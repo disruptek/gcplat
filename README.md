@@ -3,7 +3,7 @@ Google Cloud Platform (GCP) APIs in Nim
 
 ## Supported APIs
 
-[Sadly, only the 292 most popular GCP APIs are supported at this time.](https://github.com/disruptek/gcplat/tree/master/src/gcplat) :cry:
+[Sadly, only the 172 most popular GCP APIs are supported at this time.](https://github.com/disruptek/gcplat/tree/master/src/gcplat) :cry:
 
 ## Example
 
