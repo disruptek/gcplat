@@ -3,7 +3,7 @@ Google Cloud Platform (GCP) APIs in Nim
 
 ## Work in Progress
 
-The request signing hasn't been implemented yet...
+Haven't decided how to handle parameters with empty strings, so for now, you need to supply JSON arguments to the `call` as per the fallback https://github.com/disruptek/openapi syntax...
 
 ## Supported APIs
 
