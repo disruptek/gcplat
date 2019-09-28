@@ -1,6 +1,7 @@
 
 import
-  json, options, hashes, uri, openapi/rest, os, uri, strutils, httpcore
+  json, options, hashes, uri, rest, os, uri, strutils, times, httpcore, httpclient,
+  asyncdispatch, jwt
 
 ## auto-generated via openapi macro
 ## title: Drive
@@ -28,15 +29,15 @@ type
     url*: proc (protocol: Scheme; host: string; base: string; route: string;
               path: JsonNode; query: JsonNode): Uri
 
-  OpenApiRestCall_593424 = ref object of OpenApiRestCall
+  OpenApiRestCall_579424 = ref object of OpenApiRestCall
 proc hash(scheme: Scheme): Hash {.used.} =
   result = hash(ord(scheme))
 
-proc clone[T: OpenApiRestCall_593424](t: T): T {.used.} =
+proc clone[T: OpenApiRestCall_579424](t: T): T {.used.} =
   result = T(name: t.name, meth: t.meth, host: t.host, base: t.base, route: t.route,
            schemes: t.schemes, validator: t.validator, url: t.url)
 
-proc pickScheme(t: OpenApiRestCall_593424): Option[Scheme] {.used.} =
+proc pickScheme(t: OpenApiRestCall_579424): Option[Scheme] {.used.} =
   ## select a supported scheme from a set of candidates
   for scheme in Scheme.low ..
       Scheme.high:
@@ -104,17 +105,18 @@ proc hydratePath(input: JsonNode; segments: seq[PathToken]): Option[string] =
 
 const
   gcpServiceName = "drive"
+proc composeQueryString(query: JsonNode): string
 method hook(call: OpenApiRestCall; url: Uri; input: JsonNode): Recallable {.base.}
 type
-  Call_DriveAboutGet_593692 = ref object of OpenApiRestCall_593424
-proc url_DriveAboutGet_593694(protocol: Scheme; host: string; base: string;
+  Call_DriveAboutGet_579692 = ref object of OpenApiRestCall_579424
+proc url_DriveAboutGet_579694(protocol: Scheme; host: string; base: string;
                              route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   result.path = base & route
 
-proc validate_DriveAboutGet_593693(path: JsonNode; query: JsonNode; header: JsonNode;
+proc validate_DriveAboutGet_579693(path: JsonNode; query: JsonNode; header: JsonNode;
                                   formData: JsonNode; body: JsonNode): JsonNode =
   ## Gets the information about the current user along with Drive API settings
   ## 
@@ -144,56 +146,56 @@ proc validate_DriveAboutGet_593693(path: JsonNode; query: JsonNode; header: Json
   ##   startChangeId: JString
   ##                : Change ID to start counting from when calculating number of remaining change IDs
   section = newJObject()
-  var valid_593806 = query.getOrDefault("fields")
-  valid_593806 = validateParameter(valid_593806, JString, required = false,
+  var valid_579806 = query.getOrDefault("fields")
+  valid_579806 = validateParameter(valid_579806, JString, required = false,
                                  default = nil)
-  if valid_593806 != nil:
-    section.add "fields", valid_593806
-  var valid_593807 = query.getOrDefault("quotaUser")
-  valid_593807 = validateParameter(valid_593807, JString, required = false,
+  if valid_579806 != nil:
+    section.add "fields", valid_579806
+  var valid_579807 = query.getOrDefault("quotaUser")
+  valid_579807 = validateParameter(valid_579807, JString, required = false,
                                  default = nil)
-  if valid_593807 != nil:
-    section.add "quotaUser", valid_593807
-  var valid_593821 = query.getOrDefault("alt")
-  valid_593821 = validateParameter(valid_593821, JString, required = false,
+  if valid_579807 != nil:
+    section.add "quotaUser", valid_579807
+  var valid_579821 = query.getOrDefault("alt")
+  valid_579821 = validateParameter(valid_579821, JString, required = false,
                                  default = newJString("json"))
-  if valid_593821 != nil:
-    section.add "alt", valid_593821
-  var valid_593822 = query.getOrDefault("oauth_token")
-  valid_593822 = validateParameter(valid_593822, JString, required = false,
+  if valid_579821 != nil:
+    section.add "alt", valid_579821
+  var valid_579822 = query.getOrDefault("oauth_token")
+  valid_579822 = validateParameter(valid_579822, JString, required = false,
                                  default = nil)
-  if valid_593822 != nil:
-    section.add "oauth_token", valid_593822
-  var valid_593823 = query.getOrDefault("userIp")
-  valid_593823 = validateParameter(valid_593823, JString, required = false,
+  if valid_579822 != nil:
+    section.add "oauth_token", valid_579822
+  var valid_579823 = query.getOrDefault("userIp")
+  valid_579823 = validateParameter(valid_579823, JString, required = false,
                                  default = nil)
-  if valid_593823 != nil:
-    section.add "userIp", valid_593823
-  var valid_593824 = query.getOrDefault("maxChangeIdCount")
-  valid_593824 = validateParameter(valid_593824, JString, required = false,
+  if valid_579823 != nil:
+    section.add "userIp", valid_579823
+  var valid_579824 = query.getOrDefault("maxChangeIdCount")
+  valid_579824 = validateParameter(valid_579824, JString, required = false,
                                  default = newJString("1"))
-  if valid_593824 != nil:
-    section.add "maxChangeIdCount", valid_593824
-  var valid_593825 = query.getOrDefault("includeSubscribed")
-  valid_593825 = validateParameter(valid_593825, JBool, required = false,
+  if valid_579824 != nil:
+    section.add "maxChangeIdCount", valid_579824
+  var valid_579825 = query.getOrDefault("includeSubscribed")
+  valid_579825 = validateParameter(valid_579825, JBool, required = false,
                                  default = newJBool(true))
-  if valid_593825 != nil:
-    section.add "includeSubscribed", valid_593825
-  var valid_593826 = query.getOrDefault("key")
-  valid_593826 = validateParameter(valid_593826, JString, required = false,
+  if valid_579825 != nil:
+    section.add "includeSubscribed", valid_579825
+  var valid_579826 = query.getOrDefault("key")
+  valid_579826 = validateParameter(valid_579826, JString, required = false,
                                  default = nil)
-  if valid_593826 != nil:
-    section.add "key", valid_593826
-  var valid_593827 = query.getOrDefault("prettyPrint")
-  valid_593827 = validateParameter(valid_593827, JBool, required = false,
+  if valid_579826 != nil:
+    section.add "key", valid_579826
+  var valid_579827 = query.getOrDefault("prettyPrint")
+  valid_579827 = validateParameter(valid_579827, JBool, required = false,
                                  default = newJBool(true))
-  if valid_593827 != nil:
-    section.add "prettyPrint", valid_593827
-  var valid_593828 = query.getOrDefault("startChangeId")
-  valid_593828 = validateParameter(valid_593828, JString, required = false,
+  if valid_579827 != nil:
+    section.add "prettyPrint", valid_579827
+  var valid_579828 = query.getOrDefault("startChangeId")
+  valid_579828 = validateParameter(valid_579828, JString, required = false,
                                  default = nil)
-  if valid_593828 != nil:
-    section.add "startChangeId", valid_593828
+  if valid_579828 != nil:
+    section.add "startChangeId", valid_579828
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -202,20 +204,20 @@ proc validate_DriveAboutGet_593693(path: JsonNode; query: JsonNode; header: Json
   if body != nil:
     result.add "body", body
 
-proc call*(call_593851: Call_DriveAboutGet_593692; path: JsonNode; query: JsonNode;
+proc call*(call_579851: Call_DriveAboutGet_579692; path: JsonNode; query: JsonNode;
           header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Gets the information about the current user along with Drive API settings
   ## 
-  let valid = call_593851.validator(path, query, header, formData, body)
-  let scheme = call_593851.pickScheme
+  let valid = call_579851.validator(path, query, header, formData, body)
+  let scheme = call_579851.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_593851.url(scheme.get, call_593851.host, call_593851.base,
-                         call_593851.route, valid.getOrDefault("path"),
+  let url = call_579851.url(scheme.get, call_579851.host, call_579851.base,
+                         call_579851.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_593851, url, valid)
+  result = hook(call_579851, url, valid)
 
-proc call*(call_593922: Call_DriveAboutGet_593692; fields: string = "";
+proc call*(call_579922: Call_DriveAboutGet_579692; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; maxChangeIdCount: string = "1";
           includeSubscribed: bool = true; key: string = ""; prettyPrint: bool = true;
@@ -242,33 +244,33 @@ proc call*(call_593922: Call_DriveAboutGet_593692; fields: string = "";
   ##              : Returns response with indentations and line breaks.
   ##   startChangeId: string
   ##                : Change ID to start counting from when calculating number of remaining change IDs
-  var query_593923 = newJObject()
-  add(query_593923, "fields", newJString(fields))
-  add(query_593923, "quotaUser", newJString(quotaUser))
-  add(query_593923, "alt", newJString(alt))
-  add(query_593923, "oauth_token", newJString(oauthToken))
-  add(query_593923, "userIp", newJString(userIp))
-  add(query_593923, "maxChangeIdCount", newJString(maxChangeIdCount))
-  add(query_593923, "includeSubscribed", newJBool(includeSubscribed))
-  add(query_593923, "key", newJString(key))
-  add(query_593923, "prettyPrint", newJBool(prettyPrint))
-  add(query_593923, "startChangeId", newJString(startChangeId))
-  result = call_593922.call(nil, query_593923, nil, nil, nil)
+  var query_579923 = newJObject()
+  add(query_579923, "fields", newJString(fields))
+  add(query_579923, "quotaUser", newJString(quotaUser))
+  add(query_579923, "alt", newJString(alt))
+  add(query_579923, "oauth_token", newJString(oauthToken))
+  add(query_579923, "userIp", newJString(userIp))
+  add(query_579923, "maxChangeIdCount", newJString(maxChangeIdCount))
+  add(query_579923, "includeSubscribed", newJBool(includeSubscribed))
+  add(query_579923, "key", newJString(key))
+  add(query_579923, "prettyPrint", newJBool(prettyPrint))
+  add(query_579923, "startChangeId", newJString(startChangeId))
+  result = call_579922.call(nil, query_579923, nil, nil, nil)
 
-var driveAboutGet* = Call_DriveAboutGet_593692(name: "driveAboutGet",
+var driveAboutGet* = Call_DriveAboutGet_579692(name: "driveAboutGet",
     meth: HttpMethod.HttpGet, host: "www.googleapis.com", route: "/about",
-    validator: validate_DriveAboutGet_593693, base: "/drive/v2",
-    url: url_DriveAboutGet_593694, schemes: {Scheme.Https})
+    validator: validate_DriveAboutGet_579693, base: "/drive/v2",
+    url: url_DriveAboutGet_579694, schemes: {Scheme.Https})
 type
-  Call_DriveAppsList_593963 = ref object of OpenApiRestCall_593424
-proc url_DriveAppsList_593965(protocol: Scheme; host: string; base: string;
+  Call_DriveAppsList_579963 = ref object of OpenApiRestCall_579424
+proc url_DriveAppsList_579965(protocol: Scheme; host: string; base: string;
                              route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   result.path = base & route
 
-proc validate_DriveAppsList_593964(path: JsonNode; query: JsonNode; header: JsonNode;
+proc validate_DriveAppsList_579964(path: JsonNode; query: JsonNode; header: JsonNode;
                                   formData: JsonNode; body: JsonNode): JsonNode =
   ## Lists a user's installed apps.
   ## 
@@ -298,56 +300,56 @@ proc validate_DriveAppsList_593964(path: JsonNode; query: JsonNode; header: Json
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_593966 = query.getOrDefault("fields")
-  valid_593966 = validateParameter(valid_593966, JString, required = false,
+  var valid_579966 = query.getOrDefault("fields")
+  valid_579966 = validateParameter(valid_579966, JString, required = false,
                                  default = nil)
-  if valid_593966 != nil:
-    section.add "fields", valid_593966
-  var valid_593967 = query.getOrDefault("quotaUser")
-  valid_593967 = validateParameter(valid_593967, JString, required = false,
+  if valid_579966 != nil:
+    section.add "fields", valid_579966
+  var valid_579967 = query.getOrDefault("quotaUser")
+  valid_579967 = validateParameter(valid_579967, JString, required = false,
                                  default = nil)
-  if valid_593967 != nil:
-    section.add "quotaUser", valid_593967
-  var valid_593968 = query.getOrDefault("alt")
-  valid_593968 = validateParameter(valid_593968, JString, required = false,
+  if valid_579967 != nil:
+    section.add "quotaUser", valid_579967
+  var valid_579968 = query.getOrDefault("alt")
+  valid_579968 = validateParameter(valid_579968, JString, required = false,
                                  default = newJString("json"))
-  if valid_593968 != nil:
-    section.add "alt", valid_593968
-  var valid_593969 = query.getOrDefault("appFilterExtensions")
-  valid_593969 = validateParameter(valid_593969, JString, required = false,
+  if valid_579968 != nil:
+    section.add "alt", valid_579968
+  var valid_579969 = query.getOrDefault("appFilterExtensions")
+  valid_579969 = validateParameter(valid_579969, JString, required = false,
                                  default = newJString(""))
-  if valid_593969 != nil:
-    section.add "appFilterExtensions", valid_593969
-  var valid_593970 = query.getOrDefault("oauth_token")
-  valid_593970 = validateParameter(valid_593970, JString, required = false,
+  if valid_579969 != nil:
+    section.add "appFilterExtensions", valid_579969
+  var valid_579970 = query.getOrDefault("oauth_token")
+  valid_579970 = validateParameter(valid_579970, JString, required = false,
                                  default = nil)
-  if valid_593970 != nil:
-    section.add "oauth_token", valid_593970
-  var valid_593971 = query.getOrDefault("userIp")
-  valid_593971 = validateParameter(valid_593971, JString, required = false,
+  if valid_579970 != nil:
+    section.add "oauth_token", valid_579970
+  var valid_579971 = query.getOrDefault("userIp")
+  valid_579971 = validateParameter(valid_579971, JString, required = false,
                                  default = nil)
-  if valid_593971 != nil:
-    section.add "userIp", valid_593971
-  var valid_593972 = query.getOrDefault("key")
-  valid_593972 = validateParameter(valid_593972, JString, required = false,
+  if valid_579971 != nil:
+    section.add "userIp", valid_579971
+  var valid_579972 = query.getOrDefault("key")
+  valid_579972 = validateParameter(valid_579972, JString, required = false,
                                  default = nil)
-  if valid_593972 != nil:
-    section.add "key", valid_593972
-  var valid_593973 = query.getOrDefault("appFilterMimeTypes")
-  valid_593973 = validateParameter(valid_593973, JString, required = false,
+  if valid_579972 != nil:
+    section.add "key", valid_579972
+  var valid_579973 = query.getOrDefault("appFilterMimeTypes")
+  valid_579973 = validateParameter(valid_579973, JString, required = false,
                                  default = newJString(""))
-  if valid_593973 != nil:
-    section.add "appFilterMimeTypes", valid_593973
-  var valid_593974 = query.getOrDefault("languageCode")
-  valid_593974 = validateParameter(valid_593974, JString, required = false,
+  if valid_579973 != nil:
+    section.add "appFilterMimeTypes", valid_579973
+  var valid_579974 = query.getOrDefault("languageCode")
+  valid_579974 = validateParameter(valid_579974, JString, required = false,
                                  default = nil)
-  if valid_593974 != nil:
-    section.add "languageCode", valid_593974
-  var valid_593975 = query.getOrDefault("prettyPrint")
-  valid_593975 = validateParameter(valid_593975, JBool, required = false,
+  if valid_579974 != nil:
+    section.add "languageCode", valid_579974
+  var valid_579975 = query.getOrDefault("prettyPrint")
+  valid_579975 = validateParameter(valid_579975, JBool, required = false,
                                  default = newJBool(true))
-  if valid_593975 != nil:
-    section.add "prettyPrint", valid_593975
+  if valid_579975 != nil:
+    section.add "prettyPrint", valid_579975
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -356,20 +358,20 @@ proc validate_DriveAppsList_593964(path: JsonNode; query: JsonNode; header: Json
   if body != nil:
     result.add "body", body
 
-proc call*(call_593976: Call_DriveAppsList_593963; path: JsonNode; query: JsonNode;
+proc call*(call_579976: Call_DriveAppsList_579963; path: JsonNode; query: JsonNode;
           header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Lists a user's installed apps.
   ## 
-  let valid = call_593976.validator(path, query, header, formData, body)
-  let scheme = call_593976.pickScheme
+  let valid = call_579976.validator(path, query, header, formData, body)
+  let scheme = call_579976.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_593976.url(scheme.get, call_593976.host, call_593976.base,
-                         call_593976.route, valid.getOrDefault("path"),
+  let url = call_579976.url(scheme.get, call_579976.host, call_579976.base,
+                         call_579976.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_593976, url, valid)
+  result = hook(call_579976, url, valid)
 
-proc call*(call_593977: Call_DriveAppsList_593963; fields: string = "";
+proc call*(call_579977: Call_DriveAppsList_579963; fields: string = "";
           quotaUser: string = ""; alt: string = "json";
           appFilterExtensions: string = ""; oauthToken: string = "";
           userIp: string = ""; key: string = ""; appFilterMimeTypes: string = "";
@@ -396,30 +398,30 @@ proc call*(call_593977: Call_DriveAppsList_593963; fields: string = "";
   ##               : A language or locale code, as defined by BCP 47, with some extensions from Unicode's LDML format (http://www.unicode.org/reports/tr35/).
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var query_593978 = newJObject()
-  add(query_593978, "fields", newJString(fields))
-  add(query_593978, "quotaUser", newJString(quotaUser))
-  add(query_593978, "alt", newJString(alt))
-  add(query_593978, "appFilterExtensions", newJString(appFilterExtensions))
-  add(query_593978, "oauth_token", newJString(oauthToken))
-  add(query_593978, "userIp", newJString(userIp))
-  add(query_593978, "key", newJString(key))
-  add(query_593978, "appFilterMimeTypes", newJString(appFilterMimeTypes))
-  add(query_593978, "languageCode", newJString(languageCode))
-  add(query_593978, "prettyPrint", newJBool(prettyPrint))
-  result = call_593977.call(nil, query_593978, nil, nil, nil)
+  var query_579978 = newJObject()
+  add(query_579978, "fields", newJString(fields))
+  add(query_579978, "quotaUser", newJString(quotaUser))
+  add(query_579978, "alt", newJString(alt))
+  add(query_579978, "appFilterExtensions", newJString(appFilterExtensions))
+  add(query_579978, "oauth_token", newJString(oauthToken))
+  add(query_579978, "userIp", newJString(userIp))
+  add(query_579978, "key", newJString(key))
+  add(query_579978, "appFilterMimeTypes", newJString(appFilterMimeTypes))
+  add(query_579978, "languageCode", newJString(languageCode))
+  add(query_579978, "prettyPrint", newJBool(prettyPrint))
+  result = call_579977.call(nil, query_579978, nil, nil, nil)
 
-var driveAppsList* = Call_DriveAppsList_593963(name: "driveAppsList",
+var driveAppsList* = Call_DriveAppsList_579963(name: "driveAppsList",
     meth: HttpMethod.HttpGet, host: "www.googleapis.com", route: "/apps",
-    validator: validate_DriveAppsList_593964, base: "/drive/v2",
-    url: url_DriveAppsList_593965, schemes: {Scheme.Https})
+    validator: validate_DriveAppsList_579964, base: "/drive/v2",
+    url: url_DriveAppsList_579965, schemes: {Scheme.Https})
 type
-  Call_DriveAppsGet_593979 = ref object of OpenApiRestCall_593424
-proc url_DriveAppsGet_593981(protocol: Scheme; host: string; base: string;
+  Call_DriveAppsGet_579979 = ref object of OpenApiRestCall_579424
+proc url_DriveAppsGet_579981(protocol: Scheme; host: string; base: string;
                             route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "appId" in path, "`appId` is a required path parameter"
   const
@@ -430,7 +432,7 @@ proc url_DriveAppsGet_593981(protocol: Scheme; host: string; base: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_DriveAppsGet_593980(path: JsonNode; query: JsonNode; header: JsonNode;
+proc validate_DriveAppsGet_579980(path: JsonNode; query: JsonNode; header: JsonNode;
                                  formData: JsonNode; body: JsonNode): JsonNode =
   ## Gets a specific app.
   ## 
@@ -441,11 +443,11 @@ proc validate_DriveAppsGet_593980(path: JsonNode; query: JsonNode; header: JsonN
   ##        : The ID of the app.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `appId` field"
-  var valid_593996 = path.getOrDefault("appId")
-  valid_593996 = validateParameter(valid_593996, JString, required = true,
+  var valid_579996 = path.getOrDefault("appId")
+  valid_579996 = validateParameter(valid_579996, JString, required = true,
                                  default = nil)
-  if valid_593996 != nil:
-    section.add "appId", valid_593996
+  if valid_579996 != nil:
+    section.add "appId", valid_579996
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -463,41 +465,41 @@ proc validate_DriveAppsGet_593980(path: JsonNode; query: JsonNode; header: JsonN
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_593997 = query.getOrDefault("fields")
-  valid_593997 = validateParameter(valid_593997, JString, required = false,
+  var valid_579997 = query.getOrDefault("fields")
+  valid_579997 = validateParameter(valid_579997, JString, required = false,
                                  default = nil)
-  if valid_593997 != nil:
-    section.add "fields", valid_593997
-  var valid_593998 = query.getOrDefault("quotaUser")
-  valid_593998 = validateParameter(valid_593998, JString, required = false,
+  if valid_579997 != nil:
+    section.add "fields", valid_579997
+  var valid_579998 = query.getOrDefault("quotaUser")
+  valid_579998 = validateParameter(valid_579998, JString, required = false,
                                  default = nil)
-  if valid_593998 != nil:
-    section.add "quotaUser", valid_593998
-  var valid_593999 = query.getOrDefault("alt")
-  valid_593999 = validateParameter(valid_593999, JString, required = false,
+  if valid_579998 != nil:
+    section.add "quotaUser", valid_579998
+  var valid_579999 = query.getOrDefault("alt")
+  valid_579999 = validateParameter(valid_579999, JString, required = false,
                                  default = newJString("json"))
-  if valid_593999 != nil:
-    section.add "alt", valid_593999
-  var valid_594000 = query.getOrDefault("oauth_token")
-  valid_594000 = validateParameter(valid_594000, JString, required = false,
+  if valid_579999 != nil:
+    section.add "alt", valid_579999
+  var valid_580000 = query.getOrDefault("oauth_token")
+  valid_580000 = validateParameter(valid_580000, JString, required = false,
                                  default = nil)
-  if valid_594000 != nil:
-    section.add "oauth_token", valid_594000
-  var valid_594001 = query.getOrDefault("userIp")
-  valid_594001 = validateParameter(valid_594001, JString, required = false,
+  if valid_580000 != nil:
+    section.add "oauth_token", valid_580000
+  var valid_580001 = query.getOrDefault("userIp")
+  valid_580001 = validateParameter(valid_580001, JString, required = false,
                                  default = nil)
-  if valid_594001 != nil:
-    section.add "userIp", valid_594001
-  var valid_594002 = query.getOrDefault("key")
-  valid_594002 = validateParameter(valid_594002, JString, required = false,
+  if valid_580001 != nil:
+    section.add "userIp", valid_580001
+  var valid_580002 = query.getOrDefault("key")
+  valid_580002 = validateParameter(valid_580002, JString, required = false,
                                  default = nil)
-  if valid_594002 != nil:
-    section.add "key", valid_594002
-  var valid_594003 = query.getOrDefault("prettyPrint")
-  valid_594003 = validateParameter(valid_594003, JBool, required = false,
+  if valid_580002 != nil:
+    section.add "key", valid_580002
+  var valid_580003 = query.getOrDefault("prettyPrint")
+  valid_580003 = validateParameter(valid_580003, JBool, required = false,
                                  default = newJBool(true))
-  if valid_594003 != nil:
-    section.add "prettyPrint", valid_594003
+  if valid_580003 != nil:
+    section.add "prettyPrint", valid_580003
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -506,20 +508,20 @@ proc validate_DriveAppsGet_593980(path: JsonNode; query: JsonNode; header: JsonN
   if body != nil:
     result.add "body", body
 
-proc call*(call_594004: Call_DriveAppsGet_593979; path: JsonNode; query: JsonNode;
+proc call*(call_580004: Call_DriveAppsGet_579979; path: JsonNode; query: JsonNode;
           header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Gets a specific app.
   ## 
-  let valid = call_594004.validator(path, query, header, formData, body)
-  let scheme = call_594004.pickScheme
+  let valid = call_580004.validator(path, query, header, formData, body)
+  let scheme = call_580004.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_594004.url(scheme.get, call_594004.host, call_594004.base,
-                         call_594004.route, valid.getOrDefault("path"),
+  let url = call_580004.url(scheme.get, call_580004.host, call_580004.base,
+                         call_580004.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_594004, url, valid)
+  result = hook(call_580004, url, valid)
 
-proc call*(call_594005: Call_DriveAppsGet_593979; appId: string; fields: string = "";
+proc call*(call_580005: Call_DriveAppsGet_579979; appId: string; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; key: string = ""; prettyPrint: bool = true): Recallable =
   ## driveAppsGet
@@ -540,32 +542,32 @@ proc call*(call_594005: Call_DriveAppsGet_593979; appId: string; fields: string 
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_594006 = newJObject()
-  var query_594007 = newJObject()
-  add(query_594007, "fields", newJString(fields))
-  add(query_594007, "quotaUser", newJString(quotaUser))
-  add(query_594007, "alt", newJString(alt))
-  add(query_594007, "oauth_token", newJString(oauthToken))
-  add(query_594007, "userIp", newJString(userIp))
-  add(path_594006, "appId", newJString(appId))
-  add(query_594007, "key", newJString(key))
-  add(query_594007, "prettyPrint", newJBool(prettyPrint))
-  result = call_594005.call(path_594006, query_594007, nil, nil, nil)
+  var path_580006 = newJObject()
+  var query_580007 = newJObject()
+  add(query_580007, "fields", newJString(fields))
+  add(query_580007, "quotaUser", newJString(quotaUser))
+  add(query_580007, "alt", newJString(alt))
+  add(query_580007, "oauth_token", newJString(oauthToken))
+  add(query_580007, "userIp", newJString(userIp))
+  add(path_580006, "appId", newJString(appId))
+  add(query_580007, "key", newJString(key))
+  add(query_580007, "prettyPrint", newJBool(prettyPrint))
+  result = call_580005.call(path_580006, query_580007, nil, nil, nil)
 
-var driveAppsGet* = Call_DriveAppsGet_593979(name: "driveAppsGet",
+var driveAppsGet* = Call_DriveAppsGet_579979(name: "driveAppsGet",
     meth: HttpMethod.HttpGet, host: "www.googleapis.com", route: "/apps/{appId}",
-    validator: validate_DriveAppsGet_593980, base: "/drive/v2",
-    url: url_DriveAppsGet_593981, schemes: {Scheme.Https})
+    validator: validate_DriveAppsGet_579980, base: "/drive/v2",
+    url: url_DriveAppsGet_579981, schemes: {Scheme.Https})
 type
-  Call_DriveChangesList_594008 = ref object of OpenApiRestCall_593424
-proc url_DriveChangesList_594010(protocol: Scheme; host: string; base: string;
+  Call_DriveChangesList_580008 = ref object of OpenApiRestCall_579424
+proc url_DriveChangesList_580010(protocol: Scheme; host: string; base: string;
                                 route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   result.path = base & route
 
-proc validate_DriveChangesList_594009(path: JsonNode; query: JsonNode;
+proc validate_DriveChangesList_580009(path: JsonNode; query: JsonNode;
                                      header: JsonNode; formData: JsonNode;
                                      body: JsonNode): JsonNode =
   ## Lists the changes for a user or shared drive.
@@ -616,106 +618,106 @@ proc validate_DriveChangesList_594009(path: JsonNode; query: JsonNode;
   ##   includeCorpusRemovals: JBool
   ##                        : Whether changes should include the file resource if the file is still accessible by the user at the time of the request, even when a file was removed from the list of changes and there will be no further change entries for this file.
   section = newJObject()
-  var valid_594011 = query.getOrDefault("driveId")
-  valid_594011 = validateParameter(valid_594011, JString, required = false,
+  var valid_580011 = query.getOrDefault("driveId")
+  valid_580011 = validateParameter(valid_580011, JString, required = false,
                                  default = nil)
-  if valid_594011 != nil:
-    section.add "driveId", valid_594011
-  var valid_594012 = query.getOrDefault("supportsAllDrives")
-  valid_594012 = validateParameter(valid_594012, JBool, required = false,
+  if valid_580011 != nil:
+    section.add "driveId", valid_580011
+  var valid_580012 = query.getOrDefault("supportsAllDrives")
+  valid_580012 = validateParameter(valid_580012, JBool, required = false,
                                  default = newJBool(false))
-  if valid_594012 != nil:
-    section.add "supportsAllDrives", valid_594012
-  var valid_594013 = query.getOrDefault("fields")
-  valid_594013 = validateParameter(valid_594013, JString, required = false,
+  if valid_580012 != nil:
+    section.add "supportsAllDrives", valid_580012
+  var valid_580013 = query.getOrDefault("fields")
+  valid_580013 = validateParameter(valid_580013, JString, required = false,
                                  default = nil)
-  if valid_594013 != nil:
-    section.add "fields", valid_594013
-  var valid_594014 = query.getOrDefault("pageToken")
-  valid_594014 = validateParameter(valid_594014, JString, required = false,
+  if valid_580013 != nil:
+    section.add "fields", valid_580013
+  var valid_580014 = query.getOrDefault("pageToken")
+  valid_580014 = validateParameter(valid_580014, JString, required = false,
                                  default = nil)
-  if valid_594014 != nil:
-    section.add "pageToken", valid_594014
-  var valid_594015 = query.getOrDefault("quotaUser")
-  valid_594015 = validateParameter(valid_594015, JString, required = false,
+  if valid_580014 != nil:
+    section.add "pageToken", valid_580014
+  var valid_580015 = query.getOrDefault("quotaUser")
+  valid_580015 = validateParameter(valid_580015, JString, required = false,
                                  default = nil)
-  if valid_594015 != nil:
-    section.add "quotaUser", valid_594015
-  var valid_594016 = query.getOrDefault("alt")
-  valid_594016 = validateParameter(valid_594016, JString, required = false,
+  if valid_580015 != nil:
+    section.add "quotaUser", valid_580015
+  var valid_580016 = query.getOrDefault("alt")
+  valid_580016 = validateParameter(valid_580016, JString, required = false,
                                  default = newJString("json"))
-  if valid_594016 != nil:
-    section.add "alt", valid_594016
-  var valid_594017 = query.getOrDefault("oauth_token")
-  valid_594017 = validateParameter(valid_594017, JString, required = false,
+  if valid_580016 != nil:
+    section.add "alt", valid_580016
+  var valid_580017 = query.getOrDefault("oauth_token")
+  valid_580017 = validateParameter(valid_580017, JString, required = false,
                                  default = nil)
-  if valid_594017 != nil:
-    section.add "oauth_token", valid_594017
-  var valid_594018 = query.getOrDefault("includeItemsFromAllDrives")
-  valid_594018 = validateParameter(valid_594018, JBool, required = false,
+  if valid_580017 != nil:
+    section.add "oauth_token", valid_580017
+  var valid_580018 = query.getOrDefault("includeItemsFromAllDrives")
+  valid_580018 = validateParameter(valid_580018, JBool, required = false,
                                  default = newJBool(false))
-  if valid_594018 != nil:
-    section.add "includeItemsFromAllDrives", valid_594018
-  var valid_594019 = query.getOrDefault("userIp")
-  valid_594019 = validateParameter(valid_594019, JString, required = false,
+  if valid_580018 != nil:
+    section.add "includeItemsFromAllDrives", valid_580018
+  var valid_580019 = query.getOrDefault("userIp")
+  valid_580019 = validateParameter(valid_580019, JString, required = false,
                                  default = nil)
-  if valid_594019 != nil:
-    section.add "userIp", valid_594019
-  var valid_594020 = query.getOrDefault("includeTeamDriveItems")
-  valid_594020 = validateParameter(valid_594020, JBool, required = false,
+  if valid_580019 != nil:
+    section.add "userIp", valid_580019
+  var valid_580020 = query.getOrDefault("includeTeamDriveItems")
+  valid_580020 = validateParameter(valid_580020, JBool, required = false,
                                  default = newJBool(false))
-  if valid_594020 != nil:
-    section.add "includeTeamDriveItems", valid_594020
-  var valid_594021 = query.getOrDefault("teamDriveId")
-  valid_594021 = validateParameter(valid_594021, JString, required = false,
+  if valid_580020 != nil:
+    section.add "includeTeamDriveItems", valid_580020
+  var valid_580021 = query.getOrDefault("teamDriveId")
+  valid_580021 = validateParameter(valid_580021, JString, required = false,
                                  default = nil)
-  if valid_594021 != nil:
-    section.add "teamDriveId", valid_594021
-  var valid_594022 = query.getOrDefault("includeSubscribed")
-  valid_594022 = validateParameter(valid_594022, JBool, required = false,
+  if valid_580021 != nil:
+    section.add "teamDriveId", valid_580021
+  var valid_580022 = query.getOrDefault("includeSubscribed")
+  valid_580022 = validateParameter(valid_580022, JBool, required = false,
                                  default = newJBool(true))
-  if valid_594022 != nil:
-    section.add "includeSubscribed", valid_594022
-  var valid_594024 = query.getOrDefault("maxResults")
-  valid_594024 = validateParameter(valid_594024, JInt, required = false,
+  if valid_580022 != nil:
+    section.add "includeSubscribed", valid_580022
+  var valid_580024 = query.getOrDefault("maxResults")
+  valid_580024 = validateParameter(valid_580024, JInt, required = false,
                                  default = newJInt(100))
-  if valid_594024 != nil:
-    section.add "maxResults", valid_594024
-  var valid_594025 = query.getOrDefault("supportsTeamDrives")
-  valid_594025 = validateParameter(valid_594025, JBool, required = false,
+  if valid_580024 != nil:
+    section.add "maxResults", valid_580024
+  var valid_580025 = query.getOrDefault("supportsTeamDrives")
+  valid_580025 = validateParameter(valid_580025, JBool, required = false,
                                  default = newJBool(false))
-  if valid_594025 != nil:
-    section.add "supportsTeamDrives", valid_594025
-  var valid_594026 = query.getOrDefault("key")
-  valid_594026 = validateParameter(valid_594026, JString, required = false,
+  if valid_580025 != nil:
+    section.add "supportsTeamDrives", valid_580025
+  var valid_580026 = query.getOrDefault("key")
+  valid_580026 = validateParameter(valid_580026, JString, required = false,
                                  default = nil)
-  if valid_594026 != nil:
-    section.add "key", valid_594026
-  var valid_594027 = query.getOrDefault("includeDeleted")
-  valid_594027 = validateParameter(valid_594027, JBool, required = false,
+  if valid_580026 != nil:
+    section.add "key", valid_580026
+  var valid_580027 = query.getOrDefault("includeDeleted")
+  valid_580027 = validateParameter(valid_580027, JBool, required = false,
                                  default = newJBool(true))
-  if valid_594027 != nil:
-    section.add "includeDeleted", valid_594027
-  var valid_594028 = query.getOrDefault("spaces")
-  valid_594028 = validateParameter(valid_594028, JString, required = false,
+  if valid_580027 != nil:
+    section.add "includeDeleted", valid_580027
+  var valid_580028 = query.getOrDefault("spaces")
+  valid_580028 = validateParameter(valid_580028, JString, required = false,
                                  default = nil)
-  if valid_594028 != nil:
-    section.add "spaces", valid_594028
-  var valid_594029 = query.getOrDefault("prettyPrint")
-  valid_594029 = validateParameter(valid_594029, JBool, required = false,
+  if valid_580028 != nil:
+    section.add "spaces", valid_580028
+  var valid_580029 = query.getOrDefault("prettyPrint")
+  valid_580029 = validateParameter(valid_580029, JBool, required = false,
                                  default = newJBool(true))
-  if valid_594029 != nil:
-    section.add "prettyPrint", valid_594029
-  var valid_594030 = query.getOrDefault("startChangeId")
-  valid_594030 = validateParameter(valid_594030, JString, required = false,
+  if valid_580029 != nil:
+    section.add "prettyPrint", valid_580029
+  var valid_580030 = query.getOrDefault("startChangeId")
+  valid_580030 = validateParameter(valid_580030, JString, required = false,
                                  default = nil)
-  if valid_594030 != nil:
-    section.add "startChangeId", valid_594030
-  var valid_594031 = query.getOrDefault("includeCorpusRemovals")
-  valid_594031 = validateParameter(valid_594031, JBool, required = false,
+  if valid_580030 != nil:
+    section.add "startChangeId", valid_580030
+  var valid_580031 = query.getOrDefault("includeCorpusRemovals")
+  valid_580031 = validateParameter(valid_580031, JBool, required = false,
                                  default = newJBool(false))
-  if valid_594031 != nil:
-    section.add "includeCorpusRemovals", valid_594031
+  if valid_580031 != nil:
+    section.add "includeCorpusRemovals", valid_580031
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -724,20 +726,20 @@ proc validate_DriveChangesList_594009(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_594032: Call_DriveChangesList_594008; path: JsonNode;
+proc call*(call_580032: Call_DriveChangesList_580008; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Lists the changes for a user or shared drive.
   ## 
-  let valid = call_594032.validator(path, query, header, formData, body)
-  let scheme = call_594032.pickScheme
+  let valid = call_580032.validator(path, query, header, formData, body)
+  let scheme = call_580032.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_594032.url(scheme.get, call_594032.host, call_594032.base,
-                         call_594032.route, valid.getOrDefault("path"),
+  let url = call_580032.url(scheme.get, call_580032.host, call_580032.base,
+                         call_580032.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_594032, url, valid)
+  result = hook(call_580032, url, valid)
 
-proc call*(call_594033: Call_DriveChangesList_594008; driveId: string = "";
+proc call*(call_580033: Call_DriveChangesList_580008; driveId: string = "";
           supportsAllDrives: bool = false; fields: string = ""; pageToken: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           includeItemsFromAllDrives: bool = false; userIp: string = "";
@@ -788,44 +790,44 @@ proc call*(call_594033: Call_DriveChangesList_594008; driveId: string = "";
   ##                : Deprecated - use pageToken instead.
   ##   includeCorpusRemovals: bool
   ##                        : Whether changes should include the file resource if the file is still accessible by the user at the time of the request, even when a file was removed from the list of changes and there will be no further change entries for this file.
-  var query_594034 = newJObject()
-  add(query_594034, "driveId", newJString(driveId))
-  add(query_594034, "supportsAllDrives", newJBool(supportsAllDrives))
-  add(query_594034, "fields", newJString(fields))
-  add(query_594034, "pageToken", newJString(pageToken))
-  add(query_594034, "quotaUser", newJString(quotaUser))
-  add(query_594034, "alt", newJString(alt))
-  add(query_594034, "oauth_token", newJString(oauthToken))
-  add(query_594034, "includeItemsFromAllDrives",
+  var query_580034 = newJObject()
+  add(query_580034, "driveId", newJString(driveId))
+  add(query_580034, "supportsAllDrives", newJBool(supportsAllDrives))
+  add(query_580034, "fields", newJString(fields))
+  add(query_580034, "pageToken", newJString(pageToken))
+  add(query_580034, "quotaUser", newJString(quotaUser))
+  add(query_580034, "alt", newJString(alt))
+  add(query_580034, "oauth_token", newJString(oauthToken))
+  add(query_580034, "includeItemsFromAllDrives",
       newJBool(includeItemsFromAllDrives))
-  add(query_594034, "userIp", newJString(userIp))
-  add(query_594034, "includeTeamDriveItems", newJBool(includeTeamDriveItems))
-  add(query_594034, "teamDriveId", newJString(teamDriveId))
-  add(query_594034, "includeSubscribed", newJBool(includeSubscribed))
-  add(query_594034, "maxResults", newJInt(maxResults))
-  add(query_594034, "supportsTeamDrives", newJBool(supportsTeamDrives))
-  add(query_594034, "key", newJString(key))
-  add(query_594034, "includeDeleted", newJBool(includeDeleted))
-  add(query_594034, "spaces", newJString(spaces))
-  add(query_594034, "prettyPrint", newJBool(prettyPrint))
-  add(query_594034, "startChangeId", newJString(startChangeId))
-  add(query_594034, "includeCorpusRemovals", newJBool(includeCorpusRemovals))
-  result = call_594033.call(nil, query_594034, nil, nil, nil)
+  add(query_580034, "userIp", newJString(userIp))
+  add(query_580034, "includeTeamDriveItems", newJBool(includeTeamDriveItems))
+  add(query_580034, "teamDriveId", newJString(teamDriveId))
+  add(query_580034, "includeSubscribed", newJBool(includeSubscribed))
+  add(query_580034, "maxResults", newJInt(maxResults))
+  add(query_580034, "supportsTeamDrives", newJBool(supportsTeamDrives))
+  add(query_580034, "key", newJString(key))
+  add(query_580034, "includeDeleted", newJBool(includeDeleted))
+  add(query_580034, "spaces", newJString(spaces))
+  add(query_580034, "prettyPrint", newJBool(prettyPrint))
+  add(query_580034, "startChangeId", newJString(startChangeId))
+  add(query_580034, "includeCorpusRemovals", newJBool(includeCorpusRemovals))
+  result = call_580033.call(nil, query_580034, nil, nil, nil)
 
-var driveChangesList* = Call_DriveChangesList_594008(name: "driveChangesList",
+var driveChangesList* = Call_DriveChangesList_580008(name: "driveChangesList",
     meth: HttpMethod.HttpGet, host: "www.googleapis.com", route: "/changes",
-    validator: validate_DriveChangesList_594009, base: "/drive/v2",
-    url: url_DriveChangesList_594010, schemes: {Scheme.Https})
+    validator: validate_DriveChangesList_580009, base: "/drive/v2",
+    url: url_DriveChangesList_580010, schemes: {Scheme.Https})
 type
-  Call_DriveChangesGetStartPageToken_594035 = ref object of OpenApiRestCall_593424
-proc url_DriveChangesGetStartPageToken_594037(protocol: Scheme; host: string;
+  Call_DriveChangesGetStartPageToken_580035 = ref object of OpenApiRestCall_579424
+proc url_DriveChangesGetStartPageToken_580037(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   result.path = base & route
 
-proc validate_DriveChangesGetStartPageToken_594036(path: JsonNode; query: JsonNode;
+proc validate_DriveChangesGetStartPageToken_580036(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Gets the starting pageToken for listing future changes.
   ## 
@@ -857,61 +859,61 @@ proc validate_DriveChangesGetStartPageToken_594036(path: JsonNode; query: JsonNo
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_594038 = query.getOrDefault("driveId")
-  valid_594038 = validateParameter(valid_594038, JString, required = false,
+  var valid_580038 = query.getOrDefault("driveId")
+  valid_580038 = validateParameter(valid_580038, JString, required = false,
                                  default = nil)
-  if valid_594038 != nil:
-    section.add "driveId", valid_594038
-  var valid_594039 = query.getOrDefault("supportsAllDrives")
-  valid_594039 = validateParameter(valid_594039, JBool, required = false,
+  if valid_580038 != nil:
+    section.add "driveId", valid_580038
+  var valid_580039 = query.getOrDefault("supportsAllDrives")
+  valid_580039 = validateParameter(valid_580039, JBool, required = false,
                                  default = newJBool(false))
-  if valid_594039 != nil:
-    section.add "supportsAllDrives", valid_594039
-  var valid_594040 = query.getOrDefault("fields")
-  valid_594040 = validateParameter(valid_594040, JString, required = false,
+  if valid_580039 != nil:
+    section.add "supportsAllDrives", valid_580039
+  var valid_580040 = query.getOrDefault("fields")
+  valid_580040 = validateParameter(valid_580040, JString, required = false,
                                  default = nil)
-  if valid_594040 != nil:
-    section.add "fields", valid_594040
-  var valid_594041 = query.getOrDefault("quotaUser")
-  valid_594041 = validateParameter(valid_594041, JString, required = false,
+  if valid_580040 != nil:
+    section.add "fields", valid_580040
+  var valid_580041 = query.getOrDefault("quotaUser")
+  valid_580041 = validateParameter(valid_580041, JString, required = false,
                                  default = nil)
-  if valid_594041 != nil:
-    section.add "quotaUser", valid_594041
-  var valid_594042 = query.getOrDefault("alt")
-  valid_594042 = validateParameter(valid_594042, JString, required = false,
+  if valid_580041 != nil:
+    section.add "quotaUser", valid_580041
+  var valid_580042 = query.getOrDefault("alt")
+  valid_580042 = validateParameter(valid_580042, JString, required = false,
                                  default = newJString("json"))
-  if valid_594042 != nil:
-    section.add "alt", valid_594042
-  var valid_594043 = query.getOrDefault("oauth_token")
-  valid_594043 = validateParameter(valid_594043, JString, required = false,
+  if valid_580042 != nil:
+    section.add "alt", valid_580042
+  var valid_580043 = query.getOrDefault("oauth_token")
+  valid_580043 = validateParameter(valid_580043, JString, required = false,
                                  default = nil)
-  if valid_594043 != nil:
-    section.add "oauth_token", valid_594043
-  var valid_594044 = query.getOrDefault("userIp")
-  valid_594044 = validateParameter(valid_594044, JString, required = false,
+  if valid_580043 != nil:
+    section.add "oauth_token", valid_580043
+  var valid_580044 = query.getOrDefault("userIp")
+  valid_580044 = validateParameter(valid_580044, JString, required = false,
                                  default = nil)
-  if valid_594044 != nil:
-    section.add "userIp", valid_594044
-  var valid_594045 = query.getOrDefault("teamDriveId")
-  valid_594045 = validateParameter(valid_594045, JString, required = false,
+  if valid_580044 != nil:
+    section.add "userIp", valid_580044
+  var valid_580045 = query.getOrDefault("teamDriveId")
+  valid_580045 = validateParameter(valid_580045, JString, required = false,
                                  default = nil)
-  if valid_594045 != nil:
-    section.add "teamDriveId", valid_594045
-  var valid_594046 = query.getOrDefault("supportsTeamDrives")
-  valid_594046 = validateParameter(valid_594046, JBool, required = false,
+  if valid_580045 != nil:
+    section.add "teamDriveId", valid_580045
+  var valid_580046 = query.getOrDefault("supportsTeamDrives")
+  valid_580046 = validateParameter(valid_580046, JBool, required = false,
                                  default = newJBool(false))
-  if valid_594046 != nil:
-    section.add "supportsTeamDrives", valid_594046
-  var valid_594047 = query.getOrDefault("key")
-  valid_594047 = validateParameter(valid_594047, JString, required = false,
+  if valid_580046 != nil:
+    section.add "supportsTeamDrives", valid_580046
+  var valid_580047 = query.getOrDefault("key")
+  valid_580047 = validateParameter(valid_580047, JString, required = false,
                                  default = nil)
-  if valid_594047 != nil:
-    section.add "key", valid_594047
-  var valid_594048 = query.getOrDefault("prettyPrint")
-  valid_594048 = validateParameter(valid_594048, JBool, required = false,
+  if valid_580047 != nil:
+    section.add "key", valid_580047
+  var valid_580048 = query.getOrDefault("prettyPrint")
+  valid_580048 = validateParameter(valid_580048, JBool, required = false,
                                  default = newJBool(true))
-  if valid_594048 != nil:
-    section.add "prettyPrint", valid_594048
+  if valid_580048 != nil:
+    section.add "prettyPrint", valid_580048
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -920,20 +922,20 @@ proc validate_DriveChangesGetStartPageToken_594036(path: JsonNode; query: JsonNo
   if body != nil:
     result.add "body", body
 
-proc call*(call_594049: Call_DriveChangesGetStartPageToken_594035; path: JsonNode;
+proc call*(call_580049: Call_DriveChangesGetStartPageToken_580035; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Gets the starting pageToken for listing future changes.
   ## 
-  let valid = call_594049.validator(path, query, header, formData, body)
-  let scheme = call_594049.pickScheme
+  let valid = call_580049.validator(path, query, header, formData, body)
+  let scheme = call_580049.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_594049.url(scheme.get, call_594049.host, call_594049.base,
-                         call_594049.route, valid.getOrDefault("path"),
+  let url = call_580049.url(scheme.get, call_580049.host, call_580049.base,
+                         call_580049.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_594049, url, valid)
+  result = hook(call_580049, url, valid)
 
-proc call*(call_594050: Call_DriveChangesGetStartPageToken_594035;
+proc call*(call_580050: Call_DriveChangesGetStartPageToken_580035;
           driveId: string = ""; supportsAllDrives: bool = false; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; teamDriveId: string = "";
@@ -962,35 +964,35 @@ proc call*(call_594050: Call_DriveChangesGetStartPageToken_594035;
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var query_594051 = newJObject()
-  add(query_594051, "driveId", newJString(driveId))
-  add(query_594051, "supportsAllDrives", newJBool(supportsAllDrives))
-  add(query_594051, "fields", newJString(fields))
-  add(query_594051, "quotaUser", newJString(quotaUser))
-  add(query_594051, "alt", newJString(alt))
-  add(query_594051, "oauth_token", newJString(oauthToken))
-  add(query_594051, "userIp", newJString(userIp))
-  add(query_594051, "teamDriveId", newJString(teamDriveId))
-  add(query_594051, "supportsTeamDrives", newJBool(supportsTeamDrives))
-  add(query_594051, "key", newJString(key))
-  add(query_594051, "prettyPrint", newJBool(prettyPrint))
-  result = call_594050.call(nil, query_594051, nil, nil, nil)
+  var query_580051 = newJObject()
+  add(query_580051, "driveId", newJString(driveId))
+  add(query_580051, "supportsAllDrives", newJBool(supportsAllDrives))
+  add(query_580051, "fields", newJString(fields))
+  add(query_580051, "quotaUser", newJString(quotaUser))
+  add(query_580051, "alt", newJString(alt))
+  add(query_580051, "oauth_token", newJString(oauthToken))
+  add(query_580051, "userIp", newJString(userIp))
+  add(query_580051, "teamDriveId", newJString(teamDriveId))
+  add(query_580051, "supportsTeamDrives", newJBool(supportsTeamDrives))
+  add(query_580051, "key", newJString(key))
+  add(query_580051, "prettyPrint", newJBool(prettyPrint))
+  result = call_580050.call(nil, query_580051, nil, nil, nil)
 
-var driveChangesGetStartPageToken* = Call_DriveChangesGetStartPageToken_594035(
+var driveChangesGetStartPageToken* = Call_DriveChangesGetStartPageToken_580035(
     name: "driveChangesGetStartPageToken", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/changes/startPageToken",
-    validator: validate_DriveChangesGetStartPageToken_594036, base: "/drive/v2",
-    url: url_DriveChangesGetStartPageToken_594037, schemes: {Scheme.Https})
+    validator: validate_DriveChangesGetStartPageToken_580036, base: "/drive/v2",
+    url: url_DriveChangesGetStartPageToken_580037, schemes: {Scheme.Https})
 type
-  Call_DriveChangesWatch_594052 = ref object of OpenApiRestCall_593424
-proc url_DriveChangesWatch_594054(protocol: Scheme; host: string; base: string;
+  Call_DriveChangesWatch_580052 = ref object of OpenApiRestCall_579424
+proc url_DriveChangesWatch_580054(protocol: Scheme; host: string; base: string;
                                  route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   result.path = base & route
 
-proc validate_DriveChangesWatch_594053(path: JsonNode; query: JsonNode;
+proc validate_DriveChangesWatch_580053(path: JsonNode; query: JsonNode;
                                       header: JsonNode; formData: JsonNode;
                                       body: JsonNode): JsonNode =
   ## Subscribe to changes for a user.
@@ -1041,106 +1043,106 @@ proc validate_DriveChangesWatch_594053(path: JsonNode; query: JsonNode;
   ##   includeCorpusRemovals: JBool
   ##                        : Whether changes should include the file resource if the file is still accessible by the user at the time of the request, even when a file was removed from the list of changes and there will be no further change entries for this file.
   section = newJObject()
-  var valid_594055 = query.getOrDefault("driveId")
-  valid_594055 = validateParameter(valid_594055, JString, required = false,
+  var valid_580055 = query.getOrDefault("driveId")
+  valid_580055 = validateParameter(valid_580055, JString, required = false,
                                  default = nil)
-  if valid_594055 != nil:
-    section.add "driveId", valid_594055
-  var valid_594056 = query.getOrDefault("supportsAllDrives")
-  valid_594056 = validateParameter(valid_594056, JBool, required = false,
+  if valid_580055 != nil:
+    section.add "driveId", valid_580055
+  var valid_580056 = query.getOrDefault("supportsAllDrives")
+  valid_580056 = validateParameter(valid_580056, JBool, required = false,
                                  default = newJBool(false))
-  if valid_594056 != nil:
-    section.add "supportsAllDrives", valid_594056
-  var valid_594057 = query.getOrDefault("fields")
-  valid_594057 = validateParameter(valid_594057, JString, required = false,
+  if valid_580056 != nil:
+    section.add "supportsAllDrives", valid_580056
+  var valid_580057 = query.getOrDefault("fields")
+  valid_580057 = validateParameter(valid_580057, JString, required = false,
                                  default = nil)
-  if valid_594057 != nil:
-    section.add "fields", valid_594057
-  var valid_594058 = query.getOrDefault("pageToken")
-  valid_594058 = validateParameter(valid_594058, JString, required = false,
+  if valid_580057 != nil:
+    section.add "fields", valid_580057
+  var valid_580058 = query.getOrDefault("pageToken")
+  valid_580058 = validateParameter(valid_580058, JString, required = false,
                                  default = nil)
-  if valid_594058 != nil:
-    section.add "pageToken", valid_594058
-  var valid_594059 = query.getOrDefault("quotaUser")
-  valid_594059 = validateParameter(valid_594059, JString, required = false,
+  if valid_580058 != nil:
+    section.add "pageToken", valid_580058
+  var valid_580059 = query.getOrDefault("quotaUser")
+  valid_580059 = validateParameter(valid_580059, JString, required = false,
                                  default = nil)
-  if valid_594059 != nil:
-    section.add "quotaUser", valid_594059
-  var valid_594060 = query.getOrDefault("alt")
-  valid_594060 = validateParameter(valid_594060, JString, required = false,
+  if valid_580059 != nil:
+    section.add "quotaUser", valid_580059
+  var valid_580060 = query.getOrDefault("alt")
+  valid_580060 = validateParameter(valid_580060, JString, required = false,
                                  default = newJString("json"))
-  if valid_594060 != nil:
-    section.add "alt", valid_594060
-  var valid_594061 = query.getOrDefault("oauth_token")
-  valid_594061 = validateParameter(valid_594061, JString, required = false,
+  if valid_580060 != nil:
+    section.add "alt", valid_580060
+  var valid_580061 = query.getOrDefault("oauth_token")
+  valid_580061 = validateParameter(valid_580061, JString, required = false,
                                  default = nil)
-  if valid_594061 != nil:
-    section.add "oauth_token", valid_594061
-  var valid_594062 = query.getOrDefault("includeItemsFromAllDrives")
-  valid_594062 = validateParameter(valid_594062, JBool, required = false,
+  if valid_580061 != nil:
+    section.add "oauth_token", valid_580061
+  var valid_580062 = query.getOrDefault("includeItemsFromAllDrives")
+  valid_580062 = validateParameter(valid_580062, JBool, required = false,
                                  default = newJBool(false))
-  if valid_594062 != nil:
-    section.add "includeItemsFromAllDrives", valid_594062
-  var valid_594063 = query.getOrDefault("userIp")
-  valid_594063 = validateParameter(valid_594063, JString, required = false,
+  if valid_580062 != nil:
+    section.add "includeItemsFromAllDrives", valid_580062
+  var valid_580063 = query.getOrDefault("userIp")
+  valid_580063 = validateParameter(valid_580063, JString, required = false,
                                  default = nil)
-  if valid_594063 != nil:
-    section.add "userIp", valid_594063
-  var valid_594064 = query.getOrDefault("includeTeamDriveItems")
-  valid_594064 = validateParameter(valid_594064, JBool, required = false,
+  if valid_580063 != nil:
+    section.add "userIp", valid_580063
+  var valid_580064 = query.getOrDefault("includeTeamDriveItems")
+  valid_580064 = validateParameter(valid_580064, JBool, required = false,
                                  default = newJBool(false))
-  if valid_594064 != nil:
-    section.add "includeTeamDriveItems", valid_594064
-  var valid_594065 = query.getOrDefault("teamDriveId")
-  valid_594065 = validateParameter(valid_594065, JString, required = false,
+  if valid_580064 != nil:
+    section.add "includeTeamDriveItems", valid_580064
+  var valid_580065 = query.getOrDefault("teamDriveId")
+  valid_580065 = validateParameter(valid_580065, JString, required = false,
                                  default = nil)
-  if valid_594065 != nil:
-    section.add "teamDriveId", valid_594065
-  var valid_594066 = query.getOrDefault("includeSubscribed")
-  valid_594066 = validateParameter(valid_594066, JBool, required = false,
+  if valid_580065 != nil:
+    section.add "teamDriveId", valid_580065
+  var valid_580066 = query.getOrDefault("includeSubscribed")
+  valid_580066 = validateParameter(valid_580066, JBool, required = false,
                                  default = newJBool(true))
-  if valid_594066 != nil:
-    section.add "includeSubscribed", valid_594066
-  var valid_594067 = query.getOrDefault("maxResults")
-  valid_594067 = validateParameter(valid_594067, JInt, required = false,
+  if valid_580066 != nil:
+    section.add "includeSubscribed", valid_580066
+  var valid_580067 = query.getOrDefault("maxResults")
+  valid_580067 = validateParameter(valid_580067, JInt, required = false,
                                  default = newJInt(100))
-  if valid_594067 != nil:
-    section.add "maxResults", valid_594067
-  var valid_594068 = query.getOrDefault("supportsTeamDrives")
-  valid_594068 = validateParameter(valid_594068, JBool, required = false,
+  if valid_580067 != nil:
+    section.add "maxResults", valid_580067
+  var valid_580068 = query.getOrDefault("supportsTeamDrives")
+  valid_580068 = validateParameter(valid_580068, JBool, required = false,
                                  default = newJBool(false))
-  if valid_594068 != nil:
-    section.add "supportsTeamDrives", valid_594068
-  var valid_594069 = query.getOrDefault("key")
-  valid_594069 = validateParameter(valid_594069, JString, required = false,
+  if valid_580068 != nil:
+    section.add "supportsTeamDrives", valid_580068
+  var valid_580069 = query.getOrDefault("key")
+  valid_580069 = validateParameter(valid_580069, JString, required = false,
                                  default = nil)
-  if valid_594069 != nil:
-    section.add "key", valid_594069
-  var valid_594070 = query.getOrDefault("includeDeleted")
-  valid_594070 = validateParameter(valid_594070, JBool, required = false,
+  if valid_580069 != nil:
+    section.add "key", valid_580069
+  var valid_580070 = query.getOrDefault("includeDeleted")
+  valid_580070 = validateParameter(valid_580070, JBool, required = false,
                                  default = newJBool(true))
-  if valid_594070 != nil:
-    section.add "includeDeleted", valid_594070
-  var valid_594071 = query.getOrDefault("spaces")
-  valid_594071 = validateParameter(valid_594071, JString, required = false,
+  if valid_580070 != nil:
+    section.add "includeDeleted", valid_580070
+  var valid_580071 = query.getOrDefault("spaces")
+  valid_580071 = validateParameter(valid_580071, JString, required = false,
                                  default = nil)
-  if valid_594071 != nil:
-    section.add "spaces", valid_594071
-  var valid_594072 = query.getOrDefault("prettyPrint")
-  valid_594072 = validateParameter(valid_594072, JBool, required = false,
+  if valid_580071 != nil:
+    section.add "spaces", valid_580071
+  var valid_580072 = query.getOrDefault("prettyPrint")
+  valid_580072 = validateParameter(valid_580072, JBool, required = false,
                                  default = newJBool(true))
-  if valid_594072 != nil:
-    section.add "prettyPrint", valid_594072
-  var valid_594073 = query.getOrDefault("startChangeId")
-  valid_594073 = validateParameter(valid_594073, JString, required = false,
+  if valid_580072 != nil:
+    section.add "prettyPrint", valid_580072
+  var valid_580073 = query.getOrDefault("startChangeId")
+  valid_580073 = validateParameter(valid_580073, JString, required = false,
                                  default = nil)
-  if valid_594073 != nil:
-    section.add "startChangeId", valid_594073
-  var valid_594074 = query.getOrDefault("includeCorpusRemovals")
-  valid_594074 = validateParameter(valid_594074, JBool, required = false,
+  if valid_580073 != nil:
+    section.add "startChangeId", valid_580073
+  var valid_580074 = query.getOrDefault("includeCorpusRemovals")
+  valid_580074 = validateParameter(valid_580074, JBool, required = false,
                                  default = newJBool(false))
-  if valid_594074 != nil:
-    section.add "includeCorpusRemovals", valid_594074
+  if valid_580074 != nil:
+    section.add "includeCorpusRemovals", valid_580074
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1152,20 +1154,20 @@ proc validate_DriveChangesWatch_594053(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_594076: Call_DriveChangesWatch_594052; path: JsonNode;
+proc call*(call_580076: Call_DriveChangesWatch_580052; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Subscribe to changes for a user.
   ## 
-  let valid = call_594076.validator(path, query, header, formData, body)
-  let scheme = call_594076.pickScheme
+  let valid = call_580076.validator(path, query, header, formData, body)
+  let scheme = call_580076.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_594076.url(scheme.get, call_594076.host, call_594076.base,
-                         call_594076.route, valid.getOrDefault("path"),
+  let url = call_580076.url(scheme.get, call_580076.host, call_580076.base,
+                         call_580076.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_594076, url, valid)
+  result = hook(call_580076, url, valid)
 
-proc call*(call_594077: Call_DriveChangesWatch_594052; driveId: string = "";
+proc call*(call_580077: Call_DriveChangesWatch_580052; driveId: string = "";
           supportsAllDrives: bool = false; fields: string = ""; pageToken: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           includeItemsFromAllDrives: bool = false; userIp: string = "";
@@ -1218,44 +1220,44 @@ proc call*(call_594077: Call_DriveChangesWatch_594052; driveId: string = "";
   ##                : Deprecated - use pageToken instead.
   ##   includeCorpusRemovals: bool
   ##                        : Whether changes should include the file resource if the file is still accessible by the user at the time of the request, even when a file was removed from the list of changes and there will be no further change entries for this file.
-  var query_594078 = newJObject()
-  var body_594079 = newJObject()
-  add(query_594078, "driveId", newJString(driveId))
-  add(query_594078, "supportsAllDrives", newJBool(supportsAllDrives))
-  add(query_594078, "fields", newJString(fields))
-  add(query_594078, "pageToken", newJString(pageToken))
-  add(query_594078, "quotaUser", newJString(quotaUser))
-  add(query_594078, "alt", newJString(alt))
-  add(query_594078, "oauth_token", newJString(oauthToken))
-  add(query_594078, "includeItemsFromAllDrives",
+  var query_580078 = newJObject()
+  var body_580079 = newJObject()
+  add(query_580078, "driveId", newJString(driveId))
+  add(query_580078, "supportsAllDrives", newJBool(supportsAllDrives))
+  add(query_580078, "fields", newJString(fields))
+  add(query_580078, "pageToken", newJString(pageToken))
+  add(query_580078, "quotaUser", newJString(quotaUser))
+  add(query_580078, "alt", newJString(alt))
+  add(query_580078, "oauth_token", newJString(oauthToken))
+  add(query_580078, "includeItemsFromAllDrives",
       newJBool(includeItemsFromAllDrives))
-  add(query_594078, "userIp", newJString(userIp))
-  add(query_594078, "includeTeamDriveItems", newJBool(includeTeamDriveItems))
-  add(query_594078, "teamDriveId", newJString(teamDriveId))
-  add(query_594078, "includeSubscribed", newJBool(includeSubscribed))
-  add(query_594078, "maxResults", newJInt(maxResults))
-  add(query_594078, "supportsTeamDrives", newJBool(supportsTeamDrives))
-  add(query_594078, "key", newJString(key))
-  add(query_594078, "includeDeleted", newJBool(includeDeleted))
-  add(query_594078, "spaces", newJString(spaces))
+  add(query_580078, "userIp", newJString(userIp))
+  add(query_580078, "includeTeamDriveItems", newJBool(includeTeamDriveItems))
+  add(query_580078, "teamDriveId", newJString(teamDriveId))
+  add(query_580078, "includeSubscribed", newJBool(includeSubscribed))
+  add(query_580078, "maxResults", newJInt(maxResults))
+  add(query_580078, "supportsTeamDrives", newJBool(supportsTeamDrives))
+  add(query_580078, "key", newJString(key))
+  add(query_580078, "includeDeleted", newJBool(includeDeleted))
+  add(query_580078, "spaces", newJString(spaces))
   if resource != nil:
-    body_594079 = resource
-  add(query_594078, "prettyPrint", newJBool(prettyPrint))
-  add(query_594078, "startChangeId", newJString(startChangeId))
-  add(query_594078, "includeCorpusRemovals", newJBool(includeCorpusRemovals))
-  result = call_594077.call(nil, query_594078, nil, nil, body_594079)
+    body_580079 = resource
+  add(query_580078, "prettyPrint", newJBool(prettyPrint))
+  add(query_580078, "startChangeId", newJString(startChangeId))
+  add(query_580078, "includeCorpusRemovals", newJBool(includeCorpusRemovals))
+  result = call_580077.call(nil, query_580078, nil, nil, body_580079)
 
-var driveChangesWatch* = Call_DriveChangesWatch_594052(name: "driveChangesWatch",
+var driveChangesWatch* = Call_DriveChangesWatch_580052(name: "driveChangesWatch",
     meth: HttpMethod.HttpPost, host: "www.googleapis.com", route: "/changes/watch",
-    validator: validate_DriveChangesWatch_594053, base: "/drive/v2",
-    url: url_DriveChangesWatch_594054, schemes: {Scheme.Https})
+    validator: validate_DriveChangesWatch_580053, base: "/drive/v2",
+    url: url_DriveChangesWatch_580054, schemes: {Scheme.Https})
 type
-  Call_DriveChangesGet_594080 = ref object of OpenApiRestCall_593424
-proc url_DriveChangesGet_594082(protocol: Scheme; host: string; base: string;
+  Call_DriveChangesGet_580080 = ref object of OpenApiRestCall_579424
+proc url_DriveChangesGet_580082(protocol: Scheme; host: string; base: string;
                                route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "changeId" in path, "`changeId` is a required path parameter"
   const
@@ -1266,7 +1268,7 @@ proc url_DriveChangesGet_594082(protocol: Scheme; host: string; base: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_DriveChangesGet_594081(path: JsonNode; query: JsonNode;
+proc validate_DriveChangesGet_580081(path: JsonNode; query: JsonNode;
                                     header: JsonNode; formData: JsonNode;
                                     body: JsonNode): JsonNode =
   ## Deprecated - Use changes.getStartPageToken and changes.list to retrieve recent changes.
@@ -1278,11 +1280,11 @@ proc validate_DriveChangesGet_594081(path: JsonNode; query: JsonNode;
   ##           : The ID of the change.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `changeId` field"
-  var valid_594083 = path.getOrDefault("changeId")
-  valid_594083 = validateParameter(valid_594083, JString, required = true,
+  var valid_580083 = path.getOrDefault("changeId")
+  valid_580083 = validateParameter(valid_580083, JString, required = true,
                                  default = nil)
-  if valid_594083 != nil:
-    section.add "changeId", valid_594083
+  if valid_580083 != nil:
+    section.add "changeId", valid_580083
   result.add "path", section
   ## parameters in `query` object:
   ##   driveId: JString
@@ -1308,61 +1310,61 @@ proc validate_DriveChangesGet_594081(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_594084 = query.getOrDefault("driveId")
-  valid_594084 = validateParameter(valid_594084, JString, required = false,
+  var valid_580084 = query.getOrDefault("driveId")
+  valid_580084 = validateParameter(valid_580084, JString, required = false,
                                  default = nil)
-  if valid_594084 != nil:
-    section.add "driveId", valid_594084
-  var valid_594085 = query.getOrDefault("supportsAllDrives")
-  valid_594085 = validateParameter(valid_594085, JBool, required = false,
+  if valid_580084 != nil:
+    section.add "driveId", valid_580084
+  var valid_580085 = query.getOrDefault("supportsAllDrives")
+  valid_580085 = validateParameter(valid_580085, JBool, required = false,
                                  default = newJBool(false))
-  if valid_594085 != nil:
-    section.add "supportsAllDrives", valid_594085
-  var valid_594086 = query.getOrDefault("fields")
-  valid_594086 = validateParameter(valid_594086, JString, required = false,
+  if valid_580085 != nil:
+    section.add "supportsAllDrives", valid_580085
+  var valid_580086 = query.getOrDefault("fields")
+  valid_580086 = validateParameter(valid_580086, JString, required = false,
                                  default = nil)
-  if valid_594086 != nil:
-    section.add "fields", valid_594086
-  var valid_594087 = query.getOrDefault("quotaUser")
-  valid_594087 = validateParameter(valid_594087, JString, required = false,
+  if valid_580086 != nil:
+    section.add "fields", valid_580086
+  var valid_580087 = query.getOrDefault("quotaUser")
+  valid_580087 = validateParameter(valid_580087, JString, required = false,
                                  default = nil)
-  if valid_594087 != nil:
-    section.add "quotaUser", valid_594087
-  var valid_594088 = query.getOrDefault("alt")
-  valid_594088 = validateParameter(valid_594088, JString, required = false,
+  if valid_580087 != nil:
+    section.add "quotaUser", valid_580087
+  var valid_580088 = query.getOrDefault("alt")
+  valid_580088 = validateParameter(valid_580088, JString, required = false,
                                  default = newJString("json"))
-  if valid_594088 != nil:
-    section.add "alt", valid_594088
-  var valid_594089 = query.getOrDefault("oauth_token")
-  valid_594089 = validateParameter(valid_594089, JString, required = false,
+  if valid_580088 != nil:
+    section.add "alt", valid_580088
+  var valid_580089 = query.getOrDefault("oauth_token")
+  valid_580089 = validateParameter(valid_580089, JString, required = false,
                                  default = nil)
-  if valid_594089 != nil:
-    section.add "oauth_token", valid_594089
-  var valid_594090 = query.getOrDefault("userIp")
-  valid_594090 = validateParameter(valid_594090, JString, required = false,
+  if valid_580089 != nil:
+    section.add "oauth_token", valid_580089
+  var valid_580090 = query.getOrDefault("userIp")
+  valid_580090 = validateParameter(valid_580090, JString, required = false,
                                  default = nil)
-  if valid_594090 != nil:
-    section.add "userIp", valid_594090
-  var valid_594091 = query.getOrDefault("teamDriveId")
-  valid_594091 = validateParameter(valid_594091, JString, required = false,
+  if valid_580090 != nil:
+    section.add "userIp", valid_580090
+  var valid_580091 = query.getOrDefault("teamDriveId")
+  valid_580091 = validateParameter(valid_580091, JString, required = false,
                                  default = nil)
-  if valid_594091 != nil:
-    section.add "teamDriveId", valid_594091
-  var valid_594092 = query.getOrDefault("supportsTeamDrives")
-  valid_594092 = validateParameter(valid_594092, JBool, required = false,
+  if valid_580091 != nil:
+    section.add "teamDriveId", valid_580091
+  var valid_580092 = query.getOrDefault("supportsTeamDrives")
+  valid_580092 = validateParameter(valid_580092, JBool, required = false,
                                  default = newJBool(false))
-  if valid_594092 != nil:
-    section.add "supportsTeamDrives", valid_594092
-  var valid_594093 = query.getOrDefault("key")
-  valid_594093 = validateParameter(valid_594093, JString, required = false,
+  if valid_580092 != nil:
+    section.add "supportsTeamDrives", valid_580092
+  var valid_580093 = query.getOrDefault("key")
+  valid_580093 = validateParameter(valid_580093, JString, required = false,
                                  default = nil)
-  if valid_594093 != nil:
-    section.add "key", valid_594093
-  var valid_594094 = query.getOrDefault("prettyPrint")
-  valid_594094 = validateParameter(valid_594094, JBool, required = false,
+  if valid_580093 != nil:
+    section.add "key", valid_580093
+  var valid_580094 = query.getOrDefault("prettyPrint")
+  valid_580094 = validateParameter(valid_580094, JBool, required = false,
                                  default = newJBool(true))
-  if valid_594094 != nil:
-    section.add "prettyPrint", valid_594094
+  if valid_580094 != nil:
+    section.add "prettyPrint", valid_580094
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1371,20 +1373,20 @@ proc validate_DriveChangesGet_594081(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_594095: Call_DriveChangesGet_594080; path: JsonNode; query: JsonNode;
+proc call*(call_580095: Call_DriveChangesGet_580080; path: JsonNode; query: JsonNode;
           header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Deprecated - Use changes.getStartPageToken and changes.list to retrieve recent changes.
   ## 
-  let valid = call_594095.validator(path, query, header, formData, body)
-  let scheme = call_594095.pickScheme
+  let valid = call_580095.validator(path, query, header, formData, body)
+  let scheme = call_580095.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_594095.url(scheme.get, call_594095.host, call_594095.base,
-                         call_594095.route, valid.getOrDefault("path"),
+  let url = call_580095.url(scheme.get, call_580095.host, call_580095.base,
+                         call_580095.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_594095, url, valid)
+  result = hook(call_580095, url, valid)
 
-proc call*(call_594096: Call_DriveChangesGet_594080; changeId: string;
+proc call*(call_580096: Call_DriveChangesGet_580080; changeId: string;
           driveId: string = ""; supportsAllDrives: bool = false; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; teamDriveId: string = "";
@@ -1415,36 +1417,36 @@ proc call*(call_594096: Call_DriveChangesGet_594080; changeId: string;
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_594097 = newJObject()
-  var query_594098 = newJObject()
-  add(query_594098, "driveId", newJString(driveId))
-  add(query_594098, "supportsAllDrives", newJBool(supportsAllDrives))
-  add(query_594098, "fields", newJString(fields))
-  add(path_594097, "changeId", newJString(changeId))
-  add(query_594098, "quotaUser", newJString(quotaUser))
-  add(query_594098, "alt", newJString(alt))
-  add(query_594098, "oauth_token", newJString(oauthToken))
-  add(query_594098, "userIp", newJString(userIp))
-  add(query_594098, "teamDriveId", newJString(teamDriveId))
-  add(query_594098, "supportsTeamDrives", newJBool(supportsTeamDrives))
-  add(query_594098, "key", newJString(key))
-  add(query_594098, "prettyPrint", newJBool(prettyPrint))
-  result = call_594096.call(path_594097, query_594098, nil, nil, nil)
+  var path_580097 = newJObject()
+  var query_580098 = newJObject()
+  add(query_580098, "driveId", newJString(driveId))
+  add(query_580098, "supportsAllDrives", newJBool(supportsAllDrives))
+  add(query_580098, "fields", newJString(fields))
+  add(path_580097, "changeId", newJString(changeId))
+  add(query_580098, "quotaUser", newJString(quotaUser))
+  add(query_580098, "alt", newJString(alt))
+  add(query_580098, "oauth_token", newJString(oauthToken))
+  add(query_580098, "userIp", newJString(userIp))
+  add(query_580098, "teamDriveId", newJString(teamDriveId))
+  add(query_580098, "supportsTeamDrives", newJBool(supportsTeamDrives))
+  add(query_580098, "key", newJString(key))
+  add(query_580098, "prettyPrint", newJBool(prettyPrint))
+  result = call_580096.call(path_580097, query_580098, nil, nil, nil)
 
-var driveChangesGet* = Call_DriveChangesGet_594080(name: "driveChangesGet",
+var driveChangesGet* = Call_DriveChangesGet_580080(name: "driveChangesGet",
     meth: HttpMethod.HttpGet, host: "www.googleapis.com",
-    route: "/changes/{changeId}", validator: validate_DriveChangesGet_594081,
-    base: "/drive/v2", url: url_DriveChangesGet_594082, schemes: {Scheme.Https})
+    route: "/changes/{changeId}", validator: validate_DriveChangesGet_580081,
+    base: "/drive/v2", url: url_DriveChangesGet_580082, schemes: {Scheme.Https})
 type
-  Call_DriveChannelsStop_594099 = ref object of OpenApiRestCall_593424
-proc url_DriveChannelsStop_594101(protocol: Scheme; host: string; base: string;
+  Call_DriveChannelsStop_580099 = ref object of OpenApiRestCall_579424
+proc url_DriveChannelsStop_580101(protocol: Scheme; host: string; base: string;
                                  route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   result.path = base & route
 
-proc validate_DriveChannelsStop_594100(path: JsonNode; query: JsonNode;
+proc validate_DriveChannelsStop_580100(path: JsonNode; query: JsonNode;
                                       header: JsonNode; formData: JsonNode;
                                       body: JsonNode): JsonNode =
   ## Stop watching resources through this channel
@@ -1469,41 +1471,41 @@ proc validate_DriveChannelsStop_594100(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_594102 = query.getOrDefault("fields")
-  valid_594102 = validateParameter(valid_594102, JString, required = false,
+  var valid_580102 = query.getOrDefault("fields")
+  valid_580102 = validateParameter(valid_580102, JString, required = false,
                                  default = nil)
-  if valid_594102 != nil:
-    section.add "fields", valid_594102
-  var valid_594103 = query.getOrDefault("quotaUser")
-  valid_594103 = validateParameter(valid_594103, JString, required = false,
+  if valid_580102 != nil:
+    section.add "fields", valid_580102
+  var valid_580103 = query.getOrDefault("quotaUser")
+  valid_580103 = validateParameter(valid_580103, JString, required = false,
                                  default = nil)
-  if valid_594103 != nil:
-    section.add "quotaUser", valid_594103
-  var valid_594104 = query.getOrDefault("alt")
-  valid_594104 = validateParameter(valid_594104, JString, required = false,
+  if valid_580103 != nil:
+    section.add "quotaUser", valid_580103
+  var valid_580104 = query.getOrDefault("alt")
+  valid_580104 = validateParameter(valid_580104, JString, required = false,
                                  default = newJString("json"))
-  if valid_594104 != nil:
-    section.add "alt", valid_594104
-  var valid_594105 = query.getOrDefault("oauth_token")
-  valid_594105 = validateParameter(valid_594105, JString, required = false,
+  if valid_580104 != nil:
+    section.add "alt", valid_580104
+  var valid_580105 = query.getOrDefault("oauth_token")
+  valid_580105 = validateParameter(valid_580105, JString, required = false,
                                  default = nil)
-  if valid_594105 != nil:
-    section.add "oauth_token", valid_594105
-  var valid_594106 = query.getOrDefault("userIp")
-  valid_594106 = validateParameter(valid_594106, JString, required = false,
+  if valid_580105 != nil:
+    section.add "oauth_token", valid_580105
+  var valid_580106 = query.getOrDefault("userIp")
+  valid_580106 = validateParameter(valid_580106, JString, required = false,
                                  default = nil)
-  if valid_594106 != nil:
-    section.add "userIp", valid_594106
-  var valid_594107 = query.getOrDefault("key")
-  valid_594107 = validateParameter(valid_594107, JString, required = false,
+  if valid_580106 != nil:
+    section.add "userIp", valid_580106
+  var valid_580107 = query.getOrDefault("key")
+  valid_580107 = validateParameter(valid_580107, JString, required = false,
                                  default = nil)
-  if valid_594107 != nil:
-    section.add "key", valid_594107
-  var valid_594108 = query.getOrDefault("prettyPrint")
-  valid_594108 = validateParameter(valid_594108, JBool, required = false,
+  if valid_580107 != nil:
+    section.add "key", valid_580107
+  var valid_580108 = query.getOrDefault("prettyPrint")
+  valid_580108 = validateParameter(valid_580108, JBool, required = false,
                                  default = newJBool(true))
-  if valid_594108 != nil:
-    section.add "prettyPrint", valid_594108
+  if valid_580108 != nil:
+    section.add "prettyPrint", valid_580108
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1515,20 +1517,20 @@ proc validate_DriveChannelsStop_594100(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_594110: Call_DriveChannelsStop_594099; path: JsonNode;
+proc call*(call_580110: Call_DriveChannelsStop_580099; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Stop watching resources through this channel
   ## 
-  let valid = call_594110.validator(path, query, header, formData, body)
-  let scheme = call_594110.pickScheme
+  let valid = call_580110.validator(path, query, header, formData, body)
+  let scheme = call_580110.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_594110.url(scheme.get, call_594110.host, call_594110.base,
-                         call_594110.route, valid.getOrDefault("path"),
+  let url = call_580110.url(scheme.get, call_580110.host, call_580110.base,
+                         call_580110.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_594110, url, valid)
+  result = hook(call_580110, url, valid)
 
-proc call*(call_594111: Call_DriveChannelsStop_594099; fields: string = "";
+proc call*(call_580111: Call_DriveChannelsStop_580099; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; key: string = ""; resource: JsonNode = nil;
           prettyPrint: bool = true): Recallable =
@@ -1549,33 +1551,33 @@ proc call*(call_594111: Call_DriveChannelsStop_594099; fields: string = "";
   ##   resource: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var query_594112 = newJObject()
-  var body_594113 = newJObject()
-  add(query_594112, "fields", newJString(fields))
-  add(query_594112, "quotaUser", newJString(quotaUser))
-  add(query_594112, "alt", newJString(alt))
-  add(query_594112, "oauth_token", newJString(oauthToken))
-  add(query_594112, "userIp", newJString(userIp))
-  add(query_594112, "key", newJString(key))
+  var query_580112 = newJObject()
+  var body_580113 = newJObject()
+  add(query_580112, "fields", newJString(fields))
+  add(query_580112, "quotaUser", newJString(quotaUser))
+  add(query_580112, "alt", newJString(alt))
+  add(query_580112, "oauth_token", newJString(oauthToken))
+  add(query_580112, "userIp", newJString(userIp))
+  add(query_580112, "key", newJString(key))
   if resource != nil:
-    body_594113 = resource
-  add(query_594112, "prettyPrint", newJBool(prettyPrint))
-  result = call_594111.call(nil, query_594112, nil, nil, body_594113)
+    body_580113 = resource
+  add(query_580112, "prettyPrint", newJBool(prettyPrint))
+  result = call_580111.call(nil, query_580112, nil, nil, body_580113)
 
-var driveChannelsStop* = Call_DriveChannelsStop_594099(name: "driveChannelsStop",
+var driveChannelsStop* = Call_DriveChannelsStop_580099(name: "driveChannelsStop",
     meth: HttpMethod.HttpPost, host: "www.googleapis.com", route: "/channels/stop",
-    validator: validate_DriveChannelsStop_594100, base: "/drive/v2",
-    url: url_DriveChannelsStop_594101, schemes: {Scheme.Https})
+    validator: validate_DriveChannelsStop_580100, base: "/drive/v2",
+    url: url_DriveChannelsStop_580101, schemes: {Scheme.Https})
 type
-  Call_DriveDrivesInsert_594131 = ref object of OpenApiRestCall_593424
-proc url_DriveDrivesInsert_594133(protocol: Scheme; host: string; base: string;
+  Call_DriveDrivesInsert_580131 = ref object of OpenApiRestCall_579424
+proc url_DriveDrivesInsert_580133(protocol: Scheme; host: string; base: string;
                                  route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   result.path = base & route
 
-proc validate_DriveDrivesInsert_594132(path: JsonNode; query: JsonNode;
+proc validate_DriveDrivesInsert_580132(path: JsonNode; query: JsonNode;
                                       header: JsonNode; formData: JsonNode;
                                       body: JsonNode): JsonNode =
   ## Creates a new shared drive.
@@ -1602,48 +1604,48 @@ proc validate_DriveDrivesInsert_594132(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_594134 = query.getOrDefault("fields")
-  valid_594134 = validateParameter(valid_594134, JString, required = false,
+  var valid_580134 = query.getOrDefault("fields")
+  valid_580134 = validateParameter(valid_580134, JString, required = false,
                                  default = nil)
-  if valid_594134 != nil:
-    section.add "fields", valid_594134
+  if valid_580134 != nil:
+    section.add "fields", valid_580134
   assert query != nil,
         "query argument is necessary due to required `requestId` field"
-  var valid_594135 = query.getOrDefault("requestId")
-  valid_594135 = validateParameter(valid_594135, JString, required = true,
+  var valid_580135 = query.getOrDefault("requestId")
+  valid_580135 = validateParameter(valid_580135, JString, required = true,
                                  default = nil)
-  if valid_594135 != nil:
-    section.add "requestId", valid_594135
-  var valid_594136 = query.getOrDefault("quotaUser")
-  valid_594136 = validateParameter(valid_594136, JString, required = false,
+  if valid_580135 != nil:
+    section.add "requestId", valid_580135
+  var valid_580136 = query.getOrDefault("quotaUser")
+  valid_580136 = validateParameter(valid_580136, JString, required = false,
                                  default = nil)
-  if valid_594136 != nil:
-    section.add "quotaUser", valid_594136
-  var valid_594137 = query.getOrDefault("alt")
-  valid_594137 = validateParameter(valid_594137, JString, required = false,
+  if valid_580136 != nil:
+    section.add "quotaUser", valid_580136
+  var valid_580137 = query.getOrDefault("alt")
+  valid_580137 = validateParameter(valid_580137, JString, required = false,
                                  default = newJString("json"))
-  if valid_594137 != nil:
-    section.add "alt", valid_594137
-  var valid_594138 = query.getOrDefault("oauth_token")
-  valid_594138 = validateParameter(valid_594138, JString, required = false,
+  if valid_580137 != nil:
+    section.add "alt", valid_580137
+  var valid_580138 = query.getOrDefault("oauth_token")
+  valid_580138 = validateParameter(valid_580138, JString, required = false,
                                  default = nil)
-  if valid_594138 != nil:
-    section.add "oauth_token", valid_594138
-  var valid_594139 = query.getOrDefault("userIp")
-  valid_594139 = validateParameter(valid_594139, JString, required = false,
+  if valid_580138 != nil:
+    section.add "oauth_token", valid_580138
+  var valid_580139 = query.getOrDefault("userIp")
+  valid_580139 = validateParameter(valid_580139, JString, required = false,
                                  default = nil)
-  if valid_594139 != nil:
-    section.add "userIp", valid_594139
-  var valid_594140 = query.getOrDefault("key")
-  valid_594140 = validateParameter(valid_594140, JString, required = false,
+  if valid_580139 != nil:
+    section.add "userIp", valid_580139
+  var valid_580140 = query.getOrDefault("key")
+  valid_580140 = validateParameter(valid_580140, JString, required = false,
                                  default = nil)
-  if valid_594140 != nil:
-    section.add "key", valid_594140
-  var valid_594141 = query.getOrDefault("prettyPrint")
-  valid_594141 = validateParameter(valid_594141, JBool, required = false,
+  if valid_580140 != nil:
+    section.add "key", valid_580140
+  var valid_580141 = query.getOrDefault("prettyPrint")
+  valid_580141 = validateParameter(valid_580141, JBool, required = false,
                                  default = newJBool(true))
-  if valid_594141 != nil:
-    section.add "prettyPrint", valid_594141
+  if valid_580141 != nil:
+    section.add "prettyPrint", valid_580141
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1655,20 +1657,20 @@ proc validate_DriveDrivesInsert_594132(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_594143: Call_DriveDrivesInsert_594131; path: JsonNode;
+proc call*(call_580143: Call_DriveDrivesInsert_580131; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Creates a new shared drive.
   ## 
-  let valid = call_594143.validator(path, query, header, formData, body)
-  let scheme = call_594143.pickScheme
+  let valid = call_580143.validator(path, query, header, formData, body)
+  let scheme = call_580143.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_594143.url(scheme.get, call_594143.host, call_594143.base,
-                         call_594143.route, valid.getOrDefault("path"),
+  let url = call_580143.url(scheme.get, call_580143.host, call_580143.base,
+                         call_580143.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_594143, url, valid)
+  result = hook(call_580143, url, valid)
 
-proc call*(call_594144: Call_DriveDrivesInsert_594131; requestId: string;
+proc call*(call_580144: Call_DriveDrivesInsert_580131; requestId: string;
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           oauthToken: string = ""; userIp: string = ""; key: string = "";
           body: JsonNode = nil; prettyPrint: bool = true): Recallable =
@@ -1691,34 +1693,34 @@ proc call*(call_594144: Call_DriveDrivesInsert_594131; requestId: string;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var query_594145 = newJObject()
-  var body_594146 = newJObject()
-  add(query_594145, "fields", newJString(fields))
-  add(query_594145, "requestId", newJString(requestId))
-  add(query_594145, "quotaUser", newJString(quotaUser))
-  add(query_594145, "alt", newJString(alt))
-  add(query_594145, "oauth_token", newJString(oauthToken))
-  add(query_594145, "userIp", newJString(userIp))
-  add(query_594145, "key", newJString(key))
+  var query_580145 = newJObject()
+  var body_580146 = newJObject()
+  add(query_580145, "fields", newJString(fields))
+  add(query_580145, "requestId", newJString(requestId))
+  add(query_580145, "quotaUser", newJString(quotaUser))
+  add(query_580145, "alt", newJString(alt))
+  add(query_580145, "oauth_token", newJString(oauthToken))
+  add(query_580145, "userIp", newJString(userIp))
+  add(query_580145, "key", newJString(key))
   if body != nil:
-    body_594146 = body
-  add(query_594145, "prettyPrint", newJBool(prettyPrint))
-  result = call_594144.call(nil, query_594145, nil, nil, body_594146)
+    body_580146 = body
+  add(query_580145, "prettyPrint", newJBool(prettyPrint))
+  result = call_580144.call(nil, query_580145, nil, nil, body_580146)
 
-var driveDrivesInsert* = Call_DriveDrivesInsert_594131(name: "driveDrivesInsert",
+var driveDrivesInsert* = Call_DriveDrivesInsert_580131(name: "driveDrivesInsert",
     meth: HttpMethod.HttpPost, host: "www.googleapis.com", route: "/drives",
-    validator: validate_DriveDrivesInsert_594132, base: "/drive/v2",
-    url: url_DriveDrivesInsert_594133, schemes: {Scheme.Https})
+    validator: validate_DriveDrivesInsert_580132, base: "/drive/v2",
+    url: url_DriveDrivesInsert_580133, schemes: {Scheme.Https})
 type
-  Call_DriveDrivesList_594114 = ref object of OpenApiRestCall_593424
-proc url_DriveDrivesList_594116(protocol: Scheme; host: string; base: string;
+  Call_DriveDrivesList_580114 = ref object of OpenApiRestCall_579424
+proc url_DriveDrivesList_580116(protocol: Scheme; host: string; base: string;
                                route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   result.path = base & route
 
-proc validate_DriveDrivesList_594115(path: JsonNode; query: JsonNode;
+proc validate_DriveDrivesList_580115(path: JsonNode; query: JsonNode;
                                     header: JsonNode; formData: JsonNode;
                                     body: JsonNode): JsonNode =
   ## Lists the user's shared drives.
@@ -1751,61 +1753,61 @@ proc validate_DriveDrivesList_594115(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_594117 = query.getOrDefault("fields")
-  valid_594117 = validateParameter(valid_594117, JString, required = false,
+  var valid_580117 = query.getOrDefault("fields")
+  valid_580117 = validateParameter(valid_580117, JString, required = false,
                                  default = nil)
-  if valid_594117 != nil:
-    section.add "fields", valid_594117
-  var valid_594118 = query.getOrDefault("pageToken")
-  valid_594118 = validateParameter(valid_594118, JString, required = false,
+  if valid_580117 != nil:
+    section.add "fields", valid_580117
+  var valid_580118 = query.getOrDefault("pageToken")
+  valid_580118 = validateParameter(valid_580118, JString, required = false,
                                  default = nil)
-  if valid_594118 != nil:
-    section.add "pageToken", valid_594118
-  var valid_594119 = query.getOrDefault("quotaUser")
-  valid_594119 = validateParameter(valid_594119, JString, required = false,
+  if valid_580118 != nil:
+    section.add "pageToken", valid_580118
+  var valid_580119 = query.getOrDefault("quotaUser")
+  valid_580119 = validateParameter(valid_580119, JString, required = false,
                                  default = nil)
-  if valid_594119 != nil:
-    section.add "quotaUser", valid_594119
-  var valid_594120 = query.getOrDefault("alt")
-  valid_594120 = validateParameter(valid_594120, JString, required = false,
+  if valid_580119 != nil:
+    section.add "quotaUser", valid_580119
+  var valid_580120 = query.getOrDefault("alt")
+  valid_580120 = validateParameter(valid_580120, JString, required = false,
                                  default = newJString("json"))
-  if valid_594120 != nil:
-    section.add "alt", valid_594120
-  var valid_594121 = query.getOrDefault("oauth_token")
-  valid_594121 = validateParameter(valid_594121, JString, required = false,
+  if valid_580120 != nil:
+    section.add "alt", valid_580120
+  var valid_580121 = query.getOrDefault("oauth_token")
+  valid_580121 = validateParameter(valid_580121, JString, required = false,
                                  default = nil)
-  if valid_594121 != nil:
-    section.add "oauth_token", valid_594121
-  var valid_594122 = query.getOrDefault("userIp")
-  valid_594122 = validateParameter(valid_594122, JString, required = false,
+  if valid_580121 != nil:
+    section.add "oauth_token", valid_580121
+  var valid_580122 = query.getOrDefault("userIp")
+  valid_580122 = validateParameter(valid_580122, JString, required = false,
                                  default = nil)
-  if valid_594122 != nil:
-    section.add "userIp", valid_594122
-  var valid_594123 = query.getOrDefault("maxResults")
-  valid_594123 = validateParameter(valid_594123, JInt, required = false,
+  if valid_580122 != nil:
+    section.add "userIp", valid_580122
+  var valid_580123 = query.getOrDefault("maxResults")
+  valid_580123 = validateParameter(valid_580123, JInt, required = false,
                                  default = newJInt(10))
-  if valid_594123 != nil:
-    section.add "maxResults", valid_594123
-  var valid_594124 = query.getOrDefault("q")
-  valid_594124 = validateParameter(valid_594124, JString, required = false,
+  if valid_580123 != nil:
+    section.add "maxResults", valid_580123
+  var valid_580124 = query.getOrDefault("q")
+  valid_580124 = validateParameter(valid_580124, JString, required = false,
                                  default = nil)
-  if valid_594124 != nil:
-    section.add "q", valid_594124
-  var valid_594125 = query.getOrDefault("key")
-  valid_594125 = validateParameter(valid_594125, JString, required = false,
+  if valid_580124 != nil:
+    section.add "q", valid_580124
+  var valid_580125 = query.getOrDefault("key")
+  valid_580125 = validateParameter(valid_580125, JString, required = false,
                                  default = nil)
-  if valid_594125 != nil:
-    section.add "key", valid_594125
-  var valid_594126 = query.getOrDefault("useDomainAdminAccess")
-  valid_594126 = validateParameter(valid_594126, JBool, required = false,
+  if valid_580125 != nil:
+    section.add "key", valid_580125
+  var valid_580126 = query.getOrDefault("useDomainAdminAccess")
+  valid_580126 = validateParameter(valid_580126, JBool, required = false,
                                  default = newJBool(false))
-  if valid_594126 != nil:
-    section.add "useDomainAdminAccess", valid_594126
-  var valid_594127 = query.getOrDefault("prettyPrint")
-  valid_594127 = validateParameter(valid_594127, JBool, required = false,
+  if valid_580126 != nil:
+    section.add "useDomainAdminAccess", valid_580126
+  var valid_580127 = query.getOrDefault("prettyPrint")
+  valid_580127 = validateParameter(valid_580127, JBool, required = false,
                                  default = newJBool(true))
-  if valid_594127 != nil:
-    section.add "prettyPrint", valid_594127
+  if valid_580127 != nil:
+    section.add "prettyPrint", valid_580127
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1814,20 +1816,20 @@ proc validate_DriveDrivesList_594115(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_594128: Call_DriveDrivesList_594114; path: JsonNode; query: JsonNode;
+proc call*(call_580128: Call_DriveDrivesList_580114; path: JsonNode; query: JsonNode;
           header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Lists the user's shared drives.
   ## 
-  let valid = call_594128.validator(path, query, header, formData, body)
-  let scheme = call_594128.pickScheme
+  let valid = call_580128.validator(path, query, header, formData, body)
+  let scheme = call_580128.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_594128.url(scheme.get, call_594128.host, call_594128.base,
-                         call_594128.route, valid.getOrDefault("path"),
+  let url = call_580128.url(scheme.get, call_580128.host, call_580128.base,
+                         call_580128.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_594128, url, valid)
+  result = hook(call_580128, url, valid)
 
-proc call*(call_594129: Call_DriveDrivesList_594114; fields: string = "";
+proc call*(call_580129: Call_DriveDrivesList_580114; fields: string = "";
           pageToken: string = ""; quotaUser: string = ""; alt: string = "json";
           oauthToken: string = ""; userIp: string = ""; maxResults: int = 10;
           q: string = ""; key: string = ""; useDomainAdminAccess: bool = false;
@@ -1856,31 +1858,31 @@ proc call*(call_594129: Call_DriveDrivesList_594114; fields: string = "";
   ##                       : Issue the request as a domain administrator; if set to true, then all shared drives of the domain in which the requester is an administrator are returned.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var query_594130 = newJObject()
-  add(query_594130, "fields", newJString(fields))
-  add(query_594130, "pageToken", newJString(pageToken))
-  add(query_594130, "quotaUser", newJString(quotaUser))
-  add(query_594130, "alt", newJString(alt))
-  add(query_594130, "oauth_token", newJString(oauthToken))
-  add(query_594130, "userIp", newJString(userIp))
-  add(query_594130, "maxResults", newJInt(maxResults))
-  add(query_594130, "q", newJString(q))
-  add(query_594130, "key", newJString(key))
-  add(query_594130, "useDomainAdminAccess", newJBool(useDomainAdminAccess))
-  add(query_594130, "prettyPrint", newJBool(prettyPrint))
-  result = call_594129.call(nil, query_594130, nil, nil, nil)
+  var query_580130 = newJObject()
+  add(query_580130, "fields", newJString(fields))
+  add(query_580130, "pageToken", newJString(pageToken))
+  add(query_580130, "quotaUser", newJString(quotaUser))
+  add(query_580130, "alt", newJString(alt))
+  add(query_580130, "oauth_token", newJString(oauthToken))
+  add(query_580130, "userIp", newJString(userIp))
+  add(query_580130, "maxResults", newJInt(maxResults))
+  add(query_580130, "q", newJString(q))
+  add(query_580130, "key", newJString(key))
+  add(query_580130, "useDomainAdminAccess", newJBool(useDomainAdminAccess))
+  add(query_580130, "prettyPrint", newJBool(prettyPrint))
+  result = call_580129.call(nil, query_580130, nil, nil, nil)
 
-var driveDrivesList* = Call_DriveDrivesList_594114(name: "driveDrivesList",
+var driveDrivesList* = Call_DriveDrivesList_580114(name: "driveDrivesList",
     meth: HttpMethod.HttpGet, host: "www.googleapis.com", route: "/drives",
-    validator: validate_DriveDrivesList_594115, base: "/drive/v2",
-    url: url_DriveDrivesList_594116, schemes: {Scheme.Https})
+    validator: validate_DriveDrivesList_580115, base: "/drive/v2",
+    url: url_DriveDrivesList_580116, schemes: {Scheme.Https})
 type
-  Call_DriveDrivesUpdate_594163 = ref object of OpenApiRestCall_593424
-proc url_DriveDrivesUpdate_594165(protocol: Scheme; host: string; base: string;
+  Call_DriveDrivesUpdate_580163 = ref object of OpenApiRestCall_579424
+proc url_DriveDrivesUpdate_580165(protocol: Scheme; host: string; base: string;
                                  route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "driveId" in path, "`driveId` is a required path parameter"
   const
@@ -1891,7 +1893,7 @@ proc url_DriveDrivesUpdate_594165(protocol: Scheme; host: string; base: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_DriveDrivesUpdate_594164(path: JsonNode; query: JsonNode;
+proc validate_DriveDrivesUpdate_580164(path: JsonNode; query: JsonNode;
                                       header: JsonNode; formData: JsonNode;
                                       body: JsonNode): JsonNode =
   ## Updates the metadata for a shared drive.
@@ -1903,11 +1905,11 @@ proc validate_DriveDrivesUpdate_594164(path: JsonNode; query: JsonNode;
   ##          : The ID of the shared drive.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `driveId` field"
-  var valid_594166 = path.getOrDefault("driveId")
-  valid_594166 = validateParameter(valid_594166, JString, required = true,
+  var valid_580166 = path.getOrDefault("driveId")
+  valid_580166 = validateParameter(valid_580166, JString, required = true,
                                  default = nil)
-  if valid_594166 != nil:
-    section.add "driveId", valid_594166
+  if valid_580166 != nil:
+    section.add "driveId", valid_580166
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -1927,46 +1929,46 @@ proc validate_DriveDrivesUpdate_594164(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_594167 = query.getOrDefault("fields")
-  valid_594167 = validateParameter(valid_594167, JString, required = false,
+  var valid_580167 = query.getOrDefault("fields")
+  valid_580167 = validateParameter(valid_580167, JString, required = false,
                                  default = nil)
-  if valid_594167 != nil:
-    section.add "fields", valid_594167
-  var valid_594168 = query.getOrDefault("quotaUser")
-  valid_594168 = validateParameter(valid_594168, JString, required = false,
+  if valid_580167 != nil:
+    section.add "fields", valid_580167
+  var valid_580168 = query.getOrDefault("quotaUser")
+  valid_580168 = validateParameter(valid_580168, JString, required = false,
                                  default = nil)
-  if valid_594168 != nil:
-    section.add "quotaUser", valid_594168
-  var valid_594169 = query.getOrDefault("alt")
-  valid_594169 = validateParameter(valid_594169, JString, required = false,
+  if valid_580168 != nil:
+    section.add "quotaUser", valid_580168
+  var valid_580169 = query.getOrDefault("alt")
+  valid_580169 = validateParameter(valid_580169, JString, required = false,
                                  default = newJString("json"))
-  if valid_594169 != nil:
-    section.add "alt", valid_594169
-  var valid_594170 = query.getOrDefault("oauth_token")
-  valid_594170 = validateParameter(valid_594170, JString, required = false,
+  if valid_580169 != nil:
+    section.add "alt", valid_580169
+  var valid_580170 = query.getOrDefault("oauth_token")
+  valid_580170 = validateParameter(valid_580170, JString, required = false,
                                  default = nil)
-  if valid_594170 != nil:
-    section.add "oauth_token", valid_594170
-  var valid_594171 = query.getOrDefault("userIp")
-  valid_594171 = validateParameter(valid_594171, JString, required = false,
+  if valid_580170 != nil:
+    section.add "oauth_token", valid_580170
+  var valid_580171 = query.getOrDefault("userIp")
+  valid_580171 = validateParameter(valid_580171, JString, required = false,
                                  default = nil)
-  if valid_594171 != nil:
-    section.add "userIp", valid_594171
-  var valid_594172 = query.getOrDefault("key")
-  valid_594172 = validateParameter(valid_594172, JString, required = false,
+  if valid_580171 != nil:
+    section.add "userIp", valid_580171
+  var valid_580172 = query.getOrDefault("key")
+  valid_580172 = validateParameter(valid_580172, JString, required = false,
                                  default = nil)
-  if valid_594172 != nil:
-    section.add "key", valid_594172
-  var valid_594173 = query.getOrDefault("useDomainAdminAccess")
-  valid_594173 = validateParameter(valid_594173, JBool, required = false,
+  if valid_580172 != nil:
+    section.add "key", valid_580172
+  var valid_580173 = query.getOrDefault("useDomainAdminAccess")
+  valid_580173 = validateParameter(valid_580173, JBool, required = false,
                                  default = newJBool(false))
-  if valid_594173 != nil:
-    section.add "useDomainAdminAccess", valid_594173
-  var valid_594174 = query.getOrDefault("prettyPrint")
-  valid_594174 = validateParameter(valid_594174, JBool, required = false,
+  if valid_580173 != nil:
+    section.add "useDomainAdminAccess", valid_580173
+  var valid_580174 = query.getOrDefault("prettyPrint")
+  valid_580174 = validateParameter(valid_580174, JBool, required = false,
                                  default = newJBool(true))
-  if valid_594174 != nil:
-    section.add "prettyPrint", valid_594174
+  if valid_580174 != nil:
+    section.add "prettyPrint", valid_580174
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1978,20 +1980,20 @@ proc validate_DriveDrivesUpdate_594164(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_594176: Call_DriveDrivesUpdate_594163; path: JsonNode;
+proc call*(call_580176: Call_DriveDrivesUpdate_580163; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Updates the metadata for a shared drive.
   ## 
-  let valid = call_594176.validator(path, query, header, formData, body)
-  let scheme = call_594176.pickScheme
+  let valid = call_580176.validator(path, query, header, formData, body)
+  let scheme = call_580176.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_594176.url(scheme.get, call_594176.host, call_594176.base,
-                         call_594176.route, valid.getOrDefault("path"),
+  let url = call_580176.url(scheme.get, call_580176.host, call_580176.base,
+                         call_580176.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_594176, url, valid)
+  result = hook(call_580176, url, valid)
 
-proc call*(call_594177: Call_DriveDrivesUpdate_594163; driveId: string;
+proc call*(call_580177: Call_DriveDrivesUpdate_580163; driveId: string;
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           oauthToken: string = ""; userIp: string = ""; key: string = "";
           useDomainAdminAccess: bool = false; body: JsonNode = nil;
@@ -2017,33 +2019,33 @@ proc call*(call_594177: Call_DriveDrivesUpdate_594163; driveId: string;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_594178 = newJObject()
-  var query_594179 = newJObject()
-  var body_594180 = newJObject()
-  add(query_594179, "fields", newJString(fields))
-  add(path_594178, "driveId", newJString(driveId))
-  add(query_594179, "quotaUser", newJString(quotaUser))
-  add(query_594179, "alt", newJString(alt))
-  add(query_594179, "oauth_token", newJString(oauthToken))
-  add(query_594179, "userIp", newJString(userIp))
-  add(query_594179, "key", newJString(key))
-  add(query_594179, "useDomainAdminAccess", newJBool(useDomainAdminAccess))
+  var path_580178 = newJObject()
+  var query_580179 = newJObject()
+  var body_580180 = newJObject()
+  add(query_580179, "fields", newJString(fields))
+  add(path_580178, "driveId", newJString(driveId))
+  add(query_580179, "quotaUser", newJString(quotaUser))
+  add(query_580179, "alt", newJString(alt))
+  add(query_580179, "oauth_token", newJString(oauthToken))
+  add(query_580179, "userIp", newJString(userIp))
+  add(query_580179, "key", newJString(key))
+  add(query_580179, "useDomainAdminAccess", newJBool(useDomainAdminAccess))
   if body != nil:
-    body_594180 = body
-  add(query_594179, "prettyPrint", newJBool(prettyPrint))
-  result = call_594177.call(path_594178, query_594179, nil, nil, body_594180)
+    body_580180 = body
+  add(query_580179, "prettyPrint", newJBool(prettyPrint))
+  result = call_580177.call(path_580178, query_580179, nil, nil, body_580180)
 
-var driveDrivesUpdate* = Call_DriveDrivesUpdate_594163(name: "driveDrivesUpdate",
+var driveDrivesUpdate* = Call_DriveDrivesUpdate_580163(name: "driveDrivesUpdate",
     meth: HttpMethod.HttpPut, host: "www.googleapis.com",
-    route: "/drives/{driveId}", validator: validate_DriveDrivesUpdate_594164,
-    base: "/drive/v2", url: url_DriveDrivesUpdate_594165, schemes: {Scheme.Https})
+    route: "/drives/{driveId}", validator: validate_DriveDrivesUpdate_580164,
+    base: "/drive/v2", url: url_DriveDrivesUpdate_580165, schemes: {Scheme.Https})
 type
-  Call_DriveDrivesGet_594147 = ref object of OpenApiRestCall_593424
-proc url_DriveDrivesGet_594149(protocol: Scheme; host: string; base: string;
+  Call_DriveDrivesGet_580147 = ref object of OpenApiRestCall_579424
+proc url_DriveDrivesGet_580149(protocol: Scheme; host: string; base: string;
                               route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "driveId" in path, "`driveId` is a required path parameter"
   const
@@ -2054,7 +2056,7 @@ proc url_DriveDrivesGet_594149(protocol: Scheme; host: string; base: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_DriveDrivesGet_594148(path: JsonNode; query: JsonNode;
+proc validate_DriveDrivesGet_580148(path: JsonNode; query: JsonNode;
                                    header: JsonNode; formData: JsonNode;
                                    body: JsonNode): JsonNode =
   ## Gets a shared drive's metadata by ID.
@@ -2066,11 +2068,11 @@ proc validate_DriveDrivesGet_594148(path: JsonNode; query: JsonNode;
   ##          : The ID of the shared drive.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `driveId` field"
-  var valid_594150 = path.getOrDefault("driveId")
-  valid_594150 = validateParameter(valid_594150, JString, required = true,
+  var valid_580150 = path.getOrDefault("driveId")
+  valid_580150 = validateParameter(valid_580150, JString, required = true,
                                  default = nil)
-  if valid_594150 != nil:
-    section.add "driveId", valid_594150
+  if valid_580150 != nil:
+    section.add "driveId", valid_580150
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -2090,46 +2092,46 @@ proc validate_DriveDrivesGet_594148(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_594151 = query.getOrDefault("fields")
-  valid_594151 = validateParameter(valid_594151, JString, required = false,
+  var valid_580151 = query.getOrDefault("fields")
+  valid_580151 = validateParameter(valid_580151, JString, required = false,
                                  default = nil)
-  if valid_594151 != nil:
-    section.add "fields", valid_594151
-  var valid_594152 = query.getOrDefault("quotaUser")
-  valid_594152 = validateParameter(valid_594152, JString, required = false,
+  if valid_580151 != nil:
+    section.add "fields", valid_580151
+  var valid_580152 = query.getOrDefault("quotaUser")
+  valid_580152 = validateParameter(valid_580152, JString, required = false,
                                  default = nil)
-  if valid_594152 != nil:
-    section.add "quotaUser", valid_594152
-  var valid_594153 = query.getOrDefault("alt")
-  valid_594153 = validateParameter(valid_594153, JString, required = false,
+  if valid_580152 != nil:
+    section.add "quotaUser", valid_580152
+  var valid_580153 = query.getOrDefault("alt")
+  valid_580153 = validateParameter(valid_580153, JString, required = false,
                                  default = newJString("json"))
-  if valid_594153 != nil:
-    section.add "alt", valid_594153
-  var valid_594154 = query.getOrDefault("oauth_token")
-  valid_594154 = validateParameter(valid_594154, JString, required = false,
+  if valid_580153 != nil:
+    section.add "alt", valid_580153
+  var valid_580154 = query.getOrDefault("oauth_token")
+  valid_580154 = validateParameter(valid_580154, JString, required = false,
                                  default = nil)
-  if valid_594154 != nil:
-    section.add "oauth_token", valid_594154
-  var valid_594155 = query.getOrDefault("userIp")
-  valid_594155 = validateParameter(valid_594155, JString, required = false,
+  if valid_580154 != nil:
+    section.add "oauth_token", valid_580154
+  var valid_580155 = query.getOrDefault("userIp")
+  valid_580155 = validateParameter(valid_580155, JString, required = false,
                                  default = nil)
-  if valid_594155 != nil:
-    section.add "userIp", valid_594155
-  var valid_594156 = query.getOrDefault("key")
-  valid_594156 = validateParameter(valid_594156, JString, required = false,
+  if valid_580155 != nil:
+    section.add "userIp", valid_580155
+  var valid_580156 = query.getOrDefault("key")
+  valid_580156 = validateParameter(valid_580156, JString, required = false,
                                  default = nil)
-  if valid_594156 != nil:
-    section.add "key", valid_594156
-  var valid_594157 = query.getOrDefault("useDomainAdminAccess")
-  valid_594157 = validateParameter(valid_594157, JBool, required = false,
+  if valid_580156 != nil:
+    section.add "key", valid_580156
+  var valid_580157 = query.getOrDefault("useDomainAdminAccess")
+  valid_580157 = validateParameter(valid_580157, JBool, required = false,
                                  default = newJBool(false))
-  if valid_594157 != nil:
-    section.add "useDomainAdminAccess", valid_594157
-  var valid_594158 = query.getOrDefault("prettyPrint")
-  valid_594158 = validateParameter(valid_594158, JBool, required = false,
+  if valid_580157 != nil:
+    section.add "useDomainAdminAccess", valid_580157
+  var valid_580158 = query.getOrDefault("prettyPrint")
+  valid_580158 = validateParameter(valid_580158, JBool, required = false,
                                  default = newJBool(true))
-  if valid_594158 != nil:
-    section.add "prettyPrint", valid_594158
+  if valid_580158 != nil:
+    section.add "prettyPrint", valid_580158
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -2138,20 +2140,20 @@ proc validate_DriveDrivesGet_594148(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_594159: Call_DriveDrivesGet_594147; path: JsonNode; query: JsonNode;
+proc call*(call_580159: Call_DriveDrivesGet_580147; path: JsonNode; query: JsonNode;
           header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Gets a shared drive's metadata by ID.
   ## 
-  let valid = call_594159.validator(path, query, header, formData, body)
-  let scheme = call_594159.pickScheme
+  let valid = call_580159.validator(path, query, header, formData, body)
+  let scheme = call_580159.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_594159.url(scheme.get, call_594159.host, call_594159.base,
-                         call_594159.route, valid.getOrDefault("path"),
+  let url = call_580159.url(scheme.get, call_580159.host, call_580159.base,
+                         call_580159.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_594159, url, valid)
+  result = hook(call_580159, url, valid)
 
-proc call*(call_594160: Call_DriveDrivesGet_594147; driveId: string;
+proc call*(call_580160: Call_DriveDrivesGet_580147; driveId: string;
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           oauthToken: string = ""; userIp: string = ""; key: string = "";
           useDomainAdminAccess: bool = false; prettyPrint: bool = true): Recallable =
@@ -2175,30 +2177,30 @@ proc call*(call_594160: Call_DriveDrivesGet_594147; driveId: string;
   ##                       : Issue the request as a domain administrator; if set to true, then the requester will be granted access if they are an administrator of the domain to which the shared drive belongs.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_594161 = newJObject()
-  var query_594162 = newJObject()
-  add(query_594162, "fields", newJString(fields))
-  add(path_594161, "driveId", newJString(driveId))
-  add(query_594162, "quotaUser", newJString(quotaUser))
-  add(query_594162, "alt", newJString(alt))
-  add(query_594162, "oauth_token", newJString(oauthToken))
-  add(query_594162, "userIp", newJString(userIp))
-  add(query_594162, "key", newJString(key))
-  add(query_594162, "useDomainAdminAccess", newJBool(useDomainAdminAccess))
-  add(query_594162, "prettyPrint", newJBool(prettyPrint))
-  result = call_594160.call(path_594161, query_594162, nil, nil, nil)
+  var path_580161 = newJObject()
+  var query_580162 = newJObject()
+  add(query_580162, "fields", newJString(fields))
+  add(path_580161, "driveId", newJString(driveId))
+  add(query_580162, "quotaUser", newJString(quotaUser))
+  add(query_580162, "alt", newJString(alt))
+  add(query_580162, "oauth_token", newJString(oauthToken))
+  add(query_580162, "userIp", newJString(userIp))
+  add(query_580162, "key", newJString(key))
+  add(query_580162, "useDomainAdminAccess", newJBool(useDomainAdminAccess))
+  add(query_580162, "prettyPrint", newJBool(prettyPrint))
+  result = call_580160.call(path_580161, query_580162, nil, nil, nil)
 
-var driveDrivesGet* = Call_DriveDrivesGet_594147(name: "driveDrivesGet",
+var driveDrivesGet* = Call_DriveDrivesGet_580147(name: "driveDrivesGet",
     meth: HttpMethod.HttpGet, host: "www.googleapis.com",
-    route: "/drives/{driveId}", validator: validate_DriveDrivesGet_594148,
-    base: "/drive/v2", url: url_DriveDrivesGet_594149, schemes: {Scheme.Https})
+    route: "/drives/{driveId}", validator: validate_DriveDrivesGet_580148,
+    base: "/drive/v2", url: url_DriveDrivesGet_580149, schemes: {Scheme.Https})
 type
-  Call_DriveDrivesDelete_594181 = ref object of OpenApiRestCall_593424
-proc url_DriveDrivesDelete_594183(protocol: Scheme; host: string; base: string;
+  Call_DriveDrivesDelete_580181 = ref object of OpenApiRestCall_579424
+proc url_DriveDrivesDelete_580183(protocol: Scheme; host: string; base: string;
                                  route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "driveId" in path, "`driveId` is a required path parameter"
   const
@@ -2209,7 +2211,7 @@ proc url_DriveDrivesDelete_594183(protocol: Scheme; host: string; base: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_DriveDrivesDelete_594182(path: JsonNode; query: JsonNode;
+proc validate_DriveDrivesDelete_580182(path: JsonNode; query: JsonNode;
                                       header: JsonNode; formData: JsonNode;
                                       body: JsonNode): JsonNode =
   ## Permanently deletes a shared drive for which the user is an organizer. The shared drive cannot contain any untrashed items.
@@ -2221,11 +2223,11 @@ proc validate_DriveDrivesDelete_594182(path: JsonNode; query: JsonNode;
   ##          : The ID of the shared drive.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `driveId` field"
-  var valid_594184 = path.getOrDefault("driveId")
-  valid_594184 = validateParameter(valid_594184, JString, required = true,
+  var valid_580184 = path.getOrDefault("driveId")
+  valid_580184 = validateParameter(valid_580184, JString, required = true,
                                  default = nil)
-  if valid_594184 != nil:
-    section.add "driveId", valid_594184
+  if valid_580184 != nil:
+    section.add "driveId", valid_580184
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -2243,41 +2245,41 @@ proc validate_DriveDrivesDelete_594182(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_594185 = query.getOrDefault("fields")
-  valid_594185 = validateParameter(valid_594185, JString, required = false,
+  var valid_580185 = query.getOrDefault("fields")
+  valid_580185 = validateParameter(valid_580185, JString, required = false,
                                  default = nil)
-  if valid_594185 != nil:
-    section.add "fields", valid_594185
-  var valid_594186 = query.getOrDefault("quotaUser")
-  valid_594186 = validateParameter(valid_594186, JString, required = false,
+  if valid_580185 != nil:
+    section.add "fields", valid_580185
+  var valid_580186 = query.getOrDefault("quotaUser")
+  valid_580186 = validateParameter(valid_580186, JString, required = false,
                                  default = nil)
-  if valid_594186 != nil:
-    section.add "quotaUser", valid_594186
-  var valid_594187 = query.getOrDefault("alt")
-  valid_594187 = validateParameter(valid_594187, JString, required = false,
+  if valid_580186 != nil:
+    section.add "quotaUser", valid_580186
+  var valid_580187 = query.getOrDefault("alt")
+  valid_580187 = validateParameter(valid_580187, JString, required = false,
                                  default = newJString("json"))
-  if valid_594187 != nil:
-    section.add "alt", valid_594187
-  var valid_594188 = query.getOrDefault("oauth_token")
-  valid_594188 = validateParameter(valid_594188, JString, required = false,
+  if valid_580187 != nil:
+    section.add "alt", valid_580187
+  var valid_580188 = query.getOrDefault("oauth_token")
+  valid_580188 = validateParameter(valid_580188, JString, required = false,
                                  default = nil)
-  if valid_594188 != nil:
-    section.add "oauth_token", valid_594188
-  var valid_594189 = query.getOrDefault("userIp")
-  valid_594189 = validateParameter(valid_594189, JString, required = false,
+  if valid_580188 != nil:
+    section.add "oauth_token", valid_580188
+  var valid_580189 = query.getOrDefault("userIp")
+  valid_580189 = validateParameter(valid_580189, JString, required = false,
                                  default = nil)
-  if valid_594189 != nil:
-    section.add "userIp", valid_594189
-  var valid_594190 = query.getOrDefault("key")
-  valid_594190 = validateParameter(valid_594190, JString, required = false,
+  if valid_580189 != nil:
+    section.add "userIp", valid_580189
+  var valid_580190 = query.getOrDefault("key")
+  valid_580190 = validateParameter(valid_580190, JString, required = false,
                                  default = nil)
-  if valid_594190 != nil:
-    section.add "key", valid_594190
-  var valid_594191 = query.getOrDefault("prettyPrint")
-  valid_594191 = validateParameter(valid_594191, JBool, required = false,
+  if valid_580190 != nil:
+    section.add "key", valid_580190
+  var valid_580191 = query.getOrDefault("prettyPrint")
+  valid_580191 = validateParameter(valid_580191, JBool, required = false,
                                  default = newJBool(true))
-  if valid_594191 != nil:
-    section.add "prettyPrint", valid_594191
+  if valid_580191 != nil:
+    section.add "prettyPrint", valid_580191
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -2286,20 +2288,20 @@ proc validate_DriveDrivesDelete_594182(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_594192: Call_DriveDrivesDelete_594181; path: JsonNode;
+proc call*(call_580192: Call_DriveDrivesDelete_580181; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Permanently deletes a shared drive for which the user is an organizer. The shared drive cannot contain any untrashed items.
   ## 
-  let valid = call_594192.validator(path, query, header, formData, body)
-  let scheme = call_594192.pickScheme
+  let valid = call_580192.validator(path, query, header, formData, body)
+  let scheme = call_580192.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_594192.url(scheme.get, call_594192.host, call_594192.base,
-                         call_594192.route, valid.getOrDefault("path"),
+  let url = call_580192.url(scheme.get, call_580192.host, call_580192.base,
+                         call_580192.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_594192, url, valid)
+  result = hook(call_580192, url, valid)
 
-proc call*(call_594193: Call_DriveDrivesDelete_594181; driveId: string;
+proc call*(call_580193: Call_DriveDrivesDelete_580181; driveId: string;
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           oauthToken: string = ""; userIp: string = ""; key: string = "";
           prettyPrint: bool = true): Recallable =
@@ -2321,29 +2323,29 @@ proc call*(call_594193: Call_DriveDrivesDelete_594181; driveId: string;
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_594194 = newJObject()
-  var query_594195 = newJObject()
-  add(query_594195, "fields", newJString(fields))
-  add(path_594194, "driveId", newJString(driveId))
-  add(query_594195, "quotaUser", newJString(quotaUser))
-  add(query_594195, "alt", newJString(alt))
-  add(query_594195, "oauth_token", newJString(oauthToken))
-  add(query_594195, "userIp", newJString(userIp))
-  add(query_594195, "key", newJString(key))
-  add(query_594195, "prettyPrint", newJBool(prettyPrint))
-  result = call_594193.call(path_594194, query_594195, nil, nil, nil)
+  var path_580194 = newJObject()
+  var query_580195 = newJObject()
+  add(query_580195, "fields", newJString(fields))
+  add(path_580194, "driveId", newJString(driveId))
+  add(query_580195, "quotaUser", newJString(quotaUser))
+  add(query_580195, "alt", newJString(alt))
+  add(query_580195, "oauth_token", newJString(oauthToken))
+  add(query_580195, "userIp", newJString(userIp))
+  add(query_580195, "key", newJString(key))
+  add(query_580195, "prettyPrint", newJBool(prettyPrint))
+  result = call_580193.call(path_580194, query_580195, nil, nil, nil)
 
-var driveDrivesDelete* = Call_DriveDrivesDelete_594181(name: "driveDrivesDelete",
+var driveDrivesDelete* = Call_DriveDrivesDelete_580181(name: "driveDrivesDelete",
     meth: HttpMethod.HttpDelete, host: "www.googleapis.com",
-    route: "/drives/{driveId}", validator: validate_DriveDrivesDelete_594182,
-    base: "/drive/v2", url: url_DriveDrivesDelete_594183, schemes: {Scheme.Https})
+    route: "/drives/{driveId}", validator: validate_DriveDrivesDelete_580182,
+    base: "/drive/v2", url: url_DriveDrivesDelete_580183, schemes: {Scheme.Https})
 type
-  Call_DriveDrivesHide_594196 = ref object of OpenApiRestCall_593424
-proc url_DriveDrivesHide_594198(protocol: Scheme; host: string; base: string;
+  Call_DriveDrivesHide_580196 = ref object of OpenApiRestCall_579424
+proc url_DriveDrivesHide_580198(protocol: Scheme; host: string; base: string;
                                route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "driveId" in path, "`driveId` is a required path parameter"
   const
@@ -2355,7 +2357,7 @@ proc url_DriveDrivesHide_594198(protocol: Scheme; host: string; base: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_DriveDrivesHide_594197(path: JsonNode; query: JsonNode;
+proc validate_DriveDrivesHide_580197(path: JsonNode; query: JsonNode;
                                     header: JsonNode; formData: JsonNode;
                                     body: JsonNode): JsonNode =
   ## Hides a shared drive from the default view.
@@ -2367,11 +2369,11 @@ proc validate_DriveDrivesHide_594197(path: JsonNode; query: JsonNode;
   ##          : The ID of the shared drive.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `driveId` field"
-  var valid_594199 = path.getOrDefault("driveId")
-  valid_594199 = validateParameter(valid_594199, JString, required = true,
+  var valid_580199 = path.getOrDefault("driveId")
+  valid_580199 = validateParameter(valid_580199, JString, required = true,
                                  default = nil)
-  if valid_594199 != nil:
-    section.add "driveId", valid_594199
+  if valid_580199 != nil:
+    section.add "driveId", valid_580199
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -2389,41 +2391,41 @@ proc validate_DriveDrivesHide_594197(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_594200 = query.getOrDefault("fields")
-  valid_594200 = validateParameter(valid_594200, JString, required = false,
+  var valid_580200 = query.getOrDefault("fields")
+  valid_580200 = validateParameter(valid_580200, JString, required = false,
                                  default = nil)
-  if valid_594200 != nil:
-    section.add "fields", valid_594200
-  var valid_594201 = query.getOrDefault("quotaUser")
-  valid_594201 = validateParameter(valid_594201, JString, required = false,
+  if valid_580200 != nil:
+    section.add "fields", valid_580200
+  var valid_580201 = query.getOrDefault("quotaUser")
+  valid_580201 = validateParameter(valid_580201, JString, required = false,
                                  default = nil)
-  if valid_594201 != nil:
-    section.add "quotaUser", valid_594201
-  var valid_594202 = query.getOrDefault("alt")
-  valid_594202 = validateParameter(valid_594202, JString, required = false,
+  if valid_580201 != nil:
+    section.add "quotaUser", valid_580201
+  var valid_580202 = query.getOrDefault("alt")
+  valid_580202 = validateParameter(valid_580202, JString, required = false,
                                  default = newJString("json"))
-  if valid_594202 != nil:
-    section.add "alt", valid_594202
-  var valid_594203 = query.getOrDefault("oauth_token")
-  valid_594203 = validateParameter(valid_594203, JString, required = false,
+  if valid_580202 != nil:
+    section.add "alt", valid_580202
+  var valid_580203 = query.getOrDefault("oauth_token")
+  valid_580203 = validateParameter(valid_580203, JString, required = false,
                                  default = nil)
-  if valid_594203 != nil:
-    section.add "oauth_token", valid_594203
-  var valid_594204 = query.getOrDefault("userIp")
-  valid_594204 = validateParameter(valid_594204, JString, required = false,
+  if valid_580203 != nil:
+    section.add "oauth_token", valid_580203
+  var valid_580204 = query.getOrDefault("userIp")
+  valid_580204 = validateParameter(valid_580204, JString, required = false,
                                  default = nil)
-  if valid_594204 != nil:
-    section.add "userIp", valid_594204
-  var valid_594205 = query.getOrDefault("key")
-  valid_594205 = validateParameter(valid_594205, JString, required = false,
+  if valid_580204 != nil:
+    section.add "userIp", valid_580204
+  var valid_580205 = query.getOrDefault("key")
+  valid_580205 = validateParameter(valid_580205, JString, required = false,
                                  default = nil)
-  if valid_594205 != nil:
-    section.add "key", valid_594205
-  var valid_594206 = query.getOrDefault("prettyPrint")
-  valid_594206 = validateParameter(valid_594206, JBool, required = false,
+  if valid_580205 != nil:
+    section.add "key", valid_580205
+  var valid_580206 = query.getOrDefault("prettyPrint")
+  valid_580206 = validateParameter(valid_580206, JBool, required = false,
                                  default = newJBool(true))
-  if valid_594206 != nil:
-    section.add "prettyPrint", valid_594206
+  if valid_580206 != nil:
+    section.add "prettyPrint", valid_580206
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -2432,20 +2434,20 @@ proc validate_DriveDrivesHide_594197(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_594207: Call_DriveDrivesHide_594196; path: JsonNode; query: JsonNode;
+proc call*(call_580207: Call_DriveDrivesHide_580196; path: JsonNode; query: JsonNode;
           header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Hides a shared drive from the default view.
   ## 
-  let valid = call_594207.validator(path, query, header, formData, body)
-  let scheme = call_594207.pickScheme
+  let valid = call_580207.validator(path, query, header, formData, body)
+  let scheme = call_580207.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_594207.url(scheme.get, call_594207.host, call_594207.base,
-                         call_594207.route, valid.getOrDefault("path"),
+  let url = call_580207.url(scheme.get, call_580207.host, call_580207.base,
+                         call_580207.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_594207, url, valid)
+  result = hook(call_580207, url, valid)
 
-proc call*(call_594208: Call_DriveDrivesHide_594196; driveId: string;
+proc call*(call_580208: Call_DriveDrivesHide_580196; driveId: string;
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           oauthToken: string = ""; userIp: string = ""; key: string = "";
           prettyPrint: bool = true): Recallable =
@@ -2467,29 +2469,29 @@ proc call*(call_594208: Call_DriveDrivesHide_594196; driveId: string;
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_594209 = newJObject()
-  var query_594210 = newJObject()
-  add(query_594210, "fields", newJString(fields))
-  add(path_594209, "driveId", newJString(driveId))
-  add(query_594210, "quotaUser", newJString(quotaUser))
-  add(query_594210, "alt", newJString(alt))
-  add(query_594210, "oauth_token", newJString(oauthToken))
-  add(query_594210, "userIp", newJString(userIp))
-  add(query_594210, "key", newJString(key))
-  add(query_594210, "prettyPrint", newJBool(prettyPrint))
-  result = call_594208.call(path_594209, query_594210, nil, nil, nil)
+  var path_580209 = newJObject()
+  var query_580210 = newJObject()
+  add(query_580210, "fields", newJString(fields))
+  add(path_580209, "driveId", newJString(driveId))
+  add(query_580210, "quotaUser", newJString(quotaUser))
+  add(query_580210, "alt", newJString(alt))
+  add(query_580210, "oauth_token", newJString(oauthToken))
+  add(query_580210, "userIp", newJString(userIp))
+  add(query_580210, "key", newJString(key))
+  add(query_580210, "prettyPrint", newJBool(prettyPrint))
+  result = call_580208.call(path_580209, query_580210, nil, nil, nil)
 
-var driveDrivesHide* = Call_DriveDrivesHide_594196(name: "driveDrivesHide",
+var driveDrivesHide* = Call_DriveDrivesHide_580196(name: "driveDrivesHide",
     meth: HttpMethod.HttpPost, host: "www.googleapis.com",
-    route: "/drives/{driveId}/hide", validator: validate_DriveDrivesHide_594197,
-    base: "/drive/v2", url: url_DriveDrivesHide_594198, schemes: {Scheme.Https})
+    route: "/drives/{driveId}/hide", validator: validate_DriveDrivesHide_580197,
+    base: "/drive/v2", url: url_DriveDrivesHide_580198, schemes: {Scheme.Https})
 type
-  Call_DriveDrivesUnhide_594211 = ref object of OpenApiRestCall_593424
-proc url_DriveDrivesUnhide_594213(protocol: Scheme; host: string; base: string;
+  Call_DriveDrivesUnhide_580211 = ref object of OpenApiRestCall_579424
+proc url_DriveDrivesUnhide_580213(protocol: Scheme; host: string; base: string;
                                  route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "driveId" in path, "`driveId` is a required path parameter"
   const
@@ -2501,7 +2503,7 @@ proc url_DriveDrivesUnhide_594213(protocol: Scheme; host: string; base: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_DriveDrivesUnhide_594212(path: JsonNode; query: JsonNode;
+proc validate_DriveDrivesUnhide_580212(path: JsonNode; query: JsonNode;
                                       header: JsonNode; formData: JsonNode;
                                       body: JsonNode): JsonNode =
   ## Restores a shared drive to the default view.
@@ -2513,11 +2515,11 @@ proc validate_DriveDrivesUnhide_594212(path: JsonNode; query: JsonNode;
   ##          : The ID of the shared drive.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `driveId` field"
-  var valid_594214 = path.getOrDefault("driveId")
-  valid_594214 = validateParameter(valid_594214, JString, required = true,
+  var valid_580214 = path.getOrDefault("driveId")
+  valid_580214 = validateParameter(valid_580214, JString, required = true,
                                  default = nil)
-  if valid_594214 != nil:
-    section.add "driveId", valid_594214
+  if valid_580214 != nil:
+    section.add "driveId", valid_580214
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -2535,41 +2537,41 @@ proc validate_DriveDrivesUnhide_594212(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_594215 = query.getOrDefault("fields")
-  valid_594215 = validateParameter(valid_594215, JString, required = false,
+  var valid_580215 = query.getOrDefault("fields")
+  valid_580215 = validateParameter(valid_580215, JString, required = false,
                                  default = nil)
-  if valid_594215 != nil:
-    section.add "fields", valid_594215
-  var valid_594216 = query.getOrDefault("quotaUser")
-  valid_594216 = validateParameter(valid_594216, JString, required = false,
+  if valid_580215 != nil:
+    section.add "fields", valid_580215
+  var valid_580216 = query.getOrDefault("quotaUser")
+  valid_580216 = validateParameter(valid_580216, JString, required = false,
                                  default = nil)
-  if valid_594216 != nil:
-    section.add "quotaUser", valid_594216
-  var valid_594217 = query.getOrDefault("alt")
-  valid_594217 = validateParameter(valid_594217, JString, required = false,
+  if valid_580216 != nil:
+    section.add "quotaUser", valid_580216
+  var valid_580217 = query.getOrDefault("alt")
+  valid_580217 = validateParameter(valid_580217, JString, required = false,
                                  default = newJString("json"))
-  if valid_594217 != nil:
-    section.add "alt", valid_594217
-  var valid_594218 = query.getOrDefault("oauth_token")
-  valid_594218 = validateParameter(valid_594218, JString, required = false,
+  if valid_580217 != nil:
+    section.add "alt", valid_580217
+  var valid_580218 = query.getOrDefault("oauth_token")
+  valid_580218 = validateParameter(valid_580218, JString, required = false,
                                  default = nil)
-  if valid_594218 != nil:
-    section.add "oauth_token", valid_594218
-  var valid_594219 = query.getOrDefault("userIp")
-  valid_594219 = validateParameter(valid_594219, JString, required = false,
+  if valid_580218 != nil:
+    section.add "oauth_token", valid_580218
+  var valid_580219 = query.getOrDefault("userIp")
+  valid_580219 = validateParameter(valid_580219, JString, required = false,
                                  default = nil)
-  if valid_594219 != nil:
-    section.add "userIp", valid_594219
-  var valid_594220 = query.getOrDefault("key")
-  valid_594220 = validateParameter(valid_594220, JString, required = false,
+  if valid_580219 != nil:
+    section.add "userIp", valid_580219
+  var valid_580220 = query.getOrDefault("key")
+  valid_580220 = validateParameter(valid_580220, JString, required = false,
                                  default = nil)
-  if valid_594220 != nil:
-    section.add "key", valid_594220
-  var valid_594221 = query.getOrDefault("prettyPrint")
-  valid_594221 = validateParameter(valid_594221, JBool, required = false,
+  if valid_580220 != nil:
+    section.add "key", valid_580220
+  var valid_580221 = query.getOrDefault("prettyPrint")
+  valid_580221 = validateParameter(valid_580221, JBool, required = false,
                                  default = newJBool(true))
-  if valid_594221 != nil:
-    section.add "prettyPrint", valid_594221
+  if valid_580221 != nil:
+    section.add "prettyPrint", valid_580221
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -2578,20 +2580,20 @@ proc validate_DriveDrivesUnhide_594212(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_594222: Call_DriveDrivesUnhide_594211; path: JsonNode;
+proc call*(call_580222: Call_DriveDrivesUnhide_580211; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Restores a shared drive to the default view.
   ## 
-  let valid = call_594222.validator(path, query, header, formData, body)
-  let scheme = call_594222.pickScheme
+  let valid = call_580222.validator(path, query, header, formData, body)
+  let scheme = call_580222.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_594222.url(scheme.get, call_594222.host, call_594222.base,
-                         call_594222.route, valid.getOrDefault("path"),
+  let url = call_580222.url(scheme.get, call_580222.host, call_580222.base,
+                         call_580222.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_594222, url, valid)
+  result = hook(call_580222, url, valid)
 
-proc call*(call_594223: Call_DriveDrivesUnhide_594211; driveId: string;
+proc call*(call_580223: Call_DriveDrivesUnhide_580211; driveId: string;
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           oauthToken: string = ""; userIp: string = ""; key: string = "";
           prettyPrint: bool = true): Recallable =
@@ -2613,32 +2615,32 @@ proc call*(call_594223: Call_DriveDrivesUnhide_594211; driveId: string;
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_594224 = newJObject()
-  var query_594225 = newJObject()
-  add(query_594225, "fields", newJString(fields))
-  add(path_594224, "driveId", newJString(driveId))
-  add(query_594225, "quotaUser", newJString(quotaUser))
-  add(query_594225, "alt", newJString(alt))
-  add(query_594225, "oauth_token", newJString(oauthToken))
-  add(query_594225, "userIp", newJString(userIp))
-  add(query_594225, "key", newJString(key))
-  add(query_594225, "prettyPrint", newJBool(prettyPrint))
-  result = call_594223.call(path_594224, query_594225, nil, nil, nil)
+  var path_580224 = newJObject()
+  var query_580225 = newJObject()
+  add(query_580225, "fields", newJString(fields))
+  add(path_580224, "driveId", newJString(driveId))
+  add(query_580225, "quotaUser", newJString(quotaUser))
+  add(query_580225, "alt", newJString(alt))
+  add(query_580225, "oauth_token", newJString(oauthToken))
+  add(query_580225, "userIp", newJString(userIp))
+  add(query_580225, "key", newJString(key))
+  add(query_580225, "prettyPrint", newJBool(prettyPrint))
+  result = call_580223.call(path_580224, query_580225, nil, nil, nil)
 
-var driveDrivesUnhide* = Call_DriveDrivesUnhide_594211(name: "driveDrivesUnhide",
+var driveDrivesUnhide* = Call_DriveDrivesUnhide_580211(name: "driveDrivesUnhide",
     meth: HttpMethod.HttpPost, host: "www.googleapis.com",
-    route: "/drives/{driveId}/unhide", validator: validate_DriveDrivesUnhide_594212,
-    base: "/drive/v2", url: url_DriveDrivesUnhide_594213, schemes: {Scheme.Https})
+    route: "/drives/{driveId}/unhide", validator: validate_DriveDrivesUnhide_580212,
+    base: "/drive/v2", url: url_DriveDrivesUnhide_580213, schemes: {Scheme.Https})
 type
-  Call_DriveFilesInsert_594253 = ref object of OpenApiRestCall_593424
-proc url_DriveFilesInsert_594255(protocol: Scheme; host: string; base: string;
+  Call_DriveFilesInsert_580253 = ref object of OpenApiRestCall_579424
+proc url_DriveFilesInsert_580255(protocol: Scheme; host: string; base: string;
                                 route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   result.path = base & route
 
-proc validate_DriveFilesInsert_594254(path: JsonNode; query: JsonNode;
+proc validate_DriveFilesInsert_580254(path: JsonNode; query: JsonNode;
                                      header: JsonNode; formData: JsonNode;
                                      body: JsonNode): JsonNode =
   ## Insert a new file.
@@ -2683,91 +2685,91 @@ proc validate_DriveFilesInsert_594254(path: JsonNode; query: JsonNode;
   ##   visibility: JString
   ##             : The visibility of the new file. This parameter is only relevant when convert=false.
   section = newJObject()
-  var valid_594256 = query.getOrDefault("supportsAllDrives")
-  valid_594256 = validateParameter(valid_594256, JBool, required = false,
+  var valid_580256 = query.getOrDefault("supportsAllDrives")
+  valid_580256 = validateParameter(valid_580256, JBool, required = false,
                                  default = newJBool(false))
-  if valid_594256 != nil:
-    section.add "supportsAllDrives", valid_594256
-  var valid_594257 = query.getOrDefault("fields")
-  valid_594257 = validateParameter(valid_594257, JString, required = false,
+  if valid_580256 != nil:
+    section.add "supportsAllDrives", valid_580256
+  var valid_580257 = query.getOrDefault("fields")
+  valid_580257 = validateParameter(valid_580257, JString, required = false,
                                  default = nil)
-  if valid_594257 != nil:
-    section.add "fields", valid_594257
-  var valid_594258 = query.getOrDefault("quotaUser")
-  valid_594258 = validateParameter(valid_594258, JString, required = false,
+  if valid_580257 != nil:
+    section.add "fields", valid_580257
+  var valid_580258 = query.getOrDefault("quotaUser")
+  valid_580258 = validateParameter(valid_580258, JString, required = false,
                                  default = nil)
-  if valid_594258 != nil:
-    section.add "quotaUser", valid_594258
-  var valid_594259 = query.getOrDefault("alt")
-  valid_594259 = validateParameter(valid_594259, JString, required = false,
+  if valid_580258 != nil:
+    section.add "quotaUser", valid_580258
+  var valid_580259 = query.getOrDefault("alt")
+  valid_580259 = validateParameter(valid_580259, JString, required = false,
                                  default = newJString("json"))
-  if valid_594259 != nil:
-    section.add "alt", valid_594259
-  var valid_594260 = query.getOrDefault("pinned")
-  valid_594260 = validateParameter(valid_594260, JBool, required = false,
+  if valid_580259 != nil:
+    section.add "alt", valid_580259
+  var valid_580260 = query.getOrDefault("pinned")
+  valid_580260 = validateParameter(valid_580260, JBool, required = false,
                                  default = newJBool(false))
-  if valid_594260 != nil:
-    section.add "pinned", valid_594260
-  var valid_594261 = query.getOrDefault("oauth_token")
-  valid_594261 = validateParameter(valid_594261, JString, required = false,
+  if valid_580260 != nil:
+    section.add "pinned", valid_580260
+  var valid_580261 = query.getOrDefault("oauth_token")
+  valid_580261 = validateParameter(valid_580261, JString, required = false,
                                  default = nil)
-  if valid_594261 != nil:
-    section.add "oauth_token", valid_594261
-  var valid_594262 = query.getOrDefault("userIp")
-  valid_594262 = validateParameter(valid_594262, JString, required = false,
+  if valid_580261 != nil:
+    section.add "oauth_token", valid_580261
+  var valid_580262 = query.getOrDefault("userIp")
+  valid_580262 = validateParameter(valid_580262, JString, required = false,
                                  default = nil)
-  if valid_594262 != nil:
-    section.add "userIp", valid_594262
-  var valid_594263 = query.getOrDefault("ocr")
-  valid_594263 = validateParameter(valid_594263, JBool, required = false,
+  if valid_580262 != nil:
+    section.add "userIp", valid_580262
+  var valid_580263 = query.getOrDefault("ocr")
+  valid_580263 = validateParameter(valid_580263, JBool, required = false,
                                  default = newJBool(false))
-  if valid_594263 != nil:
-    section.add "ocr", valid_594263
-  var valid_594264 = query.getOrDefault("timedTextLanguage")
-  valid_594264 = validateParameter(valid_594264, JString, required = false,
+  if valid_580263 != nil:
+    section.add "ocr", valid_580263
+  var valid_580264 = query.getOrDefault("timedTextLanguage")
+  valid_580264 = validateParameter(valid_580264, JString, required = false,
                                  default = nil)
-  if valid_594264 != nil:
-    section.add "timedTextLanguage", valid_594264
-  var valid_594265 = query.getOrDefault("supportsTeamDrives")
-  valid_594265 = validateParameter(valid_594265, JBool, required = false,
+  if valid_580264 != nil:
+    section.add "timedTextLanguage", valid_580264
+  var valid_580265 = query.getOrDefault("supportsTeamDrives")
+  valid_580265 = validateParameter(valid_580265, JBool, required = false,
                                  default = newJBool(false))
-  if valid_594265 != nil:
-    section.add "supportsTeamDrives", valid_594265
-  var valid_594266 = query.getOrDefault("key")
-  valid_594266 = validateParameter(valid_594266, JString, required = false,
+  if valid_580265 != nil:
+    section.add "supportsTeamDrives", valid_580265
+  var valid_580266 = query.getOrDefault("key")
+  valid_580266 = validateParameter(valid_580266, JString, required = false,
                                  default = nil)
-  if valid_594266 != nil:
-    section.add "key", valid_594266
-  var valid_594267 = query.getOrDefault("convert")
-  valid_594267 = validateParameter(valid_594267, JBool, required = false,
+  if valid_580266 != nil:
+    section.add "key", valid_580266
+  var valid_580267 = query.getOrDefault("convert")
+  valid_580267 = validateParameter(valid_580267, JBool, required = false,
                                  default = newJBool(false))
-  if valid_594267 != nil:
-    section.add "convert", valid_594267
-  var valid_594268 = query.getOrDefault("useContentAsIndexableText")
-  valid_594268 = validateParameter(valid_594268, JBool, required = false,
+  if valid_580267 != nil:
+    section.add "convert", valid_580267
+  var valid_580268 = query.getOrDefault("useContentAsIndexableText")
+  valid_580268 = validateParameter(valid_580268, JBool, required = false,
                                  default = newJBool(false))
-  if valid_594268 != nil:
-    section.add "useContentAsIndexableText", valid_594268
-  var valid_594269 = query.getOrDefault("prettyPrint")
-  valid_594269 = validateParameter(valid_594269, JBool, required = false,
+  if valid_580268 != nil:
+    section.add "useContentAsIndexableText", valid_580268
+  var valid_580269 = query.getOrDefault("prettyPrint")
+  valid_580269 = validateParameter(valid_580269, JBool, required = false,
                                  default = newJBool(true))
-  if valid_594269 != nil:
-    section.add "prettyPrint", valid_594269
-  var valid_594270 = query.getOrDefault("ocrLanguage")
-  valid_594270 = validateParameter(valid_594270, JString, required = false,
+  if valid_580269 != nil:
+    section.add "prettyPrint", valid_580269
+  var valid_580270 = query.getOrDefault("ocrLanguage")
+  valid_580270 = validateParameter(valid_580270, JString, required = false,
                                  default = nil)
-  if valid_594270 != nil:
-    section.add "ocrLanguage", valid_594270
-  var valid_594271 = query.getOrDefault("timedTextTrackName")
-  valid_594271 = validateParameter(valid_594271, JString, required = false,
+  if valid_580270 != nil:
+    section.add "ocrLanguage", valid_580270
+  var valid_580271 = query.getOrDefault("timedTextTrackName")
+  valid_580271 = validateParameter(valid_580271, JString, required = false,
                                  default = nil)
-  if valid_594271 != nil:
-    section.add "timedTextTrackName", valid_594271
-  var valid_594272 = query.getOrDefault("visibility")
-  valid_594272 = validateParameter(valid_594272, JString, required = false,
+  if valid_580271 != nil:
+    section.add "timedTextTrackName", valid_580271
+  var valid_580272 = query.getOrDefault("visibility")
+  valid_580272 = validateParameter(valid_580272, JString, required = false,
                                  default = newJString("DEFAULT"))
-  if valid_594272 != nil:
-    section.add "visibility", valid_594272
+  if valid_580272 != nil:
+    section.add "visibility", valid_580272
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -2779,20 +2781,20 @@ proc validate_DriveFilesInsert_594254(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_594274: Call_DriveFilesInsert_594253; path: JsonNode;
+proc call*(call_580274: Call_DriveFilesInsert_580253; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Insert a new file.
   ## 
-  let valid = call_594274.validator(path, query, header, formData, body)
-  let scheme = call_594274.pickScheme
+  let valid = call_580274.validator(path, query, header, formData, body)
+  let scheme = call_580274.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_594274.url(scheme.get, call_594274.host, call_594274.base,
-                         call_594274.route, valid.getOrDefault("path"),
+  let url = call_580274.url(scheme.get, call_580274.host, call_580274.base,
+                         call_580274.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_594274, url, valid)
+  result = hook(call_580274, url, valid)
 
-proc call*(call_594275: Call_DriveFilesInsert_594253;
+proc call*(call_580275: Call_DriveFilesInsert_580253;
           supportsAllDrives: bool = false; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; pinned: bool = false; oauthToken: string = "";
           userIp: string = ""; ocr: bool = false; timedTextLanguage: string = "";
@@ -2837,44 +2839,44 @@ proc call*(call_594275: Call_DriveFilesInsert_594253;
   ##                     : The timed text track name.
   ##   visibility: string
   ##             : The visibility of the new file. This parameter is only relevant when convert=false.
-  var query_594276 = newJObject()
-  var body_594277 = newJObject()
-  add(query_594276, "supportsAllDrives", newJBool(supportsAllDrives))
-  add(query_594276, "fields", newJString(fields))
-  add(query_594276, "quotaUser", newJString(quotaUser))
-  add(query_594276, "alt", newJString(alt))
-  add(query_594276, "pinned", newJBool(pinned))
-  add(query_594276, "oauth_token", newJString(oauthToken))
-  add(query_594276, "userIp", newJString(userIp))
-  add(query_594276, "ocr", newJBool(ocr))
-  add(query_594276, "timedTextLanguage", newJString(timedTextLanguage))
-  add(query_594276, "supportsTeamDrives", newJBool(supportsTeamDrives))
-  add(query_594276, "key", newJString(key))
-  add(query_594276, "convert", newJBool(convert))
-  add(query_594276, "useContentAsIndexableText",
+  var query_580276 = newJObject()
+  var body_580277 = newJObject()
+  add(query_580276, "supportsAllDrives", newJBool(supportsAllDrives))
+  add(query_580276, "fields", newJString(fields))
+  add(query_580276, "quotaUser", newJString(quotaUser))
+  add(query_580276, "alt", newJString(alt))
+  add(query_580276, "pinned", newJBool(pinned))
+  add(query_580276, "oauth_token", newJString(oauthToken))
+  add(query_580276, "userIp", newJString(userIp))
+  add(query_580276, "ocr", newJBool(ocr))
+  add(query_580276, "timedTextLanguage", newJString(timedTextLanguage))
+  add(query_580276, "supportsTeamDrives", newJBool(supportsTeamDrives))
+  add(query_580276, "key", newJString(key))
+  add(query_580276, "convert", newJBool(convert))
+  add(query_580276, "useContentAsIndexableText",
       newJBool(useContentAsIndexableText))
   if body != nil:
-    body_594277 = body
-  add(query_594276, "prettyPrint", newJBool(prettyPrint))
-  add(query_594276, "ocrLanguage", newJString(ocrLanguage))
-  add(query_594276, "timedTextTrackName", newJString(timedTextTrackName))
-  add(query_594276, "visibility", newJString(visibility))
-  result = call_594275.call(nil, query_594276, nil, nil, body_594277)
+    body_580277 = body
+  add(query_580276, "prettyPrint", newJBool(prettyPrint))
+  add(query_580276, "ocrLanguage", newJString(ocrLanguage))
+  add(query_580276, "timedTextTrackName", newJString(timedTextTrackName))
+  add(query_580276, "visibility", newJString(visibility))
+  result = call_580275.call(nil, query_580276, nil, nil, body_580277)
 
-var driveFilesInsert* = Call_DriveFilesInsert_594253(name: "driveFilesInsert",
+var driveFilesInsert* = Call_DriveFilesInsert_580253(name: "driveFilesInsert",
     meth: HttpMethod.HttpPost, host: "www.googleapis.com", route: "/files",
-    validator: validate_DriveFilesInsert_594254, base: "/drive/v2",
-    url: url_DriveFilesInsert_594255, schemes: {Scheme.Https})
+    validator: validate_DriveFilesInsert_580254, base: "/drive/v2",
+    url: url_DriveFilesInsert_580255, schemes: {Scheme.Https})
 type
-  Call_DriveFilesList_594226 = ref object of OpenApiRestCall_593424
-proc url_DriveFilesList_594228(protocol: Scheme; host: string; base: string;
+  Call_DriveFilesList_580226 = ref object of OpenApiRestCall_579424
+proc url_DriveFilesList_580228(protocol: Scheme; host: string; base: string;
                               route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   result.path = base & route
 
-proc validate_DriveFilesList_594227(path: JsonNode; query: JsonNode;
+proc validate_DriveFilesList_580227(path: JsonNode; query: JsonNode;
                                    header: JsonNode; formData: JsonNode;
                                    body: JsonNode): JsonNode =
   ## Lists the user's files.
@@ -2927,111 +2929,111 @@ proc validate_DriveFilesList_594227(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_594229 = query.getOrDefault("driveId")
-  valid_594229 = validateParameter(valid_594229, JString, required = false,
+  var valid_580229 = query.getOrDefault("driveId")
+  valid_580229 = validateParameter(valid_580229, JString, required = false,
                                  default = nil)
-  if valid_594229 != nil:
-    section.add "driveId", valid_594229
-  var valid_594230 = query.getOrDefault("supportsAllDrives")
-  valid_594230 = validateParameter(valid_594230, JBool, required = false,
+  if valid_580229 != nil:
+    section.add "driveId", valid_580229
+  var valid_580230 = query.getOrDefault("supportsAllDrives")
+  valid_580230 = validateParameter(valid_580230, JBool, required = false,
                                  default = newJBool(false))
-  if valid_594230 != nil:
-    section.add "supportsAllDrives", valid_594230
-  var valid_594231 = query.getOrDefault("fields")
-  valid_594231 = validateParameter(valid_594231, JString, required = false,
+  if valid_580230 != nil:
+    section.add "supportsAllDrives", valid_580230
+  var valid_580231 = query.getOrDefault("fields")
+  valid_580231 = validateParameter(valid_580231, JString, required = false,
                                  default = nil)
-  if valid_594231 != nil:
-    section.add "fields", valid_594231
-  var valid_594232 = query.getOrDefault("pageToken")
-  valid_594232 = validateParameter(valid_594232, JString, required = false,
+  if valid_580231 != nil:
+    section.add "fields", valid_580231
+  var valid_580232 = query.getOrDefault("pageToken")
+  valid_580232 = validateParameter(valid_580232, JString, required = false,
                                  default = nil)
-  if valid_594232 != nil:
-    section.add "pageToken", valid_594232
-  var valid_594233 = query.getOrDefault("quotaUser")
-  valid_594233 = validateParameter(valid_594233, JString, required = false,
+  if valid_580232 != nil:
+    section.add "pageToken", valid_580232
+  var valid_580233 = query.getOrDefault("quotaUser")
+  valid_580233 = validateParameter(valid_580233, JString, required = false,
                                  default = nil)
-  if valid_594233 != nil:
-    section.add "quotaUser", valid_594233
-  var valid_594234 = query.getOrDefault("alt")
-  valid_594234 = validateParameter(valid_594234, JString, required = false,
+  if valid_580233 != nil:
+    section.add "quotaUser", valid_580233
+  var valid_580234 = query.getOrDefault("alt")
+  valid_580234 = validateParameter(valid_580234, JString, required = false,
                                  default = newJString("json"))
-  if valid_594234 != nil:
-    section.add "alt", valid_594234
-  var valid_594235 = query.getOrDefault("oauth_token")
-  valid_594235 = validateParameter(valid_594235, JString, required = false,
+  if valid_580234 != nil:
+    section.add "alt", valid_580234
+  var valid_580235 = query.getOrDefault("oauth_token")
+  valid_580235 = validateParameter(valid_580235, JString, required = false,
                                  default = nil)
-  if valid_594235 != nil:
-    section.add "oauth_token", valid_594235
-  var valid_594236 = query.getOrDefault("includeItemsFromAllDrives")
-  valid_594236 = validateParameter(valid_594236, JBool, required = false,
+  if valid_580235 != nil:
+    section.add "oauth_token", valid_580235
+  var valid_580236 = query.getOrDefault("includeItemsFromAllDrives")
+  valid_580236 = validateParameter(valid_580236, JBool, required = false,
                                  default = newJBool(false))
-  if valid_594236 != nil:
-    section.add "includeItemsFromAllDrives", valid_594236
-  var valid_594237 = query.getOrDefault("userIp")
-  valid_594237 = validateParameter(valid_594237, JString, required = false,
+  if valid_580236 != nil:
+    section.add "includeItemsFromAllDrives", valid_580236
+  var valid_580237 = query.getOrDefault("userIp")
+  valid_580237 = validateParameter(valid_580237, JString, required = false,
                                  default = nil)
-  if valid_594237 != nil:
-    section.add "userIp", valid_594237
-  var valid_594238 = query.getOrDefault("includeTeamDriveItems")
-  valid_594238 = validateParameter(valid_594238, JBool, required = false,
+  if valid_580237 != nil:
+    section.add "userIp", valid_580237
+  var valid_580238 = query.getOrDefault("includeTeamDriveItems")
+  valid_580238 = validateParameter(valid_580238, JBool, required = false,
                                  default = newJBool(false))
-  if valid_594238 != nil:
-    section.add "includeTeamDriveItems", valid_594238
-  var valid_594239 = query.getOrDefault("teamDriveId")
-  valid_594239 = validateParameter(valid_594239, JString, required = false,
+  if valid_580238 != nil:
+    section.add "includeTeamDriveItems", valid_580238
+  var valid_580239 = query.getOrDefault("teamDriveId")
+  valid_580239 = validateParameter(valid_580239, JString, required = false,
                                  default = nil)
-  if valid_594239 != nil:
-    section.add "teamDriveId", valid_594239
-  var valid_594240 = query.getOrDefault("corpus")
-  valid_594240 = validateParameter(valid_594240, JString, required = false,
+  if valid_580239 != nil:
+    section.add "teamDriveId", valid_580239
+  var valid_580240 = query.getOrDefault("corpus")
+  valid_580240 = validateParameter(valid_580240, JString, required = false,
                                  default = newJString("DEFAULT"))
-  if valid_594240 != nil:
-    section.add "corpus", valid_594240
-  var valid_594241 = query.getOrDefault("maxResults")
-  valid_594241 = validateParameter(valid_594241, JInt, required = false,
+  if valid_580240 != nil:
+    section.add "corpus", valid_580240
+  var valid_580241 = query.getOrDefault("maxResults")
+  valid_580241 = validateParameter(valid_580241, JInt, required = false,
                                  default = newJInt(100))
-  if valid_594241 != nil:
-    section.add "maxResults", valid_594241
-  var valid_594242 = query.getOrDefault("orderBy")
-  valid_594242 = validateParameter(valid_594242, JString, required = false,
+  if valid_580241 != nil:
+    section.add "maxResults", valid_580241
+  var valid_580242 = query.getOrDefault("orderBy")
+  valid_580242 = validateParameter(valid_580242, JString, required = false,
                                  default = nil)
-  if valid_594242 != nil:
-    section.add "orderBy", valid_594242
-  var valid_594243 = query.getOrDefault("q")
-  valid_594243 = validateParameter(valid_594243, JString, required = false,
+  if valid_580242 != nil:
+    section.add "orderBy", valid_580242
+  var valid_580243 = query.getOrDefault("q")
+  valid_580243 = validateParameter(valid_580243, JString, required = false,
                                  default = nil)
-  if valid_594243 != nil:
-    section.add "q", valid_594243
-  var valid_594244 = query.getOrDefault("supportsTeamDrives")
-  valid_594244 = validateParameter(valid_594244, JBool, required = false,
+  if valid_580243 != nil:
+    section.add "q", valid_580243
+  var valid_580244 = query.getOrDefault("supportsTeamDrives")
+  valid_580244 = validateParameter(valid_580244, JBool, required = false,
                                  default = newJBool(false))
-  if valid_594244 != nil:
-    section.add "supportsTeamDrives", valid_594244
-  var valid_594245 = query.getOrDefault("key")
-  valid_594245 = validateParameter(valid_594245, JString, required = false,
+  if valid_580244 != nil:
+    section.add "supportsTeamDrives", valid_580244
+  var valid_580245 = query.getOrDefault("key")
+  valid_580245 = validateParameter(valid_580245, JString, required = false,
                                  default = nil)
-  if valid_594245 != nil:
-    section.add "key", valid_594245
-  var valid_594246 = query.getOrDefault("spaces")
-  valid_594246 = validateParameter(valid_594246, JString, required = false,
+  if valid_580245 != nil:
+    section.add "key", valid_580245
+  var valid_580246 = query.getOrDefault("spaces")
+  valid_580246 = validateParameter(valid_580246, JString, required = false,
                                  default = nil)
-  if valid_594246 != nil:
-    section.add "spaces", valid_594246
-  var valid_594247 = query.getOrDefault("projection")
-  valid_594247 = validateParameter(valid_594247, JString, required = false,
+  if valid_580246 != nil:
+    section.add "spaces", valid_580246
+  var valid_580247 = query.getOrDefault("projection")
+  valid_580247 = validateParameter(valid_580247, JString, required = false,
                                  default = newJString("BASIC"))
-  if valid_594247 != nil:
-    section.add "projection", valid_594247
-  var valid_594248 = query.getOrDefault("corpora")
-  valid_594248 = validateParameter(valid_594248, JString, required = false,
+  if valid_580247 != nil:
+    section.add "projection", valid_580247
+  var valid_580248 = query.getOrDefault("corpora")
+  valid_580248 = validateParameter(valid_580248, JString, required = false,
                                  default = nil)
-  if valid_594248 != nil:
-    section.add "corpora", valid_594248
-  var valid_594249 = query.getOrDefault("prettyPrint")
-  valid_594249 = validateParameter(valid_594249, JBool, required = false,
+  if valid_580248 != nil:
+    section.add "corpora", valid_580248
+  var valid_580249 = query.getOrDefault("prettyPrint")
+  valid_580249 = validateParameter(valid_580249, JBool, required = false,
                                  default = newJBool(true))
-  if valid_594249 != nil:
-    section.add "prettyPrint", valid_594249
+  if valid_580249 != nil:
+    section.add "prettyPrint", valid_580249
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -3040,20 +3042,20 @@ proc validate_DriveFilesList_594227(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_594250: Call_DriveFilesList_594226; path: JsonNode; query: JsonNode;
+proc call*(call_580250: Call_DriveFilesList_580226; path: JsonNode; query: JsonNode;
           header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Lists the user's files.
   ## 
-  let valid = call_594250.validator(path, query, header, formData, body)
-  let scheme = call_594250.pickScheme
+  let valid = call_580250.validator(path, query, header, formData, body)
+  let scheme = call_580250.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_594250.url(scheme.get, call_594250.host, call_594250.base,
-                         call_594250.route, valid.getOrDefault("path"),
+  let url = call_580250.url(scheme.get, call_580250.host, call_580250.base,
+                         call_580250.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_594250, url, valid)
+  result = hook(call_580250, url, valid)
 
-proc call*(call_594251: Call_DriveFilesList_594226; driveId: string = "";
+proc call*(call_580251: Call_DriveFilesList_580226; driveId: string = "";
           supportsAllDrives: bool = false; fields: string = ""; pageToken: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           includeItemsFromAllDrives: bool = false; userIp: string = "";
@@ -3106,45 +3108,45 @@ proc call*(call_594251: Call_DriveFilesList_594226; driveId: string = "";
   ##          : Bodies of items (files/documents) to which the query applies. Supported bodies are 'default', 'domain', 'drive' and 'allDrives'. Prefer 'default' or 'drive' to 'allDrives' for efficiency.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var query_594252 = newJObject()
-  add(query_594252, "driveId", newJString(driveId))
-  add(query_594252, "supportsAllDrives", newJBool(supportsAllDrives))
-  add(query_594252, "fields", newJString(fields))
-  add(query_594252, "pageToken", newJString(pageToken))
-  add(query_594252, "quotaUser", newJString(quotaUser))
-  add(query_594252, "alt", newJString(alt))
-  add(query_594252, "oauth_token", newJString(oauthToken))
-  add(query_594252, "includeItemsFromAllDrives",
+  var query_580252 = newJObject()
+  add(query_580252, "driveId", newJString(driveId))
+  add(query_580252, "supportsAllDrives", newJBool(supportsAllDrives))
+  add(query_580252, "fields", newJString(fields))
+  add(query_580252, "pageToken", newJString(pageToken))
+  add(query_580252, "quotaUser", newJString(quotaUser))
+  add(query_580252, "alt", newJString(alt))
+  add(query_580252, "oauth_token", newJString(oauthToken))
+  add(query_580252, "includeItemsFromAllDrives",
       newJBool(includeItemsFromAllDrives))
-  add(query_594252, "userIp", newJString(userIp))
-  add(query_594252, "includeTeamDriveItems", newJBool(includeTeamDriveItems))
-  add(query_594252, "teamDriveId", newJString(teamDriveId))
-  add(query_594252, "corpus", newJString(corpus))
-  add(query_594252, "maxResults", newJInt(maxResults))
-  add(query_594252, "orderBy", newJString(orderBy))
-  add(query_594252, "q", newJString(q))
-  add(query_594252, "supportsTeamDrives", newJBool(supportsTeamDrives))
-  add(query_594252, "key", newJString(key))
-  add(query_594252, "spaces", newJString(spaces))
-  add(query_594252, "projection", newJString(projection))
-  add(query_594252, "corpora", newJString(corpora))
-  add(query_594252, "prettyPrint", newJBool(prettyPrint))
-  result = call_594251.call(nil, query_594252, nil, nil, nil)
+  add(query_580252, "userIp", newJString(userIp))
+  add(query_580252, "includeTeamDriveItems", newJBool(includeTeamDriveItems))
+  add(query_580252, "teamDriveId", newJString(teamDriveId))
+  add(query_580252, "corpus", newJString(corpus))
+  add(query_580252, "maxResults", newJInt(maxResults))
+  add(query_580252, "orderBy", newJString(orderBy))
+  add(query_580252, "q", newJString(q))
+  add(query_580252, "supportsTeamDrives", newJBool(supportsTeamDrives))
+  add(query_580252, "key", newJString(key))
+  add(query_580252, "spaces", newJString(spaces))
+  add(query_580252, "projection", newJString(projection))
+  add(query_580252, "corpora", newJString(corpora))
+  add(query_580252, "prettyPrint", newJBool(prettyPrint))
+  result = call_580251.call(nil, query_580252, nil, nil, nil)
 
-var driveFilesList* = Call_DriveFilesList_594226(name: "driveFilesList",
+var driveFilesList* = Call_DriveFilesList_580226(name: "driveFilesList",
     meth: HttpMethod.HttpGet, host: "www.googleapis.com", route: "/files",
-    validator: validate_DriveFilesList_594227, base: "/drive/v2",
-    url: url_DriveFilesList_594228, schemes: {Scheme.Https})
+    validator: validate_DriveFilesList_580227, base: "/drive/v2",
+    url: url_DriveFilesList_580228, schemes: {Scheme.Https})
 type
-  Call_DriveFilesGenerateIds_594278 = ref object of OpenApiRestCall_593424
-proc url_DriveFilesGenerateIds_594280(protocol: Scheme; host: string; base: string;
+  Call_DriveFilesGenerateIds_580278 = ref object of OpenApiRestCall_579424
+proc url_DriveFilesGenerateIds_580280(protocol: Scheme; host: string; base: string;
                                      route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   result.path = base & route
 
-proc validate_DriveFilesGenerateIds_594279(path: JsonNode; query: JsonNode;
+proc validate_DriveFilesGenerateIds_580279(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Generates a set of file IDs which can be provided in insert or copy requests.
   ## 
@@ -3172,51 +3174,51 @@ proc validate_DriveFilesGenerateIds_594279(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_594281 = query.getOrDefault("fields")
-  valid_594281 = validateParameter(valid_594281, JString, required = false,
+  var valid_580281 = query.getOrDefault("fields")
+  valid_580281 = validateParameter(valid_580281, JString, required = false,
                                  default = nil)
-  if valid_594281 != nil:
-    section.add "fields", valid_594281
-  var valid_594282 = query.getOrDefault("quotaUser")
-  valid_594282 = validateParameter(valid_594282, JString, required = false,
+  if valid_580281 != nil:
+    section.add "fields", valid_580281
+  var valid_580282 = query.getOrDefault("quotaUser")
+  valid_580282 = validateParameter(valid_580282, JString, required = false,
                                  default = nil)
-  if valid_594282 != nil:
-    section.add "quotaUser", valid_594282
-  var valid_594283 = query.getOrDefault("alt")
-  valid_594283 = validateParameter(valid_594283, JString, required = false,
+  if valid_580282 != nil:
+    section.add "quotaUser", valid_580282
+  var valid_580283 = query.getOrDefault("alt")
+  valid_580283 = validateParameter(valid_580283, JString, required = false,
                                  default = newJString("json"))
-  if valid_594283 != nil:
-    section.add "alt", valid_594283
-  var valid_594284 = query.getOrDefault("oauth_token")
-  valid_594284 = validateParameter(valid_594284, JString, required = false,
+  if valid_580283 != nil:
+    section.add "alt", valid_580283
+  var valid_580284 = query.getOrDefault("oauth_token")
+  valid_580284 = validateParameter(valid_580284, JString, required = false,
                                  default = nil)
-  if valid_594284 != nil:
-    section.add "oauth_token", valid_594284
-  var valid_594285 = query.getOrDefault("space")
-  valid_594285 = validateParameter(valid_594285, JString, required = false,
+  if valid_580284 != nil:
+    section.add "oauth_token", valid_580284
+  var valid_580285 = query.getOrDefault("space")
+  valid_580285 = validateParameter(valid_580285, JString, required = false,
                                  default = newJString("drive"))
-  if valid_594285 != nil:
-    section.add "space", valid_594285
-  var valid_594286 = query.getOrDefault("userIp")
-  valid_594286 = validateParameter(valid_594286, JString, required = false,
+  if valid_580285 != nil:
+    section.add "space", valid_580285
+  var valid_580286 = query.getOrDefault("userIp")
+  valid_580286 = validateParameter(valid_580286, JString, required = false,
                                  default = nil)
-  if valid_594286 != nil:
-    section.add "userIp", valid_594286
-  var valid_594287 = query.getOrDefault("maxResults")
-  valid_594287 = validateParameter(valid_594287, JInt, required = false,
+  if valid_580286 != nil:
+    section.add "userIp", valid_580286
+  var valid_580287 = query.getOrDefault("maxResults")
+  valid_580287 = validateParameter(valid_580287, JInt, required = false,
                                  default = newJInt(10))
-  if valid_594287 != nil:
-    section.add "maxResults", valid_594287
-  var valid_594288 = query.getOrDefault("key")
-  valid_594288 = validateParameter(valid_594288, JString, required = false,
+  if valid_580287 != nil:
+    section.add "maxResults", valid_580287
+  var valid_580288 = query.getOrDefault("key")
+  valid_580288 = validateParameter(valid_580288, JString, required = false,
                                  default = nil)
-  if valid_594288 != nil:
-    section.add "key", valid_594288
-  var valid_594289 = query.getOrDefault("prettyPrint")
-  valid_594289 = validateParameter(valid_594289, JBool, required = false,
+  if valid_580288 != nil:
+    section.add "key", valid_580288
+  var valid_580289 = query.getOrDefault("prettyPrint")
+  valid_580289 = validateParameter(valid_580289, JBool, required = false,
                                  default = newJBool(true))
-  if valid_594289 != nil:
-    section.add "prettyPrint", valid_594289
+  if valid_580289 != nil:
+    section.add "prettyPrint", valid_580289
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -3225,20 +3227,20 @@ proc validate_DriveFilesGenerateIds_594279(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_594290: Call_DriveFilesGenerateIds_594278; path: JsonNode;
+proc call*(call_580290: Call_DriveFilesGenerateIds_580278; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Generates a set of file IDs which can be provided in insert or copy requests.
   ## 
-  let valid = call_594290.validator(path, query, header, formData, body)
-  let scheme = call_594290.pickScheme
+  let valid = call_580290.validator(path, query, header, formData, body)
+  let scheme = call_580290.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_594290.url(scheme.get, call_594290.host, call_594290.base,
-                         call_594290.route, valid.getOrDefault("path"),
+  let url = call_580290.url(scheme.get, call_580290.host, call_580290.base,
+                         call_580290.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_594290, url, valid)
+  result = hook(call_580290, url, valid)
 
-proc call*(call_594291: Call_DriveFilesGenerateIds_594278; fields: string = "";
+proc call*(call_580291: Call_DriveFilesGenerateIds_580278; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           space: string = "drive"; userIp: string = ""; maxResults: int = 10;
           key: string = ""; prettyPrint: bool = true): Recallable =
@@ -3262,33 +3264,33 @@ proc call*(call_594291: Call_DriveFilesGenerateIds_594278; fields: string = "";
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var query_594292 = newJObject()
-  add(query_594292, "fields", newJString(fields))
-  add(query_594292, "quotaUser", newJString(quotaUser))
-  add(query_594292, "alt", newJString(alt))
-  add(query_594292, "oauth_token", newJString(oauthToken))
-  add(query_594292, "space", newJString(space))
-  add(query_594292, "userIp", newJString(userIp))
-  add(query_594292, "maxResults", newJInt(maxResults))
-  add(query_594292, "key", newJString(key))
-  add(query_594292, "prettyPrint", newJBool(prettyPrint))
-  result = call_594291.call(nil, query_594292, nil, nil, nil)
+  var query_580292 = newJObject()
+  add(query_580292, "fields", newJString(fields))
+  add(query_580292, "quotaUser", newJString(quotaUser))
+  add(query_580292, "alt", newJString(alt))
+  add(query_580292, "oauth_token", newJString(oauthToken))
+  add(query_580292, "space", newJString(space))
+  add(query_580292, "userIp", newJString(userIp))
+  add(query_580292, "maxResults", newJInt(maxResults))
+  add(query_580292, "key", newJString(key))
+  add(query_580292, "prettyPrint", newJBool(prettyPrint))
+  result = call_580291.call(nil, query_580292, nil, nil, nil)
 
-var driveFilesGenerateIds* = Call_DriveFilesGenerateIds_594278(
+var driveFilesGenerateIds* = Call_DriveFilesGenerateIds_580278(
     name: "driveFilesGenerateIds", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/files/generateIds",
-    validator: validate_DriveFilesGenerateIds_594279, base: "/drive/v2",
-    url: url_DriveFilesGenerateIds_594280, schemes: {Scheme.Https})
+    validator: validate_DriveFilesGenerateIds_580279, base: "/drive/v2",
+    url: url_DriveFilesGenerateIds_580280, schemes: {Scheme.Https})
 type
-  Call_DriveFilesEmptyTrash_594293 = ref object of OpenApiRestCall_593424
-proc url_DriveFilesEmptyTrash_594295(protocol: Scheme; host: string; base: string;
+  Call_DriveFilesEmptyTrash_580293 = ref object of OpenApiRestCall_579424
+proc url_DriveFilesEmptyTrash_580295(protocol: Scheme; host: string; base: string;
                                     route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   result.path = base & route
 
-proc validate_DriveFilesEmptyTrash_594294(path: JsonNode; query: JsonNode;
+proc validate_DriveFilesEmptyTrash_580294(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Permanently deletes all of the user's trashed files.
   ## 
@@ -3312,41 +3314,41 @@ proc validate_DriveFilesEmptyTrash_594294(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_594296 = query.getOrDefault("fields")
-  valid_594296 = validateParameter(valid_594296, JString, required = false,
+  var valid_580296 = query.getOrDefault("fields")
+  valid_580296 = validateParameter(valid_580296, JString, required = false,
                                  default = nil)
-  if valid_594296 != nil:
-    section.add "fields", valid_594296
-  var valid_594297 = query.getOrDefault("quotaUser")
-  valid_594297 = validateParameter(valid_594297, JString, required = false,
+  if valid_580296 != nil:
+    section.add "fields", valid_580296
+  var valid_580297 = query.getOrDefault("quotaUser")
+  valid_580297 = validateParameter(valid_580297, JString, required = false,
                                  default = nil)
-  if valid_594297 != nil:
-    section.add "quotaUser", valid_594297
-  var valid_594298 = query.getOrDefault("alt")
-  valid_594298 = validateParameter(valid_594298, JString, required = false,
+  if valid_580297 != nil:
+    section.add "quotaUser", valid_580297
+  var valid_580298 = query.getOrDefault("alt")
+  valid_580298 = validateParameter(valid_580298, JString, required = false,
                                  default = newJString("json"))
-  if valid_594298 != nil:
-    section.add "alt", valid_594298
-  var valid_594299 = query.getOrDefault("oauth_token")
-  valid_594299 = validateParameter(valid_594299, JString, required = false,
+  if valid_580298 != nil:
+    section.add "alt", valid_580298
+  var valid_580299 = query.getOrDefault("oauth_token")
+  valid_580299 = validateParameter(valid_580299, JString, required = false,
                                  default = nil)
-  if valid_594299 != nil:
-    section.add "oauth_token", valid_594299
-  var valid_594300 = query.getOrDefault("userIp")
-  valid_594300 = validateParameter(valid_594300, JString, required = false,
+  if valid_580299 != nil:
+    section.add "oauth_token", valid_580299
+  var valid_580300 = query.getOrDefault("userIp")
+  valid_580300 = validateParameter(valid_580300, JString, required = false,
                                  default = nil)
-  if valid_594300 != nil:
-    section.add "userIp", valid_594300
-  var valid_594301 = query.getOrDefault("key")
-  valid_594301 = validateParameter(valid_594301, JString, required = false,
+  if valid_580300 != nil:
+    section.add "userIp", valid_580300
+  var valid_580301 = query.getOrDefault("key")
+  valid_580301 = validateParameter(valid_580301, JString, required = false,
                                  default = nil)
-  if valid_594301 != nil:
-    section.add "key", valid_594301
-  var valid_594302 = query.getOrDefault("prettyPrint")
-  valid_594302 = validateParameter(valid_594302, JBool, required = false,
+  if valid_580301 != nil:
+    section.add "key", valid_580301
+  var valid_580302 = query.getOrDefault("prettyPrint")
+  valid_580302 = validateParameter(valid_580302, JBool, required = false,
                                  default = newJBool(true))
-  if valid_594302 != nil:
-    section.add "prettyPrint", valid_594302
+  if valid_580302 != nil:
+    section.add "prettyPrint", valid_580302
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -3355,20 +3357,20 @@ proc validate_DriveFilesEmptyTrash_594294(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_594303: Call_DriveFilesEmptyTrash_594293; path: JsonNode;
+proc call*(call_580303: Call_DriveFilesEmptyTrash_580293; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Permanently deletes all of the user's trashed files.
   ## 
-  let valid = call_594303.validator(path, query, header, formData, body)
-  let scheme = call_594303.pickScheme
+  let valid = call_580303.validator(path, query, header, formData, body)
+  let scheme = call_580303.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_594303.url(scheme.get, call_594303.host, call_594303.base,
-                         call_594303.route, valid.getOrDefault("path"),
+  let url = call_580303.url(scheme.get, call_580303.host, call_580303.base,
+                         call_580303.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_594303, url, valid)
+  result = hook(call_580303, url, valid)
 
-proc call*(call_594304: Call_DriveFilesEmptyTrash_594293; fields: string = "";
+proc call*(call_580304: Call_DriveFilesEmptyTrash_580293; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; key: string = ""; prettyPrint: bool = true): Recallable =
   ## driveFilesEmptyTrash
@@ -3387,28 +3389,28 @@ proc call*(call_594304: Call_DriveFilesEmptyTrash_594293; fields: string = "";
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var query_594305 = newJObject()
-  add(query_594305, "fields", newJString(fields))
-  add(query_594305, "quotaUser", newJString(quotaUser))
-  add(query_594305, "alt", newJString(alt))
-  add(query_594305, "oauth_token", newJString(oauthToken))
-  add(query_594305, "userIp", newJString(userIp))
-  add(query_594305, "key", newJString(key))
-  add(query_594305, "prettyPrint", newJBool(prettyPrint))
-  result = call_594304.call(nil, query_594305, nil, nil, nil)
+  var query_580305 = newJObject()
+  add(query_580305, "fields", newJString(fields))
+  add(query_580305, "quotaUser", newJString(quotaUser))
+  add(query_580305, "alt", newJString(alt))
+  add(query_580305, "oauth_token", newJString(oauthToken))
+  add(query_580305, "userIp", newJString(userIp))
+  add(query_580305, "key", newJString(key))
+  add(query_580305, "prettyPrint", newJBool(prettyPrint))
+  result = call_580304.call(nil, query_580305, nil, nil, nil)
 
-var driveFilesEmptyTrash* = Call_DriveFilesEmptyTrash_594293(
+var driveFilesEmptyTrash* = Call_DriveFilesEmptyTrash_580293(
     name: "driveFilesEmptyTrash", meth: HttpMethod.HttpDelete,
     host: "www.googleapis.com", route: "/files/trash",
-    validator: validate_DriveFilesEmptyTrash_594294, base: "/drive/v2",
-    url: url_DriveFilesEmptyTrash_594295, schemes: {Scheme.Https})
+    validator: validate_DriveFilesEmptyTrash_580294, base: "/drive/v2",
+    url: url_DriveFilesEmptyTrash_580295, schemes: {Scheme.Https})
 type
-  Call_DriveFilesUpdate_594327 = ref object of OpenApiRestCall_593424
-proc url_DriveFilesUpdate_594329(protocol: Scheme; host: string; base: string;
+  Call_DriveFilesUpdate_580327 = ref object of OpenApiRestCall_579424
+proc url_DriveFilesUpdate_580329(protocol: Scheme; host: string; base: string;
                                 route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "fileId" in path, "`fileId` is a required path parameter"
   const
@@ -3419,7 +3421,7 @@ proc url_DriveFilesUpdate_594329(protocol: Scheme; host: string; base: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_DriveFilesUpdate_594328(path: JsonNode; query: JsonNode;
+proc validate_DriveFilesUpdate_580328(path: JsonNode; query: JsonNode;
                                      header: JsonNode; formData: JsonNode;
                                      body: JsonNode): JsonNode =
   ## Updates file metadata and/or content.
@@ -3431,11 +3433,11 @@ proc validate_DriveFilesUpdate_594328(path: JsonNode; query: JsonNode;
   ##         : The ID of the file to update.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `fileId` field"
-  var valid_594330 = path.getOrDefault("fileId")
-  valid_594330 = validateParameter(valid_594330, JString, required = true,
+  var valid_580330 = path.getOrDefault("fileId")
+  valid_580330 = validateParameter(valid_580330, JString, required = true,
                                  default = nil)
-  if valid_594330 != nil:
-    section.add "fileId", valid_594330
+  if valid_580330 != nil:
+    section.add "fileId", valid_580330
   result.add "path", section
   ## parameters in `query` object:
   ##   supportsAllDrives: JBool
@@ -3483,116 +3485,116 @@ proc validate_DriveFilesUpdate_594328(path: JsonNode; query: JsonNode;
   ##   timedTextTrackName: JString
   ##                     : The timed text track name.
   section = newJObject()
-  var valid_594331 = query.getOrDefault("supportsAllDrives")
-  valid_594331 = validateParameter(valid_594331, JBool, required = false,
+  var valid_580331 = query.getOrDefault("supportsAllDrives")
+  valid_580331 = validateParameter(valid_580331, JBool, required = false,
                                  default = newJBool(false))
-  if valid_594331 != nil:
-    section.add "supportsAllDrives", valid_594331
-  var valid_594332 = query.getOrDefault("fields")
-  valid_594332 = validateParameter(valid_594332, JString, required = false,
+  if valid_580331 != nil:
+    section.add "supportsAllDrives", valid_580331
+  var valid_580332 = query.getOrDefault("fields")
+  valid_580332 = validateParameter(valid_580332, JString, required = false,
                                  default = nil)
-  if valid_594332 != nil:
-    section.add "fields", valid_594332
-  var valid_594333 = query.getOrDefault("quotaUser")
-  valid_594333 = validateParameter(valid_594333, JString, required = false,
+  if valid_580332 != nil:
+    section.add "fields", valid_580332
+  var valid_580333 = query.getOrDefault("quotaUser")
+  valid_580333 = validateParameter(valid_580333, JString, required = false,
                                  default = nil)
-  if valid_594333 != nil:
-    section.add "quotaUser", valid_594333
-  var valid_594334 = query.getOrDefault("alt")
-  valid_594334 = validateParameter(valid_594334, JString, required = false,
+  if valid_580333 != nil:
+    section.add "quotaUser", valid_580333
+  var valid_580334 = query.getOrDefault("alt")
+  valid_580334 = validateParameter(valid_580334, JString, required = false,
                                  default = newJString("json"))
-  if valid_594334 != nil:
-    section.add "alt", valid_594334
-  var valid_594335 = query.getOrDefault("setModifiedDate")
-  valid_594335 = validateParameter(valid_594335, JBool, required = false,
+  if valid_580334 != nil:
+    section.add "alt", valid_580334
+  var valid_580335 = query.getOrDefault("setModifiedDate")
+  valid_580335 = validateParameter(valid_580335, JBool, required = false,
                                  default = newJBool(false))
-  if valid_594335 != nil:
-    section.add "setModifiedDate", valid_594335
-  var valid_594336 = query.getOrDefault("pinned")
-  valid_594336 = validateParameter(valid_594336, JBool, required = false,
+  if valid_580335 != nil:
+    section.add "setModifiedDate", valid_580335
+  var valid_580336 = query.getOrDefault("pinned")
+  valid_580336 = validateParameter(valid_580336, JBool, required = false,
                                  default = newJBool(false))
-  if valid_594336 != nil:
-    section.add "pinned", valid_594336
-  var valid_594337 = query.getOrDefault("oauth_token")
-  valid_594337 = validateParameter(valid_594337, JString, required = false,
+  if valid_580336 != nil:
+    section.add "pinned", valid_580336
+  var valid_580337 = query.getOrDefault("oauth_token")
+  valid_580337 = validateParameter(valid_580337, JString, required = false,
                                  default = nil)
-  if valid_594337 != nil:
-    section.add "oauth_token", valid_594337
-  var valid_594338 = query.getOrDefault("userIp")
-  valid_594338 = validateParameter(valid_594338, JString, required = false,
+  if valid_580337 != nil:
+    section.add "oauth_token", valid_580337
+  var valid_580338 = query.getOrDefault("userIp")
+  valid_580338 = validateParameter(valid_580338, JString, required = false,
                                  default = nil)
-  if valid_594338 != nil:
-    section.add "userIp", valid_594338
-  var valid_594339 = query.getOrDefault("ocr")
-  valid_594339 = validateParameter(valid_594339, JBool, required = false,
+  if valid_580338 != nil:
+    section.add "userIp", valid_580338
+  var valid_580339 = query.getOrDefault("ocr")
+  valid_580339 = validateParameter(valid_580339, JBool, required = false,
                                  default = newJBool(false))
-  if valid_594339 != nil:
-    section.add "ocr", valid_594339
-  var valid_594340 = query.getOrDefault("timedTextLanguage")
-  valid_594340 = validateParameter(valid_594340, JString, required = false,
+  if valid_580339 != nil:
+    section.add "ocr", valid_580339
+  var valid_580340 = query.getOrDefault("timedTextLanguage")
+  valid_580340 = validateParameter(valid_580340, JString, required = false,
                                  default = nil)
-  if valid_594340 != nil:
-    section.add "timedTextLanguage", valid_594340
-  var valid_594341 = query.getOrDefault("supportsTeamDrives")
-  valid_594341 = validateParameter(valid_594341, JBool, required = false,
+  if valid_580340 != nil:
+    section.add "timedTextLanguage", valid_580340
+  var valid_580341 = query.getOrDefault("supportsTeamDrives")
+  valid_580341 = validateParameter(valid_580341, JBool, required = false,
                                  default = newJBool(false))
-  if valid_594341 != nil:
-    section.add "supportsTeamDrives", valid_594341
-  var valid_594342 = query.getOrDefault("key")
-  valid_594342 = validateParameter(valid_594342, JString, required = false,
+  if valid_580341 != nil:
+    section.add "supportsTeamDrives", valid_580341
+  var valid_580342 = query.getOrDefault("key")
+  valid_580342 = validateParameter(valid_580342, JString, required = false,
                                  default = nil)
-  if valid_594342 != nil:
-    section.add "key", valid_594342
-  var valid_594343 = query.getOrDefault("convert")
-  valid_594343 = validateParameter(valid_594343, JBool, required = false,
+  if valid_580342 != nil:
+    section.add "key", valid_580342
+  var valid_580343 = query.getOrDefault("convert")
+  valid_580343 = validateParameter(valid_580343, JBool, required = false,
                                  default = newJBool(false))
-  if valid_594343 != nil:
-    section.add "convert", valid_594343
-  var valid_594344 = query.getOrDefault("modifiedDateBehavior")
-  valid_594344 = validateParameter(valid_594344, JString, required = false,
+  if valid_580343 != nil:
+    section.add "convert", valid_580343
+  var valid_580344 = query.getOrDefault("modifiedDateBehavior")
+  valid_580344 = validateParameter(valid_580344, JString, required = false,
                                  default = newJString("fromBody"))
-  if valid_594344 != nil:
-    section.add "modifiedDateBehavior", valid_594344
-  var valid_594345 = query.getOrDefault("updateViewedDate")
-  valid_594345 = validateParameter(valid_594345, JBool, required = false,
+  if valid_580344 != nil:
+    section.add "modifiedDateBehavior", valid_580344
+  var valid_580345 = query.getOrDefault("updateViewedDate")
+  valid_580345 = validateParameter(valid_580345, JBool, required = false,
                                  default = newJBool(true))
-  if valid_594345 != nil:
-    section.add "updateViewedDate", valid_594345
-  var valid_594346 = query.getOrDefault("useContentAsIndexableText")
-  valid_594346 = validateParameter(valid_594346, JBool, required = false,
+  if valid_580345 != nil:
+    section.add "updateViewedDate", valid_580345
+  var valid_580346 = query.getOrDefault("useContentAsIndexableText")
+  valid_580346 = validateParameter(valid_580346, JBool, required = false,
                                  default = newJBool(false))
-  if valid_594346 != nil:
-    section.add "useContentAsIndexableText", valid_594346
-  var valid_594347 = query.getOrDefault("addParents")
-  valid_594347 = validateParameter(valid_594347, JString, required = false,
+  if valid_580346 != nil:
+    section.add "useContentAsIndexableText", valid_580346
+  var valid_580347 = query.getOrDefault("addParents")
+  valid_580347 = validateParameter(valid_580347, JString, required = false,
                                  default = nil)
-  if valid_594347 != nil:
-    section.add "addParents", valid_594347
-  var valid_594348 = query.getOrDefault("prettyPrint")
-  valid_594348 = validateParameter(valid_594348, JBool, required = false,
+  if valid_580347 != nil:
+    section.add "addParents", valid_580347
+  var valid_580348 = query.getOrDefault("prettyPrint")
+  valid_580348 = validateParameter(valid_580348, JBool, required = false,
                                  default = newJBool(true))
-  if valid_594348 != nil:
-    section.add "prettyPrint", valid_594348
-  var valid_594349 = query.getOrDefault("removeParents")
-  valid_594349 = validateParameter(valid_594349, JString, required = false,
+  if valid_580348 != nil:
+    section.add "prettyPrint", valid_580348
+  var valid_580349 = query.getOrDefault("removeParents")
+  valid_580349 = validateParameter(valid_580349, JString, required = false,
                                  default = nil)
-  if valid_594349 != nil:
-    section.add "removeParents", valid_594349
-  var valid_594350 = query.getOrDefault("newRevision")
-  valid_594350 = validateParameter(valid_594350, JBool, required = false,
+  if valid_580349 != nil:
+    section.add "removeParents", valid_580349
+  var valid_580350 = query.getOrDefault("newRevision")
+  valid_580350 = validateParameter(valid_580350, JBool, required = false,
                                  default = newJBool(true))
-  if valid_594350 != nil:
-    section.add "newRevision", valid_594350
-  var valid_594351 = query.getOrDefault("ocrLanguage")
-  valid_594351 = validateParameter(valid_594351, JString, required = false,
+  if valid_580350 != nil:
+    section.add "newRevision", valid_580350
+  var valid_580351 = query.getOrDefault("ocrLanguage")
+  valid_580351 = validateParameter(valid_580351, JString, required = false,
                                  default = nil)
-  if valid_594351 != nil:
-    section.add "ocrLanguage", valid_594351
-  var valid_594352 = query.getOrDefault("timedTextTrackName")
-  valid_594352 = validateParameter(valid_594352, JString, required = false,
+  if valid_580351 != nil:
+    section.add "ocrLanguage", valid_580351
+  var valid_580352 = query.getOrDefault("timedTextTrackName")
+  valid_580352 = validateParameter(valid_580352, JString, required = false,
                                  default = nil)
-  if valid_594352 != nil:
-    section.add "timedTextTrackName", valid_594352
+  if valid_580352 != nil:
+    section.add "timedTextTrackName", valid_580352
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -3604,20 +3606,20 @@ proc validate_DriveFilesUpdate_594328(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_594354: Call_DriveFilesUpdate_594327; path: JsonNode;
+proc call*(call_580354: Call_DriveFilesUpdate_580327; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Updates file metadata and/or content.
   ## 
-  let valid = call_594354.validator(path, query, header, formData, body)
-  let scheme = call_594354.pickScheme
+  let valid = call_580354.validator(path, query, header, formData, body)
+  let scheme = call_580354.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_594354.url(scheme.get, call_594354.host, call_594354.base,
-                         call_594354.route, valid.getOrDefault("path"),
+  let url = call_580354.url(scheme.get, call_580354.host, call_580354.base,
+                         call_580354.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_594354, url, valid)
+  result = hook(call_580354, url, valid)
 
-proc call*(call_594355: Call_DriveFilesUpdate_594327; fileId: string;
+proc call*(call_580355: Call_DriveFilesUpdate_580327; fileId: string;
           supportsAllDrives: bool = false; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; setModifiedDate: bool = false; pinned: bool = false;
           oauthToken: string = ""; userIp: string = ""; ocr: bool = false;
@@ -3677,48 +3679,48 @@ proc call*(call_594355: Call_DriveFilesUpdate_594327; fileId: string;
   ##              : If ocr is true, hints at the language to use. Valid values are BCP 47 codes.
   ##   timedTextTrackName: string
   ##                     : The timed text track name.
-  var path_594356 = newJObject()
-  var query_594357 = newJObject()
-  var body_594358 = newJObject()
-  add(query_594357, "supportsAllDrives", newJBool(supportsAllDrives))
-  add(query_594357, "fields", newJString(fields))
-  add(query_594357, "quotaUser", newJString(quotaUser))
-  add(path_594356, "fileId", newJString(fileId))
-  add(query_594357, "alt", newJString(alt))
-  add(query_594357, "setModifiedDate", newJBool(setModifiedDate))
-  add(query_594357, "pinned", newJBool(pinned))
-  add(query_594357, "oauth_token", newJString(oauthToken))
-  add(query_594357, "userIp", newJString(userIp))
-  add(query_594357, "ocr", newJBool(ocr))
-  add(query_594357, "timedTextLanguage", newJString(timedTextLanguage))
-  add(query_594357, "supportsTeamDrives", newJBool(supportsTeamDrives))
-  add(query_594357, "key", newJString(key))
-  add(query_594357, "convert", newJBool(convert))
-  add(query_594357, "modifiedDateBehavior", newJString(modifiedDateBehavior))
-  add(query_594357, "updateViewedDate", newJBool(updateViewedDate))
-  add(query_594357, "useContentAsIndexableText",
+  var path_580356 = newJObject()
+  var query_580357 = newJObject()
+  var body_580358 = newJObject()
+  add(query_580357, "supportsAllDrives", newJBool(supportsAllDrives))
+  add(query_580357, "fields", newJString(fields))
+  add(query_580357, "quotaUser", newJString(quotaUser))
+  add(path_580356, "fileId", newJString(fileId))
+  add(query_580357, "alt", newJString(alt))
+  add(query_580357, "setModifiedDate", newJBool(setModifiedDate))
+  add(query_580357, "pinned", newJBool(pinned))
+  add(query_580357, "oauth_token", newJString(oauthToken))
+  add(query_580357, "userIp", newJString(userIp))
+  add(query_580357, "ocr", newJBool(ocr))
+  add(query_580357, "timedTextLanguage", newJString(timedTextLanguage))
+  add(query_580357, "supportsTeamDrives", newJBool(supportsTeamDrives))
+  add(query_580357, "key", newJString(key))
+  add(query_580357, "convert", newJBool(convert))
+  add(query_580357, "modifiedDateBehavior", newJString(modifiedDateBehavior))
+  add(query_580357, "updateViewedDate", newJBool(updateViewedDate))
+  add(query_580357, "useContentAsIndexableText",
       newJBool(useContentAsIndexableText))
-  add(query_594357, "addParents", newJString(addParents))
-  add(query_594357, "prettyPrint", newJBool(prettyPrint))
+  add(query_580357, "addParents", newJString(addParents))
+  add(query_580357, "prettyPrint", newJBool(prettyPrint))
   if body != nil:
-    body_594358 = body
-  add(query_594357, "removeParents", newJString(removeParents))
-  add(query_594357, "newRevision", newJBool(newRevision))
-  add(query_594357, "ocrLanguage", newJString(ocrLanguage))
-  add(query_594357, "timedTextTrackName", newJString(timedTextTrackName))
-  result = call_594355.call(path_594356, query_594357, nil, nil, body_594358)
+    body_580358 = body
+  add(query_580357, "removeParents", newJString(removeParents))
+  add(query_580357, "newRevision", newJBool(newRevision))
+  add(query_580357, "ocrLanguage", newJString(ocrLanguage))
+  add(query_580357, "timedTextTrackName", newJString(timedTextTrackName))
+  result = call_580355.call(path_580356, query_580357, nil, nil, body_580358)
 
-var driveFilesUpdate* = Call_DriveFilesUpdate_594327(name: "driveFilesUpdate",
+var driveFilesUpdate* = Call_DriveFilesUpdate_580327(name: "driveFilesUpdate",
     meth: HttpMethod.HttpPut, host: "www.googleapis.com", route: "/files/{fileId}",
-    validator: validate_DriveFilesUpdate_594328, base: "/drive/v2",
-    url: url_DriveFilesUpdate_594329, schemes: {Scheme.Https})
+    validator: validate_DriveFilesUpdate_580328, base: "/drive/v2",
+    url: url_DriveFilesUpdate_580329, schemes: {Scheme.Https})
 type
-  Call_DriveFilesGet_594306 = ref object of OpenApiRestCall_593424
-proc url_DriveFilesGet_594308(protocol: Scheme; host: string; base: string;
+  Call_DriveFilesGet_580306 = ref object of OpenApiRestCall_579424
+proc url_DriveFilesGet_580308(protocol: Scheme; host: string; base: string;
                              route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "fileId" in path, "`fileId` is a required path parameter"
   const
@@ -3729,7 +3731,7 @@ proc url_DriveFilesGet_594308(protocol: Scheme; host: string; base: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_DriveFilesGet_594307(path: JsonNode; query: JsonNode; header: JsonNode;
+proc validate_DriveFilesGet_580307(path: JsonNode; query: JsonNode; header: JsonNode;
                                   formData: JsonNode; body: JsonNode): JsonNode =
   ## Gets a file's metadata by ID.
   ## 
@@ -3740,11 +3742,11 @@ proc validate_DriveFilesGet_594307(path: JsonNode; query: JsonNode; header: Json
   ##         : The ID for the file in question.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `fileId` field"
-  var valid_594309 = path.getOrDefault("fileId")
-  valid_594309 = validateParameter(valid_594309, JString, required = true,
+  var valid_580309 = path.getOrDefault("fileId")
+  valid_580309 = validateParameter(valid_580309, JString, required = true,
                                  default = nil)
-  if valid_594309 != nil:
-    section.add "fileId", valid_594309
+  if valid_580309 != nil:
+    section.add "fileId", valid_580309
   result.add "path", section
   ## parameters in `query` object:
   ##   supportsAllDrives: JBool
@@ -3774,71 +3776,71 @@ proc validate_DriveFilesGet_594307(path: JsonNode; query: JsonNode; header: Json
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_594310 = query.getOrDefault("supportsAllDrives")
-  valid_594310 = validateParameter(valid_594310, JBool, required = false,
+  var valid_580310 = query.getOrDefault("supportsAllDrives")
+  valid_580310 = validateParameter(valid_580310, JBool, required = false,
                                  default = newJBool(false))
-  if valid_594310 != nil:
-    section.add "supportsAllDrives", valid_594310
-  var valid_594311 = query.getOrDefault("fields")
-  valid_594311 = validateParameter(valid_594311, JString, required = false,
+  if valid_580310 != nil:
+    section.add "supportsAllDrives", valid_580310
+  var valid_580311 = query.getOrDefault("fields")
+  valid_580311 = validateParameter(valid_580311, JString, required = false,
                                  default = nil)
-  if valid_594311 != nil:
-    section.add "fields", valid_594311
-  var valid_594312 = query.getOrDefault("quotaUser")
-  valid_594312 = validateParameter(valid_594312, JString, required = false,
+  if valid_580311 != nil:
+    section.add "fields", valid_580311
+  var valid_580312 = query.getOrDefault("quotaUser")
+  valid_580312 = validateParameter(valid_580312, JString, required = false,
                                  default = nil)
-  if valid_594312 != nil:
-    section.add "quotaUser", valid_594312
-  var valid_594313 = query.getOrDefault("alt")
-  valid_594313 = validateParameter(valid_594313, JString, required = false,
+  if valid_580312 != nil:
+    section.add "quotaUser", valid_580312
+  var valid_580313 = query.getOrDefault("alt")
+  valid_580313 = validateParameter(valid_580313, JString, required = false,
                                  default = newJString("json"))
-  if valid_594313 != nil:
-    section.add "alt", valid_594313
-  var valid_594314 = query.getOrDefault("acknowledgeAbuse")
-  valid_594314 = validateParameter(valid_594314, JBool, required = false,
+  if valid_580313 != nil:
+    section.add "alt", valid_580313
+  var valid_580314 = query.getOrDefault("acknowledgeAbuse")
+  valid_580314 = validateParameter(valid_580314, JBool, required = false,
                                  default = newJBool(false))
-  if valid_594314 != nil:
-    section.add "acknowledgeAbuse", valid_594314
-  var valid_594315 = query.getOrDefault("oauth_token")
-  valid_594315 = validateParameter(valid_594315, JString, required = false,
+  if valid_580314 != nil:
+    section.add "acknowledgeAbuse", valid_580314
+  var valid_580315 = query.getOrDefault("oauth_token")
+  valid_580315 = validateParameter(valid_580315, JString, required = false,
                                  default = nil)
-  if valid_594315 != nil:
-    section.add "oauth_token", valid_594315
-  var valid_594316 = query.getOrDefault("userIp")
-  valid_594316 = validateParameter(valid_594316, JString, required = false,
+  if valid_580315 != nil:
+    section.add "oauth_token", valid_580315
+  var valid_580316 = query.getOrDefault("userIp")
+  valid_580316 = validateParameter(valid_580316, JString, required = false,
                                  default = nil)
-  if valid_594316 != nil:
-    section.add "userIp", valid_594316
-  var valid_594317 = query.getOrDefault("supportsTeamDrives")
-  valid_594317 = validateParameter(valid_594317, JBool, required = false,
+  if valid_580316 != nil:
+    section.add "userIp", valid_580316
+  var valid_580317 = query.getOrDefault("supportsTeamDrives")
+  valid_580317 = validateParameter(valid_580317, JBool, required = false,
                                  default = newJBool(false))
-  if valid_594317 != nil:
-    section.add "supportsTeamDrives", valid_594317
-  var valid_594318 = query.getOrDefault("key")
-  valid_594318 = validateParameter(valid_594318, JString, required = false,
+  if valid_580317 != nil:
+    section.add "supportsTeamDrives", valid_580317
+  var valid_580318 = query.getOrDefault("key")
+  valid_580318 = validateParameter(valid_580318, JString, required = false,
                                  default = nil)
-  if valid_594318 != nil:
-    section.add "key", valid_594318
-  var valid_594319 = query.getOrDefault("updateViewedDate")
-  valid_594319 = validateParameter(valid_594319, JBool, required = false,
+  if valid_580318 != nil:
+    section.add "key", valid_580318
+  var valid_580319 = query.getOrDefault("updateViewedDate")
+  valid_580319 = validateParameter(valid_580319, JBool, required = false,
                                  default = newJBool(false))
-  if valid_594319 != nil:
-    section.add "updateViewedDate", valid_594319
-  var valid_594320 = query.getOrDefault("projection")
-  valid_594320 = validateParameter(valid_594320, JString, required = false,
+  if valid_580319 != nil:
+    section.add "updateViewedDate", valid_580319
+  var valid_580320 = query.getOrDefault("projection")
+  valid_580320 = validateParameter(valid_580320, JString, required = false,
                                  default = newJString("BASIC"))
-  if valid_594320 != nil:
-    section.add "projection", valid_594320
-  var valid_594321 = query.getOrDefault("revisionId")
-  valid_594321 = validateParameter(valid_594321, JString, required = false,
+  if valid_580320 != nil:
+    section.add "projection", valid_580320
+  var valid_580321 = query.getOrDefault("revisionId")
+  valid_580321 = validateParameter(valid_580321, JString, required = false,
                                  default = nil)
-  if valid_594321 != nil:
-    section.add "revisionId", valid_594321
-  var valid_594322 = query.getOrDefault("prettyPrint")
-  valid_594322 = validateParameter(valid_594322, JBool, required = false,
+  if valid_580321 != nil:
+    section.add "revisionId", valid_580321
+  var valid_580322 = query.getOrDefault("prettyPrint")
+  valid_580322 = validateParameter(valid_580322, JBool, required = false,
                                  default = newJBool(true))
-  if valid_594322 != nil:
-    section.add "prettyPrint", valid_594322
+  if valid_580322 != nil:
+    section.add "prettyPrint", valid_580322
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -3847,20 +3849,20 @@ proc validate_DriveFilesGet_594307(path: JsonNode; query: JsonNode; header: Json
   if body != nil:
     result.add "body", body
 
-proc call*(call_594323: Call_DriveFilesGet_594306; path: JsonNode; query: JsonNode;
+proc call*(call_580323: Call_DriveFilesGet_580306; path: JsonNode; query: JsonNode;
           header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Gets a file's metadata by ID.
   ## 
-  let valid = call_594323.validator(path, query, header, formData, body)
-  let scheme = call_594323.pickScheme
+  let valid = call_580323.validator(path, query, header, formData, body)
+  let scheme = call_580323.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_594323.url(scheme.get, call_594323.host, call_594323.base,
-                         call_594323.route, valid.getOrDefault("path"),
+  let url = call_580323.url(scheme.get, call_580323.host, call_580323.base,
+                         call_580323.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_594323, url, valid)
+  result = hook(call_580323, url, valid)
 
-proc call*(call_594324: Call_DriveFilesGet_594306; fileId: string;
+proc call*(call_580324: Call_DriveFilesGet_580306; fileId: string;
           supportsAllDrives: bool = false; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; acknowledgeAbuse: bool = false; oauthToken: string = "";
           userIp: string = ""; supportsTeamDrives: bool = false; key: string = "";
@@ -3896,35 +3898,35 @@ proc call*(call_594324: Call_DriveFilesGet_594306; fileId: string;
   ##             : Specifies the Revision ID that should be downloaded. Ignored unless alt=media is specified.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_594325 = newJObject()
-  var query_594326 = newJObject()
-  add(query_594326, "supportsAllDrives", newJBool(supportsAllDrives))
-  add(query_594326, "fields", newJString(fields))
-  add(query_594326, "quotaUser", newJString(quotaUser))
-  add(path_594325, "fileId", newJString(fileId))
-  add(query_594326, "alt", newJString(alt))
-  add(query_594326, "acknowledgeAbuse", newJBool(acknowledgeAbuse))
-  add(query_594326, "oauth_token", newJString(oauthToken))
-  add(query_594326, "userIp", newJString(userIp))
-  add(query_594326, "supportsTeamDrives", newJBool(supportsTeamDrives))
-  add(query_594326, "key", newJString(key))
-  add(query_594326, "updateViewedDate", newJBool(updateViewedDate))
-  add(query_594326, "projection", newJString(projection))
-  add(query_594326, "revisionId", newJString(revisionId))
-  add(query_594326, "prettyPrint", newJBool(prettyPrint))
-  result = call_594324.call(path_594325, query_594326, nil, nil, nil)
+  var path_580325 = newJObject()
+  var query_580326 = newJObject()
+  add(query_580326, "supportsAllDrives", newJBool(supportsAllDrives))
+  add(query_580326, "fields", newJString(fields))
+  add(query_580326, "quotaUser", newJString(quotaUser))
+  add(path_580325, "fileId", newJString(fileId))
+  add(query_580326, "alt", newJString(alt))
+  add(query_580326, "acknowledgeAbuse", newJBool(acknowledgeAbuse))
+  add(query_580326, "oauth_token", newJString(oauthToken))
+  add(query_580326, "userIp", newJString(userIp))
+  add(query_580326, "supportsTeamDrives", newJBool(supportsTeamDrives))
+  add(query_580326, "key", newJString(key))
+  add(query_580326, "updateViewedDate", newJBool(updateViewedDate))
+  add(query_580326, "projection", newJString(projection))
+  add(query_580326, "revisionId", newJString(revisionId))
+  add(query_580326, "prettyPrint", newJBool(prettyPrint))
+  result = call_580324.call(path_580325, query_580326, nil, nil, nil)
 
-var driveFilesGet* = Call_DriveFilesGet_594306(name: "driveFilesGet",
+var driveFilesGet* = Call_DriveFilesGet_580306(name: "driveFilesGet",
     meth: HttpMethod.HttpGet, host: "www.googleapis.com", route: "/files/{fileId}",
-    validator: validate_DriveFilesGet_594307, base: "/drive/v2",
-    url: url_DriveFilesGet_594308, schemes: {Scheme.Https})
+    validator: validate_DriveFilesGet_580307, base: "/drive/v2",
+    url: url_DriveFilesGet_580308, schemes: {Scheme.Https})
 type
-  Call_DriveFilesPatch_594376 = ref object of OpenApiRestCall_593424
-proc url_DriveFilesPatch_594378(protocol: Scheme; host: string; base: string;
+  Call_DriveFilesPatch_580376 = ref object of OpenApiRestCall_579424
+proc url_DriveFilesPatch_580378(protocol: Scheme; host: string; base: string;
                                route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "fileId" in path, "`fileId` is a required path parameter"
   const
@@ -3935,7 +3937,7 @@ proc url_DriveFilesPatch_594378(protocol: Scheme; host: string; base: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_DriveFilesPatch_594377(path: JsonNode; query: JsonNode;
+proc validate_DriveFilesPatch_580377(path: JsonNode; query: JsonNode;
                                     header: JsonNode; formData: JsonNode;
                                     body: JsonNode): JsonNode =
   ## Updates file metadata and/or content. This method supports patch semantics.
@@ -3947,11 +3949,11 @@ proc validate_DriveFilesPatch_594377(path: JsonNode; query: JsonNode;
   ##         : The ID of the file to update.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `fileId` field"
-  var valid_594379 = path.getOrDefault("fileId")
-  valid_594379 = validateParameter(valid_594379, JString, required = true,
+  var valid_580379 = path.getOrDefault("fileId")
+  valid_580379 = validateParameter(valid_580379, JString, required = true,
                                  default = nil)
-  if valid_594379 != nil:
-    section.add "fileId", valid_594379
+  if valid_580379 != nil:
+    section.add "fileId", valid_580379
   result.add "path", section
   ## parameters in `query` object:
   ##   supportsAllDrives: JBool
@@ -3999,116 +4001,116 @@ proc validate_DriveFilesPatch_594377(path: JsonNode; query: JsonNode;
   ##   timedTextTrackName: JString
   ##                     : The timed text track name.
   section = newJObject()
-  var valid_594380 = query.getOrDefault("supportsAllDrives")
-  valid_594380 = validateParameter(valid_594380, JBool, required = false,
+  var valid_580380 = query.getOrDefault("supportsAllDrives")
+  valid_580380 = validateParameter(valid_580380, JBool, required = false,
                                  default = newJBool(false))
-  if valid_594380 != nil:
-    section.add "supportsAllDrives", valid_594380
-  var valid_594381 = query.getOrDefault("fields")
-  valid_594381 = validateParameter(valid_594381, JString, required = false,
+  if valid_580380 != nil:
+    section.add "supportsAllDrives", valid_580380
+  var valid_580381 = query.getOrDefault("fields")
+  valid_580381 = validateParameter(valid_580381, JString, required = false,
                                  default = nil)
-  if valid_594381 != nil:
-    section.add "fields", valid_594381
-  var valid_594382 = query.getOrDefault("quotaUser")
-  valid_594382 = validateParameter(valid_594382, JString, required = false,
+  if valid_580381 != nil:
+    section.add "fields", valid_580381
+  var valid_580382 = query.getOrDefault("quotaUser")
+  valid_580382 = validateParameter(valid_580382, JString, required = false,
                                  default = nil)
-  if valid_594382 != nil:
-    section.add "quotaUser", valid_594382
-  var valid_594383 = query.getOrDefault("alt")
-  valid_594383 = validateParameter(valid_594383, JString, required = false,
+  if valid_580382 != nil:
+    section.add "quotaUser", valid_580382
+  var valid_580383 = query.getOrDefault("alt")
+  valid_580383 = validateParameter(valid_580383, JString, required = false,
                                  default = newJString("json"))
-  if valid_594383 != nil:
-    section.add "alt", valid_594383
-  var valid_594384 = query.getOrDefault("setModifiedDate")
-  valid_594384 = validateParameter(valid_594384, JBool, required = false,
+  if valid_580383 != nil:
+    section.add "alt", valid_580383
+  var valid_580384 = query.getOrDefault("setModifiedDate")
+  valid_580384 = validateParameter(valid_580384, JBool, required = false,
                                  default = newJBool(false))
-  if valid_594384 != nil:
-    section.add "setModifiedDate", valid_594384
-  var valid_594385 = query.getOrDefault("pinned")
-  valid_594385 = validateParameter(valid_594385, JBool, required = false,
+  if valid_580384 != nil:
+    section.add "setModifiedDate", valid_580384
+  var valid_580385 = query.getOrDefault("pinned")
+  valid_580385 = validateParameter(valid_580385, JBool, required = false,
                                  default = newJBool(false))
-  if valid_594385 != nil:
-    section.add "pinned", valid_594385
-  var valid_594386 = query.getOrDefault("oauth_token")
-  valid_594386 = validateParameter(valid_594386, JString, required = false,
+  if valid_580385 != nil:
+    section.add "pinned", valid_580385
+  var valid_580386 = query.getOrDefault("oauth_token")
+  valid_580386 = validateParameter(valid_580386, JString, required = false,
                                  default = nil)
-  if valid_594386 != nil:
-    section.add "oauth_token", valid_594386
-  var valid_594387 = query.getOrDefault("userIp")
-  valid_594387 = validateParameter(valid_594387, JString, required = false,
+  if valid_580386 != nil:
+    section.add "oauth_token", valid_580386
+  var valid_580387 = query.getOrDefault("userIp")
+  valid_580387 = validateParameter(valid_580387, JString, required = false,
                                  default = nil)
-  if valid_594387 != nil:
-    section.add "userIp", valid_594387
-  var valid_594388 = query.getOrDefault("ocr")
-  valid_594388 = validateParameter(valid_594388, JBool, required = false,
+  if valid_580387 != nil:
+    section.add "userIp", valid_580387
+  var valid_580388 = query.getOrDefault("ocr")
+  valid_580388 = validateParameter(valid_580388, JBool, required = false,
                                  default = newJBool(false))
-  if valid_594388 != nil:
-    section.add "ocr", valid_594388
-  var valid_594389 = query.getOrDefault("timedTextLanguage")
-  valid_594389 = validateParameter(valid_594389, JString, required = false,
+  if valid_580388 != nil:
+    section.add "ocr", valid_580388
+  var valid_580389 = query.getOrDefault("timedTextLanguage")
+  valid_580389 = validateParameter(valid_580389, JString, required = false,
                                  default = nil)
-  if valid_594389 != nil:
-    section.add "timedTextLanguage", valid_594389
-  var valid_594390 = query.getOrDefault("supportsTeamDrives")
-  valid_594390 = validateParameter(valid_594390, JBool, required = false,
+  if valid_580389 != nil:
+    section.add "timedTextLanguage", valid_580389
+  var valid_580390 = query.getOrDefault("supportsTeamDrives")
+  valid_580390 = validateParameter(valid_580390, JBool, required = false,
                                  default = newJBool(false))
-  if valid_594390 != nil:
-    section.add "supportsTeamDrives", valid_594390
-  var valid_594391 = query.getOrDefault("key")
-  valid_594391 = validateParameter(valid_594391, JString, required = false,
+  if valid_580390 != nil:
+    section.add "supportsTeamDrives", valid_580390
+  var valid_580391 = query.getOrDefault("key")
+  valid_580391 = validateParameter(valid_580391, JString, required = false,
                                  default = nil)
-  if valid_594391 != nil:
-    section.add "key", valid_594391
-  var valid_594392 = query.getOrDefault("convert")
-  valid_594392 = validateParameter(valid_594392, JBool, required = false,
+  if valid_580391 != nil:
+    section.add "key", valid_580391
+  var valid_580392 = query.getOrDefault("convert")
+  valid_580392 = validateParameter(valid_580392, JBool, required = false,
                                  default = newJBool(false))
-  if valid_594392 != nil:
-    section.add "convert", valid_594392
-  var valid_594393 = query.getOrDefault("modifiedDateBehavior")
-  valid_594393 = validateParameter(valid_594393, JString, required = false,
+  if valid_580392 != nil:
+    section.add "convert", valid_580392
+  var valid_580393 = query.getOrDefault("modifiedDateBehavior")
+  valid_580393 = validateParameter(valid_580393, JString, required = false,
                                  default = newJString("fromBody"))
-  if valid_594393 != nil:
-    section.add "modifiedDateBehavior", valid_594393
-  var valid_594394 = query.getOrDefault("updateViewedDate")
-  valid_594394 = validateParameter(valid_594394, JBool, required = false,
+  if valid_580393 != nil:
+    section.add "modifiedDateBehavior", valid_580393
+  var valid_580394 = query.getOrDefault("updateViewedDate")
+  valid_580394 = validateParameter(valid_580394, JBool, required = false,
                                  default = newJBool(true))
-  if valid_594394 != nil:
-    section.add "updateViewedDate", valid_594394
-  var valid_594395 = query.getOrDefault("useContentAsIndexableText")
-  valid_594395 = validateParameter(valid_594395, JBool, required = false,
+  if valid_580394 != nil:
+    section.add "updateViewedDate", valid_580394
+  var valid_580395 = query.getOrDefault("useContentAsIndexableText")
+  valid_580395 = validateParameter(valid_580395, JBool, required = false,
                                  default = newJBool(false))
-  if valid_594395 != nil:
-    section.add "useContentAsIndexableText", valid_594395
-  var valid_594396 = query.getOrDefault("addParents")
-  valid_594396 = validateParameter(valid_594396, JString, required = false,
+  if valid_580395 != nil:
+    section.add "useContentAsIndexableText", valid_580395
+  var valid_580396 = query.getOrDefault("addParents")
+  valid_580396 = validateParameter(valid_580396, JString, required = false,
                                  default = nil)
-  if valid_594396 != nil:
-    section.add "addParents", valid_594396
-  var valid_594397 = query.getOrDefault("prettyPrint")
-  valid_594397 = validateParameter(valid_594397, JBool, required = false,
+  if valid_580396 != nil:
+    section.add "addParents", valid_580396
+  var valid_580397 = query.getOrDefault("prettyPrint")
+  valid_580397 = validateParameter(valid_580397, JBool, required = false,
                                  default = newJBool(true))
-  if valid_594397 != nil:
-    section.add "prettyPrint", valid_594397
-  var valid_594398 = query.getOrDefault("removeParents")
-  valid_594398 = validateParameter(valid_594398, JString, required = false,
+  if valid_580397 != nil:
+    section.add "prettyPrint", valid_580397
+  var valid_580398 = query.getOrDefault("removeParents")
+  valid_580398 = validateParameter(valid_580398, JString, required = false,
                                  default = nil)
-  if valid_594398 != nil:
-    section.add "removeParents", valid_594398
-  var valid_594399 = query.getOrDefault("newRevision")
-  valid_594399 = validateParameter(valid_594399, JBool, required = false,
+  if valid_580398 != nil:
+    section.add "removeParents", valid_580398
+  var valid_580399 = query.getOrDefault("newRevision")
+  valid_580399 = validateParameter(valid_580399, JBool, required = false,
                                  default = newJBool(true))
-  if valid_594399 != nil:
-    section.add "newRevision", valid_594399
-  var valid_594400 = query.getOrDefault("ocrLanguage")
-  valid_594400 = validateParameter(valid_594400, JString, required = false,
+  if valid_580399 != nil:
+    section.add "newRevision", valid_580399
+  var valid_580400 = query.getOrDefault("ocrLanguage")
+  valid_580400 = validateParameter(valid_580400, JString, required = false,
                                  default = nil)
-  if valid_594400 != nil:
-    section.add "ocrLanguage", valid_594400
-  var valid_594401 = query.getOrDefault("timedTextTrackName")
-  valid_594401 = validateParameter(valid_594401, JString, required = false,
+  if valid_580400 != nil:
+    section.add "ocrLanguage", valid_580400
+  var valid_580401 = query.getOrDefault("timedTextTrackName")
+  valid_580401 = validateParameter(valid_580401, JString, required = false,
                                  default = nil)
-  if valid_594401 != nil:
-    section.add "timedTextTrackName", valid_594401
+  if valid_580401 != nil:
+    section.add "timedTextTrackName", valid_580401
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -4120,20 +4122,20 @@ proc validate_DriveFilesPatch_594377(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_594403: Call_DriveFilesPatch_594376; path: JsonNode; query: JsonNode;
+proc call*(call_580403: Call_DriveFilesPatch_580376; path: JsonNode; query: JsonNode;
           header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Updates file metadata and/or content. This method supports patch semantics.
   ## 
-  let valid = call_594403.validator(path, query, header, formData, body)
-  let scheme = call_594403.pickScheme
+  let valid = call_580403.validator(path, query, header, formData, body)
+  let scheme = call_580403.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_594403.url(scheme.get, call_594403.host, call_594403.base,
-                         call_594403.route, valid.getOrDefault("path"),
+  let url = call_580403.url(scheme.get, call_580403.host, call_580403.base,
+                         call_580403.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_594403, url, valid)
+  result = hook(call_580403, url, valid)
 
-proc call*(call_594404: Call_DriveFilesPatch_594376; fileId: string;
+proc call*(call_580404: Call_DriveFilesPatch_580376; fileId: string;
           supportsAllDrives: bool = false; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; setModifiedDate: bool = false; pinned: bool = false;
           oauthToken: string = ""; userIp: string = ""; ocr: bool = false;
@@ -4193,48 +4195,48 @@ proc call*(call_594404: Call_DriveFilesPatch_594376; fileId: string;
   ##              : If ocr is true, hints at the language to use. Valid values are BCP 47 codes.
   ##   timedTextTrackName: string
   ##                     : The timed text track name.
-  var path_594405 = newJObject()
-  var query_594406 = newJObject()
-  var body_594407 = newJObject()
-  add(query_594406, "supportsAllDrives", newJBool(supportsAllDrives))
-  add(query_594406, "fields", newJString(fields))
-  add(query_594406, "quotaUser", newJString(quotaUser))
-  add(path_594405, "fileId", newJString(fileId))
-  add(query_594406, "alt", newJString(alt))
-  add(query_594406, "setModifiedDate", newJBool(setModifiedDate))
-  add(query_594406, "pinned", newJBool(pinned))
-  add(query_594406, "oauth_token", newJString(oauthToken))
-  add(query_594406, "userIp", newJString(userIp))
-  add(query_594406, "ocr", newJBool(ocr))
-  add(query_594406, "timedTextLanguage", newJString(timedTextLanguage))
-  add(query_594406, "supportsTeamDrives", newJBool(supportsTeamDrives))
-  add(query_594406, "key", newJString(key))
-  add(query_594406, "convert", newJBool(convert))
-  add(query_594406, "modifiedDateBehavior", newJString(modifiedDateBehavior))
-  add(query_594406, "updateViewedDate", newJBool(updateViewedDate))
-  add(query_594406, "useContentAsIndexableText",
+  var path_580405 = newJObject()
+  var query_580406 = newJObject()
+  var body_580407 = newJObject()
+  add(query_580406, "supportsAllDrives", newJBool(supportsAllDrives))
+  add(query_580406, "fields", newJString(fields))
+  add(query_580406, "quotaUser", newJString(quotaUser))
+  add(path_580405, "fileId", newJString(fileId))
+  add(query_580406, "alt", newJString(alt))
+  add(query_580406, "setModifiedDate", newJBool(setModifiedDate))
+  add(query_580406, "pinned", newJBool(pinned))
+  add(query_580406, "oauth_token", newJString(oauthToken))
+  add(query_580406, "userIp", newJString(userIp))
+  add(query_580406, "ocr", newJBool(ocr))
+  add(query_580406, "timedTextLanguage", newJString(timedTextLanguage))
+  add(query_580406, "supportsTeamDrives", newJBool(supportsTeamDrives))
+  add(query_580406, "key", newJString(key))
+  add(query_580406, "convert", newJBool(convert))
+  add(query_580406, "modifiedDateBehavior", newJString(modifiedDateBehavior))
+  add(query_580406, "updateViewedDate", newJBool(updateViewedDate))
+  add(query_580406, "useContentAsIndexableText",
       newJBool(useContentAsIndexableText))
-  add(query_594406, "addParents", newJString(addParents))
-  add(query_594406, "prettyPrint", newJBool(prettyPrint))
+  add(query_580406, "addParents", newJString(addParents))
+  add(query_580406, "prettyPrint", newJBool(prettyPrint))
   if body != nil:
-    body_594407 = body
-  add(query_594406, "removeParents", newJString(removeParents))
-  add(query_594406, "newRevision", newJBool(newRevision))
-  add(query_594406, "ocrLanguage", newJString(ocrLanguage))
-  add(query_594406, "timedTextTrackName", newJString(timedTextTrackName))
-  result = call_594404.call(path_594405, query_594406, nil, nil, body_594407)
+    body_580407 = body
+  add(query_580406, "removeParents", newJString(removeParents))
+  add(query_580406, "newRevision", newJBool(newRevision))
+  add(query_580406, "ocrLanguage", newJString(ocrLanguage))
+  add(query_580406, "timedTextTrackName", newJString(timedTextTrackName))
+  result = call_580404.call(path_580405, query_580406, nil, nil, body_580407)
 
-var driveFilesPatch* = Call_DriveFilesPatch_594376(name: "driveFilesPatch",
+var driveFilesPatch* = Call_DriveFilesPatch_580376(name: "driveFilesPatch",
     meth: HttpMethod.HttpPatch, host: "www.googleapis.com",
-    route: "/files/{fileId}", validator: validate_DriveFilesPatch_594377,
-    base: "/drive/v2", url: url_DriveFilesPatch_594378, schemes: {Scheme.Https})
+    route: "/files/{fileId}", validator: validate_DriveFilesPatch_580377,
+    base: "/drive/v2", url: url_DriveFilesPatch_580378, schemes: {Scheme.Https})
 type
-  Call_DriveFilesDelete_594359 = ref object of OpenApiRestCall_593424
-proc url_DriveFilesDelete_594361(protocol: Scheme; host: string; base: string;
+  Call_DriveFilesDelete_580359 = ref object of OpenApiRestCall_579424
+proc url_DriveFilesDelete_580361(protocol: Scheme; host: string; base: string;
                                 route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "fileId" in path, "`fileId` is a required path parameter"
   const
@@ -4245,7 +4247,7 @@ proc url_DriveFilesDelete_594361(protocol: Scheme; host: string; base: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_DriveFilesDelete_594360(path: JsonNode; query: JsonNode;
+proc validate_DriveFilesDelete_580360(path: JsonNode; query: JsonNode;
                                      header: JsonNode; formData: JsonNode;
                                      body: JsonNode): JsonNode =
   ## Permanently deletes a file by ID. Skips the trash. The currently authenticated user must own the file or be an organizer on the parent for shared drive files.
@@ -4257,11 +4259,11 @@ proc validate_DriveFilesDelete_594360(path: JsonNode; query: JsonNode;
   ##         : The ID of the file to delete.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `fileId` field"
-  var valid_594362 = path.getOrDefault("fileId")
-  valid_594362 = validateParameter(valid_594362, JString, required = true,
+  var valid_580362 = path.getOrDefault("fileId")
+  valid_580362 = validateParameter(valid_580362, JString, required = true,
                                  default = nil)
-  if valid_594362 != nil:
-    section.add "fileId", valid_594362
+  if valid_580362 != nil:
+    section.add "fileId", valid_580362
   result.add "path", section
   ## parameters in `query` object:
   ##   supportsAllDrives: JBool
@@ -4283,51 +4285,51 @@ proc validate_DriveFilesDelete_594360(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_594363 = query.getOrDefault("supportsAllDrives")
-  valid_594363 = validateParameter(valid_594363, JBool, required = false,
+  var valid_580363 = query.getOrDefault("supportsAllDrives")
+  valid_580363 = validateParameter(valid_580363, JBool, required = false,
                                  default = newJBool(false))
-  if valid_594363 != nil:
-    section.add "supportsAllDrives", valid_594363
-  var valid_594364 = query.getOrDefault("fields")
-  valid_594364 = validateParameter(valid_594364, JString, required = false,
+  if valid_580363 != nil:
+    section.add "supportsAllDrives", valid_580363
+  var valid_580364 = query.getOrDefault("fields")
+  valid_580364 = validateParameter(valid_580364, JString, required = false,
                                  default = nil)
-  if valid_594364 != nil:
-    section.add "fields", valid_594364
-  var valid_594365 = query.getOrDefault("quotaUser")
-  valid_594365 = validateParameter(valid_594365, JString, required = false,
+  if valid_580364 != nil:
+    section.add "fields", valid_580364
+  var valid_580365 = query.getOrDefault("quotaUser")
+  valid_580365 = validateParameter(valid_580365, JString, required = false,
                                  default = nil)
-  if valid_594365 != nil:
-    section.add "quotaUser", valid_594365
-  var valid_594366 = query.getOrDefault("alt")
-  valid_594366 = validateParameter(valid_594366, JString, required = false,
+  if valid_580365 != nil:
+    section.add "quotaUser", valid_580365
+  var valid_580366 = query.getOrDefault("alt")
+  valid_580366 = validateParameter(valid_580366, JString, required = false,
                                  default = newJString("json"))
-  if valid_594366 != nil:
-    section.add "alt", valid_594366
-  var valid_594367 = query.getOrDefault("oauth_token")
-  valid_594367 = validateParameter(valid_594367, JString, required = false,
+  if valid_580366 != nil:
+    section.add "alt", valid_580366
+  var valid_580367 = query.getOrDefault("oauth_token")
+  valid_580367 = validateParameter(valid_580367, JString, required = false,
                                  default = nil)
-  if valid_594367 != nil:
-    section.add "oauth_token", valid_594367
-  var valid_594368 = query.getOrDefault("userIp")
-  valid_594368 = validateParameter(valid_594368, JString, required = false,
+  if valid_580367 != nil:
+    section.add "oauth_token", valid_580367
+  var valid_580368 = query.getOrDefault("userIp")
+  valid_580368 = validateParameter(valid_580368, JString, required = false,
                                  default = nil)
-  if valid_594368 != nil:
-    section.add "userIp", valid_594368
-  var valid_594369 = query.getOrDefault("supportsTeamDrives")
-  valid_594369 = validateParameter(valid_594369, JBool, required = false,
+  if valid_580368 != nil:
+    section.add "userIp", valid_580368
+  var valid_580369 = query.getOrDefault("supportsTeamDrives")
+  valid_580369 = validateParameter(valid_580369, JBool, required = false,
                                  default = newJBool(false))
-  if valid_594369 != nil:
-    section.add "supportsTeamDrives", valid_594369
-  var valid_594370 = query.getOrDefault("key")
-  valid_594370 = validateParameter(valid_594370, JString, required = false,
+  if valid_580369 != nil:
+    section.add "supportsTeamDrives", valid_580369
+  var valid_580370 = query.getOrDefault("key")
+  valid_580370 = validateParameter(valid_580370, JString, required = false,
                                  default = nil)
-  if valid_594370 != nil:
-    section.add "key", valid_594370
-  var valid_594371 = query.getOrDefault("prettyPrint")
-  valid_594371 = validateParameter(valid_594371, JBool, required = false,
+  if valid_580370 != nil:
+    section.add "key", valid_580370
+  var valid_580371 = query.getOrDefault("prettyPrint")
+  valid_580371 = validateParameter(valid_580371, JBool, required = false,
                                  default = newJBool(true))
-  if valid_594371 != nil:
-    section.add "prettyPrint", valid_594371
+  if valid_580371 != nil:
+    section.add "prettyPrint", valid_580371
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -4336,20 +4338,20 @@ proc validate_DriveFilesDelete_594360(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_594372: Call_DriveFilesDelete_594359; path: JsonNode;
+proc call*(call_580372: Call_DriveFilesDelete_580359; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Permanently deletes a file by ID. Skips the trash. The currently authenticated user must own the file or be an organizer on the parent for shared drive files.
   ## 
-  let valid = call_594372.validator(path, query, header, formData, body)
-  let scheme = call_594372.pickScheme
+  let valid = call_580372.validator(path, query, header, formData, body)
+  let scheme = call_580372.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_594372.url(scheme.get, call_594372.host, call_594372.base,
-                         call_594372.route, valid.getOrDefault("path"),
+  let url = call_580372.url(scheme.get, call_580372.host, call_580372.base,
+                         call_580372.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_594372, url, valid)
+  result = hook(call_580372, url, valid)
 
-proc call*(call_594373: Call_DriveFilesDelete_594359; fileId: string;
+proc call*(call_580373: Call_DriveFilesDelete_580359; fileId: string;
           supportsAllDrives: bool = false; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; userIp: string = "";
           supportsTeamDrives: bool = false; key: string = ""; prettyPrint: bool = true): Recallable =
@@ -4375,31 +4377,31 @@ proc call*(call_594373: Call_DriveFilesDelete_594359; fileId: string;
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_594374 = newJObject()
-  var query_594375 = newJObject()
-  add(query_594375, "supportsAllDrives", newJBool(supportsAllDrives))
-  add(query_594375, "fields", newJString(fields))
-  add(query_594375, "quotaUser", newJString(quotaUser))
-  add(path_594374, "fileId", newJString(fileId))
-  add(query_594375, "alt", newJString(alt))
-  add(query_594375, "oauth_token", newJString(oauthToken))
-  add(query_594375, "userIp", newJString(userIp))
-  add(query_594375, "supportsTeamDrives", newJBool(supportsTeamDrives))
-  add(query_594375, "key", newJString(key))
-  add(query_594375, "prettyPrint", newJBool(prettyPrint))
-  result = call_594373.call(path_594374, query_594375, nil, nil, nil)
+  var path_580374 = newJObject()
+  var query_580375 = newJObject()
+  add(query_580375, "supportsAllDrives", newJBool(supportsAllDrives))
+  add(query_580375, "fields", newJString(fields))
+  add(query_580375, "quotaUser", newJString(quotaUser))
+  add(path_580374, "fileId", newJString(fileId))
+  add(query_580375, "alt", newJString(alt))
+  add(query_580375, "oauth_token", newJString(oauthToken))
+  add(query_580375, "userIp", newJString(userIp))
+  add(query_580375, "supportsTeamDrives", newJBool(supportsTeamDrives))
+  add(query_580375, "key", newJString(key))
+  add(query_580375, "prettyPrint", newJBool(prettyPrint))
+  result = call_580373.call(path_580374, query_580375, nil, nil, nil)
 
-var driveFilesDelete* = Call_DriveFilesDelete_594359(name: "driveFilesDelete",
+var driveFilesDelete* = Call_DriveFilesDelete_580359(name: "driveFilesDelete",
     meth: HttpMethod.HttpDelete, host: "www.googleapis.com",
-    route: "/files/{fileId}", validator: validate_DriveFilesDelete_594360,
-    base: "/drive/v2", url: url_DriveFilesDelete_594361, schemes: {Scheme.Https})
+    route: "/files/{fileId}", validator: validate_DriveFilesDelete_580360,
+    base: "/drive/v2", url: url_DriveFilesDelete_580361, schemes: {Scheme.Https})
 type
-  Call_DriveCommentsInsert_594427 = ref object of OpenApiRestCall_593424
-proc url_DriveCommentsInsert_594429(protocol: Scheme; host: string; base: string;
+  Call_DriveCommentsInsert_580427 = ref object of OpenApiRestCall_579424
+proc url_DriveCommentsInsert_580429(protocol: Scheme; host: string; base: string;
                                    route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "fileId" in path, "`fileId` is a required path parameter"
   const
@@ -4411,7 +4413,7 @@ proc url_DriveCommentsInsert_594429(protocol: Scheme; host: string; base: string
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_DriveCommentsInsert_594428(path: JsonNode; query: JsonNode;
+proc validate_DriveCommentsInsert_580428(path: JsonNode; query: JsonNode;
                                         header: JsonNode; formData: JsonNode;
                                         body: JsonNode): JsonNode =
   ## Creates a new comment on the given file.
@@ -4423,11 +4425,11 @@ proc validate_DriveCommentsInsert_594428(path: JsonNode; query: JsonNode;
   ##         : The ID of the file.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `fileId` field"
-  var valid_594430 = path.getOrDefault("fileId")
-  valid_594430 = validateParameter(valid_594430, JString, required = true,
+  var valid_580430 = path.getOrDefault("fileId")
+  valid_580430 = validateParameter(valid_580430, JString, required = true,
                                  default = nil)
-  if valid_594430 != nil:
-    section.add "fileId", valid_594430
+  if valid_580430 != nil:
+    section.add "fileId", valid_580430
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -4445,41 +4447,41 @@ proc validate_DriveCommentsInsert_594428(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_594431 = query.getOrDefault("fields")
-  valid_594431 = validateParameter(valid_594431, JString, required = false,
+  var valid_580431 = query.getOrDefault("fields")
+  valid_580431 = validateParameter(valid_580431, JString, required = false,
                                  default = nil)
-  if valid_594431 != nil:
-    section.add "fields", valid_594431
-  var valid_594432 = query.getOrDefault("quotaUser")
-  valid_594432 = validateParameter(valid_594432, JString, required = false,
+  if valid_580431 != nil:
+    section.add "fields", valid_580431
+  var valid_580432 = query.getOrDefault("quotaUser")
+  valid_580432 = validateParameter(valid_580432, JString, required = false,
                                  default = nil)
-  if valid_594432 != nil:
-    section.add "quotaUser", valid_594432
-  var valid_594433 = query.getOrDefault("alt")
-  valid_594433 = validateParameter(valid_594433, JString, required = false,
+  if valid_580432 != nil:
+    section.add "quotaUser", valid_580432
+  var valid_580433 = query.getOrDefault("alt")
+  valid_580433 = validateParameter(valid_580433, JString, required = false,
                                  default = newJString("json"))
-  if valid_594433 != nil:
-    section.add "alt", valid_594433
-  var valid_594434 = query.getOrDefault("oauth_token")
-  valid_594434 = validateParameter(valid_594434, JString, required = false,
+  if valid_580433 != nil:
+    section.add "alt", valid_580433
+  var valid_580434 = query.getOrDefault("oauth_token")
+  valid_580434 = validateParameter(valid_580434, JString, required = false,
                                  default = nil)
-  if valid_594434 != nil:
-    section.add "oauth_token", valid_594434
-  var valid_594435 = query.getOrDefault("userIp")
-  valid_594435 = validateParameter(valid_594435, JString, required = false,
+  if valid_580434 != nil:
+    section.add "oauth_token", valid_580434
+  var valid_580435 = query.getOrDefault("userIp")
+  valid_580435 = validateParameter(valid_580435, JString, required = false,
                                  default = nil)
-  if valid_594435 != nil:
-    section.add "userIp", valid_594435
-  var valid_594436 = query.getOrDefault("key")
-  valid_594436 = validateParameter(valid_594436, JString, required = false,
+  if valid_580435 != nil:
+    section.add "userIp", valid_580435
+  var valid_580436 = query.getOrDefault("key")
+  valid_580436 = validateParameter(valid_580436, JString, required = false,
                                  default = nil)
-  if valid_594436 != nil:
-    section.add "key", valid_594436
-  var valid_594437 = query.getOrDefault("prettyPrint")
-  valid_594437 = validateParameter(valid_594437, JBool, required = false,
+  if valid_580436 != nil:
+    section.add "key", valid_580436
+  var valid_580437 = query.getOrDefault("prettyPrint")
+  valid_580437 = validateParameter(valid_580437, JBool, required = false,
                                  default = newJBool(true))
-  if valid_594437 != nil:
-    section.add "prettyPrint", valid_594437
+  if valid_580437 != nil:
+    section.add "prettyPrint", valid_580437
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -4491,20 +4493,20 @@ proc validate_DriveCommentsInsert_594428(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_594439: Call_DriveCommentsInsert_594427; path: JsonNode;
+proc call*(call_580439: Call_DriveCommentsInsert_580427; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Creates a new comment on the given file.
   ## 
-  let valid = call_594439.validator(path, query, header, formData, body)
-  let scheme = call_594439.pickScheme
+  let valid = call_580439.validator(path, query, header, formData, body)
+  let scheme = call_580439.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_594439.url(scheme.get, call_594439.host, call_594439.base,
-                         call_594439.route, valid.getOrDefault("path"),
+  let url = call_580439.url(scheme.get, call_580439.host, call_580439.base,
+                         call_580439.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_594439, url, valid)
+  result = hook(call_580439, url, valid)
 
-proc call*(call_594440: Call_DriveCommentsInsert_594427; fileId: string;
+proc call*(call_580440: Call_DriveCommentsInsert_580427; fileId: string;
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           oauthToken: string = ""; userIp: string = ""; key: string = "";
           body: JsonNode = nil; prettyPrint: bool = true): Recallable =
@@ -4527,33 +4529,33 @@ proc call*(call_594440: Call_DriveCommentsInsert_594427; fileId: string;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_594441 = newJObject()
-  var query_594442 = newJObject()
-  var body_594443 = newJObject()
-  add(query_594442, "fields", newJString(fields))
-  add(query_594442, "quotaUser", newJString(quotaUser))
-  add(path_594441, "fileId", newJString(fileId))
-  add(query_594442, "alt", newJString(alt))
-  add(query_594442, "oauth_token", newJString(oauthToken))
-  add(query_594442, "userIp", newJString(userIp))
-  add(query_594442, "key", newJString(key))
+  var path_580441 = newJObject()
+  var query_580442 = newJObject()
+  var body_580443 = newJObject()
+  add(query_580442, "fields", newJString(fields))
+  add(query_580442, "quotaUser", newJString(quotaUser))
+  add(path_580441, "fileId", newJString(fileId))
+  add(query_580442, "alt", newJString(alt))
+  add(query_580442, "oauth_token", newJString(oauthToken))
+  add(query_580442, "userIp", newJString(userIp))
+  add(query_580442, "key", newJString(key))
   if body != nil:
-    body_594443 = body
-  add(query_594442, "prettyPrint", newJBool(prettyPrint))
-  result = call_594440.call(path_594441, query_594442, nil, nil, body_594443)
+    body_580443 = body
+  add(query_580442, "prettyPrint", newJBool(prettyPrint))
+  result = call_580440.call(path_580441, query_580442, nil, nil, body_580443)
 
-var driveCommentsInsert* = Call_DriveCommentsInsert_594427(
+var driveCommentsInsert* = Call_DriveCommentsInsert_580427(
     name: "driveCommentsInsert", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com", route: "/files/{fileId}/comments",
-    validator: validate_DriveCommentsInsert_594428, base: "/drive/v2",
-    url: url_DriveCommentsInsert_594429, schemes: {Scheme.Https})
+    validator: validate_DriveCommentsInsert_580428, base: "/drive/v2",
+    url: url_DriveCommentsInsert_580429, schemes: {Scheme.Https})
 type
-  Call_DriveCommentsList_594408 = ref object of OpenApiRestCall_593424
-proc url_DriveCommentsList_594410(protocol: Scheme; host: string; base: string;
+  Call_DriveCommentsList_580408 = ref object of OpenApiRestCall_579424
+proc url_DriveCommentsList_580410(protocol: Scheme; host: string; base: string;
                                  route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "fileId" in path, "`fileId` is a required path parameter"
   const
@@ -4565,7 +4567,7 @@ proc url_DriveCommentsList_594410(protocol: Scheme; host: string; base: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_DriveCommentsList_594409(path: JsonNode; query: JsonNode;
+proc validate_DriveCommentsList_580409(path: JsonNode; query: JsonNode;
                                       header: JsonNode; formData: JsonNode;
                                       body: JsonNode): JsonNode =
   ## Lists a file's comments.
@@ -4577,11 +4579,11 @@ proc validate_DriveCommentsList_594409(path: JsonNode; query: JsonNode;
   ##         : The ID of the file.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `fileId` field"
-  var valid_594411 = path.getOrDefault("fileId")
-  valid_594411 = validateParameter(valid_594411, JString, required = true,
+  var valid_580411 = path.getOrDefault("fileId")
+  valid_580411 = validateParameter(valid_580411, JString, required = true,
                                  default = nil)
-  if valid_594411 != nil:
-    section.add "fileId", valid_594411
+  if valid_580411 != nil:
+    section.add "fileId", valid_580411
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -4607,61 +4609,61 @@ proc validate_DriveCommentsList_594409(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_594412 = query.getOrDefault("fields")
-  valid_594412 = validateParameter(valid_594412, JString, required = false,
+  var valid_580412 = query.getOrDefault("fields")
+  valid_580412 = validateParameter(valid_580412, JString, required = false,
                                  default = nil)
-  if valid_594412 != nil:
-    section.add "fields", valid_594412
-  var valid_594413 = query.getOrDefault("pageToken")
-  valid_594413 = validateParameter(valid_594413, JString, required = false,
+  if valid_580412 != nil:
+    section.add "fields", valid_580412
+  var valid_580413 = query.getOrDefault("pageToken")
+  valid_580413 = validateParameter(valid_580413, JString, required = false,
                                  default = nil)
-  if valid_594413 != nil:
-    section.add "pageToken", valid_594413
-  var valid_594414 = query.getOrDefault("quotaUser")
-  valid_594414 = validateParameter(valid_594414, JString, required = false,
+  if valid_580413 != nil:
+    section.add "pageToken", valid_580413
+  var valid_580414 = query.getOrDefault("quotaUser")
+  valid_580414 = validateParameter(valid_580414, JString, required = false,
                                  default = nil)
-  if valid_594414 != nil:
-    section.add "quotaUser", valid_594414
-  var valid_594415 = query.getOrDefault("alt")
-  valid_594415 = validateParameter(valid_594415, JString, required = false,
+  if valid_580414 != nil:
+    section.add "quotaUser", valid_580414
+  var valid_580415 = query.getOrDefault("alt")
+  valid_580415 = validateParameter(valid_580415, JString, required = false,
                                  default = newJString("json"))
-  if valid_594415 != nil:
-    section.add "alt", valid_594415
-  var valid_594416 = query.getOrDefault("oauth_token")
-  valid_594416 = validateParameter(valid_594416, JString, required = false,
+  if valid_580415 != nil:
+    section.add "alt", valid_580415
+  var valid_580416 = query.getOrDefault("oauth_token")
+  valid_580416 = validateParameter(valid_580416, JString, required = false,
                                  default = nil)
-  if valid_594416 != nil:
-    section.add "oauth_token", valid_594416
-  var valid_594417 = query.getOrDefault("userIp")
-  valid_594417 = validateParameter(valid_594417, JString, required = false,
+  if valid_580416 != nil:
+    section.add "oauth_token", valid_580416
+  var valid_580417 = query.getOrDefault("userIp")
+  valid_580417 = validateParameter(valid_580417, JString, required = false,
                                  default = nil)
-  if valid_594417 != nil:
-    section.add "userIp", valid_594417
-  var valid_594418 = query.getOrDefault("maxResults")
-  valid_594418 = validateParameter(valid_594418, JInt, required = false,
+  if valid_580417 != nil:
+    section.add "userIp", valid_580417
+  var valid_580418 = query.getOrDefault("maxResults")
+  valid_580418 = validateParameter(valid_580418, JInt, required = false,
                                  default = newJInt(20))
-  if valid_594418 != nil:
-    section.add "maxResults", valid_594418
-  var valid_594419 = query.getOrDefault("updatedMin")
-  valid_594419 = validateParameter(valid_594419, JString, required = false,
+  if valid_580418 != nil:
+    section.add "maxResults", valid_580418
+  var valid_580419 = query.getOrDefault("updatedMin")
+  valid_580419 = validateParameter(valid_580419, JString, required = false,
                                  default = nil)
-  if valid_594419 != nil:
-    section.add "updatedMin", valid_594419
-  var valid_594420 = query.getOrDefault("key")
-  valid_594420 = validateParameter(valid_594420, JString, required = false,
+  if valid_580419 != nil:
+    section.add "updatedMin", valid_580419
+  var valid_580420 = query.getOrDefault("key")
+  valid_580420 = validateParameter(valid_580420, JString, required = false,
                                  default = nil)
-  if valid_594420 != nil:
-    section.add "key", valid_594420
-  var valid_594421 = query.getOrDefault("includeDeleted")
-  valid_594421 = validateParameter(valid_594421, JBool, required = false,
+  if valid_580420 != nil:
+    section.add "key", valid_580420
+  var valid_580421 = query.getOrDefault("includeDeleted")
+  valid_580421 = validateParameter(valid_580421, JBool, required = false,
                                  default = newJBool(false))
-  if valid_594421 != nil:
-    section.add "includeDeleted", valid_594421
-  var valid_594422 = query.getOrDefault("prettyPrint")
-  valid_594422 = validateParameter(valid_594422, JBool, required = false,
+  if valid_580421 != nil:
+    section.add "includeDeleted", valid_580421
+  var valid_580422 = query.getOrDefault("prettyPrint")
+  valid_580422 = validateParameter(valid_580422, JBool, required = false,
                                  default = newJBool(true))
-  if valid_594422 != nil:
-    section.add "prettyPrint", valid_594422
+  if valid_580422 != nil:
+    section.add "prettyPrint", valid_580422
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -4670,20 +4672,20 @@ proc validate_DriveCommentsList_594409(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_594423: Call_DriveCommentsList_594408; path: JsonNode;
+proc call*(call_580423: Call_DriveCommentsList_580408; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Lists a file's comments.
   ## 
-  let valid = call_594423.validator(path, query, header, formData, body)
-  let scheme = call_594423.pickScheme
+  let valid = call_580423.validator(path, query, header, formData, body)
+  let scheme = call_580423.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_594423.url(scheme.get, call_594423.host, call_594423.base,
-                         call_594423.route, valid.getOrDefault("path"),
+  let url = call_580423.url(scheme.get, call_580423.host, call_580423.base,
+                         call_580423.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_594423, url, valid)
+  result = hook(call_580423, url, valid)
 
-proc call*(call_594424: Call_DriveCommentsList_594408; fileId: string;
+proc call*(call_580424: Call_DriveCommentsList_580408; fileId: string;
           fields: string = ""; pageToken: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; userIp: string = "";
           maxResults: int = 20; updatedMin: string = ""; key: string = "";
@@ -4714,33 +4716,33 @@ proc call*(call_594424: Call_DriveCommentsList_594408; fileId: string;
   ##                 : If set, all comments and replies, including deleted comments and replies (with content stripped) will be returned.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_594425 = newJObject()
-  var query_594426 = newJObject()
-  add(query_594426, "fields", newJString(fields))
-  add(query_594426, "pageToken", newJString(pageToken))
-  add(query_594426, "quotaUser", newJString(quotaUser))
-  add(path_594425, "fileId", newJString(fileId))
-  add(query_594426, "alt", newJString(alt))
-  add(query_594426, "oauth_token", newJString(oauthToken))
-  add(query_594426, "userIp", newJString(userIp))
-  add(query_594426, "maxResults", newJInt(maxResults))
-  add(query_594426, "updatedMin", newJString(updatedMin))
-  add(query_594426, "key", newJString(key))
-  add(query_594426, "includeDeleted", newJBool(includeDeleted))
-  add(query_594426, "prettyPrint", newJBool(prettyPrint))
-  result = call_594424.call(path_594425, query_594426, nil, nil, nil)
+  var path_580425 = newJObject()
+  var query_580426 = newJObject()
+  add(query_580426, "fields", newJString(fields))
+  add(query_580426, "pageToken", newJString(pageToken))
+  add(query_580426, "quotaUser", newJString(quotaUser))
+  add(path_580425, "fileId", newJString(fileId))
+  add(query_580426, "alt", newJString(alt))
+  add(query_580426, "oauth_token", newJString(oauthToken))
+  add(query_580426, "userIp", newJString(userIp))
+  add(query_580426, "maxResults", newJInt(maxResults))
+  add(query_580426, "updatedMin", newJString(updatedMin))
+  add(query_580426, "key", newJString(key))
+  add(query_580426, "includeDeleted", newJBool(includeDeleted))
+  add(query_580426, "prettyPrint", newJBool(prettyPrint))
+  result = call_580424.call(path_580425, query_580426, nil, nil, nil)
 
-var driveCommentsList* = Call_DriveCommentsList_594408(name: "driveCommentsList",
+var driveCommentsList* = Call_DriveCommentsList_580408(name: "driveCommentsList",
     meth: HttpMethod.HttpGet, host: "www.googleapis.com",
-    route: "/files/{fileId}/comments", validator: validate_DriveCommentsList_594409,
-    base: "/drive/v2", url: url_DriveCommentsList_594410, schemes: {Scheme.Https})
+    route: "/files/{fileId}/comments", validator: validate_DriveCommentsList_580409,
+    base: "/drive/v2", url: url_DriveCommentsList_580410, schemes: {Scheme.Https})
 type
-  Call_DriveCommentsUpdate_594461 = ref object of OpenApiRestCall_593424
-proc url_DriveCommentsUpdate_594463(protocol: Scheme; host: string; base: string;
+  Call_DriveCommentsUpdate_580461 = ref object of OpenApiRestCall_579424
+proc url_DriveCommentsUpdate_580463(protocol: Scheme; host: string; base: string;
                                    route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "fileId" in path, "`fileId` is a required path parameter"
   assert "commentId" in path, "`commentId` is a required path parameter"
@@ -4754,7 +4756,7 @@ proc url_DriveCommentsUpdate_594463(protocol: Scheme; host: string; base: string
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_DriveCommentsUpdate_594462(path: JsonNode; query: JsonNode;
+proc validate_DriveCommentsUpdate_580462(path: JsonNode; query: JsonNode;
                                         header: JsonNode; formData: JsonNode;
                                         body: JsonNode): JsonNode =
   ## Updates an existing comment.
@@ -4768,16 +4770,16 @@ proc validate_DriveCommentsUpdate_594462(path: JsonNode; query: JsonNode;
   ##            : The ID of the comment.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `fileId` field"
-  var valid_594464 = path.getOrDefault("fileId")
-  valid_594464 = validateParameter(valid_594464, JString, required = true,
+  var valid_580464 = path.getOrDefault("fileId")
+  valid_580464 = validateParameter(valid_580464, JString, required = true,
                                  default = nil)
-  if valid_594464 != nil:
-    section.add "fileId", valid_594464
-  var valid_594465 = path.getOrDefault("commentId")
-  valid_594465 = validateParameter(valid_594465, JString, required = true,
+  if valid_580464 != nil:
+    section.add "fileId", valid_580464
+  var valid_580465 = path.getOrDefault("commentId")
+  valid_580465 = validateParameter(valid_580465, JString, required = true,
                                  default = nil)
-  if valid_594465 != nil:
-    section.add "commentId", valid_594465
+  if valid_580465 != nil:
+    section.add "commentId", valid_580465
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -4795,41 +4797,41 @@ proc validate_DriveCommentsUpdate_594462(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_594466 = query.getOrDefault("fields")
-  valid_594466 = validateParameter(valid_594466, JString, required = false,
+  var valid_580466 = query.getOrDefault("fields")
+  valid_580466 = validateParameter(valid_580466, JString, required = false,
                                  default = nil)
-  if valid_594466 != nil:
-    section.add "fields", valid_594466
-  var valid_594467 = query.getOrDefault("quotaUser")
-  valid_594467 = validateParameter(valid_594467, JString, required = false,
+  if valid_580466 != nil:
+    section.add "fields", valid_580466
+  var valid_580467 = query.getOrDefault("quotaUser")
+  valid_580467 = validateParameter(valid_580467, JString, required = false,
                                  default = nil)
-  if valid_594467 != nil:
-    section.add "quotaUser", valid_594467
-  var valid_594468 = query.getOrDefault("alt")
-  valid_594468 = validateParameter(valid_594468, JString, required = false,
+  if valid_580467 != nil:
+    section.add "quotaUser", valid_580467
+  var valid_580468 = query.getOrDefault("alt")
+  valid_580468 = validateParameter(valid_580468, JString, required = false,
                                  default = newJString("json"))
-  if valid_594468 != nil:
-    section.add "alt", valid_594468
-  var valid_594469 = query.getOrDefault("oauth_token")
-  valid_594469 = validateParameter(valid_594469, JString, required = false,
+  if valid_580468 != nil:
+    section.add "alt", valid_580468
+  var valid_580469 = query.getOrDefault("oauth_token")
+  valid_580469 = validateParameter(valid_580469, JString, required = false,
                                  default = nil)
-  if valid_594469 != nil:
-    section.add "oauth_token", valid_594469
-  var valid_594470 = query.getOrDefault("userIp")
-  valid_594470 = validateParameter(valid_594470, JString, required = false,
+  if valid_580469 != nil:
+    section.add "oauth_token", valid_580469
+  var valid_580470 = query.getOrDefault("userIp")
+  valid_580470 = validateParameter(valid_580470, JString, required = false,
                                  default = nil)
-  if valid_594470 != nil:
-    section.add "userIp", valid_594470
-  var valid_594471 = query.getOrDefault("key")
-  valid_594471 = validateParameter(valid_594471, JString, required = false,
+  if valid_580470 != nil:
+    section.add "userIp", valid_580470
+  var valid_580471 = query.getOrDefault("key")
+  valid_580471 = validateParameter(valid_580471, JString, required = false,
                                  default = nil)
-  if valid_594471 != nil:
-    section.add "key", valid_594471
-  var valid_594472 = query.getOrDefault("prettyPrint")
-  valid_594472 = validateParameter(valid_594472, JBool, required = false,
+  if valid_580471 != nil:
+    section.add "key", valid_580471
+  var valid_580472 = query.getOrDefault("prettyPrint")
+  valid_580472 = validateParameter(valid_580472, JBool, required = false,
                                  default = newJBool(true))
-  if valid_594472 != nil:
-    section.add "prettyPrint", valid_594472
+  if valid_580472 != nil:
+    section.add "prettyPrint", valid_580472
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -4841,20 +4843,20 @@ proc validate_DriveCommentsUpdate_594462(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_594474: Call_DriveCommentsUpdate_594461; path: JsonNode;
+proc call*(call_580474: Call_DriveCommentsUpdate_580461; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Updates an existing comment.
   ## 
-  let valid = call_594474.validator(path, query, header, formData, body)
-  let scheme = call_594474.pickScheme
+  let valid = call_580474.validator(path, query, header, formData, body)
+  let scheme = call_580474.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_594474.url(scheme.get, call_594474.host, call_594474.base,
-                         call_594474.route, valid.getOrDefault("path"),
+  let url = call_580474.url(scheme.get, call_580474.host, call_580474.base,
+                         call_580474.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_594474, url, valid)
+  result = hook(call_580474, url, valid)
 
-proc call*(call_594475: Call_DriveCommentsUpdate_594461; fileId: string;
+proc call*(call_580475: Call_DriveCommentsUpdate_580461; fileId: string;
           commentId: string; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; userIp: string = "";
           key: string = ""; body: JsonNode = nil; prettyPrint: bool = true): Recallable =
@@ -4879,34 +4881,34 @@ proc call*(call_594475: Call_DriveCommentsUpdate_594461; fileId: string;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_594476 = newJObject()
-  var query_594477 = newJObject()
-  var body_594478 = newJObject()
-  add(query_594477, "fields", newJString(fields))
-  add(query_594477, "quotaUser", newJString(quotaUser))
-  add(path_594476, "fileId", newJString(fileId))
-  add(query_594477, "alt", newJString(alt))
-  add(query_594477, "oauth_token", newJString(oauthToken))
-  add(query_594477, "userIp", newJString(userIp))
-  add(query_594477, "key", newJString(key))
-  add(path_594476, "commentId", newJString(commentId))
+  var path_580476 = newJObject()
+  var query_580477 = newJObject()
+  var body_580478 = newJObject()
+  add(query_580477, "fields", newJString(fields))
+  add(query_580477, "quotaUser", newJString(quotaUser))
+  add(path_580476, "fileId", newJString(fileId))
+  add(query_580477, "alt", newJString(alt))
+  add(query_580477, "oauth_token", newJString(oauthToken))
+  add(query_580477, "userIp", newJString(userIp))
+  add(query_580477, "key", newJString(key))
+  add(path_580476, "commentId", newJString(commentId))
   if body != nil:
-    body_594478 = body
-  add(query_594477, "prettyPrint", newJBool(prettyPrint))
-  result = call_594475.call(path_594476, query_594477, nil, nil, body_594478)
+    body_580478 = body
+  add(query_580477, "prettyPrint", newJBool(prettyPrint))
+  result = call_580475.call(path_580476, query_580477, nil, nil, body_580478)
 
-var driveCommentsUpdate* = Call_DriveCommentsUpdate_594461(
+var driveCommentsUpdate* = Call_DriveCommentsUpdate_580461(
     name: "driveCommentsUpdate", meth: HttpMethod.HttpPut,
     host: "www.googleapis.com", route: "/files/{fileId}/comments/{commentId}",
-    validator: validate_DriveCommentsUpdate_594462, base: "/drive/v2",
-    url: url_DriveCommentsUpdate_594463, schemes: {Scheme.Https})
+    validator: validate_DriveCommentsUpdate_580462, base: "/drive/v2",
+    url: url_DriveCommentsUpdate_580463, schemes: {Scheme.Https})
 type
-  Call_DriveCommentsGet_594444 = ref object of OpenApiRestCall_593424
-proc url_DriveCommentsGet_594446(protocol: Scheme; host: string; base: string;
+  Call_DriveCommentsGet_580444 = ref object of OpenApiRestCall_579424
+proc url_DriveCommentsGet_580446(protocol: Scheme; host: string; base: string;
                                 route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "fileId" in path, "`fileId` is a required path parameter"
   assert "commentId" in path, "`commentId` is a required path parameter"
@@ -4920,7 +4922,7 @@ proc url_DriveCommentsGet_594446(protocol: Scheme; host: string; base: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_DriveCommentsGet_594445(path: JsonNode; query: JsonNode;
+proc validate_DriveCommentsGet_580445(path: JsonNode; query: JsonNode;
                                      header: JsonNode; formData: JsonNode;
                                      body: JsonNode): JsonNode =
   ## Gets a comment by ID.
@@ -4934,16 +4936,16 @@ proc validate_DriveCommentsGet_594445(path: JsonNode; query: JsonNode;
   ##            : The ID of the comment.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `fileId` field"
-  var valid_594447 = path.getOrDefault("fileId")
-  valid_594447 = validateParameter(valid_594447, JString, required = true,
+  var valid_580447 = path.getOrDefault("fileId")
+  valid_580447 = validateParameter(valid_580447, JString, required = true,
                                  default = nil)
-  if valid_594447 != nil:
-    section.add "fileId", valid_594447
-  var valid_594448 = path.getOrDefault("commentId")
-  valid_594448 = validateParameter(valid_594448, JString, required = true,
+  if valid_580447 != nil:
+    section.add "fileId", valid_580447
+  var valid_580448 = path.getOrDefault("commentId")
+  valid_580448 = validateParameter(valid_580448, JString, required = true,
                                  default = nil)
-  if valid_594448 != nil:
-    section.add "commentId", valid_594448
+  if valid_580448 != nil:
+    section.add "commentId", valid_580448
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -4963,46 +4965,46 @@ proc validate_DriveCommentsGet_594445(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_594449 = query.getOrDefault("fields")
-  valid_594449 = validateParameter(valid_594449, JString, required = false,
+  var valid_580449 = query.getOrDefault("fields")
+  valid_580449 = validateParameter(valid_580449, JString, required = false,
                                  default = nil)
-  if valid_594449 != nil:
-    section.add "fields", valid_594449
-  var valid_594450 = query.getOrDefault("quotaUser")
-  valid_594450 = validateParameter(valid_594450, JString, required = false,
+  if valid_580449 != nil:
+    section.add "fields", valid_580449
+  var valid_580450 = query.getOrDefault("quotaUser")
+  valid_580450 = validateParameter(valid_580450, JString, required = false,
                                  default = nil)
-  if valid_594450 != nil:
-    section.add "quotaUser", valid_594450
-  var valid_594451 = query.getOrDefault("alt")
-  valid_594451 = validateParameter(valid_594451, JString, required = false,
+  if valid_580450 != nil:
+    section.add "quotaUser", valid_580450
+  var valid_580451 = query.getOrDefault("alt")
+  valid_580451 = validateParameter(valid_580451, JString, required = false,
                                  default = newJString("json"))
-  if valid_594451 != nil:
-    section.add "alt", valid_594451
-  var valid_594452 = query.getOrDefault("oauth_token")
-  valid_594452 = validateParameter(valid_594452, JString, required = false,
+  if valid_580451 != nil:
+    section.add "alt", valid_580451
+  var valid_580452 = query.getOrDefault("oauth_token")
+  valid_580452 = validateParameter(valid_580452, JString, required = false,
                                  default = nil)
-  if valid_594452 != nil:
-    section.add "oauth_token", valid_594452
-  var valid_594453 = query.getOrDefault("userIp")
-  valid_594453 = validateParameter(valid_594453, JString, required = false,
+  if valid_580452 != nil:
+    section.add "oauth_token", valid_580452
+  var valid_580453 = query.getOrDefault("userIp")
+  valid_580453 = validateParameter(valid_580453, JString, required = false,
                                  default = nil)
-  if valid_594453 != nil:
-    section.add "userIp", valid_594453
-  var valid_594454 = query.getOrDefault("key")
-  valid_594454 = validateParameter(valid_594454, JString, required = false,
+  if valid_580453 != nil:
+    section.add "userIp", valid_580453
+  var valid_580454 = query.getOrDefault("key")
+  valid_580454 = validateParameter(valid_580454, JString, required = false,
                                  default = nil)
-  if valid_594454 != nil:
-    section.add "key", valid_594454
-  var valid_594455 = query.getOrDefault("includeDeleted")
-  valid_594455 = validateParameter(valid_594455, JBool, required = false,
+  if valid_580454 != nil:
+    section.add "key", valid_580454
+  var valid_580455 = query.getOrDefault("includeDeleted")
+  valid_580455 = validateParameter(valid_580455, JBool, required = false,
                                  default = newJBool(false))
-  if valid_594455 != nil:
-    section.add "includeDeleted", valid_594455
-  var valid_594456 = query.getOrDefault("prettyPrint")
-  valid_594456 = validateParameter(valid_594456, JBool, required = false,
+  if valid_580455 != nil:
+    section.add "includeDeleted", valid_580455
+  var valid_580456 = query.getOrDefault("prettyPrint")
+  valid_580456 = validateParameter(valid_580456, JBool, required = false,
                                  default = newJBool(true))
-  if valid_594456 != nil:
-    section.add "prettyPrint", valid_594456
+  if valid_580456 != nil:
+    section.add "prettyPrint", valid_580456
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -5011,20 +5013,20 @@ proc validate_DriveCommentsGet_594445(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_594457: Call_DriveCommentsGet_594444; path: JsonNode;
+proc call*(call_580457: Call_DriveCommentsGet_580444; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Gets a comment by ID.
   ## 
-  let valid = call_594457.validator(path, query, header, formData, body)
-  let scheme = call_594457.pickScheme
+  let valid = call_580457.validator(path, query, header, formData, body)
+  let scheme = call_580457.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_594457.url(scheme.get, call_594457.host, call_594457.base,
-                         call_594457.route, valid.getOrDefault("path"),
+  let url = call_580457.url(scheme.get, call_580457.host, call_580457.base,
+                         call_580457.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_594457, url, valid)
+  result = hook(call_580457, url, valid)
 
-proc call*(call_594458: Call_DriveCommentsGet_594444; fileId: string;
+proc call*(call_580458: Call_DriveCommentsGet_580444; fileId: string;
           commentId: string; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; userIp: string = "";
           key: string = ""; includeDeleted: bool = false; prettyPrint: bool = true): Recallable =
@@ -5050,32 +5052,32 @@ proc call*(call_594458: Call_DriveCommentsGet_594444; fileId: string;
   ##                 : If set, this will succeed when retrieving a deleted comment, and will include any deleted replies.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_594459 = newJObject()
-  var query_594460 = newJObject()
-  add(query_594460, "fields", newJString(fields))
-  add(query_594460, "quotaUser", newJString(quotaUser))
-  add(path_594459, "fileId", newJString(fileId))
-  add(query_594460, "alt", newJString(alt))
-  add(query_594460, "oauth_token", newJString(oauthToken))
-  add(query_594460, "userIp", newJString(userIp))
-  add(query_594460, "key", newJString(key))
-  add(path_594459, "commentId", newJString(commentId))
-  add(query_594460, "includeDeleted", newJBool(includeDeleted))
-  add(query_594460, "prettyPrint", newJBool(prettyPrint))
-  result = call_594458.call(path_594459, query_594460, nil, nil, nil)
+  var path_580459 = newJObject()
+  var query_580460 = newJObject()
+  add(query_580460, "fields", newJString(fields))
+  add(query_580460, "quotaUser", newJString(quotaUser))
+  add(path_580459, "fileId", newJString(fileId))
+  add(query_580460, "alt", newJString(alt))
+  add(query_580460, "oauth_token", newJString(oauthToken))
+  add(query_580460, "userIp", newJString(userIp))
+  add(query_580460, "key", newJString(key))
+  add(path_580459, "commentId", newJString(commentId))
+  add(query_580460, "includeDeleted", newJBool(includeDeleted))
+  add(query_580460, "prettyPrint", newJBool(prettyPrint))
+  result = call_580458.call(path_580459, query_580460, nil, nil, nil)
 
-var driveCommentsGet* = Call_DriveCommentsGet_594444(name: "driveCommentsGet",
+var driveCommentsGet* = Call_DriveCommentsGet_580444(name: "driveCommentsGet",
     meth: HttpMethod.HttpGet, host: "www.googleapis.com",
     route: "/files/{fileId}/comments/{commentId}",
-    validator: validate_DriveCommentsGet_594445, base: "/drive/v2",
-    url: url_DriveCommentsGet_594446, schemes: {Scheme.Https})
+    validator: validate_DriveCommentsGet_580445, base: "/drive/v2",
+    url: url_DriveCommentsGet_580446, schemes: {Scheme.Https})
 type
-  Call_DriveCommentsPatch_594495 = ref object of OpenApiRestCall_593424
-proc url_DriveCommentsPatch_594497(protocol: Scheme; host: string; base: string;
+  Call_DriveCommentsPatch_580495 = ref object of OpenApiRestCall_579424
+proc url_DriveCommentsPatch_580497(protocol: Scheme; host: string; base: string;
                                   route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "fileId" in path, "`fileId` is a required path parameter"
   assert "commentId" in path, "`commentId` is a required path parameter"
@@ -5089,7 +5091,7 @@ proc url_DriveCommentsPatch_594497(protocol: Scheme; host: string; base: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_DriveCommentsPatch_594496(path: JsonNode; query: JsonNode;
+proc validate_DriveCommentsPatch_580496(path: JsonNode; query: JsonNode;
                                        header: JsonNode; formData: JsonNode;
                                        body: JsonNode): JsonNode =
   ## Updates an existing comment. This method supports patch semantics.
@@ -5103,16 +5105,16 @@ proc validate_DriveCommentsPatch_594496(path: JsonNode; query: JsonNode;
   ##            : The ID of the comment.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `fileId` field"
-  var valid_594498 = path.getOrDefault("fileId")
-  valid_594498 = validateParameter(valid_594498, JString, required = true,
+  var valid_580498 = path.getOrDefault("fileId")
+  valid_580498 = validateParameter(valid_580498, JString, required = true,
                                  default = nil)
-  if valid_594498 != nil:
-    section.add "fileId", valid_594498
-  var valid_594499 = path.getOrDefault("commentId")
-  valid_594499 = validateParameter(valid_594499, JString, required = true,
+  if valid_580498 != nil:
+    section.add "fileId", valid_580498
+  var valid_580499 = path.getOrDefault("commentId")
+  valid_580499 = validateParameter(valid_580499, JString, required = true,
                                  default = nil)
-  if valid_594499 != nil:
-    section.add "commentId", valid_594499
+  if valid_580499 != nil:
+    section.add "commentId", valid_580499
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -5130,41 +5132,41 @@ proc validate_DriveCommentsPatch_594496(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_594500 = query.getOrDefault("fields")
-  valid_594500 = validateParameter(valid_594500, JString, required = false,
+  var valid_580500 = query.getOrDefault("fields")
+  valid_580500 = validateParameter(valid_580500, JString, required = false,
                                  default = nil)
-  if valid_594500 != nil:
-    section.add "fields", valid_594500
-  var valid_594501 = query.getOrDefault("quotaUser")
-  valid_594501 = validateParameter(valid_594501, JString, required = false,
+  if valid_580500 != nil:
+    section.add "fields", valid_580500
+  var valid_580501 = query.getOrDefault("quotaUser")
+  valid_580501 = validateParameter(valid_580501, JString, required = false,
                                  default = nil)
-  if valid_594501 != nil:
-    section.add "quotaUser", valid_594501
-  var valid_594502 = query.getOrDefault("alt")
-  valid_594502 = validateParameter(valid_594502, JString, required = false,
+  if valid_580501 != nil:
+    section.add "quotaUser", valid_580501
+  var valid_580502 = query.getOrDefault("alt")
+  valid_580502 = validateParameter(valid_580502, JString, required = false,
                                  default = newJString("json"))
-  if valid_594502 != nil:
-    section.add "alt", valid_594502
-  var valid_594503 = query.getOrDefault("oauth_token")
-  valid_594503 = validateParameter(valid_594503, JString, required = false,
+  if valid_580502 != nil:
+    section.add "alt", valid_580502
+  var valid_580503 = query.getOrDefault("oauth_token")
+  valid_580503 = validateParameter(valid_580503, JString, required = false,
                                  default = nil)
-  if valid_594503 != nil:
-    section.add "oauth_token", valid_594503
-  var valid_594504 = query.getOrDefault("userIp")
-  valid_594504 = validateParameter(valid_594504, JString, required = false,
+  if valid_580503 != nil:
+    section.add "oauth_token", valid_580503
+  var valid_580504 = query.getOrDefault("userIp")
+  valid_580504 = validateParameter(valid_580504, JString, required = false,
                                  default = nil)
-  if valid_594504 != nil:
-    section.add "userIp", valid_594504
-  var valid_594505 = query.getOrDefault("key")
-  valid_594505 = validateParameter(valid_594505, JString, required = false,
+  if valid_580504 != nil:
+    section.add "userIp", valid_580504
+  var valid_580505 = query.getOrDefault("key")
+  valid_580505 = validateParameter(valid_580505, JString, required = false,
                                  default = nil)
-  if valid_594505 != nil:
-    section.add "key", valid_594505
-  var valid_594506 = query.getOrDefault("prettyPrint")
-  valid_594506 = validateParameter(valid_594506, JBool, required = false,
+  if valid_580505 != nil:
+    section.add "key", valid_580505
+  var valid_580506 = query.getOrDefault("prettyPrint")
+  valid_580506 = validateParameter(valid_580506, JBool, required = false,
                                  default = newJBool(true))
-  if valid_594506 != nil:
-    section.add "prettyPrint", valid_594506
+  if valid_580506 != nil:
+    section.add "prettyPrint", valid_580506
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -5176,20 +5178,20 @@ proc validate_DriveCommentsPatch_594496(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_594508: Call_DriveCommentsPatch_594495; path: JsonNode;
+proc call*(call_580508: Call_DriveCommentsPatch_580495; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Updates an existing comment. This method supports patch semantics.
   ## 
-  let valid = call_594508.validator(path, query, header, formData, body)
-  let scheme = call_594508.pickScheme
+  let valid = call_580508.validator(path, query, header, formData, body)
+  let scheme = call_580508.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_594508.url(scheme.get, call_594508.host, call_594508.base,
-                         call_594508.route, valid.getOrDefault("path"),
+  let url = call_580508.url(scheme.get, call_580508.host, call_580508.base,
+                         call_580508.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_594508, url, valid)
+  result = hook(call_580508, url, valid)
 
-proc call*(call_594509: Call_DriveCommentsPatch_594495; fileId: string;
+proc call*(call_580509: Call_DriveCommentsPatch_580495; fileId: string;
           commentId: string; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; userIp: string = "";
           key: string = ""; body: JsonNode = nil; prettyPrint: bool = true): Recallable =
@@ -5214,34 +5216,34 @@ proc call*(call_594509: Call_DriveCommentsPatch_594495; fileId: string;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_594510 = newJObject()
-  var query_594511 = newJObject()
-  var body_594512 = newJObject()
-  add(query_594511, "fields", newJString(fields))
-  add(query_594511, "quotaUser", newJString(quotaUser))
-  add(path_594510, "fileId", newJString(fileId))
-  add(query_594511, "alt", newJString(alt))
-  add(query_594511, "oauth_token", newJString(oauthToken))
-  add(query_594511, "userIp", newJString(userIp))
-  add(query_594511, "key", newJString(key))
-  add(path_594510, "commentId", newJString(commentId))
+  var path_580510 = newJObject()
+  var query_580511 = newJObject()
+  var body_580512 = newJObject()
+  add(query_580511, "fields", newJString(fields))
+  add(query_580511, "quotaUser", newJString(quotaUser))
+  add(path_580510, "fileId", newJString(fileId))
+  add(query_580511, "alt", newJString(alt))
+  add(query_580511, "oauth_token", newJString(oauthToken))
+  add(query_580511, "userIp", newJString(userIp))
+  add(query_580511, "key", newJString(key))
+  add(path_580510, "commentId", newJString(commentId))
   if body != nil:
-    body_594512 = body
-  add(query_594511, "prettyPrint", newJBool(prettyPrint))
-  result = call_594509.call(path_594510, query_594511, nil, nil, body_594512)
+    body_580512 = body
+  add(query_580511, "prettyPrint", newJBool(prettyPrint))
+  result = call_580509.call(path_580510, query_580511, nil, nil, body_580512)
 
-var driveCommentsPatch* = Call_DriveCommentsPatch_594495(
+var driveCommentsPatch* = Call_DriveCommentsPatch_580495(
     name: "driveCommentsPatch", meth: HttpMethod.HttpPatch,
     host: "www.googleapis.com", route: "/files/{fileId}/comments/{commentId}",
-    validator: validate_DriveCommentsPatch_594496, base: "/drive/v2",
-    url: url_DriveCommentsPatch_594497, schemes: {Scheme.Https})
+    validator: validate_DriveCommentsPatch_580496, base: "/drive/v2",
+    url: url_DriveCommentsPatch_580497, schemes: {Scheme.Https})
 type
-  Call_DriveCommentsDelete_594479 = ref object of OpenApiRestCall_593424
-proc url_DriveCommentsDelete_594481(protocol: Scheme; host: string; base: string;
+  Call_DriveCommentsDelete_580479 = ref object of OpenApiRestCall_579424
+proc url_DriveCommentsDelete_580481(protocol: Scheme; host: string; base: string;
                                    route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "fileId" in path, "`fileId` is a required path parameter"
   assert "commentId" in path, "`commentId` is a required path parameter"
@@ -5255,7 +5257,7 @@ proc url_DriveCommentsDelete_594481(protocol: Scheme; host: string; base: string
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_DriveCommentsDelete_594480(path: JsonNode; query: JsonNode;
+proc validate_DriveCommentsDelete_580480(path: JsonNode; query: JsonNode;
                                         header: JsonNode; formData: JsonNode;
                                         body: JsonNode): JsonNode =
   ## Deletes a comment.
@@ -5269,16 +5271,16 @@ proc validate_DriveCommentsDelete_594480(path: JsonNode; query: JsonNode;
   ##            : The ID of the comment.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `fileId` field"
-  var valid_594482 = path.getOrDefault("fileId")
-  valid_594482 = validateParameter(valid_594482, JString, required = true,
+  var valid_580482 = path.getOrDefault("fileId")
+  valid_580482 = validateParameter(valid_580482, JString, required = true,
                                  default = nil)
-  if valid_594482 != nil:
-    section.add "fileId", valid_594482
-  var valid_594483 = path.getOrDefault("commentId")
-  valid_594483 = validateParameter(valid_594483, JString, required = true,
+  if valid_580482 != nil:
+    section.add "fileId", valid_580482
+  var valid_580483 = path.getOrDefault("commentId")
+  valid_580483 = validateParameter(valid_580483, JString, required = true,
                                  default = nil)
-  if valid_594483 != nil:
-    section.add "commentId", valid_594483
+  if valid_580483 != nil:
+    section.add "commentId", valid_580483
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -5296,41 +5298,41 @@ proc validate_DriveCommentsDelete_594480(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_594484 = query.getOrDefault("fields")
-  valid_594484 = validateParameter(valid_594484, JString, required = false,
+  var valid_580484 = query.getOrDefault("fields")
+  valid_580484 = validateParameter(valid_580484, JString, required = false,
                                  default = nil)
-  if valid_594484 != nil:
-    section.add "fields", valid_594484
-  var valid_594485 = query.getOrDefault("quotaUser")
-  valid_594485 = validateParameter(valid_594485, JString, required = false,
+  if valid_580484 != nil:
+    section.add "fields", valid_580484
+  var valid_580485 = query.getOrDefault("quotaUser")
+  valid_580485 = validateParameter(valid_580485, JString, required = false,
                                  default = nil)
-  if valid_594485 != nil:
-    section.add "quotaUser", valid_594485
-  var valid_594486 = query.getOrDefault("alt")
-  valid_594486 = validateParameter(valid_594486, JString, required = false,
+  if valid_580485 != nil:
+    section.add "quotaUser", valid_580485
+  var valid_580486 = query.getOrDefault("alt")
+  valid_580486 = validateParameter(valid_580486, JString, required = false,
                                  default = newJString("json"))
-  if valid_594486 != nil:
-    section.add "alt", valid_594486
-  var valid_594487 = query.getOrDefault("oauth_token")
-  valid_594487 = validateParameter(valid_594487, JString, required = false,
+  if valid_580486 != nil:
+    section.add "alt", valid_580486
+  var valid_580487 = query.getOrDefault("oauth_token")
+  valid_580487 = validateParameter(valid_580487, JString, required = false,
                                  default = nil)
-  if valid_594487 != nil:
-    section.add "oauth_token", valid_594487
-  var valid_594488 = query.getOrDefault("userIp")
-  valid_594488 = validateParameter(valid_594488, JString, required = false,
+  if valid_580487 != nil:
+    section.add "oauth_token", valid_580487
+  var valid_580488 = query.getOrDefault("userIp")
+  valid_580488 = validateParameter(valid_580488, JString, required = false,
                                  default = nil)
-  if valid_594488 != nil:
-    section.add "userIp", valid_594488
-  var valid_594489 = query.getOrDefault("key")
-  valid_594489 = validateParameter(valid_594489, JString, required = false,
+  if valid_580488 != nil:
+    section.add "userIp", valid_580488
+  var valid_580489 = query.getOrDefault("key")
+  valid_580489 = validateParameter(valid_580489, JString, required = false,
                                  default = nil)
-  if valid_594489 != nil:
-    section.add "key", valid_594489
-  var valid_594490 = query.getOrDefault("prettyPrint")
-  valid_594490 = validateParameter(valid_594490, JBool, required = false,
+  if valid_580489 != nil:
+    section.add "key", valid_580489
+  var valid_580490 = query.getOrDefault("prettyPrint")
+  valid_580490 = validateParameter(valid_580490, JBool, required = false,
                                  default = newJBool(true))
-  if valid_594490 != nil:
-    section.add "prettyPrint", valid_594490
+  if valid_580490 != nil:
+    section.add "prettyPrint", valid_580490
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -5339,20 +5341,20 @@ proc validate_DriveCommentsDelete_594480(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_594491: Call_DriveCommentsDelete_594479; path: JsonNode;
+proc call*(call_580491: Call_DriveCommentsDelete_580479; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Deletes a comment.
   ## 
-  let valid = call_594491.validator(path, query, header, formData, body)
-  let scheme = call_594491.pickScheme
+  let valid = call_580491.validator(path, query, header, formData, body)
+  let scheme = call_580491.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_594491.url(scheme.get, call_594491.host, call_594491.base,
-                         call_594491.route, valid.getOrDefault("path"),
+  let url = call_580491.url(scheme.get, call_580491.host, call_580491.base,
+                         call_580491.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_594491, url, valid)
+  result = hook(call_580491, url, valid)
 
-proc call*(call_594492: Call_DriveCommentsDelete_594479; fileId: string;
+proc call*(call_580492: Call_DriveCommentsDelete_580479; fileId: string;
           commentId: string; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; userIp: string = "";
           key: string = ""; prettyPrint: bool = true): Recallable =
@@ -5376,31 +5378,31 @@ proc call*(call_594492: Call_DriveCommentsDelete_594479; fileId: string;
   ##            : The ID of the comment.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_594493 = newJObject()
-  var query_594494 = newJObject()
-  add(query_594494, "fields", newJString(fields))
-  add(query_594494, "quotaUser", newJString(quotaUser))
-  add(path_594493, "fileId", newJString(fileId))
-  add(query_594494, "alt", newJString(alt))
-  add(query_594494, "oauth_token", newJString(oauthToken))
-  add(query_594494, "userIp", newJString(userIp))
-  add(query_594494, "key", newJString(key))
-  add(path_594493, "commentId", newJString(commentId))
-  add(query_594494, "prettyPrint", newJBool(prettyPrint))
-  result = call_594492.call(path_594493, query_594494, nil, nil, nil)
+  var path_580493 = newJObject()
+  var query_580494 = newJObject()
+  add(query_580494, "fields", newJString(fields))
+  add(query_580494, "quotaUser", newJString(quotaUser))
+  add(path_580493, "fileId", newJString(fileId))
+  add(query_580494, "alt", newJString(alt))
+  add(query_580494, "oauth_token", newJString(oauthToken))
+  add(query_580494, "userIp", newJString(userIp))
+  add(query_580494, "key", newJString(key))
+  add(path_580493, "commentId", newJString(commentId))
+  add(query_580494, "prettyPrint", newJBool(prettyPrint))
+  result = call_580492.call(path_580493, query_580494, nil, nil, nil)
 
-var driveCommentsDelete* = Call_DriveCommentsDelete_594479(
+var driveCommentsDelete* = Call_DriveCommentsDelete_580479(
     name: "driveCommentsDelete", meth: HttpMethod.HttpDelete,
     host: "www.googleapis.com", route: "/files/{fileId}/comments/{commentId}",
-    validator: validate_DriveCommentsDelete_594480, base: "/drive/v2",
-    url: url_DriveCommentsDelete_594481, schemes: {Scheme.Https})
+    validator: validate_DriveCommentsDelete_580480, base: "/drive/v2",
+    url: url_DriveCommentsDelete_580481, schemes: {Scheme.Https})
 type
-  Call_DriveRepliesInsert_594532 = ref object of OpenApiRestCall_593424
-proc url_DriveRepliesInsert_594534(protocol: Scheme; host: string; base: string;
+  Call_DriveRepliesInsert_580532 = ref object of OpenApiRestCall_579424
+proc url_DriveRepliesInsert_580534(protocol: Scheme; host: string; base: string;
                                   route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "fileId" in path, "`fileId` is a required path parameter"
   assert "commentId" in path, "`commentId` is a required path parameter"
@@ -5415,7 +5417,7 @@ proc url_DriveRepliesInsert_594534(protocol: Scheme; host: string; base: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_DriveRepliesInsert_594533(path: JsonNode; query: JsonNode;
+proc validate_DriveRepliesInsert_580533(path: JsonNode; query: JsonNode;
                                        header: JsonNode; formData: JsonNode;
                                        body: JsonNode): JsonNode =
   ## Creates a new reply to the given comment.
@@ -5429,16 +5431,16 @@ proc validate_DriveRepliesInsert_594533(path: JsonNode; query: JsonNode;
   ##            : The ID of the comment.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `fileId` field"
-  var valid_594535 = path.getOrDefault("fileId")
-  valid_594535 = validateParameter(valid_594535, JString, required = true,
+  var valid_580535 = path.getOrDefault("fileId")
+  valid_580535 = validateParameter(valid_580535, JString, required = true,
                                  default = nil)
-  if valid_594535 != nil:
-    section.add "fileId", valid_594535
-  var valid_594536 = path.getOrDefault("commentId")
-  valid_594536 = validateParameter(valid_594536, JString, required = true,
+  if valid_580535 != nil:
+    section.add "fileId", valid_580535
+  var valid_580536 = path.getOrDefault("commentId")
+  valid_580536 = validateParameter(valid_580536, JString, required = true,
                                  default = nil)
-  if valid_594536 != nil:
-    section.add "commentId", valid_594536
+  if valid_580536 != nil:
+    section.add "commentId", valid_580536
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -5456,41 +5458,41 @@ proc validate_DriveRepliesInsert_594533(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_594537 = query.getOrDefault("fields")
-  valid_594537 = validateParameter(valid_594537, JString, required = false,
+  var valid_580537 = query.getOrDefault("fields")
+  valid_580537 = validateParameter(valid_580537, JString, required = false,
                                  default = nil)
-  if valid_594537 != nil:
-    section.add "fields", valid_594537
-  var valid_594538 = query.getOrDefault("quotaUser")
-  valid_594538 = validateParameter(valid_594538, JString, required = false,
+  if valid_580537 != nil:
+    section.add "fields", valid_580537
+  var valid_580538 = query.getOrDefault("quotaUser")
+  valid_580538 = validateParameter(valid_580538, JString, required = false,
                                  default = nil)
-  if valid_594538 != nil:
-    section.add "quotaUser", valid_594538
-  var valid_594539 = query.getOrDefault("alt")
-  valid_594539 = validateParameter(valid_594539, JString, required = false,
+  if valid_580538 != nil:
+    section.add "quotaUser", valid_580538
+  var valid_580539 = query.getOrDefault("alt")
+  valid_580539 = validateParameter(valid_580539, JString, required = false,
                                  default = newJString("json"))
-  if valid_594539 != nil:
-    section.add "alt", valid_594539
-  var valid_594540 = query.getOrDefault("oauth_token")
-  valid_594540 = validateParameter(valid_594540, JString, required = false,
+  if valid_580539 != nil:
+    section.add "alt", valid_580539
+  var valid_580540 = query.getOrDefault("oauth_token")
+  valid_580540 = validateParameter(valid_580540, JString, required = false,
                                  default = nil)
-  if valid_594540 != nil:
-    section.add "oauth_token", valid_594540
-  var valid_594541 = query.getOrDefault("userIp")
-  valid_594541 = validateParameter(valid_594541, JString, required = false,
+  if valid_580540 != nil:
+    section.add "oauth_token", valid_580540
+  var valid_580541 = query.getOrDefault("userIp")
+  valid_580541 = validateParameter(valid_580541, JString, required = false,
                                  default = nil)
-  if valid_594541 != nil:
-    section.add "userIp", valid_594541
-  var valid_594542 = query.getOrDefault("key")
-  valid_594542 = validateParameter(valid_594542, JString, required = false,
+  if valid_580541 != nil:
+    section.add "userIp", valid_580541
+  var valid_580542 = query.getOrDefault("key")
+  valid_580542 = validateParameter(valid_580542, JString, required = false,
                                  default = nil)
-  if valid_594542 != nil:
-    section.add "key", valid_594542
-  var valid_594543 = query.getOrDefault("prettyPrint")
-  valid_594543 = validateParameter(valid_594543, JBool, required = false,
+  if valid_580542 != nil:
+    section.add "key", valid_580542
+  var valid_580543 = query.getOrDefault("prettyPrint")
+  valid_580543 = validateParameter(valid_580543, JBool, required = false,
                                  default = newJBool(true))
-  if valid_594543 != nil:
-    section.add "prettyPrint", valid_594543
+  if valid_580543 != nil:
+    section.add "prettyPrint", valid_580543
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -5502,20 +5504,20 @@ proc validate_DriveRepliesInsert_594533(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_594545: Call_DriveRepliesInsert_594532; path: JsonNode;
+proc call*(call_580545: Call_DriveRepliesInsert_580532; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Creates a new reply to the given comment.
   ## 
-  let valid = call_594545.validator(path, query, header, formData, body)
-  let scheme = call_594545.pickScheme
+  let valid = call_580545.validator(path, query, header, formData, body)
+  let scheme = call_580545.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_594545.url(scheme.get, call_594545.host, call_594545.base,
-                         call_594545.route, valid.getOrDefault("path"),
+  let url = call_580545.url(scheme.get, call_580545.host, call_580545.base,
+                         call_580545.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_594545, url, valid)
+  result = hook(call_580545, url, valid)
 
-proc call*(call_594546: Call_DriveRepliesInsert_594532; fileId: string;
+proc call*(call_580546: Call_DriveRepliesInsert_580532; fileId: string;
           commentId: string; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; userIp: string = "";
           key: string = ""; body: JsonNode = nil; prettyPrint: bool = true): Recallable =
@@ -5540,35 +5542,35 @@ proc call*(call_594546: Call_DriveRepliesInsert_594532; fileId: string;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_594547 = newJObject()
-  var query_594548 = newJObject()
-  var body_594549 = newJObject()
-  add(query_594548, "fields", newJString(fields))
-  add(query_594548, "quotaUser", newJString(quotaUser))
-  add(path_594547, "fileId", newJString(fileId))
-  add(query_594548, "alt", newJString(alt))
-  add(query_594548, "oauth_token", newJString(oauthToken))
-  add(query_594548, "userIp", newJString(userIp))
-  add(query_594548, "key", newJString(key))
-  add(path_594547, "commentId", newJString(commentId))
+  var path_580547 = newJObject()
+  var query_580548 = newJObject()
+  var body_580549 = newJObject()
+  add(query_580548, "fields", newJString(fields))
+  add(query_580548, "quotaUser", newJString(quotaUser))
+  add(path_580547, "fileId", newJString(fileId))
+  add(query_580548, "alt", newJString(alt))
+  add(query_580548, "oauth_token", newJString(oauthToken))
+  add(query_580548, "userIp", newJString(userIp))
+  add(query_580548, "key", newJString(key))
+  add(path_580547, "commentId", newJString(commentId))
   if body != nil:
-    body_594549 = body
-  add(query_594548, "prettyPrint", newJBool(prettyPrint))
-  result = call_594546.call(path_594547, query_594548, nil, nil, body_594549)
+    body_580549 = body
+  add(query_580548, "prettyPrint", newJBool(prettyPrint))
+  result = call_580546.call(path_580547, query_580548, nil, nil, body_580549)
 
-var driveRepliesInsert* = Call_DriveRepliesInsert_594532(
+var driveRepliesInsert* = Call_DriveRepliesInsert_580532(
     name: "driveRepliesInsert", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com",
     route: "/files/{fileId}/comments/{commentId}/replies",
-    validator: validate_DriveRepliesInsert_594533, base: "/drive/v2",
-    url: url_DriveRepliesInsert_594534, schemes: {Scheme.Https})
+    validator: validate_DriveRepliesInsert_580533, base: "/drive/v2",
+    url: url_DriveRepliesInsert_580534, schemes: {Scheme.Https})
 type
-  Call_DriveRepliesList_594513 = ref object of OpenApiRestCall_593424
-proc url_DriveRepliesList_594515(protocol: Scheme; host: string; base: string;
+  Call_DriveRepliesList_580513 = ref object of OpenApiRestCall_579424
+proc url_DriveRepliesList_580515(protocol: Scheme; host: string; base: string;
                                 route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "fileId" in path, "`fileId` is a required path parameter"
   assert "commentId" in path, "`commentId` is a required path parameter"
@@ -5583,7 +5585,7 @@ proc url_DriveRepliesList_594515(protocol: Scheme; host: string; base: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_DriveRepliesList_594514(path: JsonNode; query: JsonNode;
+proc validate_DriveRepliesList_580514(path: JsonNode; query: JsonNode;
                                      header: JsonNode; formData: JsonNode;
                                      body: JsonNode): JsonNode =
   ## Lists all of the replies to a comment.
@@ -5597,16 +5599,16 @@ proc validate_DriveRepliesList_594514(path: JsonNode; query: JsonNode;
   ##            : The ID of the comment.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `fileId` field"
-  var valid_594516 = path.getOrDefault("fileId")
-  valid_594516 = validateParameter(valid_594516, JString, required = true,
+  var valid_580516 = path.getOrDefault("fileId")
+  valid_580516 = validateParameter(valid_580516, JString, required = true,
                                  default = nil)
-  if valid_594516 != nil:
-    section.add "fileId", valid_594516
-  var valid_594517 = path.getOrDefault("commentId")
-  valid_594517 = validateParameter(valid_594517, JString, required = true,
+  if valid_580516 != nil:
+    section.add "fileId", valid_580516
+  var valid_580517 = path.getOrDefault("commentId")
+  valid_580517 = validateParameter(valid_580517, JString, required = true,
                                  default = nil)
-  if valid_594517 != nil:
-    section.add "commentId", valid_594517
+  if valid_580517 != nil:
+    section.add "commentId", valid_580517
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -5630,56 +5632,56 @@ proc validate_DriveRepliesList_594514(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_594518 = query.getOrDefault("fields")
-  valid_594518 = validateParameter(valid_594518, JString, required = false,
+  var valid_580518 = query.getOrDefault("fields")
+  valid_580518 = validateParameter(valid_580518, JString, required = false,
                                  default = nil)
-  if valid_594518 != nil:
-    section.add "fields", valid_594518
-  var valid_594519 = query.getOrDefault("pageToken")
-  valid_594519 = validateParameter(valid_594519, JString, required = false,
+  if valid_580518 != nil:
+    section.add "fields", valid_580518
+  var valid_580519 = query.getOrDefault("pageToken")
+  valid_580519 = validateParameter(valid_580519, JString, required = false,
                                  default = nil)
-  if valid_594519 != nil:
-    section.add "pageToken", valid_594519
-  var valid_594520 = query.getOrDefault("quotaUser")
-  valid_594520 = validateParameter(valid_594520, JString, required = false,
+  if valid_580519 != nil:
+    section.add "pageToken", valid_580519
+  var valid_580520 = query.getOrDefault("quotaUser")
+  valid_580520 = validateParameter(valid_580520, JString, required = false,
                                  default = nil)
-  if valid_594520 != nil:
-    section.add "quotaUser", valid_594520
-  var valid_594521 = query.getOrDefault("alt")
-  valid_594521 = validateParameter(valid_594521, JString, required = false,
+  if valid_580520 != nil:
+    section.add "quotaUser", valid_580520
+  var valid_580521 = query.getOrDefault("alt")
+  valid_580521 = validateParameter(valid_580521, JString, required = false,
                                  default = newJString("json"))
-  if valid_594521 != nil:
-    section.add "alt", valid_594521
-  var valid_594522 = query.getOrDefault("oauth_token")
-  valid_594522 = validateParameter(valid_594522, JString, required = false,
+  if valid_580521 != nil:
+    section.add "alt", valid_580521
+  var valid_580522 = query.getOrDefault("oauth_token")
+  valid_580522 = validateParameter(valid_580522, JString, required = false,
                                  default = nil)
-  if valid_594522 != nil:
-    section.add "oauth_token", valid_594522
-  var valid_594523 = query.getOrDefault("userIp")
-  valid_594523 = validateParameter(valid_594523, JString, required = false,
+  if valid_580522 != nil:
+    section.add "oauth_token", valid_580522
+  var valid_580523 = query.getOrDefault("userIp")
+  valid_580523 = validateParameter(valid_580523, JString, required = false,
                                  default = nil)
-  if valid_594523 != nil:
-    section.add "userIp", valid_594523
-  var valid_594524 = query.getOrDefault("maxResults")
-  valid_594524 = validateParameter(valid_594524, JInt, required = false,
+  if valid_580523 != nil:
+    section.add "userIp", valid_580523
+  var valid_580524 = query.getOrDefault("maxResults")
+  valid_580524 = validateParameter(valid_580524, JInt, required = false,
                                  default = newJInt(20))
-  if valid_594524 != nil:
-    section.add "maxResults", valid_594524
-  var valid_594525 = query.getOrDefault("key")
-  valid_594525 = validateParameter(valid_594525, JString, required = false,
+  if valid_580524 != nil:
+    section.add "maxResults", valid_580524
+  var valid_580525 = query.getOrDefault("key")
+  valid_580525 = validateParameter(valid_580525, JString, required = false,
                                  default = nil)
-  if valid_594525 != nil:
-    section.add "key", valid_594525
-  var valid_594526 = query.getOrDefault("includeDeleted")
-  valid_594526 = validateParameter(valid_594526, JBool, required = false,
+  if valid_580525 != nil:
+    section.add "key", valid_580525
+  var valid_580526 = query.getOrDefault("includeDeleted")
+  valid_580526 = validateParameter(valid_580526, JBool, required = false,
                                  default = newJBool(false))
-  if valid_594526 != nil:
-    section.add "includeDeleted", valid_594526
-  var valid_594527 = query.getOrDefault("prettyPrint")
-  valid_594527 = validateParameter(valid_594527, JBool, required = false,
+  if valid_580526 != nil:
+    section.add "includeDeleted", valid_580526
+  var valid_580527 = query.getOrDefault("prettyPrint")
+  valid_580527 = validateParameter(valid_580527, JBool, required = false,
                                  default = newJBool(true))
-  if valid_594527 != nil:
-    section.add "prettyPrint", valid_594527
+  if valid_580527 != nil:
+    section.add "prettyPrint", valid_580527
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -5688,20 +5690,20 @@ proc validate_DriveRepliesList_594514(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_594528: Call_DriveRepliesList_594513; path: JsonNode;
+proc call*(call_580528: Call_DriveRepliesList_580513; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Lists all of the replies to a comment.
   ## 
-  let valid = call_594528.validator(path, query, header, formData, body)
-  let scheme = call_594528.pickScheme
+  let valid = call_580528.validator(path, query, header, formData, body)
+  let scheme = call_580528.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_594528.url(scheme.get, call_594528.host, call_594528.base,
-                         call_594528.route, valid.getOrDefault("path"),
+  let url = call_580528.url(scheme.get, call_580528.host, call_580528.base,
+                         call_580528.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_594528, url, valid)
+  result = hook(call_580528, url, valid)
 
-proc call*(call_594529: Call_DriveRepliesList_594513; fileId: string;
+proc call*(call_580529: Call_DriveRepliesList_580513; fileId: string;
           commentId: string; fields: string = ""; pageToken: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; maxResults: int = 20; key: string = "";
@@ -5732,34 +5734,34 @@ proc call*(call_594529: Call_DriveRepliesList_594513; fileId: string;
   ##                 : If set, all replies, including deleted replies (with content stripped) will be returned.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_594530 = newJObject()
-  var query_594531 = newJObject()
-  add(query_594531, "fields", newJString(fields))
-  add(query_594531, "pageToken", newJString(pageToken))
-  add(query_594531, "quotaUser", newJString(quotaUser))
-  add(path_594530, "fileId", newJString(fileId))
-  add(query_594531, "alt", newJString(alt))
-  add(query_594531, "oauth_token", newJString(oauthToken))
-  add(query_594531, "userIp", newJString(userIp))
-  add(query_594531, "maxResults", newJInt(maxResults))
-  add(query_594531, "key", newJString(key))
-  add(path_594530, "commentId", newJString(commentId))
-  add(query_594531, "includeDeleted", newJBool(includeDeleted))
-  add(query_594531, "prettyPrint", newJBool(prettyPrint))
-  result = call_594529.call(path_594530, query_594531, nil, nil, nil)
+  var path_580530 = newJObject()
+  var query_580531 = newJObject()
+  add(query_580531, "fields", newJString(fields))
+  add(query_580531, "pageToken", newJString(pageToken))
+  add(query_580531, "quotaUser", newJString(quotaUser))
+  add(path_580530, "fileId", newJString(fileId))
+  add(query_580531, "alt", newJString(alt))
+  add(query_580531, "oauth_token", newJString(oauthToken))
+  add(query_580531, "userIp", newJString(userIp))
+  add(query_580531, "maxResults", newJInt(maxResults))
+  add(query_580531, "key", newJString(key))
+  add(path_580530, "commentId", newJString(commentId))
+  add(query_580531, "includeDeleted", newJBool(includeDeleted))
+  add(query_580531, "prettyPrint", newJBool(prettyPrint))
+  result = call_580529.call(path_580530, query_580531, nil, nil, nil)
 
-var driveRepliesList* = Call_DriveRepliesList_594513(name: "driveRepliesList",
+var driveRepliesList* = Call_DriveRepliesList_580513(name: "driveRepliesList",
     meth: HttpMethod.HttpGet, host: "www.googleapis.com",
     route: "/files/{fileId}/comments/{commentId}/replies",
-    validator: validate_DriveRepliesList_594514, base: "/drive/v2",
-    url: url_DriveRepliesList_594515, schemes: {Scheme.Https})
+    validator: validate_DriveRepliesList_580514, base: "/drive/v2",
+    url: url_DriveRepliesList_580515, schemes: {Scheme.Https})
 type
-  Call_DriveRepliesUpdate_594568 = ref object of OpenApiRestCall_593424
-proc url_DriveRepliesUpdate_594570(protocol: Scheme; host: string; base: string;
+  Call_DriveRepliesUpdate_580568 = ref object of OpenApiRestCall_579424
+proc url_DriveRepliesUpdate_580570(protocol: Scheme; host: string; base: string;
                                   route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "fileId" in path, "`fileId` is a required path parameter"
   assert "commentId" in path, "`commentId` is a required path parameter"
@@ -5776,7 +5778,7 @@ proc url_DriveRepliesUpdate_594570(protocol: Scheme; host: string; base: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_DriveRepliesUpdate_594569(path: JsonNode; query: JsonNode;
+proc validate_DriveRepliesUpdate_580569(path: JsonNode; query: JsonNode;
                                        header: JsonNode; formData: JsonNode;
                                        body: JsonNode): JsonNode =
   ## Updates an existing reply.
@@ -5792,21 +5794,21 @@ proc validate_DriveRepliesUpdate_594569(path: JsonNode; query: JsonNode;
   ##            : The ID of the comment.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `fileId` field"
-  var valid_594571 = path.getOrDefault("fileId")
-  valid_594571 = validateParameter(valid_594571, JString, required = true,
+  var valid_580571 = path.getOrDefault("fileId")
+  valid_580571 = validateParameter(valid_580571, JString, required = true,
                                  default = nil)
-  if valid_594571 != nil:
-    section.add "fileId", valid_594571
-  var valid_594572 = path.getOrDefault("replyId")
-  valid_594572 = validateParameter(valid_594572, JString, required = true,
+  if valid_580571 != nil:
+    section.add "fileId", valid_580571
+  var valid_580572 = path.getOrDefault("replyId")
+  valid_580572 = validateParameter(valid_580572, JString, required = true,
                                  default = nil)
-  if valid_594572 != nil:
-    section.add "replyId", valid_594572
-  var valid_594573 = path.getOrDefault("commentId")
-  valid_594573 = validateParameter(valid_594573, JString, required = true,
+  if valid_580572 != nil:
+    section.add "replyId", valid_580572
+  var valid_580573 = path.getOrDefault("commentId")
+  valid_580573 = validateParameter(valid_580573, JString, required = true,
                                  default = nil)
-  if valid_594573 != nil:
-    section.add "commentId", valid_594573
+  if valid_580573 != nil:
+    section.add "commentId", valid_580573
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -5824,41 +5826,41 @@ proc validate_DriveRepliesUpdate_594569(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_594574 = query.getOrDefault("fields")
-  valid_594574 = validateParameter(valid_594574, JString, required = false,
+  var valid_580574 = query.getOrDefault("fields")
+  valid_580574 = validateParameter(valid_580574, JString, required = false,
                                  default = nil)
-  if valid_594574 != nil:
-    section.add "fields", valid_594574
-  var valid_594575 = query.getOrDefault("quotaUser")
-  valid_594575 = validateParameter(valid_594575, JString, required = false,
+  if valid_580574 != nil:
+    section.add "fields", valid_580574
+  var valid_580575 = query.getOrDefault("quotaUser")
+  valid_580575 = validateParameter(valid_580575, JString, required = false,
                                  default = nil)
-  if valid_594575 != nil:
-    section.add "quotaUser", valid_594575
-  var valid_594576 = query.getOrDefault("alt")
-  valid_594576 = validateParameter(valid_594576, JString, required = false,
+  if valid_580575 != nil:
+    section.add "quotaUser", valid_580575
+  var valid_580576 = query.getOrDefault("alt")
+  valid_580576 = validateParameter(valid_580576, JString, required = false,
                                  default = newJString("json"))
-  if valid_594576 != nil:
-    section.add "alt", valid_594576
-  var valid_594577 = query.getOrDefault("oauth_token")
-  valid_594577 = validateParameter(valid_594577, JString, required = false,
+  if valid_580576 != nil:
+    section.add "alt", valid_580576
+  var valid_580577 = query.getOrDefault("oauth_token")
+  valid_580577 = validateParameter(valid_580577, JString, required = false,
                                  default = nil)
-  if valid_594577 != nil:
-    section.add "oauth_token", valid_594577
-  var valid_594578 = query.getOrDefault("userIp")
-  valid_594578 = validateParameter(valid_594578, JString, required = false,
+  if valid_580577 != nil:
+    section.add "oauth_token", valid_580577
+  var valid_580578 = query.getOrDefault("userIp")
+  valid_580578 = validateParameter(valid_580578, JString, required = false,
                                  default = nil)
-  if valid_594578 != nil:
-    section.add "userIp", valid_594578
-  var valid_594579 = query.getOrDefault("key")
-  valid_594579 = validateParameter(valid_594579, JString, required = false,
+  if valid_580578 != nil:
+    section.add "userIp", valid_580578
+  var valid_580579 = query.getOrDefault("key")
+  valid_580579 = validateParameter(valid_580579, JString, required = false,
                                  default = nil)
-  if valid_594579 != nil:
-    section.add "key", valid_594579
-  var valid_594580 = query.getOrDefault("prettyPrint")
-  valid_594580 = validateParameter(valid_594580, JBool, required = false,
+  if valid_580579 != nil:
+    section.add "key", valid_580579
+  var valid_580580 = query.getOrDefault("prettyPrint")
+  valid_580580 = validateParameter(valid_580580, JBool, required = false,
                                  default = newJBool(true))
-  if valid_594580 != nil:
-    section.add "prettyPrint", valid_594580
+  if valid_580580 != nil:
+    section.add "prettyPrint", valid_580580
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -5870,20 +5872,20 @@ proc validate_DriveRepliesUpdate_594569(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_594582: Call_DriveRepliesUpdate_594568; path: JsonNode;
+proc call*(call_580582: Call_DriveRepliesUpdate_580568; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Updates an existing reply.
   ## 
-  let valid = call_594582.validator(path, query, header, formData, body)
-  let scheme = call_594582.pickScheme
+  let valid = call_580582.validator(path, query, header, formData, body)
+  let scheme = call_580582.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_594582.url(scheme.get, call_594582.host, call_594582.base,
-                         call_594582.route, valid.getOrDefault("path"),
+  let url = call_580582.url(scheme.get, call_580582.host, call_580582.base,
+                         call_580582.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_594582, url, valid)
+  result = hook(call_580582, url, valid)
 
-proc call*(call_594583: Call_DriveRepliesUpdate_594568; fileId: string;
+proc call*(call_580583: Call_DriveRepliesUpdate_580568; fileId: string;
           replyId: string; commentId: string; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; key: string = ""; body: JsonNode = nil;
@@ -5911,36 +5913,36 @@ proc call*(call_594583: Call_DriveRepliesUpdate_594568; fileId: string;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_594584 = newJObject()
-  var query_594585 = newJObject()
-  var body_594586 = newJObject()
-  add(query_594585, "fields", newJString(fields))
-  add(query_594585, "quotaUser", newJString(quotaUser))
-  add(path_594584, "fileId", newJString(fileId))
-  add(query_594585, "alt", newJString(alt))
-  add(query_594585, "oauth_token", newJString(oauthToken))
-  add(query_594585, "userIp", newJString(userIp))
-  add(query_594585, "key", newJString(key))
-  add(path_594584, "replyId", newJString(replyId))
-  add(path_594584, "commentId", newJString(commentId))
+  var path_580584 = newJObject()
+  var query_580585 = newJObject()
+  var body_580586 = newJObject()
+  add(query_580585, "fields", newJString(fields))
+  add(query_580585, "quotaUser", newJString(quotaUser))
+  add(path_580584, "fileId", newJString(fileId))
+  add(query_580585, "alt", newJString(alt))
+  add(query_580585, "oauth_token", newJString(oauthToken))
+  add(query_580585, "userIp", newJString(userIp))
+  add(query_580585, "key", newJString(key))
+  add(path_580584, "replyId", newJString(replyId))
+  add(path_580584, "commentId", newJString(commentId))
   if body != nil:
-    body_594586 = body
-  add(query_594585, "prettyPrint", newJBool(prettyPrint))
-  result = call_594583.call(path_594584, query_594585, nil, nil, body_594586)
+    body_580586 = body
+  add(query_580585, "prettyPrint", newJBool(prettyPrint))
+  result = call_580583.call(path_580584, query_580585, nil, nil, body_580586)
 
-var driveRepliesUpdate* = Call_DriveRepliesUpdate_594568(
+var driveRepliesUpdate* = Call_DriveRepliesUpdate_580568(
     name: "driveRepliesUpdate", meth: HttpMethod.HttpPut,
     host: "www.googleapis.com",
     route: "/files/{fileId}/comments/{commentId}/replies/{replyId}",
-    validator: validate_DriveRepliesUpdate_594569, base: "/drive/v2",
-    url: url_DriveRepliesUpdate_594570, schemes: {Scheme.Https})
+    validator: validate_DriveRepliesUpdate_580569, base: "/drive/v2",
+    url: url_DriveRepliesUpdate_580570, schemes: {Scheme.Https})
 type
-  Call_DriveRepliesGet_594550 = ref object of OpenApiRestCall_593424
-proc url_DriveRepliesGet_594552(protocol: Scheme; host: string; base: string;
+  Call_DriveRepliesGet_580550 = ref object of OpenApiRestCall_579424
+proc url_DriveRepliesGet_580552(protocol: Scheme; host: string; base: string;
                                route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "fileId" in path, "`fileId` is a required path parameter"
   assert "commentId" in path, "`commentId` is a required path parameter"
@@ -5957,7 +5959,7 @@ proc url_DriveRepliesGet_594552(protocol: Scheme; host: string; base: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_DriveRepliesGet_594551(path: JsonNode; query: JsonNode;
+proc validate_DriveRepliesGet_580551(path: JsonNode; query: JsonNode;
                                     header: JsonNode; formData: JsonNode;
                                     body: JsonNode): JsonNode =
   ## Gets a reply.
@@ -5973,21 +5975,21 @@ proc validate_DriveRepliesGet_594551(path: JsonNode; query: JsonNode;
   ##            : The ID of the comment.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `fileId` field"
-  var valid_594553 = path.getOrDefault("fileId")
-  valid_594553 = validateParameter(valid_594553, JString, required = true,
+  var valid_580553 = path.getOrDefault("fileId")
+  valid_580553 = validateParameter(valid_580553, JString, required = true,
                                  default = nil)
-  if valid_594553 != nil:
-    section.add "fileId", valid_594553
-  var valid_594554 = path.getOrDefault("replyId")
-  valid_594554 = validateParameter(valid_594554, JString, required = true,
+  if valid_580553 != nil:
+    section.add "fileId", valid_580553
+  var valid_580554 = path.getOrDefault("replyId")
+  valid_580554 = validateParameter(valid_580554, JString, required = true,
                                  default = nil)
-  if valid_594554 != nil:
-    section.add "replyId", valid_594554
-  var valid_594555 = path.getOrDefault("commentId")
-  valid_594555 = validateParameter(valid_594555, JString, required = true,
+  if valid_580554 != nil:
+    section.add "replyId", valid_580554
+  var valid_580555 = path.getOrDefault("commentId")
+  valid_580555 = validateParameter(valid_580555, JString, required = true,
                                  default = nil)
-  if valid_594555 != nil:
-    section.add "commentId", valid_594555
+  if valid_580555 != nil:
+    section.add "commentId", valid_580555
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -6007,46 +6009,46 @@ proc validate_DriveRepliesGet_594551(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_594556 = query.getOrDefault("fields")
-  valid_594556 = validateParameter(valid_594556, JString, required = false,
+  var valid_580556 = query.getOrDefault("fields")
+  valid_580556 = validateParameter(valid_580556, JString, required = false,
                                  default = nil)
-  if valid_594556 != nil:
-    section.add "fields", valid_594556
-  var valid_594557 = query.getOrDefault("quotaUser")
-  valid_594557 = validateParameter(valid_594557, JString, required = false,
+  if valid_580556 != nil:
+    section.add "fields", valid_580556
+  var valid_580557 = query.getOrDefault("quotaUser")
+  valid_580557 = validateParameter(valid_580557, JString, required = false,
                                  default = nil)
-  if valid_594557 != nil:
-    section.add "quotaUser", valid_594557
-  var valid_594558 = query.getOrDefault("alt")
-  valid_594558 = validateParameter(valid_594558, JString, required = false,
+  if valid_580557 != nil:
+    section.add "quotaUser", valid_580557
+  var valid_580558 = query.getOrDefault("alt")
+  valid_580558 = validateParameter(valid_580558, JString, required = false,
                                  default = newJString("json"))
-  if valid_594558 != nil:
-    section.add "alt", valid_594558
-  var valid_594559 = query.getOrDefault("oauth_token")
-  valid_594559 = validateParameter(valid_594559, JString, required = false,
+  if valid_580558 != nil:
+    section.add "alt", valid_580558
+  var valid_580559 = query.getOrDefault("oauth_token")
+  valid_580559 = validateParameter(valid_580559, JString, required = false,
                                  default = nil)
-  if valid_594559 != nil:
-    section.add "oauth_token", valid_594559
-  var valid_594560 = query.getOrDefault("userIp")
-  valid_594560 = validateParameter(valid_594560, JString, required = false,
+  if valid_580559 != nil:
+    section.add "oauth_token", valid_580559
+  var valid_580560 = query.getOrDefault("userIp")
+  valid_580560 = validateParameter(valid_580560, JString, required = false,
                                  default = nil)
-  if valid_594560 != nil:
-    section.add "userIp", valid_594560
-  var valid_594561 = query.getOrDefault("key")
-  valid_594561 = validateParameter(valid_594561, JString, required = false,
+  if valid_580560 != nil:
+    section.add "userIp", valid_580560
+  var valid_580561 = query.getOrDefault("key")
+  valid_580561 = validateParameter(valid_580561, JString, required = false,
                                  default = nil)
-  if valid_594561 != nil:
-    section.add "key", valid_594561
-  var valid_594562 = query.getOrDefault("includeDeleted")
-  valid_594562 = validateParameter(valid_594562, JBool, required = false,
+  if valid_580561 != nil:
+    section.add "key", valid_580561
+  var valid_580562 = query.getOrDefault("includeDeleted")
+  valid_580562 = validateParameter(valid_580562, JBool, required = false,
                                  default = newJBool(false))
-  if valid_594562 != nil:
-    section.add "includeDeleted", valid_594562
-  var valid_594563 = query.getOrDefault("prettyPrint")
-  valid_594563 = validateParameter(valid_594563, JBool, required = false,
+  if valid_580562 != nil:
+    section.add "includeDeleted", valid_580562
+  var valid_580563 = query.getOrDefault("prettyPrint")
+  valid_580563 = validateParameter(valid_580563, JBool, required = false,
                                  default = newJBool(true))
-  if valid_594563 != nil:
-    section.add "prettyPrint", valid_594563
+  if valid_580563 != nil:
+    section.add "prettyPrint", valid_580563
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -6055,20 +6057,20 @@ proc validate_DriveRepliesGet_594551(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_594564: Call_DriveRepliesGet_594550; path: JsonNode; query: JsonNode;
+proc call*(call_580564: Call_DriveRepliesGet_580550; path: JsonNode; query: JsonNode;
           header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Gets a reply.
   ## 
-  let valid = call_594564.validator(path, query, header, formData, body)
-  let scheme = call_594564.pickScheme
+  let valid = call_580564.validator(path, query, header, formData, body)
+  let scheme = call_580564.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_594564.url(scheme.get, call_594564.host, call_594564.base,
-                         call_594564.route, valid.getOrDefault("path"),
+  let url = call_580564.url(scheme.get, call_580564.host, call_580564.base,
+                         call_580564.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_594564, url, valid)
+  result = hook(call_580564, url, valid)
 
-proc call*(call_594565: Call_DriveRepliesGet_594550; fileId: string; replyId: string;
+proc call*(call_580565: Call_DriveRepliesGet_580550; fileId: string; replyId: string;
           commentId: string; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; userIp: string = "";
           key: string = ""; includeDeleted: bool = false; prettyPrint: bool = true): Recallable =
@@ -6096,33 +6098,33 @@ proc call*(call_594565: Call_DriveRepliesGet_594550; fileId: string; replyId: st
   ##                 : If set, this will succeed when retrieving a deleted reply.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_594566 = newJObject()
-  var query_594567 = newJObject()
-  add(query_594567, "fields", newJString(fields))
-  add(query_594567, "quotaUser", newJString(quotaUser))
-  add(path_594566, "fileId", newJString(fileId))
-  add(query_594567, "alt", newJString(alt))
-  add(query_594567, "oauth_token", newJString(oauthToken))
-  add(query_594567, "userIp", newJString(userIp))
-  add(query_594567, "key", newJString(key))
-  add(path_594566, "replyId", newJString(replyId))
-  add(path_594566, "commentId", newJString(commentId))
-  add(query_594567, "includeDeleted", newJBool(includeDeleted))
-  add(query_594567, "prettyPrint", newJBool(prettyPrint))
-  result = call_594565.call(path_594566, query_594567, nil, nil, nil)
+  var path_580566 = newJObject()
+  var query_580567 = newJObject()
+  add(query_580567, "fields", newJString(fields))
+  add(query_580567, "quotaUser", newJString(quotaUser))
+  add(path_580566, "fileId", newJString(fileId))
+  add(query_580567, "alt", newJString(alt))
+  add(query_580567, "oauth_token", newJString(oauthToken))
+  add(query_580567, "userIp", newJString(userIp))
+  add(query_580567, "key", newJString(key))
+  add(path_580566, "replyId", newJString(replyId))
+  add(path_580566, "commentId", newJString(commentId))
+  add(query_580567, "includeDeleted", newJBool(includeDeleted))
+  add(query_580567, "prettyPrint", newJBool(prettyPrint))
+  result = call_580565.call(path_580566, query_580567, nil, nil, nil)
 
-var driveRepliesGet* = Call_DriveRepliesGet_594550(name: "driveRepliesGet",
+var driveRepliesGet* = Call_DriveRepliesGet_580550(name: "driveRepliesGet",
     meth: HttpMethod.HttpGet, host: "www.googleapis.com",
     route: "/files/{fileId}/comments/{commentId}/replies/{replyId}",
-    validator: validate_DriveRepliesGet_594551, base: "/drive/v2",
-    url: url_DriveRepliesGet_594552, schemes: {Scheme.Https})
+    validator: validate_DriveRepliesGet_580551, base: "/drive/v2",
+    url: url_DriveRepliesGet_580552, schemes: {Scheme.Https})
 type
-  Call_DriveRepliesPatch_594604 = ref object of OpenApiRestCall_593424
-proc url_DriveRepliesPatch_594606(protocol: Scheme; host: string; base: string;
+  Call_DriveRepliesPatch_580604 = ref object of OpenApiRestCall_579424
+proc url_DriveRepliesPatch_580606(protocol: Scheme; host: string; base: string;
                                  route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "fileId" in path, "`fileId` is a required path parameter"
   assert "commentId" in path, "`commentId` is a required path parameter"
@@ -6139,7 +6141,7 @@ proc url_DriveRepliesPatch_594606(protocol: Scheme; host: string; base: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_DriveRepliesPatch_594605(path: JsonNode; query: JsonNode;
+proc validate_DriveRepliesPatch_580605(path: JsonNode; query: JsonNode;
                                       header: JsonNode; formData: JsonNode;
                                       body: JsonNode): JsonNode =
   ## Updates an existing reply. This method supports patch semantics.
@@ -6155,21 +6157,21 @@ proc validate_DriveRepliesPatch_594605(path: JsonNode; query: JsonNode;
   ##            : The ID of the comment.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `fileId` field"
-  var valid_594607 = path.getOrDefault("fileId")
-  valid_594607 = validateParameter(valid_594607, JString, required = true,
+  var valid_580607 = path.getOrDefault("fileId")
+  valid_580607 = validateParameter(valid_580607, JString, required = true,
                                  default = nil)
-  if valid_594607 != nil:
-    section.add "fileId", valid_594607
-  var valid_594608 = path.getOrDefault("replyId")
-  valid_594608 = validateParameter(valid_594608, JString, required = true,
+  if valid_580607 != nil:
+    section.add "fileId", valid_580607
+  var valid_580608 = path.getOrDefault("replyId")
+  valid_580608 = validateParameter(valid_580608, JString, required = true,
                                  default = nil)
-  if valid_594608 != nil:
-    section.add "replyId", valid_594608
-  var valid_594609 = path.getOrDefault("commentId")
-  valid_594609 = validateParameter(valid_594609, JString, required = true,
+  if valid_580608 != nil:
+    section.add "replyId", valid_580608
+  var valid_580609 = path.getOrDefault("commentId")
+  valid_580609 = validateParameter(valid_580609, JString, required = true,
                                  default = nil)
-  if valid_594609 != nil:
-    section.add "commentId", valid_594609
+  if valid_580609 != nil:
+    section.add "commentId", valid_580609
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -6187,41 +6189,41 @@ proc validate_DriveRepliesPatch_594605(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_594610 = query.getOrDefault("fields")
-  valid_594610 = validateParameter(valid_594610, JString, required = false,
+  var valid_580610 = query.getOrDefault("fields")
+  valid_580610 = validateParameter(valid_580610, JString, required = false,
                                  default = nil)
-  if valid_594610 != nil:
-    section.add "fields", valid_594610
-  var valid_594611 = query.getOrDefault("quotaUser")
-  valid_594611 = validateParameter(valid_594611, JString, required = false,
+  if valid_580610 != nil:
+    section.add "fields", valid_580610
+  var valid_580611 = query.getOrDefault("quotaUser")
+  valid_580611 = validateParameter(valid_580611, JString, required = false,
                                  default = nil)
-  if valid_594611 != nil:
-    section.add "quotaUser", valid_594611
-  var valid_594612 = query.getOrDefault("alt")
-  valid_594612 = validateParameter(valid_594612, JString, required = false,
+  if valid_580611 != nil:
+    section.add "quotaUser", valid_580611
+  var valid_580612 = query.getOrDefault("alt")
+  valid_580612 = validateParameter(valid_580612, JString, required = false,
                                  default = newJString("json"))
-  if valid_594612 != nil:
-    section.add "alt", valid_594612
-  var valid_594613 = query.getOrDefault("oauth_token")
-  valid_594613 = validateParameter(valid_594613, JString, required = false,
+  if valid_580612 != nil:
+    section.add "alt", valid_580612
+  var valid_580613 = query.getOrDefault("oauth_token")
+  valid_580613 = validateParameter(valid_580613, JString, required = false,
                                  default = nil)
-  if valid_594613 != nil:
-    section.add "oauth_token", valid_594613
-  var valid_594614 = query.getOrDefault("userIp")
-  valid_594614 = validateParameter(valid_594614, JString, required = false,
+  if valid_580613 != nil:
+    section.add "oauth_token", valid_580613
+  var valid_580614 = query.getOrDefault("userIp")
+  valid_580614 = validateParameter(valid_580614, JString, required = false,
                                  default = nil)
-  if valid_594614 != nil:
-    section.add "userIp", valid_594614
-  var valid_594615 = query.getOrDefault("key")
-  valid_594615 = validateParameter(valid_594615, JString, required = false,
+  if valid_580614 != nil:
+    section.add "userIp", valid_580614
+  var valid_580615 = query.getOrDefault("key")
+  valid_580615 = validateParameter(valid_580615, JString, required = false,
                                  default = nil)
-  if valid_594615 != nil:
-    section.add "key", valid_594615
-  var valid_594616 = query.getOrDefault("prettyPrint")
-  valid_594616 = validateParameter(valid_594616, JBool, required = false,
+  if valid_580615 != nil:
+    section.add "key", valid_580615
+  var valid_580616 = query.getOrDefault("prettyPrint")
+  valid_580616 = validateParameter(valid_580616, JBool, required = false,
                                  default = newJBool(true))
-  if valid_594616 != nil:
-    section.add "prettyPrint", valid_594616
+  if valid_580616 != nil:
+    section.add "prettyPrint", valid_580616
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -6233,20 +6235,20 @@ proc validate_DriveRepliesPatch_594605(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_594618: Call_DriveRepliesPatch_594604; path: JsonNode;
+proc call*(call_580618: Call_DriveRepliesPatch_580604; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Updates an existing reply. This method supports patch semantics.
   ## 
-  let valid = call_594618.validator(path, query, header, formData, body)
-  let scheme = call_594618.pickScheme
+  let valid = call_580618.validator(path, query, header, formData, body)
+  let scheme = call_580618.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_594618.url(scheme.get, call_594618.host, call_594618.base,
-                         call_594618.route, valid.getOrDefault("path"),
+  let url = call_580618.url(scheme.get, call_580618.host, call_580618.base,
+                         call_580618.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_594618, url, valid)
+  result = hook(call_580618, url, valid)
 
-proc call*(call_594619: Call_DriveRepliesPatch_594604; fileId: string;
+proc call*(call_580619: Call_DriveRepliesPatch_580604; fileId: string;
           replyId: string; commentId: string; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; key: string = ""; body: JsonNode = nil;
@@ -6274,35 +6276,35 @@ proc call*(call_594619: Call_DriveRepliesPatch_594604; fileId: string;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_594620 = newJObject()
-  var query_594621 = newJObject()
-  var body_594622 = newJObject()
-  add(query_594621, "fields", newJString(fields))
-  add(query_594621, "quotaUser", newJString(quotaUser))
-  add(path_594620, "fileId", newJString(fileId))
-  add(query_594621, "alt", newJString(alt))
-  add(query_594621, "oauth_token", newJString(oauthToken))
-  add(query_594621, "userIp", newJString(userIp))
-  add(query_594621, "key", newJString(key))
-  add(path_594620, "replyId", newJString(replyId))
-  add(path_594620, "commentId", newJString(commentId))
+  var path_580620 = newJObject()
+  var query_580621 = newJObject()
+  var body_580622 = newJObject()
+  add(query_580621, "fields", newJString(fields))
+  add(query_580621, "quotaUser", newJString(quotaUser))
+  add(path_580620, "fileId", newJString(fileId))
+  add(query_580621, "alt", newJString(alt))
+  add(query_580621, "oauth_token", newJString(oauthToken))
+  add(query_580621, "userIp", newJString(userIp))
+  add(query_580621, "key", newJString(key))
+  add(path_580620, "replyId", newJString(replyId))
+  add(path_580620, "commentId", newJString(commentId))
   if body != nil:
-    body_594622 = body
-  add(query_594621, "prettyPrint", newJBool(prettyPrint))
-  result = call_594619.call(path_594620, query_594621, nil, nil, body_594622)
+    body_580622 = body
+  add(query_580621, "prettyPrint", newJBool(prettyPrint))
+  result = call_580619.call(path_580620, query_580621, nil, nil, body_580622)
 
-var driveRepliesPatch* = Call_DriveRepliesPatch_594604(name: "driveRepliesPatch",
+var driveRepliesPatch* = Call_DriveRepliesPatch_580604(name: "driveRepliesPatch",
     meth: HttpMethod.HttpPatch, host: "www.googleapis.com",
     route: "/files/{fileId}/comments/{commentId}/replies/{replyId}",
-    validator: validate_DriveRepliesPatch_594605, base: "/drive/v2",
-    url: url_DriveRepliesPatch_594606, schemes: {Scheme.Https})
+    validator: validate_DriveRepliesPatch_580605, base: "/drive/v2",
+    url: url_DriveRepliesPatch_580606, schemes: {Scheme.Https})
 type
-  Call_DriveRepliesDelete_594587 = ref object of OpenApiRestCall_593424
-proc url_DriveRepliesDelete_594589(protocol: Scheme; host: string; base: string;
+  Call_DriveRepliesDelete_580587 = ref object of OpenApiRestCall_579424
+proc url_DriveRepliesDelete_580589(protocol: Scheme; host: string; base: string;
                                   route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "fileId" in path, "`fileId` is a required path parameter"
   assert "commentId" in path, "`commentId` is a required path parameter"
@@ -6319,7 +6321,7 @@ proc url_DriveRepliesDelete_594589(protocol: Scheme; host: string; base: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_DriveRepliesDelete_594588(path: JsonNode; query: JsonNode;
+proc validate_DriveRepliesDelete_580588(path: JsonNode; query: JsonNode;
                                        header: JsonNode; formData: JsonNode;
                                        body: JsonNode): JsonNode =
   ## Deletes a reply.
@@ -6335,21 +6337,21 @@ proc validate_DriveRepliesDelete_594588(path: JsonNode; query: JsonNode;
   ##            : The ID of the comment.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `fileId` field"
-  var valid_594590 = path.getOrDefault("fileId")
-  valid_594590 = validateParameter(valid_594590, JString, required = true,
+  var valid_580590 = path.getOrDefault("fileId")
+  valid_580590 = validateParameter(valid_580590, JString, required = true,
                                  default = nil)
-  if valid_594590 != nil:
-    section.add "fileId", valid_594590
-  var valid_594591 = path.getOrDefault("replyId")
-  valid_594591 = validateParameter(valid_594591, JString, required = true,
+  if valid_580590 != nil:
+    section.add "fileId", valid_580590
+  var valid_580591 = path.getOrDefault("replyId")
+  valid_580591 = validateParameter(valid_580591, JString, required = true,
                                  default = nil)
-  if valid_594591 != nil:
-    section.add "replyId", valid_594591
-  var valid_594592 = path.getOrDefault("commentId")
-  valid_594592 = validateParameter(valid_594592, JString, required = true,
+  if valid_580591 != nil:
+    section.add "replyId", valid_580591
+  var valid_580592 = path.getOrDefault("commentId")
+  valid_580592 = validateParameter(valid_580592, JString, required = true,
                                  default = nil)
-  if valid_594592 != nil:
-    section.add "commentId", valid_594592
+  if valid_580592 != nil:
+    section.add "commentId", valid_580592
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -6367,41 +6369,41 @@ proc validate_DriveRepliesDelete_594588(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_594593 = query.getOrDefault("fields")
-  valid_594593 = validateParameter(valid_594593, JString, required = false,
+  var valid_580593 = query.getOrDefault("fields")
+  valid_580593 = validateParameter(valid_580593, JString, required = false,
                                  default = nil)
-  if valid_594593 != nil:
-    section.add "fields", valid_594593
-  var valid_594594 = query.getOrDefault("quotaUser")
-  valid_594594 = validateParameter(valid_594594, JString, required = false,
+  if valid_580593 != nil:
+    section.add "fields", valid_580593
+  var valid_580594 = query.getOrDefault("quotaUser")
+  valid_580594 = validateParameter(valid_580594, JString, required = false,
                                  default = nil)
-  if valid_594594 != nil:
-    section.add "quotaUser", valid_594594
-  var valid_594595 = query.getOrDefault("alt")
-  valid_594595 = validateParameter(valid_594595, JString, required = false,
+  if valid_580594 != nil:
+    section.add "quotaUser", valid_580594
+  var valid_580595 = query.getOrDefault("alt")
+  valid_580595 = validateParameter(valid_580595, JString, required = false,
                                  default = newJString("json"))
-  if valid_594595 != nil:
-    section.add "alt", valid_594595
-  var valid_594596 = query.getOrDefault("oauth_token")
-  valid_594596 = validateParameter(valid_594596, JString, required = false,
+  if valid_580595 != nil:
+    section.add "alt", valid_580595
+  var valid_580596 = query.getOrDefault("oauth_token")
+  valid_580596 = validateParameter(valid_580596, JString, required = false,
                                  default = nil)
-  if valid_594596 != nil:
-    section.add "oauth_token", valid_594596
-  var valid_594597 = query.getOrDefault("userIp")
-  valid_594597 = validateParameter(valid_594597, JString, required = false,
+  if valid_580596 != nil:
+    section.add "oauth_token", valid_580596
+  var valid_580597 = query.getOrDefault("userIp")
+  valid_580597 = validateParameter(valid_580597, JString, required = false,
                                  default = nil)
-  if valid_594597 != nil:
-    section.add "userIp", valid_594597
-  var valid_594598 = query.getOrDefault("key")
-  valid_594598 = validateParameter(valid_594598, JString, required = false,
+  if valid_580597 != nil:
+    section.add "userIp", valid_580597
+  var valid_580598 = query.getOrDefault("key")
+  valid_580598 = validateParameter(valid_580598, JString, required = false,
                                  default = nil)
-  if valid_594598 != nil:
-    section.add "key", valid_594598
-  var valid_594599 = query.getOrDefault("prettyPrint")
-  valid_594599 = validateParameter(valid_594599, JBool, required = false,
+  if valid_580598 != nil:
+    section.add "key", valid_580598
+  var valid_580599 = query.getOrDefault("prettyPrint")
+  valid_580599 = validateParameter(valid_580599, JBool, required = false,
                                  default = newJBool(true))
-  if valid_594599 != nil:
-    section.add "prettyPrint", valid_594599
+  if valid_580599 != nil:
+    section.add "prettyPrint", valid_580599
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -6410,20 +6412,20 @@ proc validate_DriveRepliesDelete_594588(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_594600: Call_DriveRepliesDelete_594587; path: JsonNode;
+proc call*(call_580600: Call_DriveRepliesDelete_580587; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Deletes a reply.
   ## 
-  let valid = call_594600.validator(path, query, header, formData, body)
-  let scheme = call_594600.pickScheme
+  let valid = call_580600.validator(path, query, header, formData, body)
+  let scheme = call_580600.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_594600.url(scheme.get, call_594600.host, call_594600.base,
-                         call_594600.route, valid.getOrDefault("path"),
+  let url = call_580600.url(scheme.get, call_580600.host, call_580600.base,
+                         call_580600.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_594600, url, valid)
+  result = hook(call_580600, url, valid)
 
-proc call*(call_594601: Call_DriveRepliesDelete_594587; fileId: string;
+proc call*(call_580601: Call_DriveRepliesDelete_580587; fileId: string;
           replyId: string; commentId: string; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; key: string = ""; prettyPrint: bool = true): Recallable =
@@ -6449,33 +6451,33 @@ proc call*(call_594601: Call_DriveRepliesDelete_594587; fileId: string;
   ##            : The ID of the comment.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_594602 = newJObject()
-  var query_594603 = newJObject()
-  add(query_594603, "fields", newJString(fields))
-  add(query_594603, "quotaUser", newJString(quotaUser))
-  add(path_594602, "fileId", newJString(fileId))
-  add(query_594603, "alt", newJString(alt))
-  add(query_594603, "oauth_token", newJString(oauthToken))
-  add(query_594603, "userIp", newJString(userIp))
-  add(query_594603, "key", newJString(key))
-  add(path_594602, "replyId", newJString(replyId))
-  add(path_594602, "commentId", newJString(commentId))
-  add(query_594603, "prettyPrint", newJBool(prettyPrint))
-  result = call_594601.call(path_594602, query_594603, nil, nil, nil)
+  var path_580602 = newJObject()
+  var query_580603 = newJObject()
+  add(query_580603, "fields", newJString(fields))
+  add(query_580603, "quotaUser", newJString(quotaUser))
+  add(path_580602, "fileId", newJString(fileId))
+  add(query_580603, "alt", newJString(alt))
+  add(query_580603, "oauth_token", newJString(oauthToken))
+  add(query_580603, "userIp", newJString(userIp))
+  add(query_580603, "key", newJString(key))
+  add(path_580602, "replyId", newJString(replyId))
+  add(path_580602, "commentId", newJString(commentId))
+  add(query_580603, "prettyPrint", newJBool(prettyPrint))
+  result = call_580601.call(path_580602, query_580603, nil, nil, nil)
 
-var driveRepliesDelete* = Call_DriveRepliesDelete_594587(
+var driveRepliesDelete* = Call_DriveRepliesDelete_580587(
     name: "driveRepliesDelete", meth: HttpMethod.HttpDelete,
     host: "www.googleapis.com",
     route: "/files/{fileId}/comments/{commentId}/replies/{replyId}",
-    validator: validate_DriveRepliesDelete_594588, base: "/drive/v2",
-    url: url_DriveRepliesDelete_594589, schemes: {Scheme.Https})
+    validator: validate_DriveRepliesDelete_580588, base: "/drive/v2",
+    url: url_DriveRepliesDelete_580589, schemes: {Scheme.Https})
 type
-  Call_DriveFilesCopy_594623 = ref object of OpenApiRestCall_593424
-proc url_DriveFilesCopy_594625(protocol: Scheme; host: string; base: string;
+  Call_DriveFilesCopy_580623 = ref object of OpenApiRestCall_579424
+proc url_DriveFilesCopy_580625(protocol: Scheme; host: string; base: string;
                               route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "fileId" in path, "`fileId` is a required path parameter"
   const
@@ -6487,7 +6489,7 @@ proc url_DriveFilesCopy_594625(protocol: Scheme; host: string; base: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_DriveFilesCopy_594624(path: JsonNode; query: JsonNode;
+proc validate_DriveFilesCopy_580624(path: JsonNode; query: JsonNode;
                                    header: JsonNode; formData: JsonNode;
                                    body: JsonNode): JsonNode =
   ## Creates a copy of the specified file.
@@ -6499,11 +6501,11 @@ proc validate_DriveFilesCopy_594624(path: JsonNode; query: JsonNode;
   ##         : The ID of the file to copy.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `fileId` field"
-  var valid_594626 = path.getOrDefault("fileId")
-  valid_594626 = validateParameter(valid_594626, JString, required = true,
+  var valid_580626 = path.getOrDefault("fileId")
+  valid_580626 = validateParameter(valid_580626, JString, required = true,
                                  default = nil)
-  if valid_594626 != nil:
-    section.add "fileId", valid_594626
+  if valid_580626 != nil:
+    section.add "fileId", valid_580626
   result.add "path", section
   ## parameters in `query` object:
   ##   supportsAllDrives: JBool
@@ -6539,86 +6541,86 @@ proc validate_DriveFilesCopy_594624(path: JsonNode; query: JsonNode;
   ##   visibility: JString
   ##             : The visibility of the new file. This parameter is only relevant when the source is not a native Google Doc and convert=false.
   section = newJObject()
-  var valid_594627 = query.getOrDefault("supportsAllDrives")
-  valid_594627 = validateParameter(valid_594627, JBool, required = false,
+  var valid_580627 = query.getOrDefault("supportsAllDrives")
+  valid_580627 = validateParameter(valid_580627, JBool, required = false,
                                  default = newJBool(false))
-  if valid_594627 != nil:
-    section.add "supportsAllDrives", valid_594627
-  var valid_594628 = query.getOrDefault("fields")
-  valid_594628 = validateParameter(valid_594628, JString, required = false,
+  if valid_580627 != nil:
+    section.add "supportsAllDrives", valid_580627
+  var valid_580628 = query.getOrDefault("fields")
+  valid_580628 = validateParameter(valid_580628, JString, required = false,
                                  default = nil)
-  if valid_594628 != nil:
-    section.add "fields", valid_594628
-  var valid_594629 = query.getOrDefault("quotaUser")
-  valid_594629 = validateParameter(valid_594629, JString, required = false,
+  if valid_580628 != nil:
+    section.add "fields", valid_580628
+  var valid_580629 = query.getOrDefault("quotaUser")
+  valid_580629 = validateParameter(valid_580629, JString, required = false,
                                  default = nil)
-  if valid_594629 != nil:
-    section.add "quotaUser", valid_594629
-  var valid_594630 = query.getOrDefault("alt")
-  valid_594630 = validateParameter(valid_594630, JString, required = false,
+  if valid_580629 != nil:
+    section.add "quotaUser", valid_580629
+  var valid_580630 = query.getOrDefault("alt")
+  valid_580630 = validateParameter(valid_580630, JString, required = false,
                                  default = newJString("json"))
-  if valid_594630 != nil:
-    section.add "alt", valid_594630
-  var valid_594631 = query.getOrDefault("pinned")
-  valid_594631 = validateParameter(valid_594631, JBool, required = false,
+  if valid_580630 != nil:
+    section.add "alt", valid_580630
+  var valid_580631 = query.getOrDefault("pinned")
+  valid_580631 = validateParameter(valid_580631, JBool, required = false,
                                  default = newJBool(false))
-  if valid_594631 != nil:
-    section.add "pinned", valid_594631
-  var valid_594632 = query.getOrDefault("oauth_token")
-  valid_594632 = validateParameter(valid_594632, JString, required = false,
+  if valid_580631 != nil:
+    section.add "pinned", valid_580631
+  var valid_580632 = query.getOrDefault("oauth_token")
+  valid_580632 = validateParameter(valid_580632, JString, required = false,
                                  default = nil)
-  if valid_594632 != nil:
-    section.add "oauth_token", valid_594632
-  var valid_594633 = query.getOrDefault("userIp")
-  valid_594633 = validateParameter(valid_594633, JString, required = false,
+  if valid_580632 != nil:
+    section.add "oauth_token", valid_580632
+  var valid_580633 = query.getOrDefault("userIp")
+  valid_580633 = validateParameter(valid_580633, JString, required = false,
                                  default = nil)
-  if valid_594633 != nil:
-    section.add "userIp", valid_594633
-  var valid_594634 = query.getOrDefault("ocr")
-  valid_594634 = validateParameter(valid_594634, JBool, required = false,
+  if valid_580633 != nil:
+    section.add "userIp", valid_580633
+  var valid_580634 = query.getOrDefault("ocr")
+  valid_580634 = validateParameter(valid_580634, JBool, required = false,
                                  default = newJBool(false))
-  if valid_594634 != nil:
-    section.add "ocr", valid_594634
-  var valid_594635 = query.getOrDefault("timedTextLanguage")
-  valid_594635 = validateParameter(valid_594635, JString, required = false,
+  if valid_580634 != nil:
+    section.add "ocr", valid_580634
+  var valid_580635 = query.getOrDefault("timedTextLanguage")
+  valid_580635 = validateParameter(valid_580635, JString, required = false,
                                  default = nil)
-  if valid_594635 != nil:
-    section.add "timedTextLanguage", valid_594635
-  var valid_594636 = query.getOrDefault("supportsTeamDrives")
-  valid_594636 = validateParameter(valid_594636, JBool, required = false,
+  if valid_580635 != nil:
+    section.add "timedTextLanguage", valid_580635
+  var valid_580636 = query.getOrDefault("supportsTeamDrives")
+  valid_580636 = validateParameter(valid_580636, JBool, required = false,
                                  default = newJBool(false))
-  if valid_594636 != nil:
-    section.add "supportsTeamDrives", valid_594636
-  var valid_594637 = query.getOrDefault("key")
-  valid_594637 = validateParameter(valid_594637, JString, required = false,
+  if valid_580636 != nil:
+    section.add "supportsTeamDrives", valid_580636
+  var valid_580637 = query.getOrDefault("key")
+  valid_580637 = validateParameter(valid_580637, JString, required = false,
                                  default = nil)
-  if valid_594637 != nil:
-    section.add "key", valid_594637
-  var valid_594638 = query.getOrDefault("convert")
-  valid_594638 = validateParameter(valid_594638, JBool, required = false,
+  if valid_580637 != nil:
+    section.add "key", valid_580637
+  var valid_580638 = query.getOrDefault("convert")
+  valid_580638 = validateParameter(valid_580638, JBool, required = false,
                                  default = newJBool(false))
-  if valid_594638 != nil:
-    section.add "convert", valid_594638
-  var valid_594639 = query.getOrDefault("prettyPrint")
-  valid_594639 = validateParameter(valid_594639, JBool, required = false,
+  if valid_580638 != nil:
+    section.add "convert", valid_580638
+  var valid_580639 = query.getOrDefault("prettyPrint")
+  valid_580639 = validateParameter(valid_580639, JBool, required = false,
                                  default = newJBool(true))
-  if valid_594639 != nil:
-    section.add "prettyPrint", valid_594639
-  var valid_594640 = query.getOrDefault("ocrLanguage")
-  valid_594640 = validateParameter(valid_594640, JString, required = false,
+  if valid_580639 != nil:
+    section.add "prettyPrint", valid_580639
+  var valid_580640 = query.getOrDefault("ocrLanguage")
+  valid_580640 = validateParameter(valid_580640, JString, required = false,
                                  default = nil)
-  if valid_594640 != nil:
-    section.add "ocrLanguage", valid_594640
-  var valid_594641 = query.getOrDefault("timedTextTrackName")
-  valid_594641 = validateParameter(valid_594641, JString, required = false,
+  if valid_580640 != nil:
+    section.add "ocrLanguage", valid_580640
+  var valid_580641 = query.getOrDefault("timedTextTrackName")
+  valid_580641 = validateParameter(valid_580641, JString, required = false,
                                  default = nil)
-  if valid_594641 != nil:
-    section.add "timedTextTrackName", valid_594641
-  var valid_594642 = query.getOrDefault("visibility")
-  valid_594642 = validateParameter(valid_594642, JString, required = false,
+  if valid_580641 != nil:
+    section.add "timedTextTrackName", valid_580641
+  var valid_580642 = query.getOrDefault("visibility")
+  valid_580642 = validateParameter(valid_580642, JString, required = false,
                                  default = newJString("DEFAULT"))
-  if valid_594642 != nil:
-    section.add "visibility", valid_594642
+  if valid_580642 != nil:
+    section.add "visibility", valid_580642
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -6630,20 +6632,20 @@ proc validate_DriveFilesCopy_594624(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_594644: Call_DriveFilesCopy_594623; path: JsonNode; query: JsonNode;
+proc call*(call_580644: Call_DriveFilesCopy_580623; path: JsonNode; query: JsonNode;
           header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Creates a copy of the specified file.
   ## 
-  let valid = call_594644.validator(path, query, header, formData, body)
-  let scheme = call_594644.pickScheme
+  let valid = call_580644.validator(path, query, header, formData, body)
+  let scheme = call_580644.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_594644.url(scheme.get, call_594644.host, call_594644.base,
-                         call_594644.route, valid.getOrDefault("path"),
+  let url = call_580644.url(scheme.get, call_580644.host, call_580644.base,
+                         call_580644.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_594644, url, valid)
+  result = hook(call_580644, url, valid)
 
-proc call*(call_594645: Call_DriveFilesCopy_594623; fileId: string;
+proc call*(call_580645: Call_DriveFilesCopy_580623; fileId: string;
           supportsAllDrives: bool = false; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; pinned: bool = false; oauthToken: string = "";
           userIp: string = ""; ocr: bool = false; timedTextLanguage: string = "";
@@ -6687,41 +6689,41 @@ proc call*(call_594645: Call_DriveFilesCopy_594623; fileId: string;
   ##                     : The timed text track name.
   ##   visibility: string
   ##             : The visibility of the new file. This parameter is only relevant when the source is not a native Google Doc and convert=false.
-  var path_594646 = newJObject()
-  var query_594647 = newJObject()
-  var body_594648 = newJObject()
-  add(query_594647, "supportsAllDrives", newJBool(supportsAllDrives))
-  add(query_594647, "fields", newJString(fields))
-  add(query_594647, "quotaUser", newJString(quotaUser))
-  add(path_594646, "fileId", newJString(fileId))
-  add(query_594647, "alt", newJString(alt))
-  add(query_594647, "pinned", newJBool(pinned))
-  add(query_594647, "oauth_token", newJString(oauthToken))
-  add(query_594647, "userIp", newJString(userIp))
-  add(query_594647, "ocr", newJBool(ocr))
-  add(query_594647, "timedTextLanguage", newJString(timedTextLanguage))
-  add(query_594647, "supportsTeamDrives", newJBool(supportsTeamDrives))
-  add(query_594647, "key", newJString(key))
-  add(query_594647, "convert", newJBool(convert))
+  var path_580646 = newJObject()
+  var query_580647 = newJObject()
+  var body_580648 = newJObject()
+  add(query_580647, "supportsAllDrives", newJBool(supportsAllDrives))
+  add(query_580647, "fields", newJString(fields))
+  add(query_580647, "quotaUser", newJString(quotaUser))
+  add(path_580646, "fileId", newJString(fileId))
+  add(query_580647, "alt", newJString(alt))
+  add(query_580647, "pinned", newJBool(pinned))
+  add(query_580647, "oauth_token", newJString(oauthToken))
+  add(query_580647, "userIp", newJString(userIp))
+  add(query_580647, "ocr", newJBool(ocr))
+  add(query_580647, "timedTextLanguage", newJString(timedTextLanguage))
+  add(query_580647, "supportsTeamDrives", newJBool(supportsTeamDrives))
+  add(query_580647, "key", newJString(key))
+  add(query_580647, "convert", newJBool(convert))
   if body != nil:
-    body_594648 = body
-  add(query_594647, "prettyPrint", newJBool(prettyPrint))
-  add(query_594647, "ocrLanguage", newJString(ocrLanguage))
-  add(query_594647, "timedTextTrackName", newJString(timedTextTrackName))
-  add(query_594647, "visibility", newJString(visibility))
-  result = call_594645.call(path_594646, query_594647, nil, nil, body_594648)
+    body_580648 = body
+  add(query_580647, "prettyPrint", newJBool(prettyPrint))
+  add(query_580647, "ocrLanguage", newJString(ocrLanguage))
+  add(query_580647, "timedTextTrackName", newJString(timedTextTrackName))
+  add(query_580647, "visibility", newJString(visibility))
+  result = call_580645.call(path_580646, query_580647, nil, nil, body_580648)
 
-var driveFilesCopy* = Call_DriveFilesCopy_594623(name: "driveFilesCopy",
+var driveFilesCopy* = Call_DriveFilesCopy_580623(name: "driveFilesCopy",
     meth: HttpMethod.HttpPost, host: "www.googleapis.com",
-    route: "/files/{fileId}/copy", validator: validate_DriveFilesCopy_594624,
-    base: "/drive/v2", url: url_DriveFilesCopy_594625, schemes: {Scheme.Https})
+    route: "/files/{fileId}/copy", validator: validate_DriveFilesCopy_580624,
+    base: "/drive/v2", url: url_DriveFilesCopy_580625, schemes: {Scheme.Https})
 type
-  Call_DriveFilesExport_594649 = ref object of OpenApiRestCall_593424
-proc url_DriveFilesExport_594651(protocol: Scheme; host: string; base: string;
+  Call_DriveFilesExport_580649 = ref object of OpenApiRestCall_579424
+proc url_DriveFilesExport_580651(protocol: Scheme; host: string; base: string;
                                 route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "fileId" in path, "`fileId` is a required path parameter"
   const
@@ -6733,7 +6735,7 @@ proc url_DriveFilesExport_594651(protocol: Scheme; host: string; base: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_DriveFilesExport_594650(path: JsonNode; query: JsonNode;
+proc validate_DriveFilesExport_580650(path: JsonNode; query: JsonNode;
                                      header: JsonNode; formData: JsonNode;
                                      body: JsonNode): JsonNode =
   ## Exports a Google Doc to the requested MIME type and returns the exported content. Please note that the exported content is limited to 10MB.
@@ -6745,11 +6747,11 @@ proc validate_DriveFilesExport_594650(path: JsonNode; query: JsonNode;
   ##         : The ID of the file.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `fileId` field"
-  var valid_594652 = path.getOrDefault("fileId")
-  valid_594652 = validateParameter(valid_594652, JString, required = true,
+  var valid_580652 = path.getOrDefault("fileId")
+  valid_580652 = validateParameter(valid_580652, JString, required = true,
                                  default = nil)
-  if valid_594652 != nil:
-    section.add "fileId", valid_594652
+  if valid_580652 != nil:
+    section.add "fileId", valid_580652
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -6769,48 +6771,48 @@ proc validate_DriveFilesExport_594650(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_594653 = query.getOrDefault("fields")
-  valid_594653 = validateParameter(valid_594653, JString, required = false,
+  var valid_580653 = query.getOrDefault("fields")
+  valid_580653 = validateParameter(valid_580653, JString, required = false,
                                  default = nil)
-  if valid_594653 != nil:
-    section.add "fields", valid_594653
-  var valid_594654 = query.getOrDefault("quotaUser")
-  valid_594654 = validateParameter(valid_594654, JString, required = false,
+  if valid_580653 != nil:
+    section.add "fields", valid_580653
+  var valid_580654 = query.getOrDefault("quotaUser")
+  valid_580654 = validateParameter(valid_580654, JString, required = false,
                                  default = nil)
-  if valid_594654 != nil:
-    section.add "quotaUser", valid_594654
-  var valid_594655 = query.getOrDefault("alt")
-  valid_594655 = validateParameter(valid_594655, JString, required = false,
+  if valid_580654 != nil:
+    section.add "quotaUser", valid_580654
+  var valid_580655 = query.getOrDefault("alt")
+  valid_580655 = validateParameter(valid_580655, JString, required = false,
                                  default = newJString("json"))
-  if valid_594655 != nil:
-    section.add "alt", valid_594655
-  var valid_594656 = query.getOrDefault("oauth_token")
-  valid_594656 = validateParameter(valid_594656, JString, required = false,
+  if valid_580655 != nil:
+    section.add "alt", valid_580655
+  var valid_580656 = query.getOrDefault("oauth_token")
+  valid_580656 = validateParameter(valid_580656, JString, required = false,
                                  default = nil)
-  if valid_594656 != nil:
-    section.add "oauth_token", valid_594656
-  var valid_594657 = query.getOrDefault("userIp")
-  valid_594657 = validateParameter(valid_594657, JString, required = false,
+  if valid_580656 != nil:
+    section.add "oauth_token", valid_580656
+  var valid_580657 = query.getOrDefault("userIp")
+  valid_580657 = validateParameter(valid_580657, JString, required = false,
                                  default = nil)
-  if valid_594657 != nil:
-    section.add "userIp", valid_594657
+  if valid_580657 != nil:
+    section.add "userIp", valid_580657
   assert query != nil,
         "query argument is necessary due to required `mimeType` field"
-  var valid_594658 = query.getOrDefault("mimeType")
-  valid_594658 = validateParameter(valid_594658, JString, required = true,
+  var valid_580658 = query.getOrDefault("mimeType")
+  valid_580658 = validateParameter(valid_580658, JString, required = true,
                                  default = nil)
-  if valid_594658 != nil:
-    section.add "mimeType", valid_594658
-  var valid_594659 = query.getOrDefault("key")
-  valid_594659 = validateParameter(valid_594659, JString, required = false,
+  if valid_580658 != nil:
+    section.add "mimeType", valid_580658
+  var valid_580659 = query.getOrDefault("key")
+  valid_580659 = validateParameter(valid_580659, JString, required = false,
                                  default = nil)
-  if valid_594659 != nil:
-    section.add "key", valid_594659
-  var valid_594660 = query.getOrDefault("prettyPrint")
-  valid_594660 = validateParameter(valid_594660, JBool, required = false,
+  if valid_580659 != nil:
+    section.add "key", valid_580659
+  var valid_580660 = query.getOrDefault("prettyPrint")
+  valid_580660 = validateParameter(valid_580660, JBool, required = false,
                                  default = newJBool(true))
-  if valid_594660 != nil:
-    section.add "prettyPrint", valid_594660
+  if valid_580660 != nil:
+    section.add "prettyPrint", valid_580660
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -6819,20 +6821,20 @@ proc validate_DriveFilesExport_594650(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_594661: Call_DriveFilesExport_594649; path: JsonNode;
+proc call*(call_580661: Call_DriveFilesExport_580649; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Exports a Google Doc to the requested MIME type and returns the exported content. Please note that the exported content is limited to 10MB.
   ## 
-  let valid = call_594661.validator(path, query, header, formData, body)
-  let scheme = call_594661.pickScheme
+  let valid = call_580661.validator(path, query, header, formData, body)
+  let scheme = call_580661.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_594661.url(scheme.get, call_594661.host, call_594661.base,
-                         call_594661.route, valid.getOrDefault("path"),
+  let url = call_580661.url(scheme.get, call_580661.host, call_580661.base,
+                         call_580661.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_594661, url, valid)
+  result = hook(call_580661, url, valid)
 
-proc call*(call_594662: Call_DriveFilesExport_594649; fileId: string;
+proc call*(call_580662: Call_DriveFilesExport_580649; fileId: string;
           mimeType: string; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; userIp: string = "";
           key: string = ""; prettyPrint: bool = true): Recallable =
@@ -6856,30 +6858,30 @@ proc call*(call_594662: Call_DriveFilesExport_594649; fileId: string;
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_594663 = newJObject()
-  var query_594664 = newJObject()
-  add(query_594664, "fields", newJString(fields))
-  add(query_594664, "quotaUser", newJString(quotaUser))
-  add(path_594663, "fileId", newJString(fileId))
-  add(query_594664, "alt", newJString(alt))
-  add(query_594664, "oauth_token", newJString(oauthToken))
-  add(query_594664, "userIp", newJString(userIp))
-  add(query_594664, "mimeType", newJString(mimeType))
-  add(query_594664, "key", newJString(key))
-  add(query_594664, "prettyPrint", newJBool(prettyPrint))
-  result = call_594662.call(path_594663, query_594664, nil, nil, nil)
+  var path_580663 = newJObject()
+  var query_580664 = newJObject()
+  add(query_580664, "fields", newJString(fields))
+  add(query_580664, "quotaUser", newJString(quotaUser))
+  add(path_580663, "fileId", newJString(fileId))
+  add(query_580664, "alt", newJString(alt))
+  add(query_580664, "oauth_token", newJString(oauthToken))
+  add(query_580664, "userIp", newJString(userIp))
+  add(query_580664, "mimeType", newJString(mimeType))
+  add(query_580664, "key", newJString(key))
+  add(query_580664, "prettyPrint", newJBool(prettyPrint))
+  result = call_580662.call(path_580663, query_580664, nil, nil, nil)
 
-var driveFilesExport* = Call_DriveFilesExport_594649(name: "driveFilesExport",
+var driveFilesExport* = Call_DriveFilesExport_580649(name: "driveFilesExport",
     meth: HttpMethod.HttpGet, host: "www.googleapis.com",
-    route: "/files/{fileId}/export", validator: validate_DriveFilesExport_594650,
-    base: "/drive/v2", url: url_DriveFilesExport_594651, schemes: {Scheme.Https})
+    route: "/files/{fileId}/export", validator: validate_DriveFilesExport_580650,
+    base: "/drive/v2", url: url_DriveFilesExport_580651, schemes: {Scheme.Https})
 type
-  Call_DriveParentsInsert_594680 = ref object of OpenApiRestCall_593424
-proc url_DriveParentsInsert_594682(protocol: Scheme; host: string; base: string;
+  Call_DriveParentsInsert_580680 = ref object of OpenApiRestCall_579424
+proc url_DriveParentsInsert_580682(protocol: Scheme; host: string; base: string;
                                   route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "fileId" in path, "`fileId` is a required path parameter"
   const
@@ -6891,7 +6893,7 @@ proc url_DriveParentsInsert_594682(protocol: Scheme; host: string; base: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_DriveParentsInsert_594681(path: JsonNode; query: JsonNode;
+proc validate_DriveParentsInsert_580681(path: JsonNode; query: JsonNode;
                                        header: JsonNode; formData: JsonNode;
                                        body: JsonNode): JsonNode =
   ## Adds a parent folder for a file.
@@ -6903,11 +6905,11 @@ proc validate_DriveParentsInsert_594681(path: JsonNode; query: JsonNode;
   ##         : The ID of the file.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `fileId` field"
-  var valid_594683 = path.getOrDefault("fileId")
-  valid_594683 = validateParameter(valid_594683, JString, required = true,
+  var valid_580683 = path.getOrDefault("fileId")
+  valid_580683 = validateParameter(valid_580683, JString, required = true,
                                  default = nil)
-  if valid_594683 != nil:
-    section.add "fileId", valid_594683
+  if valid_580683 != nil:
+    section.add "fileId", valid_580683
   result.add "path", section
   ## parameters in `query` object:
   ##   supportsAllDrives: JBool
@@ -6929,51 +6931,51 @@ proc validate_DriveParentsInsert_594681(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_594684 = query.getOrDefault("supportsAllDrives")
-  valid_594684 = validateParameter(valid_594684, JBool, required = false,
+  var valid_580684 = query.getOrDefault("supportsAllDrives")
+  valid_580684 = validateParameter(valid_580684, JBool, required = false,
                                  default = newJBool(false))
-  if valid_594684 != nil:
-    section.add "supportsAllDrives", valid_594684
-  var valid_594685 = query.getOrDefault("fields")
-  valid_594685 = validateParameter(valid_594685, JString, required = false,
+  if valid_580684 != nil:
+    section.add "supportsAllDrives", valid_580684
+  var valid_580685 = query.getOrDefault("fields")
+  valid_580685 = validateParameter(valid_580685, JString, required = false,
                                  default = nil)
-  if valid_594685 != nil:
-    section.add "fields", valid_594685
-  var valid_594686 = query.getOrDefault("quotaUser")
-  valid_594686 = validateParameter(valid_594686, JString, required = false,
+  if valid_580685 != nil:
+    section.add "fields", valid_580685
+  var valid_580686 = query.getOrDefault("quotaUser")
+  valid_580686 = validateParameter(valid_580686, JString, required = false,
                                  default = nil)
-  if valid_594686 != nil:
-    section.add "quotaUser", valid_594686
-  var valid_594687 = query.getOrDefault("alt")
-  valid_594687 = validateParameter(valid_594687, JString, required = false,
+  if valid_580686 != nil:
+    section.add "quotaUser", valid_580686
+  var valid_580687 = query.getOrDefault("alt")
+  valid_580687 = validateParameter(valid_580687, JString, required = false,
                                  default = newJString("json"))
-  if valid_594687 != nil:
-    section.add "alt", valid_594687
-  var valid_594688 = query.getOrDefault("oauth_token")
-  valid_594688 = validateParameter(valid_594688, JString, required = false,
+  if valid_580687 != nil:
+    section.add "alt", valid_580687
+  var valid_580688 = query.getOrDefault("oauth_token")
+  valid_580688 = validateParameter(valid_580688, JString, required = false,
                                  default = nil)
-  if valid_594688 != nil:
-    section.add "oauth_token", valid_594688
-  var valid_594689 = query.getOrDefault("userIp")
-  valid_594689 = validateParameter(valid_594689, JString, required = false,
+  if valid_580688 != nil:
+    section.add "oauth_token", valid_580688
+  var valid_580689 = query.getOrDefault("userIp")
+  valid_580689 = validateParameter(valid_580689, JString, required = false,
                                  default = nil)
-  if valid_594689 != nil:
-    section.add "userIp", valid_594689
-  var valid_594690 = query.getOrDefault("supportsTeamDrives")
-  valid_594690 = validateParameter(valid_594690, JBool, required = false,
+  if valid_580689 != nil:
+    section.add "userIp", valid_580689
+  var valid_580690 = query.getOrDefault("supportsTeamDrives")
+  valid_580690 = validateParameter(valid_580690, JBool, required = false,
                                  default = newJBool(false))
-  if valid_594690 != nil:
-    section.add "supportsTeamDrives", valid_594690
-  var valid_594691 = query.getOrDefault("key")
-  valid_594691 = validateParameter(valid_594691, JString, required = false,
+  if valid_580690 != nil:
+    section.add "supportsTeamDrives", valid_580690
+  var valid_580691 = query.getOrDefault("key")
+  valid_580691 = validateParameter(valid_580691, JString, required = false,
                                  default = nil)
-  if valid_594691 != nil:
-    section.add "key", valid_594691
-  var valid_594692 = query.getOrDefault("prettyPrint")
-  valid_594692 = validateParameter(valid_594692, JBool, required = false,
+  if valid_580691 != nil:
+    section.add "key", valid_580691
+  var valid_580692 = query.getOrDefault("prettyPrint")
+  valid_580692 = validateParameter(valid_580692, JBool, required = false,
                                  default = newJBool(true))
-  if valid_594692 != nil:
-    section.add "prettyPrint", valid_594692
+  if valid_580692 != nil:
+    section.add "prettyPrint", valid_580692
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -6985,20 +6987,20 @@ proc validate_DriveParentsInsert_594681(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_594694: Call_DriveParentsInsert_594680; path: JsonNode;
+proc call*(call_580694: Call_DriveParentsInsert_580680; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Adds a parent folder for a file.
   ## 
-  let valid = call_594694.validator(path, query, header, formData, body)
-  let scheme = call_594694.pickScheme
+  let valid = call_580694.validator(path, query, header, formData, body)
+  let scheme = call_580694.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_594694.url(scheme.get, call_594694.host, call_594694.base,
-                         call_594694.route, valid.getOrDefault("path"),
+  let url = call_580694.url(scheme.get, call_580694.host, call_580694.base,
+                         call_580694.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_594694, url, valid)
+  result = hook(call_580694, url, valid)
 
-proc call*(call_594695: Call_DriveParentsInsert_594680; fileId: string;
+proc call*(call_580695: Call_DriveParentsInsert_580680; fileId: string;
           supportsAllDrives: bool = false; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; userIp: string = "";
           supportsTeamDrives: bool = false; key: string = ""; body: JsonNode = nil;
@@ -7026,35 +7028,35 @@ proc call*(call_594695: Call_DriveParentsInsert_594680; fileId: string;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_594696 = newJObject()
-  var query_594697 = newJObject()
-  var body_594698 = newJObject()
-  add(query_594697, "supportsAllDrives", newJBool(supportsAllDrives))
-  add(query_594697, "fields", newJString(fields))
-  add(query_594697, "quotaUser", newJString(quotaUser))
-  add(path_594696, "fileId", newJString(fileId))
-  add(query_594697, "alt", newJString(alt))
-  add(query_594697, "oauth_token", newJString(oauthToken))
-  add(query_594697, "userIp", newJString(userIp))
-  add(query_594697, "supportsTeamDrives", newJBool(supportsTeamDrives))
-  add(query_594697, "key", newJString(key))
+  var path_580696 = newJObject()
+  var query_580697 = newJObject()
+  var body_580698 = newJObject()
+  add(query_580697, "supportsAllDrives", newJBool(supportsAllDrives))
+  add(query_580697, "fields", newJString(fields))
+  add(query_580697, "quotaUser", newJString(quotaUser))
+  add(path_580696, "fileId", newJString(fileId))
+  add(query_580697, "alt", newJString(alt))
+  add(query_580697, "oauth_token", newJString(oauthToken))
+  add(query_580697, "userIp", newJString(userIp))
+  add(query_580697, "supportsTeamDrives", newJBool(supportsTeamDrives))
+  add(query_580697, "key", newJString(key))
   if body != nil:
-    body_594698 = body
-  add(query_594697, "prettyPrint", newJBool(prettyPrint))
-  result = call_594695.call(path_594696, query_594697, nil, nil, body_594698)
+    body_580698 = body
+  add(query_580697, "prettyPrint", newJBool(prettyPrint))
+  result = call_580695.call(path_580696, query_580697, nil, nil, body_580698)
 
-var driveParentsInsert* = Call_DriveParentsInsert_594680(
+var driveParentsInsert* = Call_DriveParentsInsert_580680(
     name: "driveParentsInsert", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com", route: "/files/{fileId}/parents",
-    validator: validate_DriveParentsInsert_594681, base: "/drive/v2",
-    url: url_DriveParentsInsert_594682, schemes: {Scheme.Https})
+    validator: validate_DriveParentsInsert_580681, base: "/drive/v2",
+    url: url_DriveParentsInsert_580682, schemes: {Scheme.Https})
 type
-  Call_DriveParentsList_594665 = ref object of OpenApiRestCall_593424
-proc url_DriveParentsList_594667(protocol: Scheme; host: string; base: string;
+  Call_DriveParentsList_580665 = ref object of OpenApiRestCall_579424
+proc url_DriveParentsList_580667(protocol: Scheme; host: string; base: string;
                                 route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "fileId" in path, "`fileId` is a required path parameter"
   const
@@ -7066,7 +7068,7 @@ proc url_DriveParentsList_594667(protocol: Scheme; host: string; base: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_DriveParentsList_594666(path: JsonNode; query: JsonNode;
+proc validate_DriveParentsList_580666(path: JsonNode; query: JsonNode;
                                      header: JsonNode; formData: JsonNode;
                                      body: JsonNode): JsonNode =
   ## Lists a file's parents.
@@ -7078,11 +7080,11 @@ proc validate_DriveParentsList_594666(path: JsonNode; query: JsonNode;
   ##         : The ID of the file.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `fileId` field"
-  var valid_594668 = path.getOrDefault("fileId")
-  valid_594668 = validateParameter(valid_594668, JString, required = true,
+  var valid_580668 = path.getOrDefault("fileId")
+  valid_580668 = validateParameter(valid_580668, JString, required = true,
                                  default = nil)
-  if valid_594668 != nil:
-    section.add "fileId", valid_594668
+  if valid_580668 != nil:
+    section.add "fileId", valid_580668
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -7100,41 +7102,41 @@ proc validate_DriveParentsList_594666(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_594669 = query.getOrDefault("fields")
-  valid_594669 = validateParameter(valid_594669, JString, required = false,
+  var valid_580669 = query.getOrDefault("fields")
+  valid_580669 = validateParameter(valid_580669, JString, required = false,
                                  default = nil)
-  if valid_594669 != nil:
-    section.add "fields", valid_594669
-  var valid_594670 = query.getOrDefault("quotaUser")
-  valid_594670 = validateParameter(valid_594670, JString, required = false,
+  if valid_580669 != nil:
+    section.add "fields", valid_580669
+  var valid_580670 = query.getOrDefault("quotaUser")
+  valid_580670 = validateParameter(valid_580670, JString, required = false,
                                  default = nil)
-  if valid_594670 != nil:
-    section.add "quotaUser", valid_594670
-  var valid_594671 = query.getOrDefault("alt")
-  valid_594671 = validateParameter(valid_594671, JString, required = false,
+  if valid_580670 != nil:
+    section.add "quotaUser", valid_580670
+  var valid_580671 = query.getOrDefault("alt")
+  valid_580671 = validateParameter(valid_580671, JString, required = false,
                                  default = newJString("json"))
-  if valid_594671 != nil:
-    section.add "alt", valid_594671
-  var valid_594672 = query.getOrDefault("oauth_token")
-  valid_594672 = validateParameter(valid_594672, JString, required = false,
+  if valid_580671 != nil:
+    section.add "alt", valid_580671
+  var valid_580672 = query.getOrDefault("oauth_token")
+  valid_580672 = validateParameter(valid_580672, JString, required = false,
                                  default = nil)
-  if valid_594672 != nil:
-    section.add "oauth_token", valid_594672
-  var valid_594673 = query.getOrDefault("userIp")
-  valid_594673 = validateParameter(valid_594673, JString, required = false,
+  if valid_580672 != nil:
+    section.add "oauth_token", valid_580672
+  var valid_580673 = query.getOrDefault("userIp")
+  valid_580673 = validateParameter(valid_580673, JString, required = false,
                                  default = nil)
-  if valid_594673 != nil:
-    section.add "userIp", valid_594673
-  var valid_594674 = query.getOrDefault("key")
-  valid_594674 = validateParameter(valid_594674, JString, required = false,
+  if valid_580673 != nil:
+    section.add "userIp", valid_580673
+  var valid_580674 = query.getOrDefault("key")
+  valid_580674 = validateParameter(valid_580674, JString, required = false,
                                  default = nil)
-  if valid_594674 != nil:
-    section.add "key", valid_594674
-  var valid_594675 = query.getOrDefault("prettyPrint")
-  valid_594675 = validateParameter(valid_594675, JBool, required = false,
+  if valid_580674 != nil:
+    section.add "key", valid_580674
+  var valid_580675 = query.getOrDefault("prettyPrint")
+  valid_580675 = validateParameter(valid_580675, JBool, required = false,
                                  default = newJBool(true))
-  if valid_594675 != nil:
-    section.add "prettyPrint", valid_594675
+  if valid_580675 != nil:
+    section.add "prettyPrint", valid_580675
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -7143,20 +7145,20 @@ proc validate_DriveParentsList_594666(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_594676: Call_DriveParentsList_594665; path: JsonNode;
+proc call*(call_580676: Call_DriveParentsList_580665; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Lists a file's parents.
   ## 
-  let valid = call_594676.validator(path, query, header, formData, body)
-  let scheme = call_594676.pickScheme
+  let valid = call_580676.validator(path, query, header, formData, body)
+  let scheme = call_580676.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_594676.url(scheme.get, call_594676.host, call_594676.base,
-                         call_594676.route, valid.getOrDefault("path"),
+  let url = call_580676.url(scheme.get, call_580676.host, call_580676.base,
+                         call_580676.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_594676, url, valid)
+  result = hook(call_580676, url, valid)
 
-proc call*(call_594677: Call_DriveParentsList_594665; fileId: string;
+proc call*(call_580677: Call_DriveParentsList_580665; fileId: string;
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           oauthToken: string = ""; userIp: string = ""; key: string = "";
           prettyPrint: bool = true): Recallable =
@@ -7178,29 +7180,29 @@ proc call*(call_594677: Call_DriveParentsList_594665; fileId: string;
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_594678 = newJObject()
-  var query_594679 = newJObject()
-  add(query_594679, "fields", newJString(fields))
-  add(query_594679, "quotaUser", newJString(quotaUser))
-  add(path_594678, "fileId", newJString(fileId))
-  add(query_594679, "alt", newJString(alt))
-  add(query_594679, "oauth_token", newJString(oauthToken))
-  add(query_594679, "userIp", newJString(userIp))
-  add(query_594679, "key", newJString(key))
-  add(query_594679, "prettyPrint", newJBool(prettyPrint))
-  result = call_594677.call(path_594678, query_594679, nil, nil, nil)
+  var path_580678 = newJObject()
+  var query_580679 = newJObject()
+  add(query_580679, "fields", newJString(fields))
+  add(query_580679, "quotaUser", newJString(quotaUser))
+  add(path_580678, "fileId", newJString(fileId))
+  add(query_580679, "alt", newJString(alt))
+  add(query_580679, "oauth_token", newJString(oauthToken))
+  add(query_580679, "userIp", newJString(userIp))
+  add(query_580679, "key", newJString(key))
+  add(query_580679, "prettyPrint", newJBool(prettyPrint))
+  result = call_580677.call(path_580678, query_580679, nil, nil, nil)
 
-var driveParentsList* = Call_DriveParentsList_594665(name: "driveParentsList",
+var driveParentsList* = Call_DriveParentsList_580665(name: "driveParentsList",
     meth: HttpMethod.HttpGet, host: "www.googleapis.com",
-    route: "/files/{fileId}/parents", validator: validate_DriveParentsList_594666,
-    base: "/drive/v2", url: url_DriveParentsList_594667, schemes: {Scheme.Https})
+    route: "/files/{fileId}/parents", validator: validate_DriveParentsList_580666,
+    base: "/drive/v2", url: url_DriveParentsList_580667, schemes: {Scheme.Https})
 type
-  Call_DriveParentsGet_594699 = ref object of OpenApiRestCall_593424
-proc url_DriveParentsGet_594701(protocol: Scheme; host: string; base: string;
+  Call_DriveParentsGet_580699 = ref object of OpenApiRestCall_579424
+proc url_DriveParentsGet_580701(protocol: Scheme; host: string; base: string;
                                route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "fileId" in path, "`fileId` is a required path parameter"
   assert "parentId" in path, "`parentId` is a required path parameter"
@@ -7214,7 +7216,7 @@ proc url_DriveParentsGet_594701(protocol: Scheme; host: string; base: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_DriveParentsGet_594700(path: JsonNode; query: JsonNode;
+proc validate_DriveParentsGet_580700(path: JsonNode; query: JsonNode;
                                     header: JsonNode; formData: JsonNode;
                                     body: JsonNode): JsonNode =
   ## Gets a specific parent reference.
@@ -7228,16 +7230,16 @@ proc validate_DriveParentsGet_594700(path: JsonNode; query: JsonNode;
   ##           : The ID of the parent.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `fileId` field"
-  var valid_594702 = path.getOrDefault("fileId")
-  valid_594702 = validateParameter(valid_594702, JString, required = true,
+  var valid_580702 = path.getOrDefault("fileId")
+  valid_580702 = validateParameter(valid_580702, JString, required = true,
                                  default = nil)
-  if valid_594702 != nil:
-    section.add "fileId", valid_594702
-  var valid_594703 = path.getOrDefault("parentId")
-  valid_594703 = validateParameter(valid_594703, JString, required = true,
+  if valid_580702 != nil:
+    section.add "fileId", valid_580702
+  var valid_580703 = path.getOrDefault("parentId")
+  valid_580703 = validateParameter(valid_580703, JString, required = true,
                                  default = nil)
-  if valid_594703 != nil:
-    section.add "parentId", valid_594703
+  if valid_580703 != nil:
+    section.add "parentId", valid_580703
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -7255,41 +7257,41 @@ proc validate_DriveParentsGet_594700(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_594704 = query.getOrDefault("fields")
-  valid_594704 = validateParameter(valid_594704, JString, required = false,
+  var valid_580704 = query.getOrDefault("fields")
+  valid_580704 = validateParameter(valid_580704, JString, required = false,
                                  default = nil)
-  if valid_594704 != nil:
-    section.add "fields", valid_594704
-  var valid_594705 = query.getOrDefault("quotaUser")
-  valid_594705 = validateParameter(valid_594705, JString, required = false,
+  if valid_580704 != nil:
+    section.add "fields", valid_580704
+  var valid_580705 = query.getOrDefault("quotaUser")
+  valid_580705 = validateParameter(valid_580705, JString, required = false,
                                  default = nil)
-  if valid_594705 != nil:
-    section.add "quotaUser", valid_594705
-  var valid_594706 = query.getOrDefault("alt")
-  valid_594706 = validateParameter(valid_594706, JString, required = false,
+  if valid_580705 != nil:
+    section.add "quotaUser", valid_580705
+  var valid_580706 = query.getOrDefault("alt")
+  valid_580706 = validateParameter(valid_580706, JString, required = false,
                                  default = newJString("json"))
-  if valid_594706 != nil:
-    section.add "alt", valid_594706
-  var valid_594707 = query.getOrDefault("oauth_token")
-  valid_594707 = validateParameter(valid_594707, JString, required = false,
+  if valid_580706 != nil:
+    section.add "alt", valid_580706
+  var valid_580707 = query.getOrDefault("oauth_token")
+  valid_580707 = validateParameter(valid_580707, JString, required = false,
                                  default = nil)
-  if valid_594707 != nil:
-    section.add "oauth_token", valid_594707
-  var valid_594708 = query.getOrDefault("userIp")
-  valid_594708 = validateParameter(valid_594708, JString, required = false,
+  if valid_580707 != nil:
+    section.add "oauth_token", valid_580707
+  var valid_580708 = query.getOrDefault("userIp")
+  valid_580708 = validateParameter(valid_580708, JString, required = false,
                                  default = nil)
-  if valid_594708 != nil:
-    section.add "userIp", valid_594708
-  var valid_594709 = query.getOrDefault("key")
-  valid_594709 = validateParameter(valid_594709, JString, required = false,
+  if valid_580708 != nil:
+    section.add "userIp", valid_580708
+  var valid_580709 = query.getOrDefault("key")
+  valid_580709 = validateParameter(valid_580709, JString, required = false,
                                  default = nil)
-  if valid_594709 != nil:
-    section.add "key", valid_594709
-  var valid_594710 = query.getOrDefault("prettyPrint")
-  valid_594710 = validateParameter(valid_594710, JBool, required = false,
+  if valid_580709 != nil:
+    section.add "key", valid_580709
+  var valid_580710 = query.getOrDefault("prettyPrint")
+  valid_580710 = validateParameter(valid_580710, JBool, required = false,
                                  default = newJBool(true))
-  if valid_594710 != nil:
-    section.add "prettyPrint", valid_594710
+  if valid_580710 != nil:
+    section.add "prettyPrint", valid_580710
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -7298,20 +7300,20 @@ proc validate_DriveParentsGet_594700(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_594711: Call_DriveParentsGet_594699; path: JsonNode; query: JsonNode;
+proc call*(call_580711: Call_DriveParentsGet_580699; path: JsonNode; query: JsonNode;
           header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Gets a specific parent reference.
   ## 
-  let valid = call_594711.validator(path, query, header, formData, body)
-  let scheme = call_594711.pickScheme
+  let valid = call_580711.validator(path, query, header, formData, body)
+  let scheme = call_580711.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_594711.url(scheme.get, call_594711.host, call_594711.base,
-                         call_594711.route, valid.getOrDefault("path"),
+  let url = call_580711.url(scheme.get, call_580711.host, call_580711.base,
+                         call_580711.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_594711, url, valid)
+  result = hook(call_580711, url, valid)
 
-proc call*(call_594712: Call_DriveParentsGet_594699; fileId: string;
+proc call*(call_580712: Call_DriveParentsGet_580699; fileId: string;
           parentId: string; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; userIp: string = "";
           key: string = ""; prettyPrint: bool = true): Recallable =
@@ -7335,31 +7337,31 @@ proc call*(call_594712: Call_DriveParentsGet_594699; fileId: string;
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_594713 = newJObject()
-  var query_594714 = newJObject()
-  add(query_594714, "fields", newJString(fields))
-  add(query_594714, "quotaUser", newJString(quotaUser))
-  add(path_594713, "fileId", newJString(fileId))
-  add(query_594714, "alt", newJString(alt))
-  add(path_594713, "parentId", newJString(parentId))
-  add(query_594714, "oauth_token", newJString(oauthToken))
-  add(query_594714, "userIp", newJString(userIp))
-  add(query_594714, "key", newJString(key))
-  add(query_594714, "prettyPrint", newJBool(prettyPrint))
-  result = call_594712.call(path_594713, query_594714, nil, nil, nil)
+  var path_580713 = newJObject()
+  var query_580714 = newJObject()
+  add(query_580714, "fields", newJString(fields))
+  add(query_580714, "quotaUser", newJString(quotaUser))
+  add(path_580713, "fileId", newJString(fileId))
+  add(query_580714, "alt", newJString(alt))
+  add(path_580713, "parentId", newJString(parentId))
+  add(query_580714, "oauth_token", newJString(oauthToken))
+  add(query_580714, "userIp", newJString(userIp))
+  add(query_580714, "key", newJString(key))
+  add(query_580714, "prettyPrint", newJBool(prettyPrint))
+  result = call_580712.call(path_580713, query_580714, nil, nil, nil)
 
-var driveParentsGet* = Call_DriveParentsGet_594699(name: "driveParentsGet",
+var driveParentsGet* = Call_DriveParentsGet_580699(name: "driveParentsGet",
     meth: HttpMethod.HttpGet, host: "www.googleapis.com",
     route: "/files/{fileId}/parents/{parentId}",
-    validator: validate_DriveParentsGet_594700, base: "/drive/v2",
-    url: url_DriveParentsGet_594701, schemes: {Scheme.Https})
+    validator: validate_DriveParentsGet_580700, base: "/drive/v2",
+    url: url_DriveParentsGet_580701, schemes: {Scheme.Https})
 type
-  Call_DriveParentsDelete_594715 = ref object of OpenApiRestCall_593424
-proc url_DriveParentsDelete_594717(protocol: Scheme; host: string; base: string;
+  Call_DriveParentsDelete_580715 = ref object of OpenApiRestCall_579424
+proc url_DriveParentsDelete_580717(protocol: Scheme; host: string; base: string;
                                   route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "fileId" in path, "`fileId` is a required path parameter"
   assert "parentId" in path, "`parentId` is a required path parameter"
@@ -7373,7 +7375,7 @@ proc url_DriveParentsDelete_594717(protocol: Scheme; host: string; base: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_DriveParentsDelete_594716(path: JsonNode; query: JsonNode;
+proc validate_DriveParentsDelete_580716(path: JsonNode; query: JsonNode;
                                        header: JsonNode; formData: JsonNode;
                                        body: JsonNode): JsonNode =
   ## Removes a parent from a file.
@@ -7387,16 +7389,16 @@ proc validate_DriveParentsDelete_594716(path: JsonNode; query: JsonNode;
   ##           : The ID of the parent.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `fileId` field"
-  var valid_594718 = path.getOrDefault("fileId")
-  valid_594718 = validateParameter(valid_594718, JString, required = true,
+  var valid_580718 = path.getOrDefault("fileId")
+  valid_580718 = validateParameter(valid_580718, JString, required = true,
                                  default = nil)
-  if valid_594718 != nil:
-    section.add "fileId", valid_594718
-  var valid_594719 = path.getOrDefault("parentId")
-  valid_594719 = validateParameter(valid_594719, JString, required = true,
+  if valid_580718 != nil:
+    section.add "fileId", valid_580718
+  var valid_580719 = path.getOrDefault("parentId")
+  valid_580719 = validateParameter(valid_580719, JString, required = true,
                                  default = nil)
-  if valid_594719 != nil:
-    section.add "parentId", valid_594719
+  if valid_580719 != nil:
+    section.add "parentId", valid_580719
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -7414,41 +7416,41 @@ proc validate_DriveParentsDelete_594716(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_594720 = query.getOrDefault("fields")
-  valid_594720 = validateParameter(valid_594720, JString, required = false,
+  var valid_580720 = query.getOrDefault("fields")
+  valid_580720 = validateParameter(valid_580720, JString, required = false,
                                  default = nil)
-  if valid_594720 != nil:
-    section.add "fields", valid_594720
-  var valid_594721 = query.getOrDefault("quotaUser")
-  valid_594721 = validateParameter(valid_594721, JString, required = false,
+  if valid_580720 != nil:
+    section.add "fields", valid_580720
+  var valid_580721 = query.getOrDefault("quotaUser")
+  valid_580721 = validateParameter(valid_580721, JString, required = false,
                                  default = nil)
-  if valid_594721 != nil:
-    section.add "quotaUser", valid_594721
-  var valid_594722 = query.getOrDefault("alt")
-  valid_594722 = validateParameter(valid_594722, JString, required = false,
+  if valid_580721 != nil:
+    section.add "quotaUser", valid_580721
+  var valid_580722 = query.getOrDefault("alt")
+  valid_580722 = validateParameter(valid_580722, JString, required = false,
                                  default = newJString("json"))
-  if valid_594722 != nil:
-    section.add "alt", valid_594722
-  var valid_594723 = query.getOrDefault("oauth_token")
-  valid_594723 = validateParameter(valid_594723, JString, required = false,
+  if valid_580722 != nil:
+    section.add "alt", valid_580722
+  var valid_580723 = query.getOrDefault("oauth_token")
+  valid_580723 = validateParameter(valid_580723, JString, required = false,
                                  default = nil)
-  if valid_594723 != nil:
-    section.add "oauth_token", valid_594723
-  var valid_594724 = query.getOrDefault("userIp")
-  valid_594724 = validateParameter(valid_594724, JString, required = false,
+  if valid_580723 != nil:
+    section.add "oauth_token", valid_580723
+  var valid_580724 = query.getOrDefault("userIp")
+  valid_580724 = validateParameter(valid_580724, JString, required = false,
                                  default = nil)
-  if valid_594724 != nil:
-    section.add "userIp", valid_594724
-  var valid_594725 = query.getOrDefault("key")
-  valid_594725 = validateParameter(valid_594725, JString, required = false,
+  if valid_580724 != nil:
+    section.add "userIp", valid_580724
+  var valid_580725 = query.getOrDefault("key")
+  valid_580725 = validateParameter(valid_580725, JString, required = false,
                                  default = nil)
-  if valid_594725 != nil:
-    section.add "key", valid_594725
-  var valid_594726 = query.getOrDefault("prettyPrint")
-  valid_594726 = validateParameter(valid_594726, JBool, required = false,
+  if valid_580725 != nil:
+    section.add "key", valid_580725
+  var valid_580726 = query.getOrDefault("prettyPrint")
+  valid_580726 = validateParameter(valid_580726, JBool, required = false,
                                  default = newJBool(true))
-  if valid_594726 != nil:
-    section.add "prettyPrint", valid_594726
+  if valid_580726 != nil:
+    section.add "prettyPrint", valid_580726
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -7457,20 +7459,20 @@ proc validate_DriveParentsDelete_594716(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_594727: Call_DriveParentsDelete_594715; path: JsonNode;
+proc call*(call_580727: Call_DriveParentsDelete_580715; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Removes a parent from a file.
   ## 
-  let valid = call_594727.validator(path, query, header, formData, body)
-  let scheme = call_594727.pickScheme
+  let valid = call_580727.validator(path, query, header, formData, body)
+  let scheme = call_580727.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_594727.url(scheme.get, call_594727.host, call_594727.base,
-                         call_594727.route, valid.getOrDefault("path"),
+  let url = call_580727.url(scheme.get, call_580727.host, call_580727.base,
+                         call_580727.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_594727, url, valid)
+  result = hook(call_580727, url, valid)
 
-proc call*(call_594728: Call_DriveParentsDelete_594715; fileId: string;
+proc call*(call_580728: Call_DriveParentsDelete_580715; fileId: string;
           parentId: string; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; userIp: string = "";
           key: string = ""; prettyPrint: bool = true): Recallable =
@@ -7494,31 +7496,31 @@ proc call*(call_594728: Call_DriveParentsDelete_594715; fileId: string;
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_594729 = newJObject()
-  var query_594730 = newJObject()
-  add(query_594730, "fields", newJString(fields))
-  add(query_594730, "quotaUser", newJString(quotaUser))
-  add(path_594729, "fileId", newJString(fileId))
-  add(query_594730, "alt", newJString(alt))
-  add(path_594729, "parentId", newJString(parentId))
-  add(query_594730, "oauth_token", newJString(oauthToken))
-  add(query_594730, "userIp", newJString(userIp))
-  add(query_594730, "key", newJString(key))
-  add(query_594730, "prettyPrint", newJBool(prettyPrint))
-  result = call_594728.call(path_594729, query_594730, nil, nil, nil)
+  var path_580729 = newJObject()
+  var query_580730 = newJObject()
+  add(query_580730, "fields", newJString(fields))
+  add(query_580730, "quotaUser", newJString(quotaUser))
+  add(path_580729, "fileId", newJString(fileId))
+  add(query_580730, "alt", newJString(alt))
+  add(path_580729, "parentId", newJString(parentId))
+  add(query_580730, "oauth_token", newJString(oauthToken))
+  add(query_580730, "userIp", newJString(userIp))
+  add(query_580730, "key", newJString(key))
+  add(query_580730, "prettyPrint", newJBool(prettyPrint))
+  result = call_580728.call(path_580729, query_580730, nil, nil, nil)
 
-var driveParentsDelete* = Call_DriveParentsDelete_594715(
+var driveParentsDelete* = Call_DriveParentsDelete_580715(
     name: "driveParentsDelete", meth: HttpMethod.HttpDelete,
     host: "www.googleapis.com", route: "/files/{fileId}/parents/{parentId}",
-    validator: validate_DriveParentsDelete_594716, base: "/drive/v2",
-    url: url_DriveParentsDelete_594717, schemes: {Scheme.Https})
+    validator: validate_DriveParentsDelete_580716, base: "/drive/v2",
+    url: url_DriveParentsDelete_580717, schemes: {Scheme.Https})
 type
-  Call_DrivePermissionsInsert_594751 = ref object of OpenApiRestCall_593424
-proc url_DrivePermissionsInsert_594753(protocol: Scheme; host: string; base: string;
+  Call_DrivePermissionsInsert_580751 = ref object of OpenApiRestCall_579424
+proc url_DrivePermissionsInsert_580753(protocol: Scheme; host: string; base: string;
                                       route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "fileId" in path, "`fileId` is a required path parameter"
   const
@@ -7530,7 +7532,7 @@ proc url_DrivePermissionsInsert_594753(protocol: Scheme; host: string; base: str
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_DrivePermissionsInsert_594752(path: JsonNode; query: JsonNode;
+proc validate_DrivePermissionsInsert_580752(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Inserts a permission for a file or shared drive.
   ## 
@@ -7541,11 +7543,11 @@ proc validate_DrivePermissionsInsert_594752(path: JsonNode; query: JsonNode;
   ##         : The ID for the file or shared drive.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `fileId` field"
-  var valid_594754 = path.getOrDefault("fileId")
-  valid_594754 = validateParameter(valid_594754, JString, required = true,
+  var valid_580754 = path.getOrDefault("fileId")
+  valid_580754 = validateParameter(valid_580754, JString, required = true,
                                  default = nil)
-  if valid_594754 != nil:
-    section.add "fileId", valid_594754
+  if valid_580754 != nil:
+    section.add "fileId", valid_580754
   result.add "path", section
   ## parameters in `query` object:
   ##   supportsAllDrives: JBool
@@ -7573,66 +7575,66 @@ proc validate_DrivePermissionsInsert_594752(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_594755 = query.getOrDefault("supportsAllDrives")
-  valid_594755 = validateParameter(valid_594755, JBool, required = false,
+  var valid_580755 = query.getOrDefault("supportsAllDrives")
+  valid_580755 = validateParameter(valid_580755, JBool, required = false,
                                  default = newJBool(false))
-  if valid_594755 != nil:
-    section.add "supportsAllDrives", valid_594755
-  var valid_594756 = query.getOrDefault("fields")
-  valid_594756 = validateParameter(valid_594756, JString, required = false,
+  if valid_580755 != nil:
+    section.add "supportsAllDrives", valid_580755
+  var valid_580756 = query.getOrDefault("fields")
+  valid_580756 = validateParameter(valid_580756, JString, required = false,
                                  default = nil)
-  if valid_594756 != nil:
-    section.add "fields", valid_594756
-  var valid_594757 = query.getOrDefault("quotaUser")
-  valid_594757 = validateParameter(valid_594757, JString, required = false,
+  if valid_580756 != nil:
+    section.add "fields", valid_580756
+  var valid_580757 = query.getOrDefault("quotaUser")
+  valid_580757 = validateParameter(valid_580757, JString, required = false,
                                  default = nil)
-  if valid_594757 != nil:
-    section.add "quotaUser", valid_594757
-  var valid_594758 = query.getOrDefault("alt")
-  valid_594758 = validateParameter(valid_594758, JString, required = false,
+  if valid_580757 != nil:
+    section.add "quotaUser", valid_580757
+  var valid_580758 = query.getOrDefault("alt")
+  valid_580758 = validateParameter(valid_580758, JString, required = false,
                                  default = newJString("json"))
-  if valid_594758 != nil:
-    section.add "alt", valid_594758
-  var valid_594759 = query.getOrDefault("oauth_token")
-  valid_594759 = validateParameter(valid_594759, JString, required = false,
+  if valid_580758 != nil:
+    section.add "alt", valid_580758
+  var valid_580759 = query.getOrDefault("oauth_token")
+  valid_580759 = validateParameter(valid_580759, JString, required = false,
                                  default = nil)
-  if valid_594759 != nil:
-    section.add "oauth_token", valid_594759
-  var valid_594760 = query.getOrDefault("sendNotificationEmails")
-  valid_594760 = validateParameter(valid_594760, JBool, required = false,
+  if valid_580759 != nil:
+    section.add "oauth_token", valid_580759
+  var valid_580760 = query.getOrDefault("sendNotificationEmails")
+  valid_580760 = validateParameter(valid_580760, JBool, required = false,
                                  default = newJBool(true))
-  if valid_594760 != nil:
-    section.add "sendNotificationEmails", valid_594760
-  var valid_594761 = query.getOrDefault("userIp")
-  valid_594761 = validateParameter(valid_594761, JString, required = false,
+  if valid_580760 != nil:
+    section.add "sendNotificationEmails", valid_580760
+  var valid_580761 = query.getOrDefault("userIp")
+  valid_580761 = validateParameter(valid_580761, JString, required = false,
                                  default = nil)
-  if valid_594761 != nil:
-    section.add "userIp", valid_594761
-  var valid_594762 = query.getOrDefault("supportsTeamDrives")
-  valid_594762 = validateParameter(valid_594762, JBool, required = false,
+  if valid_580761 != nil:
+    section.add "userIp", valid_580761
+  var valid_580762 = query.getOrDefault("supportsTeamDrives")
+  valid_580762 = validateParameter(valid_580762, JBool, required = false,
                                  default = newJBool(false))
-  if valid_594762 != nil:
-    section.add "supportsTeamDrives", valid_594762
-  var valid_594763 = query.getOrDefault("key")
-  valid_594763 = validateParameter(valid_594763, JString, required = false,
+  if valid_580762 != nil:
+    section.add "supportsTeamDrives", valid_580762
+  var valid_580763 = query.getOrDefault("key")
+  valid_580763 = validateParameter(valid_580763, JString, required = false,
                                  default = nil)
-  if valid_594763 != nil:
-    section.add "key", valid_594763
-  var valid_594764 = query.getOrDefault("useDomainAdminAccess")
-  valid_594764 = validateParameter(valid_594764, JBool, required = false,
+  if valid_580763 != nil:
+    section.add "key", valid_580763
+  var valid_580764 = query.getOrDefault("useDomainAdminAccess")
+  valid_580764 = validateParameter(valid_580764, JBool, required = false,
                                  default = newJBool(false))
-  if valid_594764 != nil:
-    section.add "useDomainAdminAccess", valid_594764
-  var valid_594765 = query.getOrDefault("emailMessage")
-  valid_594765 = validateParameter(valid_594765, JString, required = false,
+  if valid_580764 != nil:
+    section.add "useDomainAdminAccess", valid_580764
+  var valid_580765 = query.getOrDefault("emailMessage")
+  valid_580765 = validateParameter(valid_580765, JString, required = false,
                                  default = nil)
-  if valid_594765 != nil:
-    section.add "emailMessage", valid_594765
-  var valid_594766 = query.getOrDefault("prettyPrint")
-  valid_594766 = validateParameter(valid_594766, JBool, required = false,
+  if valid_580765 != nil:
+    section.add "emailMessage", valid_580765
+  var valid_580766 = query.getOrDefault("prettyPrint")
+  valid_580766 = validateParameter(valid_580766, JBool, required = false,
                                  default = newJBool(true))
-  if valid_594766 != nil:
-    section.add "prettyPrint", valid_594766
+  if valid_580766 != nil:
+    section.add "prettyPrint", valid_580766
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -7644,20 +7646,20 @@ proc validate_DrivePermissionsInsert_594752(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_594768: Call_DrivePermissionsInsert_594751; path: JsonNode;
+proc call*(call_580768: Call_DrivePermissionsInsert_580751; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Inserts a permission for a file or shared drive.
   ## 
-  let valid = call_594768.validator(path, query, header, formData, body)
-  let scheme = call_594768.pickScheme
+  let valid = call_580768.validator(path, query, header, formData, body)
+  let scheme = call_580768.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_594768.url(scheme.get, call_594768.host, call_594768.base,
-                         call_594768.route, valid.getOrDefault("path"),
+  let url = call_580768.url(scheme.get, call_580768.host, call_580768.base,
+                         call_580768.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_594768, url, valid)
+  result = hook(call_580768, url, valid)
 
-proc call*(call_594769: Call_DrivePermissionsInsert_594751; fileId: string;
+proc call*(call_580769: Call_DrivePermissionsInsert_580751; fileId: string;
           supportsAllDrives: bool = false; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = "";
           sendNotificationEmails: bool = true; userIp: string = "";
@@ -7693,38 +7695,38 @@ proc call*(call_594769: Call_DrivePermissionsInsert_594751; fileId: string;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_594770 = newJObject()
-  var query_594771 = newJObject()
-  var body_594772 = newJObject()
-  add(query_594771, "supportsAllDrives", newJBool(supportsAllDrives))
-  add(query_594771, "fields", newJString(fields))
-  add(query_594771, "quotaUser", newJString(quotaUser))
-  add(path_594770, "fileId", newJString(fileId))
-  add(query_594771, "alt", newJString(alt))
-  add(query_594771, "oauth_token", newJString(oauthToken))
-  add(query_594771, "sendNotificationEmails", newJBool(sendNotificationEmails))
-  add(query_594771, "userIp", newJString(userIp))
-  add(query_594771, "supportsTeamDrives", newJBool(supportsTeamDrives))
-  add(query_594771, "key", newJString(key))
-  add(query_594771, "useDomainAdminAccess", newJBool(useDomainAdminAccess))
-  add(query_594771, "emailMessage", newJString(emailMessage))
+  var path_580770 = newJObject()
+  var query_580771 = newJObject()
+  var body_580772 = newJObject()
+  add(query_580771, "supportsAllDrives", newJBool(supportsAllDrives))
+  add(query_580771, "fields", newJString(fields))
+  add(query_580771, "quotaUser", newJString(quotaUser))
+  add(path_580770, "fileId", newJString(fileId))
+  add(query_580771, "alt", newJString(alt))
+  add(query_580771, "oauth_token", newJString(oauthToken))
+  add(query_580771, "sendNotificationEmails", newJBool(sendNotificationEmails))
+  add(query_580771, "userIp", newJString(userIp))
+  add(query_580771, "supportsTeamDrives", newJBool(supportsTeamDrives))
+  add(query_580771, "key", newJString(key))
+  add(query_580771, "useDomainAdminAccess", newJBool(useDomainAdminAccess))
+  add(query_580771, "emailMessage", newJString(emailMessage))
   if body != nil:
-    body_594772 = body
-  add(query_594771, "prettyPrint", newJBool(prettyPrint))
-  result = call_594769.call(path_594770, query_594771, nil, nil, body_594772)
+    body_580772 = body
+  add(query_580771, "prettyPrint", newJBool(prettyPrint))
+  result = call_580769.call(path_580770, query_580771, nil, nil, body_580772)
 
-var drivePermissionsInsert* = Call_DrivePermissionsInsert_594751(
+var drivePermissionsInsert* = Call_DrivePermissionsInsert_580751(
     name: "drivePermissionsInsert", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com", route: "/files/{fileId}/permissions",
-    validator: validate_DrivePermissionsInsert_594752, base: "/drive/v2",
-    url: url_DrivePermissionsInsert_594753, schemes: {Scheme.Https})
+    validator: validate_DrivePermissionsInsert_580752, base: "/drive/v2",
+    url: url_DrivePermissionsInsert_580753, schemes: {Scheme.Https})
 type
-  Call_DrivePermissionsList_594731 = ref object of OpenApiRestCall_593424
-proc url_DrivePermissionsList_594733(protocol: Scheme; host: string; base: string;
+  Call_DrivePermissionsList_580731 = ref object of OpenApiRestCall_579424
+proc url_DrivePermissionsList_580733(protocol: Scheme; host: string; base: string;
                                     route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "fileId" in path, "`fileId` is a required path parameter"
   const
@@ -7736,7 +7738,7 @@ proc url_DrivePermissionsList_594733(protocol: Scheme; host: string; base: strin
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_DrivePermissionsList_594732(path: JsonNode; query: JsonNode;
+proc validate_DrivePermissionsList_580732(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Lists a file's or shared drive's permissions.
   ## 
@@ -7747,11 +7749,11 @@ proc validate_DrivePermissionsList_594732(path: JsonNode; query: JsonNode;
   ##         : The ID for the file or shared drive.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `fileId` field"
-  var valid_594734 = path.getOrDefault("fileId")
-  valid_594734 = validateParameter(valid_594734, JString, required = true,
+  var valid_580734 = path.getOrDefault("fileId")
+  valid_580734 = validateParameter(valid_580734, JString, required = true,
                                  default = nil)
-  if valid_594734 != nil:
-    section.add "fileId", valid_594734
+  if valid_580734 != nil:
+    section.add "fileId", valid_580734
   result.add "path", section
   ## parameters in `query` object:
   ##   supportsAllDrives: JBool
@@ -7779,65 +7781,65 @@ proc validate_DrivePermissionsList_594732(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_594735 = query.getOrDefault("supportsAllDrives")
-  valid_594735 = validateParameter(valid_594735, JBool, required = false,
+  var valid_580735 = query.getOrDefault("supportsAllDrives")
+  valid_580735 = validateParameter(valid_580735, JBool, required = false,
                                  default = newJBool(false))
-  if valid_594735 != nil:
-    section.add "supportsAllDrives", valid_594735
-  var valid_594736 = query.getOrDefault("fields")
-  valid_594736 = validateParameter(valid_594736, JString, required = false,
+  if valid_580735 != nil:
+    section.add "supportsAllDrives", valid_580735
+  var valid_580736 = query.getOrDefault("fields")
+  valid_580736 = validateParameter(valid_580736, JString, required = false,
                                  default = nil)
-  if valid_594736 != nil:
-    section.add "fields", valid_594736
-  var valid_594737 = query.getOrDefault("pageToken")
-  valid_594737 = validateParameter(valid_594737, JString, required = false,
+  if valid_580736 != nil:
+    section.add "fields", valid_580736
+  var valid_580737 = query.getOrDefault("pageToken")
+  valid_580737 = validateParameter(valid_580737, JString, required = false,
                                  default = nil)
-  if valid_594737 != nil:
-    section.add "pageToken", valid_594737
-  var valid_594738 = query.getOrDefault("quotaUser")
-  valid_594738 = validateParameter(valid_594738, JString, required = false,
+  if valid_580737 != nil:
+    section.add "pageToken", valid_580737
+  var valid_580738 = query.getOrDefault("quotaUser")
+  valid_580738 = validateParameter(valid_580738, JString, required = false,
                                  default = nil)
-  if valid_594738 != nil:
-    section.add "quotaUser", valid_594738
-  var valid_594739 = query.getOrDefault("alt")
-  valid_594739 = validateParameter(valid_594739, JString, required = false,
+  if valid_580738 != nil:
+    section.add "quotaUser", valid_580738
+  var valid_580739 = query.getOrDefault("alt")
+  valid_580739 = validateParameter(valid_580739, JString, required = false,
                                  default = newJString("json"))
-  if valid_594739 != nil:
-    section.add "alt", valid_594739
-  var valid_594740 = query.getOrDefault("oauth_token")
-  valid_594740 = validateParameter(valid_594740, JString, required = false,
+  if valid_580739 != nil:
+    section.add "alt", valid_580739
+  var valid_580740 = query.getOrDefault("oauth_token")
+  valid_580740 = validateParameter(valid_580740, JString, required = false,
                                  default = nil)
-  if valid_594740 != nil:
-    section.add "oauth_token", valid_594740
-  var valid_594741 = query.getOrDefault("userIp")
-  valid_594741 = validateParameter(valid_594741, JString, required = false,
+  if valid_580740 != nil:
+    section.add "oauth_token", valid_580740
+  var valid_580741 = query.getOrDefault("userIp")
+  valid_580741 = validateParameter(valid_580741, JString, required = false,
                                  default = nil)
-  if valid_594741 != nil:
-    section.add "userIp", valid_594741
-  var valid_594742 = query.getOrDefault("maxResults")
-  valid_594742 = validateParameter(valid_594742, JInt, required = false, default = nil)
-  if valid_594742 != nil:
-    section.add "maxResults", valid_594742
-  var valid_594743 = query.getOrDefault("supportsTeamDrives")
-  valid_594743 = validateParameter(valid_594743, JBool, required = false,
+  if valid_580741 != nil:
+    section.add "userIp", valid_580741
+  var valid_580742 = query.getOrDefault("maxResults")
+  valid_580742 = validateParameter(valid_580742, JInt, required = false, default = nil)
+  if valid_580742 != nil:
+    section.add "maxResults", valid_580742
+  var valid_580743 = query.getOrDefault("supportsTeamDrives")
+  valid_580743 = validateParameter(valid_580743, JBool, required = false,
                                  default = newJBool(false))
-  if valid_594743 != nil:
-    section.add "supportsTeamDrives", valid_594743
-  var valid_594744 = query.getOrDefault("key")
-  valid_594744 = validateParameter(valid_594744, JString, required = false,
+  if valid_580743 != nil:
+    section.add "supportsTeamDrives", valid_580743
+  var valid_580744 = query.getOrDefault("key")
+  valid_580744 = validateParameter(valid_580744, JString, required = false,
                                  default = nil)
-  if valid_594744 != nil:
-    section.add "key", valid_594744
-  var valid_594745 = query.getOrDefault("useDomainAdminAccess")
-  valid_594745 = validateParameter(valid_594745, JBool, required = false,
+  if valid_580744 != nil:
+    section.add "key", valid_580744
+  var valid_580745 = query.getOrDefault("useDomainAdminAccess")
+  valid_580745 = validateParameter(valid_580745, JBool, required = false,
                                  default = newJBool(false))
-  if valid_594745 != nil:
-    section.add "useDomainAdminAccess", valid_594745
-  var valid_594746 = query.getOrDefault("prettyPrint")
-  valid_594746 = validateParameter(valid_594746, JBool, required = false,
+  if valid_580745 != nil:
+    section.add "useDomainAdminAccess", valid_580745
+  var valid_580746 = query.getOrDefault("prettyPrint")
+  valid_580746 = validateParameter(valid_580746, JBool, required = false,
                                  default = newJBool(true))
-  if valid_594746 != nil:
-    section.add "prettyPrint", valid_594746
+  if valid_580746 != nil:
+    section.add "prettyPrint", valid_580746
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -7846,20 +7848,20 @@ proc validate_DrivePermissionsList_594732(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_594747: Call_DrivePermissionsList_594731; path: JsonNode;
+proc call*(call_580747: Call_DrivePermissionsList_580731; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Lists a file's or shared drive's permissions.
   ## 
-  let valid = call_594747.validator(path, query, header, formData, body)
-  let scheme = call_594747.pickScheme
+  let valid = call_580747.validator(path, query, header, formData, body)
+  let scheme = call_580747.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_594747.url(scheme.get, call_594747.host, call_594747.base,
-                         call_594747.route, valid.getOrDefault("path"),
+  let url = call_580747.url(scheme.get, call_580747.host, call_580747.base,
+                         call_580747.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_594747, url, valid)
+  result = hook(call_580747, url, valid)
 
-proc call*(call_594748: Call_DrivePermissionsList_594731; fileId: string;
+proc call*(call_580748: Call_DrivePermissionsList_580731; fileId: string;
           supportsAllDrives: bool = false; fields: string = ""; pageToken: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; maxResults: int = 0; supportsTeamDrives: bool = false;
@@ -7892,35 +7894,35 @@ proc call*(call_594748: Call_DrivePermissionsList_594731; fileId: string;
   ##                       : Issue the request as a domain administrator; if set to true, then the requester will be granted access if the file ID parameter refers to a shared drive and the requester is an administrator of the domain to which the shared drive belongs.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_594749 = newJObject()
-  var query_594750 = newJObject()
-  add(query_594750, "supportsAllDrives", newJBool(supportsAllDrives))
-  add(query_594750, "fields", newJString(fields))
-  add(query_594750, "pageToken", newJString(pageToken))
-  add(query_594750, "quotaUser", newJString(quotaUser))
-  add(path_594749, "fileId", newJString(fileId))
-  add(query_594750, "alt", newJString(alt))
-  add(query_594750, "oauth_token", newJString(oauthToken))
-  add(query_594750, "userIp", newJString(userIp))
-  add(query_594750, "maxResults", newJInt(maxResults))
-  add(query_594750, "supportsTeamDrives", newJBool(supportsTeamDrives))
-  add(query_594750, "key", newJString(key))
-  add(query_594750, "useDomainAdminAccess", newJBool(useDomainAdminAccess))
-  add(query_594750, "prettyPrint", newJBool(prettyPrint))
-  result = call_594748.call(path_594749, query_594750, nil, nil, nil)
+  var path_580749 = newJObject()
+  var query_580750 = newJObject()
+  add(query_580750, "supportsAllDrives", newJBool(supportsAllDrives))
+  add(query_580750, "fields", newJString(fields))
+  add(query_580750, "pageToken", newJString(pageToken))
+  add(query_580750, "quotaUser", newJString(quotaUser))
+  add(path_580749, "fileId", newJString(fileId))
+  add(query_580750, "alt", newJString(alt))
+  add(query_580750, "oauth_token", newJString(oauthToken))
+  add(query_580750, "userIp", newJString(userIp))
+  add(query_580750, "maxResults", newJInt(maxResults))
+  add(query_580750, "supportsTeamDrives", newJBool(supportsTeamDrives))
+  add(query_580750, "key", newJString(key))
+  add(query_580750, "useDomainAdminAccess", newJBool(useDomainAdminAccess))
+  add(query_580750, "prettyPrint", newJBool(prettyPrint))
+  result = call_580748.call(path_580749, query_580750, nil, nil, nil)
 
-var drivePermissionsList* = Call_DrivePermissionsList_594731(
+var drivePermissionsList* = Call_DrivePermissionsList_580731(
     name: "drivePermissionsList", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/files/{fileId}/permissions",
-    validator: validate_DrivePermissionsList_594732, base: "/drive/v2",
-    url: url_DrivePermissionsList_594733, schemes: {Scheme.Https})
+    validator: validate_DrivePermissionsList_580732, base: "/drive/v2",
+    url: url_DrivePermissionsList_580733, schemes: {Scheme.Https})
 type
-  Call_DrivePermissionsUpdate_594792 = ref object of OpenApiRestCall_593424
-proc url_DrivePermissionsUpdate_594794(protocol: Scheme; host: string; base: string;
+  Call_DrivePermissionsUpdate_580792 = ref object of OpenApiRestCall_579424
+proc url_DrivePermissionsUpdate_580794(protocol: Scheme; host: string; base: string;
                                       route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "fileId" in path, "`fileId` is a required path parameter"
   assert "permissionId" in path, "`permissionId` is a required path parameter"
@@ -7934,7 +7936,7 @@ proc url_DrivePermissionsUpdate_594794(protocol: Scheme; host: string; base: str
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_DrivePermissionsUpdate_594793(path: JsonNode; query: JsonNode;
+proc validate_DrivePermissionsUpdate_580793(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Updates a permission.
   ## 
@@ -7947,16 +7949,16 @@ proc validate_DrivePermissionsUpdate_594793(path: JsonNode; query: JsonNode;
   ##               : The ID for the permission.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `fileId` field"
-  var valid_594795 = path.getOrDefault("fileId")
-  valid_594795 = validateParameter(valid_594795, JString, required = true,
+  var valid_580795 = path.getOrDefault("fileId")
+  valid_580795 = validateParameter(valid_580795, JString, required = true,
                                  default = nil)
-  if valid_594795 != nil:
-    section.add "fileId", valid_594795
-  var valid_594796 = path.getOrDefault("permissionId")
-  valid_594796 = validateParameter(valid_594796, JString, required = true,
+  if valid_580795 != nil:
+    section.add "fileId", valid_580795
+  var valid_580796 = path.getOrDefault("permissionId")
+  valid_580796 = validateParameter(valid_580796, JString, required = true,
                                  default = nil)
-  if valid_594796 != nil:
-    section.add "permissionId", valid_594796
+  if valid_580796 != nil:
+    section.add "permissionId", valid_580796
   result.add "path", section
   ## parameters in `query` object:
   ##   supportsAllDrives: JBool
@@ -7984,66 +7986,66 @@ proc validate_DrivePermissionsUpdate_594793(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_594797 = query.getOrDefault("supportsAllDrives")
-  valid_594797 = validateParameter(valid_594797, JBool, required = false,
+  var valid_580797 = query.getOrDefault("supportsAllDrives")
+  valid_580797 = validateParameter(valid_580797, JBool, required = false,
                                  default = newJBool(false))
-  if valid_594797 != nil:
-    section.add "supportsAllDrives", valid_594797
-  var valid_594798 = query.getOrDefault("fields")
-  valid_594798 = validateParameter(valid_594798, JString, required = false,
+  if valid_580797 != nil:
+    section.add "supportsAllDrives", valid_580797
+  var valid_580798 = query.getOrDefault("fields")
+  valid_580798 = validateParameter(valid_580798, JString, required = false,
                                  default = nil)
-  if valid_594798 != nil:
-    section.add "fields", valid_594798
-  var valid_594799 = query.getOrDefault("quotaUser")
-  valid_594799 = validateParameter(valid_594799, JString, required = false,
+  if valid_580798 != nil:
+    section.add "fields", valid_580798
+  var valid_580799 = query.getOrDefault("quotaUser")
+  valid_580799 = validateParameter(valid_580799, JString, required = false,
                                  default = nil)
-  if valid_594799 != nil:
-    section.add "quotaUser", valid_594799
-  var valid_594800 = query.getOrDefault("alt")
-  valid_594800 = validateParameter(valid_594800, JString, required = false,
+  if valid_580799 != nil:
+    section.add "quotaUser", valid_580799
+  var valid_580800 = query.getOrDefault("alt")
+  valid_580800 = validateParameter(valid_580800, JString, required = false,
                                  default = newJString("json"))
-  if valid_594800 != nil:
-    section.add "alt", valid_594800
-  var valid_594801 = query.getOrDefault("oauth_token")
-  valid_594801 = validateParameter(valid_594801, JString, required = false,
+  if valid_580800 != nil:
+    section.add "alt", valid_580800
+  var valid_580801 = query.getOrDefault("oauth_token")
+  valid_580801 = validateParameter(valid_580801, JString, required = false,
                                  default = nil)
-  if valid_594801 != nil:
-    section.add "oauth_token", valid_594801
-  var valid_594802 = query.getOrDefault("removeExpiration")
-  valid_594802 = validateParameter(valid_594802, JBool, required = false,
+  if valid_580801 != nil:
+    section.add "oauth_token", valid_580801
+  var valid_580802 = query.getOrDefault("removeExpiration")
+  valid_580802 = validateParameter(valid_580802, JBool, required = false,
                                  default = newJBool(false))
-  if valid_594802 != nil:
-    section.add "removeExpiration", valid_594802
-  var valid_594803 = query.getOrDefault("userIp")
-  valid_594803 = validateParameter(valid_594803, JString, required = false,
+  if valid_580802 != nil:
+    section.add "removeExpiration", valid_580802
+  var valid_580803 = query.getOrDefault("userIp")
+  valid_580803 = validateParameter(valid_580803, JString, required = false,
                                  default = nil)
-  if valid_594803 != nil:
-    section.add "userIp", valid_594803
-  var valid_594804 = query.getOrDefault("supportsTeamDrives")
-  valid_594804 = validateParameter(valid_594804, JBool, required = false,
+  if valid_580803 != nil:
+    section.add "userIp", valid_580803
+  var valid_580804 = query.getOrDefault("supportsTeamDrives")
+  valid_580804 = validateParameter(valid_580804, JBool, required = false,
                                  default = newJBool(false))
-  if valid_594804 != nil:
-    section.add "supportsTeamDrives", valid_594804
-  var valid_594805 = query.getOrDefault("key")
-  valid_594805 = validateParameter(valid_594805, JString, required = false,
+  if valid_580804 != nil:
+    section.add "supportsTeamDrives", valid_580804
+  var valid_580805 = query.getOrDefault("key")
+  valid_580805 = validateParameter(valid_580805, JString, required = false,
                                  default = nil)
-  if valid_594805 != nil:
-    section.add "key", valid_594805
-  var valid_594806 = query.getOrDefault("useDomainAdminAccess")
-  valid_594806 = validateParameter(valid_594806, JBool, required = false,
+  if valid_580805 != nil:
+    section.add "key", valid_580805
+  var valid_580806 = query.getOrDefault("useDomainAdminAccess")
+  valid_580806 = validateParameter(valid_580806, JBool, required = false,
                                  default = newJBool(false))
-  if valid_594806 != nil:
-    section.add "useDomainAdminAccess", valid_594806
-  var valid_594807 = query.getOrDefault("transferOwnership")
-  valid_594807 = validateParameter(valid_594807, JBool, required = false,
+  if valid_580806 != nil:
+    section.add "useDomainAdminAccess", valid_580806
+  var valid_580807 = query.getOrDefault("transferOwnership")
+  valid_580807 = validateParameter(valid_580807, JBool, required = false,
                                  default = newJBool(false))
-  if valid_594807 != nil:
-    section.add "transferOwnership", valid_594807
-  var valid_594808 = query.getOrDefault("prettyPrint")
-  valid_594808 = validateParameter(valid_594808, JBool, required = false,
+  if valid_580807 != nil:
+    section.add "transferOwnership", valid_580807
+  var valid_580808 = query.getOrDefault("prettyPrint")
+  valid_580808 = validateParameter(valid_580808, JBool, required = false,
                                  default = newJBool(true))
-  if valid_594808 != nil:
-    section.add "prettyPrint", valid_594808
+  if valid_580808 != nil:
+    section.add "prettyPrint", valid_580808
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -8055,20 +8057,20 @@ proc validate_DrivePermissionsUpdate_594793(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_594810: Call_DrivePermissionsUpdate_594792; path: JsonNode;
+proc call*(call_580810: Call_DrivePermissionsUpdate_580792; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Updates a permission.
   ## 
-  let valid = call_594810.validator(path, query, header, formData, body)
-  let scheme = call_594810.pickScheme
+  let valid = call_580810.validator(path, query, header, formData, body)
+  let scheme = call_580810.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_594810.url(scheme.get, call_594810.host, call_594810.base,
-                         call_594810.route, valid.getOrDefault("path"),
+  let url = call_580810.url(scheme.get, call_580810.host, call_580810.base,
+                         call_580810.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_594810, url, valid)
+  result = hook(call_580810, url, valid)
 
-proc call*(call_594811: Call_DrivePermissionsUpdate_594792; fileId: string;
+proc call*(call_580811: Call_DrivePermissionsUpdate_580792; fileId: string;
           permissionId: string; supportsAllDrives: bool = false; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           removeExpiration: bool = false; userIp: string = "";
@@ -8106,40 +8108,40 @@ proc call*(call_594811: Call_DrivePermissionsUpdate_594792; fileId: string;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_594812 = newJObject()
-  var query_594813 = newJObject()
-  var body_594814 = newJObject()
-  add(query_594813, "supportsAllDrives", newJBool(supportsAllDrives))
-  add(query_594813, "fields", newJString(fields))
-  add(query_594813, "quotaUser", newJString(quotaUser))
-  add(path_594812, "fileId", newJString(fileId))
-  add(query_594813, "alt", newJString(alt))
-  add(query_594813, "oauth_token", newJString(oauthToken))
-  add(path_594812, "permissionId", newJString(permissionId))
-  add(query_594813, "removeExpiration", newJBool(removeExpiration))
-  add(query_594813, "userIp", newJString(userIp))
-  add(query_594813, "supportsTeamDrives", newJBool(supportsTeamDrives))
-  add(query_594813, "key", newJString(key))
-  add(query_594813, "useDomainAdminAccess", newJBool(useDomainAdminAccess))
-  add(query_594813, "transferOwnership", newJBool(transferOwnership))
+  var path_580812 = newJObject()
+  var query_580813 = newJObject()
+  var body_580814 = newJObject()
+  add(query_580813, "supportsAllDrives", newJBool(supportsAllDrives))
+  add(query_580813, "fields", newJString(fields))
+  add(query_580813, "quotaUser", newJString(quotaUser))
+  add(path_580812, "fileId", newJString(fileId))
+  add(query_580813, "alt", newJString(alt))
+  add(query_580813, "oauth_token", newJString(oauthToken))
+  add(path_580812, "permissionId", newJString(permissionId))
+  add(query_580813, "removeExpiration", newJBool(removeExpiration))
+  add(query_580813, "userIp", newJString(userIp))
+  add(query_580813, "supportsTeamDrives", newJBool(supportsTeamDrives))
+  add(query_580813, "key", newJString(key))
+  add(query_580813, "useDomainAdminAccess", newJBool(useDomainAdminAccess))
+  add(query_580813, "transferOwnership", newJBool(transferOwnership))
   if body != nil:
-    body_594814 = body
-  add(query_594813, "prettyPrint", newJBool(prettyPrint))
-  result = call_594811.call(path_594812, query_594813, nil, nil, body_594814)
+    body_580814 = body
+  add(query_580813, "prettyPrint", newJBool(prettyPrint))
+  result = call_580811.call(path_580812, query_580813, nil, nil, body_580814)
 
-var drivePermissionsUpdate* = Call_DrivePermissionsUpdate_594792(
+var drivePermissionsUpdate* = Call_DrivePermissionsUpdate_580792(
     name: "drivePermissionsUpdate", meth: HttpMethod.HttpPut,
     host: "www.googleapis.com",
     route: "/files/{fileId}/permissions/{permissionId}",
-    validator: validate_DrivePermissionsUpdate_594793, base: "/drive/v2",
-    url: url_DrivePermissionsUpdate_594794, schemes: {Scheme.Https})
+    validator: validate_DrivePermissionsUpdate_580793, base: "/drive/v2",
+    url: url_DrivePermissionsUpdate_580794, schemes: {Scheme.Https})
 type
-  Call_DrivePermissionsGet_594773 = ref object of OpenApiRestCall_593424
-proc url_DrivePermissionsGet_594775(protocol: Scheme; host: string; base: string;
+  Call_DrivePermissionsGet_580773 = ref object of OpenApiRestCall_579424
+proc url_DrivePermissionsGet_580775(protocol: Scheme; host: string; base: string;
                                    route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "fileId" in path, "`fileId` is a required path parameter"
   assert "permissionId" in path, "`permissionId` is a required path parameter"
@@ -8153,7 +8155,7 @@ proc url_DrivePermissionsGet_594775(protocol: Scheme; host: string; base: string
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_DrivePermissionsGet_594774(path: JsonNode; query: JsonNode;
+proc validate_DrivePermissionsGet_580774(path: JsonNode; query: JsonNode;
                                         header: JsonNode; formData: JsonNode;
                                         body: JsonNode): JsonNode =
   ## Gets a permission by ID.
@@ -8167,16 +8169,16 @@ proc validate_DrivePermissionsGet_594774(path: JsonNode; query: JsonNode;
   ##               : The ID for the permission.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `fileId` field"
-  var valid_594776 = path.getOrDefault("fileId")
-  valid_594776 = validateParameter(valid_594776, JString, required = true,
+  var valid_580776 = path.getOrDefault("fileId")
+  valid_580776 = validateParameter(valid_580776, JString, required = true,
                                  default = nil)
-  if valid_594776 != nil:
-    section.add "fileId", valid_594776
-  var valid_594777 = path.getOrDefault("permissionId")
-  valid_594777 = validateParameter(valid_594777, JString, required = true,
+  if valid_580776 != nil:
+    section.add "fileId", valid_580776
+  var valid_580777 = path.getOrDefault("permissionId")
+  valid_580777 = validateParameter(valid_580777, JString, required = true,
                                  default = nil)
-  if valid_594777 != nil:
-    section.add "permissionId", valid_594777
+  if valid_580777 != nil:
+    section.add "permissionId", valid_580777
   result.add "path", section
   ## parameters in `query` object:
   ##   supportsAllDrives: JBool
@@ -8200,56 +8202,56 @@ proc validate_DrivePermissionsGet_594774(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_594778 = query.getOrDefault("supportsAllDrives")
-  valid_594778 = validateParameter(valid_594778, JBool, required = false,
+  var valid_580778 = query.getOrDefault("supportsAllDrives")
+  valid_580778 = validateParameter(valid_580778, JBool, required = false,
                                  default = newJBool(false))
-  if valid_594778 != nil:
-    section.add "supportsAllDrives", valid_594778
-  var valid_594779 = query.getOrDefault("fields")
-  valid_594779 = validateParameter(valid_594779, JString, required = false,
+  if valid_580778 != nil:
+    section.add "supportsAllDrives", valid_580778
+  var valid_580779 = query.getOrDefault("fields")
+  valid_580779 = validateParameter(valid_580779, JString, required = false,
                                  default = nil)
-  if valid_594779 != nil:
-    section.add "fields", valid_594779
-  var valid_594780 = query.getOrDefault("quotaUser")
-  valid_594780 = validateParameter(valid_594780, JString, required = false,
+  if valid_580779 != nil:
+    section.add "fields", valid_580779
+  var valid_580780 = query.getOrDefault("quotaUser")
+  valid_580780 = validateParameter(valid_580780, JString, required = false,
                                  default = nil)
-  if valid_594780 != nil:
-    section.add "quotaUser", valid_594780
-  var valid_594781 = query.getOrDefault("alt")
-  valid_594781 = validateParameter(valid_594781, JString, required = false,
+  if valid_580780 != nil:
+    section.add "quotaUser", valid_580780
+  var valid_580781 = query.getOrDefault("alt")
+  valid_580781 = validateParameter(valid_580781, JString, required = false,
                                  default = newJString("json"))
-  if valid_594781 != nil:
-    section.add "alt", valid_594781
-  var valid_594782 = query.getOrDefault("oauth_token")
-  valid_594782 = validateParameter(valid_594782, JString, required = false,
+  if valid_580781 != nil:
+    section.add "alt", valid_580781
+  var valid_580782 = query.getOrDefault("oauth_token")
+  valid_580782 = validateParameter(valid_580782, JString, required = false,
                                  default = nil)
-  if valid_594782 != nil:
-    section.add "oauth_token", valid_594782
-  var valid_594783 = query.getOrDefault("userIp")
-  valid_594783 = validateParameter(valid_594783, JString, required = false,
+  if valid_580782 != nil:
+    section.add "oauth_token", valid_580782
+  var valid_580783 = query.getOrDefault("userIp")
+  valid_580783 = validateParameter(valid_580783, JString, required = false,
                                  default = nil)
-  if valid_594783 != nil:
-    section.add "userIp", valid_594783
-  var valid_594784 = query.getOrDefault("supportsTeamDrives")
-  valid_594784 = validateParameter(valid_594784, JBool, required = false,
+  if valid_580783 != nil:
+    section.add "userIp", valid_580783
+  var valid_580784 = query.getOrDefault("supportsTeamDrives")
+  valid_580784 = validateParameter(valid_580784, JBool, required = false,
                                  default = newJBool(false))
-  if valid_594784 != nil:
-    section.add "supportsTeamDrives", valid_594784
-  var valid_594785 = query.getOrDefault("key")
-  valid_594785 = validateParameter(valid_594785, JString, required = false,
+  if valid_580784 != nil:
+    section.add "supportsTeamDrives", valid_580784
+  var valid_580785 = query.getOrDefault("key")
+  valid_580785 = validateParameter(valid_580785, JString, required = false,
                                  default = nil)
-  if valid_594785 != nil:
-    section.add "key", valid_594785
-  var valid_594786 = query.getOrDefault("useDomainAdminAccess")
-  valid_594786 = validateParameter(valid_594786, JBool, required = false,
+  if valid_580785 != nil:
+    section.add "key", valid_580785
+  var valid_580786 = query.getOrDefault("useDomainAdminAccess")
+  valid_580786 = validateParameter(valid_580786, JBool, required = false,
                                  default = newJBool(false))
-  if valid_594786 != nil:
-    section.add "useDomainAdminAccess", valid_594786
-  var valid_594787 = query.getOrDefault("prettyPrint")
-  valid_594787 = validateParameter(valid_594787, JBool, required = false,
+  if valid_580786 != nil:
+    section.add "useDomainAdminAccess", valid_580786
+  var valid_580787 = query.getOrDefault("prettyPrint")
+  valid_580787 = validateParameter(valid_580787, JBool, required = false,
                                  default = newJBool(true))
-  if valid_594787 != nil:
-    section.add "prettyPrint", valid_594787
+  if valid_580787 != nil:
+    section.add "prettyPrint", valid_580787
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -8258,20 +8260,20 @@ proc validate_DrivePermissionsGet_594774(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_594788: Call_DrivePermissionsGet_594773; path: JsonNode;
+proc call*(call_580788: Call_DrivePermissionsGet_580773; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Gets a permission by ID.
   ## 
-  let valid = call_594788.validator(path, query, header, formData, body)
-  let scheme = call_594788.pickScheme
+  let valid = call_580788.validator(path, query, header, formData, body)
+  let scheme = call_580788.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_594788.url(scheme.get, call_594788.host, call_594788.base,
-                         call_594788.route, valid.getOrDefault("path"),
+  let url = call_580788.url(scheme.get, call_580788.host, call_580788.base,
+                         call_580788.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_594788, url, valid)
+  result = hook(call_580788, url, valid)
 
-proc call*(call_594789: Call_DrivePermissionsGet_594773; fileId: string;
+proc call*(call_580789: Call_DrivePermissionsGet_580773; fileId: string;
           permissionId: string; supportsAllDrives: bool = false; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; supportsTeamDrives: bool = false; key: string = "";
@@ -8302,35 +8304,35 @@ proc call*(call_594789: Call_DrivePermissionsGet_594773; fileId: string;
   ##                       : Issue the request as a domain administrator; if set to true, then the requester will be granted access if the file ID parameter refers to a shared drive and the requester is an administrator of the domain to which the shared drive belongs.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_594790 = newJObject()
-  var query_594791 = newJObject()
-  add(query_594791, "supportsAllDrives", newJBool(supportsAllDrives))
-  add(query_594791, "fields", newJString(fields))
-  add(query_594791, "quotaUser", newJString(quotaUser))
-  add(path_594790, "fileId", newJString(fileId))
-  add(query_594791, "alt", newJString(alt))
-  add(query_594791, "oauth_token", newJString(oauthToken))
-  add(path_594790, "permissionId", newJString(permissionId))
-  add(query_594791, "userIp", newJString(userIp))
-  add(query_594791, "supportsTeamDrives", newJBool(supportsTeamDrives))
-  add(query_594791, "key", newJString(key))
-  add(query_594791, "useDomainAdminAccess", newJBool(useDomainAdminAccess))
-  add(query_594791, "prettyPrint", newJBool(prettyPrint))
-  result = call_594789.call(path_594790, query_594791, nil, nil, nil)
+  var path_580790 = newJObject()
+  var query_580791 = newJObject()
+  add(query_580791, "supportsAllDrives", newJBool(supportsAllDrives))
+  add(query_580791, "fields", newJString(fields))
+  add(query_580791, "quotaUser", newJString(quotaUser))
+  add(path_580790, "fileId", newJString(fileId))
+  add(query_580791, "alt", newJString(alt))
+  add(query_580791, "oauth_token", newJString(oauthToken))
+  add(path_580790, "permissionId", newJString(permissionId))
+  add(query_580791, "userIp", newJString(userIp))
+  add(query_580791, "supportsTeamDrives", newJBool(supportsTeamDrives))
+  add(query_580791, "key", newJString(key))
+  add(query_580791, "useDomainAdminAccess", newJBool(useDomainAdminAccess))
+  add(query_580791, "prettyPrint", newJBool(prettyPrint))
+  result = call_580789.call(path_580790, query_580791, nil, nil, nil)
 
-var drivePermissionsGet* = Call_DrivePermissionsGet_594773(
+var drivePermissionsGet* = Call_DrivePermissionsGet_580773(
     name: "drivePermissionsGet", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com",
     route: "/files/{fileId}/permissions/{permissionId}",
-    validator: validate_DrivePermissionsGet_594774, base: "/drive/v2",
-    url: url_DrivePermissionsGet_594775, schemes: {Scheme.Https})
+    validator: validate_DrivePermissionsGet_580774, base: "/drive/v2",
+    url: url_DrivePermissionsGet_580775, schemes: {Scheme.Https})
 type
-  Call_DrivePermissionsPatch_594834 = ref object of OpenApiRestCall_593424
-proc url_DrivePermissionsPatch_594836(protocol: Scheme; host: string; base: string;
+  Call_DrivePermissionsPatch_580834 = ref object of OpenApiRestCall_579424
+proc url_DrivePermissionsPatch_580836(protocol: Scheme; host: string; base: string;
                                      route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "fileId" in path, "`fileId` is a required path parameter"
   assert "permissionId" in path, "`permissionId` is a required path parameter"
@@ -8344,7 +8346,7 @@ proc url_DrivePermissionsPatch_594836(protocol: Scheme; host: string; base: stri
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_DrivePermissionsPatch_594835(path: JsonNode; query: JsonNode;
+proc validate_DrivePermissionsPatch_580835(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Updates a permission using patch semantics.
   ## 
@@ -8357,16 +8359,16 @@ proc validate_DrivePermissionsPatch_594835(path: JsonNode; query: JsonNode;
   ##               : The ID for the permission.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `fileId` field"
-  var valid_594837 = path.getOrDefault("fileId")
-  valid_594837 = validateParameter(valid_594837, JString, required = true,
+  var valid_580837 = path.getOrDefault("fileId")
+  valid_580837 = validateParameter(valid_580837, JString, required = true,
                                  default = nil)
-  if valid_594837 != nil:
-    section.add "fileId", valid_594837
-  var valid_594838 = path.getOrDefault("permissionId")
-  valid_594838 = validateParameter(valid_594838, JString, required = true,
+  if valid_580837 != nil:
+    section.add "fileId", valid_580837
+  var valid_580838 = path.getOrDefault("permissionId")
+  valid_580838 = validateParameter(valid_580838, JString, required = true,
                                  default = nil)
-  if valid_594838 != nil:
-    section.add "permissionId", valid_594838
+  if valid_580838 != nil:
+    section.add "permissionId", valid_580838
   result.add "path", section
   ## parameters in `query` object:
   ##   supportsAllDrives: JBool
@@ -8394,66 +8396,66 @@ proc validate_DrivePermissionsPatch_594835(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_594839 = query.getOrDefault("supportsAllDrives")
-  valid_594839 = validateParameter(valid_594839, JBool, required = false,
+  var valid_580839 = query.getOrDefault("supportsAllDrives")
+  valid_580839 = validateParameter(valid_580839, JBool, required = false,
                                  default = newJBool(false))
-  if valid_594839 != nil:
-    section.add "supportsAllDrives", valid_594839
-  var valid_594840 = query.getOrDefault("fields")
-  valid_594840 = validateParameter(valid_594840, JString, required = false,
+  if valid_580839 != nil:
+    section.add "supportsAllDrives", valid_580839
+  var valid_580840 = query.getOrDefault("fields")
+  valid_580840 = validateParameter(valid_580840, JString, required = false,
                                  default = nil)
-  if valid_594840 != nil:
-    section.add "fields", valid_594840
-  var valid_594841 = query.getOrDefault("quotaUser")
-  valid_594841 = validateParameter(valid_594841, JString, required = false,
+  if valid_580840 != nil:
+    section.add "fields", valid_580840
+  var valid_580841 = query.getOrDefault("quotaUser")
+  valid_580841 = validateParameter(valid_580841, JString, required = false,
                                  default = nil)
-  if valid_594841 != nil:
-    section.add "quotaUser", valid_594841
-  var valid_594842 = query.getOrDefault("alt")
-  valid_594842 = validateParameter(valid_594842, JString, required = false,
+  if valid_580841 != nil:
+    section.add "quotaUser", valid_580841
+  var valid_580842 = query.getOrDefault("alt")
+  valid_580842 = validateParameter(valid_580842, JString, required = false,
                                  default = newJString("json"))
-  if valid_594842 != nil:
-    section.add "alt", valid_594842
-  var valid_594843 = query.getOrDefault("oauth_token")
-  valid_594843 = validateParameter(valid_594843, JString, required = false,
+  if valid_580842 != nil:
+    section.add "alt", valid_580842
+  var valid_580843 = query.getOrDefault("oauth_token")
+  valid_580843 = validateParameter(valid_580843, JString, required = false,
                                  default = nil)
-  if valid_594843 != nil:
-    section.add "oauth_token", valid_594843
-  var valid_594844 = query.getOrDefault("removeExpiration")
-  valid_594844 = validateParameter(valid_594844, JBool, required = false,
+  if valid_580843 != nil:
+    section.add "oauth_token", valid_580843
+  var valid_580844 = query.getOrDefault("removeExpiration")
+  valid_580844 = validateParameter(valid_580844, JBool, required = false,
                                  default = newJBool(false))
-  if valid_594844 != nil:
-    section.add "removeExpiration", valid_594844
-  var valid_594845 = query.getOrDefault("userIp")
-  valid_594845 = validateParameter(valid_594845, JString, required = false,
+  if valid_580844 != nil:
+    section.add "removeExpiration", valid_580844
+  var valid_580845 = query.getOrDefault("userIp")
+  valid_580845 = validateParameter(valid_580845, JString, required = false,
                                  default = nil)
-  if valid_594845 != nil:
-    section.add "userIp", valid_594845
-  var valid_594846 = query.getOrDefault("supportsTeamDrives")
-  valid_594846 = validateParameter(valid_594846, JBool, required = false,
+  if valid_580845 != nil:
+    section.add "userIp", valid_580845
+  var valid_580846 = query.getOrDefault("supportsTeamDrives")
+  valid_580846 = validateParameter(valid_580846, JBool, required = false,
                                  default = newJBool(false))
-  if valid_594846 != nil:
-    section.add "supportsTeamDrives", valid_594846
-  var valid_594847 = query.getOrDefault("key")
-  valid_594847 = validateParameter(valid_594847, JString, required = false,
+  if valid_580846 != nil:
+    section.add "supportsTeamDrives", valid_580846
+  var valid_580847 = query.getOrDefault("key")
+  valid_580847 = validateParameter(valid_580847, JString, required = false,
                                  default = nil)
-  if valid_594847 != nil:
-    section.add "key", valid_594847
-  var valid_594848 = query.getOrDefault("useDomainAdminAccess")
-  valid_594848 = validateParameter(valid_594848, JBool, required = false,
+  if valid_580847 != nil:
+    section.add "key", valid_580847
+  var valid_580848 = query.getOrDefault("useDomainAdminAccess")
+  valid_580848 = validateParameter(valid_580848, JBool, required = false,
                                  default = newJBool(false))
-  if valid_594848 != nil:
-    section.add "useDomainAdminAccess", valid_594848
-  var valid_594849 = query.getOrDefault("transferOwnership")
-  valid_594849 = validateParameter(valid_594849, JBool, required = false,
+  if valid_580848 != nil:
+    section.add "useDomainAdminAccess", valid_580848
+  var valid_580849 = query.getOrDefault("transferOwnership")
+  valid_580849 = validateParameter(valid_580849, JBool, required = false,
                                  default = newJBool(false))
-  if valid_594849 != nil:
-    section.add "transferOwnership", valid_594849
-  var valid_594850 = query.getOrDefault("prettyPrint")
-  valid_594850 = validateParameter(valid_594850, JBool, required = false,
+  if valid_580849 != nil:
+    section.add "transferOwnership", valid_580849
+  var valid_580850 = query.getOrDefault("prettyPrint")
+  valid_580850 = validateParameter(valid_580850, JBool, required = false,
                                  default = newJBool(true))
-  if valid_594850 != nil:
-    section.add "prettyPrint", valid_594850
+  if valid_580850 != nil:
+    section.add "prettyPrint", valid_580850
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -8465,20 +8467,20 @@ proc validate_DrivePermissionsPatch_594835(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_594852: Call_DrivePermissionsPatch_594834; path: JsonNode;
+proc call*(call_580852: Call_DrivePermissionsPatch_580834; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Updates a permission using patch semantics.
   ## 
-  let valid = call_594852.validator(path, query, header, formData, body)
-  let scheme = call_594852.pickScheme
+  let valid = call_580852.validator(path, query, header, formData, body)
+  let scheme = call_580852.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_594852.url(scheme.get, call_594852.host, call_594852.base,
-                         call_594852.route, valid.getOrDefault("path"),
+  let url = call_580852.url(scheme.get, call_580852.host, call_580852.base,
+                         call_580852.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_594852, url, valid)
+  result = hook(call_580852, url, valid)
 
-proc call*(call_594853: Call_DrivePermissionsPatch_594834; fileId: string;
+proc call*(call_580853: Call_DrivePermissionsPatch_580834; fileId: string;
           permissionId: string; supportsAllDrives: bool = false; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           removeExpiration: bool = false; userIp: string = "";
@@ -8516,40 +8518,40 @@ proc call*(call_594853: Call_DrivePermissionsPatch_594834; fileId: string;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_594854 = newJObject()
-  var query_594855 = newJObject()
-  var body_594856 = newJObject()
-  add(query_594855, "supportsAllDrives", newJBool(supportsAllDrives))
-  add(query_594855, "fields", newJString(fields))
-  add(query_594855, "quotaUser", newJString(quotaUser))
-  add(path_594854, "fileId", newJString(fileId))
-  add(query_594855, "alt", newJString(alt))
-  add(query_594855, "oauth_token", newJString(oauthToken))
-  add(path_594854, "permissionId", newJString(permissionId))
-  add(query_594855, "removeExpiration", newJBool(removeExpiration))
-  add(query_594855, "userIp", newJString(userIp))
-  add(query_594855, "supportsTeamDrives", newJBool(supportsTeamDrives))
-  add(query_594855, "key", newJString(key))
-  add(query_594855, "useDomainAdminAccess", newJBool(useDomainAdminAccess))
-  add(query_594855, "transferOwnership", newJBool(transferOwnership))
+  var path_580854 = newJObject()
+  var query_580855 = newJObject()
+  var body_580856 = newJObject()
+  add(query_580855, "supportsAllDrives", newJBool(supportsAllDrives))
+  add(query_580855, "fields", newJString(fields))
+  add(query_580855, "quotaUser", newJString(quotaUser))
+  add(path_580854, "fileId", newJString(fileId))
+  add(query_580855, "alt", newJString(alt))
+  add(query_580855, "oauth_token", newJString(oauthToken))
+  add(path_580854, "permissionId", newJString(permissionId))
+  add(query_580855, "removeExpiration", newJBool(removeExpiration))
+  add(query_580855, "userIp", newJString(userIp))
+  add(query_580855, "supportsTeamDrives", newJBool(supportsTeamDrives))
+  add(query_580855, "key", newJString(key))
+  add(query_580855, "useDomainAdminAccess", newJBool(useDomainAdminAccess))
+  add(query_580855, "transferOwnership", newJBool(transferOwnership))
   if body != nil:
-    body_594856 = body
-  add(query_594855, "prettyPrint", newJBool(prettyPrint))
-  result = call_594853.call(path_594854, query_594855, nil, nil, body_594856)
+    body_580856 = body
+  add(query_580855, "prettyPrint", newJBool(prettyPrint))
+  result = call_580853.call(path_580854, query_580855, nil, nil, body_580856)
 
-var drivePermissionsPatch* = Call_DrivePermissionsPatch_594834(
+var drivePermissionsPatch* = Call_DrivePermissionsPatch_580834(
     name: "drivePermissionsPatch", meth: HttpMethod.HttpPatch,
     host: "www.googleapis.com",
     route: "/files/{fileId}/permissions/{permissionId}",
-    validator: validate_DrivePermissionsPatch_594835, base: "/drive/v2",
-    url: url_DrivePermissionsPatch_594836, schemes: {Scheme.Https})
+    validator: validate_DrivePermissionsPatch_580835, base: "/drive/v2",
+    url: url_DrivePermissionsPatch_580836, schemes: {Scheme.Https})
 type
-  Call_DrivePermissionsDelete_594815 = ref object of OpenApiRestCall_593424
-proc url_DrivePermissionsDelete_594817(protocol: Scheme; host: string; base: string;
+  Call_DrivePermissionsDelete_580815 = ref object of OpenApiRestCall_579424
+proc url_DrivePermissionsDelete_580817(protocol: Scheme; host: string; base: string;
                                       route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "fileId" in path, "`fileId` is a required path parameter"
   assert "permissionId" in path, "`permissionId` is a required path parameter"
@@ -8563,7 +8565,7 @@ proc url_DrivePermissionsDelete_594817(protocol: Scheme; host: string; base: str
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_DrivePermissionsDelete_594816(path: JsonNode; query: JsonNode;
+proc validate_DrivePermissionsDelete_580816(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Deletes a permission from a file or shared drive.
   ## 
@@ -8576,16 +8578,16 @@ proc validate_DrivePermissionsDelete_594816(path: JsonNode; query: JsonNode;
   ##               : The ID for the permission.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `fileId` field"
-  var valid_594818 = path.getOrDefault("fileId")
-  valid_594818 = validateParameter(valid_594818, JString, required = true,
+  var valid_580818 = path.getOrDefault("fileId")
+  valid_580818 = validateParameter(valid_580818, JString, required = true,
                                  default = nil)
-  if valid_594818 != nil:
-    section.add "fileId", valid_594818
-  var valid_594819 = path.getOrDefault("permissionId")
-  valid_594819 = validateParameter(valid_594819, JString, required = true,
+  if valid_580818 != nil:
+    section.add "fileId", valid_580818
+  var valid_580819 = path.getOrDefault("permissionId")
+  valid_580819 = validateParameter(valid_580819, JString, required = true,
                                  default = nil)
-  if valid_594819 != nil:
-    section.add "permissionId", valid_594819
+  if valid_580819 != nil:
+    section.add "permissionId", valid_580819
   result.add "path", section
   ## parameters in `query` object:
   ##   supportsAllDrives: JBool
@@ -8609,56 +8611,56 @@ proc validate_DrivePermissionsDelete_594816(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_594820 = query.getOrDefault("supportsAllDrives")
-  valid_594820 = validateParameter(valid_594820, JBool, required = false,
+  var valid_580820 = query.getOrDefault("supportsAllDrives")
+  valid_580820 = validateParameter(valid_580820, JBool, required = false,
                                  default = newJBool(false))
-  if valid_594820 != nil:
-    section.add "supportsAllDrives", valid_594820
-  var valid_594821 = query.getOrDefault("fields")
-  valid_594821 = validateParameter(valid_594821, JString, required = false,
+  if valid_580820 != nil:
+    section.add "supportsAllDrives", valid_580820
+  var valid_580821 = query.getOrDefault("fields")
+  valid_580821 = validateParameter(valid_580821, JString, required = false,
                                  default = nil)
-  if valid_594821 != nil:
-    section.add "fields", valid_594821
-  var valid_594822 = query.getOrDefault("quotaUser")
-  valid_594822 = validateParameter(valid_594822, JString, required = false,
+  if valid_580821 != nil:
+    section.add "fields", valid_580821
+  var valid_580822 = query.getOrDefault("quotaUser")
+  valid_580822 = validateParameter(valid_580822, JString, required = false,
                                  default = nil)
-  if valid_594822 != nil:
-    section.add "quotaUser", valid_594822
-  var valid_594823 = query.getOrDefault("alt")
-  valid_594823 = validateParameter(valid_594823, JString, required = false,
+  if valid_580822 != nil:
+    section.add "quotaUser", valid_580822
+  var valid_580823 = query.getOrDefault("alt")
+  valid_580823 = validateParameter(valid_580823, JString, required = false,
                                  default = newJString("json"))
-  if valid_594823 != nil:
-    section.add "alt", valid_594823
-  var valid_594824 = query.getOrDefault("oauth_token")
-  valid_594824 = validateParameter(valid_594824, JString, required = false,
+  if valid_580823 != nil:
+    section.add "alt", valid_580823
+  var valid_580824 = query.getOrDefault("oauth_token")
+  valid_580824 = validateParameter(valid_580824, JString, required = false,
                                  default = nil)
-  if valid_594824 != nil:
-    section.add "oauth_token", valid_594824
-  var valid_594825 = query.getOrDefault("userIp")
-  valid_594825 = validateParameter(valid_594825, JString, required = false,
+  if valid_580824 != nil:
+    section.add "oauth_token", valid_580824
+  var valid_580825 = query.getOrDefault("userIp")
+  valid_580825 = validateParameter(valid_580825, JString, required = false,
                                  default = nil)
-  if valid_594825 != nil:
-    section.add "userIp", valid_594825
-  var valid_594826 = query.getOrDefault("supportsTeamDrives")
-  valid_594826 = validateParameter(valid_594826, JBool, required = false,
+  if valid_580825 != nil:
+    section.add "userIp", valid_580825
+  var valid_580826 = query.getOrDefault("supportsTeamDrives")
+  valid_580826 = validateParameter(valid_580826, JBool, required = false,
                                  default = newJBool(false))
-  if valid_594826 != nil:
-    section.add "supportsTeamDrives", valid_594826
-  var valid_594827 = query.getOrDefault("key")
-  valid_594827 = validateParameter(valid_594827, JString, required = false,
+  if valid_580826 != nil:
+    section.add "supportsTeamDrives", valid_580826
+  var valid_580827 = query.getOrDefault("key")
+  valid_580827 = validateParameter(valid_580827, JString, required = false,
                                  default = nil)
-  if valid_594827 != nil:
-    section.add "key", valid_594827
-  var valid_594828 = query.getOrDefault("useDomainAdminAccess")
-  valid_594828 = validateParameter(valid_594828, JBool, required = false,
+  if valid_580827 != nil:
+    section.add "key", valid_580827
+  var valid_580828 = query.getOrDefault("useDomainAdminAccess")
+  valid_580828 = validateParameter(valid_580828, JBool, required = false,
                                  default = newJBool(false))
-  if valid_594828 != nil:
-    section.add "useDomainAdminAccess", valid_594828
-  var valid_594829 = query.getOrDefault("prettyPrint")
-  valid_594829 = validateParameter(valid_594829, JBool, required = false,
+  if valid_580828 != nil:
+    section.add "useDomainAdminAccess", valid_580828
+  var valid_580829 = query.getOrDefault("prettyPrint")
+  valid_580829 = validateParameter(valid_580829, JBool, required = false,
                                  default = newJBool(true))
-  if valid_594829 != nil:
-    section.add "prettyPrint", valid_594829
+  if valid_580829 != nil:
+    section.add "prettyPrint", valid_580829
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -8667,20 +8669,20 @@ proc validate_DrivePermissionsDelete_594816(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_594830: Call_DrivePermissionsDelete_594815; path: JsonNode;
+proc call*(call_580830: Call_DrivePermissionsDelete_580815; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Deletes a permission from a file or shared drive.
   ## 
-  let valid = call_594830.validator(path, query, header, formData, body)
-  let scheme = call_594830.pickScheme
+  let valid = call_580830.validator(path, query, header, formData, body)
+  let scheme = call_580830.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_594830.url(scheme.get, call_594830.host, call_594830.base,
-                         call_594830.route, valid.getOrDefault("path"),
+  let url = call_580830.url(scheme.get, call_580830.host, call_580830.base,
+                         call_580830.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_594830, url, valid)
+  result = hook(call_580830, url, valid)
 
-proc call*(call_594831: Call_DrivePermissionsDelete_594815; fileId: string;
+proc call*(call_580831: Call_DrivePermissionsDelete_580815; fileId: string;
           permissionId: string; supportsAllDrives: bool = false; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; supportsTeamDrives: bool = false; key: string = "";
@@ -8711,35 +8713,35 @@ proc call*(call_594831: Call_DrivePermissionsDelete_594815; fileId: string;
   ##                       : Issue the request as a domain administrator; if set to true, then the requester will be granted access if the file ID parameter refers to a shared drive and the requester is an administrator of the domain to which the shared drive belongs.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_594832 = newJObject()
-  var query_594833 = newJObject()
-  add(query_594833, "supportsAllDrives", newJBool(supportsAllDrives))
-  add(query_594833, "fields", newJString(fields))
-  add(query_594833, "quotaUser", newJString(quotaUser))
-  add(path_594832, "fileId", newJString(fileId))
-  add(query_594833, "alt", newJString(alt))
-  add(query_594833, "oauth_token", newJString(oauthToken))
-  add(path_594832, "permissionId", newJString(permissionId))
-  add(query_594833, "userIp", newJString(userIp))
-  add(query_594833, "supportsTeamDrives", newJBool(supportsTeamDrives))
-  add(query_594833, "key", newJString(key))
-  add(query_594833, "useDomainAdminAccess", newJBool(useDomainAdminAccess))
-  add(query_594833, "prettyPrint", newJBool(prettyPrint))
-  result = call_594831.call(path_594832, query_594833, nil, nil, nil)
+  var path_580832 = newJObject()
+  var query_580833 = newJObject()
+  add(query_580833, "supportsAllDrives", newJBool(supportsAllDrives))
+  add(query_580833, "fields", newJString(fields))
+  add(query_580833, "quotaUser", newJString(quotaUser))
+  add(path_580832, "fileId", newJString(fileId))
+  add(query_580833, "alt", newJString(alt))
+  add(query_580833, "oauth_token", newJString(oauthToken))
+  add(path_580832, "permissionId", newJString(permissionId))
+  add(query_580833, "userIp", newJString(userIp))
+  add(query_580833, "supportsTeamDrives", newJBool(supportsTeamDrives))
+  add(query_580833, "key", newJString(key))
+  add(query_580833, "useDomainAdminAccess", newJBool(useDomainAdminAccess))
+  add(query_580833, "prettyPrint", newJBool(prettyPrint))
+  result = call_580831.call(path_580832, query_580833, nil, nil, nil)
 
-var drivePermissionsDelete* = Call_DrivePermissionsDelete_594815(
+var drivePermissionsDelete* = Call_DrivePermissionsDelete_580815(
     name: "drivePermissionsDelete", meth: HttpMethod.HttpDelete,
     host: "www.googleapis.com",
     route: "/files/{fileId}/permissions/{permissionId}",
-    validator: validate_DrivePermissionsDelete_594816, base: "/drive/v2",
-    url: url_DrivePermissionsDelete_594817, schemes: {Scheme.Https})
+    validator: validate_DrivePermissionsDelete_580816, base: "/drive/v2",
+    url: url_DrivePermissionsDelete_580817, schemes: {Scheme.Https})
 type
-  Call_DrivePropertiesInsert_594872 = ref object of OpenApiRestCall_593424
-proc url_DrivePropertiesInsert_594874(protocol: Scheme; host: string; base: string;
+  Call_DrivePropertiesInsert_580872 = ref object of OpenApiRestCall_579424
+proc url_DrivePropertiesInsert_580874(protocol: Scheme; host: string; base: string;
                                      route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "fileId" in path, "`fileId` is a required path parameter"
   const
@@ -8751,7 +8753,7 @@ proc url_DrivePropertiesInsert_594874(protocol: Scheme; host: string; base: stri
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_DrivePropertiesInsert_594873(path: JsonNode; query: JsonNode;
+proc validate_DrivePropertiesInsert_580873(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Adds a property to a file, or updates it if it already exists.
   ## 
@@ -8762,11 +8764,11 @@ proc validate_DrivePropertiesInsert_594873(path: JsonNode; query: JsonNode;
   ##         : The ID of the file.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `fileId` field"
-  var valid_594875 = path.getOrDefault("fileId")
-  valid_594875 = validateParameter(valid_594875, JString, required = true,
+  var valid_580875 = path.getOrDefault("fileId")
+  valid_580875 = validateParameter(valid_580875, JString, required = true,
                                  default = nil)
-  if valid_594875 != nil:
-    section.add "fileId", valid_594875
+  if valid_580875 != nil:
+    section.add "fileId", valid_580875
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -8784,41 +8786,41 @@ proc validate_DrivePropertiesInsert_594873(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_594876 = query.getOrDefault("fields")
-  valid_594876 = validateParameter(valid_594876, JString, required = false,
+  var valid_580876 = query.getOrDefault("fields")
+  valid_580876 = validateParameter(valid_580876, JString, required = false,
                                  default = nil)
-  if valid_594876 != nil:
-    section.add "fields", valid_594876
-  var valid_594877 = query.getOrDefault("quotaUser")
-  valid_594877 = validateParameter(valid_594877, JString, required = false,
+  if valid_580876 != nil:
+    section.add "fields", valid_580876
+  var valid_580877 = query.getOrDefault("quotaUser")
+  valid_580877 = validateParameter(valid_580877, JString, required = false,
                                  default = nil)
-  if valid_594877 != nil:
-    section.add "quotaUser", valid_594877
-  var valid_594878 = query.getOrDefault("alt")
-  valid_594878 = validateParameter(valid_594878, JString, required = false,
+  if valid_580877 != nil:
+    section.add "quotaUser", valid_580877
+  var valid_580878 = query.getOrDefault("alt")
+  valid_580878 = validateParameter(valid_580878, JString, required = false,
                                  default = newJString("json"))
-  if valid_594878 != nil:
-    section.add "alt", valid_594878
-  var valid_594879 = query.getOrDefault("oauth_token")
-  valid_594879 = validateParameter(valid_594879, JString, required = false,
+  if valid_580878 != nil:
+    section.add "alt", valid_580878
+  var valid_580879 = query.getOrDefault("oauth_token")
+  valid_580879 = validateParameter(valid_580879, JString, required = false,
                                  default = nil)
-  if valid_594879 != nil:
-    section.add "oauth_token", valid_594879
-  var valid_594880 = query.getOrDefault("userIp")
-  valid_594880 = validateParameter(valid_594880, JString, required = false,
+  if valid_580879 != nil:
+    section.add "oauth_token", valid_580879
+  var valid_580880 = query.getOrDefault("userIp")
+  valid_580880 = validateParameter(valid_580880, JString, required = false,
                                  default = nil)
-  if valid_594880 != nil:
-    section.add "userIp", valid_594880
-  var valid_594881 = query.getOrDefault("key")
-  valid_594881 = validateParameter(valid_594881, JString, required = false,
+  if valid_580880 != nil:
+    section.add "userIp", valid_580880
+  var valid_580881 = query.getOrDefault("key")
+  valid_580881 = validateParameter(valid_580881, JString, required = false,
                                  default = nil)
-  if valid_594881 != nil:
-    section.add "key", valid_594881
-  var valid_594882 = query.getOrDefault("prettyPrint")
-  valid_594882 = validateParameter(valid_594882, JBool, required = false,
+  if valid_580881 != nil:
+    section.add "key", valid_580881
+  var valid_580882 = query.getOrDefault("prettyPrint")
+  valid_580882 = validateParameter(valid_580882, JBool, required = false,
                                  default = newJBool(true))
-  if valid_594882 != nil:
-    section.add "prettyPrint", valid_594882
+  if valid_580882 != nil:
+    section.add "prettyPrint", valid_580882
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -8830,20 +8832,20 @@ proc validate_DrivePropertiesInsert_594873(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_594884: Call_DrivePropertiesInsert_594872; path: JsonNode;
+proc call*(call_580884: Call_DrivePropertiesInsert_580872; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Adds a property to a file, or updates it if it already exists.
   ## 
-  let valid = call_594884.validator(path, query, header, formData, body)
-  let scheme = call_594884.pickScheme
+  let valid = call_580884.validator(path, query, header, formData, body)
+  let scheme = call_580884.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_594884.url(scheme.get, call_594884.host, call_594884.base,
-                         call_594884.route, valid.getOrDefault("path"),
+  let url = call_580884.url(scheme.get, call_580884.host, call_580884.base,
+                         call_580884.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_594884, url, valid)
+  result = hook(call_580884, url, valid)
 
-proc call*(call_594885: Call_DrivePropertiesInsert_594872; fileId: string;
+proc call*(call_580885: Call_DrivePropertiesInsert_580872; fileId: string;
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           oauthToken: string = ""; userIp: string = ""; key: string = "";
           body: JsonNode = nil; prettyPrint: bool = true): Recallable =
@@ -8866,33 +8868,33 @@ proc call*(call_594885: Call_DrivePropertiesInsert_594872; fileId: string;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_594886 = newJObject()
-  var query_594887 = newJObject()
-  var body_594888 = newJObject()
-  add(query_594887, "fields", newJString(fields))
-  add(query_594887, "quotaUser", newJString(quotaUser))
-  add(path_594886, "fileId", newJString(fileId))
-  add(query_594887, "alt", newJString(alt))
-  add(query_594887, "oauth_token", newJString(oauthToken))
-  add(query_594887, "userIp", newJString(userIp))
-  add(query_594887, "key", newJString(key))
+  var path_580886 = newJObject()
+  var query_580887 = newJObject()
+  var body_580888 = newJObject()
+  add(query_580887, "fields", newJString(fields))
+  add(query_580887, "quotaUser", newJString(quotaUser))
+  add(path_580886, "fileId", newJString(fileId))
+  add(query_580887, "alt", newJString(alt))
+  add(query_580887, "oauth_token", newJString(oauthToken))
+  add(query_580887, "userIp", newJString(userIp))
+  add(query_580887, "key", newJString(key))
   if body != nil:
-    body_594888 = body
-  add(query_594887, "prettyPrint", newJBool(prettyPrint))
-  result = call_594885.call(path_594886, query_594887, nil, nil, body_594888)
+    body_580888 = body
+  add(query_580887, "prettyPrint", newJBool(prettyPrint))
+  result = call_580885.call(path_580886, query_580887, nil, nil, body_580888)
 
-var drivePropertiesInsert* = Call_DrivePropertiesInsert_594872(
+var drivePropertiesInsert* = Call_DrivePropertiesInsert_580872(
     name: "drivePropertiesInsert", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com", route: "/files/{fileId}/properties",
-    validator: validate_DrivePropertiesInsert_594873, base: "/drive/v2",
-    url: url_DrivePropertiesInsert_594874, schemes: {Scheme.Https})
+    validator: validate_DrivePropertiesInsert_580873, base: "/drive/v2",
+    url: url_DrivePropertiesInsert_580874, schemes: {Scheme.Https})
 type
-  Call_DrivePropertiesList_594857 = ref object of OpenApiRestCall_593424
-proc url_DrivePropertiesList_594859(protocol: Scheme; host: string; base: string;
+  Call_DrivePropertiesList_580857 = ref object of OpenApiRestCall_579424
+proc url_DrivePropertiesList_580859(protocol: Scheme; host: string; base: string;
                                    route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "fileId" in path, "`fileId` is a required path parameter"
   const
@@ -8904,7 +8906,7 @@ proc url_DrivePropertiesList_594859(protocol: Scheme; host: string; base: string
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_DrivePropertiesList_594858(path: JsonNode; query: JsonNode;
+proc validate_DrivePropertiesList_580858(path: JsonNode; query: JsonNode;
                                         header: JsonNode; formData: JsonNode;
                                         body: JsonNode): JsonNode =
   ## Lists a file's properties.
@@ -8916,11 +8918,11 @@ proc validate_DrivePropertiesList_594858(path: JsonNode; query: JsonNode;
   ##         : The ID of the file.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `fileId` field"
-  var valid_594860 = path.getOrDefault("fileId")
-  valid_594860 = validateParameter(valid_594860, JString, required = true,
+  var valid_580860 = path.getOrDefault("fileId")
+  valid_580860 = validateParameter(valid_580860, JString, required = true,
                                  default = nil)
-  if valid_594860 != nil:
-    section.add "fileId", valid_594860
+  if valid_580860 != nil:
+    section.add "fileId", valid_580860
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -8938,41 +8940,41 @@ proc validate_DrivePropertiesList_594858(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_594861 = query.getOrDefault("fields")
-  valid_594861 = validateParameter(valid_594861, JString, required = false,
+  var valid_580861 = query.getOrDefault("fields")
+  valid_580861 = validateParameter(valid_580861, JString, required = false,
                                  default = nil)
-  if valid_594861 != nil:
-    section.add "fields", valid_594861
-  var valid_594862 = query.getOrDefault("quotaUser")
-  valid_594862 = validateParameter(valid_594862, JString, required = false,
+  if valid_580861 != nil:
+    section.add "fields", valid_580861
+  var valid_580862 = query.getOrDefault("quotaUser")
+  valid_580862 = validateParameter(valid_580862, JString, required = false,
                                  default = nil)
-  if valid_594862 != nil:
-    section.add "quotaUser", valid_594862
-  var valid_594863 = query.getOrDefault("alt")
-  valid_594863 = validateParameter(valid_594863, JString, required = false,
+  if valid_580862 != nil:
+    section.add "quotaUser", valid_580862
+  var valid_580863 = query.getOrDefault("alt")
+  valid_580863 = validateParameter(valid_580863, JString, required = false,
                                  default = newJString("json"))
-  if valid_594863 != nil:
-    section.add "alt", valid_594863
-  var valid_594864 = query.getOrDefault("oauth_token")
-  valid_594864 = validateParameter(valid_594864, JString, required = false,
+  if valid_580863 != nil:
+    section.add "alt", valid_580863
+  var valid_580864 = query.getOrDefault("oauth_token")
+  valid_580864 = validateParameter(valid_580864, JString, required = false,
                                  default = nil)
-  if valid_594864 != nil:
-    section.add "oauth_token", valid_594864
-  var valid_594865 = query.getOrDefault("userIp")
-  valid_594865 = validateParameter(valid_594865, JString, required = false,
+  if valid_580864 != nil:
+    section.add "oauth_token", valid_580864
+  var valid_580865 = query.getOrDefault("userIp")
+  valid_580865 = validateParameter(valid_580865, JString, required = false,
                                  default = nil)
-  if valid_594865 != nil:
-    section.add "userIp", valid_594865
-  var valid_594866 = query.getOrDefault("key")
-  valid_594866 = validateParameter(valid_594866, JString, required = false,
+  if valid_580865 != nil:
+    section.add "userIp", valid_580865
+  var valid_580866 = query.getOrDefault("key")
+  valid_580866 = validateParameter(valid_580866, JString, required = false,
                                  default = nil)
-  if valid_594866 != nil:
-    section.add "key", valid_594866
-  var valid_594867 = query.getOrDefault("prettyPrint")
-  valid_594867 = validateParameter(valid_594867, JBool, required = false,
+  if valid_580866 != nil:
+    section.add "key", valid_580866
+  var valid_580867 = query.getOrDefault("prettyPrint")
+  valid_580867 = validateParameter(valid_580867, JBool, required = false,
                                  default = newJBool(true))
-  if valid_594867 != nil:
-    section.add "prettyPrint", valid_594867
+  if valid_580867 != nil:
+    section.add "prettyPrint", valid_580867
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -8981,20 +8983,20 @@ proc validate_DrivePropertiesList_594858(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_594868: Call_DrivePropertiesList_594857; path: JsonNode;
+proc call*(call_580868: Call_DrivePropertiesList_580857; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Lists a file's properties.
   ## 
-  let valid = call_594868.validator(path, query, header, formData, body)
-  let scheme = call_594868.pickScheme
+  let valid = call_580868.validator(path, query, header, formData, body)
+  let scheme = call_580868.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_594868.url(scheme.get, call_594868.host, call_594868.base,
-                         call_594868.route, valid.getOrDefault("path"),
+  let url = call_580868.url(scheme.get, call_580868.host, call_580868.base,
+                         call_580868.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_594868, url, valid)
+  result = hook(call_580868, url, valid)
 
-proc call*(call_594869: Call_DrivePropertiesList_594857; fileId: string;
+proc call*(call_580869: Call_DrivePropertiesList_580857; fileId: string;
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           oauthToken: string = ""; userIp: string = ""; key: string = "";
           prettyPrint: bool = true): Recallable =
@@ -9016,30 +9018,30 @@ proc call*(call_594869: Call_DrivePropertiesList_594857; fileId: string;
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_594870 = newJObject()
-  var query_594871 = newJObject()
-  add(query_594871, "fields", newJString(fields))
-  add(query_594871, "quotaUser", newJString(quotaUser))
-  add(path_594870, "fileId", newJString(fileId))
-  add(query_594871, "alt", newJString(alt))
-  add(query_594871, "oauth_token", newJString(oauthToken))
-  add(query_594871, "userIp", newJString(userIp))
-  add(query_594871, "key", newJString(key))
-  add(query_594871, "prettyPrint", newJBool(prettyPrint))
-  result = call_594869.call(path_594870, query_594871, nil, nil, nil)
+  var path_580870 = newJObject()
+  var query_580871 = newJObject()
+  add(query_580871, "fields", newJString(fields))
+  add(query_580871, "quotaUser", newJString(quotaUser))
+  add(path_580870, "fileId", newJString(fileId))
+  add(query_580871, "alt", newJString(alt))
+  add(query_580871, "oauth_token", newJString(oauthToken))
+  add(query_580871, "userIp", newJString(userIp))
+  add(query_580871, "key", newJString(key))
+  add(query_580871, "prettyPrint", newJBool(prettyPrint))
+  result = call_580869.call(path_580870, query_580871, nil, nil, nil)
 
-var drivePropertiesList* = Call_DrivePropertiesList_594857(
+var drivePropertiesList* = Call_DrivePropertiesList_580857(
     name: "drivePropertiesList", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/files/{fileId}/properties",
-    validator: validate_DrivePropertiesList_594858, base: "/drive/v2",
-    url: url_DrivePropertiesList_594859, schemes: {Scheme.Https})
+    validator: validate_DrivePropertiesList_580858, base: "/drive/v2",
+    url: url_DrivePropertiesList_580859, schemes: {Scheme.Https})
 type
-  Call_DrivePropertiesUpdate_594906 = ref object of OpenApiRestCall_593424
-proc url_DrivePropertiesUpdate_594908(protocol: Scheme; host: string; base: string;
+  Call_DrivePropertiesUpdate_580906 = ref object of OpenApiRestCall_579424
+proc url_DrivePropertiesUpdate_580908(protocol: Scheme; host: string; base: string;
                                      route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "fileId" in path, "`fileId` is a required path parameter"
   assert "propertyKey" in path, "`propertyKey` is a required path parameter"
@@ -9053,7 +9055,7 @@ proc url_DrivePropertiesUpdate_594908(protocol: Scheme; host: string; base: stri
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_DrivePropertiesUpdate_594907(path: JsonNode; query: JsonNode;
+proc validate_DrivePropertiesUpdate_580907(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Updates a property.
   ## 
@@ -9066,16 +9068,16 @@ proc validate_DrivePropertiesUpdate_594907(path: JsonNode; query: JsonNode;
   ##              : The key of the property.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `fileId` field"
-  var valid_594909 = path.getOrDefault("fileId")
-  valid_594909 = validateParameter(valid_594909, JString, required = true,
+  var valid_580909 = path.getOrDefault("fileId")
+  valid_580909 = validateParameter(valid_580909, JString, required = true,
                                  default = nil)
-  if valid_594909 != nil:
-    section.add "fileId", valid_594909
-  var valid_594910 = path.getOrDefault("propertyKey")
-  valid_594910 = validateParameter(valid_594910, JString, required = true,
+  if valid_580909 != nil:
+    section.add "fileId", valid_580909
+  var valid_580910 = path.getOrDefault("propertyKey")
+  valid_580910 = validateParameter(valid_580910, JString, required = true,
                                  default = nil)
-  if valid_594910 != nil:
-    section.add "propertyKey", valid_594910
+  if valid_580910 != nil:
+    section.add "propertyKey", valid_580910
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -9095,46 +9097,46 @@ proc validate_DrivePropertiesUpdate_594907(path: JsonNode; query: JsonNode;
   ##   visibility: JString
   ##             : The visibility of the property. Allowed values are PRIVATE and PUBLIC. (Default: PRIVATE)
   section = newJObject()
-  var valid_594911 = query.getOrDefault("fields")
-  valid_594911 = validateParameter(valid_594911, JString, required = false,
+  var valid_580911 = query.getOrDefault("fields")
+  valid_580911 = validateParameter(valid_580911, JString, required = false,
                                  default = nil)
-  if valid_594911 != nil:
-    section.add "fields", valid_594911
-  var valid_594912 = query.getOrDefault("quotaUser")
-  valid_594912 = validateParameter(valid_594912, JString, required = false,
+  if valid_580911 != nil:
+    section.add "fields", valid_580911
+  var valid_580912 = query.getOrDefault("quotaUser")
+  valid_580912 = validateParameter(valid_580912, JString, required = false,
                                  default = nil)
-  if valid_594912 != nil:
-    section.add "quotaUser", valid_594912
-  var valid_594913 = query.getOrDefault("alt")
-  valid_594913 = validateParameter(valid_594913, JString, required = false,
+  if valid_580912 != nil:
+    section.add "quotaUser", valid_580912
+  var valid_580913 = query.getOrDefault("alt")
+  valid_580913 = validateParameter(valid_580913, JString, required = false,
                                  default = newJString("json"))
-  if valid_594913 != nil:
-    section.add "alt", valid_594913
-  var valid_594914 = query.getOrDefault("oauth_token")
-  valid_594914 = validateParameter(valid_594914, JString, required = false,
+  if valid_580913 != nil:
+    section.add "alt", valid_580913
+  var valid_580914 = query.getOrDefault("oauth_token")
+  valid_580914 = validateParameter(valid_580914, JString, required = false,
                                  default = nil)
-  if valid_594914 != nil:
-    section.add "oauth_token", valid_594914
-  var valid_594915 = query.getOrDefault("userIp")
-  valid_594915 = validateParameter(valid_594915, JString, required = false,
+  if valid_580914 != nil:
+    section.add "oauth_token", valid_580914
+  var valid_580915 = query.getOrDefault("userIp")
+  valid_580915 = validateParameter(valid_580915, JString, required = false,
                                  default = nil)
-  if valid_594915 != nil:
-    section.add "userIp", valid_594915
-  var valid_594916 = query.getOrDefault("key")
-  valid_594916 = validateParameter(valid_594916, JString, required = false,
+  if valid_580915 != nil:
+    section.add "userIp", valid_580915
+  var valid_580916 = query.getOrDefault("key")
+  valid_580916 = validateParameter(valid_580916, JString, required = false,
                                  default = nil)
-  if valid_594916 != nil:
-    section.add "key", valid_594916
-  var valid_594917 = query.getOrDefault("prettyPrint")
-  valid_594917 = validateParameter(valid_594917, JBool, required = false,
+  if valid_580916 != nil:
+    section.add "key", valid_580916
+  var valid_580917 = query.getOrDefault("prettyPrint")
+  valid_580917 = validateParameter(valid_580917, JBool, required = false,
                                  default = newJBool(true))
-  if valid_594917 != nil:
-    section.add "prettyPrint", valid_594917
-  var valid_594918 = query.getOrDefault("visibility")
-  valid_594918 = validateParameter(valid_594918, JString, required = false,
+  if valid_580917 != nil:
+    section.add "prettyPrint", valid_580917
+  var valid_580918 = query.getOrDefault("visibility")
+  valid_580918 = validateParameter(valid_580918, JString, required = false,
                                  default = newJString("private"))
-  if valid_594918 != nil:
-    section.add "visibility", valid_594918
+  if valid_580918 != nil:
+    section.add "visibility", valid_580918
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -9146,20 +9148,20 @@ proc validate_DrivePropertiesUpdate_594907(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_594920: Call_DrivePropertiesUpdate_594906; path: JsonNode;
+proc call*(call_580920: Call_DrivePropertiesUpdate_580906; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Updates a property.
   ## 
-  let valid = call_594920.validator(path, query, header, formData, body)
-  let scheme = call_594920.pickScheme
+  let valid = call_580920.validator(path, query, header, formData, body)
+  let scheme = call_580920.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_594920.url(scheme.get, call_594920.host, call_594920.base,
-                         call_594920.route, valid.getOrDefault("path"),
+  let url = call_580920.url(scheme.get, call_580920.host, call_580920.base,
+                         call_580920.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_594920, url, valid)
+  result = hook(call_580920, url, valid)
 
-proc call*(call_594921: Call_DrivePropertiesUpdate_594906; fileId: string;
+proc call*(call_580921: Call_DrivePropertiesUpdate_580906; fileId: string;
           propertyKey: string; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; userIp: string = "";
           key: string = ""; body: JsonNode = nil; prettyPrint: bool = true;
@@ -9187,35 +9189,35 @@ proc call*(call_594921: Call_DrivePropertiesUpdate_594906; fileId: string;
   ##              : Returns response with indentations and line breaks.
   ##   visibility: string
   ##             : The visibility of the property. Allowed values are PRIVATE and PUBLIC. (Default: PRIVATE)
-  var path_594922 = newJObject()
-  var query_594923 = newJObject()
-  var body_594924 = newJObject()
-  add(query_594923, "fields", newJString(fields))
-  add(query_594923, "quotaUser", newJString(quotaUser))
-  add(path_594922, "fileId", newJString(fileId))
-  add(query_594923, "alt", newJString(alt))
-  add(query_594923, "oauth_token", newJString(oauthToken))
-  add(query_594923, "userIp", newJString(userIp))
-  add(query_594923, "key", newJString(key))
-  add(path_594922, "propertyKey", newJString(propertyKey))
+  var path_580922 = newJObject()
+  var query_580923 = newJObject()
+  var body_580924 = newJObject()
+  add(query_580923, "fields", newJString(fields))
+  add(query_580923, "quotaUser", newJString(quotaUser))
+  add(path_580922, "fileId", newJString(fileId))
+  add(query_580923, "alt", newJString(alt))
+  add(query_580923, "oauth_token", newJString(oauthToken))
+  add(query_580923, "userIp", newJString(userIp))
+  add(query_580923, "key", newJString(key))
+  add(path_580922, "propertyKey", newJString(propertyKey))
   if body != nil:
-    body_594924 = body
-  add(query_594923, "prettyPrint", newJBool(prettyPrint))
-  add(query_594923, "visibility", newJString(visibility))
-  result = call_594921.call(path_594922, query_594923, nil, nil, body_594924)
+    body_580924 = body
+  add(query_580923, "prettyPrint", newJBool(prettyPrint))
+  add(query_580923, "visibility", newJString(visibility))
+  result = call_580921.call(path_580922, query_580923, nil, nil, body_580924)
 
-var drivePropertiesUpdate* = Call_DrivePropertiesUpdate_594906(
+var drivePropertiesUpdate* = Call_DrivePropertiesUpdate_580906(
     name: "drivePropertiesUpdate", meth: HttpMethod.HttpPut,
     host: "www.googleapis.com", route: "/files/{fileId}/properties/{propertyKey}",
-    validator: validate_DrivePropertiesUpdate_594907, base: "/drive/v2",
-    url: url_DrivePropertiesUpdate_594908, schemes: {Scheme.Https})
+    validator: validate_DrivePropertiesUpdate_580907, base: "/drive/v2",
+    url: url_DrivePropertiesUpdate_580908, schemes: {Scheme.Https})
 type
-  Call_DrivePropertiesGet_594889 = ref object of OpenApiRestCall_593424
-proc url_DrivePropertiesGet_594891(protocol: Scheme; host: string; base: string;
+  Call_DrivePropertiesGet_580889 = ref object of OpenApiRestCall_579424
+proc url_DrivePropertiesGet_580891(protocol: Scheme; host: string; base: string;
                                   route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "fileId" in path, "`fileId` is a required path parameter"
   assert "propertyKey" in path, "`propertyKey` is a required path parameter"
@@ -9229,7 +9231,7 @@ proc url_DrivePropertiesGet_594891(protocol: Scheme; host: string; base: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_DrivePropertiesGet_594890(path: JsonNode; query: JsonNode;
+proc validate_DrivePropertiesGet_580890(path: JsonNode; query: JsonNode;
                                        header: JsonNode; formData: JsonNode;
                                        body: JsonNode): JsonNode =
   ## Gets a property by its key.
@@ -9243,16 +9245,16 @@ proc validate_DrivePropertiesGet_594890(path: JsonNode; query: JsonNode;
   ##              : The key of the property.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `fileId` field"
-  var valid_594892 = path.getOrDefault("fileId")
-  valid_594892 = validateParameter(valid_594892, JString, required = true,
+  var valid_580892 = path.getOrDefault("fileId")
+  valid_580892 = validateParameter(valid_580892, JString, required = true,
                                  default = nil)
-  if valid_594892 != nil:
-    section.add "fileId", valid_594892
-  var valid_594893 = path.getOrDefault("propertyKey")
-  valid_594893 = validateParameter(valid_594893, JString, required = true,
+  if valid_580892 != nil:
+    section.add "fileId", valid_580892
+  var valid_580893 = path.getOrDefault("propertyKey")
+  valid_580893 = validateParameter(valid_580893, JString, required = true,
                                  default = nil)
-  if valid_594893 != nil:
-    section.add "propertyKey", valid_594893
+  if valid_580893 != nil:
+    section.add "propertyKey", valid_580893
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -9272,46 +9274,46 @@ proc validate_DrivePropertiesGet_594890(path: JsonNode; query: JsonNode;
   ##   visibility: JString
   ##             : The visibility of the property.
   section = newJObject()
-  var valid_594894 = query.getOrDefault("fields")
-  valid_594894 = validateParameter(valid_594894, JString, required = false,
+  var valid_580894 = query.getOrDefault("fields")
+  valid_580894 = validateParameter(valid_580894, JString, required = false,
                                  default = nil)
-  if valid_594894 != nil:
-    section.add "fields", valid_594894
-  var valid_594895 = query.getOrDefault("quotaUser")
-  valid_594895 = validateParameter(valid_594895, JString, required = false,
+  if valid_580894 != nil:
+    section.add "fields", valid_580894
+  var valid_580895 = query.getOrDefault("quotaUser")
+  valid_580895 = validateParameter(valid_580895, JString, required = false,
                                  default = nil)
-  if valid_594895 != nil:
-    section.add "quotaUser", valid_594895
-  var valid_594896 = query.getOrDefault("alt")
-  valid_594896 = validateParameter(valid_594896, JString, required = false,
+  if valid_580895 != nil:
+    section.add "quotaUser", valid_580895
+  var valid_580896 = query.getOrDefault("alt")
+  valid_580896 = validateParameter(valid_580896, JString, required = false,
                                  default = newJString("json"))
-  if valid_594896 != nil:
-    section.add "alt", valid_594896
-  var valid_594897 = query.getOrDefault("oauth_token")
-  valid_594897 = validateParameter(valid_594897, JString, required = false,
+  if valid_580896 != nil:
+    section.add "alt", valid_580896
+  var valid_580897 = query.getOrDefault("oauth_token")
+  valid_580897 = validateParameter(valid_580897, JString, required = false,
                                  default = nil)
-  if valid_594897 != nil:
-    section.add "oauth_token", valid_594897
-  var valid_594898 = query.getOrDefault("userIp")
-  valid_594898 = validateParameter(valid_594898, JString, required = false,
+  if valid_580897 != nil:
+    section.add "oauth_token", valid_580897
+  var valid_580898 = query.getOrDefault("userIp")
+  valid_580898 = validateParameter(valid_580898, JString, required = false,
                                  default = nil)
-  if valid_594898 != nil:
-    section.add "userIp", valid_594898
-  var valid_594899 = query.getOrDefault("key")
-  valid_594899 = validateParameter(valid_594899, JString, required = false,
+  if valid_580898 != nil:
+    section.add "userIp", valid_580898
+  var valid_580899 = query.getOrDefault("key")
+  valid_580899 = validateParameter(valid_580899, JString, required = false,
                                  default = nil)
-  if valid_594899 != nil:
-    section.add "key", valid_594899
-  var valid_594900 = query.getOrDefault("prettyPrint")
-  valid_594900 = validateParameter(valid_594900, JBool, required = false,
+  if valid_580899 != nil:
+    section.add "key", valid_580899
+  var valid_580900 = query.getOrDefault("prettyPrint")
+  valid_580900 = validateParameter(valid_580900, JBool, required = false,
                                  default = newJBool(true))
-  if valid_594900 != nil:
-    section.add "prettyPrint", valid_594900
-  var valid_594901 = query.getOrDefault("visibility")
-  valid_594901 = validateParameter(valid_594901, JString, required = false,
+  if valid_580900 != nil:
+    section.add "prettyPrint", valid_580900
+  var valid_580901 = query.getOrDefault("visibility")
+  valid_580901 = validateParameter(valid_580901, JString, required = false,
                                  default = newJString("private"))
-  if valid_594901 != nil:
-    section.add "visibility", valid_594901
+  if valid_580901 != nil:
+    section.add "visibility", valid_580901
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -9320,20 +9322,20 @@ proc validate_DrivePropertiesGet_594890(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_594902: Call_DrivePropertiesGet_594889; path: JsonNode;
+proc call*(call_580902: Call_DrivePropertiesGet_580889; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Gets a property by its key.
   ## 
-  let valid = call_594902.validator(path, query, header, formData, body)
-  let scheme = call_594902.pickScheme
+  let valid = call_580902.validator(path, query, header, formData, body)
+  let scheme = call_580902.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_594902.url(scheme.get, call_594902.host, call_594902.base,
-                         call_594902.route, valid.getOrDefault("path"),
+  let url = call_580902.url(scheme.get, call_580902.host, call_580902.base,
+                         call_580902.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_594902, url, valid)
+  result = hook(call_580902, url, valid)
 
-proc call*(call_594903: Call_DrivePropertiesGet_594889; fileId: string;
+proc call*(call_580903: Call_DrivePropertiesGet_580889; fileId: string;
           propertyKey: string; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; userIp: string = "";
           key: string = ""; prettyPrint: bool = true; visibility: string = "private"): Recallable =
@@ -9359,32 +9361,32 @@ proc call*(call_594903: Call_DrivePropertiesGet_594889; fileId: string;
   ##              : Returns response with indentations and line breaks.
   ##   visibility: string
   ##             : The visibility of the property.
-  var path_594904 = newJObject()
-  var query_594905 = newJObject()
-  add(query_594905, "fields", newJString(fields))
-  add(query_594905, "quotaUser", newJString(quotaUser))
-  add(path_594904, "fileId", newJString(fileId))
-  add(query_594905, "alt", newJString(alt))
-  add(query_594905, "oauth_token", newJString(oauthToken))
-  add(query_594905, "userIp", newJString(userIp))
-  add(query_594905, "key", newJString(key))
-  add(path_594904, "propertyKey", newJString(propertyKey))
-  add(query_594905, "prettyPrint", newJBool(prettyPrint))
-  add(query_594905, "visibility", newJString(visibility))
-  result = call_594903.call(path_594904, query_594905, nil, nil, nil)
+  var path_580904 = newJObject()
+  var query_580905 = newJObject()
+  add(query_580905, "fields", newJString(fields))
+  add(query_580905, "quotaUser", newJString(quotaUser))
+  add(path_580904, "fileId", newJString(fileId))
+  add(query_580905, "alt", newJString(alt))
+  add(query_580905, "oauth_token", newJString(oauthToken))
+  add(query_580905, "userIp", newJString(userIp))
+  add(query_580905, "key", newJString(key))
+  add(path_580904, "propertyKey", newJString(propertyKey))
+  add(query_580905, "prettyPrint", newJBool(prettyPrint))
+  add(query_580905, "visibility", newJString(visibility))
+  result = call_580903.call(path_580904, query_580905, nil, nil, nil)
 
-var drivePropertiesGet* = Call_DrivePropertiesGet_594889(
+var drivePropertiesGet* = Call_DrivePropertiesGet_580889(
     name: "drivePropertiesGet", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/files/{fileId}/properties/{propertyKey}",
-    validator: validate_DrivePropertiesGet_594890, base: "/drive/v2",
-    url: url_DrivePropertiesGet_594891, schemes: {Scheme.Https})
+    validator: validate_DrivePropertiesGet_580890, base: "/drive/v2",
+    url: url_DrivePropertiesGet_580891, schemes: {Scheme.Https})
 type
-  Call_DrivePropertiesPatch_594942 = ref object of OpenApiRestCall_593424
-proc url_DrivePropertiesPatch_594944(protocol: Scheme; host: string; base: string;
+  Call_DrivePropertiesPatch_580942 = ref object of OpenApiRestCall_579424
+proc url_DrivePropertiesPatch_580944(protocol: Scheme; host: string; base: string;
                                     route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "fileId" in path, "`fileId` is a required path parameter"
   assert "propertyKey" in path, "`propertyKey` is a required path parameter"
@@ -9398,7 +9400,7 @@ proc url_DrivePropertiesPatch_594944(protocol: Scheme; host: string; base: strin
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_DrivePropertiesPatch_594943(path: JsonNode; query: JsonNode;
+proc validate_DrivePropertiesPatch_580943(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Updates a property.
   ## 
@@ -9411,16 +9413,16 @@ proc validate_DrivePropertiesPatch_594943(path: JsonNode; query: JsonNode;
   ##              : The key of the property.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `fileId` field"
-  var valid_594945 = path.getOrDefault("fileId")
-  valid_594945 = validateParameter(valid_594945, JString, required = true,
+  var valid_580945 = path.getOrDefault("fileId")
+  valid_580945 = validateParameter(valid_580945, JString, required = true,
                                  default = nil)
-  if valid_594945 != nil:
-    section.add "fileId", valid_594945
-  var valid_594946 = path.getOrDefault("propertyKey")
-  valid_594946 = validateParameter(valid_594946, JString, required = true,
+  if valid_580945 != nil:
+    section.add "fileId", valid_580945
+  var valid_580946 = path.getOrDefault("propertyKey")
+  valid_580946 = validateParameter(valid_580946, JString, required = true,
                                  default = nil)
-  if valid_594946 != nil:
-    section.add "propertyKey", valid_594946
+  if valid_580946 != nil:
+    section.add "propertyKey", valid_580946
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -9440,46 +9442,46 @@ proc validate_DrivePropertiesPatch_594943(path: JsonNode; query: JsonNode;
   ##   visibility: JString
   ##             : The visibility of the property. Allowed values are PRIVATE and PUBLIC. (Default: PRIVATE)
   section = newJObject()
-  var valid_594947 = query.getOrDefault("fields")
-  valid_594947 = validateParameter(valid_594947, JString, required = false,
+  var valid_580947 = query.getOrDefault("fields")
+  valid_580947 = validateParameter(valid_580947, JString, required = false,
                                  default = nil)
-  if valid_594947 != nil:
-    section.add "fields", valid_594947
-  var valid_594948 = query.getOrDefault("quotaUser")
-  valid_594948 = validateParameter(valid_594948, JString, required = false,
+  if valid_580947 != nil:
+    section.add "fields", valid_580947
+  var valid_580948 = query.getOrDefault("quotaUser")
+  valid_580948 = validateParameter(valid_580948, JString, required = false,
                                  default = nil)
-  if valid_594948 != nil:
-    section.add "quotaUser", valid_594948
-  var valid_594949 = query.getOrDefault("alt")
-  valid_594949 = validateParameter(valid_594949, JString, required = false,
+  if valid_580948 != nil:
+    section.add "quotaUser", valid_580948
+  var valid_580949 = query.getOrDefault("alt")
+  valid_580949 = validateParameter(valid_580949, JString, required = false,
                                  default = newJString("json"))
-  if valid_594949 != nil:
-    section.add "alt", valid_594949
-  var valid_594950 = query.getOrDefault("oauth_token")
-  valid_594950 = validateParameter(valid_594950, JString, required = false,
+  if valid_580949 != nil:
+    section.add "alt", valid_580949
+  var valid_580950 = query.getOrDefault("oauth_token")
+  valid_580950 = validateParameter(valid_580950, JString, required = false,
                                  default = nil)
-  if valid_594950 != nil:
-    section.add "oauth_token", valid_594950
-  var valid_594951 = query.getOrDefault("userIp")
-  valid_594951 = validateParameter(valid_594951, JString, required = false,
+  if valid_580950 != nil:
+    section.add "oauth_token", valid_580950
+  var valid_580951 = query.getOrDefault("userIp")
+  valid_580951 = validateParameter(valid_580951, JString, required = false,
                                  default = nil)
-  if valid_594951 != nil:
-    section.add "userIp", valid_594951
-  var valid_594952 = query.getOrDefault("key")
-  valid_594952 = validateParameter(valid_594952, JString, required = false,
+  if valid_580951 != nil:
+    section.add "userIp", valid_580951
+  var valid_580952 = query.getOrDefault("key")
+  valid_580952 = validateParameter(valid_580952, JString, required = false,
                                  default = nil)
-  if valid_594952 != nil:
-    section.add "key", valid_594952
-  var valid_594953 = query.getOrDefault("prettyPrint")
-  valid_594953 = validateParameter(valid_594953, JBool, required = false,
+  if valid_580952 != nil:
+    section.add "key", valid_580952
+  var valid_580953 = query.getOrDefault("prettyPrint")
+  valid_580953 = validateParameter(valid_580953, JBool, required = false,
                                  default = newJBool(true))
-  if valid_594953 != nil:
-    section.add "prettyPrint", valid_594953
-  var valid_594954 = query.getOrDefault("visibility")
-  valid_594954 = validateParameter(valid_594954, JString, required = false,
+  if valid_580953 != nil:
+    section.add "prettyPrint", valid_580953
+  var valid_580954 = query.getOrDefault("visibility")
+  valid_580954 = validateParameter(valid_580954, JString, required = false,
                                  default = newJString("private"))
-  if valid_594954 != nil:
-    section.add "visibility", valid_594954
+  if valid_580954 != nil:
+    section.add "visibility", valid_580954
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -9491,20 +9493,20 @@ proc validate_DrivePropertiesPatch_594943(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_594956: Call_DrivePropertiesPatch_594942; path: JsonNode;
+proc call*(call_580956: Call_DrivePropertiesPatch_580942; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Updates a property.
   ## 
-  let valid = call_594956.validator(path, query, header, formData, body)
-  let scheme = call_594956.pickScheme
+  let valid = call_580956.validator(path, query, header, formData, body)
+  let scheme = call_580956.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_594956.url(scheme.get, call_594956.host, call_594956.base,
-                         call_594956.route, valid.getOrDefault("path"),
+  let url = call_580956.url(scheme.get, call_580956.host, call_580956.base,
+                         call_580956.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_594956, url, valid)
+  result = hook(call_580956, url, valid)
 
-proc call*(call_594957: Call_DrivePropertiesPatch_594942; fileId: string;
+proc call*(call_580957: Call_DrivePropertiesPatch_580942; fileId: string;
           propertyKey: string; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; userIp: string = "";
           key: string = ""; body: JsonNode = nil; prettyPrint: bool = true;
@@ -9532,35 +9534,35 @@ proc call*(call_594957: Call_DrivePropertiesPatch_594942; fileId: string;
   ##              : Returns response with indentations and line breaks.
   ##   visibility: string
   ##             : The visibility of the property. Allowed values are PRIVATE and PUBLIC. (Default: PRIVATE)
-  var path_594958 = newJObject()
-  var query_594959 = newJObject()
-  var body_594960 = newJObject()
-  add(query_594959, "fields", newJString(fields))
-  add(query_594959, "quotaUser", newJString(quotaUser))
-  add(path_594958, "fileId", newJString(fileId))
-  add(query_594959, "alt", newJString(alt))
-  add(query_594959, "oauth_token", newJString(oauthToken))
-  add(query_594959, "userIp", newJString(userIp))
-  add(query_594959, "key", newJString(key))
-  add(path_594958, "propertyKey", newJString(propertyKey))
+  var path_580958 = newJObject()
+  var query_580959 = newJObject()
+  var body_580960 = newJObject()
+  add(query_580959, "fields", newJString(fields))
+  add(query_580959, "quotaUser", newJString(quotaUser))
+  add(path_580958, "fileId", newJString(fileId))
+  add(query_580959, "alt", newJString(alt))
+  add(query_580959, "oauth_token", newJString(oauthToken))
+  add(query_580959, "userIp", newJString(userIp))
+  add(query_580959, "key", newJString(key))
+  add(path_580958, "propertyKey", newJString(propertyKey))
   if body != nil:
-    body_594960 = body
-  add(query_594959, "prettyPrint", newJBool(prettyPrint))
-  add(query_594959, "visibility", newJString(visibility))
-  result = call_594957.call(path_594958, query_594959, nil, nil, body_594960)
+    body_580960 = body
+  add(query_580959, "prettyPrint", newJBool(prettyPrint))
+  add(query_580959, "visibility", newJString(visibility))
+  result = call_580957.call(path_580958, query_580959, nil, nil, body_580960)
 
-var drivePropertiesPatch* = Call_DrivePropertiesPatch_594942(
+var drivePropertiesPatch* = Call_DrivePropertiesPatch_580942(
     name: "drivePropertiesPatch", meth: HttpMethod.HttpPatch,
     host: "www.googleapis.com", route: "/files/{fileId}/properties/{propertyKey}",
-    validator: validate_DrivePropertiesPatch_594943, base: "/drive/v2",
-    url: url_DrivePropertiesPatch_594944, schemes: {Scheme.Https})
+    validator: validate_DrivePropertiesPatch_580943, base: "/drive/v2",
+    url: url_DrivePropertiesPatch_580944, schemes: {Scheme.Https})
 type
-  Call_DrivePropertiesDelete_594925 = ref object of OpenApiRestCall_593424
-proc url_DrivePropertiesDelete_594927(protocol: Scheme; host: string; base: string;
+  Call_DrivePropertiesDelete_580925 = ref object of OpenApiRestCall_579424
+proc url_DrivePropertiesDelete_580927(protocol: Scheme; host: string; base: string;
                                      route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "fileId" in path, "`fileId` is a required path parameter"
   assert "propertyKey" in path, "`propertyKey` is a required path parameter"
@@ -9574,7 +9576,7 @@ proc url_DrivePropertiesDelete_594927(protocol: Scheme; host: string; base: stri
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_DrivePropertiesDelete_594926(path: JsonNode; query: JsonNode;
+proc validate_DrivePropertiesDelete_580926(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Deletes a property.
   ## 
@@ -9587,16 +9589,16 @@ proc validate_DrivePropertiesDelete_594926(path: JsonNode; query: JsonNode;
   ##              : The key of the property.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `fileId` field"
-  var valid_594928 = path.getOrDefault("fileId")
-  valid_594928 = validateParameter(valid_594928, JString, required = true,
+  var valid_580928 = path.getOrDefault("fileId")
+  valid_580928 = validateParameter(valid_580928, JString, required = true,
                                  default = nil)
-  if valid_594928 != nil:
-    section.add "fileId", valid_594928
-  var valid_594929 = path.getOrDefault("propertyKey")
-  valid_594929 = validateParameter(valid_594929, JString, required = true,
+  if valid_580928 != nil:
+    section.add "fileId", valid_580928
+  var valid_580929 = path.getOrDefault("propertyKey")
+  valid_580929 = validateParameter(valid_580929, JString, required = true,
                                  default = nil)
-  if valid_594929 != nil:
-    section.add "propertyKey", valid_594929
+  if valid_580929 != nil:
+    section.add "propertyKey", valid_580929
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -9616,46 +9618,46 @@ proc validate_DrivePropertiesDelete_594926(path: JsonNode; query: JsonNode;
   ##   visibility: JString
   ##             : The visibility of the property.
   section = newJObject()
-  var valid_594930 = query.getOrDefault("fields")
-  valid_594930 = validateParameter(valid_594930, JString, required = false,
+  var valid_580930 = query.getOrDefault("fields")
+  valid_580930 = validateParameter(valid_580930, JString, required = false,
                                  default = nil)
-  if valid_594930 != nil:
-    section.add "fields", valid_594930
-  var valid_594931 = query.getOrDefault("quotaUser")
-  valid_594931 = validateParameter(valid_594931, JString, required = false,
+  if valid_580930 != nil:
+    section.add "fields", valid_580930
+  var valid_580931 = query.getOrDefault("quotaUser")
+  valid_580931 = validateParameter(valid_580931, JString, required = false,
                                  default = nil)
-  if valid_594931 != nil:
-    section.add "quotaUser", valid_594931
-  var valid_594932 = query.getOrDefault("alt")
-  valid_594932 = validateParameter(valid_594932, JString, required = false,
+  if valid_580931 != nil:
+    section.add "quotaUser", valid_580931
+  var valid_580932 = query.getOrDefault("alt")
+  valid_580932 = validateParameter(valid_580932, JString, required = false,
                                  default = newJString("json"))
-  if valid_594932 != nil:
-    section.add "alt", valid_594932
-  var valid_594933 = query.getOrDefault("oauth_token")
-  valid_594933 = validateParameter(valid_594933, JString, required = false,
+  if valid_580932 != nil:
+    section.add "alt", valid_580932
+  var valid_580933 = query.getOrDefault("oauth_token")
+  valid_580933 = validateParameter(valid_580933, JString, required = false,
                                  default = nil)
-  if valid_594933 != nil:
-    section.add "oauth_token", valid_594933
-  var valid_594934 = query.getOrDefault("userIp")
-  valid_594934 = validateParameter(valid_594934, JString, required = false,
+  if valid_580933 != nil:
+    section.add "oauth_token", valid_580933
+  var valid_580934 = query.getOrDefault("userIp")
+  valid_580934 = validateParameter(valid_580934, JString, required = false,
                                  default = nil)
-  if valid_594934 != nil:
-    section.add "userIp", valid_594934
-  var valid_594935 = query.getOrDefault("key")
-  valid_594935 = validateParameter(valid_594935, JString, required = false,
+  if valid_580934 != nil:
+    section.add "userIp", valid_580934
+  var valid_580935 = query.getOrDefault("key")
+  valid_580935 = validateParameter(valid_580935, JString, required = false,
                                  default = nil)
-  if valid_594935 != nil:
-    section.add "key", valid_594935
-  var valid_594936 = query.getOrDefault("prettyPrint")
-  valid_594936 = validateParameter(valid_594936, JBool, required = false,
+  if valid_580935 != nil:
+    section.add "key", valid_580935
+  var valid_580936 = query.getOrDefault("prettyPrint")
+  valid_580936 = validateParameter(valid_580936, JBool, required = false,
                                  default = newJBool(true))
-  if valid_594936 != nil:
-    section.add "prettyPrint", valid_594936
-  var valid_594937 = query.getOrDefault("visibility")
-  valid_594937 = validateParameter(valid_594937, JString, required = false,
+  if valid_580936 != nil:
+    section.add "prettyPrint", valid_580936
+  var valid_580937 = query.getOrDefault("visibility")
+  valid_580937 = validateParameter(valid_580937, JString, required = false,
                                  default = newJString("private"))
-  if valid_594937 != nil:
-    section.add "visibility", valid_594937
+  if valid_580937 != nil:
+    section.add "visibility", valid_580937
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -9664,20 +9666,20 @@ proc validate_DrivePropertiesDelete_594926(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_594938: Call_DrivePropertiesDelete_594925; path: JsonNode;
+proc call*(call_580938: Call_DrivePropertiesDelete_580925; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Deletes a property.
   ## 
-  let valid = call_594938.validator(path, query, header, formData, body)
-  let scheme = call_594938.pickScheme
+  let valid = call_580938.validator(path, query, header, formData, body)
+  let scheme = call_580938.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_594938.url(scheme.get, call_594938.host, call_594938.base,
-                         call_594938.route, valid.getOrDefault("path"),
+  let url = call_580938.url(scheme.get, call_580938.host, call_580938.base,
+                         call_580938.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_594938, url, valid)
+  result = hook(call_580938, url, valid)
 
-proc call*(call_594939: Call_DrivePropertiesDelete_594925; fileId: string;
+proc call*(call_580939: Call_DrivePropertiesDelete_580925; fileId: string;
           propertyKey: string; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; userIp: string = "";
           key: string = ""; prettyPrint: bool = true; visibility: string = "private"): Recallable =
@@ -9703,32 +9705,32 @@ proc call*(call_594939: Call_DrivePropertiesDelete_594925; fileId: string;
   ##              : Returns response with indentations and line breaks.
   ##   visibility: string
   ##             : The visibility of the property.
-  var path_594940 = newJObject()
-  var query_594941 = newJObject()
-  add(query_594941, "fields", newJString(fields))
-  add(query_594941, "quotaUser", newJString(quotaUser))
-  add(path_594940, "fileId", newJString(fileId))
-  add(query_594941, "alt", newJString(alt))
-  add(query_594941, "oauth_token", newJString(oauthToken))
-  add(query_594941, "userIp", newJString(userIp))
-  add(query_594941, "key", newJString(key))
-  add(path_594940, "propertyKey", newJString(propertyKey))
-  add(query_594941, "prettyPrint", newJBool(prettyPrint))
-  add(query_594941, "visibility", newJString(visibility))
-  result = call_594939.call(path_594940, query_594941, nil, nil, nil)
+  var path_580940 = newJObject()
+  var query_580941 = newJObject()
+  add(query_580941, "fields", newJString(fields))
+  add(query_580941, "quotaUser", newJString(quotaUser))
+  add(path_580940, "fileId", newJString(fileId))
+  add(query_580941, "alt", newJString(alt))
+  add(query_580941, "oauth_token", newJString(oauthToken))
+  add(query_580941, "userIp", newJString(userIp))
+  add(query_580941, "key", newJString(key))
+  add(path_580940, "propertyKey", newJString(propertyKey))
+  add(query_580941, "prettyPrint", newJBool(prettyPrint))
+  add(query_580941, "visibility", newJString(visibility))
+  result = call_580939.call(path_580940, query_580941, nil, nil, nil)
 
-var drivePropertiesDelete* = Call_DrivePropertiesDelete_594925(
+var drivePropertiesDelete* = Call_DrivePropertiesDelete_580925(
     name: "drivePropertiesDelete", meth: HttpMethod.HttpDelete,
     host: "www.googleapis.com", route: "/files/{fileId}/properties/{propertyKey}",
-    validator: validate_DrivePropertiesDelete_594926, base: "/drive/v2",
-    url: url_DrivePropertiesDelete_594927, schemes: {Scheme.Https})
+    validator: validate_DrivePropertiesDelete_580926, base: "/drive/v2",
+    url: url_DrivePropertiesDelete_580927, schemes: {Scheme.Https})
 type
-  Call_DriveRealtimeUpdate_594977 = ref object of OpenApiRestCall_593424
-proc url_DriveRealtimeUpdate_594979(protocol: Scheme; host: string; base: string;
+  Call_DriveRealtimeUpdate_580977 = ref object of OpenApiRestCall_579424
+proc url_DriveRealtimeUpdate_580979(protocol: Scheme; host: string; base: string;
                                    route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "fileId" in path, "`fileId` is a required path parameter"
   const
@@ -9740,7 +9742,7 @@ proc url_DriveRealtimeUpdate_594979(protocol: Scheme; host: string; base: string
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_DriveRealtimeUpdate_594978(path: JsonNode; query: JsonNode;
+proc validate_DriveRealtimeUpdate_580978(path: JsonNode; query: JsonNode;
                                         header: JsonNode; formData: JsonNode;
                                         body: JsonNode): JsonNode =
   ## Overwrites the Realtime API data model associated with this file with the provided JSON data model.
@@ -9752,11 +9754,11 @@ proc validate_DriveRealtimeUpdate_594978(path: JsonNode; query: JsonNode;
   ##         : The ID of the file that the Realtime API data model is associated with.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `fileId` field"
-  var valid_594980 = path.getOrDefault("fileId")
-  valid_594980 = validateParameter(valid_594980, JString, required = true,
+  var valid_580980 = path.getOrDefault("fileId")
+  valid_580980 = validateParameter(valid_580980, JString, required = true,
                                  default = nil)
-  if valid_594980 != nil:
-    section.add "fileId", valid_594980
+  if valid_580980 != nil:
+    section.add "fileId", valid_580980
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -9776,46 +9778,46 @@ proc validate_DriveRealtimeUpdate_594978(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_594981 = query.getOrDefault("fields")
-  valid_594981 = validateParameter(valid_594981, JString, required = false,
+  var valid_580981 = query.getOrDefault("fields")
+  valid_580981 = validateParameter(valid_580981, JString, required = false,
                                  default = nil)
-  if valid_594981 != nil:
-    section.add "fields", valid_594981
-  var valid_594982 = query.getOrDefault("quotaUser")
-  valid_594982 = validateParameter(valid_594982, JString, required = false,
+  if valid_580981 != nil:
+    section.add "fields", valid_580981
+  var valid_580982 = query.getOrDefault("quotaUser")
+  valid_580982 = validateParameter(valid_580982, JString, required = false,
                                  default = nil)
-  if valid_594982 != nil:
-    section.add "quotaUser", valid_594982
-  var valid_594983 = query.getOrDefault("alt")
-  valid_594983 = validateParameter(valid_594983, JString, required = false,
+  if valid_580982 != nil:
+    section.add "quotaUser", valid_580982
+  var valid_580983 = query.getOrDefault("alt")
+  valid_580983 = validateParameter(valid_580983, JString, required = false,
                                  default = newJString("json"))
-  if valid_594983 != nil:
-    section.add "alt", valid_594983
-  var valid_594984 = query.getOrDefault("oauth_token")
-  valid_594984 = validateParameter(valid_594984, JString, required = false,
+  if valid_580983 != nil:
+    section.add "alt", valid_580983
+  var valid_580984 = query.getOrDefault("oauth_token")
+  valid_580984 = validateParameter(valid_580984, JString, required = false,
                                  default = nil)
-  if valid_594984 != nil:
-    section.add "oauth_token", valid_594984
-  var valid_594985 = query.getOrDefault("baseRevision")
-  valid_594985 = validateParameter(valid_594985, JString, required = false,
+  if valid_580984 != nil:
+    section.add "oauth_token", valid_580984
+  var valid_580985 = query.getOrDefault("baseRevision")
+  valid_580985 = validateParameter(valid_580985, JString, required = false,
                                  default = nil)
-  if valid_594985 != nil:
-    section.add "baseRevision", valid_594985
-  var valid_594986 = query.getOrDefault("userIp")
-  valid_594986 = validateParameter(valid_594986, JString, required = false,
+  if valid_580985 != nil:
+    section.add "baseRevision", valid_580985
+  var valid_580986 = query.getOrDefault("userIp")
+  valid_580986 = validateParameter(valid_580986, JString, required = false,
                                  default = nil)
-  if valid_594986 != nil:
-    section.add "userIp", valid_594986
-  var valid_594987 = query.getOrDefault("key")
-  valid_594987 = validateParameter(valid_594987, JString, required = false,
+  if valid_580986 != nil:
+    section.add "userIp", valid_580986
+  var valid_580987 = query.getOrDefault("key")
+  valid_580987 = validateParameter(valid_580987, JString, required = false,
                                  default = nil)
-  if valid_594987 != nil:
-    section.add "key", valid_594987
-  var valid_594988 = query.getOrDefault("prettyPrint")
-  valid_594988 = validateParameter(valid_594988, JBool, required = false,
+  if valid_580987 != nil:
+    section.add "key", valid_580987
+  var valid_580988 = query.getOrDefault("prettyPrint")
+  valid_580988 = validateParameter(valid_580988, JBool, required = false,
                                  default = newJBool(true))
-  if valid_594988 != nil:
-    section.add "prettyPrint", valid_594988
+  if valid_580988 != nil:
+    section.add "prettyPrint", valid_580988
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -9824,20 +9826,20 @@ proc validate_DriveRealtimeUpdate_594978(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_594989: Call_DriveRealtimeUpdate_594977; path: JsonNode;
+proc call*(call_580989: Call_DriveRealtimeUpdate_580977; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Overwrites the Realtime API data model associated with this file with the provided JSON data model.
   ## 
-  let valid = call_594989.validator(path, query, header, formData, body)
-  let scheme = call_594989.pickScheme
+  let valid = call_580989.validator(path, query, header, formData, body)
+  let scheme = call_580989.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_594989.url(scheme.get, call_594989.host, call_594989.base,
-                         call_594989.route, valid.getOrDefault("path"),
+  let url = call_580989.url(scheme.get, call_580989.host, call_580989.base,
+                         call_580989.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_594989, url, valid)
+  result = hook(call_580989, url, valid)
 
-proc call*(call_594990: Call_DriveRealtimeUpdate_594977; fileId: string;
+proc call*(call_580990: Call_DriveRealtimeUpdate_580977; fileId: string;
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           oauthToken: string = ""; baseRevision: string = ""; userIp: string = "";
           key: string = ""; prettyPrint: bool = true): Recallable =
@@ -9861,31 +9863,31 @@ proc call*(call_594990: Call_DriveRealtimeUpdate_594977; fileId: string;
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_594991 = newJObject()
-  var query_594992 = newJObject()
-  add(query_594992, "fields", newJString(fields))
-  add(query_594992, "quotaUser", newJString(quotaUser))
-  add(path_594991, "fileId", newJString(fileId))
-  add(query_594992, "alt", newJString(alt))
-  add(query_594992, "oauth_token", newJString(oauthToken))
-  add(query_594992, "baseRevision", newJString(baseRevision))
-  add(query_594992, "userIp", newJString(userIp))
-  add(query_594992, "key", newJString(key))
-  add(query_594992, "prettyPrint", newJBool(prettyPrint))
-  result = call_594990.call(path_594991, query_594992, nil, nil, nil)
+  var path_580991 = newJObject()
+  var query_580992 = newJObject()
+  add(query_580992, "fields", newJString(fields))
+  add(query_580992, "quotaUser", newJString(quotaUser))
+  add(path_580991, "fileId", newJString(fileId))
+  add(query_580992, "alt", newJString(alt))
+  add(query_580992, "oauth_token", newJString(oauthToken))
+  add(query_580992, "baseRevision", newJString(baseRevision))
+  add(query_580992, "userIp", newJString(userIp))
+  add(query_580992, "key", newJString(key))
+  add(query_580992, "prettyPrint", newJBool(prettyPrint))
+  result = call_580990.call(path_580991, query_580992, nil, nil, nil)
 
-var driveRealtimeUpdate* = Call_DriveRealtimeUpdate_594977(
+var driveRealtimeUpdate* = Call_DriveRealtimeUpdate_580977(
     name: "driveRealtimeUpdate", meth: HttpMethod.HttpPut,
     host: "www.googleapis.com", route: "/files/{fileId}/realtime",
-    validator: validate_DriveRealtimeUpdate_594978, base: "/drive/v2",
-    url: url_DriveRealtimeUpdate_594979, schemes: {Scheme.Https})
+    validator: validate_DriveRealtimeUpdate_580978, base: "/drive/v2",
+    url: url_DriveRealtimeUpdate_580979, schemes: {Scheme.Https})
 type
-  Call_DriveRealtimeGet_594961 = ref object of OpenApiRestCall_593424
-proc url_DriveRealtimeGet_594963(protocol: Scheme; host: string; base: string;
+  Call_DriveRealtimeGet_580961 = ref object of OpenApiRestCall_579424
+proc url_DriveRealtimeGet_580963(protocol: Scheme; host: string; base: string;
                                 route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "fileId" in path, "`fileId` is a required path parameter"
   const
@@ -9897,7 +9899,7 @@ proc url_DriveRealtimeGet_594963(protocol: Scheme; host: string; base: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_DriveRealtimeGet_594962(path: JsonNode; query: JsonNode;
+proc validate_DriveRealtimeGet_580962(path: JsonNode; query: JsonNode;
                                      header: JsonNode; formData: JsonNode;
                                      body: JsonNode): JsonNode =
   ## Exports the contents of the Realtime API data model associated with this file as JSON.
@@ -9909,11 +9911,11 @@ proc validate_DriveRealtimeGet_594962(path: JsonNode; query: JsonNode;
   ##         : The ID of the file that the Realtime API data model is associated with.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `fileId` field"
-  var valid_594964 = path.getOrDefault("fileId")
-  valid_594964 = validateParameter(valid_594964, JString, required = true,
+  var valid_580964 = path.getOrDefault("fileId")
+  valid_580964 = validateParameter(valid_580964, JString, required = true,
                                  default = nil)
-  if valid_594964 != nil:
-    section.add "fileId", valid_594964
+  if valid_580964 != nil:
+    section.add "fileId", valid_580964
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -9933,45 +9935,45 @@ proc validate_DriveRealtimeGet_594962(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_594965 = query.getOrDefault("fields")
-  valid_594965 = validateParameter(valid_594965, JString, required = false,
+  var valid_580965 = query.getOrDefault("fields")
+  valid_580965 = validateParameter(valid_580965, JString, required = false,
                                  default = nil)
-  if valid_594965 != nil:
-    section.add "fields", valid_594965
-  var valid_594966 = query.getOrDefault("quotaUser")
-  valid_594966 = validateParameter(valid_594966, JString, required = false,
+  if valid_580965 != nil:
+    section.add "fields", valid_580965
+  var valid_580966 = query.getOrDefault("quotaUser")
+  valid_580966 = validateParameter(valid_580966, JString, required = false,
                                  default = nil)
-  if valid_594966 != nil:
-    section.add "quotaUser", valid_594966
-  var valid_594967 = query.getOrDefault("alt")
-  valid_594967 = validateParameter(valid_594967, JString, required = false,
+  if valid_580966 != nil:
+    section.add "quotaUser", valid_580966
+  var valid_580967 = query.getOrDefault("alt")
+  valid_580967 = validateParameter(valid_580967, JString, required = false,
                                  default = newJString("json"))
-  if valid_594967 != nil:
-    section.add "alt", valid_594967
-  var valid_594968 = query.getOrDefault("oauth_token")
-  valid_594968 = validateParameter(valid_594968, JString, required = false,
+  if valid_580967 != nil:
+    section.add "alt", valid_580967
+  var valid_580968 = query.getOrDefault("oauth_token")
+  valid_580968 = validateParameter(valid_580968, JString, required = false,
                                  default = nil)
-  if valid_594968 != nil:
-    section.add "oauth_token", valid_594968
-  var valid_594969 = query.getOrDefault("userIp")
-  valid_594969 = validateParameter(valid_594969, JString, required = false,
+  if valid_580968 != nil:
+    section.add "oauth_token", valid_580968
+  var valid_580969 = query.getOrDefault("userIp")
+  valid_580969 = validateParameter(valid_580969, JString, required = false,
                                  default = nil)
-  if valid_594969 != nil:
-    section.add "userIp", valid_594969
-  var valid_594970 = query.getOrDefault("revision")
-  valid_594970 = validateParameter(valid_594970, JInt, required = false, default = nil)
-  if valid_594970 != nil:
-    section.add "revision", valid_594970
-  var valid_594971 = query.getOrDefault("key")
-  valid_594971 = validateParameter(valid_594971, JString, required = false,
+  if valid_580969 != nil:
+    section.add "userIp", valid_580969
+  var valid_580970 = query.getOrDefault("revision")
+  valid_580970 = validateParameter(valid_580970, JInt, required = false, default = nil)
+  if valid_580970 != nil:
+    section.add "revision", valid_580970
+  var valid_580971 = query.getOrDefault("key")
+  valid_580971 = validateParameter(valid_580971, JString, required = false,
                                  default = nil)
-  if valid_594971 != nil:
-    section.add "key", valid_594971
-  var valid_594972 = query.getOrDefault("prettyPrint")
-  valid_594972 = validateParameter(valid_594972, JBool, required = false,
+  if valid_580971 != nil:
+    section.add "key", valid_580971
+  var valid_580972 = query.getOrDefault("prettyPrint")
+  valid_580972 = validateParameter(valid_580972, JBool, required = false,
                                  default = newJBool(true))
-  if valid_594972 != nil:
-    section.add "prettyPrint", valid_594972
+  if valid_580972 != nil:
+    section.add "prettyPrint", valid_580972
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -9980,20 +9982,20 @@ proc validate_DriveRealtimeGet_594962(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_594973: Call_DriveRealtimeGet_594961; path: JsonNode;
+proc call*(call_580973: Call_DriveRealtimeGet_580961; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Exports the contents of the Realtime API data model associated with this file as JSON.
   ## 
-  let valid = call_594973.validator(path, query, header, formData, body)
-  let scheme = call_594973.pickScheme
+  let valid = call_580973.validator(path, query, header, formData, body)
+  let scheme = call_580973.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_594973.url(scheme.get, call_594973.host, call_594973.base,
-                         call_594973.route, valid.getOrDefault("path"),
+  let url = call_580973.url(scheme.get, call_580973.host, call_580973.base,
+                         call_580973.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_594973, url, valid)
+  result = hook(call_580973, url, valid)
 
-proc call*(call_594974: Call_DriveRealtimeGet_594961; fileId: string;
+proc call*(call_580974: Call_DriveRealtimeGet_580961; fileId: string;
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           oauthToken: string = ""; userIp: string = ""; revision: int = 0; key: string = "";
           prettyPrint: bool = true): Recallable =
@@ -10017,30 +10019,30 @@ proc call*(call_594974: Call_DriveRealtimeGet_594961; fileId: string;
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_594975 = newJObject()
-  var query_594976 = newJObject()
-  add(query_594976, "fields", newJString(fields))
-  add(query_594976, "quotaUser", newJString(quotaUser))
-  add(path_594975, "fileId", newJString(fileId))
-  add(query_594976, "alt", newJString(alt))
-  add(query_594976, "oauth_token", newJString(oauthToken))
-  add(query_594976, "userIp", newJString(userIp))
-  add(query_594976, "revision", newJInt(revision))
-  add(query_594976, "key", newJString(key))
-  add(query_594976, "prettyPrint", newJBool(prettyPrint))
-  result = call_594974.call(path_594975, query_594976, nil, nil, nil)
+  var path_580975 = newJObject()
+  var query_580976 = newJObject()
+  add(query_580976, "fields", newJString(fields))
+  add(query_580976, "quotaUser", newJString(quotaUser))
+  add(path_580975, "fileId", newJString(fileId))
+  add(query_580976, "alt", newJString(alt))
+  add(query_580976, "oauth_token", newJString(oauthToken))
+  add(query_580976, "userIp", newJString(userIp))
+  add(query_580976, "revision", newJInt(revision))
+  add(query_580976, "key", newJString(key))
+  add(query_580976, "prettyPrint", newJBool(prettyPrint))
+  result = call_580974.call(path_580975, query_580976, nil, nil, nil)
 
-var driveRealtimeGet* = Call_DriveRealtimeGet_594961(name: "driveRealtimeGet",
+var driveRealtimeGet* = Call_DriveRealtimeGet_580961(name: "driveRealtimeGet",
     meth: HttpMethod.HttpGet, host: "www.googleapis.com",
-    route: "/files/{fileId}/realtime", validator: validate_DriveRealtimeGet_594962,
-    base: "/drive/v2", url: url_DriveRealtimeGet_594963, schemes: {Scheme.Https})
+    route: "/files/{fileId}/realtime", validator: validate_DriveRealtimeGet_580962,
+    base: "/drive/v2", url: url_DriveRealtimeGet_580963, schemes: {Scheme.Https})
 type
-  Call_DriveRevisionsList_594993 = ref object of OpenApiRestCall_593424
-proc url_DriveRevisionsList_594995(protocol: Scheme; host: string; base: string;
+  Call_DriveRevisionsList_580993 = ref object of OpenApiRestCall_579424
+proc url_DriveRevisionsList_580995(protocol: Scheme; host: string; base: string;
                                   route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "fileId" in path, "`fileId` is a required path parameter"
   const
@@ -10052,7 +10054,7 @@ proc url_DriveRevisionsList_594995(protocol: Scheme; host: string; base: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_DriveRevisionsList_594994(path: JsonNode; query: JsonNode;
+proc validate_DriveRevisionsList_580994(path: JsonNode; query: JsonNode;
                                        header: JsonNode; formData: JsonNode;
                                        body: JsonNode): JsonNode =
   ## Lists a file's revisions.
@@ -10064,11 +10066,11 @@ proc validate_DriveRevisionsList_594994(path: JsonNode; query: JsonNode;
   ##         : The ID of the file.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `fileId` field"
-  var valid_594996 = path.getOrDefault("fileId")
-  valid_594996 = validateParameter(valid_594996, JString, required = true,
+  var valid_580996 = path.getOrDefault("fileId")
+  valid_580996 = validateParameter(valid_580996, JString, required = true,
                                  default = nil)
-  if valid_594996 != nil:
-    section.add "fileId", valid_594996
+  if valid_580996 != nil:
+    section.add "fileId", valid_580996
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -10090,51 +10092,51 @@ proc validate_DriveRevisionsList_594994(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_594997 = query.getOrDefault("fields")
-  valid_594997 = validateParameter(valid_594997, JString, required = false,
+  var valid_580997 = query.getOrDefault("fields")
+  valid_580997 = validateParameter(valid_580997, JString, required = false,
                                  default = nil)
-  if valid_594997 != nil:
-    section.add "fields", valid_594997
-  var valid_594998 = query.getOrDefault("pageToken")
-  valid_594998 = validateParameter(valid_594998, JString, required = false,
+  if valid_580997 != nil:
+    section.add "fields", valid_580997
+  var valid_580998 = query.getOrDefault("pageToken")
+  valid_580998 = validateParameter(valid_580998, JString, required = false,
                                  default = nil)
-  if valid_594998 != nil:
-    section.add "pageToken", valid_594998
-  var valid_594999 = query.getOrDefault("quotaUser")
-  valid_594999 = validateParameter(valid_594999, JString, required = false,
+  if valid_580998 != nil:
+    section.add "pageToken", valid_580998
+  var valid_580999 = query.getOrDefault("quotaUser")
+  valid_580999 = validateParameter(valid_580999, JString, required = false,
                                  default = nil)
-  if valid_594999 != nil:
-    section.add "quotaUser", valid_594999
-  var valid_595000 = query.getOrDefault("alt")
-  valid_595000 = validateParameter(valid_595000, JString, required = false,
+  if valid_580999 != nil:
+    section.add "quotaUser", valid_580999
+  var valid_581000 = query.getOrDefault("alt")
+  valid_581000 = validateParameter(valid_581000, JString, required = false,
                                  default = newJString("json"))
-  if valid_595000 != nil:
-    section.add "alt", valid_595000
-  var valid_595001 = query.getOrDefault("oauth_token")
-  valid_595001 = validateParameter(valid_595001, JString, required = false,
+  if valid_581000 != nil:
+    section.add "alt", valid_581000
+  var valid_581001 = query.getOrDefault("oauth_token")
+  valid_581001 = validateParameter(valid_581001, JString, required = false,
                                  default = nil)
-  if valid_595001 != nil:
-    section.add "oauth_token", valid_595001
-  var valid_595002 = query.getOrDefault("userIp")
-  valid_595002 = validateParameter(valid_595002, JString, required = false,
+  if valid_581001 != nil:
+    section.add "oauth_token", valid_581001
+  var valid_581002 = query.getOrDefault("userIp")
+  valid_581002 = validateParameter(valid_581002, JString, required = false,
                                  default = nil)
-  if valid_595002 != nil:
-    section.add "userIp", valid_595002
-  var valid_595003 = query.getOrDefault("maxResults")
-  valid_595003 = validateParameter(valid_595003, JInt, required = false,
+  if valid_581002 != nil:
+    section.add "userIp", valid_581002
+  var valid_581003 = query.getOrDefault("maxResults")
+  valid_581003 = validateParameter(valid_581003, JInt, required = false,
                                  default = newJInt(200))
-  if valid_595003 != nil:
-    section.add "maxResults", valid_595003
-  var valid_595004 = query.getOrDefault("key")
-  valid_595004 = validateParameter(valid_595004, JString, required = false,
+  if valid_581003 != nil:
+    section.add "maxResults", valid_581003
+  var valid_581004 = query.getOrDefault("key")
+  valid_581004 = validateParameter(valid_581004, JString, required = false,
                                  default = nil)
-  if valid_595004 != nil:
-    section.add "key", valid_595004
-  var valid_595005 = query.getOrDefault("prettyPrint")
-  valid_595005 = validateParameter(valid_595005, JBool, required = false,
+  if valid_581004 != nil:
+    section.add "key", valid_581004
+  var valid_581005 = query.getOrDefault("prettyPrint")
+  valid_581005 = validateParameter(valid_581005, JBool, required = false,
                                  default = newJBool(true))
-  if valid_595005 != nil:
-    section.add "prettyPrint", valid_595005
+  if valid_581005 != nil:
+    section.add "prettyPrint", valid_581005
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -10143,20 +10145,20 @@ proc validate_DriveRevisionsList_594994(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_595006: Call_DriveRevisionsList_594993; path: JsonNode;
+proc call*(call_581006: Call_DriveRevisionsList_580993; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Lists a file's revisions.
   ## 
-  let valid = call_595006.validator(path, query, header, formData, body)
-  let scheme = call_595006.pickScheme
+  let valid = call_581006.validator(path, query, header, formData, body)
+  let scheme = call_581006.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_595006.url(scheme.get, call_595006.host, call_595006.base,
-                         call_595006.route, valid.getOrDefault("path"),
+  let url = call_581006.url(scheme.get, call_581006.host, call_581006.base,
+                         call_581006.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_595006, url, valid)
+  result = hook(call_581006, url, valid)
 
-proc call*(call_595007: Call_DriveRevisionsList_594993; fileId: string;
+proc call*(call_581007: Call_DriveRevisionsList_580993; fileId: string;
           fields: string = ""; pageToken: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; userIp: string = "";
           maxResults: int = 200; key: string = ""; prettyPrint: bool = true): Recallable =
@@ -10182,32 +10184,32 @@ proc call*(call_595007: Call_DriveRevisionsList_594993; fileId: string;
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_595008 = newJObject()
-  var query_595009 = newJObject()
-  add(query_595009, "fields", newJString(fields))
-  add(query_595009, "pageToken", newJString(pageToken))
-  add(query_595009, "quotaUser", newJString(quotaUser))
-  add(path_595008, "fileId", newJString(fileId))
-  add(query_595009, "alt", newJString(alt))
-  add(query_595009, "oauth_token", newJString(oauthToken))
-  add(query_595009, "userIp", newJString(userIp))
-  add(query_595009, "maxResults", newJInt(maxResults))
-  add(query_595009, "key", newJString(key))
-  add(query_595009, "prettyPrint", newJBool(prettyPrint))
-  result = call_595007.call(path_595008, query_595009, nil, nil, nil)
+  var path_581008 = newJObject()
+  var query_581009 = newJObject()
+  add(query_581009, "fields", newJString(fields))
+  add(query_581009, "pageToken", newJString(pageToken))
+  add(query_581009, "quotaUser", newJString(quotaUser))
+  add(path_581008, "fileId", newJString(fileId))
+  add(query_581009, "alt", newJString(alt))
+  add(query_581009, "oauth_token", newJString(oauthToken))
+  add(query_581009, "userIp", newJString(userIp))
+  add(query_581009, "maxResults", newJInt(maxResults))
+  add(query_581009, "key", newJString(key))
+  add(query_581009, "prettyPrint", newJBool(prettyPrint))
+  result = call_581007.call(path_581008, query_581009, nil, nil, nil)
 
-var driveRevisionsList* = Call_DriveRevisionsList_594993(
+var driveRevisionsList* = Call_DriveRevisionsList_580993(
     name: "driveRevisionsList", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/files/{fileId}/revisions",
-    validator: validate_DriveRevisionsList_594994, base: "/drive/v2",
-    url: url_DriveRevisionsList_594995, schemes: {Scheme.Https})
+    validator: validate_DriveRevisionsList_580994, base: "/drive/v2",
+    url: url_DriveRevisionsList_580995, schemes: {Scheme.Https})
 type
-  Call_DriveRevisionsUpdate_595026 = ref object of OpenApiRestCall_593424
-proc url_DriveRevisionsUpdate_595028(protocol: Scheme; host: string; base: string;
+  Call_DriveRevisionsUpdate_581026 = ref object of OpenApiRestCall_579424
+proc url_DriveRevisionsUpdate_581028(protocol: Scheme; host: string; base: string;
                                     route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "fileId" in path, "`fileId` is a required path parameter"
   assert "revisionId" in path, "`revisionId` is a required path parameter"
@@ -10221,7 +10223,7 @@ proc url_DriveRevisionsUpdate_595028(protocol: Scheme; host: string; base: strin
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_DriveRevisionsUpdate_595027(path: JsonNode; query: JsonNode;
+proc validate_DriveRevisionsUpdate_581027(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Updates a revision.
   ## 
@@ -10234,16 +10236,16 @@ proc validate_DriveRevisionsUpdate_595027(path: JsonNode; query: JsonNode;
   ##             : The ID for the revision.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `fileId` field"
-  var valid_595029 = path.getOrDefault("fileId")
-  valid_595029 = validateParameter(valid_595029, JString, required = true,
+  var valid_581029 = path.getOrDefault("fileId")
+  valid_581029 = validateParameter(valid_581029, JString, required = true,
                                  default = nil)
-  if valid_595029 != nil:
-    section.add "fileId", valid_595029
-  var valid_595030 = path.getOrDefault("revisionId")
-  valid_595030 = validateParameter(valid_595030, JString, required = true,
+  if valid_581029 != nil:
+    section.add "fileId", valid_581029
+  var valid_581030 = path.getOrDefault("revisionId")
+  valid_581030 = validateParameter(valid_581030, JString, required = true,
                                  default = nil)
-  if valid_595030 != nil:
-    section.add "revisionId", valid_595030
+  if valid_581030 != nil:
+    section.add "revisionId", valid_581030
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -10261,41 +10263,41 @@ proc validate_DriveRevisionsUpdate_595027(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_595031 = query.getOrDefault("fields")
-  valid_595031 = validateParameter(valid_595031, JString, required = false,
+  var valid_581031 = query.getOrDefault("fields")
+  valid_581031 = validateParameter(valid_581031, JString, required = false,
                                  default = nil)
-  if valid_595031 != nil:
-    section.add "fields", valid_595031
-  var valid_595032 = query.getOrDefault("quotaUser")
-  valid_595032 = validateParameter(valid_595032, JString, required = false,
+  if valid_581031 != nil:
+    section.add "fields", valid_581031
+  var valid_581032 = query.getOrDefault("quotaUser")
+  valid_581032 = validateParameter(valid_581032, JString, required = false,
                                  default = nil)
-  if valid_595032 != nil:
-    section.add "quotaUser", valid_595032
-  var valid_595033 = query.getOrDefault("alt")
-  valid_595033 = validateParameter(valid_595033, JString, required = false,
+  if valid_581032 != nil:
+    section.add "quotaUser", valid_581032
+  var valid_581033 = query.getOrDefault("alt")
+  valid_581033 = validateParameter(valid_581033, JString, required = false,
                                  default = newJString("json"))
-  if valid_595033 != nil:
-    section.add "alt", valid_595033
-  var valid_595034 = query.getOrDefault("oauth_token")
-  valid_595034 = validateParameter(valid_595034, JString, required = false,
+  if valid_581033 != nil:
+    section.add "alt", valid_581033
+  var valid_581034 = query.getOrDefault("oauth_token")
+  valid_581034 = validateParameter(valid_581034, JString, required = false,
                                  default = nil)
-  if valid_595034 != nil:
-    section.add "oauth_token", valid_595034
-  var valid_595035 = query.getOrDefault("userIp")
-  valid_595035 = validateParameter(valid_595035, JString, required = false,
+  if valid_581034 != nil:
+    section.add "oauth_token", valid_581034
+  var valid_581035 = query.getOrDefault("userIp")
+  valid_581035 = validateParameter(valid_581035, JString, required = false,
                                  default = nil)
-  if valid_595035 != nil:
-    section.add "userIp", valid_595035
-  var valid_595036 = query.getOrDefault("key")
-  valid_595036 = validateParameter(valid_595036, JString, required = false,
+  if valid_581035 != nil:
+    section.add "userIp", valid_581035
+  var valid_581036 = query.getOrDefault("key")
+  valid_581036 = validateParameter(valid_581036, JString, required = false,
                                  default = nil)
-  if valid_595036 != nil:
-    section.add "key", valid_595036
-  var valid_595037 = query.getOrDefault("prettyPrint")
-  valid_595037 = validateParameter(valid_595037, JBool, required = false,
+  if valid_581036 != nil:
+    section.add "key", valid_581036
+  var valid_581037 = query.getOrDefault("prettyPrint")
+  valid_581037 = validateParameter(valid_581037, JBool, required = false,
                                  default = newJBool(true))
-  if valid_595037 != nil:
-    section.add "prettyPrint", valid_595037
+  if valid_581037 != nil:
+    section.add "prettyPrint", valid_581037
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -10307,20 +10309,20 @@ proc validate_DriveRevisionsUpdate_595027(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_595039: Call_DriveRevisionsUpdate_595026; path: JsonNode;
+proc call*(call_581039: Call_DriveRevisionsUpdate_581026; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Updates a revision.
   ## 
-  let valid = call_595039.validator(path, query, header, formData, body)
-  let scheme = call_595039.pickScheme
+  let valid = call_581039.validator(path, query, header, formData, body)
+  let scheme = call_581039.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_595039.url(scheme.get, call_595039.host, call_595039.base,
-                         call_595039.route, valid.getOrDefault("path"),
+  let url = call_581039.url(scheme.get, call_581039.host, call_581039.base,
+                         call_581039.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_595039, url, valid)
+  result = hook(call_581039, url, valid)
 
-proc call*(call_595040: Call_DriveRevisionsUpdate_595026; fileId: string;
+proc call*(call_581040: Call_DriveRevisionsUpdate_581026; fileId: string;
           revisionId: string; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; userIp: string = "";
           key: string = ""; body: JsonNode = nil; prettyPrint: bool = true): Recallable =
@@ -10345,34 +10347,34 @@ proc call*(call_595040: Call_DriveRevisionsUpdate_595026; fileId: string;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_595041 = newJObject()
-  var query_595042 = newJObject()
-  var body_595043 = newJObject()
-  add(query_595042, "fields", newJString(fields))
-  add(query_595042, "quotaUser", newJString(quotaUser))
-  add(path_595041, "fileId", newJString(fileId))
-  add(query_595042, "alt", newJString(alt))
-  add(query_595042, "oauth_token", newJString(oauthToken))
-  add(path_595041, "revisionId", newJString(revisionId))
-  add(query_595042, "userIp", newJString(userIp))
-  add(query_595042, "key", newJString(key))
+  var path_581041 = newJObject()
+  var query_581042 = newJObject()
+  var body_581043 = newJObject()
+  add(query_581042, "fields", newJString(fields))
+  add(query_581042, "quotaUser", newJString(quotaUser))
+  add(path_581041, "fileId", newJString(fileId))
+  add(query_581042, "alt", newJString(alt))
+  add(query_581042, "oauth_token", newJString(oauthToken))
+  add(path_581041, "revisionId", newJString(revisionId))
+  add(query_581042, "userIp", newJString(userIp))
+  add(query_581042, "key", newJString(key))
   if body != nil:
-    body_595043 = body
-  add(query_595042, "prettyPrint", newJBool(prettyPrint))
-  result = call_595040.call(path_595041, query_595042, nil, nil, body_595043)
+    body_581043 = body
+  add(query_581042, "prettyPrint", newJBool(prettyPrint))
+  result = call_581040.call(path_581041, query_581042, nil, nil, body_581043)
 
-var driveRevisionsUpdate* = Call_DriveRevisionsUpdate_595026(
+var driveRevisionsUpdate* = Call_DriveRevisionsUpdate_581026(
     name: "driveRevisionsUpdate", meth: HttpMethod.HttpPut,
     host: "www.googleapis.com", route: "/files/{fileId}/revisions/{revisionId}",
-    validator: validate_DriveRevisionsUpdate_595027, base: "/drive/v2",
-    url: url_DriveRevisionsUpdate_595028, schemes: {Scheme.Https})
+    validator: validate_DriveRevisionsUpdate_581027, base: "/drive/v2",
+    url: url_DriveRevisionsUpdate_581028, schemes: {Scheme.Https})
 type
-  Call_DriveRevisionsGet_595010 = ref object of OpenApiRestCall_593424
-proc url_DriveRevisionsGet_595012(protocol: Scheme; host: string; base: string;
+  Call_DriveRevisionsGet_581010 = ref object of OpenApiRestCall_579424
+proc url_DriveRevisionsGet_581012(protocol: Scheme; host: string; base: string;
                                  route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "fileId" in path, "`fileId` is a required path parameter"
   assert "revisionId" in path, "`revisionId` is a required path parameter"
@@ -10386,7 +10388,7 @@ proc url_DriveRevisionsGet_595012(protocol: Scheme; host: string; base: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_DriveRevisionsGet_595011(path: JsonNode; query: JsonNode;
+proc validate_DriveRevisionsGet_581011(path: JsonNode; query: JsonNode;
                                       header: JsonNode; formData: JsonNode;
                                       body: JsonNode): JsonNode =
   ## Gets a specific revision.
@@ -10400,16 +10402,16 @@ proc validate_DriveRevisionsGet_595011(path: JsonNode; query: JsonNode;
   ##             : The ID of the revision.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `fileId` field"
-  var valid_595013 = path.getOrDefault("fileId")
-  valid_595013 = validateParameter(valid_595013, JString, required = true,
+  var valid_581013 = path.getOrDefault("fileId")
+  valid_581013 = validateParameter(valid_581013, JString, required = true,
                                  default = nil)
-  if valid_595013 != nil:
-    section.add "fileId", valid_595013
-  var valid_595014 = path.getOrDefault("revisionId")
-  valid_595014 = validateParameter(valid_595014, JString, required = true,
+  if valid_581013 != nil:
+    section.add "fileId", valid_581013
+  var valid_581014 = path.getOrDefault("revisionId")
+  valid_581014 = validateParameter(valid_581014, JString, required = true,
                                  default = nil)
-  if valid_595014 != nil:
-    section.add "revisionId", valid_595014
+  if valid_581014 != nil:
+    section.add "revisionId", valid_581014
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -10427,41 +10429,41 @@ proc validate_DriveRevisionsGet_595011(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_595015 = query.getOrDefault("fields")
-  valid_595015 = validateParameter(valid_595015, JString, required = false,
+  var valid_581015 = query.getOrDefault("fields")
+  valid_581015 = validateParameter(valid_581015, JString, required = false,
                                  default = nil)
-  if valid_595015 != nil:
-    section.add "fields", valid_595015
-  var valid_595016 = query.getOrDefault("quotaUser")
-  valid_595016 = validateParameter(valid_595016, JString, required = false,
+  if valid_581015 != nil:
+    section.add "fields", valid_581015
+  var valid_581016 = query.getOrDefault("quotaUser")
+  valid_581016 = validateParameter(valid_581016, JString, required = false,
                                  default = nil)
-  if valid_595016 != nil:
-    section.add "quotaUser", valid_595016
-  var valid_595017 = query.getOrDefault("alt")
-  valid_595017 = validateParameter(valid_595017, JString, required = false,
+  if valid_581016 != nil:
+    section.add "quotaUser", valid_581016
+  var valid_581017 = query.getOrDefault("alt")
+  valid_581017 = validateParameter(valid_581017, JString, required = false,
                                  default = newJString("json"))
-  if valid_595017 != nil:
-    section.add "alt", valid_595017
-  var valid_595018 = query.getOrDefault("oauth_token")
-  valid_595018 = validateParameter(valid_595018, JString, required = false,
+  if valid_581017 != nil:
+    section.add "alt", valid_581017
+  var valid_581018 = query.getOrDefault("oauth_token")
+  valid_581018 = validateParameter(valid_581018, JString, required = false,
                                  default = nil)
-  if valid_595018 != nil:
-    section.add "oauth_token", valid_595018
-  var valid_595019 = query.getOrDefault("userIp")
-  valid_595019 = validateParameter(valid_595019, JString, required = false,
+  if valid_581018 != nil:
+    section.add "oauth_token", valid_581018
+  var valid_581019 = query.getOrDefault("userIp")
+  valid_581019 = validateParameter(valid_581019, JString, required = false,
                                  default = nil)
-  if valid_595019 != nil:
-    section.add "userIp", valid_595019
-  var valid_595020 = query.getOrDefault("key")
-  valid_595020 = validateParameter(valid_595020, JString, required = false,
+  if valid_581019 != nil:
+    section.add "userIp", valid_581019
+  var valid_581020 = query.getOrDefault("key")
+  valid_581020 = validateParameter(valid_581020, JString, required = false,
                                  default = nil)
-  if valid_595020 != nil:
-    section.add "key", valid_595020
-  var valid_595021 = query.getOrDefault("prettyPrint")
-  valid_595021 = validateParameter(valid_595021, JBool, required = false,
+  if valid_581020 != nil:
+    section.add "key", valid_581020
+  var valid_581021 = query.getOrDefault("prettyPrint")
+  valid_581021 = validateParameter(valid_581021, JBool, required = false,
                                  default = newJBool(true))
-  if valid_595021 != nil:
-    section.add "prettyPrint", valid_595021
+  if valid_581021 != nil:
+    section.add "prettyPrint", valid_581021
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -10470,20 +10472,20 @@ proc validate_DriveRevisionsGet_595011(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_595022: Call_DriveRevisionsGet_595010; path: JsonNode;
+proc call*(call_581022: Call_DriveRevisionsGet_581010; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Gets a specific revision.
   ## 
-  let valid = call_595022.validator(path, query, header, formData, body)
-  let scheme = call_595022.pickScheme
+  let valid = call_581022.validator(path, query, header, formData, body)
+  let scheme = call_581022.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_595022.url(scheme.get, call_595022.host, call_595022.base,
-                         call_595022.route, valid.getOrDefault("path"),
+  let url = call_581022.url(scheme.get, call_581022.host, call_581022.base,
+                         call_581022.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_595022, url, valid)
+  result = hook(call_581022, url, valid)
 
-proc call*(call_595023: Call_DriveRevisionsGet_595010; fileId: string;
+proc call*(call_581023: Call_DriveRevisionsGet_581010; fileId: string;
           revisionId: string; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; userIp: string = "";
           key: string = ""; prettyPrint: bool = true): Recallable =
@@ -10507,31 +10509,31 @@ proc call*(call_595023: Call_DriveRevisionsGet_595010; fileId: string;
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_595024 = newJObject()
-  var query_595025 = newJObject()
-  add(query_595025, "fields", newJString(fields))
-  add(query_595025, "quotaUser", newJString(quotaUser))
-  add(path_595024, "fileId", newJString(fileId))
-  add(query_595025, "alt", newJString(alt))
-  add(query_595025, "oauth_token", newJString(oauthToken))
-  add(path_595024, "revisionId", newJString(revisionId))
-  add(query_595025, "userIp", newJString(userIp))
-  add(query_595025, "key", newJString(key))
-  add(query_595025, "prettyPrint", newJBool(prettyPrint))
-  result = call_595023.call(path_595024, query_595025, nil, nil, nil)
+  var path_581024 = newJObject()
+  var query_581025 = newJObject()
+  add(query_581025, "fields", newJString(fields))
+  add(query_581025, "quotaUser", newJString(quotaUser))
+  add(path_581024, "fileId", newJString(fileId))
+  add(query_581025, "alt", newJString(alt))
+  add(query_581025, "oauth_token", newJString(oauthToken))
+  add(path_581024, "revisionId", newJString(revisionId))
+  add(query_581025, "userIp", newJString(userIp))
+  add(query_581025, "key", newJString(key))
+  add(query_581025, "prettyPrint", newJBool(prettyPrint))
+  result = call_581023.call(path_581024, query_581025, nil, nil, nil)
 
-var driveRevisionsGet* = Call_DriveRevisionsGet_595010(name: "driveRevisionsGet",
+var driveRevisionsGet* = Call_DriveRevisionsGet_581010(name: "driveRevisionsGet",
     meth: HttpMethod.HttpGet, host: "www.googleapis.com",
     route: "/files/{fileId}/revisions/{revisionId}",
-    validator: validate_DriveRevisionsGet_595011, base: "/drive/v2",
-    url: url_DriveRevisionsGet_595012, schemes: {Scheme.Https})
+    validator: validate_DriveRevisionsGet_581011, base: "/drive/v2",
+    url: url_DriveRevisionsGet_581012, schemes: {Scheme.Https})
 type
-  Call_DriveRevisionsPatch_595060 = ref object of OpenApiRestCall_593424
-proc url_DriveRevisionsPatch_595062(protocol: Scheme; host: string; base: string;
+  Call_DriveRevisionsPatch_581060 = ref object of OpenApiRestCall_579424
+proc url_DriveRevisionsPatch_581062(protocol: Scheme; host: string; base: string;
                                    route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "fileId" in path, "`fileId` is a required path parameter"
   assert "revisionId" in path, "`revisionId` is a required path parameter"
@@ -10545,7 +10547,7 @@ proc url_DriveRevisionsPatch_595062(protocol: Scheme; host: string; base: string
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_DriveRevisionsPatch_595061(path: JsonNode; query: JsonNode;
+proc validate_DriveRevisionsPatch_581061(path: JsonNode; query: JsonNode;
                                         header: JsonNode; formData: JsonNode;
                                         body: JsonNode): JsonNode =
   ## Updates a revision. This method supports patch semantics.
@@ -10559,16 +10561,16 @@ proc validate_DriveRevisionsPatch_595061(path: JsonNode; query: JsonNode;
   ##             : The ID for the revision.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `fileId` field"
-  var valid_595063 = path.getOrDefault("fileId")
-  valid_595063 = validateParameter(valid_595063, JString, required = true,
+  var valid_581063 = path.getOrDefault("fileId")
+  valid_581063 = validateParameter(valid_581063, JString, required = true,
                                  default = nil)
-  if valid_595063 != nil:
-    section.add "fileId", valid_595063
-  var valid_595064 = path.getOrDefault("revisionId")
-  valid_595064 = validateParameter(valid_595064, JString, required = true,
+  if valid_581063 != nil:
+    section.add "fileId", valid_581063
+  var valid_581064 = path.getOrDefault("revisionId")
+  valid_581064 = validateParameter(valid_581064, JString, required = true,
                                  default = nil)
-  if valid_595064 != nil:
-    section.add "revisionId", valid_595064
+  if valid_581064 != nil:
+    section.add "revisionId", valid_581064
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -10586,41 +10588,41 @@ proc validate_DriveRevisionsPatch_595061(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_595065 = query.getOrDefault("fields")
-  valid_595065 = validateParameter(valid_595065, JString, required = false,
+  var valid_581065 = query.getOrDefault("fields")
+  valid_581065 = validateParameter(valid_581065, JString, required = false,
                                  default = nil)
-  if valid_595065 != nil:
-    section.add "fields", valid_595065
-  var valid_595066 = query.getOrDefault("quotaUser")
-  valid_595066 = validateParameter(valid_595066, JString, required = false,
+  if valid_581065 != nil:
+    section.add "fields", valid_581065
+  var valid_581066 = query.getOrDefault("quotaUser")
+  valid_581066 = validateParameter(valid_581066, JString, required = false,
                                  default = nil)
-  if valid_595066 != nil:
-    section.add "quotaUser", valid_595066
-  var valid_595067 = query.getOrDefault("alt")
-  valid_595067 = validateParameter(valid_595067, JString, required = false,
+  if valid_581066 != nil:
+    section.add "quotaUser", valid_581066
+  var valid_581067 = query.getOrDefault("alt")
+  valid_581067 = validateParameter(valid_581067, JString, required = false,
                                  default = newJString("json"))
-  if valid_595067 != nil:
-    section.add "alt", valid_595067
-  var valid_595068 = query.getOrDefault("oauth_token")
-  valid_595068 = validateParameter(valid_595068, JString, required = false,
+  if valid_581067 != nil:
+    section.add "alt", valid_581067
+  var valid_581068 = query.getOrDefault("oauth_token")
+  valid_581068 = validateParameter(valid_581068, JString, required = false,
                                  default = nil)
-  if valid_595068 != nil:
-    section.add "oauth_token", valid_595068
-  var valid_595069 = query.getOrDefault("userIp")
-  valid_595069 = validateParameter(valid_595069, JString, required = false,
+  if valid_581068 != nil:
+    section.add "oauth_token", valid_581068
+  var valid_581069 = query.getOrDefault("userIp")
+  valid_581069 = validateParameter(valid_581069, JString, required = false,
                                  default = nil)
-  if valid_595069 != nil:
-    section.add "userIp", valid_595069
-  var valid_595070 = query.getOrDefault("key")
-  valid_595070 = validateParameter(valid_595070, JString, required = false,
+  if valid_581069 != nil:
+    section.add "userIp", valid_581069
+  var valid_581070 = query.getOrDefault("key")
+  valid_581070 = validateParameter(valid_581070, JString, required = false,
                                  default = nil)
-  if valid_595070 != nil:
-    section.add "key", valid_595070
-  var valid_595071 = query.getOrDefault("prettyPrint")
-  valid_595071 = validateParameter(valid_595071, JBool, required = false,
+  if valid_581070 != nil:
+    section.add "key", valid_581070
+  var valid_581071 = query.getOrDefault("prettyPrint")
+  valid_581071 = validateParameter(valid_581071, JBool, required = false,
                                  default = newJBool(true))
-  if valid_595071 != nil:
-    section.add "prettyPrint", valid_595071
+  if valid_581071 != nil:
+    section.add "prettyPrint", valid_581071
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -10632,20 +10634,20 @@ proc validate_DriveRevisionsPatch_595061(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_595073: Call_DriveRevisionsPatch_595060; path: JsonNode;
+proc call*(call_581073: Call_DriveRevisionsPatch_581060; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Updates a revision. This method supports patch semantics.
   ## 
-  let valid = call_595073.validator(path, query, header, formData, body)
-  let scheme = call_595073.pickScheme
+  let valid = call_581073.validator(path, query, header, formData, body)
+  let scheme = call_581073.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_595073.url(scheme.get, call_595073.host, call_595073.base,
-                         call_595073.route, valid.getOrDefault("path"),
+  let url = call_581073.url(scheme.get, call_581073.host, call_581073.base,
+                         call_581073.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_595073, url, valid)
+  result = hook(call_581073, url, valid)
 
-proc call*(call_595074: Call_DriveRevisionsPatch_595060; fileId: string;
+proc call*(call_581074: Call_DriveRevisionsPatch_581060; fileId: string;
           revisionId: string; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; userIp: string = "";
           key: string = ""; body: JsonNode = nil; prettyPrint: bool = true): Recallable =
@@ -10670,34 +10672,34 @@ proc call*(call_595074: Call_DriveRevisionsPatch_595060; fileId: string;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_595075 = newJObject()
-  var query_595076 = newJObject()
-  var body_595077 = newJObject()
-  add(query_595076, "fields", newJString(fields))
-  add(query_595076, "quotaUser", newJString(quotaUser))
-  add(path_595075, "fileId", newJString(fileId))
-  add(query_595076, "alt", newJString(alt))
-  add(query_595076, "oauth_token", newJString(oauthToken))
-  add(path_595075, "revisionId", newJString(revisionId))
-  add(query_595076, "userIp", newJString(userIp))
-  add(query_595076, "key", newJString(key))
+  var path_581075 = newJObject()
+  var query_581076 = newJObject()
+  var body_581077 = newJObject()
+  add(query_581076, "fields", newJString(fields))
+  add(query_581076, "quotaUser", newJString(quotaUser))
+  add(path_581075, "fileId", newJString(fileId))
+  add(query_581076, "alt", newJString(alt))
+  add(query_581076, "oauth_token", newJString(oauthToken))
+  add(path_581075, "revisionId", newJString(revisionId))
+  add(query_581076, "userIp", newJString(userIp))
+  add(query_581076, "key", newJString(key))
   if body != nil:
-    body_595077 = body
-  add(query_595076, "prettyPrint", newJBool(prettyPrint))
-  result = call_595074.call(path_595075, query_595076, nil, nil, body_595077)
+    body_581077 = body
+  add(query_581076, "prettyPrint", newJBool(prettyPrint))
+  result = call_581074.call(path_581075, query_581076, nil, nil, body_581077)
 
-var driveRevisionsPatch* = Call_DriveRevisionsPatch_595060(
+var driveRevisionsPatch* = Call_DriveRevisionsPatch_581060(
     name: "driveRevisionsPatch", meth: HttpMethod.HttpPatch,
     host: "www.googleapis.com", route: "/files/{fileId}/revisions/{revisionId}",
-    validator: validate_DriveRevisionsPatch_595061, base: "/drive/v2",
-    url: url_DriveRevisionsPatch_595062, schemes: {Scheme.Https})
+    validator: validate_DriveRevisionsPatch_581061, base: "/drive/v2",
+    url: url_DriveRevisionsPatch_581062, schemes: {Scheme.Https})
 type
-  Call_DriveRevisionsDelete_595044 = ref object of OpenApiRestCall_593424
-proc url_DriveRevisionsDelete_595046(protocol: Scheme; host: string; base: string;
+  Call_DriveRevisionsDelete_581044 = ref object of OpenApiRestCall_579424
+proc url_DriveRevisionsDelete_581046(protocol: Scheme; host: string; base: string;
                                     route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "fileId" in path, "`fileId` is a required path parameter"
   assert "revisionId" in path, "`revisionId` is a required path parameter"
@@ -10711,7 +10713,7 @@ proc url_DriveRevisionsDelete_595046(protocol: Scheme; host: string; base: strin
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_DriveRevisionsDelete_595045(path: JsonNode; query: JsonNode;
+proc validate_DriveRevisionsDelete_581045(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Permanently deletes a file version. You can only delete revisions for files with binary content, like images or videos. Revisions for other files, like Google Docs or Sheets, and the last remaining file version can't be deleted.
   ## 
@@ -10724,16 +10726,16 @@ proc validate_DriveRevisionsDelete_595045(path: JsonNode; query: JsonNode;
   ##             : The ID of the revision.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `fileId` field"
-  var valid_595047 = path.getOrDefault("fileId")
-  valid_595047 = validateParameter(valid_595047, JString, required = true,
+  var valid_581047 = path.getOrDefault("fileId")
+  valid_581047 = validateParameter(valid_581047, JString, required = true,
                                  default = nil)
-  if valid_595047 != nil:
-    section.add "fileId", valid_595047
-  var valid_595048 = path.getOrDefault("revisionId")
-  valid_595048 = validateParameter(valid_595048, JString, required = true,
+  if valid_581047 != nil:
+    section.add "fileId", valid_581047
+  var valid_581048 = path.getOrDefault("revisionId")
+  valid_581048 = validateParameter(valid_581048, JString, required = true,
                                  default = nil)
-  if valid_595048 != nil:
-    section.add "revisionId", valid_595048
+  if valid_581048 != nil:
+    section.add "revisionId", valid_581048
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -10751,41 +10753,41 @@ proc validate_DriveRevisionsDelete_595045(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_595049 = query.getOrDefault("fields")
-  valid_595049 = validateParameter(valid_595049, JString, required = false,
+  var valid_581049 = query.getOrDefault("fields")
+  valid_581049 = validateParameter(valid_581049, JString, required = false,
                                  default = nil)
-  if valid_595049 != nil:
-    section.add "fields", valid_595049
-  var valid_595050 = query.getOrDefault("quotaUser")
-  valid_595050 = validateParameter(valid_595050, JString, required = false,
+  if valid_581049 != nil:
+    section.add "fields", valid_581049
+  var valid_581050 = query.getOrDefault("quotaUser")
+  valid_581050 = validateParameter(valid_581050, JString, required = false,
                                  default = nil)
-  if valid_595050 != nil:
-    section.add "quotaUser", valid_595050
-  var valid_595051 = query.getOrDefault("alt")
-  valid_595051 = validateParameter(valid_595051, JString, required = false,
+  if valid_581050 != nil:
+    section.add "quotaUser", valid_581050
+  var valid_581051 = query.getOrDefault("alt")
+  valid_581051 = validateParameter(valid_581051, JString, required = false,
                                  default = newJString("json"))
-  if valid_595051 != nil:
-    section.add "alt", valid_595051
-  var valid_595052 = query.getOrDefault("oauth_token")
-  valid_595052 = validateParameter(valid_595052, JString, required = false,
+  if valid_581051 != nil:
+    section.add "alt", valid_581051
+  var valid_581052 = query.getOrDefault("oauth_token")
+  valid_581052 = validateParameter(valid_581052, JString, required = false,
                                  default = nil)
-  if valid_595052 != nil:
-    section.add "oauth_token", valid_595052
-  var valid_595053 = query.getOrDefault("userIp")
-  valid_595053 = validateParameter(valid_595053, JString, required = false,
+  if valid_581052 != nil:
+    section.add "oauth_token", valid_581052
+  var valid_581053 = query.getOrDefault("userIp")
+  valid_581053 = validateParameter(valid_581053, JString, required = false,
                                  default = nil)
-  if valid_595053 != nil:
-    section.add "userIp", valid_595053
-  var valid_595054 = query.getOrDefault("key")
-  valid_595054 = validateParameter(valid_595054, JString, required = false,
+  if valid_581053 != nil:
+    section.add "userIp", valid_581053
+  var valid_581054 = query.getOrDefault("key")
+  valid_581054 = validateParameter(valid_581054, JString, required = false,
                                  default = nil)
-  if valid_595054 != nil:
-    section.add "key", valid_595054
-  var valid_595055 = query.getOrDefault("prettyPrint")
-  valid_595055 = validateParameter(valid_595055, JBool, required = false,
+  if valid_581054 != nil:
+    section.add "key", valid_581054
+  var valid_581055 = query.getOrDefault("prettyPrint")
+  valid_581055 = validateParameter(valid_581055, JBool, required = false,
                                  default = newJBool(true))
-  if valid_595055 != nil:
-    section.add "prettyPrint", valid_595055
+  if valid_581055 != nil:
+    section.add "prettyPrint", valid_581055
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -10794,20 +10796,20 @@ proc validate_DriveRevisionsDelete_595045(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_595056: Call_DriveRevisionsDelete_595044; path: JsonNode;
+proc call*(call_581056: Call_DriveRevisionsDelete_581044; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Permanently deletes a file version. You can only delete revisions for files with binary content, like images or videos. Revisions for other files, like Google Docs or Sheets, and the last remaining file version can't be deleted.
   ## 
-  let valid = call_595056.validator(path, query, header, formData, body)
-  let scheme = call_595056.pickScheme
+  let valid = call_581056.validator(path, query, header, formData, body)
+  let scheme = call_581056.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_595056.url(scheme.get, call_595056.host, call_595056.base,
-                         call_595056.route, valid.getOrDefault("path"),
+  let url = call_581056.url(scheme.get, call_581056.host, call_581056.base,
+                         call_581056.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_595056, url, valid)
+  result = hook(call_581056, url, valid)
 
-proc call*(call_595057: Call_DriveRevisionsDelete_595044; fileId: string;
+proc call*(call_581057: Call_DriveRevisionsDelete_581044; fileId: string;
           revisionId: string; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; userIp: string = "";
           key: string = ""; prettyPrint: bool = true): Recallable =
@@ -10831,31 +10833,31 @@ proc call*(call_595057: Call_DriveRevisionsDelete_595044; fileId: string;
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_595058 = newJObject()
-  var query_595059 = newJObject()
-  add(query_595059, "fields", newJString(fields))
-  add(query_595059, "quotaUser", newJString(quotaUser))
-  add(path_595058, "fileId", newJString(fileId))
-  add(query_595059, "alt", newJString(alt))
-  add(query_595059, "oauth_token", newJString(oauthToken))
-  add(path_595058, "revisionId", newJString(revisionId))
-  add(query_595059, "userIp", newJString(userIp))
-  add(query_595059, "key", newJString(key))
-  add(query_595059, "prettyPrint", newJBool(prettyPrint))
-  result = call_595057.call(path_595058, query_595059, nil, nil, nil)
+  var path_581058 = newJObject()
+  var query_581059 = newJObject()
+  add(query_581059, "fields", newJString(fields))
+  add(query_581059, "quotaUser", newJString(quotaUser))
+  add(path_581058, "fileId", newJString(fileId))
+  add(query_581059, "alt", newJString(alt))
+  add(query_581059, "oauth_token", newJString(oauthToken))
+  add(path_581058, "revisionId", newJString(revisionId))
+  add(query_581059, "userIp", newJString(userIp))
+  add(query_581059, "key", newJString(key))
+  add(query_581059, "prettyPrint", newJBool(prettyPrint))
+  result = call_581057.call(path_581058, query_581059, nil, nil, nil)
 
-var driveRevisionsDelete* = Call_DriveRevisionsDelete_595044(
+var driveRevisionsDelete* = Call_DriveRevisionsDelete_581044(
     name: "driveRevisionsDelete", meth: HttpMethod.HttpDelete,
     host: "www.googleapis.com", route: "/files/{fileId}/revisions/{revisionId}",
-    validator: validate_DriveRevisionsDelete_595045, base: "/drive/v2",
-    url: url_DriveRevisionsDelete_595046, schemes: {Scheme.Https})
+    validator: validate_DriveRevisionsDelete_581045, base: "/drive/v2",
+    url: url_DriveRevisionsDelete_581046, schemes: {Scheme.Https})
 type
-  Call_DriveFilesTouch_595078 = ref object of OpenApiRestCall_593424
-proc url_DriveFilesTouch_595080(protocol: Scheme; host: string; base: string;
+  Call_DriveFilesTouch_581078 = ref object of OpenApiRestCall_579424
+proc url_DriveFilesTouch_581080(protocol: Scheme; host: string; base: string;
                                route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "fileId" in path, "`fileId` is a required path parameter"
   const
@@ -10867,7 +10869,7 @@ proc url_DriveFilesTouch_595080(protocol: Scheme; host: string; base: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_DriveFilesTouch_595079(path: JsonNode; query: JsonNode;
+proc validate_DriveFilesTouch_581079(path: JsonNode; query: JsonNode;
                                     header: JsonNode; formData: JsonNode;
                                     body: JsonNode): JsonNode =
   ## Set the file's updated time to the current server time.
@@ -10879,11 +10881,11 @@ proc validate_DriveFilesTouch_595079(path: JsonNode; query: JsonNode;
   ##         : The ID of the file to update.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `fileId` field"
-  var valid_595081 = path.getOrDefault("fileId")
-  valid_595081 = validateParameter(valid_595081, JString, required = true,
+  var valid_581081 = path.getOrDefault("fileId")
+  valid_581081 = validateParameter(valid_581081, JString, required = true,
                                  default = nil)
-  if valid_595081 != nil:
-    section.add "fileId", valid_595081
+  if valid_581081 != nil:
+    section.add "fileId", valid_581081
   result.add "path", section
   ## parameters in `query` object:
   ##   supportsAllDrives: JBool
@@ -10905,51 +10907,51 @@ proc validate_DriveFilesTouch_595079(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_595082 = query.getOrDefault("supportsAllDrives")
-  valid_595082 = validateParameter(valid_595082, JBool, required = false,
+  var valid_581082 = query.getOrDefault("supportsAllDrives")
+  valid_581082 = validateParameter(valid_581082, JBool, required = false,
                                  default = newJBool(false))
-  if valid_595082 != nil:
-    section.add "supportsAllDrives", valid_595082
-  var valid_595083 = query.getOrDefault("fields")
-  valid_595083 = validateParameter(valid_595083, JString, required = false,
+  if valid_581082 != nil:
+    section.add "supportsAllDrives", valid_581082
+  var valid_581083 = query.getOrDefault("fields")
+  valid_581083 = validateParameter(valid_581083, JString, required = false,
                                  default = nil)
-  if valid_595083 != nil:
-    section.add "fields", valid_595083
-  var valid_595084 = query.getOrDefault("quotaUser")
-  valid_595084 = validateParameter(valid_595084, JString, required = false,
+  if valid_581083 != nil:
+    section.add "fields", valid_581083
+  var valid_581084 = query.getOrDefault("quotaUser")
+  valid_581084 = validateParameter(valid_581084, JString, required = false,
                                  default = nil)
-  if valid_595084 != nil:
-    section.add "quotaUser", valid_595084
-  var valid_595085 = query.getOrDefault("alt")
-  valid_595085 = validateParameter(valid_595085, JString, required = false,
+  if valid_581084 != nil:
+    section.add "quotaUser", valid_581084
+  var valid_581085 = query.getOrDefault("alt")
+  valid_581085 = validateParameter(valid_581085, JString, required = false,
                                  default = newJString("json"))
-  if valid_595085 != nil:
-    section.add "alt", valid_595085
-  var valid_595086 = query.getOrDefault("oauth_token")
-  valid_595086 = validateParameter(valid_595086, JString, required = false,
+  if valid_581085 != nil:
+    section.add "alt", valid_581085
+  var valid_581086 = query.getOrDefault("oauth_token")
+  valid_581086 = validateParameter(valid_581086, JString, required = false,
                                  default = nil)
-  if valid_595086 != nil:
-    section.add "oauth_token", valid_595086
-  var valid_595087 = query.getOrDefault("userIp")
-  valid_595087 = validateParameter(valid_595087, JString, required = false,
+  if valid_581086 != nil:
+    section.add "oauth_token", valid_581086
+  var valid_581087 = query.getOrDefault("userIp")
+  valid_581087 = validateParameter(valid_581087, JString, required = false,
                                  default = nil)
-  if valid_595087 != nil:
-    section.add "userIp", valid_595087
-  var valid_595088 = query.getOrDefault("supportsTeamDrives")
-  valid_595088 = validateParameter(valid_595088, JBool, required = false,
+  if valid_581087 != nil:
+    section.add "userIp", valid_581087
+  var valid_581088 = query.getOrDefault("supportsTeamDrives")
+  valid_581088 = validateParameter(valid_581088, JBool, required = false,
                                  default = newJBool(false))
-  if valid_595088 != nil:
-    section.add "supportsTeamDrives", valid_595088
-  var valid_595089 = query.getOrDefault("key")
-  valid_595089 = validateParameter(valid_595089, JString, required = false,
+  if valid_581088 != nil:
+    section.add "supportsTeamDrives", valid_581088
+  var valid_581089 = query.getOrDefault("key")
+  valid_581089 = validateParameter(valid_581089, JString, required = false,
                                  default = nil)
-  if valid_595089 != nil:
-    section.add "key", valid_595089
-  var valid_595090 = query.getOrDefault("prettyPrint")
-  valid_595090 = validateParameter(valid_595090, JBool, required = false,
+  if valid_581089 != nil:
+    section.add "key", valid_581089
+  var valid_581090 = query.getOrDefault("prettyPrint")
+  valid_581090 = validateParameter(valid_581090, JBool, required = false,
                                  default = newJBool(true))
-  if valid_595090 != nil:
-    section.add "prettyPrint", valid_595090
+  if valid_581090 != nil:
+    section.add "prettyPrint", valid_581090
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -10958,20 +10960,20 @@ proc validate_DriveFilesTouch_595079(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_595091: Call_DriveFilesTouch_595078; path: JsonNode; query: JsonNode;
+proc call*(call_581091: Call_DriveFilesTouch_581078; path: JsonNode; query: JsonNode;
           header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Set the file's updated time to the current server time.
   ## 
-  let valid = call_595091.validator(path, query, header, formData, body)
-  let scheme = call_595091.pickScheme
+  let valid = call_581091.validator(path, query, header, formData, body)
+  let scheme = call_581091.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_595091.url(scheme.get, call_595091.host, call_595091.base,
-                         call_595091.route, valid.getOrDefault("path"),
+  let url = call_581091.url(scheme.get, call_581091.host, call_581091.base,
+                         call_581091.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_595091, url, valid)
+  result = hook(call_581091, url, valid)
 
-proc call*(call_595092: Call_DriveFilesTouch_595078; fileId: string;
+proc call*(call_581092: Call_DriveFilesTouch_581078; fileId: string;
           supportsAllDrives: bool = false; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; userIp: string = "";
           supportsTeamDrives: bool = false; key: string = ""; prettyPrint: bool = true): Recallable =
@@ -10997,31 +10999,31 @@ proc call*(call_595092: Call_DriveFilesTouch_595078; fileId: string;
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_595093 = newJObject()
-  var query_595094 = newJObject()
-  add(query_595094, "supportsAllDrives", newJBool(supportsAllDrives))
-  add(query_595094, "fields", newJString(fields))
-  add(query_595094, "quotaUser", newJString(quotaUser))
-  add(path_595093, "fileId", newJString(fileId))
-  add(query_595094, "alt", newJString(alt))
-  add(query_595094, "oauth_token", newJString(oauthToken))
-  add(query_595094, "userIp", newJString(userIp))
-  add(query_595094, "supportsTeamDrives", newJBool(supportsTeamDrives))
-  add(query_595094, "key", newJString(key))
-  add(query_595094, "prettyPrint", newJBool(prettyPrint))
-  result = call_595092.call(path_595093, query_595094, nil, nil, nil)
+  var path_581093 = newJObject()
+  var query_581094 = newJObject()
+  add(query_581094, "supportsAllDrives", newJBool(supportsAllDrives))
+  add(query_581094, "fields", newJString(fields))
+  add(query_581094, "quotaUser", newJString(quotaUser))
+  add(path_581093, "fileId", newJString(fileId))
+  add(query_581094, "alt", newJString(alt))
+  add(query_581094, "oauth_token", newJString(oauthToken))
+  add(query_581094, "userIp", newJString(userIp))
+  add(query_581094, "supportsTeamDrives", newJBool(supportsTeamDrives))
+  add(query_581094, "key", newJString(key))
+  add(query_581094, "prettyPrint", newJBool(prettyPrint))
+  result = call_581092.call(path_581093, query_581094, nil, nil, nil)
 
-var driveFilesTouch* = Call_DriveFilesTouch_595078(name: "driveFilesTouch",
+var driveFilesTouch* = Call_DriveFilesTouch_581078(name: "driveFilesTouch",
     meth: HttpMethod.HttpPost, host: "www.googleapis.com",
-    route: "/files/{fileId}/touch", validator: validate_DriveFilesTouch_595079,
-    base: "/drive/v2", url: url_DriveFilesTouch_595080, schemes: {Scheme.Https})
+    route: "/files/{fileId}/touch", validator: validate_DriveFilesTouch_581079,
+    base: "/drive/v2", url: url_DriveFilesTouch_581080, schemes: {Scheme.Https})
 type
-  Call_DriveFilesTrash_595095 = ref object of OpenApiRestCall_593424
-proc url_DriveFilesTrash_595097(protocol: Scheme; host: string; base: string;
+  Call_DriveFilesTrash_581095 = ref object of OpenApiRestCall_579424
+proc url_DriveFilesTrash_581097(protocol: Scheme; host: string; base: string;
                                route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "fileId" in path, "`fileId` is a required path parameter"
   const
@@ -11033,7 +11035,7 @@ proc url_DriveFilesTrash_595097(protocol: Scheme; host: string; base: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_DriveFilesTrash_595096(path: JsonNode; query: JsonNode;
+proc validate_DriveFilesTrash_581096(path: JsonNode; query: JsonNode;
                                     header: JsonNode; formData: JsonNode;
                                     body: JsonNode): JsonNode =
   ## Moves a file to the trash. The currently authenticated user must own the file or be at least a fileOrganizer on the parent for shared drive files.
@@ -11045,11 +11047,11 @@ proc validate_DriveFilesTrash_595096(path: JsonNode; query: JsonNode;
   ##         : The ID of the file to trash.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `fileId` field"
-  var valid_595098 = path.getOrDefault("fileId")
-  valid_595098 = validateParameter(valid_595098, JString, required = true,
+  var valid_581098 = path.getOrDefault("fileId")
+  valid_581098 = validateParameter(valid_581098, JString, required = true,
                                  default = nil)
-  if valid_595098 != nil:
-    section.add "fileId", valid_595098
+  if valid_581098 != nil:
+    section.add "fileId", valid_581098
   result.add "path", section
   ## parameters in `query` object:
   ##   supportsAllDrives: JBool
@@ -11071,51 +11073,51 @@ proc validate_DriveFilesTrash_595096(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_595099 = query.getOrDefault("supportsAllDrives")
-  valid_595099 = validateParameter(valid_595099, JBool, required = false,
+  var valid_581099 = query.getOrDefault("supportsAllDrives")
+  valid_581099 = validateParameter(valid_581099, JBool, required = false,
                                  default = newJBool(false))
-  if valid_595099 != nil:
-    section.add "supportsAllDrives", valid_595099
-  var valid_595100 = query.getOrDefault("fields")
-  valid_595100 = validateParameter(valid_595100, JString, required = false,
+  if valid_581099 != nil:
+    section.add "supportsAllDrives", valid_581099
+  var valid_581100 = query.getOrDefault("fields")
+  valid_581100 = validateParameter(valid_581100, JString, required = false,
                                  default = nil)
-  if valid_595100 != nil:
-    section.add "fields", valid_595100
-  var valid_595101 = query.getOrDefault("quotaUser")
-  valid_595101 = validateParameter(valid_595101, JString, required = false,
+  if valid_581100 != nil:
+    section.add "fields", valid_581100
+  var valid_581101 = query.getOrDefault("quotaUser")
+  valid_581101 = validateParameter(valid_581101, JString, required = false,
                                  default = nil)
-  if valid_595101 != nil:
-    section.add "quotaUser", valid_595101
-  var valid_595102 = query.getOrDefault("alt")
-  valid_595102 = validateParameter(valid_595102, JString, required = false,
+  if valid_581101 != nil:
+    section.add "quotaUser", valid_581101
+  var valid_581102 = query.getOrDefault("alt")
+  valid_581102 = validateParameter(valid_581102, JString, required = false,
                                  default = newJString("json"))
-  if valid_595102 != nil:
-    section.add "alt", valid_595102
-  var valid_595103 = query.getOrDefault("oauth_token")
-  valid_595103 = validateParameter(valid_595103, JString, required = false,
+  if valid_581102 != nil:
+    section.add "alt", valid_581102
+  var valid_581103 = query.getOrDefault("oauth_token")
+  valid_581103 = validateParameter(valid_581103, JString, required = false,
                                  default = nil)
-  if valid_595103 != nil:
-    section.add "oauth_token", valid_595103
-  var valid_595104 = query.getOrDefault("userIp")
-  valid_595104 = validateParameter(valid_595104, JString, required = false,
+  if valid_581103 != nil:
+    section.add "oauth_token", valid_581103
+  var valid_581104 = query.getOrDefault("userIp")
+  valid_581104 = validateParameter(valid_581104, JString, required = false,
                                  default = nil)
-  if valid_595104 != nil:
-    section.add "userIp", valid_595104
-  var valid_595105 = query.getOrDefault("supportsTeamDrives")
-  valid_595105 = validateParameter(valid_595105, JBool, required = false,
+  if valid_581104 != nil:
+    section.add "userIp", valid_581104
+  var valid_581105 = query.getOrDefault("supportsTeamDrives")
+  valid_581105 = validateParameter(valid_581105, JBool, required = false,
                                  default = newJBool(false))
-  if valid_595105 != nil:
-    section.add "supportsTeamDrives", valid_595105
-  var valid_595106 = query.getOrDefault("key")
-  valid_595106 = validateParameter(valid_595106, JString, required = false,
+  if valid_581105 != nil:
+    section.add "supportsTeamDrives", valid_581105
+  var valid_581106 = query.getOrDefault("key")
+  valid_581106 = validateParameter(valid_581106, JString, required = false,
                                  default = nil)
-  if valid_595106 != nil:
-    section.add "key", valid_595106
-  var valid_595107 = query.getOrDefault("prettyPrint")
-  valid_595107 = validateParameter(valid_595107, JBool, required = false,
+  if valid_581106 != nil:
+    section.add "key", valid_581106
+  var valid_581107 = query.getOrDefault("prettyPrint")
+  valid_581107 = validateParameter(valid_581107, JBool, required = false,
                                  default = newJBool(true))
-  if valid_595107 != nil:
-    section.add "prettyPrint", valid_595107
+  if valid_581107 != nil:
+    section.add "prettyPrint", valid_581107
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -11124,20 +11126,20 @@ proc validate_DriveFilesTrash_595096(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_595108: Call_DriveFilesTrash_595095; path: JsonNode; query: JsonNode;
+proc call*(call_581108: Call_DriveFilesTrash_581095; path: JsonNode; query: JsonNode;
           header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Moves a file to the trash. The currently authenticated user must own the file or be at least a fileOrganizer on the parent for shared drive files.
   ## 
-  let valid = call_595108.validator(path, query, header, formData, body)
-  let scheme = call_595108.pickScheme
+  let valid = call_581108.validator(path, query, header, formData, body)
+  let scheme = call_581108.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_595108.url(scheme.get, call_595108.host, call_595108.base,
-                         call_595108.route, valid.getOrDefault("path"),
+  let url = call_581108.url(scheme.get, call_581108.host, call_581108.base,
+                         call_581108.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_595108, url, valid)
+  result = hook(call_581108, url, valid)
 
-proc call*(call_595109: Call_DriveFilesTrash_595095; fileId: string;
+proc call*(call_581109: Call_DriveFilesTrash_581095; fileId: string;
           supportsAllDrives: bool = false; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; userIp: string = "";
           supportsTeamDrives: bool = false; key: string = ""; prettyPrint: bool = true): Recallable =
@@ -11163,31 +11165,31 @@ proc call*(call_595109: Call_DriveFilesTrash_595095; fileId: string;
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_595110 = newJObject()
-  var query_595111 = newJObject()
-  add(query_595111, "supportsAllDrives", newJBool(supportsAllDrives))
-  add(query_595111, "fields", newJString(fields))
-  add(query_595111, "quotaUser", newJString(quotaUser))
-  add(path_595110, "fileId", newJString(fileId))
-  add(query_595111, "alt", newJString(alt))
-  add(query_595111, "oauth_token", newJString(oauthToken))
-  add(query_595111, "userIp", newJString(userIp))
-  add(query_595111, "supportsTeamDrives", newJBool(supportsTeamDrives))
-  add(query_595111, "key", newJString(key))
-  add(query_595111, "prettyPrint", newJBool(prettyPrint))
-  result = call_595109.call(path_595110, query_595111, nil, nil, nil)
+  var path_581110 = newJObject()
+  var query_581111 = newJObject()
+  add(query_581111, "supportsAllDrives", newJBool(supportsAllDrives))
+  add(query_581111, "fields", newJString(fields))
+  add(query_581111, "quotaUser", newJString(quotaUser))
+  add(path_581110, "fileId", newJString(fileId))
+  add(query_581111, "alt", newJString(alt))
+  add(query_581111, "oauth_token", newJString(oauthToken))
+  add(query_581111, "userIp", newJString(userIp))
+  add(query_581111, "supportsTeamDrives", newJBool(supportsTeamDrives))
+  add(query_581111, "key", newJString(key))
+  add(query_581111, "prettyPrint", newJBool(prettyPrint))
+  result = call_581109.call(path_581110, query_581111, nil, nil, nil)
 
-var driveFilesTrash* = Call_DriveFilesTrash_595095(name: "driveFilesTrash",
+var driveFilesTrash* = Call_DriveFilesTrash_581095(name: "driveFilesTrash",
     meth: HttpMethod.HttpPost, host: "www.googleapis.com",
-    route: "/files/{fileId}/trash", validator: validate_DriveFilesTrash_595096,
-    base: "/drive/v2", url: url_DriveFilesTrash_595097, schemes: {Scheme.Https})
+    route: "/files/{fileId}/trash", validator: validate_DriveFilesTrash_581096,
+    base: "/drive/v2", url: url_DriveFilesTrash_581097, schemes: {Scheme.Https})
 type
-  Call_DriveFilesUntrash_595112 = ref object of OpenApiRestCall_593424
-proc url_DriveFilesUntrash_595114(protocol: Scheme; host: string; base: string;
+  Call_DriveFilesUntrash_581112 = ref object of OpenApiRestCall_579424
+proc url_DriveFilesUntrash_581114(protocol: Scheme; host: string; base: string;
                                  route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "fileId" in path, "`fileId` is a required path parameter"
   const
@@ -11199,7 +11201,7 @@ proc url_DriveFilesUntrash_595114(protocol: Scheme; host: string; base: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_DriveFilesUntrash_595113(path: JsonNode; query: JsonNode;
+proc validate_DriveFilesUntrash_581113(path: JsonNode; query: JsonNode;
                                       header: JsonNode; formData: JsonNode;
                                       body: JsonNode): JsonNode =
   ## Restores a file from the trash.
@@ -11211,11 +11213,11 @@ proc validate_DriveFilesUntrash_595113(path: JsonNode; query: JsonNode;
   ##         : The ID of the file to untrash.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `fileId` field"
-  var valid_595115 = path.getOrDefault("fileId")
-  valid_595115 = validateParameter(valid_595115, JString, required = true,
+  var valid_581115 = path.getOrDefault("fileId")
+  valid_581115 = validateParameter(valid_581115, JString, required = true,
                                  default = nil)
-  if valid_595115 != nil:
-    section.add "fileId", valid_595115
+  if valid_581115 != nil:
+    section.add "fileId", valid_581115
   result.add "path", section
   ## parameters in `query` object:
   ##   supportsAllDrives: JBool
@@ -11237,51 +11239,51 @@ proc validate_DriveFilesUntrash_595113(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_595116 = query.getOrDefault("supportsAllDrives")
-  valid_595116 = validateParameter(valid_595116, JBool, required = false,
+  var valid_581116 = query.getOrDefault("supportsAllDrives")
+  valid_581116 = validateParameter(valid_581116, JBool, required = false,
                                  default = newJBool(false))
-  if valid_595116 != nil:
-    section.add "supportsAllDrives", valid_595116
-  var valid_595117 = query.getOrDefault("fields")
-  valid_595117 = validateParameter(valid_595117, JString, required = false,
+  if valid_581116 != nil:
+    section.add "supportsAllDrives", valid_581116
+  var valid_581117 = query.getOrDefault("fields")
+  valid_581117 = validateParameter(valid_581117, JString, required = false,
                                  default = nil)
-  if valid_595117 != nil:
-    section.add "fields", valid_595117
-  var valid_595118 = query.getOrDefault("quotaUser")
-  valid_595118 = validateParameter(valid_595118, JString, required = false,
+  if valid_581117 != nil:
+    section.add "fields", valid_581117
+  var valid_581118 = query.getOrDefault("quotaUser")
+  valid_581118 = validateParameter(valid_581118, JString, required = false,
                                  default = nil)
-  if valid_595118 != nil:
-    section.add "quotaUser", valid_595118
-  var valid_595119 = query.getOrDefault("alt")
-  valid_595119 = validateParameter(valid_595119, JString, required = false,
+  if valid_581118 != nil:
+    section.add "quotaUser", valid_581118
+  var valid_581119 = query.getOrDefault("alt")
+  valid_581119 = validateParameter(valid_581119, JString, required = false,
                                  default = newJString("json"))
-  if valid_595119 != nil:
-    section.add "alt", valid_595119
-  var valid_595120 = query.getOrDefault("oauth_token")
-  valid_595120 = validateParameter(valid_595120, JString, required = false,
+  if valid_581119 != nil:
+    section.add "alt", valid_581119
+  var valid_581120 = query.getOrDefault("oauth_token")
+  valid_581120 = validateParameter(valid_581120, JString, required = false,
                                  default = nil)
-  if valid_595120 != nil:
-    section.add "oauth_token", valid_595120
-  var valid_595121 = query.getOrDefault("userIp")
-  valid_595121 = validateParameter(valid_595121, JString, required = false,
+  if valid_581120 != nil:
+    section.add "oauth_token", valid_581120
+  var valid_581121 = query.getOrDefault("userIp")
+  valid_581121 = validateParameter(valid_581121, JString, required = false,
                                  default = nil)
-  if valid_595121 != nil:
-    section.add "userIp", valid_595121
-  var valid_595122 = query.getOrDefault("supportsTeamDrives")
-  valid_595122 = validateParameter(valid_595122, JBool, required = false,
+  if valid_581121 != nil:
+    section.add "userIp", valid_581121
+  var valid_581122 = query.getOrDefault("supportsTeamDrives")
+  valid_581122 = validateParameter(valid_581122, JBool, required = false,
                                  default = newJBool(false))
-  if valid_595122 != nil:
-    section.add "supportsTeamDrives", valid_595122
-  var valid_595123 = query.getOrDefault("key")
-  valid_595123 = validateParameter(valid_595123, JString, required = false,
+  if valid_581122 != nil:
+    section.add "supportsTeamDrives", valid_581122
+  var valid_581123 = query.getOrDefault("key")
+  valid_581123 = validateParameter(valid_581123, JString, required = false,
                                  default = nil)
-  if valid_595123 != nil:
-    section.add "key", valid_595123
-  var valid_595124 = query.getOrDefault("prettyPrint")
-  valid_595124 = validateParameter(valid_595124, JBool, required = false,
+  if valid_581123 != nil:
+    section.add "key", valid_581123
+  var valid_581124 = query.getOrDefault("prettyPrint")
+  valid_581124 = validateParameter(valid_581124, JBool, required = false,
                                  default = newJBool(true))
-  if valid_595124 != nil:
-    section.add "prettyPrint", valid_595124
+  if valid_581124 != nil:
+    section.add "prettyPrint", valid_581124
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -11290,20 +11292,20 @@ proc validate_DriveFilesUntrash_595113(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_595125: Call_DriveFilesUntrash_595112; path: JsonNode;
+proc call*(call_581125: Call_DriveFilesUntrash_581112; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Restores a file from the trash.
   ## 
-  let valid = call_595125.validator(path, query, header, formData, body)
-  let scheme = call_595125.pickScheme
+  let valid = call_581125.validator(path, query, header, formData, body)
+  let scheme = call_581125.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_595125.url(scheme.get, call_595125.host, call_595125.base,
-                         call_595125.route, valid.getOrDefault("path"),
+  let url = call_581125.url(scheme.get, call_581125.host, call_581125.base,
+                         call_581125.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_595125, url, valid)
+  result = hook(call_581125, url, valid)
 
-proc call*(call_595126: Call_DriveFilesUntrash_595112; fileId: string;
+proc call*(call_581126: Call_DriveFilesUntrash_581112; fileId: string;
           supportsAllDrives: bool = false; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; userIp: string = "";
           supportsTeamDrives: bool = false; key: string = ""; prettyPrint: bool = true): Recallable =
@@ -11329,31 +11331,31 @@ proc call*(call_595126: Call_DriveFilesUntrash_595112; fileId: string;
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_595127 = newJObject()
-  var query_595128 = newJObject()
-  add(query_595128, "supportsAllDrives", newJBool(supportsAllDrives))
-  add(query_595128, "fields", newJString(fields))
-  add(query_595128, "quotaUser", newJString(quotaUser))
-  add(path_595127, "fileId", newJString(fileId))
-  add(query_595128, "alt", newJString(alt))
-  add(query_595128, "oauth_token", newJString(oauthToken))
-  add(query_595128, "userIp", newJString(userIp))
-  add(query_595128, "supportsTeamDrives", newJBool(supportsTeamDrives))
-  add(query_595128, "key", newJString(key))
-  add(query_595128, "prettyPrint", newJBool(prettyPrint))
-  result = call_595126.call(path_595127, query_595128, nil, nil, nil)
+  var path_581127 = newJObject()
+  var query_581128 = newJObject()
+  add(query_581128, "supportsAllDrives", newJBool(supportsAllDrives))
+  add(query_581128, "fields", newJString(fields))
+  add(query_581128, "quotaUser", newJString(quotaUser))
+  add(path_581127, "fileId", newJString(fileId))
+  add(query_581128, "alt", newJString(alt))
+  add(query_581128, "oauth_token", newJString(oauthToken))
+  add(query_581128, "userIp", newJString(userIp))
+  add(query_581128, "supportsTeamDrives", newJBool(supportsTeamDrives))
+  add(query_581128, "key", newJString(key))
+  add(query_581128, "prettyPrint", newJBool(prettyPrint))
+  result = call_581126.call(path_581127, query_581128, nil, nil, nil)
 
-var driveFilesUntrash* = Call_DriveFilesUntrash_595112(name: "driveFilesUntrash",
+var driveFilesUntrash* = Call_DriveFilesUntrash_581112(name: "driveFilesUntrash",
     meth: HttpMethod.HttpPost, host: "www.googleapis.com",
-    route: "/files/{fileId}/untrash", validator: validate_DriveFilesUntrash_595113,
-    base: "/drive/v2", url: url_DriveFilesUntrash_595114, schemes: {Scheme.Https})
+    route: "/files/{fileId}/untrash", validator: validate_DriveFilesUntrash_581113,
+    base: "/drive/v2", url: url_DriveFilesUntrash_581114, schemes: {Scheme.Https})
 type
-  Call_DriveFilesWatch_595129 = ref object of OpenApiRestCall_593424
-proc url_DriveFilesWatch_595131(protocol: Scheme; host: string; base: string;
+  Call_DriveFilesWatch_581129 = ref object of OpenApiRestCall_579424
+proc url_DriveFilesWatch_581131(protocol: Scheme; host: string; base: string;
                                route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "fileId" in path, "`fileId` is a required path parameter"
   const
@@ -11365,7 +11367,7 @@ proc url_DriveFilesWatch_595131(protocol: Scheme; host: string; base: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_DriveFilesWatch_595130(path: JsonNode; query: JsonNode;
+proc validate_DriveFilesWatch_581130(path: JsonNode; query: JsonNode;
                                     header: JsonNode; formData: JsonNode;
                                     body: JsonNode): JsonNode =
   ## Subscribe to changes on a file
@@ -11377,11 +11379,11 @@ proc validate_DriveFilesWatch_595130(path: JsonNode; query: JsonNode;
   ##         : The ID for the file in question.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `fileId` field"
-  var valid_595132 = path.getOrDefault("fileId")
-  valid_595132 = validateParameter(valid_595132, JString, required = true,
+  var valid_581132 = path.getOrDefault("fileId")
+  valid_581132 = validateParameter(valid_581132, JString, required = true,
                                  default = nil)
-  if valid_595132 != nil:
-    section.add "fileId", valid_595132
+  if valid_581132 != nil:
+    section.add "fileId", valid_581132
   result.add "path", section
   ## parameters in `query` object:
   ##   supportsAllDrives: JBool
@@ -11411,71 +11413,71 @@ proc validate_DriveFilesWatch_595130(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_595133 = query.getOrDefault("supportsAllDrives")
-  valid_595133 = validateParameter(valid_595133, JBool, required = false,
+  var valid_581133 = query.getOrDefault("supportsAllDrives")
+  valid_581133 = validateParameter(valid_581133, JBool, required = false,
                                  default = newJBool(false))
-  if valid_595133 != nil:
-    section.add "supportsAllDrives", valid_595133
-  var valid_595134 = query.getOrDefault("fields")
-  valid_595134 = validateParameter(valid_595134, JString, required = false,
+  if valid_581133 != nil:
+    section.add "supportsAllDrives", valid_581133
+  var valid_581134 = query.getOrDefault("fields")
+  valid_581134 = validateParameter(valid_581134, JString, required = false,
                                  default = nil)
-  if valid_595134 != nil:
-    section.add "fields", valid_595134
-  var valid_595135 = query.getOrDefault("quotaUser")
-  valid_595135 = validateParameter(valid_595135, JString, required = false,
+  if valid_581134 != nil:
+    section.add "fields", valid_581134
+  var valid_581135 = query.getOrDefault("quotaUser")
+  valid_581135 = validateParameter(valid_581135, JString, required = false,
                                  default = nil)
-  if valid_595135 != nil:
-    section.add "quotaUser", valid_595135
-  var valid_595136 = query.getOrDefault("alt")
-  valid_595136 = validateParameter(valid_595136, JString, required = false,
+  if valid_581135 != nil:
+    section.add "quotaUser", valid_581135
+  var valid_581136 = query.getOrDefault("alt")
+  valid_581136 = validateParameter(valid_581136, JString, required = false,
                                  default = newJString("json"))
-  if valid_595136 != nil:
-    section.add "alt", valid_595136
-  var valid_595137 = query.getOrDefault("acknowledgeAbuse")
-  valid_595137 = validateParameter(valid_595137, JBool, required = false,
+  if valid_581136 != nil:
+    section.add "alt", valid_581136
+  var valid_581137 = query.getOrDefault("acknowledgeAbuse")
+  valid_581137 = validateParameter(valid_581137, JBool, required = false,
                                  default = newJBool(false))
-  if valid_595137 != nil:
-    section.add "acknowledgeAbuse", valid_595137
-  var valid_595138 = query.getOrDefault("oauth_token")
-  valid_595138 = validateParameter(valid_595138, JString, required = false,
+  if valid_581137 != nil:
+    section.add "acknowledgeAbuse", valid_581137
+  var valid_581138 = query.getOrDefault("oauth_token")
+  valid_581138 = validateParameter(valid_581138, JString, required = false,
                                  default = nil)
-  if valid_595138 != nil:
-    section.add "oauth_token", valid_595138
-  var valid_595139 = query.getOrDefault("userIp")
-  valid_595139 = validateParameter(valid_595139, JString, required = false,
+  if valid_581138 != nil:
+    section.add "oauth_token", valid_581138
+  var valid_581139 = query.getOrDefault("userIp")
+  valid_581139 = validateParameter(valid_581139, JString, required = false,
                                  default = nil)
-  if valid_595139 != nil:
-    section.add "userIp", valid_595139
-  var valid_595140 = query.getOrDefault("supportsTeamDrives")
-  valid_595140 = validateParameter(valid_595140, JBool, required = false,
+  if valid_581139 != nil:
+    section.add "userIp", valid_581139
+  var valid_581140 = query.getOrDefault("supportsTeamDrives")
+  valid_581140 = validateParameter(valid_581140, JBool, required = false,
                                  default = newJBool(false))
-  if valid_595140 != nil:
-    section.add "supportsTeamDrives", valid_595140
-  var valid_595141 = query.getOrDefault("key")
-  valid_595141 = validateParameter(valid_595141, JString, required = false,
+  if valid_581140 != nil:
+    section.add "supportsTeamDrives", valid_581140
+  var valid_581141 = query.getOrDefault("key")
+  valid_581141 = validateParameter(valid_581141, JString, required = false,
                                  default = nil)
-  if valid_595141 != nil:
-    section.add "key", valid_595141
-  var valid_595142 = query.getOrDefault("updateViewedDate")
-  valid_595142 = validateParameter(valid_595142, JBool, required = false,
+  if valid_581141 != nil:
+    section.add "key", valid_581141
+  var valid_581142 = query.getOrDefault("updateViewedDate")
+  valid_581142 = validateParameter(valid_581142, JBool, required = false,
                                  default = newJBool(false))
-  if valid_595142 != nil:
-    section.add "updateViewedDate", valid_595142
-  var valid_595143 = query.getOrDefault("projection")
-  valid_595143 = validateParameter(valid_595143, JString, required = false,
+  if valid_581142 != nil:
+    section.add "updateViewedDate", valid_581142
+  var valid_581143 = query.getOrDefault("projection")
+  valid_581143 = validateParameter(valid_581143, JString, required = false,
                                  default = newJString("BASIC"))
-  if valid_595143 != nil:
-    section.add "projection", valid_595143
-  var valid_595144 = query.getOrDefault("revisionId")
-  valid_595144 = validateParameter(valid_595144, JString, required = false,
+  if valid_581143 != nil:
+    section.add "projection", valid_581143
+  var valid_581144 = query.getOrDefault("revisionId")
+  valid_581144 = validateParameter(valid_581144, JString, required = false,
                                  default = nil)
-  if valid_595144 != nil:
-    section.add "revisionId", valid_595144
-  var valid_595145 = query.getOrDefault("prettyPrint")
-  valid_595145 = validateParameter(valid_595145, JBool, required = false,
+  if valid_581144 != nil:
+    section.add "revisionId", valid_581144
+  var valid_581145 = query.getOrDefault("prettyPrint")
+  valid_581145 = validateParameter(valid_581145, JBool, required = false,
                                  default = newJBool(true))
-  if valid_595145 != nil:
-    section.add "prettyPrint", valid_595145
+  if valid_581145 != nil:
+    section.add "prettyPrint", valid_581145
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -11487,20 +11489,20 @@ proc validate_DriveFilesWatch_595130(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_595147: Call_DriveFilesWatch_595129; path: JsonNode; query: JsonNode;
+proc call*(call_581147: Call_DriveFilesWatch_581129; path: JsonNode; query: JsonNode;
           header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Subscribe to changes on a file
   ## 
-  let valid = call_595147.validator(path, query, header, formData, body)
-  let scheme = call_595147.pickScheme
+  let valid = call_581147.validator(path, query, header, formData, body)
+  let scheme = call_581147.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_595147.url(scheme.get, call_595147.host, call_595147.base,
-                         call_595147.route, valid.getOrDefault("path"),
+  let url = call_581147.url(scheme.get, call_581147.host, call_581147.base,
+                         call_581147.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_595147, url, valid)
+  result = hook(call_581147, url, valid)
 
-proc call*(call_595148: Call_DriveFilesWatch_595129; fileId: string;
+proc call*(call_581148: Call_DriveFilesWatch_581129; fileId: string;
           supportsAllDrives: bool = false; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; acknowledgeAbuse: bool = false; oauthToken: string = "";
           userIp: string = ""; supportsTeamDrives: bool = false; key: string = "";
@@ -11537,38 +11539,38 @@ proc call*(call_595148: Call_DriveFilesWatch_595129; fileId: string;
   ##             : Specifies the Revision ID that should be downloaded. Ignored unless alt=media is specified.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_595149 = newJObject()
-  var query_595150 = newJObject()
-  var body_595151 = newJObject()
-  add(query_595150, "supportsAllDrives", newJBool(supportsAllDrives))
-  add(query_595150, "fields", newJString(fields))
-  add(query_595150, "quotaUser", newJString(quotaUser))
-  add(path_595149, "fileId", newJString(fileId))
-  add(query_595150, "alt", newJString(alt))
-  add(query_595150, "acknowledgeAbuse", newJBool(acknowledgeAbuse))
-  add(query_595150, "oauth_token", newJString(oauthToken))
-  add(query_595150, "userIp", newJString(userIp))
-  add(query_595150, "supportsTeamDrives", newJBool(supportsTeamDrives))
-  add(query_595150, "key", newJString(key))
-  add(query_595150, "updateViewedDate", newJBool(updateViewedDate))
-  add(query_595150, "projection", newJString(projection))
+  var path_581149 = newJObject()
+  var query_581150 = newJObject()
+  var body_581151 = newJObject()
+  add(query_581150, "supportsAllDrives", newJBool(supportsAllDrives))
+  add(query_581150, "fields", newJString(fields))
+  add(query_581150, "quotaUser", newJString(quotaUser))
+  add(path_581149, "fileId", newJString(fileId))
+  add(query_581150, "alt", newJString(alt))
+  add(query_581150, "acknowledgeAbuse", newJBool(acknowledgeAbuse))
+  add(query_581150, "oauth_token", newJString(oauthToken))
+  add(query_581150, "userIp", newJString(userIp))
+  add(query_581150, "supportsTeamDrives", newJBool(supportsTeamDrives))
+  add(query_581150, "key", newJString(key))
+  add(query_581150, "updateViewedDate", newJBool(updateViewedDate))
+  add(query_581150, "projection", newJString(projection))
   if resource != nil:
-    body_595151 = resource
-  add(query_595150, "revisionId", newJString(revisionId))
-  add(query_595150, "prettyPrint", newJBool(prettyPrint))
-  result = call_595148.call(path_595149, query_595150, nil, nil, body_595151)
+    body_581151 = resource
+  add(query_581150, "revisionId", newJString(revisionId))
+  add(query_581150, "prettyPrint", newJBool(prettyPrint))
+  result = call_581148.call(path_581149, query_581150, nil, nil, body_581151)
 
-var driveFilesWatch* = Call_DriveFilesWatch_595129(name: "driveFilesWatch",
+var driveFilesWatch* = Call_DriveFilesWatch_581129(name: "driveFilesWatch",
     meth: HttpMethod.HttpPost, host: "www.googleapis.com",
-    route: "/files/{fileId}/watch", validator: validate_DriveFilesWatch_595130,
-    base: "/drive/v2", url: url_DriveFilesWatch_595131, schemes: {Scheme.Https})
+    route: "/files/{fileId}/watch", validator: validate_DriveFilesWatch_581130,
+    base: "/drive/v2", url: url_DriveFilesWatch_581131, schemes: {Scheme.Https})
 type
-  Call_DriveChildrenInsert_595171 = ref object of OpenApiRestCall_593424
-proc url_DriveChildrenInsert_595173(protocol: Scheme; host: string; base: string;
+  Call_DriveChildrenInsert_581171 = ref object of OpenApiRestCall_579424
+proc url_DriveChildrenInsert_581173(protocol: Scheme; host: string; base: string;
                                    route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "folderId" in path, "`folderId` is a required path parameter"
   const
@@ -11580,7 +11582,7 @@ proc url_DriveChildrenInsert_595173(protocol: Scheme; host: string; base: string
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_DriveChildrenInsert_595172(path: JsonNode; query: JsonNode;
+proc validate_DriveChildrenInsert_581172(path: JsonNode; query: JsonNode;
                                         header: JsonNode; formData: JsonNode;
                                         body: JsonNode): JsonNode =
   ## Inserts a file into a folder.
@@ -11592,11 +11594,11 @@ proc validate_DriveChildrenInsert_595172(path: JsonNode; query: JsonNode;
   ##           : The ID of the folder.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `folderId` field"
-  var valid_595174 = path.getOrDefault("folderId")
-  valid_595174 = validateParameter(valid_595174, JString, required = true,
+  var valid_581174 = path.getOrDefault("folderId")
+  valid_581174 = validateParameter(valid_581174, JString, required = true,
                                  default = nil)
-  if valid_595174 != nil:
-    section.add "folderId", valid_595174
+  if valid_581174 != nil:
+    section.add "folderId", valid_581174
   result.add "path", section
   ## parameters in `query` object:
   ##   supportsAllDrives: JBool
@@ -11618,51 +11620,51 @@ proc validate_DriveChildrenInsert_595172(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_595175 = query.getOrDefault("supportsAllDrives")
-  valid_595175 = validateParameter(valid_595175, JBool, required = false,
+  var valid_581175 = query.getOrDefault("supportsAllDrives")
+  valid_581175 = validateParameter(valid_581175, JBool, required = false,
                                  default = newJBool(false))
-  if valid_595175 != nil:
-    section.add "supportsAllDrives", valid_595175
-  var valid_595176 = query.getOrDefault("fields")
-  valid_595176 = validateParameter(valid_595176, JString, required = false,
+  if valid_581175 != nil:
+    section.add "supportsAllDrives", valid_581175
+  var valid_581176 = query.getOrDefault("fields")
+  valid_581176 = validateParameter(valid_581176, JString, required = false,
                                  default = nil)
-  if valid_595176 != nil:
-    section.add "fields", valid_595176
-  var valid_595177 = query.getOrDefault("quotaUser")
-  valid_595177 = validateParameter(valid_595177, JString, required = false,
+  if valid_581176 != nil:
+    section.add "fields", valid_581176
+  var valid_581177 = query.getOrDefault("quotaUser")
+  valid_581177 = validateParameter(valid_581177, JString, required = false,
                                  default = nil)
-  if valid_595177 != nil:
-    section.add "quotaUser", valid_595177
-  var valid_595178 = query.getOrDefault("alt")
-  valid_595178 = validateParameter(valid_595178, JString, required = false,
+  if valid_581177 != nil:
+    section.add "quotaUser", valid_581177
+  var valid_581178 = query.getOrDefault("alt")
+  valid_581178 = validateParameter(valid_581178, JString, required = false,
                                  default = newJString("json"))
-  if valid_595178 != nil:
-    section.add "alt", valid_595178
-  var valid_595179 = query.getOrDefault("oauth_token")
-  valid_595179 = validateParameter(valid_595179, JString, required = false,
+  if valid_581178 != nil:
+    section.add "alt", valid_581178
+  var valid_581179 = query.getOrDefault("oauth_token")
+  valid_581179 = validateParameter(valid_581179, JString, required = false,
                                  default = nil)
-  if valid_595179 != nil:
-    section.add "oauth_token", valid_595179
-  var valid_595180 = query.getOrDefault("userIp")
-  valid_595180 = validateParameter(valid_595180, JString, required = false,
+  if valid_581179 != nil:
+    section.add "oauth_token", valid_581179
+  var valid_581180 = query.getOrDefault("userIp")
+  valid_581180 = validateParameter(valid_581180, JString, required = false,
                                  default = nil)
-  if valid_595180 != nil:
-    section.add "userIp", valid_595180
-  var valid_595181 = query.getOrDefault("supportsTeamDrives")
-  valid_595181 = validateParameter(valid_595181, JBool, required = false,
+  if valid_581180 != nil:
+    section.add "userIp", valid_581180
+  var valid_581181 = query.getOrDefault("supportsTeamDrives")
+  valid_581181 = validateParameter(valid_581181, JBool, required = false,
                                  default = newJBool(false))
-  if valid_595181 != nil:
-    section.add "supportsTeamDrives", valid_595181
-  var valid_595182 = query.getOrDefault("key")
-  valid_595182 = validateParameter(valid_595182, JString, required = false,
+  if valid_581181 != nil:
+    section.add "supportsTeamDrives", valid_581181
+  var valid_581182 = query.getOrDefault("key")
+  valid_581182 = validateParameter(valid_581182, JString, required = false,
                                  default = nil)
-  if valid_595182 != nil:
-    section.add "key", valid_595182
-  var valid_595183 = query.getOrDefault("prettyPrint")
-  valid_595183 = validateParameter(valid_595183, JBool, required = false,
+  if valid_581182 != nil:
+    section.add "key", valid_581182
+  var valid_581183 = query.getOrDefault("prettyPrint")
+  valid_581183 = validateParameter(valid_581183, JBool, required = false,
                                  default = newJBool(true))
-  if valid_595183 != nil:
-    section.add "prettyPrint", valid_595183
+  if valid_581183 != nil:
+    section.add "prettyPrint", valid_581183
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -11674,20 +11676,20 @@ proc validate_DriveChildrenInsert_595172(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_595185: Call_DriveChildrenInsert_595171; path: JsonNode;
+proc call*(call_581185: Call_DriveChildrenInsert_581171; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Inserts a file into a folder.
   ## 
-  let valid = call_595185.validator(path, query, header, formData, body)
-  let scheme = call_595185.pickScheme
+  let valid = call_581185.validator(path, query, header, formData, body)
+  let scheme = call_581185.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_595185.url(scheme.get, call_595185.host, call_595185.base,
-                         call_595185.route, valid.getOrDefault("path"),
+  let url = call_581185.url(scheme.get, call_581185.host, call_581185.base,
+                         call_581185.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_595185, url, valid)
+  result = hook(call_581185, url, valid)
 
-proc call*(call_595186: Call_DriveChildrenInsert_595171; folderId: string;
+proc call*(call_581186: Call_DriveChildrenInsert_581171; folderId: string;
           supportsAllDrives: bool = false; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; userIp: string = "";
           supportsTeamDrives: bool = false; key: string = ""; body: JsonNode = nil;
@@ -11715,35 +11717,35 @@ proc call*(call_595186: Call_DriveChildrenInsert_595171; folderId: string;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_595187 = newJObject()
-  var query_595188 = newJObject()
-  var body_595189 = newJObject()
-  add(query_595188, "supportsAllDrives", newJBool(supportsAllDrives))
-  add(query_595188, "fields", newJString(fields))
-  add(query_595188, "quotaUser", newJString(quotaUser))
-  add(query_595188, "alt", newJString(alt))
-  add(query_595188, "oauth_token", newJString(oauthToken))
-  add(query_595188, "userIp", newJString(userIp))
-  add(path_595187, "folderId", newJString(folderId))
-  add(query_595188, "supportsTeamDrives", newJBool(supportsTeamDrives))
-  add(query_595188, "key", newJString(key))
+  var path_581187 = newJObject()
+  var query_581188 = newJObject()
+  var body_581189 = newJObject()
+  add(query_581188, "supportsAllDrives", newJBool(supportsAllDrives))
+  add(query_581188, "fields", newJString(fields))
+  add(query_581188, "quotaUser", newJString(quotaUser))
+  add(query_581188, "alt", newJString(alt))
+  add(query_581188, "oauth_token", newJString(oauthToken))
+  add(query_581188, "userIp", newJString(userIp))
+  add(path_581187, "folderId", newJString(folderId))
+  add(query_581188, "supportsTeamDrives", newJBool(supportsTeamDrives))
+  add(query_581188, "key", newJString(key))
   if body != nil:
-    body_595189 = body
-  add(query_595188, "prettyPrint", newJBool(prettyPrint))
-  result = call_595186.call(path_595187, query_595188, nil, nil, body_595189)
+    body_581189 = body
+  add(query_581188, "prettyPrint", newJBool(prettyPrint))
+  result = call_581186.call(path_581187, query_581188, nil, nil, body_581189)
 
-var driveChildrenInsert* = Call_DriveChildrenInsert_595171(
+var driveChildrenInsert* = Call_DriveChildrenInsert_581171(
     name: "driveChildrenInsert", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com", route: "/files/{folderId}/children",
-    validator: validate_DriveChildrenInsert_595172, base: "/drive/v2",
-    url: url_DriveChildrenInsert_595173, schemes: {Scheme.Https})
+    validator: validate_DriveChildrenInsert_581172, base: "/drive/v2",
+    url: url_DriveChildrenInsert_581173, schemes: {Scheme.Https})
 type
-  Call_DriveChildrenList_595152 = ref object of OpenApiRestCall_593424
-proc url_DriveChildrenList_595154(protocol: Scheme; host: string; base: string;
+  Call_DriveChildrenList_581152 = ref object of OpenApiRestCall_579424
+proc url_DriveChildrenList_581154(protocol: Scheme; host: string; base: string;
                                  route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "folderId" in path, "`folderId` is a required path parameter"
   const
@@ -11755,7 +11757,7 @@ proc url_DriveChildrenList_595154(protocol: Scheme; host: string; base: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_DriveChildrenList_595153(path: JsonNode; query: JsonNode;
+proc validate_DriveChildrenList_581153(path: JsonNode; query: JsonNode;
                                       header: JsonNode; formData: JsonNode;
                                       body: JsonNode): JsonNode =
   ## Lists a folder's children.
@@ -11767,11 +11769,11 @@ proc validate_DriveChildrenList_595153(path: JsonNode; query: JsonNode;
   ##           : The ID of the folder.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `folderId` field"
-  var valid_595155 = path.getOrDefault("folderId")
-  valid_595155 = validateParameter(valid_595155, JString, required = true,
+  var valid_581155 = path.getOrDefault("folderId")
+  valid_581155 = validateParameter(valid_581155, JString, required = true,
                                  default = nil)
-  if valid_595155 != nil:
-    section.add "folderId", valid_595155
+  if valid_581155 != nil:
+    section.add "folderId", valid_581155
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -11797,61 +11799,61 @@ proc validate_DriveChildrenList_595153(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_595156 = query.getOrDefault("fields")
-  valid_595156 = validateParameter(valid_595156, JString, required = false,
+  var valid_581156 = query.getOrDefault("fields")
+  valid_581156 = validateParameter(valid_581156, JString, required = false,
                                  default = nil)
-  if valid_595156 != nil:
-    section.add "fields", valid_595156
-  var valid_595157 = query.getOrDefault("pageToken")
-  valid_595157 = validateParameter(valid_595157, JString, required = false,
+  if valid_581156 != nil:
+    section.add "fields", valid_581156
+  var valid_581157 = query.getOrDefault("pageToken")
+  valid_581157 = validateParameter(valid_581157, JString, required = false,
                                  default = nil)
-  if valid_595157 != nil:
-    section.add "pageToken", valid_595157
-  var valid_595158 = query.getOrDefault("quotaUser")
-  valid_595158 = validateParameter(valid_595158, JString, required = false,
+  if valid_581157 != nil:
+    section.add "pageToken", valid_581157
+  var valid_581158 = query.getOrDefault("quotaUser")
+  valid_581158 = validateParameter(valid_581158, JString, required = false,
                                  default = nil)
-  if valid_595158 != nil:
-    section.add "quotaUser", valid_595158
-  var valid_595159 = query.getOrDefault("alt")
-  valid_595159 = validateParameter(valid_595159, JString, required = false,
+  if valid_581158 != nil:
+    section.add "quotaUser", valid_581158
+  var valid_581159 = query.getOrDefault("alt")
+  valid_581159 = validateParameter(valid_581159, JString, required = false,
                                  default = newJString("json"))
-  if valid_595159 != nil:
-    section.add "alt", valid_595159
-  var valid_595160 = query.getOrDefault("oauth_token")
-  valid_595160 = validateParameter(valid_595160, JString, required = false,
+  if valid_581159 != nil:
+    section.add "alt", valid_581159
+  var valid_581160 = query.getOrDefault("oauth_token")
+  valid_581160 = validateParameter(valid_581160, JString, required = false,
                                  default = nil)
-  if valid_595160 != nil:
-    section.add "oauth_token", valid_595160
-  var valid_595161 = query.getOrDefault("userIp")
-  valid_595161 = validateParameter(valid_595161, JString, required = false,
+  if valid_581160 != nil:
+    section.add "oauth_token", valid_581160
+  var valid_581161 = query.getOrDefault("userIp")
+  valid_581161 = validateParameter(valid_581161, JString, required = false,
                                  default = nil)
-  if valid_595161 != nil:
-    section.add "userIp", valid_595161
-  var valid_595162 = query.getOrDefault("maxResults")
-  valid_595162 = validateParameter(valid_595162, JInt, required = false,
+  if valid_581161 != nil:
+    section.add "userIp", valid_581161
+  var valid_581162 = query.getOrDefault("maxResults")
+  valid_581162 = validateParameter(valid_581162, JInt, required = false,
                                  default = newJInt(100))
-  if valid_595162 != nil:
-    section.add "maxResults", valid_595162
-  var valid_595163 = query.getOrDefault("orderBy")
-  valid_595163 = validateParameter(valid_595163, JString, required = false,
+  if valid_581162 != nil:
+    section.add "maxResults", valid_581162
+  var valid_581163 = query.getOrDefault("orderBy")
+  valid_581163 = validateParameter(valid_581163, JString, required = false,
                                  default = nil)
-  if valid_595163 != nil:
-    section.add "orderBy", valid_595163
-  var valid_595164 = query.getOrDefault("q")
-  valid_595164 = validateParameter(valid_595164, JString, required = false,
+  if valid_581163 != nil:
+    section.add "orderBy", valid_581163
+  var valid_581164 = query.getOrDefault("q")
+  valid_581164 = validateParameter(valid_581164, JString, required = false,
                                  default = nil)
-  if valid_595164 != nil:
-    section.add "q", valid_595164
-  var valid_595165 = query.getOrDefault("key")
-  valid_595165 = validateParameter(valid_595165, JString, required = false,
+  if valid_581164 != nil:
+    section.add "q", valid_581164
+  var valid_581165 = query.getOrDefault("key")
+  valid_581165 = validateParameter(valid_581165, JString, required = false,
                                  default = nil)
-  if valid_595165 != nil:
-    section.add "key", valid_595165
-  var valid_595166 = query.getOrDefault("prettyPrint")
-  valid_595166 = validateParameter(valid_595166, JBool, required = false,
+  if valid_581165 != nil:
+    section.add "key", valid_581165
+  var valid_581166 = query.getOrDefault("prettyPrint")
+  valid_581166 = validateParameter(valid_581166, JBool, required = false,
                                  default = newJBool(true))
-  if valid_595166 != nil:
-    section.add "prettyPrint", valid_595166
+  if valid_581166 != nil:
+    section.add "prettyPrint", valid_581166
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -11860,20 +11862,20 @@ proc validate_DriveChildrenList_595153(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_595167: Call_DriveChildrenList_595152; path: JsonNode;
+proc call*(call_581167: Call_DriveChildrenList_581152; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Lists a folder's children.
   ## 
-  let valid = call_595167.validator(path, query, header, formData, body)
-  let scheme = call_595167.pickScheme
+  let valid = call_581167.validator(path, query, header, formData, body)
+  let scheme = call_581167.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_595167.url(scheme.get, call_595167.host, call_595167.base,
-                         call_595167.route, valid.getOrDefault("path"),
+  let url = call_581167.url(scheme.get, call_581167.host, call_581167.base,
+                         call_581167.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_595167, url, valid)
+  result = hook(call_581167, url, valid)
 
-proc call*(call_595168: Call_DriveChildrenList_595152; folderId: string;
+proc call*(call_581168: Call_DriveChildrenList_581152; folderId: string;
           fields: string = ""; pageToken: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; userIp: string = "";
           maxResults: int = 100; orderBy: string = ""; q: string = ""; key: string = "";
@@ -11904,33 +11906,33 @@ proc call*(call_595168: Call_DriveChildrenList_595152; folderId: string;
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_595169 = newJObject()
-  var query_595170 = newJObject()
-  add(query_595170, "fields", newJString(fields))
-  add(query_595170, "pageToken", newJString(pageToken))
-  add(query_595170, "quotaUser", newJString(quotaUser))
-  add(query_595170, "alt", newJString(alt))
-  add(query_595170, "oauth_token", newJString(oauthToken))
-  add(query_595170, "userIp", newJString(userIp))
-  add(path_595169, "folderId", newJString(folderId))
-  add(query_595170, "maxResults", newJInt(maxResults))
-  add(query_595170, "orderBy", newJString(orderBy))
-  add(query_595170, "q", newJString(q))
-  add(query_595170, "key", newJString(key))
-  add(query_595170, "prettyPrint", newJBool(prettyPrint))
-  result = call_595168.call(path_595169, query_595170, nil, nil, nil)
+  var path_581169 = newJObject()
+  var query_581170 = newJObject()
+  add(query_581170, "fields", newJString(fields))
+  add(query_581170, "pageToken", newJString(pageToken))
+  add(query_581170, "quotaUser", newJString(quotaUser))
+  add(query_581170, "alt", newJString(alt))
+  add(query_581170, "oauth_token", newJString(oauthToken))
+  add(query_581170, "userIp", newJString(userIp))
+  add(path_581169, "folderId", newJString(folderId))
+  add(query_581170, "maxResults", newJInt(maxResults))
+  add(query_581170, "orderBy", newJString(orderBy))
+  add(query_581170, "q", newJString(q))
+  add(query_581170, "key", newJString(key))
+  add(query_581170, "prettyPrint", newJBool(prettyPrint))
+  result = call_581168.call(path_581169, query_581170, nil, nil, nil)
 
-var driveChildrenList* = Call_DriveChildrenList_595152(name: "driveChildrenList",
+var driveChildrenList* = Call_DriveChildrenList_581152(name: "driveChildrenList",
     meth: HttpMethod.HttpGet, host: "www.googleapis.com",
-    route: "/files/{folderId}/children", validator: validate_DriveChildrenList_595153,
-    base: "/drive/v2", url: url_DriveChildrenList_595154, schemes: {Scheme.Https})
+    route: "/files/{folderId}/children", validator: validate_DriveChildrenList_581153,
+    base: "/drive/v2", url: url_DriveChildrenList_581154, schemes: {Scheme.Https})
 type
-  Call_DriveChildrenGet_595190 = ref object of OpenApiRestCall_593424
-proc url_DriveChildrenGet_595192(protocol: Scheme; host: string; base: string;
+  Call_DriveChildrenGet_581190 = ref object of OpenApiRestCall_579424
+proc url_DriveChildrenGet_581192(protocol: Scheme; host: string; base: string;
                                 route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "folderId" in path, "`folderId` is a required path parameter"
   assert "childId" in path, "`childId` is a required path parameter"
@@ -11944,7 +11946,7 @@ proc url_DriveChildrenGet_595192(protocol: Scheme; host: string; base: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_DriveChildrenGet_595191(path: JsonNode; query: JsonNode;
+proc validate_DriveChildrenGet_581191(path: JsonNode; query: JsonNode;
                                      header: JsonNode; formData: JsonNode;
                                      body: JsonNode): JsonNode =
   ## Gets a specific child reference.
@@ -11958,16 +11960,16 @@ proc validate_DriveChildrenGet_595191(path: JsonNode; query: JsonNode;
   ##           : The ID of the folder.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `childId` field"
-  var valid_595193 = path.getOrDefault("childId")
-  valid_595193 = validateParameter(valid_595193, JString, required = true,
+  var valid_581193 = path.getOrDefault("childId")
+  valid_581193 = validateParameter(valid_581193, JString, required = true,
                                  default = nil)
-  if valid_595193 != nil:
-    section.add "childId", valid_595193
-  var valid_595194 = path.getOrDefault("folderId")
-  valid_595194 = validateParameter(valid_595194, JString, required = true,
+  if valid_581193 != nil:
+    section.add "childId", valid_581193
+  var valid_581194 = path.getOrDefault("folderId")
+  valid_581194 = validateParameter(valid_581194, JString, required = true,
                                  default = nil)
-  if valid_595194 != nil:
-    section.add "folderId", valid_595194
+  if valid_581194 != nil:
+    section.add "folderId", valid_581194
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -11985,41 +11987,41 @@ proc validate_DriveChildrenGet_595191(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_595195 = query.getOrDefault("fields")
-  valid_595195 = validateParameter(valid_595195, JString, required = false,
+  var valid_581195 = query.getOrDefault("fields")
+  valid_581195 = validateParameter(valid_581195, JString, required = false,
                                  default = nil)
-  if valid_595195 != nil:
-    section.add "fields", valid_595195
-  var valid_595196 = query.getOrDefault("quotaUser")
-  valid_595196 = validateParameter(valid_595196, JString, required = false,
+  if valid_581195 != nil:
+    section.add "fields", valid_581195
+  var valid_581196 = query.getOrDefault("quotaUser")
+  valid_581196 = validateParameter(valid_581196, JString, required = false,
                                  default = nil)
-  if valid_595196 != nil:
-    section.add "quotaUser", valid_595196
-  var valid_595197 = query.getOrDefault("alt")
-  valid_595197 = validateParameter(valid_595197, JString, required = false,
+  if valid_581196 != nil:
+    section.add "quotaUser", valid_581196
+  var valid_581197 = query.getOrDefault("alt")
+  valid_581197 = validateParameter(valid_581197, JString, required = false,
                                  default = newJString("json"))
-  if valid_595197 != nil:
-    section.add "alt", valid_595197
-  var valid_595198 = query.getOrDefault("oauth_token")
-  valid_595198 = validateParameter(valid_595198, JString, required = false,
+  if valid_581197 != nil:
+    section.add "alt", valid_581197
+  var valid_581198 = query.getOrDefault("oauth_token")
+  valid_581198 = validateParameter(valid_581198, JString, required = false,
                                  default = nil)
-  if valid_595198 != nil:
-    section.add "oauth_token", valid_595198
-  var valid_595199 = query.getOrDefault("userIp")
-  valid_595199 = validateParameter(valid_595199, JString, required = false,
+  if valid_581198 != nil:
+    section.add "oauth_token", valid_581198
+  var valid_581199 = query.getOrDefault("userIp")
+  valid_581199 = validateParameter(valid_581199, JString, required = false,
                                  default = nil)
-  if valid_595199 != nil:
-    section.add "userIp", valid_595199
-  var valid_595200 = query.getOrDefault("key")
-  valid_595200 = validateParameter(valid_595200, JString, required = false,
+  if valid_581199 != nil:
+    section.add "userIp", valid_581199
+  var valid_581200 = query.getOrDefault("key")
+  valid_581200 = validateParameter(valid_581200, JString, required = false,
                                  default = nil)
-  if valid_595200 != nil:
-    section.add "key", valid_595200
-  var valid_595201 = query.getOrDefault("prettyPrint")
-  valid_595201 = validateParameter(valid_595201, JBool, required = false,
+  if valid_581200 != nil:
+    section.add "key", valid_581200
+  var valid_581201 = query.getOrDefault("prettyPrint")
+  valid_581201 = validateParameter(valid_581201, JBool, required = false,
                                  default = newJBool(true))
-  if valid_595201 != nil:
-    section.add "prettyPrint", valid_595201
+  if valid_581201 != nil:
+    section.add "prettyPrint", valid_581201
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -12028,20 +12030,20 @@ proc validate_DriveChildrenGet_595191(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_595202: Call_DriveChildrenGet_595190; path: JsonNode;
+proc call*(call_581202: Call_DriveChildrenGet_581190; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Gets a specific child reference.
   ## 
-  let valid = call_595202.validator(path, query, header, formData, body)
-  let scheme = call_595202.pickScheme
+  let valid = call_581202.validator(path, query, header, formData, body)
+  let scheme = call_581202.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_595202.url(scheme.get, call_595202.host, call_595202.base,
-                         call_595202.route, valid.getOrDefault("path"),
+  let url = call_581202.url(scheme.get, call_581202.host, call_581202.base,
+                         call_581202.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_595202, url, valid)
+  result = hook(call_581202, url, valid)
 
-proc call*(call_595203: Call_DriveChildrenGet_595190; childId: string;
+proc call*(call_581203: Call_DriveChildrenGet_581190; childId: string;
           folderId: string; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; userIp: string = "";
           key: string = ""; prettyPrint: bool = true): Recallable =
@@ -12065,31 +12067,31 @@ proc call*(call_595203: Call_DriveChildrenGet_595190; childId: string;
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_595204 = newJObject()
-  var query_595205 = newJObject()
-  add(query_595205, "fields", newJString(fields))
-  add(query_595205, "quotaUser", newJString(quotaUser))
-  add(query_595205, "alt", newJString(alt))
-  add(query_595205, "oauth_token", newJString(oauthToken))
-  add(query_595205, "userIp", newJString(userIp))
-  add(path_595204, "childId", newJString(childId))
-  add(path_595204, "folderId", newJString(folderId))
-  add(query_595205, "key", newJString(key))
-  add(query_595205, "prettyPrint", newJBool(prettyPrint))
-  result = call_595203.call(path_595204, query_595205, nil, nil, nil)
+  var path_581204 = newJObject()
+  var query_581205 = newJObject()
+  add(query_581205, "fields", newJString(fields))
+  add(query_581205, "quotaUser", newJString(quotaUser))
+  add(query_581205, "alt", newJString(alt))
+  add(query_581205, "oauth_token", newJString(oauthToken))
+  add(query_581205, "userIp", newJString(userIp))
+  add(path_581204, "childId", newJString(childId))
+  add(path_581204, "folderId", newJString(folderId))
+  add(query_581205, "key", newJString(key))
+  add(query_581205, "prettyPrint", newJBool(prettyPrint))
+  result = call_581203.call(path_581204, query_581205, nil, nil, nil)
 
-var driveChildrenGet* = Call_DriveChildrenGet_595190(name: "driveChildrenGet",
+var driveChildrenGet* = Call_DriveChildrenGet_581190(name: "driveChildrenGet",
     meth: HttpMethod.HttpGet, host: "www.googleapis.com",
     route: "/files/{folderId}/children/{childId}",
-    validator: validate_DriveChildrenGet_595191, base: "/drive/v2",
-    url: url_DriveChildrenGet_595192, schemes: {Scheme.Https})
+    validator: validate_DriveChildrenGet_581191, base: "/drive/v2",
+    url: url_DriveChildrenGet_581192, schemes: {Scheme.Https})
 type
-  Call_DriveChildrenDelete_595206 = ref object of OpenApiRestCall_593424
-proc url_DriveChildrenDelete_595208(protocol: Scheme; host: string; base: string;
+  Call_DriveChildrenDelete_581206 = ref object of OpenApiRestCall_579424
+proc url_DriveChildrenDelete_581208(protocol: Scheme; host: string; base: string;
                                    route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "folderId" in path, "`folderId` is a required path parameter"
   assert "childId" in path, "`childId` is a required path parameter"
@@ -12103,7 +12105,7 @@ proc url_DriveChildrenDelete_595208(protocol: Scheme; host: string; base: string
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_DriveChildrenDelete_595207(path: JsonNode; query: JsonNode;
+proc validate_DriveChildrenDelete_581207(path: JsonNode; query: JsonNode;
                                         header: JsonNode; formData: JsonNode;
                                         body: JsonNode): JsonNode =
   ## Removes a child from a folder.
@@ -12117,16 +12119,16 @@ proc validate_DriveChildrenDelete_595207(path: JsonNode; query: JsonNode;
   ##           : The ID of the folder.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `childId` field"
-  var valid_595209 = path.getOrDefault("childId")
-  valid_595209 = validateParameter(valid_595209, JString, required = true,
+  var valid_581209 = path.getOrDefault("childId")
+  valid_581209 = validateParameter(valid_581209, JString, required = true,
                                  default = nil)
-  if valid_595209 != nil:
-    section.add "childId", valid_595209
-  var valid_595210 = path.getOrDefault("folderId")
-  valid_595210 = validateParameter(valid_595210, JString, required = true,
+  if valid_581209 != nil:
+    section.add "childId", valid_581209
+  var valid_581210 = path.getOrDefault("folderId")
+  valid_581210 = validateParameter(valid_581210, JString, required = true,
                                  default = nil)
-  if valid_595210 != nil:
-    section.add "folderId", valid_595210
+  if valid_581210 != nil:
+    section.add "folderId", valid_581210
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -12144,41 +12146,41 @@ proc validate_DriveChildrenDelete_595207(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_595211 = query.getOrDefault("fields")
-  valid_595211 = validateParameter(valid_595211, JString, required = false,
+  var valid_581211 = query.getOrDefault("fields")
+  valid_581211 = validateParameter(valid_581211, JString, required = false,
                                  default = nil)
-  if valid_595211 != nil:
-    section.add "fields", valid_595211
-  var valid_595212 = query.getOrDefault("quotaUser")
-  valid_595212 = validateParameter(valid_595212, JString, required = false,
+  if valid_581211 != nil:
+    section.add "fields", valid_581211
+  var valid_581212 = query.getOrDefault("quotaUser")
+  valid_581212 = validateParameter(valid_581212, JString, required = false,
                                  default = nil)
-  if valid_595212 != nil:
-    section.add "quotaUser", valid_595212
-  var valid_595213 = query.getOrDefault("alt")
-  valid_595213 = validateParameter(valid_595213, JString, required = false,
+  if valid_581212 != nil:
+    section.add "quotaUser", valid_581212
+  var valid_581213 = query.getOrDefault("alt")
+  valid_581213 = validateParameter(valid_581213, JString, required = false,
                                  default = newJString("json"))
-  if valid_595213 != nil:
-    section.add "alt", valid_595213
-  var valid_595214 = query.getOrDefault("oauth_token")
-  valid_595214 = validateParameter(valid_595214, JString, required = false,
+  if valid_581213 != nil:
+    section.add "alt", valid_581213
+  var valid_581214 = query.getOrDefault("oauth_token")
+  valid_581214 = validateParameter(valid_581214, JString, required = false,
                                  default = nil)
-  if valid_595214 != nil:
-    section.add "oauth_token", valid_595214
-  var valid_595215 = query.getOrDefault("userIp")
-  valid_595215 = validateParameter(valid_595215, JString, required = false,
+  if valid_581214 != nil:
+    section.add "oauth_token", valid_581214
+  var valid_581215 = query.getOrDefault("userIp")
+  valid_581215 = validateParameter(valid_581215, JString, required = false,
                                  default = nil)
-  if valid_595215 != nil:
-    section.add "userIp", valid_595215
-  var valid_595216 = query.getOrDefault("key")
-  valid_595216 = validateParameter(valid_595216, JString, required = false,
+  if valid_581215 != nil:
+    section.add "userIp", valid_581215
+  var valid_581216 = query.getOrDefault("key")
+  valid_581216 = validateParameter(valid_581216, JString, required = false,
                                  default = nil)
-  if valid_595216 != nil:
-    section.add "key", valid_595216
-  var valid_595217 = query.getOrDefault("prettyPrint")
-  valid_595217 = validateParameter(valid_595217, JBool, required = false,
+  if valid_581216 != nil:
+    section.add "key", valid_581216
+  var valid_581217 = query.getOrDefault("prettyPrint")
+  valid_581217 = validateParameter(valid_581217, JBool, required = false,
                                  default = newJBool(true))
-  if valid_595217 != nil:
-    section.add "prettyPrint", valid_595217
+  if valid_581217 != nil:
+    section.add "prettyPrint", valid_581217
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -12187,20 +12189,20 @@ proc validate_DriveChildrenDelete_595207(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_595218: Call_DriveChildrenDelete_595206; path: JsonNode;
+proc call*(call_581218: Call_DriveChildrenDelete_581206; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Removes a child from a folder.
   ## 
-  let valid = call_595218.validator(path, query, header, formData, body)
-  let scheme = call_595218.pickScheme
+  let valid = call_581218.validator(path, query, header, formData, body)
+  let scheme = call_581218.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_595218.url(scheme.get, call_595218.host, call_595218.base,
-                         call_595218.route, valid.getOrDefault("path"),
+  let url = call_581218.url(scheme.get, call_581218.host, call_581218.base,
+                         call_581218.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_595218, url, valid)
+  result = hook(call_581218, url, valid)
 
-proc call*(call_595219: Call_DriveChildrenDelete_595206; childId: string;
+proc call*(call_581219: Call_DriveChildrenDelete_581206; childId: string;
           folderId: string; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; userIp: string = "";
           key: string = ""; prettyPrint: bool = true): Recallable =
@@ -12224,31 +12226,31 @@ proc call*(call_595219: Call_DriveChildrenDelete_595206; childId: string;
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_595220 = newJObject()
-  var query_595221 = newJObject()
-  add(query_595221, "fields", newJString(fields))
-  add(query_595221, "quotaUser", newJString(quotaUser))
-  add(query_595221, "alt", newJString(alt))
-  add(query_595221, "oauth_token", newJString(oauthToken))
-  add(query_595221, "userIp", newJString(userIp))
-  add(path_595220, "childId", newJString(childId))
-  add(path_595220, "folderId", newJString(folderId))
-  add(query_595221, "key", newJString(key))
-  add(query_595221, "prettyPrint", newJBool(prettyPrint))
-  result = call_595219.call(path_595220, query_595221, nil, nil, nil)
+  var path_581220 = newJObject()
+  var query_581221 = newJObject()
+  add(query_581221, "fields", newJString(fields))
+  add(query_581221, "quotaUser", newJString(quotaUser))
+  add(query_581221, "alt", newJString(alt))
+  add(query_581221, "oauth_token", newJString(oauthToken))
+  add(query_581221, "userIp", newJString(userIp))
+  add(path_581220, "childId", newJString(childId))
+  add(path_581220, "folderId", newJString(folderId))
+  add(query_581221, "key", newJString(key))
+  add(query_581221, "prettyPrint", newJBool(prettyPrint))
+  result = call_581219.call(path_581220, query_581221, nil, nil, nil)
 
-var driveChildrenDelete* = Call_DriveChildrenDelete_595206(
+var driveChildrenDelete* = Call_DriveChildrenDelete_581206(
     name: "driveChildrenDelete", meth: HttpMethod.HttpDelete,
     host: "www.googleapis.com", route: "/files/{folderId}/children/{childId}",
-    validator: validate_DriveChildrenDelete_595207, base: "/drive/v2",
-    url: url_DriveChildrenDelete_595208, schemes: {Scheme.Https})
+    validator: validate_DriveChildrenDelete_581207, base: "/drive/v2",
+    url: url_DriveChildrenDelete_581208, schemes: {Scheme.Https})
 type
-  Call_DrivePermissionsGetIdForEmail_595222 = ref object of OpenApiRestCall_593424
-proc url_DrivePermissionsGetIdForEmail_595224(protocol: Scheme; host: string;
+  Call_DrivePermissionsGetIdForEmail_581222 = ref object of OpenApiRestCall_579424
+proc url_DrivePermissionsGetIdForEmail_581224(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "email" in path, "`email` is a required path parameter"
   const
@@ -12259,7 +12261,7 @@ proc url_DrivePermissionsGetIdForEmail_595224(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_DrivePermissionsGetIdForEmail_595223(path: JsonNode; query: JsonNode;
+proc validate_DrivePermissionsGetIdForEmail_581223(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Returns the permission ID for an email address.
   ## 
@@ -12270,11 +12272,11 @@ proc validate_DrivePermissionsGetIdForEmail_595223(path: JsonNode; query: JsonNo
   ##        : The email address for which to return a permission ID
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `email` field"
-  var valid_595225 = path.getOrDefault("email")
-  valid_595225 = validateParameter(valid_595225, JString, required = true,
+  var valid_581225 = path.getOrDefault("email")
+  valid_581225 = validateParameter(valid_581225, JString, required = true,
                                  default = nil)
-  if valid_595225 != nil:
-    section.add "email", valid_595225
+  if valid_581225 != nil:
+    section.add "email", valid_581225
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -12292,41 +12294,41 @@ proc validate_DrivePermissionsGetIdForEmail_595223(path: JsonNode; query: JsonNo
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_595226 = query.getOrDefault("fields")
-  valid_595226 = validateParameter(valid_595226, JString, required = false,
+  var valid_581226 = query.getOrDefault("fields")
+  valid_581226 = validateParameter(valid_581226, JString, required = false,
                                  default = nil)
-  if valid_595226 != nil:
-    section.add "fields", valid_595226
-  var valid_595227 = query.getOrDefault("quotaUser")
-  valid_595227 = validateParameter(valid_595227, JString, required = false,
+  if valid_581226 != nil:
+    section.add "fields", valid_581226
+  var valid_581227 = query.getOrDefault("quotaUser")
+  valid_581227 = validateParameter(valid_581227, JString, required = false,
                                  default = nil)
-  if valid_595227 != nil:
-    section.add "quotaUser", valid_595227
-  var valid_595228 = query.getOrDefault("alt")
-  valid_595228 = validateParameter(valid_595228, JString, required = false,
+  if valid_581227 != nil:
+    section.add "quotaUser", valid_581227
+  var valid_581228 = query.getOrDefault("alt")
+  valid_581228 = validateParameter(valid_581228, JString, required = false,
                                  default = newJString("json"))
-  if valid_595228 != nil:
-    section.add "alt", valid_595228
-  var valid_595229 = query.getOrDefault("oauth_token")
-  valid_595229 = validateParameter(valid_595229, JString, required = false,
+  if valid_581228 != nil:
+    section.add "alt", valid_581228
+  var valid_581229 = query.getOrDefault("oauth_token")
+  valid_581229 = validateParameter(valid_581229, JString, required = false,
                                  default = nil)
-  if valid_595229 != nil:
-    section.add "oauth_token", valid_595229
-  var valid_595230 = query.getOrDefault("userIp")
-  valid_595230 = validateParameter(valid_595230, JString, required = false,
+  if valid_581229 != nil:
+    section.add "oauth_token", valid_581229
+  var valid_581230 = query.getOrDefault("userIp")
+  valid_581230 = validateParameter(valid_581230, JString, required = false,
                                  default = nil)
-  if valid_595230 != nil:
-    section.add "userIp", valid_595230
-  var valid_595231 = query.getOrDefault("key")
-  valid_595231 = validateParameter(valid_595231, JString, required = false,
+  if valid_581230 != nil:
+    section.add "userIp", valid_581230
+  var valid_581231 = query.getOrDefault("key")
+  valid_581231 = validateParameter(valid_581231, JString, required = false,
                                  default = nil)
-  if valid_595231 != nil:
-    section.add "key", valid_595231
-  var valid_595232 = query.getOrDefault("prettyPrint")
-  valid_595232 = validateParameter(valid_595232, JBool, required = false,
+  if valid_581231 != nil:
+    section.add "key", valid_581231
+  var valid_581232 = query.getOrDefault("prettyPrint")
+  valid_581232 = validateParameter(valid_581232, JBool, required = false,
                                  default = newJBool(true))
-  if valid_595232 != nil:
-    section.add "prettyPrint", valid_595232
+  if valid_581232 != nil:
+    section.add "prettyPrint", valid_581232
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -12335,20 +12337,20 @@ proc validate_DrivePermissionsGetIdForEmail_595223(path: JsonNode; query: JsonNo
   if body != nil:
     result.add "body", body
 
-proc call*(call_595233: Call_DrivePermissionsGetIdForEmail_595222; path: JsonNode;
+proc call*(call_581233: Call_DrivePermissionsGetIdForEmail_581222; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Returns the permission ID for an email address.
   ## 
-  let valid = call_595233.validator(path, query, header, formData, body)
-  let scheme = call_595233.pickScheme
+  let valid = call_581233.validator(path, query, header, formData, body)
+  let scheme = call_581233.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_595233.url(scheme.get, call_595233.host, call_595233.base,
-                         call_595233.route, valid.getOrDefault("path"),
+  let url = call_581233.url(scheme.get, call_581233.host, call_581233.base,
+                         call_581233.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_595233, url, valid)
+  result = hook(call_581233, url, valid)
 
-proc call*(call_595234: Call_DrivePermissionsGetIdForEmail_595222; email: string;
+proc call*(call_581234: Call_DrivePermissionsGetIdForEmail_581222; email: string;
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           oauthToken: string = ""; userIp: string = ""; key: string = "";
           prettyPrint: bool = true): Recallable =
@@ -12370,33 +12372,33 @@ proc call*(call_595234: Call_DrivePermissionsGetIdForEmail_595222; email: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_595235 = newJObject()
-  var query_595236 = newJObject()
-  add(query_595236, "fields", newJString(fields))
-  add(query_595236, "quotaUser", newJString(quotaUser))
-  add(query_595236, "alt", newJString(alt))
-  add(path_595235, "email", newJString(email))
-  add(query_595236, "oauth_token", newJString(oauthToken))
-  add(query_595236, "userIp", newJString(userIp))
-  add(query_595236, "key", newJString(key))
-  add(query_595236, "prettyPrint", newJBool(prettyPrint))
-  result = call_595234.call(path_595235, query_595236, nil, nil, nil)
+  var path_581235 = newJObject()
+  var query_581236 = newJObject()
+  add(query_581236, "fields", newJString(fields))
+  add(query_581236, "quotaUser", newJString(quotaUser))
+  add(query_581236, "alt", newJString(alt))
+  add(path_581235, "email", newJString(email))
+  add(query_581236, "oauth_token", newJString(oauthToken))
+  add(query_581236, "userIp", newJString(userIp))
+  add(query_581236, "key", newJString(key))
+  add(query_581236, "prettyPrint", newJBool(prettyPrint))
+  result = call_581234.call(path_581235, query_581236, nil, nil, nil)
 
-var drivePermissionsGetIdForEmail* = Call_DrivePermissionsGetIdForEmail_595222(
+var drivePermissionsGetIdForEmail* = Call_DrivePermissionsGetIdForEmail_581222(
     name: "drivePermissionsGetIdForEmail", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/permissionIds/{email}",
-    validator: validate_DrivePermissionsGetIdForEmail_595223, base: "/drive/v2",
-    url: url_DrivePermissionsGetIdForEmail_595224, schemes: {Scheme.Https})
+    validator: validate_DrivePermissionsGetIdForEmail_581223, base: "/drive/v2",
+    url: url_DrivePermissionsGetIdForEmail_581224, schemes: {Scheme.Https})
 type
-  Call_DriveTeamdrivesInsert_595254 = ref object of OpenApiRestCall_593424
-proc url_DriveTeamdrivesInsert_595256(protocol: Scheme; host: string; base: string;
+  Call_DriveTeamdrivesInsert_581254 = ref object of OpenApiRestCall_579424
+proc url_DriveTeamdrivesInsert_581256(protocol: Scheme; host: string; base: string;
                                      route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   result.path = base & route
 
-proc validate_DriveTeamdrivesInsert_595255(path: JsonNode; query: JsonNode;
+proc validate_DriveTeamdrivesInsert_581255(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Deprecated use drives.insert instead.
   ## 
@@ -12422,48 +12424,48 @@ proc validate_DriveTeamdrivesInsert_595255(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_595257 = query.getOrDefault("fields")
-  valid_595257 = validateParameter(valid_595257, JString, required = false,
+  var valid_581257 = query.getOrDefault("fields")
+  valid_581257 = validateParameter(valid_581257, JString, required = false,
                                  default = nil)
-  if valid_595257 != nil:
-    section.add "fields", valid_595257
+  if valid_581257 != nil:
+    section.add "fields", valid_581257
   assert query != nil,
         "query argument is necessary due to required `requestId` field"
-  var valid_595258 = query.getOrDefault("requestId")
-  valid_595258 = validateParameter(valid_595258, JString, required = true,
+  var valid_581258 = query.getOrDefault("requestId")
+  valid_581258 = validateParameter(valid_581258, JString, required = true,
                                  default = nil)
-  if valid_595258 != nil:
-    section.add "requestId", valid_595258
-  var valid_595259 = query.getOrDefault("quotaUser")
-  valid_595259 = validateParameter(valid_595259, JString, required = false,
+  if valid_581258 != nil:
+    section.add "requestId", valid_581258
+  var valid_581259 = query.getOrDefault("quotaUser")
+  valid_581259 = validateParameter(valid_581259, JString, required = false,
                                  default = nil)
-  if valid_595259 != nil:
-    section.add "quotaUser", valid_595259
-  var valid_595260 = query.getOrDefault("alt")
-  valid_595260 = validateParameter(valid_595260, JString, required = false,
+  if valid_581259 != nil:
+    section.add "quotaUser", valid_581259
+  var valid_581260 = query.getOrDefault("alt")
+  valid_581260 = validateParameter(valid_581260, JString, required = false,
                                  default = newJString("json"))
-  if valid_595260 != nil:
-    section.add "alt", valid_595260
-  var valid_595261 = query.getOrDefault("oauth_token")
-  valid_595261 = validateParameter(valid_595261, JString, required = false,
+  if valid_581260 != nil:
+    section.add "alt", valid_581260
+  var valid_581261 = query.getOrDefault("oauth_token")
+  valid_581261 = validateParameter(valid_581261, JString, required = false,
                                  default = nil)
-  if valid_595261 != nil:
-    section.add "oauth_token", valid_595261
-  var valid_595262 = query.getOrDefault("userIp")
-  valid_595262 = validateParameter(valid_595262, JString, required = false,
+  if valid_581261 != nil:
+    section.add "oauth_token", valid_581261
+  var valid_581262 = query.getOrDefault("userIp")
+  valid_581262 = validateParameter(valid_581262, JString, required = false,
                                  default = nil)
-  if valid_595262 != nil:
-    section.add "userIp", valid_595262
-  var valid_595263 = query.getOrDefault("key")
-  valid_595263 = validateParameter(valid_595263, JString, required = false,
+  if valid_581262 != nil:
+    section.add "userIp", valid_581262
+  var valid_581263 = query.getOrDefault("key")
+  valid_581263 = validateParameter(valid_581263, JString, required = false,
                                  default = nil)
-  if valid_595263 != nil:
-    section.add "key", valid_595263
-  var valid_595264 = query.getOrDefault("prettyPrint")
-  valid_595264 = validateParameter(valid_595264, JBool, required = false,
+  if valid_581263 != nil:
+    section.add "key", valid_581263
+  var valid_581264 = query.getOrDefault("prettyPrint")
+  valid_581264 = validateParameter(valid_581264, JBool, required = false,
                                  default = newJBool(true))
-  if valid_595264 != nil:
-    section.add "prettyPrint", valid_595264
+  if valid_581264 != nil:
+    section.add "prettyPrint", valid_581264
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -12475,20 +12477,20 @@ proc validate_DriveTeamdrivesInsert_595255(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_595266: Call_DriveTeamdrivesInsert_595254; path: JsonNode;
+proc call*(call_581266: Call_DriveTeamdrivesInsert_581254; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Deprecated use drives.insert instead.
   ## 
-  let valid = call_595266.validator(path, query, header, formData, body)
-  let scheme = call_595266.pickScheme
+  let valid = call_581266.validator(path, query, header, formData, body)
+  let scheme = call_581266.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_595266.url(scheme.get, call_595266.host, call_595266.base,
-                         call_595266.route, valid.getOrDefault("path"),
+  let url = call_581266.url(scheme.get, call_581266.host, call_581266.base,
+                         call_581266.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_595266, url, valid)
+  result = hook(call_581266, url, valid)
 
-proc call*(call_595267: Call_DriveTeamdrivesInsert_595254; requestId: string;
+proc call*(call_581267: Call_DriveTeamdrivesInsert_581254; requestId: string;
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           oauthToken: string = ""; userIp: string = ""; key: string = "";
           body: JsonNode = nil; prettyPrint: bool = true): Recallable =
@@ -12511,35 +12513,35 @@ proc call*(call_595267: Call_DriveTeamdrivesInsert_595254; requestId: string;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var query_595268 = newJObject()
-  var body_595269 = newJObject()
-  add(query_595268, "fields", newJString(fields))
-  add(query_595268, "requestId", newJString(requestId))
-  add(query_595268, "quotaUser", newJString(quotaUser))
-  add(query_595268, "alt", newJString(alt))
-  add(query_595268, "oauth_token", newJString(oauthToken))
-  add(query_595268, "userIp", newJString(userIp))
-  add(query_595268, "key", newJString(key))
+  var query_581268 = newJObject()
+  var body_581269 = newJObject()
+  add(query_581268, "fields", newJString(fields))
+  add(query_581268, "requestId", newJString(requestId))
+  add(query_581268, "quotaUser", newJString(quotaUser))
+  add(query_581268, "alt", newJString(alt))
+  add(query_581268, "oauth_token", newJString(oauthToken))
+  add(query_581268, "userIp", newJString(userIp))
+  add(query_581268, "key", newJString(key))
   if body != nil:
-    body_595269 = body
-  add(query_595268, "prettyPrint", newJBool(prettyPrint))
-  result = call_595267.call(nil, query_595268, nil, nil, body_595269)
+    body_581269 = body
+  add(query_581268, "prettyPrint", newJBool(prettyPrint))
+  result = call_581267.call(nil, query_581268, nil, nil, body_581269)
 
-var driveTeamdrivesInsert* = Call_DriveTeamdrivesInsert_595254(
+var driveTeamdrivesInsert* = Call_DriveTeamdrivesInsert_581254(
     name: "driveTeamdrivesInsert", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com", route: "/teamdrives",
-    validator: validate_DriveTeamdrivesInsert_595255, base: "/drive/v2",
-    url: url_DriveTeamdrivesInsert_595256, schemes: {Scheme.Https})
+    validator: validate_DriveTeamdrivesInsert_581255, base: "/drive/v2",
+    url: url_DriveTeamdrivesInsert_581256, schemes: {Scheme.Https})
 type
-  Call_DriveTeamdrivesList_595237 = ref object of OpenApiRestCall_593424
-proc url_DriveTeamdrivesList_595239(protocol: Scheme; host: string; base: string;
+  Call_DriveTeamdrivesList_581237 = ref object of OpenApiRestCall_579424
+proc url_DriveTeamdrivesList_581239(protocol: Scheme; host: string; base: string;
                                    route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   result.path = base & route
 
-proc validate_DriveTeamdrivesList_595238(path: JsonNode; query: JsonNode;
+proc validate_DriveTeamdrivesList_581238(path: JsonNode; query: JsonNode;
                                         header: JsonNode; formData: JsonNode;
                                         body: JsonNode): JsonNode =
   ## Deprecated use drives.list instead.
@@ -12572,61 +12574,61 @@ proc validate_DriveTeamdrivesList_595238(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_595240 = query.getOrDefault("fields")
-  valid_595240 = validateParameter(valid_595240, JString, required = false,
+  var valid_581240 = query.getOrDefault("fields")
+  valid_581240 = validateParameter(valid_581240, JString, required = false,
                                  default = nil)
-  if valid_595240 != nil:
-    section.add "fields", valid_595240
-  var valid_595241 = query.getOrDefault("pageToken")
-  valid_595241 = validateParameter(valid_595241, JString, required = false,
+  if valid_581240 != nil:
+    section.add "fields", valid_581240
+  var valid_581241 = query.getOrDefault("pageToken")
+  valid_581241 = validateParameter(valid_581241, JString, required = false,
                                  default = nil)
-  if valid_595241 != nil:
-    section.add "pageToken", valid_595241
-  var valid_595242 = query.getOrDefault("quotaUser")
-  valid_595242 = validateParameter(valid_595242, JString, required = false,
+  if valid_581241 != nil:
+    section.add "pageToken", valid_581241
+  var valid_581242 = query.getOrDefault("quotaUser")
+  valid_581242 = validateParameter(valid_581242, JString, required = false,
                                  default = nil)
-  if valid_595242 != nil:
-    section.add "quotaUser", valid_595242
-  var valid_595243 = query.getOrDefault("alt")
-  valid_595243 = validateParameter(valid_595243, JString, required = false,
+  if valid_581242 != nil:
+    section.add "quotaUser", valid_581242
+  var valid_581243 = query.getOrDefault("alt")
+  valid_581243 = validateParameter(valid_581243, JString, required = false,
                                  default = newJString("json"))
-  if valid_595243 != nil:
-    section.add "alt", valid_595243
-  var valid_595244 = query.getOrDefault("oauth_token")
-  valid_595244 = validateParameter(valid_595244, JString, required = false,
+  if valid_581243 != nil:
+    section.add "alt", valid_581243
+  var valid_581244 = query.getOrDefault("oauth_token")
+  valid_581244 = validateParameter(valid_581244, JString, required = false,
                                  default = nil)
-  if valid_595244 != nil:
-    section.add "oauth_token", valid_595244
-  var valid_595245 = query.getOrDefault("userIp")
-  valid_595245 = validateParameter(valid_595245, JString, required = false,
+  if valid_581244 != nil:
+    section.add "oauth_token", valid_581244
+  var valid_581245 = query.getOrDefault("userIp")
+  valid_581245 = validateParameter(valid_581245, JString, required = false,
                                  default = nil)
-  if valid_595245 != nil:
-    section.add "userIp", valid_595245
-  var valid_595246 = query.getOrDefault("maxResults")
-  valid_595246 = validateParameter(valid_595246, JInt, required = false,
+  if valid_581245 != nil:
+    section.add "userIp", valid_581245
+  var valid_581246 = query.getOrDefault("maxResults")
+  valid_581246 = validateParameter(valid_581246, JInt, required = false,
                                  default = newJInt(10))
-  if valid_595246 != nil:
-    section.add "maxResults", valid_595246
-  var valid_595247 = query.getOrDefault("q")
-  valid_595247 = validateParameter(valid_595247, JString, required = false,
+  if valid_581246 != nil:
+    section.add "maxResults", valid_581246
+  var valid_581247 = query.getOrDefault("q")
+  valid_581247 = validateParameter(valid_581247, JString, required = false,
                                  default = nil)
-  if valid_595247 != nil:
-    section.add "q", valid_595247
-  var valid_595248 = query.getOrDefault("key")
-  valid_595248 = validateParameter(valid_595248, JString, required = false,
+  if valid_581247 != nil:
+    section.add "q", valid_581247
+  var valid_581248 = query.getOrDefault("key")
+  valid_581248 = validateParameter(valid_581248, JString, required = false,
                                  default = nil)
-  if valid_595248 != nil:
-    section.add "key", valid_595248
-  var valid_595249 = query.getOrDefault("useDomainAdminAccess")
-  valid_595249 = validateParameter(valid_595249, JBool, required = false,
+  if valid_581248 != nil:
+    section.add "key", valid_581248
+  var valid_581249 = query.getOrDefault("useDomainAdminAccess")
+  valid_581249 = validateParameter(valid_581249, JBool, required = false,
                                  default = newJBool(false))
-  if valid_595249 != nil:
-    section.add "useDomainAdminAccess", valid_595249
-  var valid_595250 = query.getOrDefault("prettyPrint")
-  valid_595250 = validateParameter(valid_595250, JBool, required = false,
+  if valid_581249 != nil:
+    section.add "useDomainAdminAccess", valid_581249
+  var valid_581250 = query.getOrDefault("prettyPrint")
+  valid_581250 = validateParameter(valid_581250, JBool, required = false,
                                  default = newJBool(true))
-  if valid_595250 != nil:
-    section.add "prettyPrint", valid_595250
+  if valid_581250 != nil:
+    section.add "prettyPrint", valid_581250
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -12635,20 +12637,20 @@ proc validate_DriveTeamdrivesList_595238(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_595251: Call_DriveTeamdrivesList_595237; path: JsonNode;
+proc call*(call_581251: Call_DriveTeamdrivesList_581237; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Deprecated use drives.list instead.
   ## 
-  let valid = call_595251.validator(path, query, header, formData, body)
-  let scheme = call_595251.pickScheme
+  let valid = call_581251.validator(path, query, header, formData, body)
+  let scheme = call_581251.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_595251.url(scheme.get, call_595251.host, call_595251.base,
-                         call_595251.route, valid.getOrDefault("path"),
+  let url = call_581251.url(scheme.get, call_581251.host, call_581251.base,
+                         call_581251.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_595251, url, valid)
+  result = hook(call_581251, url, valid)
 
-proc call*(call_595252: Call_DriveTeamdrivesList_595237; fields: string = "";
+proc call*(call_581252: Call_DriveTeamdrivesList_581237; fields: string = "";
           pageToken: string = ""; quotaUser: string = ""; alt: string = "json";
           oauthToken: string = ""; userIp: string = ""; maxResults: int = 10;
           q: string = ""; key: string = ""; useDomainAdminAccess: bool = false;
@@ -12677,32 +12679,32 @@ proc call*(call_595252: Call_DriveTeamdrivesList_595237; fields: string = "";
   ##                       : Issue the request as a domain administrator; if set to true, then all Team Drives of the domain in which the requester is an administrator are returned.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var query_595253 = newJObject()
-  add(query_595253, "fields", newJString(fields))
-  add(query_595253, "pageToken", newJString(pageToken))
-  add(query_595253, "quotaUser", newJString(quotaUser))
-  add(query_595253, "alt", newJString(alt))
-  add(query_595253, "oauth_token", newJString(oauthToken))
-  add(query_595253, "userIp", newJString(userIp))
-  add(query_595253, "maxResults", newJInt(maxResults))
-  add(query_595253, "q", newJString(q))
-  add(query_595253, "key", newJString(key))
-  add(query_595253, "useDomainAdminAccess", newJBool(useDomainAdminAccess))
-  add(query_595253, "prettyPrint", newJBool(prettyPrint))
-  result = call_595252.call(nil, query_595253, nil, nil, nil)
+  var query_581253 = newJObject()
+  add(query_581253, "fields", newJString(fields))
+  add(query_581253, "pageToken", newJString(pageToken))
+  add(query_581253, "quotaUser", newJString(quotaUser))
+  add(query_581253, "alt", newJString(alt))
+  add(query_581253, "oauth_token", newJString(oauthToken))
+  add(query_581253, "userIp", newJString(userIp))
+  add(query_581253, "maxResults", newJInt(maxResults))
+  add(query_581253, "q", newJString(q))
+  add(query_581253, "key", newJString(key))
+  add(query_581253, "useDomainAdminAccess", newJBool(useDomainAdminAccess))
+  add(query_581253, "prettyPrint", newJBool(prettyPrint))
+  result = call_581252.call(nil, query_581253, nil, nil, nil)
 
-var driveTeamdrivesList* = Call_DriveTeamdrivesList_595237(
+var driveTeamdrivesList* = Call_DriveTeamdrivesList_581237(
     name: "driveTeamdrivesList", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/teamdrives",
-    validator: validate_DriveTeamdrivesList_595238, base: "/drive/v2",
-    url: url_DriveTeamdrivesList_595239, schemes: {Scheme.Https})
+    validator: validate_DriveTeamdrivesList_581238, base: "/drive/v2",
+    url: url_DriveTeamdrivesList_581239, schemes: {Scheme.Https})
 type
-  Call_DriveTeamdrivesUpdate_595286 = ref object of OpenApiRestCall_593424
-proc url_DriveTeamdrivesUpdate_595288(protocol: Scheme; host: string; base: string;
+  Call_DriveTeamdrivesUpdate_581286 = ref object of OpenApiRestCall_579424
+proc url_DriveTeamdrivesUpdate_581288(protocol: Scheme; host: string; base: string;
                                      route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "teamDriveId" in path, "`teamDriveId` is a required path parameter"
   const
@@ -12713,7 +12715,7 @@ proc url_DriveTeamdrivesUpdate_595288(protocol: Scheme; host: string; base: stri
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_DriveTeamdrivesUpdate_595287(path: JsonNode; query: JsonNode;
+proc validate_DriveTeamdrivesUpdate_581287(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Deprecated use drives.update instead.
   ## 
@@ -12725,11 +12727,11 @@ proc validate_DriveTeamdrivesUpdate_595287(path: JsonNode; query: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `teamDriveId` field"
-  var valid_595289 = path.getOrDefault("teamDriveId")
-  valid_595289 = validateParameter(valid_595289, JString, required = true,
+  var valid_581289 = path.getOrDefault("teamDriveId")
+  valid_581289 = validateParameter(valid_581289, JString, required = true,
                                  default = nil)
-  if valid_595289 != nil:
-    section.add "teamDriveId", valid_595289
+  if valid_581289 != nil:
+    section.add "teamDriveId", valid_581289
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -12749,46 +12751,46 @@ proc validate_DriveTeamdrivesUpdate_595287(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_595290 = query.getOrDefault("fields")
-  valid_595290 = validateParameter(valid_595290, JString, required = false,
+  var valid_581290 = query.getOrDefault("fields")
+  valid_581290 = validateParameter(valid_581290, JString, required = false,
                                  default = nil)
-  if valid_595290 != nil:
-    section.add "fields", valid_595290
-  var valid_595291 = query.getOrDefault("quotaUser")
-  valid_595291 = validateParameter(valid_595291, JString, required = false,
+  if valid_581290 != nil:
+    section.add "fields", valid_581290
+  var valid_581291 = query.getOrDefault("quotaUser")
+  valid_581291 = validateParameter(valid_581291, JString, required = false,
                                  default = nil)
-  if valid_595291 != nil:
-    section.add "quotaUser", valid_595291
-  var valid_595292 = query.getOrDefault("alt")
-  valid_595292 = validateParameter(valid_595292, JString, required = false,
+  if valid_581291 != nil:
+    section.add "quotaUser", valid_581291
+  var valid_581292 = query.getOrDefault("alt")
+  valid_581292 = validateParameter(valid_581292, JString, required = false,
                                  default = newJString("json"))
-  if valid_595292 != nil:
-    section.add "alt", valid_595292
-  var valid_595293 = query.getOrDefault("oauth_token")
-  valid_595293 = validateParameter(valid_595293, JString, required = false,
+  if valid_581292 != nil:
+    section.add "alt", valid_581292
+  var valid_581293 = query.getOrDefault("oauth_token")
+  valid_581293 = validateParameter(valid_581293, JString, required = false,
                                  default = nil)
-  if valid_595293 != nil:
-    section.add "oauth_token", valid_595293
-  var valid_595294 = query.getOrDefault("userIp")
-  valid_595294 = validateParameter(valid_595294, JString, required = false,
+  if valid_581293 != nil:
+    section.add "oauth_token", valid_581293
+  var valid_581294 = query.getOrDefault("userIp")
+  valid_581294 = validateParameter(valid_581294, JString, required = false,
                                  default = nil)
-  if valid_595294 != nil:
-    section.add "userIp", valid_595294
-  var valid_595295 = query.getOrDefault("key")
-  valid_595295 = validateParameter(valid_595295, JString, required = false,
+  if valid_581294 != nil:
+    section.add "userIp", valid_581294
+  var valid_581295 = query.getOrDefault("key")
+  valid_581295 = validateParameter(valid_581295, JString, required = false,
                                  default = nil)
-  if valid_595295 != nil:
-    section.add "key", valid_595295
-  var valid_595296 = query.getOrDefault("useDomainAdminAccess")
-  valid_595296 = validateParameter(valid_595296, JBool, required = false,
+  if valid_581295 != nil:
+    section.add "key", valid_581295
+  var valid_581296 = query.getOrDefault("useDomainAdminAccess")
+  valid_581296 = validateParameter(valid_581296, JBool, required = false,
                                  default = newJBool(false))
-  if valid_595296 != nil:
-    section.add "useDomainAdminAccess", valid_595296
-  var valid_595297 = query.getOrDefault("prettyPrint")
-  valid_595297 = validateParameter(valid_595297, JBool, required = false,
+  if valid_581296 != nil:
+    section.add "useDomainAdminAccess", valid_581296
+  var valid_581297 = query.getOrDefault("prettyPrint")
+  valid_581297 = validateParameter(valid_581297, JBool, required = false,
                                  default = newJBool(true))
-  if valid_595297 != nil:
-    section.add "prettyPrint", valid_595297
+  if valid_581297 != nil:
+    section.add "prettyPrint", valid_581297
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -12800,20 +12802,20 @@ proc validate_DriveTeamdrivesUpdate_595287(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_595299: Call_DriveTeamdrivesUpdate_595286; path: JsonNode;
+proc call*(call_581299: Call_DriveTeamdrivesUpdate_581286; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Deprecated use drives.update instead.
   ## 
-  let valid = call_595299.validator(path, query, header, formData, body)
-  let scheme = call_595299.pickScheme
+  let valid = call_581299.validator(path, query, header, formData, body)
+  let scheme = call_581299.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_595299.url(scheme.get, call_595299.host, call_595299.base,
-                         call_595299.route, valid.getOrDefault("path"),
+  let url = call_581299.url(scheme.get, call_581299.host, call_581299.base,
+                         call_581299.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_595299, url, valid)
+  result = hook(call_581299, url, valid)
 
-proc call*(call_595300: Call_DriveTeamdrivesUpdate_595286; teamDriveId: string;
+proc call*(call_581300: Call_DriveTeamdrivesUpdate_581286; teamDriveId: string;
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           oauthToken: string = ""; userIp: string = ""; key: string = "";
           useDomainAdminAccess: bool = false; body: JsonNode = nil;
@@ -12839,34 +12841,34 @@ proc call*(call_595300: Call_DriveTeamdrivesUpdate_595286; teamDriveId: string;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_595301 = newJObject()
-  var query_595302 = newJObject()
-  var body_595303 = newJObject()
-  add(path_595301, "teamDriveId", newJString(teamDriveId))
-  add(query_595302, "fields", newJString(fields))
-  add(query_595302, "quotaUser", newJString(quotaUser))
-  add(query_595302, "alt", newJString(alt))
-  add(query_595302, "oauth_token", newJString(oauthToken))
-  add(query_595302, "userIp", newJString(userIp))
-  add(query_595302, "key", newJString(key))
-  add(query_595302, "useDomainAdminAccess", newJBool(useDomainAdminAccess))
+  var path_581301 = newJObject()
+  var query_581302 = newJObject()
+  var body_581303 = newJObject()
+  add(path_581301, "teamDriveId", newJString(teamDriveId))
+  add(query_581302, "fields", newJString(fields))
+  add(query_581302, "quotaUser", newJString(quotaUser))
+  add(query_581302, "alt", newJString(alt))
+  add(query_581302, "oauth_token", newJString(oauthToken))
+  add(query_581302, "userIp", newJString(userIp))
+  add(query_581302, "key", newJString(key))
+  add(query_581302, "useDomainAdminAccess", newJBool(useDomainAdminAccess))
   if body != nil:
-    body_595303 = body
-  add(query_595302, "prettyPrint", newJBool(prettyPrint))
-  result = call_595300.call(path_595301, query_595302, nil, nil, body_595303)
+    body_581303 = body
+  add(query_581302, "prettyPrint", newJBool(prettyPrint))
+  result = call_581300.call(path_581301, query_581302, nil, nil, body_581303)
 
-var driveTeamdrivesUpdate* = Call_DriveTeamdrivesUpdate_595286(
+var driveTeamdrivesUpdate* = Call_DriveTeamdrivesUpdate_581286(
     name: "driveTeamdrivesUpdate", meth: HttpMethod.HttpPut,
     host: "www.googleapis.com", route: "/teamdrives/{teamDriveId}",
-    validator: validate_DriveTeamdrivesUpdate_595287, base: "/drive/v2",
-    url: url_DriveTeamdrivesUpdate_595288, schemes: {Scheme.Https})
+    validator: validate_DriveTeamdrivesUpdate_581287, base: "/drive/v2",
+    url: url_DriveTeamdrivesUpdate_581288, schemes: {Scheme.Https})
 type
-  Call_DriveTeamdrivesGet_595270 = ref object of OpenApiRestCall_593424
-proc url_DriveTeamdrivesGet_595272(protocol: Scheme; host: string; base: string;
+  Call_DriveTeamdrivesGet_581270 = ref object of OpenApiRestCall_579424
+proc url_DriveTeamdrivesGet_581272(protocol: Scheme; host: string; base: string;
                                   route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "teamDriveId" in path, "`teamDriveId` is a required path parameter"
   const
@@ -12877,7 +12879,7 @@ proc url_DriveTeamdrivesGet_595272(protocol: Scheme; host: string; base: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_DriveTeamdrivesGet_595271(path: JsonNode; query: JsonNode;
+proc validate_DriveTeamdrivesGet_581271(path: JsonNode; query: JsonNode;
                                        header: JsonNode; formData: JsonNode;
                                        body: JsonNode): JsonNode =
   ## Deprecated use drives.get instead.
@@ -12890,11 +12892,11 @@ proc validate_DriveTeamdrivesGet_595271(path: JsonNode; query: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `teamDriveId` field"
-  var valid_595273 = path.getOrDefault("teamDriveId")
-  valid_595273 = validateParameter(valid_595273, JString, required = true,
+  var valid_581273 = path.getOrDefault("teamDriveId")
+  valid_581273 = validateParameter(valid_581273, JString, required = true,
                                  default = nil)
-  if valid_595273 != nil:
-    section.add "teamDriveId", valid_595273
+  if valid_581273 != nil:
+    section.add "teamDriveId", valid_581273
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -12914,46 +12916,46 @@ proc validate_DriveTeamdrivesGet_595271(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_595274 = query.getOrDefault("fields")
-  valid_595274 = validateParameter(valid_595274, JString, required = false,
+  var valid_581274 = query.getOrDefault("fields")
+  valid_581274 = validateParameter(valid_581274, JString, required = false,
                                  default = nil)
-  if valid_595274 != nil:
-    section.add "fields", valid_595274
-  var valid_595275 = query.getOrDefault("quotaUser")
-  valid_595275 = validateParameter(valid_595275, JString, required = false,
+  if valid_581274 != nil:
+    section.add "fields", valid_581274
+  var valid_581275 = query.getOrDefault("quotaUser")
+  valid_581275 = validateParameter(valid_581275, JString, required = false,
                                  default = nil)
-  if valid_595275 != nil:
-    section.add "quotaUser", valid_595275
-  var valid_595276 = query.getOrDefault("alt")
-  valid_595276 = validateParameter(valid_595276, JString, required = false,
+  if valid_581275 != nil:
+    section.add "quotaUser", valid_581275
+  var valid_581276 = query.getOrDefault("alt")
+  valid_581276 = validateParameter(valid_581276, JString, required = false,
                                  default = newJString("json"))
-  if valid_595276 != nil:
-    section.add "alt", valid_595276
-  var valid_595277 = query.getOrDefault("oauth_token")
-  valid_595277 = validateParameter(valid_595277, JString, required = false,
+  if valid_581276 != nil:
+    section.add "alt", valid_581276
+  var valid_581277 = query.getOrDefault("oauth_token")
+  valid_581277 = validateParameter(valid_581277, JString, required = false,
                                  default = nil)
-  if valid_595277 != nil:
-    section.add "oauth_token", valid_595277
-  var valid_595278 = query.getOrDefault("userIp")
-  valid_595278 = validateParameter(valid_595278, JString, required = false,
+  if valid_581277 != nil:
+    section.add "oauth_token", valid_581277
+  var valid_581278 = query.getOrDefault("userIp")
+  valid_581278 = validateParameter(valid_581278, JString, required = false,
                                  default = nil)
-  if valid_595278 != nil:
-    section.add "userIp", valid_595278
-  var valid_595279 = query.getOrDefault("key")
-  valid_595279 = validateParameter(valid_595279, JString, required = false,
+  if valid_581278 != nil:
+    section.add "userIp", valid_581278
+  var valid_581279 = query.getOrDefault("key")
+  valid_581279 = validateParameter(valid_581279, JString, required = false,
                                  default = nil)
-  if valid_595279 != nil:
-    section.add "key", valid_595279
-  var valid_595280 = query.getOrDefault("useDomainAdminAccess")
-  valid_595280 = validateParameter(valid_595280, JBool, required = false,
+  if valid_581279 != nil:
+    section.add "key", valid_581279
+  var valid_581280 = query.getOrDefault("useDomainAdminAccess")
+  valid_581280 = validateParameter(valid_581280, JBool, required = false,
                                  default = newJBool(false))
-  if valid_595280 != nil:
-    section.add "useDomainAdminAccess", valid_595280
-  var valid_595281 = query.getOrDefault("prettyPrint")
-  valid_595281 = validateParameter(valid_595281, JBool, required = false,
+  if valid_581280 != nil:
+    section.add "useDomainAdminAccess", valid_581280
+  var valid_581281 = query.getOrDefault("prettyPrint")
+  valid_581281 = validateParameter(valid_581281, JBool, required = false,
                                  default = newJBool(true))
-  if valid_595281 != nil:
-    section.add "prettyPrint", valid_595281
+  if valid_581281 != nil:
+    section.add "prettyPrint", valid_581281
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -12962,20 +12964,20 @@ proc validate_DriveTeamdrivesGet_595271(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_595282: Call_DriveTeamdrivesGet_595270; path: JsonNode;
+proc call*(call_581282: Call_DriveTeamdrivesGet_581270; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Deprecated use drives.get instead.
   ## 
-  let valid = call_595282.validator(path, query, header, formData, body)
-  let scheme = call_595282.pickScheme
+  let valid = call_581282.validator(path, query, header, formData, body)
+  let scheme = call_581282.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_595282.url(scheme.get, call_595282.host, call_595282.base,
-                         call_595282.route, valid.getOrDefault("path"),
+  let url = call_581282.url(scheme.get, call_581282.host, call_581282.base,
+                         call_581282.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_595282, url, valid)
+  result = hook(call_581282, url, valid)
 
-proc call*(call_595283: Call_DriveTeamdrivesGet_595270; teamDriveId: string;
+proc call*(call_581283: Call_DriveTeamdrivesGet_581270; teamDriveId: string;
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           oauthToken: string = ""; userIp: string = ""; key: string = "";
           useDomainAdminAccess: bool = false; prettyPrint: bool = true): Recallable =
@@ -12999,31 +13001,31 @@ proc call*(call_595283: Call_DriveTeamdrivesGet_595270; teamDriveId: string;
   ##                       : Issue the request as a domain administrator; if set to true, then the requester will be granted access if they are an administrator of the domain to which the Team Drive belongs.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_595284 = newJObject()
-  var query_595285 = newJObject()
-  add(path_595284, "teamDriveId", newJString(teamDriveId))
-  add(query_595285, "fields", newJString(fields))
-  add(query_595285, "quotaUser", newJString(quotaUser))
-  add(query_595285, "alt", newJString(alt))
-  add(query_595285, "oauth_token", newJString(oauthToken))
-  add(query_595285, "userIp", newJString(userIp))
-  add(query_595285, "key", newJString(key))
-  add(query_595285, "useDomainAdminAccess", newJBool(useDomainAdminAccess))
-  add(query_595285, "prettyPrint", newJBool(prettyPrint))
-  result = call_595283.call(path_595284, query_595285, nil, nil, nil)
+  var path_581284 = newJObject()
+  var query_581285 = newJObject()
+  add(path_581284, "teamDriveId", newJString(teamDriveId))
+  add(query_581285, "fields", newJString(fields))
+  add(query_581285, "quotaUser", newJString(quotaUser))
+  add(query_581285, "alt", newJString(alt))
+  add(query_581285, "oauth_token", newJString(oauthToken))
+  add(query_581285, "userIp", newJString(userIp))
+  add(query_581285, "key", newJString(key))
+  add(query_581285, "useDomainAdminAccess", newJBool(useDomainAdminAccess))
+  add(query_581285, "prettyPrint", newJBool(prettyPrint))
+  result = call_581283.call(path_581284, query_581285, nil, nil, nil)
 
-var driveTeamdrivesGet* = Call_DriveTeamdrivesGet_595270(
+var driveTeamdrivesGet* = Call_DriveTeamdrivesGet_581270(
     name: "driveTeamdrivesGet", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/teamdrives/{teamDriveId}",
-    validator: validate_DriveTeamdrivesGet_595271, base: "/drive/v2",
-    url: url_DriveTeamdrivesGet_595272, schemes: {Scheme.Https})
+    validator: validate_DriveTeamdrivesGet_581271, base: "/drive/v2",
+    url: url_DriveTeamdrivesGet_581272, schemes: {Scheme.Https})
 type
-  Call_DriveTeamdrivesDelete_595304 = ref object of OpenApiRestCall_593424
-proc url_DriveTeamdrivesDelete_595306(protocol: Scheme; host: string; base: string;
+  Call_DriveTeamdrivesDelete_581304 = ref object of OpenApiRestCall_579424
+proc url_DriveTeamdrivesDelete_581306(protocol: Scheme; host: string; base: string;
                                      route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "teamDriveId" in path, "`teamDriveId` is a required path parameter"
   const
@@ -13034,7 +13036,7 @@ proc url_DriveTeamdrivesDelete_595306(protocol: Scheme; host: string; base: stri
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_DriveTeamdrivesDelete_595305(path: JsonNode; query: JsonNode;
+proc validate_DriveTeamdrivesDelete_581305(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Deprecated use drives.delete instead.
   ## 
@@ -13046,11 +13048,11 @@ proc validate_DriveTeamdrivesDelete_595305(path: JsonNode; query: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `teamDriveId` field"
-  var valid_595307 = path.getOrDefault("teamDriveId")
-  valid_595307 = validateParameter(valid_595307, JString, required = true,
+  var valid_581307 = path.getOrDefault("teamDriveId")
+  valid_581307 = validateParameter(valid_581307, JString, required = true,
                                  default = nil)
-  if valid_595307 != nil:
-    section.add "teamDriveId", valid_595307
+  if valid_581307 != nil:
+    section.add "teamDriveId", valid_581307
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -13068,41 +13070,41 @@ proc validate_DriveTeamdrivesDelete_595305(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_595308 = query.getOrDefault("fields")
-  valid_595308 = validateParameter(valid_595308, JString, required = false,
+  var valid_581308 = query.getOrDefault("fields")
+  valid_581308 = validateParameter(valid_581308, JString, required = false,
                                  default = nil)
-  if valid_595308 != nil:
-    section.add "fields", valid_595308
-  var valid_595309 = query.getOrDefault("quotaUser")
-  valid_595309 = validateParameter(valid_595309, JString, required = false,
+  if valid_581308 != nil:
+    section.add "fields", valid_581308
+  var valid_581309 = query.getOrDefault("quotaUser")
+  valid_581309 = validateParameter(valid_581309, JString, required = false,
                                  default = nil)
-  if valid_595309 != nil:
-    section.add "quotaUser", valid_595309
-  var valid_595310 = query.getOrDefault("alt")
-  valid_595310 = validateParameter(valid_595310, JString, required = false,
+  if valid_581309 != nil:
+    section.add "quotaUser", valid_581309
+  var valid_581310 = query.getOrDefault("alt")
+  valid_581310 = validateParameter(valid_581310, JString, required = false,
                                  default = newJString("json"))
-  if valid_595310 != nil:
-    section.add "alt", valid_595310
-  var valid_595311 = query.getOrDefault("oauth_token")
-  valid_595311 = validateParameter(valid_595311, JString, required = false,
+  if valid_581310 != nil:
+    section.add "alt", valid_581310
+  var valid_581311 = query.getOrDefault("oauth_token")
+  valid_581311 = validateParameter(valid_581311, JString, required = false,
                                  default = nil)
-  if valid_595311 != nil:
-    section.add "oauth_token", valid_595311
-  var valid_595312 = query.getOrDefault("userIp")
-  valid_595312 = validateParameter(valid_595312, JString, required = false,
+  if valid_581311 != nil:
+    section.add "oauth_token", valid_581311
+  var valid_581312 = query.getOrDefault("userIp")
+  valid_581312 = validateParameter(valid_581312, JString, required = false,
                                  default = nil)
-  if valid_595312 != nil:
-    section.add "userIp", valid_595312
-  var valid_595313 = query.getOrDefault("key")
-  valid_595313 = validateParameter(valid_595313, JString, required = false,
+  if valid_581312 != nil:
+    section.add "userIp", valid_581312
+  var valid_581313 = query.getOrDefault("key")
+  valid_581313 = validateParameter(valid_581313, JString, required = false,
                                  default = nil)
-  if valid_595313 != nil:
-    section.add "key", valid_595313
-  var valid_595314 = query.getOrDefault("prettyPrint")
-  valid_595314 = validateParameter(valid_595314, JBool, required = false,
+  if valid_581313 != nil:
+    section.add "key", valid_581313
+  var valid_581314 = query.getOrDefault("prettyPrint")
+  valid_581314 = validateParameter(valid_581314, JBool, required = false,
                                  default = newJBool(true))
-  if valid_595314 != nil:
-    section.add "prettyPrint", valid_595314
+  if valid_581314 != nil:
+    section.add "prettyPrint", valid_581314
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -13111,20 +13113,20 @@ proc validate_DriveTeamdrivesDelete_595305(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_595315: Call_DriveTeamdrivesDelete_595304; path: JsonNode;
+proc call*(call_581315: Call_DriveTeamdrivesDelete_581304; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Deprecated use drives.delete instead.
   ## 
-  let valid = call_595315.validator(path, query, header, formData, body)
-  let scheme = call_595315.pickScheme
+  let valid = call_581315.validator(path, query, header, formData, body)
+  let scheme = call_581315.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_595315.url(scheme.get, call_595315.host, call_595315.base,
-                         call_595315.route, valid.getOrDefault("path"),
+  let url = call_581315.url(scheme.get, call_581315.host, call_581315.base,
+                         call_581315.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_595315, url, valid)
+  result = hook(call_581315, url, valid)
 
-proc call*(call_595316: Call_DriveTeamdrivesDelete_595304; teamDriveId: string;
+proc call*(call_581316: Call_DriveTeamdrivesDelete_581304; teamDriveId: string;
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           oauthToken: string = ""; userIp: string = ""; key: string = "";
           prettyPrint: bool = true): Recallable =
@@ -13146,26 +13148,116 @@ proc call*(call_595316: Call_DriveTeamdrivesDelete_595304; teamDriveId: string;
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_595317 = newJObject()
-  var query_595318 = newJObject()
-  add(path_595317, "teamDriveId", newJString(teamDriveId))
-  add(query_595318, "fields", newJString(fields))
-  add(query_595318, "quotaUser", newJString(quotaUser))
-  add(query_595318, "alt", newJString(alt))
-  add(query_595318, "oauth_token", newJString(oauthToken))
-  add(query_595318, "userIp", newJString(userIp))
-  add(query_595318, "key", newJString(key))
-  add(query_595318, "prettyPrint", newJBool(prettyPrint))
-  result = call_595316.call(path_595317, query_595318, nil, nil, nil)
+  var path_581317 = newJObject()
+  var query_581318 = newJObject()
+  add(path_581317, "teamDriveId", newJString(teamDriveId))
+  add(query_581318, "fields", newJString(fields))
+  add(query_581318, "quotaUser", newJString(quotaUser))
+  add(query_581318, "alt", newJString(alt))
+  add(query_581318, "oauth_token", newJString(oauthToken))
+  add(query_581318, "userIp", newJString(userIp))
+  add(query_581318, "key", newJString(key))
+  add(query_581318, "prettyPrint", newJBool(prettyPrint))
+  result = call_581316.call(path_581317, query_581318, nil, nil, nil)
 
-var driveTeamdrivesDelete* = Call_DriveTeamdrivesDelete_595304(
+var driveTeamdrivesDelete* = Call_DriveTeamdrivesDelete_581304(
     name: "driveTeamdrivesDelete", meth: HttpMethod.HttpDelete,
     host: "www.googleapis.com", route: "/teamdrives/{teamDriveId}",
-    validator: validate_DriveTeamdrivesDelete_595305, base: "/drive/v2",
-    url: url_DriveTeamdrivesDelete_595306, schemes: {Scheme.Https})
+    validator: validate_DriveTeamdrivesDelete_581305, base: "/drive/v2",
+    url: url_DriveTeamdrivesDelete_581306, schemes: {Scheme.Https})
 export
   rest
 
+type
+  GoogleAuth = ref object
+    endpoint*: Uri
+    token: string
+    expiry*: float64
+    issued*: float64
+    email: string
+    key: string
+    scope*: seq[string]
+    form: string
+    digest: Hash
+
+const
+  endpoint = "https://www.googleapis.com/oauth2/v4/token".parseUri
+var auth = GoogleAuth(endpoint: endpoint)
+proc hash(auth: GoogleAuth): Hash =
+  ## yield differing values for effectively different auth payloads
+  result = hash($auth.endpoint)
+  result = result !& hash(auth.email)
+  result = result !& hash(auth.key)
+  result = result !& hash(auth.scope.join(" "))
+  result = !$result
+
+proc newAuthenticator*(path: string): GoogleAuth =
+  let
+    input = readFile(path)
+    js = parseJson(input)
+  auth.email = js["client_email"].getStr
+  auth.key = js["private_key"].getStr
+  result = auth
+
+proc store(auth: var GoogleAuth; token: string; expiry: int; form: string) =
+  auth.token = token
+  auth.issued = epochTime()
+  auth.expiry = auth.issued + expiry.float64
+  auth.form = form
+  auth.digest = auth.hash
+
+proc authenticate*(fresh: float64 = -3600.0; lifetime: int = 3600): Future[bool] {.async.} =
+  ## get or refresh an authentication token; provide `fresh`
+  ## to ensure that the token won't expire in the next N seconds.
+  ## provide `lifetime` to indicate how long the token should last.
+  let clock = epochTime()
+  if auth.expiry > clock + fresh:
+    if auth.hash == auth.digest:
+      return true
+  let
+    expiry = clock.int + lifetime
+    header = JOSEHeader(alg: RS256, typ: "JWT")
+    claims = %*{"iss": auth.email, "scope": auth.scope.join(" "),
+              "aud": "https://www.googleapis.com/oauth2/v4/token", "exp": expiry,
+              "iat": clock.int}
+  var tok = JWT(header: header, claims: toClaims(claims))
+  tok.sign(auth.key)
+  let post = encodeQuery({"grant_type": "urn:ietf:params:oauth:grant-type:jwt-bearer",
+                       "assertion": $tok}, usePlus = false, omitEq = false)
+  var client = newAsyncHttpClient()
+  client.headers = newHttpHeaders({"Content-Type": "application/x-www-form-urlencoded",
+                                 "Content-Length": $post.len})
+  let response = await client.request($auth.endpoint, HttpPost, body = post)
+  if not response.code.is2xx:
+    return false
+  let body = await response.body
+  client.close
+  try:
+    let js = parseJson(body)
+    auth.store(js["access_token"].getStr, js["expires_in"].getInt,
+               js["token_type"].getStr)
+  except KeyError:
+    return false
+  except JsonParsingError:
+    return false
+  return true
+
+proc composeQueryString(query: JsonNode): string =
+  var qs: seq[KeyVal]
+  if query == nil:
+    return ""
+  for k, v in query.pairs:
+    qs.add (key: k, val: v.getStr)
+  result = encodeQuery(qs, usePlus = false, omitEq = false)
+
 method hook(call: OpenApiRestCall; url: Uri; input: JsonNode): Recallable {.base.} =
-  let headers = massageHeaders(input.getOrDefault("header"))
-  result = newRecallable(call, url, headers, input.getOrDefault("body").getStr)
+  var headers = massageHeaders(input.getOrDefault("header"))
+  let body = input.getOrDefault("body").getStr
+  if auth.scope.len == 0:
+    raise newException(ValueError, "specify authentication scopes")
+  if not waitfor authenticate(fresh = 10.0):
+    raise newException(IOError, "unable to refresh authentication token")
+  headers.add ("Authorization", auth.form & " " & auth.token)
+  headers.add ("Content-Type", "application/json")
+  headers.add ("Content-Length", $body.len)
+  result = newRecallable(call, url, headers, body = body)

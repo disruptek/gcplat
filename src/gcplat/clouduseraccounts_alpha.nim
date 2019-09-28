@@ -1,6 +1,7 @@
 
 import
-  json, options, hashes, uri, openapi/rest, os, uri, strutils, httpcore
+  json, options, hashes, uri, rest, os, uri, strutils, times, httpcore, httpclient,
+  asyncdispatch, jwt
 
 ## auto-generated via openapi macro
 ## title: Cloud User Accounts
@@ -28,15 +29,15 @@ type
     url*: proc (protocol: Scheme; host: string; base: string; route: string;
               path: JsonNode; query: JsonNode): Uri
 
-  OpenApiRestCall_597424 = ref object of OpenApiRestCall
+  OpenApiRestCall_579424 = ref object of OpenApiRestCall
 proc hash(scheme: Scheme): Hash {.used.} =
   result = hash(ord(scheme))
 
-proc clone[T: OpenApiRestCall_597424](t: T): T {.used.} =
+proc clone[T: OpenApiRestCall_579424](t: T): T {.used.} =
   result = T(name: t.name, meth: t.meth, host: t.host, base: t.base, route: t.route,
            schemes: t.schemes, validator: t.validator, url: t.url)
 
-proc pickScheme(t: OpenApiRestCall_597424): Option[Scheme] {.used.} =
+proc pickScheme(t: OpenApiRestCall_579424): Option[Scheme] {.used.} =
   ## select a supported scheme from a set of candidates
   for scheme in Scheme.low ..
       Scheme.high:
@@ -104,14 +105,15 @@ proc hydratePath(input: JsonNode; segments: seq[PathToken]): Option[string] =
 
 const
   gcpServiceName = "clouduseraccounts"
+proc composeQueryString(query: JsonNode): string
 method hook(call: OpenApiRestCall; url: Uri; input: JsonNode): Recallable {.base.}
 type
-  Call_ClouduseraccountsGroupsInsert_597981 = ref object of OpenApiRestCall_597424
-proc url_ClouduseraccountsGroupsInsert_597983(protocol: Scheme; host: string;
+  Call_ClouduseraccountsGroupsInsert_579981 = ref object of OpenApiRestCall_579424
+proc url_ClouduseraccountsGroupsInsert_579983(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "project" in path, "`project` is a required path parameter"
   const
@@ -123,7 +125,7 @@ proc url_ClouduseraccountsGroupsInsert_597983(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_ClouduseraccountsGroupsInsert_597982(path: JsonNode; query: JsonNode;
+proc validate_ClouduseraccountsGroupsInsert_579982(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Creates a Group resource in the specified project using the data included in the request.
   ## 
@@ -134,11 +136,11 @@ proc validate_ClouduseraccountsGroupsInsert_597982(path: JsonNode; query: JsonNo
   ##          : Project ID for this request.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `project` field"
-  var valid_597984 = path.getOrDefault("project")
-  valid_597984 = validateParameter(valid_597984, JString, required = true,
+  var valid_579984 = path.getOrDefault("project")
+  valid_579984 = validateParameter(valid_579984, JString, required = true,
                                  default = nil)
-  if valid_597984 != nil:
-    section.add "project", valid_597984
+  if valid_579984 != nil:
+    section.add "project", valid_579984
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -156,41 +158,41 @@ proc validate_ClouduseraccountsGroupsInsert_597982(path: JsonNode; query: JsonNo
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_597985 = query.getOrDefault("fields")
-  valid_597985 = validateParameter(valid_597985, JString, required = false,
+  var valid_579985 = query.getOrDefault("fields")
+  valid_579985 = validateParameter(valid_579985, JString, required = false,
                                  default = nil)
-  if valid_597985 != nil:
-    section.add "fields", valid_597985
-  var valid_597986 = query.getOrDefault("quotaUser")
-  valid_597986 = validateParameter(valid_597986, JString, required = false,
+  if valid_579985 != nil:
+    section.add "fields", valid_579985
+  var valid_579986 = query.getOrDefault("quotaUser")
+  valid_579986 = validateParameter(valid_579986, JString, required = false,
                                  default = nil)
-  if valid_597986 != nil:
-    section.add "quotaUser", valid_597986
-  var valid_597987 = query.getOrDefault("alt")
-  valid_597987 = validateParameter(valid_597987, JString, required = false,
+  if valid_579986 != nil:
+    section.add "quotaUser", valid_579986
+  var valid_579987 = query.getOrDefault("alt")
+  valid_579987 = validateParameter(valid_579987, JString, required = false,
                                  default = newJString("json"))
-  if valid_597987 != nil:
-    section.add "alt", valid_597987
-  var valid_597988 = query.getOrDefault("oauth_token")
-  valid_597988 = validateParameter(valid_597988, JString, required = false,
+  if valid_579987 != nil:
+    section.add "alt", valid_579987
+  var valid_579988 = query.getOrDefault("oauth_token")
+  valid_579988 = validateParameter(valid_579988, JString, required = false,
                                  default = nil)
-  if valid_597988 != nil:
-    section.add "oauth_token", valid_597988
-  var valid_597989 = query.getOrDefault("userIp")
-  valid_597989 = validateParameter(valid_597989, JString, required = false,
+  if valid_579988 != nil:
+    section.add "oauth_token", valid_579988
+  var valid_579989 = query.getOrDefault("userIp")
+  valid_579989 = validateParameter(valid_579989, JString, required = false,
                                  default = nil)
-  if valid_597989 != nil:
-    section.add "userIp", valid_597989
-  var valid_597990 = query.getOrDefault("key")
-  valid_597990 = validateParameter(valid_597990, JString, required = false,
+  if valid_579989 != nil:
+    section.add "userIp", valid_579989
+  var valid_579990 = query.getOrDefault("key")
+  valid_579990 = validateParameter(valid_579990, JString, required = false,
                                  default = nil)
-  if valid_597990 != nil:
-    section.add "key", valid_597990
-  var valid_597991 = query.getOrDefault("prettyPrint")
-  valid_597991 = validateParameter(valid_597991, JBool, required = false,
+  if valid_579990 != nil:
+    section.add "key", valid_579990
+  var valid_579991 = query.getOrDefault("prettyPrint")
+  valid_579991 = validateParameter(valid_579991, JBool, required = false,
                                  default = newJBool(true))
-  if valid_597991 != nil:
-    section.add "prettyPrint", valid_597991
+  if valid_579991 != nil:
+    section.add "prettyPrint", valid_579991
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -202,20 +204,20 @@ proc validate_ClouduseraccountsGroupsInsert_597982(path: JsonNode; query: JsonNo
   if body != nil:
     result.add "body", body
 
-proc call*(call_597993: Call_ClouduseraccountsGroupsInsert_597981; path: JsonNode;
+proc call*(call_579993: Call_ClouduseraccountsGroupsInsert_579981; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Creates a Group resource in the specified project using the data included in the request.
   ## 
-  let valid = call_597993.validator(path, query, header, formData, body)
-  let scheme = call_597993.pickScheme
+  let valid = call_579993.validator(path, query, header, formData, body)
+  let scheme = call_579993.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_597993.url(scheme.get, call_597993.host, call_597993.base,
-                         call_597993.route, valid.getOrDefault("path"),
+  let url = call_579993.url(scheme.get, call_579993.host, call_579993.base,
+                         call_579993.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_597993, url, valid)
+  result = hook(call_579993, url, valid)
 
-proc call*(call_597994: Call_ClouduseraccountsGroupsInsert_597981; project: string;
+proc call*(call_579994: Call_ClouduseraccountsGroupsInsert_579981; project: string;
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           oauthToken: string = ""; userIp: string = ""; key: string = "";
           body: JsonNode = nil; prettyPrint: bool = true): Recallable =
@@ -238,34 +240,34 @@ proc call*(call_597994: Call_ClouduseraccountsGroupsInsert_597981; project: stri
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_597995 = newJObject()
-  var query_597996 = newJObject()
-  var body_597997 = newJObject()
-  add(query_597996, "fields", newJString(fields))
-  add(query_597996, "quotaUser", newJString(quotaUser))
-  add(query_597996, "alt", newJString(alt))
-  add(query_597996, "oauth_token", newJString(oauthToken))
-  add(query_597996, "userIp", newJString(userIp))
-  add(query_597996, "key", newJString(key))
-  add(path_597995, "project", newJString(project))
+  var path_579995 = newJObject()
+  var query_579996 = newJObject()
+  var body_579997 = newJObject()
+  add(query_579996, "fields", newJString(fields))
+  add(query_579996, "quotaUser", newJString(quotaUser))
+  add(query_579996, "alt", newJString(alt))
+  add(query_579996, "oauth_token", newJString(oauthToken))
+  add(query_579996, "userIp", newJString(userIp))
+  add(query_579996, "key", newJString(key))
+  add(path_579995, "project", newJString(project))
   if body != nil:
-    body_597997 = body
-  add(query_597996, "prettyPrint", newJBool(prettyPrint))
-  result = call_597994.call(path_597995, query_597996, nil, nil, body_597997)
+    body_579997 = body
+  add(query_579996, "prettyPrint", newJBool(prettyPrint))
+  result = call_579994.call(path_579995, query_579996, nil, nil, body_579997)
 
-var clouduseraccountsGroupsInsert* = Call_ClouduseraccountsGroupsInsert_597981(
+var clouduseraccountsGroupsInsert* = Call_ClouduseraccountsGroupsInsert_579981(
     name: "clouduseraccountsGroupsInsert", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com", route: "/{project}/global/groups",
-    validator: validate_ClouduseraccountsGroupsInsert_597982,
+    validator: validate_ClouduseraccountsGroupsInsert_579982,
     base: "/clouduseraccounts/alpha/projects",
-    url: url_ClouduseraccountsGroupsInsert_597983, schemes: {Scheme.Https})
+    url: url_ClouduseraccountsGroupsInsert_579983, schemes: {Scheme.Https})
 type
-  Call_ClouduseraccountsGroupsList_597692 = ref object of OpenApiRestCall_597424
-proc url_ClouduseraccountsGroupsList_597694(protocol: Scheme; host: string;
+  Call_ClouduseraccountsGroupsList_579692 = ref object of OpenApiRestCall_579424
+proc url_ClouduseraccountsGroupsList_579694(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "project" in path, "`project` is a required path parameter"
   const
@@ -277,7 +279,7 @@ proc url_ClouduseraccountsGroupsList_597694(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_ClouduseraccountsGroupsList_597693(path: JsonNode; query: JsonNode;
+proc validate_ClouduseraccountsGroupsList_579693(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Retrieves the list of groups contained within the specified project.
   ## 
@@ -288,11 +290,11 @@ proc validate_ClouduseraccountsGroupsList_597693(path: JsonNode; query: JsonNode
   ##          : Project ID for this request.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `project` field"
-  var valid_597820 = path.getOrDefault("project")
-  valid_597820 = validateParameter(valid_597820, JString, required = true,
+  var valid_579820 = path.getOrDefault("project")
+  valid_579820 = validateParameter(valid_579820, JString, required = true,
                                  default = nil)
-  if valid_597820 != nil:
-    section.add "project", valid_597820
+  if valid_579820 != nil:
+    section.add "project", valid_579820
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -330,61 +332,61 @@ proc validate_ClouduseraccountsGroupsList_597693(path: JsonNode; query: JsonNode
   ## 
   ## The Beta API also supports filtering on multiple expressions by providing each separate expression within parentheses. For example, (scheduling.automaticRestart eq true) (zone eq us-central1-f). Multiple expressions are treated as AND expressions, meaning that resources must match all expressions to pass the filters.
   section = newJObject()
-  var valid_597821 = query.getOrDefault("fields")
-  valid_597821 = validateParameter(valid_597821, JString, required = false,
+  var valid_579821 = query.getOrDefault("fields")
+  valid_579821 = validateParameter(valid_579821, JString, required = false,
                                  default = nil)
-  if valid_597821 != nil:
-    section.add "fields", valid_597821
-  var valid_597822 = query.getOrDefault("pageToken")
-  valid_597822 = validateParameter(valid_597822, JString, required = false,
+  if valid_579821 != nil:
+    section.add "fields", valid_579821
+  var valid_579822 = query.getOrDefault("pageToken")
+  valid_579822 = validateParameter(valid_579822, JString, required = false,
                                  default = nil)
-  if valid_597822 != nil:
-    section.add "pageToken", valid_597822
-  var valid_597823 = query.getOrDefault("quotaUser")
-  valid_597823 = validateParameter(valid_597823, JString, required = false,
+  if valid_579822 != nil:
+    section.add "pageToken", valid_579822
+  var valid_579823 = query.getOrDefault("quotaUser")
+  valid_579823 = validateParameter(valid_579823, JString, required = false,
                                  default = nil)
-  if valid_597823 != nil:
-    section.add "quotaUser", valid_597823
-  var valid_597837 = query.getOrDefault("alt")
-  valid_597837 = validateParameter(valid_597837, JString, required = false,
+  if valid_579823 != nil:
+    section.add "quotaUser", valid_579823
+  var valid_579837 = query.getOrDefault("alt")
+  valid_579837 = validateParameter(valid_579837, JString, required = false,
                                  default = newJString("json"))
-  if valid_597837 != nil:
-    section.add "alt", valid_597837
-  var valid_597838 = query.getOrDefault("oauth_token")
-  valid_597838 = validateParameter(valid_597838, JString, required = false,
+  if valid_579837 != nil:
+    section.add "alt", valid_579837
+  var valid_579838 = query.getOrDefault("oauth_token")
+  valid_579838 = validateParameter(valid_579838, JString, required = false,
                                  default = nil)
-  if valid_597838 != nil:
-    section.add "oauth_token", valid_597838
-  var valid_597839 = query.getOrDefault("userIp")
-  valid_597839 = validateParameter(valid_597839, JString, required = false,
+  if valid_579838 != nil:
+    section.add "oauth_token", valid_579838
+  var valid_579839 = query.getOrDefault("userIp")
+  valid_579839 = validateParameter(valid_579839, JString, required = false,
                                  default = nil)
-  if valid_597839 != nil:
-    section.add "userIp", valid_597839
-  var valid_597841 = query.getOrDefault("maxResults")
-  valid_597841 = validateParameter(valid_597841, JInt, required = false,
+  if valid_579839 != nil:
+    section.add "userIp", valid_579839
+  var valid_579841 = query.getOrDefault("maxResults")
+  valid_579841 = validateParameter(valid_579841, JInt, required = false,
                                  default = newJInt(500))
-  if valid_597841 != nil:
-    section.add "maxResults", valid_597841
-  var valid_597842 = query.getOrDefault("orderBy")
-  valid_597842 = validateParameter(valid_597842, JString, required = false,
+  if valid_579841 != nil:
+    section.add "maxResults", valid_579841
+  var valid_579842 = query.getOrDefault("orderBy")
+  valid_579842 = validateParameter(valid_579842, JString, required = false,
                                  default = nil)
-  if valid_597842 != nil:
-    section.add "orderBy", valid_597842
-  var valid_597843 = query.getOrDefault("key")
-  valid_597843 = validateParameter(valid_597843, JString, required = false,
+  if valid_579842 != nil:
+    section.add "orderBy", valid_579842
+  var valid_579843 = query.getOrDefault("key")
+  valid_579843 = validateParameter(valid_579843, JString, required = false,
                                  default = nil)
-  if valid_597843 != nil:
-    section.add "key", valid_597843
-  var valid_597844 = query.getOrDefault("prettyPrint")
-  valid_597844 = validateParameter(valid_597844, JBool, required = false,
+  if valid_579843 != nil:
+    section.add "key", valid_579843
+  var valid_579844 = query.getOrDefault("prettyPrint")
+  valid_579844 = validateParameter(valid_579844, JBool, required = false,
                                  default = newJBool(true))
-  if valid_597844 != nil:
-    section.add "prettyPrint", valid_597844
-  var valid_597845 = query.getOrDefault("filter")
-  valid_597845 = validateParameter(valid_597845, JString, required = false,
+  if valid_579844 != nil:
+    section.add "prettyPrint", valid_579844
+  var valid_579845 = query.getOrDefault("filter")
+  valid_579845 = validateParameter(valid_579845, JString, required = false,
                                  default = nil)
-  if valid_597845 != nil:
-    section.add "filter", valid_597845
+  if valid_579845 != nil:
+    section.add "filter", valid_579845
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -393,20 +395,20 @@ proc validate_ClouduseraccountsGroupsList_597693(path: JsonNode; query: JsonNode
   if body != nil:
     result.add "body", body
 
-proc call*(call_597868: Call_ClouduseraccountsGroupsList_597692; path: JsonNode;
+proc call*(call_579868: Call_ClouduseraccountsGroupsList_579692; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Retrieves the list of groups contained within the specified project.
   ## 
-  let valid = call_597868.validator(path, query, header, formData, body)
-  let scheme = call_597868.pickScheme
+  let valid = call_579868.validator(path, query, header, formData, body)
+  let scheme = call_579868.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_597868.url(scheme.get, call_597868.host, call_597868.base,
-                         call_597868.route, valid.getOrDefault("path"),
+  let url = call_579868.url(scheme.get, call_579868.host, call_579868.base,
+                         call_579868.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_597868, url, valid)
+  result = hook(call_579868, url, valid)
 
-proc call*(call_597939: Call_ClouduseraccountsGroupsList_597692; project: string;
+proc call*(call_579939: Call_ClouduseraccountsGroupsList_579692; project: string;
           fields: string = ""; pageToken: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; userIp: string = "";
           maxResults: int = 500; orderBy: string = ""; key: string = "";
@@ -449,35 +451,35 @@ proc call*(call_597939: Call_ClouduseraccountsGroupsList_597692; project: string
   ## Compute Engine Beta API Only: If you use filtering in the Beta API, you can also filter on nested fields. For example, you could filter on instances that have set the scheduling.automaticRestart field to true. In particular, use filtering on nested fields to take advantage of instance labels to organize and filter results based on label values.
   ## 
   ## The Beta API also supports filtering on multiple expressions by providing each separate expression within parentheses. For example, (scheduling.automaticRestart eq true) (zone eq us-central1-f). Multiple expressions are treated as AND expressions, meaning that resources must match all expressions to pass the filters.
-  var path_597940 = newJObject()
-  var query_597942 = newJObject()
-  add(query_597942, "fields", newJString(fields))
-  add(query_597942, "pageToken", newJString(pageToken))
-  add(query_597942, "quotaUser", newJString(quotaUser))
-  add(query_597942, "alt", newJString(alt))
-  add(query_597942, "oauth_token", newJString(oauthToken))
-  add(query_597942, "userIp", newJString(userIp))
-  add(query_597942, "maxResults", newJInt(maxResults))
-  add(query_597942, "orderBy", newJString(orderBy))
-  add(query_597942, "key", newJString(key))
-  add(path_597940, "project", newJString(project))
-  add(query_597942, "prettyPrint", newJBool(prettyPrint))
-  add(query_597942, "filter", newJString(filter))
-  result = call_597939.call(path_597940, query_597942, nil, nil, nil)
+  var path_579940 = newJObject()
+  var query_579942 = newJObject()
+  add(query_579942, "fields", newJString(fields))
+  add(query_579942, "pageToken", newJString(pageToken))
+  add(query_579942, "quotaUser", newJString(quotaUser))
+  add(query_579942, "alt", newJString(alt))
+  add(query_579942, "oauth_token", newJString(oauthToken))
+  add(query_579942, "userIp", newJString(userIp))
+  add(query_579942, "maxResults", newJInt(maxResults))
+  add(query_579942, "orderBy", newJString(orderBy))
+  add(query_579942, "key", newJString(key))
+  add(path_579940, "project", newJString(project))
+  add(query_579942, "prettyPrint", newJBool(prettyPrint))
+  add(query_579942, "filter", newJString(filter))
+  result = call_579939.call(path_579940, query_579942, nil, nil, nil)
 
-var clouduseraccountsGroupsList* = Call_ClouduseraccountsGroupsList_597692(
+var clouduseraccountsGroupsList* = Call_ClouduseraccountsGroupsList_579692(
     name: "clouduseraccountsGroupsList", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/{project}/global/groups",
-    validator: validate_ClouduseraccountsGroupsList_597693,
+    validator: validate_ClouduseraccountsGroupsList_579693,
     base: "/clouduseraccounts/alpha/projects",
-    url: url_ClouduseraccountsGroupsList_597694, schemes: {Scheme.Https})
+    url: url_ClouduseraccountsGroupsList_579694, schemes: {Scheme.Https})
 type
-  Call_ClouduseraccountsGroupsGet_597998 = ref object of OpenApiRestCall_597424
-proc url_ClouduseraccountsGroupsGet_598000(protocol: Scheme; host: string;
+  Call_ClouduseraccountsGroupsGet_579998 = ref object of OpenApiRestCall_579424
+proc url_ClouduseraccountsGroupsGet_580000(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "project" in path, "`project` is a required path parameter"
   assert "groupName" in path, "`groupName` is a required path parameter"
@@ -491,7 +493,7 @@ proc url_ClouduseraccountsGroupsGet_598000(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_ClouduseraccountsGroupsGet_597999(path: JsonNode; query: JsonNode;
+proc validate_ClouduseraccountsGroupsGet_579999(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Returns the specified Group resource.
   ## 
@@ -504,16 +506,16 @@ proc validate_ClouduseraccountsGroupsGet_597999(path: JsonNode; query: JsonNode;
   ##          : Project ID for this request.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `groupName` field"
-  var valid_598001 = path.getOrDefault("groupName")
-  valid_598001 = validateParameter(valid_598001, JString, required = true,
+  var valid_580001 = path.getOrDefault("groupName")
+  valid_580001 = validateParameter(valid_580001, JString, required = true,
                                  default = nil)
-  if valid_598001 != nil:
-    section.add "groupName", valid_598001
-  var valid_598002 = path.getOrDefault("project")
-  valid_598002 = validateParameter(valid_598002, JString, required = true,
+  if valid_580001 != nil:
+    section.add "groupName", valid_580001
+  var valid_580002 = path.getOrDefault("project")
+  valid_580002 = validateParameter(valid_580002, JString, required = true,
                                  default = nil)
-  if valid_598002 != nil:
-    section.add "project", valid_598002
+  if valid_580002 != nil:
+    section.add "project", valid_580002
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -531,41 +533,41 @@ proc validate_ClouduseraccountsGroupsGet_597999(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_598003 = query.getOrDefault("fields")
-  valid_598003 = validateParameter(valid_598003, JString, required = false,
+  var valid_580003 = query.getOrDefault("fields")
+  valid_580003 = validateParameter(valid_580003, JString, required = false,
                                  default = nil)
-  if valid_598003 != nil:
-    section.add "fields", valid_598003
-  var valid_598004 = query.getOrDefault("quotaUser")
-  valid_598004 = validateParameter(valid_598004, JString, required = false,
+  if valid_580003 != nil:
+    section.add "fields", valid_580003
+  var valid_580004 = query.getOrDefault("quotaUser")
+  valid_580004 = validateParameter(valid_580004, JString, required = false,
                                  default = nil)
-  if valid_598004 != nil:
-    section.add "quotaUser", valid_598004
-  var valid_598005 = query.getOrDefault("alt")
-  valid_598005 = validateParameter(valid_598005, JString, required = false,
+  if valid_580004 != nil:
+    section.add "quotaUser", valid_580004
+  var valid_580005 = query.getOrDefault("alt")
+  valid_580005 = validateParameter(valid_580005, JString, required = false,
                                  default = newJString("json"))
-  if valid_598005 != nil:
-    section.add "alt", valid_598005
-  var valid_598006 = query.getOrDefault("oauth_token")
-  valid_598006 = validateParameter(valid_598006, JString, required = false,
+  if valid_580005 != nil:
+    section.add "alt", valid_580005
+  var valid_580006 = query.getOrDefault("oauth_token")
+  valid_580006 = validateParameter(valid_580006, JString, required = false,
                                  default = nil)
-  if valid_598006 != nil:
-    section.add "oauth_token", valid_598006
-  var valid_598007 = query.getOrDefault("userIp")
-  valid_598007 = validateParameter(valid_598007, JString, required = false,
+  if valid_580006 != nil:
+    section.add "oauth_token", valid_580006
+  var valid_580007 = query.getOrDefault("userIp")
+  valid_580007 = validateParameter(valid_580007, JString, required = false,
                                  default = nil)
-  if valid_598007 != nil:
-    section.add "userIp", valid_598007
-  var valid_598008 = query.getOrDefault("key")
-  valid_598008 = validateParameter(valid_598008, JString, required = false,
+  if valid_580007 != nil:
+    section.add "userIp", valid_580007
+  var valid_580008 = query.getOrDefault("key")
+  valid_580008 = validateParameter(valid_580008, JString, required = false,
                                  default = nil)
-  if valid_598008 != nil:
-    section.add "key", valid_598008
-  var valid_598009 = query.getOrDefault("prettyPrint")
-  valid_598009 = validateParameter(valid_598009, JBool, required = false,
+  if valid_580008 != nil:
+    section.add "key", valid_580008
+  var valid_580009 = query.getOrDefault("prettyPrint")
+  valid_580009 = validateParameter(valid_580009, JBool, required = false,
                                  default = newJBool(true))
-  if valid_598009 != nil:
-    section.add "prettyPrint", valid_598009
+  if valid_580009 != nil:
+    section.add "prettyPrint", valid_580009
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -574,20 +576,20 @@ proc validate_ClouduseraccountsGroupsGet_597999(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_598010: Call_ClouduseraccountsGroupsGet_597998; path: JsonNode;
+proc call*(call_580010: Call_ClouduseraccountsGroupsGet_579998; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Returns the specified Group resource.
   ## 
-  let valid = call_598010.validator(path, query, header, formData, body)
-  let scheme = call_598010.pickScheme
+  let valid = call_580010.validator(path, query, header, formData, body)
+  let scheme = call_580010.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_598010.url(scheme.get, call_598010.host, call_598010.base,
-                         call_598010.route, valid.getOrDefault("path"),
+  let url = call_580010.url(scheme.get, call_580010.host, call_580010.base,
+                         call_580010.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_598010, url, valid)
+  result = hook(call_580010, url, valid)
 
-proc call*(call_598011: Call_ClouduseraccountsGroupsGet_597998; groupName: string;
+proc call*(call_580011: Call_ClouduseraccountsGroupsGet_579998; groupName: string;
           project: string; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; userIp: string = "";
           key: string = ""; prettyPrint: bool = true): Recallable =
@@ -611,32 +613,32 @@ proc call*(call_598011: Call_ClouduseraccountsGroupsGet_597998; groupName: strin
   ##          : Project ID for this request.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_598012 = newJObject()
-  var query_598013 = newJObject()
-  add(query_598013, "fields", newJString(fields))
-  add(query_598013, "quotaUser", newJString(quotaUser))
-  add(query_598013, "alt", newJString(alt))
-  add(query_598013, "oauth_token", newJString(oauthToken))
-  add(path_598012, "groupName", newJString(groupName))
-  add(query_598013, "userIp", newJString(userIp))
-  add(query_598013, "key", newJString(key))
-  add(path_598012, "project", newJString(project))
-  add(query_598013, "prettyPrint", newJBool(prettyPrint))
-  result = call_598011.call(path_598012, query_598013, nil, nil, nil)
+  var path_580012 = newJObject()
+  var query_580013 = newJObject()
+  add(query_580013, "fields", newJString(fields))
+  add(query_580013, "quotaUser", newJString(quotaUser))
+  add(query_580013, "alt", newJString(alt))
+  add(query_580013, "oauth_token", newJString(oauthToken))
+  add(path_580012, "groupName", newJString(groupName))
+  add(query_580013, "userIp", newJString(userIp))
+  add(query_580013, "key", newJString(key))
+  add(path_580012, "project", newJString(project))
+  add(query_580013, "prettyPrint", newJBool(prettyPrint))
+  result = call_580011.call(path_580012, query_580013, nil, nil, nil)
 
-var clouduseraccountsGroupsGet* = Call_ClouduseraccountsGroupsGet_597998(
+var clouduseraccountsGroupsGet* = Call_ClouduseraccountsGroupsGet_579998(
     name: "clouduseraccountsGroupsGet", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/{project}/global/groups/{groupName}",
-    validator: validate_ClouduseraccountsGroupsGet_597999,
+    validator: validate_ClouduseraccountsGroupsGet_579999,
     base: "/clouduseraccounts/alpha/projects",
-    url: url_ClouduseraccountsGroupsGet_598000, schemes: {Scheme.Https})
+    url: url_ClouduseraccountsGroupsGet_580000, schemes: {Scheme.Https})
 type
-  Call_ClouduseraccountsGroupsDelete_598014 = ref object of OpenApiRestCall_597424
-proc url_ClouduseraccountsGroupsDelete_598016(protocol: Scheme; host: string;
+  Call_ClouduseraccountsGroupsDelete_580014 = ref object of OpenApiRestCall_579424
+proc url_ClouduseraccountsGroupsDelete_580016(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "project" in path, "`project` is a required path parameter"
   assert "groupName" in path, "`groupName` is a required path parameter"
@@ -650,7 +652,7 @@ proc url_ClouduseraccountsGroupsDelete_598016(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_ClouduseraccountsGroupsDelete_598015(path: JsonNode; query: JsonNode;
+proc validate_ClouduseraccountsGroupsDelete_580015(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Deletes the specified Group resource.
   ## 
@@ -663,16 +665,16 @@ proc validate_ClouduseraccountsGroupsDelete_598015(path: JsonNode; query: JsonNo
   ##          : Project ID for this request.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `groupName` field"
-  var valid_598017 = path.getOrDefault("groupName")
-  valid_598017 = validateParameter(valid_598017, JString, required = true,
+  var valid_580017 = path.getOrDefault("groupName")
+  valid_580017 = validateParameter(valid_580017, JString, required = true,
                                  default = nil)
-  if valid_598017 != nil:
-    section.add "groupName", valid_598017
-  var valid_598018 = path.getOrDefault("project")
-  valid_598018 = validateParameter(valid_598018, JString, required = true,
+  if valid_580017 != nil:
+    section.add "groupName", valid_580017
+  var valid_580018 = path.getOrDefault("project")
+  valid_580018 = validateParameter(valid_580018, JString, required = true,
                                  default = nil)
-  if valid_598018 != nil:
-    section.add "project", valid_598018
+  if valid_580018 != nil:
+    section.add "project", valid_580018
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -690,41 +692,41 @@ proc validate_ClouduseraccountsGroupsDelete_598015(path: JsonNode; query: JsonNo
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_598019 = query.getOrDefault("fields")
-  valid_598019 = validateParameter(valid_598019, JString, required = false,
+  var valid_580019 = query.getOrDefault("fields")
+  valid_580019 = validateParameter(valid_580019, JString, required = false,
                                  default = nil)
-  if valid_598019 != nil:
-    section.add "fields", valid_598019
-  var valid_598020 = query.getOrDefault("quotaUser")
-  valid_598020 = validateParameter(valid_598020, JString, required = false,
+  if valid_580019 != nil:
+    section.add "fields", valid_580019
+  var valid_580020 = query.getOrDefault("quotaUser")
+  valid_580020 = validateParameter(valid_580020, JString, required = false,
                                  default = nil)
-  if valid_598020 != nil:
-    section.add "quotaUser", valid_598020
-  var valid_598021 = query.getOrDefault("alt")
-  valid_598021 = validateParameter(valid_598021, JString, required = false,
+  if valid_580020 != nil:
+    section.add "quotaUser", valid_580020
+  var valid_580021 = query.getOrDefault("alt")
+  valid_580021 = validateParameter(valid_580021, JString, required = false,
                                  default = newJString("json"))
-  if valid_598021 != nil:
-    section.add "alt", valid_598021
-  var valid_598022 = query.getOrDefault("oauth_token")
-  valid_598022 = validateParameter(valid_598022, JString, required = false,
+  if valid_580021 != nil:
+    section.add "alt", valid_580021
+  var valid_580022 = query.getOrDefault("oauth_token")
+  valid_580022 = validateParameter(valid_580022, JString, required = false,
                                  default = nil)
-  if valid_598022 != nil:
-    section.add "oauth_token", valid_598022
-  var valid_598023 = query.getOrDefault("userIp")
-  valid_598023 = validateParameter(valid_598023, JString, required = false,
+  if valid_580022 != nil:
+    section.add "oauth_token", valid_580022
+  var valid_580023 = query.getOrDefault("userIp")
+  valid_580023 = validateParameter(valid_580023, JString, required = false,
                                  default = nil)
-  if valid_598023 != nil:
-    section.add "userIp", valid_598023
-  var valid_598024 = query.getOrDefault("key")
-  valid_598024 = validateParameter(valid_598024, JString, required = false,
+  if valid_580023 != nil:
+    section.add "userIp", valid_580023
+  var valid_580024 = query.getOrDefault("key")
+  valid_580024 = validateParameter(valid_580024, JString, required = false,
                                  default = nil)
-  if valid_598024 != nil:
-    section.add "key", valid_598024
-  var valid_598025 = query.getOrDefault("prettyPrint")
-  valid_598025 = validateParameter(valid_598025, JBool, required = false,
+  if valid_580024 != nil:
+    section.add "key", valid_580024
+  var valid_580025 = query.getOrDefault("prettyPrint")
+  valid_580025 = validateParameter(valid_580025, JBool, required = false,
                                  default = newJBool(true))
-  if valid_598025 != nil:
-    section.add "prettyPrint", valid_598025
+  if valid_580025 != nil:
+    section.add "prettyPrint", valid_580025
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -733,20 +735,20 @@ proc validate_ClouduseraccountsGroupsDelete_598015(path: JsonNode; query: JsonNo
   if body != nil:
     result.add "body", body
 
-proc call*(call_598026: Call_ClouduseraccountsGroupsDelete_598014; path: JsonNode;
+proc call*(call_580026: Call_ClouduseraccountsGroupsDelete_580014; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Deletes the specified Group resource.
   ## 
-  let valid = call_598026.validator(path, query, header, formData, body)
-  let scheme = call_598026.pickScheme
+  let valid = call_580026.validator(path, query, header, formData, body)
+  let scheme = call_580026.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_598026.url(scheme.get, call_598026.host, call_598026.base,
-                         call_598026.route, valid.getOrDefault("path"),
+  let url = call_580026.url(scheme.get, call_580026.host, call_580026.base,
+                         call_580026.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_598026, url, valid)
+  result = hook(call_580026, url, valid)
 
-proc call*(call_598027: Call_ClouduseraccountsGroupsDelete_598014;
+proc call*(call_580027: Call_ClouduseraccountsGroupsDelete_580014;
           groupName: string; project: string; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; key: string = ""; prettyPrint: bool = true): Recallable =
@@ -770,32 +772,32 @@ proc call*(call_598027: Call_ClouduseraccountsGroupsDelete_598014;
   ##          : Project ID for this request.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_598028 = newJObject()
-  var query_598029 = newJObject()
-  add(query_598029, "fields", newJString(fields))
-  add(query_598029, "quotaUser", newJString(quotaUser))
-  add(query_598029, "alt", newJString(alt))
-  add(query_598029, "oauth_token", newJString(oauthToken))
-  add(path_598028, "groupName", newJString(groupName))
-  add(query_598029, "userIp", newJString(userIp))
-  add(query_598029, "key", newJString(key))
-  add(path_598028, "project", newJString(project))
-  add(query_598029, "prettyPrint", newJBool(prettyPrint))
-  result = call_598027.call(path_598028, query_598029, nil, nil, nil)
+  var path_580028 = newJObject()
+  var query_580029 = newJObject()
+  add(query_580029, "fields", newJString(fields))
+  add(query_580029, "quotaUser", newJString(quotaUser))
+  add(query_580029, "alt", newJString(alt))
+  add(query_580029, "oauth_token", newJString(oauthToken))
+  add(path_580028, "groupName", newJString(groupName))
+  add(query_580029, "userIp", newJString(userIp))
+  add(query_580029, "key", newJString(key))
+  add(path_580028, "project", newJString(project))
+  add(query_580029, "prettyPrint", newJBool(prettyPrint))
+  result = call_580027.call(path_580028, query_580029, nil, nil, nil)
 
-var clouduseraccountsGroupsDelete* = Call_ClouduseraccountsGroupsDelete_598014(
+var clouduseraccountsGroupsDelete* = Call_ClouduseraccountsGroupsDelete_580014(
     name: "clouduseraccountsGroupsDelete", meth: HttpMethod.HttpDelete,
     host: "www.googleapis.com", route: "/{project}/global/groups/{groupName}",
-    validator: validate_ClouduseraccountsGroupsDelete_598015,
+    validator: validate_ClouduseraccountsGroupsDelete_580015,
     base: "/clouduseraccounts/alpha/projects",
-    url: url_ClouduseraccountsGroupsDelete_598016, schemes: {Scheme.Https})
+    url: url_ClouduseraccountsGroupsDelete_580016, schemes: {Scheme.Https})
 type
-  Call_ClouduseraccountsGroupsAddMember_598030 = ref object of OpenApiRestCall_597424
-proc url_ClouduseraccountsGroupsAddMember_598032(protocol: Scheme; host: string;
+  Call_ClouduseraccountsGroupsAddMember_580030 = ref object of OpenApiRestCall_579424
+proc url_ClouduseraccountsGroupsAddMember_580032(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "project" in path, "`project` is a required path parameter"
   assert "groupName" in path, "`groupName` is a required path parameter"
@@ -810,7 +812,7 @@ proc url_ClouduseraccountsGroupsAddMember_598032(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_ClouduseraccountsGroupsAddMember_598031(path: JsonNode;
+proc validate_ClouduseraccountsGroupsAddMember_580031(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Adds users to the specified group.
   ## 
@@ -823,16 +825,16 @@ proc validate_ClouduseraccountsGroupsAddMember_598031(path: JsonNode;
   ##          : Project ID for this request.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `groupName` field"
-  var valid_598033 = path.getOrDefault("groupName")
-  valid_598033 = validateParameter(valid_598033, JString, required = true,
+  var valid_580033 = path.getOrDefault("groupName")
+  valid_580033 = validateParameter(valid_580033, JString, required = true,
                                  default = nil)
-  if valid_598033 != nil:
-    section.add "groupName", valid_598033
-  var valid_598034 = path.getOrDefault("project")
-  valid_598034 = validateParameter(valid_598034, JString, required = true,
+  if valid_580033 != nil:
+    section.add "groupName", valid_580033
+  var valid_580034 = path.getOrDefault("project")
+  valid_580034 = validateParameter(valid_580034, JString, required = true,
                                  default = nil)
-  if valid_598034 != nil:
-    section.add "project", valid_598034
+  if valid_580034 != nil:
+    section.add "project", valid_580034
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -850,41 +852,41 @@ proc validate_ClouduseraccountsGroupsAddMember_598031(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_598035 = query.getOrDefault("fields")
-  valid_598035 = validateParameter(valid_598035, JString, required = false,
+  var valid_580035 = query.getOrDefault("fields")
+  valid_580035 = validateParameter(valid_580035, JString, required = false,
                                  default = nil)
-  if valid_598035 != nil:
-    section.add "fields", valid_598035
-  var valid_598036 = query.getOrDefault("quotaUser")
-  valid_598036 = validateParameter(valid_598036, JString, required = false,
+  if valid_580035 != nil:
+    section.add "fields", valid_580035
+  var valid_580036 = query.getOrDefault("quotaUser")
+  valid_580036 = validateParameter(valid_580036, JString, required = false,
                                  default = nil)
-  if valid_598036 != nil:
-    section.add "quotaUser", valid_598036
-  var valid_598037 = query.getOrDefault("alt")
-  valid_598037 = validateParameter(valid_598037, JString, required = false,
+  if valid_580036 != nil:
+    section.add "quotaUser", valid_580036
+  var valid_580037 = query.getOrDefault("alt")
+  valid_580037 = validateParameter(valid_580037, JString, required = false,
                                  default = newJString("json"))
-  if valid_598037 != nil:
-    section.add "alt", valid_598037
-  var valid_598038 = query.getOrDefault("oauth_token")
-  valid_598038 = validateParameter(valid_598038, JString, required = false,
+  if valid_580037 != nil:
+    section.add "alt", valid_580037
+  var valid_580038 = query.getOrDefault("oauth_token")
+  valid_580038 = validateParameter(valid_580038, JString, required = false,
                                  default = nil)
-  if valid_598038 != nil:
-    section.add "oauth_token", valid_598038
-  var valid_598039 = query.getOrDefault("userIp")
-  valid_598039 = validateParameter(valid_598039, JString, required = false,
+  if valid_580038 != nil:
+    section.add "oauth_token", valid_580038
+  var valid_580039 = query.getOrDefault("userIp")
+  valid_580039 = validateParameter(valid_580039, JString, required = false,
                                  default = nil)
-  if valid_598039 != nil:
-    section.add "userIp", valid_598039
-  var valid_598040 = query.getOrDefault("key")
-  valid_598040 = validateParameter(valid_598040, JString, required = false,
+  if valid_580039 != nil:
+    section.add "userIp", valid_580039
+  var valid_580040 = query.getOrDefault("key")
+  valid_580040 = validateParameter(valid_580040, JString, required = false,
                                  default = nil)
-  if valid_598040 != nil:
-    section.add "key", valid_598040
-  var valid_598041 = query.getOrDefault("prettyPrint")
-  valid_598041 = validateParameter(valid_598041, JBool, required = false,
+  if valid_580040 != nil:
+    section.add "key", valid_580040
+  var valid_580041 = query.getOrDefault("prettyPrint")
+  valid_580041 = validateParameter(valid_580041, JBool, required = false,
                                  default = newJBool(true))
-  if valid_598041 != nil:
-    section.add "prettyPrint", valid_598041
+  if valid_580041 != nil:
+    section.add "prettyPrint", valid_580041
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -896,21 +898,21 @@ proc validate_ClouduseraccountsGroupsAddMember_598031(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_598043: Call_ClouduseraccountsGroupsAddMember_598030;
+proc call*(call_580043: Call_ClouduseraccountsGroupsAddMember_580030;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Adds users to the specified group.
   ## 
-  let valid = call_598043.validator(path, query, header, formData, body)
-  let scheme = call_598043.pickScheme
+  let valid = call_580043.validator(path, query, header, formData, body)
+  let scheme = call_580043.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_598043.url(scheme.get, call_598043.host, call_598043.base,
-                         call_598043.route, valid.getOrDefault("path"),
+  let url = call_580043.url(scheme.get, call_580043.host, call_580043.base,
+                         call_580043.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_598043, url, valid)
+  result = hook(call_580043, url, valid)
 
-proc call*(call_598044: Call_ClouduseraccountsGroupsAddMember_598030;
+proc call*(call_580044: Call_ClouduseraccountsGroupsAddMember_580030;
           groupName: string; project: string; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; key: string = ""; body: JsonNode = nil;
@@ -936,36 +938,36 @@ proc call*(call_598044: Call_ClouduseraccountsGroupsAddMember_598030;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_598045 = newJObject()
-  var query_598046 = newJObject()
-  var body_598047 = newJObject()
-  add(query_598046, "fields", newJString(fields))
-  add(query_598046, "quotaUser", newJString(quotaUser))
-  add(query_598046, "alt", newJString(alt))
-  add(query_598046, "oauth_token", newJString(oauthToken))
-  add(path_598045, "groupName", newJString(groupName))
-  add(query_598046, "userIp", newJString(userIp))
-  add(query_598046, "key", newJString(key))
-  add(path_598045, "project", newJString(project))
+  var path_580045 = newJObject()
+  var query_580046 = newJObject()
+  var body_580047 = newJObject()
+  add(query_580046, "fields", newJString(fields))
+  add(query_580046, "quotaUser", newJString(quotaUser))
+  add(query_580046, "alt", newJString(alt))
+  add(query_580046, "oauth_token", newJString(oauthToken))
+  add(path_580045, "groupName", newJString(groupName))
+  add(query_580046, "userIp", newJString(userIp))
+  add(query_580046, "key", newJString(key))
+  add(path_580045, "project", newJString(project))
   if body != nil:
-    body_598047 = body
-  add(query_598046, "prettyPrint", newJBool(prettyPrint))
-  result = call_598044.call(path_598045, query_598046, nil, nil, body_598047)
+    body_580047 = body
+  add(query_580046, "prettyPrint", newJBool(prettyPrint))
+  result = call_580044.call(path_580045, query_580046, nil, nil, body_580047)
 
-var clouduseraccountsGroupsAddMember* = Call_ClouduseraccountsGroupsAddMember_598030(
+var clouduseraccountsGroupsAddMember* = Call_ClouduseraccountsGroupsAddMember_580030(
     name: "clouduseraccountsGroupsAddMember", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com",
     route: "/{project}/global/groups/{groupName}/addMember",
-    validator: validate_ClouduseraccountsGroupsAddMember_598031,
+    validator: validate_ClouduseraccountsGroupsAddMember_580031,
     base: "/clouduseraccounts/alpha/projects",
-    url: url_ClouduseraccountsGroupsAddMember_598032, schemes: {Scheme.Https})
+    url: url_ClouduseraccountsGroupsAddMember_580032, schemes: {Scheme.Https})
 type
-  Call_ClouduseraccountsGroupsRemoveMember_598048 = ref object of OpenApiRestCall_597424
-proc url_ClouduseraccountsGroupsRemoveMember_598050(protocol: Scheme; host: string;
+  Call_ClouduseraccountsGroupsRemoveMember_580048 = ref object of OpenApiRestCall_579424
+proc url_ClouduseraccountsGroupsRemoveMember_580050(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "project" in path, "`project` is a required path parameter"
   assert "groupName" in path, "`groupName` is a required path parameter"
@@ -980,7 +982,7 @@ proc url_ClouduseraccountsGroupsRemoveMember_598050(protocol: Scheme; host: stri
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_ClouduseraccountsGroupsRemoveMember_598049(path: JsonNode;
+proc validate_ClouduseraccountsGroupsRemoveMember_580049(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Removes users from the specified group.
   ## 
@@ -993,16 +995,16 @@ proc validate_ClouduseraccountsGroupsRemoveMember_598049(path: JsonNode;
   ##          : Project ID for this request.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `groupName` field"
-  var valid_598051 = path.getOrDefault("groupName")
-  valid_598051 = validateParameter(valid_598051, JString, required = true,
+  var valid_580051 = path.getOrDefault("groupName")
+  valid_580051 = validateParameter(valid_580051, JString, required = true,
                                  default = nil)
-  if valid_598051 != nil:
-    section.add "groupName", valid_598051
-  var valid_598052 = path.getOrDefault("project")
-  valid_598052 = validateParameter(valid_598052, JString, required = true,
+  if valid_580051 != nil:
+    section.add "groupName", valid_580051
+  var valid_580052 = path.getOrDefault("project")
+  valid_580052 = validateParameter(valid_580052, JString, required = true,
                                  default = nil)
-  if valid_598052 != nil:
-    section.add "project", valid_598052
+  if valid_580052 != nil:
+    section.add "project", valid_580052
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -1020,41 +1022,41 @@ proc validate_ClouduseraccountsGroupsRemoveMember_598049(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_598053 = query.getOrDefault("fields")
-  valid_598053 = validateParameter(valid_598053, JString, required = false,
+  var valid_580053 = query.getOrDefault("fields")
+  valid_580053 = validateParameter(valid_580053, JString, required = false,
                                  default = nil)
-  if valid_598053 != nil:
-    section.add "fields", valid_598053
-  var valid_598054 = query.getOrDefault("quotaUser")
-  valid_598054 = validateParameter(valid_598054, JString, required = false,
+  if valid_580053 != nil:
+    section.add "fields", valid_580053
+  var valid_580054 = query.getOrDefault("quotaUser")
+  valid_580054 = validateParameter(valid_580054, JString, required = false,
                                  default = nil)
-  if valid_598054 != nil:
-    section.add "quotaUser", valid_598054
-  var valid_598055 = query.getOrDefault("alt")
-  valid_598055 = validateParameter(valid_598055, JString, required = false,
+  if valid_580054 != nil:
+    section.add "quotaUser", valid_580054
+  var valid_580055 = query.getOrDefault("alt")
+  valid_580055 = validateParameter(valid_580055, JString, required = false,
                                  default = newJString("json"))
-  if valid_598055 != nil:
-    section.add "alt", valid_598055
-  var valid_598056 = query.getOrDefault("oauth_token")
-  valid_598056 = validateParameter(valid_598056, JString, required = false,
+  if valid_580055 != nil:
+    section.add "alt", valid_580055
+  var valid_580056 = query.getOrDefault("oauth_token")
+  valid_580056 = validateParameter(valid_580056, JString, required = false,
                                  default = nil)
-  if valid_598056 != nil:
-    section.add "oauth_token", valid_598056
-  var valid_598057 = query.getOrDefault("userIp")
-  valid_598057 = validateParameter(valid_598057, JString, required = false,
+  if valid_580056 != nil:
+    section.add "oauth_token", valid_580056
+  var valid_580057 = query.getOrDefault("userIp")
+  valid_580057 = validateParameter(valid_580057, JString, required = false,
                                  default = nil)
-  if valid_598057 != nil:
-    section.add "userIp", valid_598057
-  var valid_598058 = query.getOrDefault("key")
-  valid_598058 = validateParameter(valid_598058, JString, required = false,
+  if valid_580057 != nil:
+    section.add "userIp", valid_580057
+  var valid_580058 = query.getOrDefault("key")
+  valid_580058 = validateParameter(valid_580058, JString, required = false,
                                  default = nil)
-  if valid_598058 != nil:
-    section.add "key", valid_598058
-  var valid_598059 = query.getOrDefault("prettyPrint")
-  valid_598059 = validateParameter(valid_598059, JBool, required = false,
+  if valid_580058 != nil:
+    section.add "key", valid_580058
+  var valid_580059 = query.getOrDefault("prettyPrint")
+  valid_580059 = validateParameter(valid_580059, JBool, required = false,
                                  default = newJBool(true))
-  if valid_598059 != nil:
-    section.add "prettyPrint", valid_598059
+  if valid_580059 != nil:
+    section.add "prettyPrint", valid_580059
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1066,21 +1068,21 @@ proc validate_ClouduseraccountsGroupsRemoveMember_598049(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_598061: Call_ClouduseraccountsGroupsRemoveMember_598048;
+proc call*(call_580061: Call_ClouduseraccountsGroupsRemoveMember_580048;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Removes users from the specified group.
   ## 
-  let valid = call_598061.validator(path, query, header, formData, body)
-  let scheme = call_598061.pickScheme
+  let valid = call_580061.validator(path, query, header, formData, body)
+  let scheme = call_580061.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_598061.url(scheme.get, call_598061.host, call_598061.base,
-                         call_598061.route, valid.getOrDefault("path"),
+  let url = call_580061.url(scheme.get, call_580061.host, call_580061.base,
+                         call_580061.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_598061, url, valid)
+  result = hook(call_580061, url, valid)
 
-proc call*(call_598062: Call_ClouduseraccountsGroupsRemoveMember_598048;
+proc call*(call_580062: Call_ClouduseraccountsGroupsRemoveMember_580048;
           groupName: string; project: string; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; key: string = ""; body: JsonNode = nil;
@@ -1106,36 +1108,36 @@ proc call*(call_598062: Call_ClouduseraccountsGroupsRemoveMember_598048;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_598063 = newJObject()
-  var query_598064 = newJObject()
-  var body_598065 = newJObject()
-  add(query_598064, "fields", newJString(fields))
-  add(query_598064, "quotaUser", newJString(quotaUser))
-  add(query_598064, "alt", newJString(alt))
-  add(query_598064, "oauth_token", newJString(oauthToken))
-  add(path_598063, "groupName", newJString(groupName))
-  add(query_598064, "userIp", newJString(userIp))
-  add(query_598064, "key", newJString(key))
-  add(path_598063, "project", newJString(project))
+  var path_580063 = newJObject()
+  var query_580064 = newJObject()
+  var body_580065 = newJObject()
+  add(query_580064, "fields", newJString(fields))
+  add(query_580064, "quotaUser", newJString(quotaUser))
+  add(query_580064, "alt", newJString(alt))
+  add(query_580064, "oauth_token", newJString(oauthToken))
+  add(path_580063, "groupName", newJString(groupName))
+  add(query_580064, "userIp", newJString(userIp))
+  add(query_580064, "key", newJString(key))
+  add(path_580063, "project", newJString(project))
   if body != nil:
-    body_598065 = body
-  add(query_598064, "prettyPrint", newJBool(prettyPrint))
-  result = call_598062.call(path_598063, query_598064, nil, nil, body_598065)
+    body_580065 = body
+  add(query_580064, "prettyPrint", newJBool(prettyPrint))
+  result = call_580062.call(path_580063, query_580064, nil, nil, body_580065)
 
-var clouduseraccountsGroupsRemoveMember* = Call_ClouduseraccountsGroupsRemoveMember_598048(
+var clouduseraccountsGroupsRemoveMember* = Call_ClouduseraccountsGroupsRemoveMember_580048(
     name: "clouduseraccountsGroupsRemoveMember", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com",
     route: "/{project}/global/groups/{groupName}/removeMember",
-    validator: validate_ClouduseraccountsGroupsRemoveMember_598049,
+    validator: validate_ClouduseraccountsGroupsRemoveMember_580049,
     base: "/clouduseraccounts/alpha/projects",
-    url: url_ClouduseraccountsGroupsRemoveMember_598050, schemes: {Scheme.Https})
+    url: url_ClouduseraccountsGroupsRemoveMember_580050, schemes: {Scheme.Https})
 type
-  Call_ClouduseraccountsGroupsGetIamPolicy_598066 = ref object of OpenApiRestCall_597424
-proc url_ClouduseraccountsGroupsGetIamPolicy_598068(protocol: Scheme; host: string;
+  Call_ClouduseraccountsGroupsGetIamPolicy_580066 = ref object of OpenApiRestCall_579424
+proc url_ClouduseraccountsGroupsGetIamPolicy_580068(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "project" in path, "`project` is a required path parameter"
   assert "resource" in path, "`resource` is a required path parameter"
@@ -1150,7 +1152,7 @@ proc url_ClouduseraccountsGroupsGetIamPolicy_598068(protocol: Scheme; host: stri
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_ClouduseraccountsGroupsGetIamPolicy_598067(path: JsonNode;
+proc validate_ClouduseraccountsGroupsGetIamPolicy_580067(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Gets the access control policy for a resource. May be empty if no such policy or resource exists.
   ## 
@@ -1163,16 +1165,16 @@ proc validate_ClouduseraccountsGroupsGetIamPolicy_598067(path: JsonNode;
   ##          : Project ID for this request.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `resource` field"
-  var valid_598069 = path.getOrDefault("resource")
-  valid_598069 = validateParameter(valid_598069, JString, required = true,
+  var valid_580069 = path.getOrDefault("resource")
+  valid_580069 = validateParameter(valid_580069, JString, required = true,
                                  default = nil)
-  if valid_598069 != nil:
-    section.add "resource", valid_598069
-  var valid_598070 = path.getOrDefault("project")
-  valid_598070 = validateParameter(valid_598070, JString, required = true,
+  if valid_580069 != nil:
+    section.add "resource", valid_580069
+  var valid_580070 = path.getOrDefault("project")
+  valid_580070 = validateParameter(valid_580070, JString, required = true,
                                  default = nil)
-  if valid_598070 != nil:
-    section.add "project", valid_598070
+  if valid_580070 != nil:
+    section.add "project", valid_580070
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -1190,41 +1192,41 @@ proc validate_ClouduseraccountsGroupsGetIamPolicy_598067(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_598071 = query.getOrDefault("fields")
-  valid_598071 = validateParameter(valid_598071, JString, required = false,
+  var valid_580071 = query.getOrDefault("fields")
+  valid_580071 = validateParameter(valid_580071, JString, required = false,
                                  default = nil)
-  if valid_598071 != nil:
-    section.add "fields", valid_598071
-  var valid_598072 = query.getOrDefault("quotaUser")
-  valid_598072 = validateParameter(valid_598072, JString, required = false,
+  if valid_580071 != nil:
+    section.add "fields", valid_580071
+  var valid_580072 = query.getOrDefault("quotaUser")
+  valid_580072 = validateParameter(valid_580072, JString, required = false,
                                  default = nil)
-  if valid_598072 != nil:
-    section.add "quotaUser", valid_598072
-  var valid_598073 = query.getOrDefault("alt")
-  valid_598073 = validateParameter(valid_598073, JString, required = false,
+  if valid_580072 != nil:
+    section.add "quotaUser", valid_580072
+  var valid_580073 = query.getOrDefault("alt")
+  valid_580073 = validateParameter(valid_580073, JString, required = false,
                                  default = newJString("json"))
-  if valid_598073 != nil:
-    section.add "alt", valid_598073
-  var valid_598074 = query.getOrDefault("oauth_token")
-  valid_598074 = validateParameter(valid_598074, JString, required = false,
+  if valid_580073 != nil:
+    section.add "alt", valid_580073
+  var valid_580074 = query.getOrDefault("oauth_token")
+  valid_580074 = validateParameter(valid_580074, JString, required = false,
                                  default = nil)
-  if valid_598074 != nil:
-    section.add "oauth_token", valid_598074
-  var valid_598075 = query.getOrDefault("userIp")
-  valid_598075 = validateParameter(valid_598075, JString, required = false,
+  if valid_580074 != nil:
+    section.add "oauth_token", valid_580074
+  var valid_580075 = query.getOrDefault("userIp")
+  valid_580075 = validateParameter(valid_580075, JString, required = false,
                                  default = nil)
-  if valid_598075 != nil:
-    section.add "userIp", valid_598075
-  var valid_598076 = query.getOrDefault("key")
-  valid_598076 = validateParameter(valid_598076, JString, required = false,
+  if valid_580075 != nil:
+    section.add "userIp", valid_580075
+  var valid_580076 = query.getOrDefault("key")
+  valid_580076 = validateParameter(valid_580076, JString, required = false,
                                  default = nil)
-  if valid_598076 != nil:
-    section.add "key", valid_598076
-  var valid_598077 = query.getOrDefault("prettyPrint")
-  valid_598077 = validateParameter(valid_598077, JBool, required = false,
+  if valid_580076 != nil:
+    section.add "key", valid_580076
+  var valid_580077 = query.getOrDefault("prettyPrint")
+  valid_580077 = validateParameter(valid_580077, JBool, required = false,
                                  default = newJBool(true))
-  if valid_598077 != nil:
-    section.add "prettyPrint", valid_598077
+  if valid_580077 != nil:
+    section.add "prettyPrint", valid_580077
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1233,21 +1235,21 @@ proc validate_ClouduseraccountsGroupsGetIamPolicy_598067(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_598078: Call_ClouduseraccountsGroupsGetIamPolicy_598066;
+proc call*(call_580078: Call_ClouduseraccountsGroupsGetIamPolicy_580066;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Gets the access control policy for a resource. May be empty if no such policy or resource exists.
   ## 
-  let valid = call_598078.validator(path, query, header, formData, body)
-  let scheme = call_598078.pickScheme
+  let valid = call_580078.validator(path, query, header, formData, body)
+  let scheme = call_580078.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_598078.url(scheme.get, call_598078.host, call_598078.base,
-                         call_598078.route, valid.getOrDefault("path"),
+  let url = call_580078.url(scheme.get, call_580078.host, call_580078.base,
+                         call_580078.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_598078, url, valid)
+  result = hook(call_580078, url, valid)
 
-proc call*(call_598079: Call_ClouduseraccountsGroupsGetIamPolicy_598066;
+proc call*(call_580079: Call_ClouduseraccountsGroupsGetIamPolicy_580066;
           resource: string; project: string; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; key: string = ""; prettyPrint: bool = true): Recallable =
@@ -1271,33 +1273,33 @@ proc call*(call_598079: Call_ClouduseraccountsGroupsGetIamPolicy_598066;
   ##          : Project ID for this request.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_598080 = newJObject()
-  var query_598081 = newJObject()
-  add(query_598081, "fields", newJString(fields))
-  add(query_598081, "quotaUser", newJString(quotaUser))
-  add(query_598081, "alt", newJString(alt))
-  add(query_598081, "oauth_token", newJString(oauthToken))
-  add(query_598081, "userIp", newJString(userIp))
-  add(query_598081, "key", newJString(key))
-  add(path_598080, "resource", newJString(resource))
-  add(path_598080, "project", newJString(project))
-  add(query_598081, "prettyPrint", newJBool(prettyPrint))
-  result = call_598079.call(path_598080, query_598081, nil, nil, nil)
+  var path_580080 = newJObject()
+  var query_580081 = newJObject()
+  add(query_580081, "fields", newJString(fields))
+  add(query_580081, "quotaUser", newJString(quotaUser))
+  add(query_580081, "alt", newJString(alt))
+  add(query_580081, "oauth_token", newJString(oauthToken))
+  add(query_580081, "userIp", newJString(userIp))
+  add(query_580081, "key", newJString(key))
+  add(path_580080, "resource", newJString(resource))
+  add(path_580080, "project", newJString(project))
+  add(query_580081, "prettyPrint", newJBool(prettyPrint))
+  result = call_580079.call(path_580080, query_580081, nil, nil, nil)
 
-var clouduseraccountsGroupsGetIamPolicy* = Call_ClouduseraccountsGroupsGetIamPolicy_598066(
+var clouduseraccountsGroupsGetIamPolicy* = Call_ClouduseraccountsGroupsGetIamPolicy_580066(
     name: "clouduseraccountsGroupsGetIamPolicy", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com",
     route: "/{project}/global/groups/{resource}/getIamPolicy",
-    validator: validate_ClouduseraccountsGroupsGetIamPolicy_598067,
+    validator: validate_ClouduseraccountsGroupsGetIamPolicy_580067,
     base: "/clouduseraccounts/alpha/projects",
-    url: url_ClouduseraccountsGroupsGetIamPolicy_598068, schemes: {Scheme.Https})
+    url: url_ClouduseraccountsGroupsGetIamPolicy_580068, schemes: {Scheme.Https})
 type
-  Call_ClouduseraccountsGroupsSetIamPolicy_598082 = ref object of OpenApiRestCall_597424
-proc url_ClouduseraccountsGroupsSetIamPolicy_598084(protocol: Scheme; host: string;
+  Call_ClouduseraccountsGroupsSetIamPolicy_580082 = ref object of OpenApiRestCall_579424
+proc url_ClouduseraccountsGroupsSetIamPolicy_580084(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "project" in path, "`project` is a required path parameter"
   assert "resource" in path, "`resource` is a required path parameter"
@@ -1312,7 +1314,7 @@ proc url_ClouduseraccountsGroupsSetIamPolicy_598084(protocol: Scheme; host: stri
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_ClouduseraccountsGroupsSetIamPolicy_598083(path: JsonNode;
+proc validate_ClouduseraccountsGroupsSetIamPolicy_580083(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Sets the access control policy on the specified resource. Replaces any existing policy.
   ## 
@@ -1325,16 +1327,16 @@ proc validate_ClouduseraccountsGroupsSetIamPolicy_598083(path: JsonNode;
   ##          : Project ID for this request.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `resource` field"
-  var valid_598085 = path.getOrDefault("resource")
-  valid_598085 = validateParameter(valid_598085, JString, required = true,
+  var valid_580085 = path.getOrDefault("resource")
+  valid_580085 = validateParameter(valid_580085, JString, required = true,
                                  default = nil)
-  if valid_598085 != nil:
-    section.add "resource", valid_598085
-  var valid_598086 = path.getOrDefault("project")
-  valid_598086 = validateParameter(valid_598086, JString, required = true,
+  if valid_580085 != nil:
+    section.add "resource", valid_580085
+  var valid_580086 = path.getOrDefault("project")
+  valid_580086 = validateParameter(valid_580086, JString, required = true,
                                  default = nil)
-  if valid_598086 != nil:
-    section.add "project", valid_598086
+  if valid_580086 != nil:
+    section.add "project", valid_580086
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -1352,41 +1354,41 @@ proc validate_ClouduseraccountsGroupsSetIamPolicy_598083(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_598087 = query.getOrDefault("fields")
-  valid_598087 = validateParameter(valid_598087, JString, required = false,
+  var valid_580087 = query.getOrDefault("fields")
+  valid_580087 = validateParameter(valid_580087, JString, required = false,
                                  default = nil)
-  if valid_598087 != nil:
-    section.add "fields", valid_598087
-  var valid_598088 = query.getOrDefault("quotaUser")
-  valid_598088 = validateParameter(valid_598088, JString, required = false,
+  if valid_580087 != nil:
+    section.add "fields", valid_580087
+  var valid_580088 = query.getOrDefault("quotaUser")
+  valid_580088 = validateParameter(valid_580088, JString, required = false,
                                  default = nil)
-  if valid_598088 != nil:
-    section.add "quotaUser", valid_598088
-  var valid_598089 = query.getOrDefault("alt")
-  valid_598089 = validateParameter(valid_598089, JString, required = false,
+  if valid_580088 != nil:
+    section.add "quotaUser", valid_580088
+  var valid_580089 = query.getOrDefault("alt")
+  valid_580089 = validateParameter(valid_580089, JString, required = false,
                                  default = newJString("json"))
-  if valid_598089 != nil:
-    section.add "alt", valid_598089
-  var valid_598090 = query.getOrDefault("oauth_token")
-  valid_598090 = validateParameter(valid_598090, JString, required = false,
+  if valid_580089 != nil:
+    section.add "alt", valid_580089
+  var valid_580090 = query.getOrDefault("oauth_token")
+  valid_580090 = validateParameter(valid_580090, JString, required = false,
                                  default = nil)
-  if valid_598090 != nil:
-    section.add "oauth_token", valid_598090
-  var valid_598091 = query.getOrDefault("userIp")
-  valid_598091 = validateParameter(valid_598091, JString, required = false,
+  if valid_580090 != nil:
+    section.add "oauth_token", valid_580090
+  var valid_580091 = query.getOrDefault("userIp")
+  valid_580091 = validateParameter(valid_580091, JString, required = false,
                                  default = nil)
-  if valid_598091 != nil:
-    section.add "userIp", valid_598091
-  var valid_598092 = query.getOrDefault("key")
-  valid_598092 = validateParameter(valid_598092, JString, required = false,
+  if valid_580091 != nil:
+    section.add "userIp", valid_580091
+  var valid_580092 = query.getOrDefault("key")
+  valid_580092 = validateParameter(valid_580092, JString, required = false,
                                  default = nil)
-  if valid_598092 != nil:
-    section.add "key", valid_598092
-  var valid_598093 = query.getOrDefault("prettyPrint")
-  valid_598093 = validateParameter(valid_598093, JBool, required = false,
+  if valid_580092 != nil:
+    section.add "key", valid_580092
+  var valid_580093 = query.getOrDefault("prettyPrint")
+  valid_580093 = validateParameter(valid_580093, JBool, required = false,
                                  default = newJBool(true))
-  if valid_598093 != nil:
-    section.add "prettyPrint", valid_598093
+  if valid_580093 != nil:
+    section.add "prettyPrint", valid_580093
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1398,21 +1400,21 @@ proc validate_ClouduseraccountsGroupsSetIamPolicy_598083(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_598095: Call_ClouduseraccountsGroupsSetIamPolicy_598082;
+proc call*(call_580095: Call_ClouduseraccountsGroupsSetIamPolicy_580082;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Sets the access control policy on the specified resource. Replaces any existing policy.
   ## 
-  let valid = call_598095.validator(path, query, header, formData, body)
-  let scheme = call_598095.pickScheme
+  let valid = call_580095.validator(path, query, header, formData, body)
+  let scheme = call_580095.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_598095.url(scheme.get, call_598095.host, call_598095.base,
-                         call_598095.route, valid.getOrDefault("path"),
+  let url = call_580095.url(scheme.get, call_580095.host, call_580095.base,
+                         call_580095.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_598095, url, valid)
+  result = hook(call_580095, url, valid)
 
-proc call*(call_598096: Call_ClouduseraccountsGroupsSetIamPolicy_598082;
+proc call*(call_580096: Call_ClouduseraccountsGroupsSetIamPolicy_580082;
           resource: string; project: string; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; key: string = ""; body: JsonNode = nil;
@@ -1438,36 +1440,36 @@ proc call*(call_598096: Call_ClouduseraccountsGroupsSetIamPolicy_598082;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_598097 = newJObject()
-  var query_598098 = newJObject()
-  var body_598099 = newJObject()
-  add(query_598098, "fields", newJString(fields))
-  add(query_598098, "quotaUser", newJString(quotaUser))
-  add(query_598098, "alt", newJString(alt))
-  add(query_598098, "oauth_token", newJString(oauthToken))
-  add(query_598098, "userIp", newJString(userIp))
-  add(query_598098, "key", newJString(key))
-  add(path_598097, "resource", newJString(resource))
-  add(path_598097, "project", newJString(project))
+  var path_580097 = newJObject()
+  var query_580098 = newJObject()
+  var body_580099 = newJObject()
+  add(query_580098, "fields", newJString(fields))
+  add(query_580098, "quotaUser", newJString(quotaUser))
+  add(query_580098, "alt", newJString(alt))
+  add(query_580098, "oauth_token", newJString(oauthToken))
+  add(query_580098, "userIp", newJString(userIp))
+  add(query_580098, "key", newJString(key))
+  add(path_580097, "resource", newJString(resource))
+  add(path_580097, "project", newJString(project))
   if body != nil:
-    body_598099 = body
-  add(query_598098, "prettyPrint", newJBool(prettyPrint))
-  result = call_598096.call(path_598097, query_598098, nil, nil, body_598099)
+    body_580099 = body
+  add(query_580098, "prettyPrint", newJBool(prettyPrint))
+  result = call_580096.call(path_580097, query_580098, nil, nil, body_580099)
 
-var clouduseraccountsGroupsSetIamPolicy* = Call_ClouduseraccountsGroupsSetIamPolicy_598082(
+var clouduseraccountsGroupsSetIamPolicy* = Call_ClouduseraccountsGroupsSetIamPolicy_580082(
     name: "clouduseraccountsGroupsSetIamPolicy", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com",
     route: "/{project}/global/groups/{resource}/setIamPolicy",
-    validator: validate_ClouduseraccountsGroupsSetIamPolicy_598083,
+    validator: validate_ClouduseraccountsGroupsSetIamPolicy_580083,
     base: "/clouduseraccounts/alpha/projects",
-    url: url_ClouduseraccountsGroupsSetIamPolicy_598084, schemes: {Scheme.Https})
+    url: url_ClouduseraccountsGroupsSetIamPolicy_580084, schemes: {Scheme.Https})
 type
-  Call_ClouduseraccountsGroupsTestIamPermissions_598100 = ref object of OpenApiRestCall_597424
-proc url_ClouduseraccountsGroupsTestIamPermissions_598102(protocol: Scheme;
+  Call_ClouduseraccountsGroupsTestIamPermissions_580100 = ref object of OpenApiRestCall_579424
+proc url_ClouduseraccountsGroupsTestIamPermissions_580102(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "project" in path, "`project` is a required path parameter"
   assert "resource" in path, "`resource` is a required path parameter"
@@ -1482,7 +1484,7 @@ proc url_ClouduseraccountsGroupsTestIamPermissions_598102(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_ClouduseraccountsGroupsTestIamPermissions_598101(path: JsonNode;
+proc validate_ClouduseraccountsGroupsTestIamPermissions_580101(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Returns permissions that a caller has on the specified resource.
   ## 
@@ -1495,16 +1497,16 @@ proc validate_ClouduseraccountsGroupsTestIamPermissions_598101(path: JsonNode;
   ##          : Project ID for this request.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `resource` field"
-  var valid_598103 = path.getOrDefault("resource")
-  valid_598103 = validateParameter(valid_598103, JString, required = true,
+  var valid_580103 = path.getOrDefault("resource")
+  valid_580103 = validateParameter(valid_580103, JString, required = true,
                                  default = nil)
-  if valid_598103 != nil:
-    section.add "resource", valid_598103
-  var valid_598104 = path.getOrDefault("project")
-  valid_598104 = validateParameter(valid_598104, JString, required = true,
+  if valid_580103 != nil:
+    section.add "resource", valid_580103
+  var valid_580104 = path.getOrDefault("project")
+  valid_580104 = validateParameter(valid_580104, JString, required = true,
                                  default = nil)
-  if valid_598104 != nil:
-    section.add "project", valid_598104
+  if valid_580104 != nil:
+    section.add "project", valid_580104
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -1522,41 +1524,41 @@ proc validate_ClouduseraccountsGroupsTestIamPermissions_598101(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_598105 = query.getOrDefault("fields")
-  valid_598105 = validateParameter(valid_598105, JString, required = false,
+  var valid_580105 = query.getOrDefault("fields")
+  valid_580105 = validateParameter(valid_580105, JString, required = false,
                                  default = nil)
-  if valid_598105 != nil:
-    section.add "fields", valid_598105
-  var valid_598106 = query.getOrDefault("quotaUser")
-  valid_598106 = validateParameter(valid_598106, JString, required = false,
+  if valid_580105 != nil:
+    section.add "fields", valid_580105
+  var valid_580106 = query.getOrDefault("quotaUser")
+  valid_580106 = validateParameter(valid_580106, JString, required = false,
                                  default = nil)
-  if valid_598106 != nil:
-    section.add "quotaUser", valid_598106
-  var valid_598107 = query.getOrDefault("alt")
-  valid_598107 = validateParameter(valid_598107, JString, required = false,
+  if valid_580106 != nil:
+    section.add "quotaUser", valid_580106
+  var valid_580107 = query.getOrDefault("alt")
+  valid_580107 = validateParameter(valid_580107, JString, required = false,
                                  default = newJString("json"))
-  if valid_598107 != nil:
-    section.add "alt", valid_598107
-  var valid_598108 = query.getOrDefault("oauth_token")
-  valid_598108 = validateParameter(valid_598108, JString, required = false,
+  if valid_580107 != nil:
+    section.add "alt", valid_580107
+  var valid_580108 = query.getOrDefault("oauth_token")
+  valid_580108 = validateParameter(valid_580108, JString, required = false,
                                  default = nil)
-  if valid_598108 != nil:
-    section.add "oauth_token", valid_598108
-  var valid_598109 = query.getOrDefault("userIp")
-  valid_598109 = validateParameter(valid_598109, JString, required = false,
+  if valid_580108 != nil:
+    section.add "oauth_token", valid_580108
+  var valid_580109 = query.getOrDefault("userIp")
+  valid_580109 = validateParameter(valid_580109, JString, required = false,
                                  default = nil)
-  if valid_598109 != nil:
-    section.add "userIp", valid_598109
-  var valid_598110 = query.getOrDefault("key")
-  valid_598110 = validateParameter(valid_598110, JString, required = false,
+  if valid_580109 != nil:
+    section.add "userIp", valid_580109
+  var valid_580110 = query.getOrDefault("key")
+  valid_580110 = validateParameter(valid_580110, JString, required = false,
                                  default = nil)
-  if valid_598110 != nil:
-    section.add "key", valid_598110
-  var valid_598111 = query.getOrDefault("prettyPrint")
-  valid_598111 = validateParameter(valid_598111, JBool, required = false,
+  if valid_580110 != nil:
+    section.add "key", valid_580110
+  var valid_580111 = query.getOrDefault("prettyPrint")
+  valid_580111 = validateParameter(valid_580111, JBool, required = false,
                                  default = newJBool(true))
-  if valid_598111 != nil:
-    section.add "prettyPrint", valid_598111
+  if valid_580111 != nil:
+    section.add "prettyPrint", valid_580111
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1568,21 +1570,21 @@ proc validate_ClouduseraccountsGroupsTestIamPermissions_598101(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_598113: Call_ClouduseraccountsGroupsTestIamPermissions_598100;
+proc call*(call_580113: Call_ClouduseraccountsGroupsTestIamPermissions_580100;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Returns permissions that a caller has on the specified resource.
   ## 
-  let valid = call_598113.validator(path, query, header, formData, body)
-  let scheme = call_598113.pickScheme
+  let valid = call_580113.validator(path, query, header, formData, body)
+  let scheme = call_580113.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_598113.url(scheme.get, call_598113.host, call_598113.base,
-                         call_598113.route, valid.getOrDefault("path"),
+  let url = call_580113.url(scheme.get, call_580113.host, call_580113.base,
+                         call_580113.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_598113, url, valid)
+  result = hook(call_580113, url, valid)
 
-proc call*(call_598114: Call_ClouduseraccountsGroupsTestIamPermissions_598100;
+proc call*(call_580114: Call_ClouduseraccountsGroupsTestIamPermissions_580100;
           resource: string; project: string; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; key: string = ""; body: JsonNode = nil;
@@ -1608,37 +1610,37 @@ proc call*(call_598114: Call_ClouduseraccountsGroupsTestIamPermissions_598100;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_598115 = newJObject()
-  var query_598116 = newJObject()
-  var body_598117 = newJObject()
-  add(query_598116, "fields", newJString(fields))
-  add(query_598116, "quotaUser", newJString(quotaUser))
-  add(query_598116, "alt", newJString(alt))
-  add(query_598116, "oauth_token", newJString(oauthToken))
-  add(query_598116, "userIp", newJString(userIp))
-  add(query_598116, "key", newJString(key))
-  add(path_598115, "resource", newJString(resource))
-  add(path_598115, "project", newJString(project))
+  var path_580115 = newJObject()
+  var query_580116 = newJObject()
+  var body_580117 = newJObject()
+  add(query_580116, "fields", newJString(fields))
+  add(query_580116, "quotaUser", newJString(quotaUser))
+  add(query_580116, "alt", newJString(alt))
+  add(query_580116, "oauth_token", newJString(oauthToken))
+  add(query_580116, "userIp", newJString(userIp))
+  add(query_580116, "key", newJString(key))
+  add(path_580115, "resource", newJString(resource))
+  add(path_580115, "project", newJString(project))
   if body != nil:
-    body_598117 = body
-  add(query_598116, "prettyPrint", newJBool(prettyPrint))
-  result = call_598114.call(path_598115, query_598116, nil, nil, body_598117)
+    body_580117 = body
+  add(query_580116, "prettyPrint", newJBool(prettyPrint))
+  result = call_580114.call(path_580115, query_580116, nil, nil, body_580117)
 
-var clouduseraccountsGroupsTestIamPermissions* = Call_ClouduseraccountsGroupsTestIamPermissions_598100(
+var clouduseraccountsGroupsTestIamPermissions* = Call_ClouduseraccountsGroupsTestIamPermissions_580100(
     name: "clouduseraccountsGroupsTestIamPermissions", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com",
     route: "/{project}/global/groups/{resource}/testIamPermissions",
-    validator: validate_ClouduseraccountsGroupsTestIamPermissions_598101,
+    validator: validate_ClouduseraccountsGroupsTestIamPermissions_580101,
     base: "/clouduseraccounts/alpha/projects",
-    url: url_ClouduseraccountsGroupsTestIamPermissions_598102,
+    url: url_ClouduseraccountsGroupsTestIamPermissions_580102,
     schemes: {Scheme.Https})
 type
-  Call_ClouduseraccountsGlobalAccountsOperationsList_598118 = ref object of OpenApiRestCall_597424
-proc url_ClouduseraccountsGlobalAccountsOperationsList_598120(protocol: Scheme;
+  Call_ClouduseraccountsGlobalAccountsOperationsList_580118 = ref object of OpenApiRestCall_579424
+proc url_ClouduseraccountsGlobalAccountsOperationsList_580120(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "project" in path, "`project` is a required path parameter"
   const
@@ -1650,7 +1652,7 @@ proc url_ClouduseraccountsGlobalAccountsOperationsList_598120(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_ClouduseraccountsGlobalAccountsOperationsList_598119(
+proc validate_ClouduseraccountsGlobalAccountsOperationsList_580119(
     path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
     body: JsonNode): JsonNode =
   ## Retrieves the list of operation resources contained within the specified project.
@@ -1662,11 +1664,11 @@ proc validate_ClouduseraccountsGlobalAccountsOperationsList_598119(
   ##          : Project ID for this request.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `project` field"
-  var valid_598121 = path.getOrDefault("project")
-  valid_598121 = validateParameter(valid_598121, JString, required = true,
+  var valid_580121 = path.getOrDefault("project")
+  valid_580121 = validateParameter(valid_580121, JString, required = true,
                                  default = nil)
-  if valid_598121 != nil:
-    section.add "project", valid_598121
+  if valid_580121 != nil:
+    section.add "project", valid_580121
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -1704,61 +1706,61 @@ proc validate_ClouduseraccountsGlobalAccountsOperationsList_598119(
   ## 
   ## The Beta API also supports filtering on multiple expressions by providing each separate expression within parentheses. For example, (scheduling.automaticRestart eq true) (zone eq us-central1-f). Multiple expressions are treated as AND expressions, meaning that resources must match all expressions to pass the filters.
   section = newJObject()
-  var valid_598122 = query.getOrDefault("fields")
-  valid_598122 = validateParameter(valid_598122, JString, required = false,
+  var valid_580122 = query.getOrDefault("fields")
+  valid_580122 = validateParameter(valid_580122, JString, required = false,
                                  default = nil)
-  if valid_598122 != nil:
-    section.add "fields", valid_598122
-  var valid_598123 = query.getOrDefault("pageToken")
-  valid_598123 = validateParameter(valid_598123, JString, required = false,
+  if valid_580122 != nil:
+    section.add "fields", valid_580122
+  var valid_580123 = query.getOrDefault("pageToken")
+  valid_580123 = validateParameter(valid_580123, JString, required = false,
                                  default = nil)
-  if valid_598123 != nil:
-    section.add "pageToken", valid_598123
-  var valid_598124 = query.getOrDefault("quotaUser")
-  valid_598124 = validateParameter(valid_598124, JString, required = false,
+  if valid_580123 != nil:
+    section.add "pageToken", valid_580123
+  var valid_580124 = query.getOrDefault("quotaUser")
+  valid_580124 = validateParameter(valid_580124, JString, required = false,
                                  default = nil)
-  if valid_598124 != nil:
-    section.add "quotaUser", valid_598124
-  var valid_598125 = query.getOrDefault("alt")
-  valid_598125 = validateParameter(valid_598125, JString, required = false,
+  if valid_580124 != nil:
+    section.add "quotaUser", valid_580124
+  var valid_580125 = query.getOrDefault("alt")
+  valid_580125 = validateParameter(valid_580125, JString, required = false,
                                  default = newJString("json"))
-  if valid_598125 != nil:
-    section.add "alt", valid_598125
-  var valid_598126 = query.getOrDefault("oauth_token")
-  valid_598126 = validateParameter(valid_598126, JString, required = false,
+  if valid_580125 != nil:
+    section.add "alt", valid_580125
+  var valid_580126 = query.getOrDefault("oauth_token")
+  valid_580126 = validateParameter(valid_580126, JString, required = false,
                                  default = nil)
-  if valid_598126 != nil:
-    section.add "oauth_token", valid_598126
-  var valid_598127 = query.getOrDefault("userIp")
-  valid_598127 = validateParameter(valid_598127, JString, required = false,
+  if valid_580126 != nil:
+    section.add "oauth_token", valid_580126
+  var valid_580127 = query.getOrDefault("userIp")
+  valid_580127 = validateParameter(valid_580127, JString, required = false,
                                  default = nil)
-  if valid_598127 != nil:
-    section.add "userIp", valid_598127
-  var valid_598128 = query.getOrDefault("maxResults")
-  valid_598128 = validateParameter(valid_598128, JInt, required = false,
+  if valid_580127 != nil:
+    section.add "userIp", valid_580127
+  var valid_580128 = query.getOrDefault("maxResults")
+  valid_580128 = validateParameter(valid_580128, JInt, required = false,
                                  default = newJInt(500))
-  if valid_598128 != nil:
-    section.add "maxResults", valid_598128
-  var valid_598129 = query.getOrDefault("orderBy")
-  valid_598129 = validateParameter(valid_598129, JString, required = false,
+  if valid_580128 != nil:
+    section.add "maxResults", valid_580128
+  var valid_580129 = query.getOrDefault("orderBy")
+  valid_580129 = validateParameter(valid_580129, JString, required = false,
                                  default = nil)
-  if valid_598129 != nil:
-    section.add "orderBy", valid_598129
-  var valid_598130 = query.getOrDefault("key")
-  valid_598130 = validateParameter(valid_598130, JString, required = false,
+  if valid_580129 != nil:
+    section.add "orderBy", valid_580129
+  var valid_580130 = query.getOrDefault("key")
+  valid_580130 = validateParameter(valid_580130, JString, required = false,
                                  default = nil)
-  if valid_598130 != nil:
-    section.add "key", valid_598130
-  var valid_598131 = query.getOrDefault("prettyPrint")
-  valid_598131 = validateParameter(valid_598131, JBool, required = false,
+  if valid_580130 != nil:
+    section.add "key", valid_580130
+  var valid_580131 = query.getOrDefault("prettyPrint")
+  valid_580131 = validateParameter(valid_580131, JBool, required = false,
                                  default = newJBool(true))
-  if valid_598131 != nil:
-    section.add "prettyPrint", valid_598131
-  var valid_598132 = query.getOrDefault("filter")
-  valid_598132 = validateParameter(valid_598132, JString, required = false,
+  if valid_580131 != nil:
+    section.add "prettyPrint", valid_580131
+  var valid_580132 = query.getOrDefault("filter")
+  valid_580132 = validateParameter(valid_580132, JString, required = false,
                                  default = nil)
-  if valid_598132 != nil:
-    section.add "filter", valid_598132
+  if valid_580132 != nil:
+    section.add "filter", valid_580132
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1767,21 +1769,21 @@ proc validate_ClouduseraccountsGlobalAccountsOperationsList_598119(
   if body != nil:
     result.add "body", body
 
-proc call*(call_598133: Call_ClouduseraccountsGlobalAccountsOperationsList_598118;
+proc call*(call_580133: Call_ClouduseraccountsGlobalAccountsOperationsList_580118;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Retrieves the list of operation resources contained within the specified project.
   ## 
-  let valid = call_598133.validator(path, query, header, formData, body)
-  let scheme = call_598133.pickScheme
+  let valid = call_580133.validator(path, query, header, formData, body)
+  let scheme = call_580133.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_598133.url(scheme.get, call_598133.host, call_598133.base,
-                         call_598133.route, valid.getOrDefault("path"),
+  let url = call_580133.url(scheme.get, call_580133.host, call_580133.base,
+                         call_580133.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_598133, url, valid)
+  result = hook(call_580133, url, valid)
 
-proc call*(call_598134: Call_ClouduseraccountsGlobalAccountsOperationsList_598118;
+proc call*(call_580134: Call_ClouduseraccountsGlobalAccountsOperationsList_580118;
           project: string; fields: string = ""; pageToken: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; maxResults: int = 500; orderBy: string = "";
@@ -1824,37 +1826,37 @@ proc call*(call_598134: Call_ClouduseraccountsGlobalAccountsOperationsList_59811
   ## Compute Engine Beta API Only: If you use filtering in the Beta API, you can also filter on nested fields. For example, you could filter on instances that have set the scheduling.automaticRestart field to true. In particular, use filtering on nested fields to take advantage of instance labels to organize and filter results based on label values.
   ## 
   ## The Beta API also supports filtering on multiple expressions by providing each separate expression within parentheses. For example, (scheduling.automaticRestart eq true) (zone eq us-central1-f). Multiple expressions are treated as AND expressions, meaning that resources must match all expressions to pass the filters.
-  var path_598135 = newJObject()
-  var query_598136 = newJObject()
-  add(query_598136, "fields", newJString(fields))
-  add(query_598136, "pageToken", newJString(pageToken))
-  add(query_598136, "quotaUser", newJString(quotaUser))
-  add(query_598136, "alt", newJString(alt))
-  add(query_598136, "oauth_token", newJString(oauthToken))
-  add(query_598136, "userIp", newJString(userIp))
-  add(query_598136, "maxResults", newJInt(maxResults))
-  add(query_598136, "orderBy", newJString(orderBy))
-  add(query_598136, "key", newJString(key))
-  add(path_598135, "project", newJString(project))
-  add(query_598136, "prettyPrint", newJBool(prettyPrint))
-  add(query_598136, "filter", newJString(filter))
-  result = call_598134.call(path_598135, query_598136, nil, nil, nil)
+  var path_580135 = newJObject()
+  var query_580136 = newJObject()
+  add(query_580136, "fields", newJString(fields))
+  add(query_580136, "pageToken", newJString(pageToken))
+  add(query_580136, "quotaUser", newJString(quotaUser))
+  add(query_580136, "alt", newJString(alt))
+  add(query_580136, "oauth_token", newJString(oauthToken))
+  add(query_580136, "userIp", newJString(userIp))
+  add(query_580136, "maxResults", newJInt(maxResults))
+  add(query_580136, "orderBy", newJString(orderBy))
+  add(query_580136, "key", newJString(key))
+  add(path_580135, "project", newJString(project))
+  add(query_580136, "prettyPrint", newJBool(prettyPrint))
+  add(query_580136, "filter", newJString(filter))
+  result = call_580134.call(path_580135, query_580136, nil, nil, nil)
 
-var clouduseraccountsGlobalAccountsOperationsList* = Call_ClouduseraccountsGlobalAccountsOperationsList_598118(
+var clouduseraccountsGlobalAccountsOperationsList* = Call_ClouduseraccountsGlobalAccountsOperationsList_580118(
     name: "clouduseraccountsGlobalAccountsOperationsList",
     meth: HttpMethod.HttpGet, host: "www.googleapis.com",
     route: "/{project}/global/operations",
-    validator: validate_ClouduseraccountsGlobalAccountsOperationsList_598119,
+    validator: validate_ClouduseraccountsGlobalAccountsOperationsList_580119,
     base: "/clouduseraccounts/alpha/projects",
-    url: url_ClouduseraccountsGlobalAccountsOperationsList_598120,
+    url: url_ClouduseraccountsGlobalAccountsOperationsList_580120,
     schemes: {Scheme.Https})
 type
-  Call_ClouduseraccountsGlobalAccountsOperationsGet_598137 = ref object of OpenApiRestCall_597424
-proc url_ClouduseraccountsGlobalAccountsOperationsGet_598139(protocol: Scheme;
+  Call_ClouduseraccountsGlobalAccountsOperationsGet_580137 = ref object of OpenApiRestCall_579424
+proc url_ClouduseraccountsGlobalAccountsOperationsGet_580139(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "project" in path, "`project` is a required path parameter"
   assert "operation" in path, "`operation` is a required path parameter"
@@ -1868,7 +1870,7 @@ proc url_ClouduseraccountsGlobalAccountsOperationsGet_598139(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_ClouduseraccountsGlobalAccountsOperationsGet_598138(path: JsonNode;
+proc validate_ClouduseraccountsGlobalAccountsOperationsGet_580138(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Retrieves the specified operation resource.
   ## 
@@ -1881,16 +1883,16 @@ proc validate_ClouduseraccountsGlobalAccountsOperationsGet_598138(path: JsonNode
   ##          : Project ID for this request.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `operation` field"
-  var valid_598140 = path.getOrDefault("operation")
-  valid_598140 = validateParameter(valid_598140, JString, required = true,
+  var valid_580140 = path.getOrDefault("operation")
+  valid_580140 = validateParameter(valid_580140, JString, required = true,
                                  default = nil)
-  if valid_598140 != nil:
-    section.add "operation", valid_598140
-  var valid_598141 = path.getOrDefault("project")
-  valid_598141 = validateParameter(valid_598141, JString, required = true,
+  if valid_580140 != nil:
+    section.add "operation", valid_580140
+  var valid_580141 = path.getOrDefault("project")
+  valid_580141 = validateParameter(valid_580141, JString, required = true,
                                  default = nil)
-  if valid_598141 != nil:
-    section.add "project", valid_598141
+  if valid_580141 != nil:
+    section.add "project", valid_580141
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -1908,41 +1910,41 @@ proc validate_ClouduseraccountsGlobalAccountsOperationsGet_598138(path: JsonNode
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_598142 = query.getOrDefault("fields")
-  valid_598142 = validateParameter(valid_598142, JString, required = false,
+  var valid_580142 = query.getOrDefault("fields")
+  valid_580142 = validateParameter(valid_580142, JString, required = false,
                                  default = nil)
-  if valid_598142 != nil:
-    section.add "fields", valid_598142
-  var valid_598143 = query.getOrDefault("quotaUser")
-  valid_598143 = validateParameter(valid_598143, JString, required = false,
+  if valid_580142 != nil:
+    section.add "fields", valid_580142
+  var valid_580143 = query.getOrDefault("quotaUser")
+  valid_580143 = validateParameter(valid_580143, JString, required = false,
                                  default = nil)
-  if valid_598143 != nil:
-    section.add "quotaUser", valid_598143
-  var valid_598144 = query.getOrDefault("alt")
-  valid_598144 = validateParameter(valid_598144, JString, required = false,
+  if valid_580143 != nil:
+    section.add "quotaUser", valid_580143
+  var valid_580144 = query.getOrDefault("alt")
+  valid_580144 = validateParameter(valid_580144, JString, required = false,
                                  default = newJString("json"))
-  if valid_598144 != nil:
-    section.add "alt", valid_598144
-  var valid_598145 = query.getOrDefault("oauth_token")
-  valid_598145 = validateParameter(valid_598145, JString, required = false,
+  if valid_580144 != nil:
+    section.add "alt", valid_580144
+  var valid_580145 = query.getOrDefault("oauth_token")
+  valid_580145 = validateParameter(valid_580145, JString, required = false,
                                  default = nil)
-  if valid_598145 != nil:
-    section.add "oauth_token", valid_598145
-  var valid_598146 = query.getOrDefault("userIp")
-  valid_598146 = validateParameter(valid_598146, JString, required = false,
+  if valid_580145 != nil:
+    section.add "oauth_token", valid_580145
+  var valid_580146 = query.getOrDefault("userIp")
+  valid_580146 = validateParameter(valid_580146, JString, required = false,
                                  default = nil)
-  if valid_598146 != nil:
-    section.add "userIp", valid_598146
-  var valid_598147 = query.getOrDefault("key")
-  valid_598147 = validateParameter(valid_598147, JString, required = false,
+  if valid_580146 != nil:
+    section.add "userIp", valid_580146
+  var valid_580147 = query.getOrDefault("key")
+  valid_580147 = validateParameter(valid_580147, JString, required = false,
                                  default = nil)
-  if valid_598147 != nil:
-    section.add "key", valid_598147
-  var valid_598148 = query.getOrDefault("prettyPrint")
-  valid_598148 = validateParameter(valid_598148, JBool, required = false,
+  if valid_580147 != nil:
+    section.add "key", valid_580147
+  var valid_580148 = query.getOrDefault("prettyPrint")
+  valid_580148 = validateParameter(valid_580148, JBool, required = false,
                                  default = newJBool(true))
-  if valid_598148 != nil:
-    section.add "prettyPrint", valid_598148
+  if valid_580148 != nil:
+    section.add "prettyPrint", valid_580148
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1951,21 +1953,21 @@ proc validate_ClouduseraccountsGlobalAccountsOperationsGet_598138(path: JsonNode
   if body != nil:
     result.add "body", body
 
-proc call*(call_598149: Call_ClouduseraccountsGlobalAccountsOperationsGet_598137;
+proc call*(call_580149: Call_ClouduseraccountsGlobalAccountsOperationsGet_580137;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Retrieves the specified operation resource.
   ## 
-  let valid = call_598149.validator(path, query, header, formData, body)
-  let scheme = call_598149.pickScheme
+  let valid = call_580149.validator(path, query, header, formData, body)
+  let scheme = call_580149.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_598149.url(scheme.get, call_598149.host, call_598149.base,
-                         call_598149.route, valid.getOrDefault("path"),
+  let url = call_580149.url(scheme.get, call_580149.host, call_580149.base,
+                         call_580149.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_598149, url, valid)
+  result = hook(call_580149, url, valid)
 
-proc call*(call_598150: Call_ClouduseraccountsGlobalAccountsOperationsGet_598137;
+proc call*(call_580150: Call_ClouduseraccountsGlobalAccountsOperationsGet_580137;
           operation: string; project: string; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; key: string = ""; prettyPrint: bool = true): Recallable =
@@ -1989,34 +1991,34 @@ proc call*(call_598150: Call_ClouduseraccountsGlobalAccountsOperationsGet_598137
   ##          : Project ID for this request.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_598151 = newJObject()
-  var query_598152 = newJObject()
-  add(query_598152, "fields", newJString(fields))
-  add(query_598152, "quotaUser", newJString(quotaUser))
-  add(query_598152, "alt", newJString(alt))
-  add(path_598151, "operation", newJString(operation))
-  add(query_598152, "oauth_token", newJString(oauthToken))
-  add(query_598152, "userIp", newJString(userIp))
-  add(query_598152, "key", newJString(key))
-  add(path_598151, "project", newJString(project))
-  add(query_598152, "prettyPrint", newJBool(prettyPrint))
-  result = call_598150.call(path_598151, query_598152, nil, nil, nil)
+  var path_580151 = newJObject()
+  var query_580152 = newJObject()
+  add(query_580152, "fields", newJString(fields))
+  add(query_580152, "quotaUser", newJString(quotaUser))
+  add(query_580152, "alt", newJString(alt))
+  add(path_580151, "operation", newJString(operation))
+  add(query_580152, "oauth_token", newJString(oauthToken))
+  add(query_580152, "userIp", newJString(userIp))
+  add(query_580152, "key", newJString(key))
+  add(path_580151, "project", newJString(project))
+  add(query_580152, "prettyPrint", newJBool(prettyPrint))
+  result = call_580150.call(path_580151, query_580152, nil, nil, nil)
 
-var clouduseraccountsGlobalAccountsOperationsGet* = Call_ClouduseraccountsGlobalAccountsOperationsGet_598137(
+var clouduseraccountsGlobalAccountsOperationsGet* = Call_ClouduseraccountsGlobalAccountsOperationsGet_580137(
     name: "clouduseraccountsGlobalAccountsOperationsGet",
     meth: HttpMethod.HttpGet, host: "www.googleapis.com",
     route: "/{project}/global/operations/{operation}",
-    validator: validate_ClouduseraccountsGlobalAccountsOperationsGet_598138,
+    validator: validate_ClouduseraccountsGlobalAccountsOperationsGet_580138,
     base: "/clouduseraccounts/alpha/projects",
-    url: url_ClouduseraccountsGlobalAccountsOperationsGet_598139,
+    url: url_ClouduseraccountsGlobalAccountsOperationsGet_580139,
     schemes: {Scheme.Https})
 type
-  Call_ClouduseraccountsGlobalAccountsOperationsDelete_598153 = ref object of OpenApiRestCall_597424
-proc url_ClouduseraccountsGlobalAccountsOperationsDelete_598155(protocol: Scheme;
+  Call_ClouduseraccountsGlobalAccountsOperationsDelete_580153 = ref object of OpenApiRestCall_579424
+proc url_ClouduseraccountsGlobalAccountsOperationsDelete_580155(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "project" in path, "`project` is a required path parameter"
   assert "operation" in path, "`operation` is a required path parameter"
@@ -2030,7 +2032,7 @@ proc url_ClouduseraccountsGlobalAccountsOperationsDelete_598155(protocol: Scheme
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_ClouduseraccountsGlobalAccountsOperationsDelete_598154(
+proc validate_ClouduseraccountsGlobalAccountsOperationsDelete_580154(
     path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
     body: JsonNode): JsonNode =
   ## Deletes the specified operation resource.
@@ -2044,16 +2046,16 @@ proc validate_ClouduseraccountsGlobalAccountsOperationsDelete_598154(
   ##          : Project ID for this request.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `operation` field"
-  var valid_598156 = path.getOrDefault("operation")
-  valid_598156 = validateParameter(valid_598156, JString, required = true,
+  var valid_580156 = path.getOrDefault("operation")
+  valid_580156 = validateParameter(valid_580156, JString, required = true,
                                  default = nil)
-  if valid_598156 != nil:
-    section.add "operation", valid_598156
-  var valid_598157 = path.getOrDefault("project")
-  valid_598157 = validateParameter(valid_598157, JString, required = true,
+  if valid_580156 != nil:
+    section.add "operation", valid_580156
+  var valid_580157 = path.getOrDefault("project")
+  valid_580157 = validateParameter(valid_580157, JString, required = true,
                                  default = nil)
-  if valid_598157 != nil:
-    section.add "project", valid_598157
+  if valid_580157 != nil:
+    section.add "project", valid_580157
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -2071,41 +2073,41 @@ proc validate_ClouduseraccountsGlobalAccountsOperationsDelete_598154(
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_598158 = query.getOrDefault("fields")
-  valid_598158 = validateParameter(valid_598158, JString, required = false,
+  var valid_580158 = query.getOrDefault("fields")
+  valid_580158 = validateParameter(valid_580158, JString, required = false,
                                  default = nil)
-  if valid_598158 != nil:
-    section.add "fields", valid_598158
-  var valid_598159 = query.getOrDefault("quotaUser")
-  valid_598159 = validateParameter(valid_598159, JString, required = false,
+  if valid_580158 != nil:
+    section.add "fields", valid_580158
+  var valid_580159 = query.getOrDefault("quotaUser")
+  valid_580159 = validateParameter(valid_580159, JString, required = false,
                                  default = nil)
-  if valid_598159 != nil:
-    section.add "quotaUser", valid_598159
-  var valid_598160 = query.getOrDefault("alt")
-  valid_598160 = validateParameter(valid_598160, JString, required = false,
+  if valid_580159 != nil:
+    section.add "quotaUser", valid_580159
+  var valid_580160 = query.getOrDefault("alt")
+  valid_580160 = validateParameter(valid_580160, JString, required = false,
                                  default = newJString("json"))
-  if valid_598160 != nil:
-    section.add "alt", valid_598160
-  var valid_598161 = query.getOrDefault("oauth_token")
-  valid_598161 = validateParameter(valid_598161, JString, required = false,
+  if valid_580160 != nil:
+    section.add "alt", valid_580160
+  var valid_580161 = query.getOrDefault("oauth_token")
+  valid_580161 = validateParameter(valid_580161, JString, required = false,
                                  default = nil)
-  if valid_598161 != nil:
-    section.add "oauth_token", valid_598161
-  var valid_598162 = query.getOrDefault("userIp")
-  valid_598162 = validateParameter(valid_598162, JString, required = false,
+  if valid_580161 != nil:
+    section.add "oauth_token", valid_580161
+  var valid_580162 = query.getOrDefault("userIp")
+  valid_580162 = validateParameter(valid_580162, JString, required = false,
                                  default = nil)
-  if valid_598162 != nil:
-    section.add "userIp", valid_598162
-  var valid_598163 = query.getOrDefault("key")
-  valid_598163 = validateParameter(valid_598163, JString, required = false,
+  if valid_580162 != nil:
+    section.add "userIp", valid_580162
+  var valid_580163 = query.getOrDefault("key")
+  valid_580163 = validateParameter(valid_580163, JString, required = false,
                                  default = nil)
-  if valid_598163 != nil:
-    section.add "key", valid_598163
-  var valid_598164 = query.getOrDefault("prettyPrint")
-  valid_598164 = validateParameter(valid_598164, JBool, required = false,
+  if valid_580163 != nil:
+    section.add "key", valid_580163
+  var valid_580164 = query.getOrDefault("prettyPrint")
+  valid_580164 = validateParameter(valid_580164, JBool, required = false,
                                  default = newJBool(true))
-  if valid_598164 != nil:
-    section.add "prettyPrint", valid_598164
+  if valid_580164 != nil:
+    section.add "prettyPrint", valid_580164
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -2114,21 +2116,21 @@ proc validate_ClouduseraccountsGlobalAccountsOperationsDelete_598154(
   if body != nil:
     result.add "body", body
 
-proc call*(call_598165: Call_ClouduseraccountsGlobalAccountsOperationsDelete_598153;
+proc call*(call_580165: Call_ClouduseraccountsGlobalAccountsOperationsDelete_580153;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Deletes the specified operation resource.
   ## 
-  let valid = call_598165.validator(path, query, header, formData, body)
-  let scheme = call_598165.pickScheme
+  let valid = call_580165.validator(path, query, header, formData, body)
+  let scheme = call_580165.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_598165.url(scheme.get, call_598165.host, call_598165.base,
-                         call_598165.route, valid.getOrDefault("path"),
+  let url = call_580165.url(scheme.get, call_580165.host, call_580165.base,
+                         call_580165.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_598165, url, valid)
+  result = hook(call_580165, url, valid)
 
-proc call*(call_598166: Call_ClouduseraccountsGlobalAccountsOperationsDelete_598153;
+proc call*(call_580166: Call_ClouduseraccountsGlobalAccountsOperationsDelete_580153;
           operation: string; project: string; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; key: string = ""; prettyPrint: bool = true): Recallable =
@@ -2152,34 +2154,34 @@ proc call*(call_598166: Call_ClouduseraccountsGlobalAccountsOperationsDelete_598
   ##          : Project ID for this request.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_598167 = newJObject()
-  var query_598168 = newJObject()
-  add(query_598168, "fields", newJString(fields))
-  add(query_598168, "quotaUser", newJString(quotaUser))
-  add(query_598168, "alt", newJString(alt))
-  add(path_598167, "operation", newJString(operation))
-  add(query_598168, "oauth_token", newJString(oauthToken))
-  add(query_598168, "userIp", newJString(userIp))
-  add(query_598168, "key", newJString(key))
-  add(path_598167, "project", newJString(project))
-  add(query_598168, "prettyPrint", newJBool(prettyPrint))
-  result = call_598166.call(path_598167, query_598168, nil, nil, nil)
+  var path_580167 = newJObject()
+  var query_580168 = newJObject()
+  add(query_580168, "fields", newJString(fields))
+  add(query_580168, "quotaUser", newJString(quotaUser))
+  add(query_580168, "alt", newJString(alt))
+  add(path_580167, "operation", newJString(operation))
+  add(query_580168, "oauth_token", newJString(oauthToken))
+  add(query_580168, "userIp", newJString(userIp))
+  add(query_580168, "key", newJString(key))
+  add(path_580167, "project", newJString(project))
+  add(query_580168, "prettyPrint", newJBool(prettyPrint))
+  result = call_580166.call(path_580167, query_580168, nil, nil, nil)
 
-var clouduseraccountsGlobalAccountsOperationsDelete* = Call_ClouduseraccountsGlobalAccountsOperationsDelete_598153(
+var clouduseraccountsGlobalAccountsOperationsDelete* = Call_ClouduseraccountsGlobalAccountsOperationsDelete_580153(
     name: "clouduseraccountsGlobalAccountsOperationsDelete",
     meth: HttpMethod.HttpDelete, host: "www.googleapis.com",
     route: "/{project}/global/operations/{operation}",
-    validator: validate_ClouduseraccountsGlobalAccountsOperationsDelete_598154,
+    validator: validate_ClouduseraccountsGlobalAccountsOperationsDelete_580154,
     base: "/clouduseraccounts/alpha/projects",
-    url: url_ClouduseraccountsGlobalAccountsOperationsDelete_598155,
+    url: url_ClouduseraccountsGlobalAccountsOperationsDelete_580155,
     schemes: {Scheme.Https})
 type
-  Call_ClouduseraccountsUsersInsert_598188 = ref object of OpenApiRestCall_597424
-proc url_ClouduseraccountsUsersInsert_598190(protocol: Scheme; host: string;
+  Call_ClouduseraccountsUsersInsert_580188 = ref object of OpenApiRestCall_579424
+proc url_ClouduseraccountsUsersInsert_580190(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "project" in path, "`project` is a required path parameter"
   const
@@ -2191,7 +2193,7 @@ proc url_ClouduseraccountsUsersInsert_598190(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_ClouduseraccountsUsersInsert_598189(path: JsonNode; query: JsonNode;
+proc validate_ClouduseraccountsUsersInsert_580189(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Creates a User resource in the specified project using the data included in the request.
   ## 
@@ -2202,11 +2204,11 @@ proc validate_ClouduseraccountsUsersInsert_598189(path: JsonNode; query: JsonNod
   ##          : Project ID for this request.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `project` field"
-  var valid_598191 = path.getOrDefault("project")
-  valid_598191 = validateParameter(valid_598191, JString, required = true,
+  var valid_580191 = path.getOrDefault("project")
+  valid_580191 = validateParameter(valid_580191, JString, required = true,
                                  default = nil)
-  if valid_598191 != nil:
-    section.add "project", valid_598191
+  if valid_580191 != nil:
+    section.add "project", valid_580191
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -2224,41 +2226,41 @@ proc validate_ClouduseraccountsUsersInsert_598189(path: JsonNode; query: JsonNod
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_598192 = query.getOrDefault("fields")
-  valid_598192 = validateParameter(valid_598192, JString, required = false,
+  var valid_580192 = query.getOrDefault("fields")
+  valid_580192 = validateParameter(valid_580192, JString, required = false,
                                  default = nil)
-  if valid_598192 != nil:
-    section.add "fields", valid_598192
-  var valid_598193 = query.getOrDefault("quotaUser")
-  valid_598193 = validateParameter(valid_598193, JString, required = false,
+  if valid_580192 != nil:
+    section.add "fields", valid_580192
+  var valid_580193 = query.getOrDefault("quotaUser")
+  valid_580193 = validateParameter(valid_580193, JString, required = false,
                                  default = nil)
-  if valid_598193 != nil:
-    section.add "quotaUser", valid_598193
-  var valid_598194 = query.getOrDefault("alt")
-  valid_598194 = validateParameter(valid_598194, JString, required = false,
+  if valid_580193 != nil:
+    section.add "quotaUser", valid_580193
+  var valid_580194 = query.getOrDefault("alt")
+  valid_580194 = validateParameter(valid_580194, JString, required = false,
                                  default = newJString("json"))
-  if valid_598194 != nil:
-    section.add "alt", valid_598194
-  var valid_598195 = query.getOrDefault("oauth_token")
-  valid_598195 = validateParameter(valid_598195, JString, required = false,
+  if valid_580194 != nil:
+    section.add "alt", valid_580194
+  var valid_580195 = query.getOrDefault("oauth_token")
+  valid_580195 = validateParameter(valid_580195, JString, required = false,
                                  default = nil)
-  if valid_598195 != nil:
-    section.add "oauth_token", valid_598195
-  var valid_598196 = query.getOrDefault("userIp")
-  valid_598196 = validateParameter(valid_598196, JString, required = false,
+  if valid_580195 != nil:
+    section.add "oauth_token", valid_580195
+  var valid_580196 = query.getOrDefault("userIp")
+  valid_580196 = validateParameter(valid_580196, JString, required = false,
                                  default = nil)
-  if valid_598196 != nil:
-    section.add "userIp", valid_598196
-  var valid_598197 = query.getOrDefault("key")
-  valid_598197 = validateParameter(valid_598197, JString, required = false,
+  if valid_580196 != nil:
+    section.add "userIp", valid_580196
+  var valid_580197 = query.getOrDefault("key")
+  valid_580197 = validateParameter(valid_580197, JString, required = false,
                                  default = nil)
-  if valid_598197 != nil:
-    section.add "key", valid_598197
-  var valid_598198 = query.getOrDefault("prettyPrint")
-  valid_598198 = validateParameter(valid_598198, JBool, required = false,
+  if valid_580197 != nil:
+    section.add "key", valid_580197
+  var valid_580198 = query.getOrDefault("prettyPrint")
+  valid_580198 = validateParameter(valid_580198, JBool, required = false,
                                  default = newJBool(true))
-  if valid_598198 != nil:
-    section.add "prettyPrint", valid_598198
+  if valid_580198 != nil:
+    section.add "prettyPrint", valid_580198
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -2270,20 +2272,20 @@ proc validate_ClouduseraccountsUsersInsert_598189(path: JsonNode; query: JsonNod
   if body != nil:
     result.add "body", body
 
-proc call*(call_598200: Call_ClouduseraccountsUsersInsert_598188; path: JsonNode;
+proc call*(call_580200: Call_ClouduseraccountsUsersInsert_580188; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Creates a User resource in the specified project using the data included in the request.
   ## 
-  let valid = call_598200.validator(path, query, header, formData, body)
-  let scheme = call_598200.pickScheme
+  let valid = call_580200.validator(path, query, header, formData, body)
+  let scheme = call_580200.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_598200.url(scheme.get, call_598200.host, call_598200.base,
-                         call_598200.route, valid.getOrDefault("path"),
+  let url = call_580200.url(scheme.get, call_580200.host, call_580200.base,
+                         call_580200.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_598200, url, valid)
+  result = hook(call_580200, url, valid)
 
-proc call*(call_598201: Call_ClouduseraccountsUsersInsert_598188; project: string;
+proc call*(call_580201: Call_ClouduseraccountsUsersInsert_580188; project: string;
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           oauthToken: string = ""; userIp: string = ""; key: string = "";
           body: JsonNode = nil; prettyPrint: bool = true): Recallable =
@@ -2306,34 +2308,34 @@ proc call*(call_598201: Call_ClouduseraccountsUsersInsert_598188; project: strin
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_598202 = newJObject()
-  var query_598203 = newJObject()
-  var body_598204 = newJObject()
-  add(query_598203, "fields", newJString(fields))
-  add(query_598203, "quotaUser", newJString(quotaUser))
-  add(query_598203, "alt", newJString(alt))
-  add(query_598203, "oauth_token", newJString(oauthToken))
-  add(query_598203, "userIp", newJString(userIp))
-  add(query_598203, "key", newJString(key))
-  add(path_598202, "project", newJString(project))
+  var path_580202 = newJObject()
+  var query_580203 = newJObject()
+  var body_580204 = newJObject()
+  add(query_580203, "fields", newJString(fields))
+  add(query_580203, "quotaUser", newJString(quotaUser))
+  add(query_580203, "alt", newJString(alt))
+  add(query_580203, "oauth_token", newJString(oauthToken))
+  add(query_580203, "userIp", newJString(userIp))
+  add(query_580203, "key", newJString(key))
+  add(path_580202, "project", newJString(project))
   if body != nil:
-    body_598204 = body
-  add(query_598203, "prettyPrint", newJBool(prettyPrint))
-  result = call_598201.call(path_598202, query_598203, nil, nil, body_598204)
+    body_580204 = body
+  add(query_580203, "prettyPrint", newJBool(prettyPrint))
+  result = call_580201.call(path_580202, query_580203, nil, nil, body_580204)
 
-var clouduseraccountsUsersInsert* = Call_ClouduseraccountsUsersInsert_598188(
+var clouduseraccountsUsersInsert* = Call_ClouduseraccountsUsersInsert_580188(
     name: "clouduseraccountsUsersInsert", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com", route: "/{project}/global/users",
-    validator: validate_ClouduseraccountsUsersInsert_598189,
+    validator: validate_ClouduseraccountsUsersInsert_580189,
     base: "/clouduseraccounts/alpha/projects",
-    url: url_ClouduseraccountsUsersInsert_598190, schemes: {Scheme.Https})
+    url: url_ClouduseraccountsUsersInsert_580190, schemes: {Scheme.Https})
 type
-  Call_ClouduseraccountsUsersList_598169 = ref object of OpenApiRestCall_597424
-proc url_ClouduseraccountsUsersList_598171(protocol: Scheme; host: string;
+  Call_ClouduseraccountsUsersList_580169 = ref object of OpenApiRestCall_579424
+proc url_ClouduseraccountsUsersList_580171(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "project" in path, "`project` is a required path parameter"
   const
@@ -2345,7 +2347,7 @@ proc url_ClouduseraccountsUsersList_598171(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_ClouduseraccountsUsersList_598170(path: JsonNode; query: JsonNode;
+proc validate_ClouduseraccountsUsersList_580170(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Retrieves a list of users contained within the specified project.
   ## 
@@ -2356,11 +2358,11 @@ proc validate_ClouduseraccountsUsersList_598170(path: JsonNode; query: JsonNode;
   ##          : Project ID for this request.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `project` field"
-  var valid_598172 = path.getOrDefault("project")
-  valid_598172 = validateParameter(valid_598172, JString, required = true,
+  var valid_580172 = path.getOrDefault("project")
+  valid_580172 = validateParameter(valid_580172, JString, required = true,
                                  default = nil)
-  if valid_598172 != nil:
-    section.add "project", valid_598172
+  if valid_580172 != nil:
+    section.add "project", valid_580172
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -2398,61 +2400,61 @@ proc validate_ClouduseraccountsUsersList_598170(path: JsonNode; query: JsonNode;
   ## 
   ## The Beta API also supports filtering on multiple expressions by providing each separate expression within parentheses. For example, (scheduling.automaticRestart eq true) (zone eq us-central1-f). Multiple expressions are treated as AND expressions, meaning that resources must match all expressions to pass the filters.
   section = newJObject()
-  var valid_598173 = query.getOrDefault("fields")
-  valid_598173 = validateParameter(valid_598173, JString, required = false,
+  var valid_580173 = query.getOrDefault("fields")
+  valid_580173 = validateParameter(valid_580173, JString, required = false,
                                  default = nil)
-  if valid_598173 != nil:
-    section.add "fields", valid_598173
-  var valid_598174 = query.getOrDefault("pageToken")
-  valid_598174 = validateParameter(valid_598174, JString, required = false,
+  if valid_580173 != nil:
+    section.add "fields", valid_580173
+  var valid_580174 = query.getOrDefault("pageToken")
+  valid_580174 = validateParameter(valid_580174, JString, required = false,
                                  default = nil)
-  if valid_598174 != nil:
-    section.add "pageToken", valid_598174
-  var valid_598175 = query.getOrDefault("quotaUser")
-  valid_598175 = validateParameter(valid_598175, JString, required = false,
+  if valid_580174 != nil:
+    section.add "pageToken", valid_580174
+  var valid_580175 = query.getOrDefault("quotaUser")
+  valid_580175 = validateParameter(valid_580175, JString, required = false,
                                  default = nil)
-  if valid_598175 != nil:
-    section.add "quotaUser", valid_598175
-  var valid_598176 = query.getOrDefault("alt")
-  valid_598176 = validateParameter(valid_598176, JString, required = false,
+  if valid_580175 != nil:
+    section.add "quotaUser", valid_580175
+  var valid_580176 = query.getOrDefault("alt")
+  valid_580176 = validateParameter(valid_580176, JString, required = false,
                                  default = newJString("json"))
-  if valid_598176 != nil:
-    section.add "alt", valid_598176
-  var valid_598177 = query.getOrDefault("oauth_token")
-  valid_598177 = validateParameter(valid_598177, JString, required = false,
+  if valid_580176 != nil:
+    section.add "alt", valid_580176
+  var valid_580177 = query.getOrDefault("oauth_token")
+  valid_580177 = validateParameter(valid_580177, JString, required = false,
                                  default = nil)
-  if valid_598177 != nil:
-    section.add "oauth_token", valid_598177
-  var valid_598178 = query.getOrDefault("userIp")
-  valid_598178 = validateParameter(valid_598178, JString, required = false,
+  if valid_580177 != nil:
+    section.add "oauth_token", valid_580177
+  var valid_580178 = query.getOrDefault("userIp")
+  valid_580178 = validateParameter(valid_580178, JString, required = false,
                                  default = nil)
-  if valid_598178 != nil:
-    section.add "userIp", valid_598178
-  var valid_598179 = query.getOrDefault("maxResults")
-  valid_598179 = validateParameter(valid_598179, JInt, required = false,
+  if valid_580178 != nil:
+    section.add "userIp", valid_580178
+  var valid_580179 = query.getOrDefault("maxResults")
+  valid_580179 = validateParameter(valid_580179, JInt, required = false,
                                  default = newJInt(500))
-  if valid_598179 != nil:
-    section.add "maxResults", valid_598179
-  var valid_598180 = query.getOrDefault("orderBy")
-  valid_598180 = validateParameter(valid_598180, JString, required = false,
+  if valid_580179 != nil:
+    section.add "maxResults", valid_580179
+  var valid_580180 = query.getOrDefault("orderBy")
+  valid_580180 = validateParameter(valid_580180, JString, required = false,
                                  default = nil)
-  if valid_598180 != nil:
-    section.add "orderBy", valid_598180
-  var valid_598181 = query.getOrDefault("key")
-  valid_598181 = validateParameter(valid_598181, JString, required = false,
+  if valid_580180 != nil:
+    section.add "orderBy", valid_580180
+  var valid_580181 = query.getOrDefault("key")
+  valid_580181 = validateParameter(valid_580181, JString, required = false,
                                  default = nil)
-  if valid_598181 != nil:
-    section.add "key", valid_598181
-  var valid_598182 = query.getOrDefault("prettyPrint")
-  valid_598182 = validateParameter(valid_598182, JBool, required = false,
+  if valid_580181 != nil:
+    section.add "key", valid_580181
+  var valid_580182 = query.getOrDefault("prettyPrint")
+  valid_580182 = validateParameter(valid_580182, JBool, required = false,
                                  default = newJBool(true))
-  if valid_598182 != nil:
-    section.add "prettyPrint", valid_598182
-  var valid_598183 = query.getOrDefault("filter")
-  valid_598183 = validateParameter(valid_598183, JString, required = false,
+  if valid_580182 != nil:
+    section.add "prettyPrint", valid_580182
+  var valid_580183 = query.getOrDefault("filter")
+  valid_580183 = validateParameter(valid_580183, JString, required = false,
                                  default = nil)
-  if valid_598183 != nil:
-    section.add "filter", valid_598183
+  if valid_580183 != nil:
+    section.add "filter", valid_580183
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -2461,20 +2463,20 @@ proc validate_ClouduseraccountsUsersList_598170(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_598184: Call_ClouduseraccountsUsersList_598169; path: JsonNode;
+proc call*(call_580184: Call_ClouduseraccountsUsersList_580169; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Retrieves a list of users contained within the specified project.
   ## 
-  let valid = call_598184.validator(path, query, header, formData, body)
-  let scheme = call_598184.pickScheme
+  let valid = call_580184.validator(path, query, header, formData, body)
+  let scheme = call_580184.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_598184.url(scheme.get, call_598184.host, call_598184.base,
-                         call_598184.route, valid.getOrDefault("path"),
+  let url = call_580184.url(scheme.get, call_580184.host, call_580184.base,
+                         call_580184.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_598184, url, valid)
+  result = hook(call_580184, url, valid)
 
-proc call*(call_598185: Call_ClouduseraccountsUsersList_598169; project: string;
+proc call*(call_580185: Call_ClouduseraccountsUsersList_580169; project: string;
           fields: string = ""; pageToken: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; userIp: string = "";
           maxResults: int = 500; orderBy: string = ""; key: string = "";
@@ -2517,35 +2519,35 @@ proc call*(call_598185: Call_ClouduseraccountsUsersList_598169; project: string;
   ## Compute Engine Beta API Only: If you use filtering in the Beta API, you can also filter on nested fields. For example, you could filter on instances that have set the scheduling.automaticRestart field to true. In particular, use filtering on nested fields to take advantage of instance labels to organize and filter results based on label values.
   ## 
   ## The Beta API also supports filtering on multiple expressions by providing each separate expression within parentheses. For example, (scheduling.automaticRestart eq true) (zone eq us-central1-f). Multiple expressions are treated as AND expressions, meaning that resources must match all expressions to pass the filters.
-  var path_598186 = newJObject()
-  var query_598187 = newJObject()
-  add(query_598187, "fields", newJString(fields))
-  add(query_598187, "pageToken", newJString(pageToken))
-  add(query_598187, "quotaUser", newJString(quotaUser))
-  add(query_598187, "alt", newJString(alt))
-  add(query_598187, "oauth_token", newJString(oauthToken))
-  add(query_598187, "userIp", newJString(userIp))
-  add(query_598187, "maxResults", newJInt(maxResults))
-  add(query_598187, "orderBy", newJString(orderBy))
-  add(query_598187, "key", newJString(key))
-  add(path_598186, "project", newJString(project))
-  add(query_598187, "prettyPrint", newJBool(prettyPrint))
-  add(query_598187, "filter", newJString(filter))
-  result = call_598185.call(path_598186, query_598187, nil, nil, nil)
+  var path_580186 = newJObject()
+  var query_580187 = newJObject()
+  add(query_580187, "fields", newJString(fields))
+  add(query_580187, "pageToken", newJString(pageToken))
+  add(query_580187, "quotaUser", newJString(quotaUser))
+  add(query_580187, "alt", newJString(alt))
+  add(query_580187, "oauth_token", newJString(oauthToken))
+  add(query_580187, "userIp", newJString(userIp))
+  add(query_580187, "maxResults", newJInt(maxResults))
+  add(query_580187, "orderBy", newJString(orderBy))
+  add(query_580187, "key", newJString(key))
+  add(path_580186, "project", newJString(project))
+  add(query_580187, "prettyPrint", newJBool(prettyPrint))
+  add(query_580187, "filter", newJString(filter))
+  result = call_580185.call(path_580186, query_580187, nil, nil, nil)
 
-var clouduseraccountsUsersList* = Call_ClouduseraccountsUsersList_598169(
+var clouduseraccountsUsersList* = Call_ClouduseraccountsUsersList_580169(
     name: "clouduseraccountsUsersList", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/{project}/global/users",
-    validator: validate_ClouduseraccountsUsersList_598170,
+    validator: validate_ClouduseraccountsUsersList_580170,
     base: "/clouduseraccounts/alpha/projects",
-    url: url_ClouduseraccountsUsersList_598171, schemes: {Scheme.Https})
+    url: url_ClouduseraccountsUsersList_580171, schemes: {Scheme.Https})
 type
-  Call_ClouduseraccountsUsersGetIamPolicy_598205 = ref object of OpenApiRestCall_597424
-proc url_ClouduseraccountsUsersGetIamPolicy_598207(protocol: Scheme; host: string;
+  Call_ClouduseraccountsUsersGetIamPolicy_580205 = ref object of OpenApiRestCall_579424
+proc url_ClouduseraccountsUsersGetIamPolicy_580207(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "project" in path, "`project` is a required path parameter"
   assert "resource" in path, "`resource` is a required path parameter"
@@ -2560,7 +2562,7 @@ proc url_ClouduseraccountsUsersGetIamPolicy_598207(protocol: Scheme; host: strin
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_ClouduseraccountsUsersGetIamPolicy_598206(path: JsonNode;
+proc validate_ClouduseraccountsUsersGetIamPolicy_580206(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Gets the access control policy for a resource. May be empty if no such policy or resource exists.
   ## 
@@ -2573,16 +2575,16 @@ proc validate_ClouduseraccountsUsersGetIamPolicy_598206(path: JsonNode;
   ##          : Project ID for this request.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `resource` field"
-  var valid_598208 = path.getOrDefault("resource")
-  valid_598208 = validateParameter(valid_598208, JString, required = true,
+  var valid_580208 = path.getOrDefault("resource")
+  valid_580208 = validateParameter(valid_580208, JString, required = true,
                                  default = nil)
-  if valid_598208 != nil:
-    section.add "resource", valid_598208
-  var valid_598209 = path.getOrDefault("project")
-  valid_598209 = validateParameter(valid_598209, JString, required = true,
+  if valid_580208 != nil:
+    section.add "resource", valid_580208
+  var valid_580209 = path.getOrDefault("project")
+  valid_580209 = validateParameter(valid_580209, JString, required = true,
                                  default = nil)
-  if valid_598209 != nil:
-    section.add "project", valid_598209
+  if valid_580209 != nil:
+    section.add "project", valid_580209
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -2600,41 +2602,41 @@ proc validate_ClouduseraccountsUsersGetIamPolicy_598206(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_598210 = query.getOrDefault("fields")
-  valid_598210 = validateParameter(valid_598210, JString, required = false,
+  var valid_580210 = query.getOrDefault("fields")
+  valid_580210 = validateParameter(valid_580210, JString, required = false,
                                  default = nil)
-  if valid_598210 != nil:
-    section.add "fields", valid_598210
-  var valid_598211 = query.getOrDefault("quotaUser")
-  valid_598211 = validateParameter(valid_598211, JString, required = false,
+  if valid_580210 != nil:
+    section.add "fields", valid_580210
+  var valid_580211 = query.getOrDefault("quotaUser")
+  valid_580211 = validateParameter(valid_580211, JString, required = false,
                                  default = nil)
-  if valid_598211 != nil:
-    section.add "quotaUser", valid_598211
-  var valid_598212 = query.getOrDefault("alt")
-  valid_598212 = validateParameter(valid_598212, JString, required = false,
+  if valid_580211 != nil:
+    section.add "quotaUser", valid_580211
+  var valid_580212 = query.getOrDefault("alt")
+  valid_580212 = validateParameter(valid_580212, JString, required = false,
                                  default = newJString("json"))
-  if valid_598212 != nil:
-    section.add "alt", valid_598212
-  var valid_598213 = query.getOrDefault("oauth_token")
-  valid_598213 = validateParameter(valid_598213, JString, required = false,
+  if valid_580212 != nil:
+    section.add "alt", valid_580212
+  var valid_580213 = query.getOrDefault("oauth_token")
+  valid_580213 = validateParameter(valid_580213, JString, required = false,
                                  default = nil)
-  if valid_598213 != nil:
-    section.add "oauth_token", valid_598213
-  var valid_598214 = query.getOrDefault("userIp")
-  valid_598214 = validateParameter(valid_598214, JString, required = false,
+  if valid_580213 != nil:
+    section.add "oauth_token", valid_580213
+  var valid_580214 = query.getOrDefault("userIp")
+  valid_580214 = validateParameter(valid_580214, JString, required = false,
                                  default = nil)
-  if valid_598214 != nil:
-    section.add "userIp", valid_598214
-  var valid_598215 = query.getOrDefault("key")
-  valid_598215 = validateParameter(valid_598215, JString, required = false,
+  if valid_580214 != nil:
+    section.add "userIp", valid_580214
+  var valid_580215 = query.getOrDefault("key")
+  valid_580215 = validateParameter(valid_580215, JString, required = false,
                                  default = nil)
-  if valid_598215 != nil:
-    section.add "key", valid_598215
-  var valid_598216 = query.getOrDefault("prettyPrint")
-  valid_598216 = validateParameter(valid_598216, JBool, required = false,
+  if valid_580215 != nil:
+    section.add "key", valid_580215
+  var valid_580216 = query.getOrDefault("prettyPrint")
+  valid_580216 = validateParameter(valid_580216, JBool, required = false,
                                  default = newJBool(true))
-  if valid_598216 != nil:
-    section.add "prettyPrint", valid_598216
+  if valid_580216 != nil:
+    section.add "prettyPrint", valid_580216
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -2643,21 +2645,21 @@ proc validate_ClouduseraccountsUsersGetIamPolicy_598206(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_598217: Call_ClouduseraccountsUsersGetIamPolicy_598205;
+proc call*(call_580217: Call_ClouduseraccountsUsersGetIamPolicy_580205;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Gets the access control policy for a resource. May be empty if no such policy or resource exists.
   ## 
-  let valid = call_598217.validator(path, query, header, formData, body)
-  let scheme = call_598217.pickScheme
+  let valid = call_580217.validator(path, query, header, formData, body)
+  let scheme = call_580217.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_598217.url(scheme.get, call_598217.host, call_598217.base,
-                         call_598217.route, valid.getOrDefault("path"),
+  let url = call_580217.url(scheme.get, call_580217.host, call_580217.base,
+                         call_580217.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_598217, url, valid)
+  result = hook(call_580217, url, valid)
 
-proc call*(call_598218: Call_ClouduseraccountsUsersGetIamPolicy_598205;
+proc call*(call_580218: Call_ClouduseraccountsUsersGetIamPolicy_580205;
           resource: string; project: string; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; key: string = ""; prettyPrint: bool = true): Recallable =
@@ -2681,33 +2683,33 @@ proc call*(call_598218: Call_ClouduseraccountsUsersGetIamPolicy_598205;
   ##          : Project ID for this request.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_598219 = newJObject()
-  var query_598220 = newJObject()
-  add(query_598220, "fields", newJString(fields))
-  add(query_598220, "quotaUser", newJString(quotaUser))
-  add(query_598220, "alt", newJString(alt))
-  add(query_598220, "oauth_token", newJString(oauthToken))
-  add(query_598220, "userIp", newJString(userIp))
-  add(query_598220, "key", newJString(key))
-  add(path_598219, "resource", newJString(resource))
-  add(path_598219, "project", newJString(project))
-  add(query_598220, "prettyPrint", newJBool(prettyPrint))
-  result = call_598218.call(path_598219, query_598220, nil, nil, nil)
+  var path_580219 = newJObject()
+  var query_580220 = newJObject()
+  add(query_580220, "fields", newJString(fields))
+  add(query_580220, "quotaUser", newJString(quotaUser))
+  add(query_580220, "alt", newJString(alt))
+  add(query_580220, "oauth_token", newJString(oauthToken))
+  add(query_580220, "userIp", newJString(userIp))
+  add(query_580220, "key", newJString(key))
+  add(path_580219, "resource", newJString(resource))
+  add(path_580219, "project", newJString(project))
+  add(query_580220, "prettyPrint", newJBool(prettyPrint))
+  result = call_580218.call(path_580219, query_580220, nil, nil, nil)
 
-var clouduseraccountsUsersGetIamPolicy* = Call_ClouduseraccountsUsersGetIamPolicy_598205(
+var clouduseraccountsUsersGetIamPolicy* = Call_ClouduseraccountsUsersGetIamPolicy_580205(
     name: "clouduseraccountsUsersGetIamPolicy", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com",
     route: "/{project}/global/users/{resource}/getIamPolicy",
-    validator: validate_ClouduseraccountsUsersGetIamPolicy_598206,
+    validator: validate_ClouduseraccountsUsersGetIamPolicy_580206,
     base: "/clouduseraccounts/alpha/projects",
-    url: url_ClouduseraccountsUsersGetIamPolicy_598207, schemes: {Scheme.Https})
+    url: url_ClouduseraccountsUsersGetIamPolicy_580207, schemes: {Scheme.Https})
 type
-  Call_ClouduseraccountsUsersSetIamPolicy_598221 = ref object of OpenApiRestCall_597424
-proc url_ClouduseraccountsUsersSetIamPolicy_598223(protocol: Scheme; host: string;
+  Call_ClouduseraccountsUsersSetIamPolicy_580221 = ref object of OpenApiRestCall_579424
+proc url_ClouduseraccountsUsersSetIamPolicy_580223(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "project" in path, "`project` is a required path parameter"
   assert "resource" in path, "`resource` is a required path parameter"
@@ -2722,7 +2724,7 @@ proc url_ClouduseraccountsUsersSetIamPolicy_598223(protocol: Scheme; host: strin
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_ClouduseraccountsUsersSetIamPolicy_598222(path: JsonNode;
+proc validate_ClouduseraccountsUsersSetIamPolicy_580222(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Sets the access control policy on the specified resource. Replaces any existing policy.
   ## 
@@ -2735,16 +2737,16 @@ proc validate_ClouduseraccountsUsersSetIamPolicy_598222(path: JsonNode;
   ##          : Project ID for this request.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `resource` field"
-  var valid_598224 = path.getOrDefault("resource")
-  valid_598224 = validateParameter(valid_598224, JString, required = true,
+  var valid_580224 = path.getOrDefault("resource")
+  valid_580224 = validateParameter(valid_580224, JString, required = true,
                                  default = nil)
-  if valid_598224 != nil:
-    section.add "resource", valid_598224
-  var valid_598225 = path.getOrDefault("project")
-  valid_598225 = validateParameter(valid_598225, JString, required = true,
+  if valid_580224 != nil:
+    section.add "resource", valid_580224
+  var valid_580225 = path.getOrDefault("project")
+  valid_580225 = validateParameter(valid_580225, JString, required = true,
                                  default = nil)
-  if valid_598225 != nil:
-    section.add "project", valid_598225
+  if valid_580225 != nil:
+    section.add "project", valid_580225
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -2762,41 +2764,41 @@ proc validate_ClouduseraccountsUsersSetIamPolicy_598222(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_598226 = query.getOrDefault("fields")
-  valid_598226 = validateParameter(valid_598226, JString, required = false,
+  var valid_580226 = query.getOrDefault("fields")
+  valid_580226 = validateParameter(valid_580226, JString, required = false,
                                  default = nil)
-  if valid_598226 != nil:
-    section.add "fields", valid_598226
-  var valid_598227 = query.getOrDefault("quotaUser")
-  valid_598227 = validateParameter(valid_598227, JString, required = false,
+  if valid_580226 != nil:
+    section.add "fields", valid_580226
+  var valid_580227 = query.getOrDefault("quotaUser")
+  valid_580227 = validateParameter(valid_580227, JString, required = false,
                                  default = nil)
-  if valid_598227 != nil:
-    section.add "quotaUser", valid_598227
-  var valid_598228 = query.getOrDefault("alt")
-  valid_598228 = validateParameter(valid_598228, JString, required = false,
+  if valid_580227 != nil:
+    section.add "quotaUser", valid_580227
+  var valid_580228 = query.getOrDefault("alt")
+  valid_580228 = validateParameter(valid_580228, JString, required = false,
                                  default = newJString("json"))
-  if valid_598228 != nil:
-    section.add "alt", valid_598228
-  var valid_598229 = query.getOrDefault("oauth_token")
-  valid_598229 = validateParameter(valid_598229, JString, required = false,
+  if valid_580228 != nil:
+    section.add "alt", valid_580228
+  var valid_580229 = query.getOrDefault("oauth_token")
+  valid_580229 = validateParameter(valid_580229, JString, required = false,
                                  default = nil)
-  if valid_598229 != nil:
-    section.add "oauth_token", valid_598229
-  var valid_598230 = query.getOrDefault("userIp")
-  valid_598230 = validateParameter(valid_598230, JString, required = false,
+  if valid_580229 != nil:
+    section.add "oauth_token", valid_580229
+  var valid_580230 = query.getOrDefault("userIp")
+  valid_580230 = validateParameter(valid_580230, JString, required = false,
                                  default = nil)
-  if valid_598230 != nil:
-    section.add "userIp", valid_598230
-  var valid_598231 = query.getOrDefault("key")
-  valid_598231 = validateParameter(valid_598231, JString, required = false,
+  if valid_580230 != nil:
+    section.add "userIp", valid_580230
+  var valid_580231 = query.getOrDefault("key")
+  valid_580231 = validateParameter(valid_580231, JString, required = false,
                                  default = nil)
-  if valid_598231 != nil:
-    section.add "key", valid_598231
-  var valid_598232 = query.getOrDefault("prettyPrint")
-  valid_598232 = validateParameter(valid_598232, JBool, required = false,
+  if valid_580231 != nil:
+    section.add "key", valid_580231
+  var valid_580232 = query.getOrDefault("prettyPrint")
+  valid_580232 = validateParameter(valid_580232, JBool, required = false,
                                  default = newJBool(true))
-  if valid_598232 != nil:
-    section.add "prettyPrint", valid_598232
+  if valid_580232 != nil:
+    section.add "prettyPrint", valid_580232
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -2808,21 +2810,21 @@ proc validate_ClouduseraccountsUsersSetIamPolicy_598222(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_598234: Call_ClouduseraccountsUsersSetIamPolicy_598221;
+proc call*(call_580234: Call_ClouduseraccountsUsersSetIamPolicy_580221;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Sets the access control policy on the specified resource. Replaces any existing policy.
   ## 
-  let valid = call_598234.validator(path, query, header, formData, body)
-  let scheme = call_598234.pickScheme
+  let valid = call_580234.validator(path, query, header, formData, body)
+  let scheme = call_580234.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_598234.url(scheme.get, call_598234.host, call_598234.base,
-                         call_598234.route, valid.getOrDefault("path"),
+  let url = call_580234.url(scheme.get, call_580234.host, call_580234.base,
+                         call_580234.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_598234, url, valid)
+  result = hook(call_580234, url, valid)
 
-proc call*(call_598235: Call_ClouduseraccountsUsersSetIamPolicy_598221;
+proc call*(call_580235: Call_ClouduseraccountsUsersSetIamPolicy_580221;
           resource: string; project: string; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; key: string = ""; body: JsonNode = nil;
@@ -2848,36 +2850,36 @@ proc call*(call_598235: Call_ClouduseraccountsUsersSetIamPolicy_598221;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_598236 = newJObject()
-  var query_598237 = newJObject()
-  var body_598238 = newJObject()
-  add(query_598237, "fields", newJString(fields))
-  add(query_598237, "quotaUser", newJString(quotaUser))
-  add(query_598237, "alt", newJString(alt))
-  add(query_598237, "oauth_token", newJString(oauthToken))
-  add(query_598237, "userIp", newJString(userIp))
-  add(query_598237, "key", newJString(key))
-  add(path_598236, "resource", newJString(resource))
-  add(path_598236, "project", newJString(project))
+  var path_580236 = newJObject()
+  var query_580237 = newJObject()
+  var body_580238 = newJObject()
+  add(query_580237, "fields", newJString(fields))
+  add(query_580237, "quotaUser", newJString(quotaUser))
+  add(query_580237, "alt", newJString(alt))
+  add(query_580237, "oauth_token", newJString(oauthToken))
+  add(query_580237, "userIp", newJString(userIp))
+  add(query_580237, "key", newJString(key))
+  add(path_580236, "resource", newJString(resource))
+  add(path_580236, "project", newJString(project))
   if body != nil:
-    body_598238 = body
-  add(query_598237, "prettyPrint", newJBool(prettyPrint))
-  result = call_598235.call(path_598236, query_598237, nil, nil, body_598238)
+    body_580238 = body
+  add(query_580237, "prettyPrint", newJBool(prettyPrint))
+  result = call_580235.call(path_580236, query_580237, nil, nil, body_580238)
 
-var clouduseraccountsUsersSetIamPolicy* = Call_ClouduseraccountsUsersSetIamPolicy_598221(
+var clouduseraccountsUsersSetIamPolicy* = Call_ClouduseraccountsUsersSetIamPolicy_580221(
     name: "clouduseraccountsUsersSetIamPolicy", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com",
     route: "/{project}/global/users/{resource}/setIamPolicy",
-    validator: validate_ClouduseraccountsUsersSetIamPolicy_598222,
+    validator: validate_ClouduseraccountsUsersSetIamPolicy_580222,
     base: "/clouduseraccounts/alpha/projects",
-    url: url_ClouduseraccountsUsersSetIamPolicy_598223, schemes: {Scheme.Https})
+    url: url_ClouduseraccountsUsersSetIamPolicy_580223, schemes: {Scheme.Https})
 type
-  Call_ClouduseraccountsUsersTestIamPermissions_598239 = ref object of OpenApiRestCall_597424
-proc url_ClouduseraccountsUsersTestIamPermissions_598241(protocol: Scheme;
+  Call_ClouduseraccountsUsersTestIamPermissions_580239 = ref object of OpenApiRestCall_579424
+proc url_ClouduseraccountsUsersTestIamPermissions_580241(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "project" in path, "`project` is a required path parameter"
   assert "resource" in path, "`resource` is a required path parameter"
@@ -2892,7 +2894,7 @@ proc url_ClouduseraccountsUsersTestIamPermissions_598241(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_ClouduseraccountsUsersTestIamPermissions_598240(path: JsonNode;
+proc validate_ClouduseraccountsUsersTestIamPermissions_580240(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Returns permissions that a caller has on the specified resource.
   ## 
@@ -2905,16 +2907,16 @@ proc validate_ClouduseraccountsUsersTestIamPermissions_598240(path: JsonNode;
   ##          : Project ID for this request.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `resource` field"
-  var valid_598242 = path.getOrDefault("resource")
-  valid_598242 = validateParameter(valid_598242, JString, required = true,
+  var valid_580242 = path.getOrDefault("resource")
+  valid_580242 = validateParameter(valid_580242, JString, required = true,
                                  default = nil)
-  if valid_598242 != nil:
-    section.add "resource", valid_598242
-  var valid_598243 = path.getOrDefault("project")
-  valid_598243 = validateParameter(valid_598243, JString, required = true,
+  if valid_580242 != nil:
+    section.add "resource", valid_580242
+  var valid_580243 = path.getOrDefault("project")
+  valid_580243 = validateParameter(valid_580243, JString, required = true,
                                  default = nil)
-  if valid_598243 != nil:
-    section.add "project", valid_598243
+  if valid_580243 != nil:
+    section.add "project", valid_580243
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -2932,41 +2934,41 @@ proc validate_ClouduseraccountsUsersTestIamPermissions_598240(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_598244 = query.getOrDefault("fields")
-  valid_598244 = validateParameter(valid_598244, JString, required = false,
+  var valid_580244 = query.getOrDefault("fields")
+  valid_580244 = validateParameter(valid_580244, JString, required = false,
                                  default = nil)
-  if valid_598244 != nil:
-    section.add "fields", valid_598244
-  var valid_598245 = query.getOrDefault("quotaUser")
-  valid_598245 = validateParameter(valid_598245, JString, required = false,
+  if valid_580244 != nil:
+    section.add "fields", valid_580244
+  var valid_580245 = query.getOrDefault("quotaUser")
+  valid_580245 = validateParameter(valid_580245, JString, required = false,
                                  default = nil)
-  if valid_598245 != nil:
-    section.add "quotaUser", valid_598245
-  var valid_598246 = query.getOrDefault("alt")
-  valid_598246 = validateParameter(valid_598246, JString, required = false,
+  if valid_580245 != nil:
+    section.add "quotaUser", valid_580245
+  var valid_580246 = query.getOrDefault("alt")
+  valid_580246 = validateParameter(valid_580246, JString, required = false,
                                  default = newJString("json"))
-  if valid_598246 != nil:
-    section.add "alt", valid_598246
-  var valid_598247 = query.getOrDefault("oauth_token")
-  valid_598247 = validateParameter(valid_598247, JString, required = false,
+  if valid_580246 != nil:
+    section.add "alt", valid_580246
+  var valid_580247 = query.getOrDefault("oauth_token")
+  valid_580247 = validateParameter(valid_580247, JString, required = false,
                                  default = nil)
-  if valid_598247 != nil:
-    section.add "oauth_token", valid_598247
-  var valid_598248 = query.getOrDefault("userIp")
-  valid_598248 = validateParameter(valid_598248, JString, required = false,
+  if valid_580247 != nil:
+    section.add "oauth_token", valid_580247
+  var valid_580248 = query.getOrDefault("userIp")
+  valid_580248 = validateParameter(valid_580248, JString, required = false,
                                  default = nil)
-  if valid_598248 != nil:
-    section.add "userIp", valid_598248
-  var valid_598249 = query.getOrDefault("key")
-  valid_598249 = validateParameter(valid_598249, JString, required = false,
+  if valid_580248 != nil:
+    section.add "userIp", valid_580248
+  var valid_580249 = query.getOrDefault("key")
+  valid_580249 = validateParameter(valid_580249, JString, required = false,
                                  default = nil)
-  if valid_598249 != nil:
-    section.add "key", valid_598249
-  var valid_598250 = query.getOrDefault("prettyPrint")
-  valid_598250 = validateParameter(valid_598250, JBool, required = false,
+  if valid_580249 != nil:
+    section.add "key", valid_580249
+  var valid_580250 = query.getOrDefault("prettyPrint")
+  valid_580250 = validateParameter(valid_580250, JBool, required = false,
                                  default = newJBool(true))
-  if valid_598250 != nil:
-    section.add "prettyPrint", valid_598250
+  if valid_580250 != nil:
+    section.add "prettyPrint", valid_580250
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -2978,21 +2980,21 @@ proc validate_ClouduseraccountsUsersTestIamPermissions_598240(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_598252: Call_ClouduseraccountsUsersTestIamPermissions_598239;
+proc call*(call_580252: Call_ClouduseraccountsUsersTestIamPermissions_580239;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Returns permissions that a caller has on the specified resource.
   ## 
-  let valid = call_598252.validator(path, query, header, formData, body)
-  let scheme = call_598252.pickScheme
+  let valid = call_580252.validator(path, query, header, formData, body)
+  let scheme = call_580252.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_598252.url(scheme.get, call_598252.host, call_598252.base,
-                         call_598252.route, valid.getOrDefault("path"),
+  let url = call_580252.url(scheme.get, call_580252.host, call_580252.base,
+                         call_580252.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_598252, url, valid)
+  result = hook(call_580252, url, valid)
 
-proc call*(call_598253: Call_ClouduseraccountsUsersTestIamPermissions_598239;
+proc call*(call_580253: Call_ClouduseraccountsUsersTestIamPermissions_580239;
           resource: string; project: string; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; key: string = ""; body: JsonNode = nil;
@@ -3018,37 +3020,37 @@ proc call*(call_598253: Call_ClouduseraccountsUsersTestIamPermissions_598239;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_598254 = newJObject()
-  var query_598255 = newJObject()
-  var body_598256 = newJObject()
-  add(query_598255, "fields", newJString(fields))
-  add(query_598255, "quotaUser", newJString(quotaUser))
-  add(query_598255, "alt", newJString(alt))
-  add(query_598255, "oauth_token", newJString(oauthToken))
-  add(query_598255, "userIp", newJString(userIp))
-  add(query_598255, "key", newJString(key))
-  add(path_598254, "resource", newJString(resource))
-  add(path_598254, "project", newJString(project))
+  var path_580254 = newJObject()
+  var query_580255 = newJObject()
+  var body_580256 = newJObject()
+  add(query_580255, "fields", newJString(fields))
+  add(query_580255, "quotaUser", newJString(quotaUser))
+  add(query_580255, "alt", newJString(alt))
+  add(query_580255, "oauth_token", newJString(oauthToken))
+  add(query_580255, "userIp", newJString(userIp))
+  add(query_580255, "key", newJString(key))
+  add(path_580254, "resource", newJString(resource))
+  add(path_580254, "project", newJString(project))
   if body != nil:
-    body_598256 = body
-  add(query_598255, "prettyPrint", newJBool(prettyPrint))
-  result = call_598253.call(path_598254, query_598255, nil, nil, body_598256)
+    body_580256 = body
+  add(query_580255, "prettyPrint", newJBool(prettyPrint))
+  result = call_580253.call(path_580254, query_580255, nil, nil, body_580256)
 
-var clouduseraccountsUsersTestIamPermissions* = Call_ClouduseraccountsUsersTestIamPermissions_598239(
+var clouduseraccountsUsersTestIamPermissions* = Call_ClouduseraccountsUsersTestIamPermissions_580239(
     name: "clouduseraccountsUsersTestIamPermissions", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com",
     route: "/{project}/global/users/{resource}/testIamPermissions",
-    validator: validate_ClouduseraccountsUsersTestIamPermissions_598240,
+    validator: validate_ClouduseraccountsUsersTestIamPermissions_580240,
     base: "/clouduseraccounts/alpha/projects",
-    url: url_ClouduseraccountsUsersTestIamPermissions_598241,
+    url: url_ClouduseraccountsUsersTestIamPermissions_580241,
     schemes: {Scheme.Https})
 type
-  Call_ClouduseraccountsUsersGet_598257 = ref object of OpenApiRestCall_597424
-proc url_ClouduseraccountsUsersGet_598259(protocol: Scheme; host: string;
+  Call_ClouduseraccountsUsersGet_580257 = ref object of OpenApiRestCall_579424
+proc url_ClouduseraccountsUsersGet_580259(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "project" in path, "`project` is a required path parameter"
   assert "user" in path, "`user` is a required path parameter"
@@ -3062,7 +3064,7 @@ proc url_ClouduseraccountsUsersGet_598259(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_ClouduseraccountsUsersGet_598258(path: JsonNode; query: JsonNode;
+proc validate_ClouduseraccountsUsersGet_580258(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Returns the specified User resource.
   ## 
@@ -3075,16 +3077,16 @@ proc validate_ClouduseraccountsUsersGet_598258(path: JsonNode; query: JsonNode;
   ##          : Project ID for this request.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `user` field"
-  var valid_598260 = path.getOrDefault("user")
-  valid_598260 = validateParameter(valid_598260, JString, required = true,
+  var valid_580260 = path.getOrDefault("user")
+  valid_580260 = validateParameter(valid_580260, JString, required = true,
                                  default = nil)
-  if valid_598260 != nil:
-    section.add "user", valid_598260
-  var valid_598261 = path.getOrDefault("project")
-  valid_598261 = validateParameter(valid_598261, JString, required = true,
+  if valid_580260 != nil:
+    section.add "user", valid_580260
+  var valid_580261 = path.getOrDefault("project")
+  valid_580261 = validateParameter(valid_580261, JString, required = true,
                                  default = nil)
-  if valid_598261 != nil:
-    section.add "project", valid_598261
+  if valid_580261 != nil:
+    section.add "project", valid_580261
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -3102,41 +3104,41 @@ proc validate_ClouduseraccountsUsersGet_598258(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_598262 = query.getOrDefault("fields")
-  valid_598262 = validateParameter(valid_598262, JString, required = false,
+  var valid_580262 = query.getOrDefault("fields")
+  valid_580262 = validateParameter(valid_580262, JString, required = false,
                                  default = nil)
-  if valid_598262 != nil:
-    section.add "fields", valid_598262
-  var valid_598263 = query.getOrDefault("quotaUser")
-  valid_598263 = validateParameter(valid_598263, JString, required = false,
+  if valid_580262 != nil:
+    section.add "fields", valid_580262
+  var valid_580263 = query.getOrDefault("quotaUser")
+  valid_580263 = validateParameter(valid_580263, JString, required = false,
                                  default = nil)
-  if valid_598263 != nil:
-    section.add "quotaUser", valid_598263
-  var valid_598264 = query.getOrDefault("alt")
-  valid_598264 = validateParameter(valid_598264, JString, required = false,
+  if valid_580263 != nil:
+    section.add "quotaUser", valid_580263
+  var valid_580264 = query.getOrDefault("alt")
+  valid_580264 = validateParameter(valid_580264, JString, required = false,
                                  default = newJString("json"))
-  if valid_598264 != nil:
-    section.add "alt", valid_598264
-  var valid_598265 = query.getOrDefault("oauth_token")
-  valid_598265 = validateParameter(valid_598265, JString, required = false,
+  if valid_580264 != nil:
+    section.add "alt", valid_580264
+  var valid_580265 = query.getOrDefault("oauth_token")
+  valid_580265 = validateParameter(valid_580265, JString, required = false,
                                  default = nil)
-  if valid_598265 != nil:
-    section.add "oauth_token", valid_598265
-  var valid_598266 = query.getOrDefault("userIp")
-  valid_598266 = validateParameter(valid_598266, JString, required = false,
+  if valid_580265 != nil:
+    section.add "oauth_token", valid_580265
+  var valid_580266 = query.getOrDefault("userIp")
+  valid_580266 = validateParameter(valid_580266, JString, required = false,
                                  default = nil)
-  if valid_598266 != nil:
-    section.add "userIp", valid_598266
-  var valid_598267 = query.getOrDefault("key")
-  valid_598267 = validateParameter(valid_598267, JString, required = false,
+  if valid_580266 != nil:
+    section.add "userIp", valid_580266
+  var valid_580267 = query.getOrDefault("key")
+  valid_580267 = validateParameter(valid_580267, JString, required = false,
                                  default = nil)
-  if valid_598267 != nil:
-    section.add "key", valid_598267
-  var valid_598268 = query.getOrDefault("prettyPrint")
-  valid_598268 = validateParameter(valid_598268, JBool, required = false,
+  if valid_580267 != nil:
+    section.add "key", valid_580267
+  var valid_580268 = query.getOrDefault("prettyPrint")
+  valid_580268 = validateParameter(valid_580268, JBool, required = false,
                                  default = newJBool(true))
-  if valid_598268 != nil:
-    section.add "prettyPrint", valid_598268
+  if valid_580268 != nil:
+    section.add "prettyPrint", valid_580268
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -3145,20 +3147,20 @@ proc validate_ClouduseraccountsUsersGet_598258(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_598269: Call_ClouduseraccountsUsersGet_598257; path: JsonNode;
+proc call*(call_580269: Call_ClouduseraccountsUsersGet_580257; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Returns the specified User resource.
   ## 
-  let valid = call_598269.validator(path, query, header, formData, body)
-  let scheme = call_598269.pickScheme
+  let valid = call_580269.validator(path, query, header, formData, body)
+  let scheme = call_580269.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_598269.url(scheme.get, call_598269.host, call_598269.base,
-                         call_598269.route, valid.getOrDefault("path"),
+  let url = call_580269.url(scheme.get, call_580269.host, call_580269.base,
+                         call_580269.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_598269, url, valid)
+  result = hook(call_580269, url, valid)
 
-proc call*(call_598270: Call_ClouduseraccountsUsersGet_598257; user: string;
+proc call*(call_580270: Call_ClouduseraccountsUsersGet_580257; user: string;
           project: string; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; userIp: string = "";
           key: string = ""; prettyPrint: bool = true): Recallable =
@@ -3182,32 +3184,32 @@ proc call*(call_598270: Call_ClouduseraccountsUsersGet_598257; user: string;
   ##          : Project ID for this request.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_598271 = newJObject()
-  var query_598272 = newJObject()
-  add(query_598272, "fields", newJString(fields))
-  add(query_598272, "quotaUser", newJString(quotaUser))
-  add(query_598272, "alt", newJString(alt))
-  add(path_598271, "user", newJString(user))
-  add(query_598272, "oauth_token", newJString(oauthToken))
-  add(query_598272, "userIp", newJString(userIp))
-  add(query_598272, "key", newJString(key))
-  add(path_598271, "project", newJString(project))
-  add(query_598272, "prettyPrint", newJBool(prettyPrint))
-  result = call_598270.call(path_598271, query_598272, nil, nil, nil)
+  var path_580271 = newJObject()
+  var query_580272 = newJObject()
+  add(query_580272, "fields", newJString(fields))
+  add(query_580272, "quotaUser", newJString(quotaUser))
+  add(query_580272, "alt", newJString(alt))
+  add(path_580271, "user", newJString(user))
+  add(query_580272, "oauth_token", newJString(oauthToken))
+  add(query_580272, "userIp", newJString(userIp))
+  add(query_580272, "key", newJString(key))
+  add(path_580271, "project", newJString(project))
+  add(query_580272, "prettyPrint", newJBool(prettyPrint))
+  result = call_580270.call(path_580271, query_580272, nil, nil, nil)
 
-var clouduseraccountsUsersGet* = Call_ClouduseraccountsUsersGet_598257(
+var clouduseraccountsUsersGet* = Call_ClouduseraccountsUsersGet_580257(
     name: "clouduseraccountsUsersGet", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/{project}/global/users/{user}",
-    validator: validate_ClouduseraccountsUsersGet_598258,
-    base: "/clouduseraccounts/alpha/projects", url: url_ClouduseraccountsUsersGet_598259,
+    validator: validate_ClouduseraccountsUsersGet_580258,
+    base: "/clouduseraccounts/alpha/projects", url: url_ClouduseraccountsUsersGet_580259,
     schemes: {Scheme.Https})
 type
-  Call_ClouduseraccountsUsersDelete_598273 = ref object of OpenApiRestCall_597424
-proc url_ClouduseraccountsUsersDelete_598275(protocol: Scheme; host: string;
+  Call_ClouduseraccountsUsersDelete_580273 = ref object of OpenApiRestCall_579424
+proc url_ClouduseraccountsUsersDelete_580275(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "project" in path, "`project` is a required path parameter"
   assert "user" in path, "`user` is a required path parameter"
@@ -3221,7 +3223,7 @@ proc url_ClouduseraccountsUsersDelete_598275(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_ClouduseraccountsUsersDelete_598274(path: JsonNode; query: JsonNode;
+proc validate_ClouduseraccountsUsersDelete_580274(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Deletes the specified User resource.
   ## 
@@ -3234,16 +3236,16 @@ proc validate_ClouduseraccountsUsersDelete_598274(path: JsonNode; query: JsonNod
   ##          : Project ID for this request.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `user` field"
-  var valid_598276 = path.getOrDefault("user")
-  valid_598276 = validateParameter(valid_598276, JString, required = true,
+  var valid_580276 = path.getOrDefault("user")
+  valid_580276 = validateParameter(valid_580276, JString, required = true,
                                  default = nil)
-  if valid_598276 != nil:
-    section.add "user", valid_598276
-  var valid_598277 = path.getOrDefault("project")
-  valid_598277 = validateParameter(valid_598277, JString, required = true,
+  if valid_580276 != nil:
+    section.add "user", valid_580276
+  var valid_580277 = path.getOrDefault("project")
+  valid_580277 = validateParameter(valid_580277, JString, required = true,
                                  default = nil)
-  if valid_598277 != nil:
-    section.add "project", valid_598277
+  if valid_580277 != nil:
+    section.add "project", valid_580277
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -3261,41 +3263,41 @@ proc validate_ClouduseraccountsUsersDelete_598274(path: JsonNode; query: JsonNod
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_598278 = query.getOrDefault("fields")
-  valid_598278 = validateParameter(valid_598278, JString, required = false,
+  var valid_580278 = query.getOrDefault("fields")
+  valid_580278 = validateParameter(valid_580278, JString, required = false,
                                  default = nil)
-  if valid_598278 != nil:
-    section.add "fields", valid_598278
-  var valid_598279 = query.getOrDefault("quotaUser")
-  valid_598279 = validateParameter(valid_598279, JString, required = false,
+  if valid_580278 != nil:
+    section.add "fields", valid_580278
+  var valid_580279 = query.getOrDefault("quotaUser")
+  valid_580279 = validateParameter(valid_580279, JString, required = false,
                                  default = nil)
-  if valid_598279 != nil:
-    section.add "quotaUser", valid_598279
-  var valid_598280 = query.getOrDefault("alt")
-  valid_598280 = validateParameter(valid_598280, JString, required = false,
+  if valid_580279 != nil:
+    section.add "quotaUser", valid_580279
+  var valid_580280 = query.getOrDefault("alt")
+  valid_580280 = validateParameter(valid_580280, JString, required = false,
                                  default = newJString("json"))
-  if valid_598280 != nil:
-    section.add "alt", valid_598280
-  var valid_598281 = query.getOrDefault("oauth_token")
-  valid_598281 = validateParameter(valid_598281, JString, required = false,
+  if valid_580280 != nil:
+    section.add "alt", valid_580280
+  var valid_580281 = query.getOrDefault("oauth_token")
+  valid_580281 = validateParameter(valid_580281, JString, required = false,
                                  default = nil)
-  if valid_598281 != nil:
-    section.add "oauth_token", valid_598281
-  var valid_598282 = query.getOrDefault("userIp")
-  valid_598282 = validateParameter(valid_598282, JString, required = false,
+  if valid_580281 != nil:
+    section.add "oauth_token", valid_580281
+  var valid_580282 = query.getOrDefault("userIp")
+  valid_580282 = validateParameter(valid_580282, JString, required = false,
                                  default = nil)
-  if valid_598282 != nil:
-    section.add "userIp", valid_598282
-  var valid_598283 = query.getOrDefault("key")
-  valid_598283 = validateParameter(valid_598283, JString, required = false,
+  if valid_580282 != nil:
+    section.add "userIp", valid_580282
+  var valid_580283 = query.getOrDefault("key")
+  valid_580283 = validateParameter(valid_580283, JString, required = false,
                                  default = nil)
-  if valid_598283 != nil:
-    section.add "key", valid_598283
-  var valid_598284 = query.getOrDefault("prettyPrint")
-  valid_598284 = validateParameter(valid_598284, JBool, required = false,
+  if valid_580283 != nil:
+    section.add "key", valid_580283
+  var valid_580284 = query.getOrDefault("prettyPrint")
+  valid_580284 = validateParameter(valid_580284, JBool, required = false,
                                  default = newJBool(true))
-  if valid_598284 != nil:
-    section.add "prettyPrint", valid_598284
+  if valid_580284 != nil:
+    section.add "prettyPrint", valid_580284
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -3304,20 +3306,20 @@ proc validate_ClouduseraccountsUsersDelete_598274(path: JsonNode; query: JsonNod
   if body != nil:
     result.add "body", body
 
-proc call*(call_598285: Call_ClouduseraccountsUsersDelete_598273; path: JsonNode;
+proc call*(call_580285: Call_ClouduseraccountsUsersDelete_580273; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Deletes the specified User resource.
   ## 
-  let valid = call_598285.validator(path, query, header, formData, body)
-  let scheme = call_598285.pickScheme
+  let valid = call_580285.validator(path, query, header, formData, body)
+  let scheme = call_580285.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_598285.url(scheme.get, call_598285.host, call_598285.base,
-                         call_598285.route, valid.getOrDefault("path"),
+  let url = call_580285.url(scheme.get, call_580285.host, call_580285.base,
+                         call_580285.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_598285, url, valid)
+  result = hook(call_580285, url, valid)
 
-proc call*(call_598286: Call_ClouduseraccountsUsersDelete_598273; user: string;
+proc call*(call_580286: Call_ClouduseraccountsUsersDelete_580273; user: string;
           project: string; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; userIp: string = "";
           key: string = ""; prettyPrint: bool = true): Recallable =
@@ -3341,32 +3343,32 @@ proc call*(call_598286: Call_ClouduseraccountsUsersDelete_598273; user: string;
   ##          : Project ID for this request.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_598287 = newJObject()
-  var query_598288 = newJObject()
-  add(query_598288, "fields", newJString(fields))
-  add(query_598288, "quotaUser", newJString(quotaUser))
-  add(query_598288, "alt", newJString(alt))
-  add(path_598287, "user", newJString(user))
-  add(query_598288, "oauth_token", newJString(oauthToken))
-  add(query_598288, "userIp", newJString(userIp))
-  add(query_598288, "key", newJString(key))
-  add(path_598287, "project", newJString(project))
-  add(query_598288, "prettyPrint", newJBool(prettyPrint))
-  result = call_598286.call(path_598287, query_598288, nil, nil, nil)
+  var path_580287 = newJObject()
+  var query_580288 = newJObject()
+  add(query_580288, "fields", newJString(fields))
+  add(query_580288, "quotaUser", newJString(quotaUser))
+  add(query_580288, "alt", newJString(alt))
+  add(path_580287, "user", newJString(user))
+  add(query_580288, "oauth_token", newJString(oauthToken))
+  add(query_580288, "userIp", newJString(userIp))
+  add(query_580288, "key", newJString(key))
+  add(path_580287, "project", newJString(project))
+  add(query_580288, "prettyPrint", newJBool(prettyPrint))
+  result = call_580286.call(path_580287, query_580288, nil, nil, nil)
 
-var clouduseraccountsUsersDelete* = Call_ClouduseraccountsUsersDelete_598273(
+var clouduseraccountsUsersDelete* = Call_ClouduseraccountsUsersDelete_580273(
     name: "clouduseraccountsUsersDelete", meth: HttpMethod.HttpDelete,
     host: "www.googleapis.com", route: "/{project}/global/users/{user}",
-    validator: validate_ClouduseraccountsUsersDelete_598274,
+    validator: validate_ClouduseraccountsUsersDelete_580274,
     base: "/clouduseraccounts/alpha/projects",
-    url: url_ClouduseraccountsUsersDelete_598275, schemes: {Scheme.Https})
+    url: url_ClouduseraccountsUsersDelete_580275, schemes: {Scheme.Https})
 type
-  Call_ClouduseraccountsUsersAddPublicKey_598289 = ref object of OpenApiRestCall_597424
-proc url_ClouduseraccountsUsersAddPublicKey_598291(protocol: Scheme; host: string;
+  Call_ClouduseraccountsUsersAddPublicKey_580289 = ref object of OpenApiRestCall_579424
+proc url_ClouduseraccountsUsersAddPublicKey_580291(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "project" in path, "`project` is a required path parameter"
   assert "user" in path, "`user` is a required path parameter"
@@ -3381,7 +3383,7 @@ proc url_ClouduseraccountsUsersAddPublicKey_598291(protocol: Scheme; host: strin
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_ClouduseraccountsUsersAddPublicKey_598290(path: JsonNode;
+proc validate_ClouduseraccountsUsersAddPublicKey_580290(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Adds a public key to the specified User resource with the data included in the request.
   ## 
@@ -3394,16 +3396,16 @@ proc validate_ClouduseraccountsUsersAddPublicKey_598290(path: JsonNode;
   ##          : Project ID for this request.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `user` field"
-  var valid_598292 = path.getOrDefault("user")
-  valid_598292 = validateParameter(valid_598292, JString, required = true,
+  var valid_580292 = path.getOrDefault("user")
+  valid_580292 = validateParameter(valid_580292, JString, required = true,
                                  default = nil)
-  if valid_598292 != nil:
-    section.add "user", valid_598292
-  var valid_598293 = path.getOrDefault("project")
-  valid_598293 = validateParameter(valid_598293, JString, required = true,
+  if valid_580292 != nil:
+    section.add "user", valid_580292
+  var valid_580293 = path.getOrDefault("project")
+  valid_580293 = validateParameter(valid_580293, JString, required = true,
                                  default = nil)
-  if valid_598293 != nil:
-    section.add "project", valid_598293
+  if valid_580293 != nil:
+    section.add "project", valid_580293
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -3421,41 +3423,41 @@ proc validate_ClouduseraccountsUsersAddPublicKey_598290(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_598294 = query.getOrDefault("fields")
-  valid_598294 = validateParameter(valid_598294, JString, required = false,
+  var valid_580294 = query.getOrDefault("fields")
+  valid_580294 = validateParameter(valid_580294, JString, required = false,
                                  default = nil)
-  if valid_598294 != nil:
-    section.add "fields", valid_598294
-  var valid_598295 = query.getOrDefault("quotaUser")
-  valid_598295 = validateParameter(valid_598295, JString, required = false,
+  if valid_580294 != nil:
+    section.add "fields", valid_580294
+  var valid_580295 = query.getOrDefault("quotaUser")
+  valid_580295 = validateParameter(valid_580295, JString, required = false,
                                  default = nil)
-  if valid_598295 != nil:
-    section.add "quotaUser", valid_598295
-  var valid_598296 = query.getOrDefault("alt")
-  valid_598296 = validateParameter(valid_598296, JString, required = false,
+  if valid_580295 != nil:
+    section.add "quotaUser", valid_580295
+  var valid_580296 = query.getOrDefault("alt")
+  valid_580296 = validateParameter(valid_580296, JString, required = false,
                                  default = newJString("json"))
-  if valid_598296 != nil:
-    section.add "alt", valid_598296
-  var valid_598297 = query.getOrDefault("oauth_token")
-  valid_598297 = validateParameter(valid_598297, JString, required = false,
+  if valid_580296 != nil:
+    section.add "alt", valid_580296
+  var valid_580297 = query.getOrDefault("oauth_token")
+  valid_580297 = validateParameter(valid_580297, JString, required = false,
                                  default = nil)
-  if valid_598297 != nil:
-    section.add "oauth_token", valid_598297
-  var valid_598298 = query.getOrDefault("userIp")
-  valid_598298 = validateParameter(valid_598298, JString, required = false,
+  if valid_580297 != nil:
+    section.add "oauth_token", valid_580297
+  var valid_580298 = query.getOrDefault("userIp")
+  valid_580298 = validateParameter(valid_580298, JString, required = false,
                                  default = nil)
-  if valid_598298 != nil:
-    section.add "userIp", valid_598298
-  var valid_598299 = query.getOrDefault("key")
-  valid_598299 = validateParameter(valid_598299, JString, required = false,
+  if valid_580298 != nil:
+    section.add "userIp", valid_580298
+  var valid_580299 = query.getOrDefault("key")
+  valid_580299 = validateParameter(valid_580299, JString, required = false,
                                  default = nil)
-  if valid_598299 != nil:
-    section.add "key", valid_598299
-  var valid_598300 = query.getOrDefault("prettyPrint")
-  valid_598300 = validateParameter(valid_598300, JBool, required = false,
+  if valid_580299 != nil:
+    section.add "key", valid_580299
+  var valid_580300 = query.getOrDefault("prettyPrint")
+  valid_580300 = validateParameter(valid_580300, JBool, required = false,
                                  default = newJBool(true))
-  if valid_598300 != nil:
-    section.add "prettyPrint", valid_598300
+  if valid_580300 != nil:
+    section.add "prettyPrint", valid_580300
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -3467,21 +3469,21 @@ proc validate_ClouduseraccountsUsersAddPublicKey_598290(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_598302: Call_ClouduseraccountsUsersAddPublicKey_598289;
+proc call*(call_580302: Call_ClouduseraccountsUsersAddPublicKey_580289;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Adds a public key to the specified User resource with the data included in the request.
   ## 
-  let valid = call_598302.validator(path, query, header, formData, body)
-  let scheme = call_598302.pickScheme
+  let valid = call_580302.validator(path, query, header, formData, body)
+  let scheme = call_580302.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_598302.url(scheme.get, call_598302.host, call_598302.base,
-                         call_598302.route, valid.getOrDefault("path"),
+  let url = call_580302.url(scheme.get, call_580302.host, call_580302.base,
+                         call_580302.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_598302, url, valid)
+  result = hook(call_580302, url, valid)
 
-proc call*(call_598303: Call_ClouduseraccountsUsersAddPublicKey_598289;
+proc call*(call_580303: Call_ClouduseraccountsUsersAddPublicKey_580289;
           user: string; project: string; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; userIp: string = "";
           key: string = ""; body: JsonNode = nil; prettyPrint: bool = true): Recallable =
@@ -3506,36 +3508,36 @@ proc call*(call_598303: Call_ClouduseraccountsUsersAddPublicKey_598289;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_598304 = newJObject()
-  var query_598305 = newJObject()
-  var body_598306 = newJObject()
-  add(query_598305, "fields", newJString(fields))
-  add(query_598305, "quotaUser", newJString(quotaUser))
-  add(query_598305, "alt", newJString(alt))
-  add(path_598304, "user", newJString(user))
-  add(query_598305, "oauth_token", newJString(oauthToken))
-  add(query_598305, "userIp", newJString(userIp))
-  add(query_598305, "key", newJString(key))
-  add(path_598304, "project", newJString(project))
+  var path_580304 = newJObject()
+  var query_580305 = newJObject()
+  var body_580306 = newJObject()
+  add(query_580305, "fields", newJString(fields))
+  add(query_580305, "quotaUser", newJString(quotaUser))
+  add(query_580305, "alt", newJString(alt))
+  add(path_580304, "user", newJString(user))
+  add(query_580305, "oauth_token", newJString(oauthToken))
+  add(query_580305, "userIp", newJString(userIp))
+  add(query_580305, "key", newJString(key))
+  add(path_580304, "project", newJString(project))
   if body != nil:
-    body_598306 = body
-  add(query_598305, "prettyPrint", newJBool(prettyPrint))
-  result = call_598303.call(path_598304, query_598305, nil, nil, body_598306)
+    body_580306 = body
+  add(query_580305, "prettyPrint", newJBool(prettyPrint))
+  result = call_580303.call(path_580304, query_580305, nil, nil, body_580306)
 
-var clouduseraccountsUsersAddPublicKey* = Call_ClouduseraccountsUsersAddPublicKey_598289(
+var clouduseraccountsUsersAddPublicKey* = Call_ClouduseraccountsUsersAddPublicKey_580289(
     name: "clouduseraccountsUsersAddPublicKey", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com",
     route: "/{project}/global/users/{user}/addPublicKey",
-    validator: validate_ClouduseraccountsUsersAddPublicKey_598290,
+    validator: validate_ClouduseraccountsUsersAddPublicKey_580290,
     base: "/clouduseraccounts/alpha/projects",
-    url: url_ClouduseraccountsUsersAddPublicKey_598291, schemes: {Scheme.Https})
+    url: url_ClouduseraccountsUsersAddPublicKey_580291, schemes: {Scheme.Https})
 type
-  Call_ClouduseraccountsUsersRemovePublicKey_598307 = ref object of OpenApiRestCall_597424
-proc url_ClouduseraccountsUsersRemovePublicKey_598309(protocol: Scheme;
+  Call_ClouduseraccountsUsersRemovePublicKey_580307 = ref object of OpenApiRestCall_579424
+proc url_ClouduseraccountsUsersRemovePublicKey_580309(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "project" in path, "`project` is a required path parameter"
   assert "user" in path, "`user` is a required path parameter"
@@ -3550,7 +3552,7 @@ proc url_ClouduseraccountsUsersRemovePublicKey_598309(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_ClouduseraccountsUsersRemovePublicKey_598308(path: JsonNode;
+proc validate_ClouduseraccountsUsersRemovePublicKey_580308(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Removes the specified public key from the user.
   ## 
@@ -3563,16 +3565,16 @@ proc validate_ClouduseraccountsUsersRemovePublicKey_598308(path: JsonNode;
   ##          : Project ID for this request.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `user` field"
-  var valid_598310 = path.getOrDefault("user")
-  valid_598310 = validateParameter(valid_598310, JString, required = true,
+  var valid_580310 = path.getOrDefault("user")
+  valid_580310 = validateParameter(valid_580310, JString, required = true,
                                  default = nil)
-  if valid_598310 != nil:
-    section.add "user", valid_598310
-  var valid_598311 = path.getOrDefault("project")
-  valid_598311 = validateParameter(valid_598311, JString, required = true,
+  if valid_580310 != nil:
+    section.add "user", valid_580310
+  var valid_580311 = path.getOrDefault("project")
+  valid_580311 = validateParameter(valid_580311, JString, required = true,
                                  default = nil)
-  if valid_598311 != nil:
-    section.add "project", valid_598311
+  if valid_580311 != nil:
+    section.add "project", valid_580311
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -3592,48 +3594,48 @@ proc validate_ClouduseraccountsUsersRemovePublicKey_598308(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_598312 = query.getOrDefault("fields")
-  valid_598312 = validateParameter(valid_598312, JString, required = false,
+  var valid_580312 = query.getOrDefault("fields")
+  valid_580312 = validateParameter(valid_580312, JString, required = false,
                                  default = nil)
-  if valid_598312 != nil:
-    section.add "fields", valid_598312
+  if valid_580312 != nil:
+    section.add "fields", valid_580312
   assert query != nil,
         "query argument is necessary due to required `fingerprint` field"
-  var valid_598313 = query.getOrDefault("fingerprint")
-  valid_598313 = validateParameter(valid_598313, JString, required = true,
+  var valid_580313 = query.getOrDefault("fingerprint")
+  valid_580313 = validateParameter(valid_580313, JString, required = true,
                                  default = nil)
-  if valid_598313 != nil:
-    section.add "fingerprint", valid_598313
-  var valid_598314 = query.getOrDefault("quotaUser")
-  valid_598314 = validateParameter(valid_598314, JString, required = false,
+  if valid_580313 != nil:
+    section.add "fingerprint", valid_580313
+  var valid_580314 = query.getOrDefault("quotaUser")
+  valid_580314 = validateParameter(valid_580314, JString, required = false,
                                  default = nil)
-  if valid_598314 != nil:
-    section.add "quotaUser", valid_598314
-  var valid_598315 = query.getOrDefault("alt")
-  valid_598315 = validateParameter(valid_598315, JString, required = false,
+  if valid_580314 != nil:
+    section.add "quotaUser", valid_580314
+  var valid_580315 = query.getOrDefault("alt")
+  valid_580315 = validateParameter(valid_580315, JString, required = false,
                                  default = newJString("json"))
-  if valid_598315 != nil:
-    section.add "alt", valid_598315
-  var valid_598316 = query.getOrDefault("oauth_token")
-  valid_598316 = validateParameter(valid_598316, JString, required = false,
+  if valid_580315 != nil:
+    section.add "alt", valid_580315
+  var valid_580316 = query.getOrDefault("oauth_token")
+  valid_580316 = validateParameter(valid_580316, JString, required = false,
                                  default = nil)
-  if valid_598316 != nil:
-    section.add "oauth_token", valid_598316
-  var valid_598317 = query.getOrDefault("userIp")
-  valid_598317 = validateParameter(valid_598317, JString, required = false,
+  if valid_580316 != nil:
+    section.add "oauth_token", valid_580316
+  var valid_580317 = query.getOrDefault("userIp")
+  valid_580317 = validateParameter(valid_580317, JString, required = false,
                                  default = nil)
-  if valid_598317 != nil:
-    section.add "userIp", valid_598317
-  var valid_598318 = query.getOrDefault("key")
-  valid_598318 = validateParameter(valid_598318, JString, required = false,
+  if valid_580317 != nil:
+    section.add "userIp", valid_580317
+  var valid_580318 = query.getOrDefault("key")
+  valid_580318 = validateParameter(valid_580318, JString, required = false,
                                  default = nil)
-  if valid_598318 != nil:
-    section.add "key", valid_598318
-  var valid_598319 = query.getOrDefault("prettyPrint")
-  valid_598319 = validateParameter(valid_598319, JBool, required = false,
+  if valid_580318 != nil:
+    section.add "key", valid_580318
+  var valid_580319 = query.getOrDefault("prettyPrint")
+  valid_580319 = validateParameter(valid_580319, JBool, required = false,
                                  default = newJBool(true))
-  if valid_598319 != nil:
-    section.add "prettyPrint", valid_598319
+  if valid_580319 != nil:
+    section.add "prettyPrint", valid_580319
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -3642,21 +3644,21 @@ proc validate_ClouduseraccountsUsersRemovePublicKey_598308(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_598320: Call_ClouduseraccountsUsersRemovePublicKey_598307;
+proc call*(call_580320: Call_ClouduseraccountsUsersRemovePublicKey_580307;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Removes the specified public key from the user.
   ## 
-  let valid = call_598320.validator(path, query, header, formData, body)
-  let scheme = call_598320.pickScheme
+  let valid = call_580320.validator(path, query, header, formData, body)
+  let scheme = call_580320.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_598320.url(scheme.get, call_598320.host, call_598320.base,
-                         call_598320.route, valid.getOrDefault("path"),
+  let url = call_580320.url(scheme.get, call_580320.host, call_580320.base,
+                         call_580320.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_598320, url, valid)
+  result = hook(call_580320, url, valid)
 
-proc call*(call_598321: Call_ClouduseraccountsUsersRemovePublicKey_598307;
+proc call*(call_580321: Call_ClouduseraccountsUsersRemovePublicKey_580307;
           fingerprint: string; user: string; project: string; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; key: string = ""; prettyPrint: bool = true): Recallable =
@@ -3682,34 +3684,34 @@ proc call*(call_598321: Call_ClouduseraccountsUsersRemovePublicKey_598307;
   ##          : Project ID for this request.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_598322 = newJObject()
-  var query_598323 = newJObject()
-  add(query_598323, "fields", newJString(fields))
-  add(query_598323, "fingerprint", newJString(fingerprint))
-  add(query_598323, "quotaUser", newJString(quotaUser))
-  add(query_598323, "alt", newJString(alt))
-  add(path_598322, "user", newJString(user))
-  add(query_598323, "oauth_token", newJString(oauthToken))
-  add(query_598323, "userIp", newJString(userIp))
-  add(query_598323, "key", newJString(key))
-  add(path_598322, "project", newJString(project))
-  add(query_598323, "prettyPrint", newJBool(prettyPrint))
-  result = call_598321.call(path_598322, query_598323, nil, nil, nil)
+  var path_580322 = newJObject()
+  var query_580323 = newJObject()
+  add(query_580323, "fields", newJString(fields))
+  add(query_580323, "fingerprint", newJString(fingerprint))
+  add(query_580323, "quotaUser", newJString(quotaUser))
+  add(query_580323, "alt", newJString(alt))
+  add(path_580322, "user", newJString(user))
+  add(query_580323, "oauth_token", newJString(oauthToken))
+  add(query_580323, "userIp", newJString(userIp))
+  add(query_580323, "key", newJString(key))
+  add(path_580322, "project", newJString(project))
+  add(query_580323, "prettyPrint", newJBool(prettyPrint))
+  result = call_580321.call(path_580322, query_580323, nil, nil, nil)
 
-var clouduseraccountsUsersRemovePublicKey* = Call_ClouduseraccountsUsersRemovePublicKey_598307(
+var clouduseraccountsUsersRemovePublicKey* = Call_ClouduseraccountsUsersRemovePublicKey_580307(
     name: "clouduseraccountsUsersRemovePublicKey", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com",
     route: "/{project}/global/users/{user}/removePublicKey",
-    validator: validate_ClouduseraccountsUsersRemovePublicKey_598308,
+    validator: validate_ClouduseraccountsUsersRemovePublicKey_580308,
     base: "/clouduseraccounts/alpha/projects",
-    url: url_ClouduseraccountsUsersRemovePublicKey_598309, schemes: {Scheme.Https})
+    url: url_ClouduseraccountsUsersRemovePublicKey_580309, schemes: {Scheme.Https})
 type
-  Call_ClouduseraccountsLinuxGetAuthorizedKeysView_598324 = ref object of OpenApiRestCall_597424
-proc url_ClouduseraccountsLinuxGetAuthorizedKeysView_598326(protocol: Scheme;
+  Call_ClouduseraccountsLinuxGetAuthorizedKeysView_580324 = ref object of OpenApiRestCall_579424
+proc url_ClouduseraccountsLinuxGetAuthorizedKeysView_580326(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "project" in path, "`project` is a required path parameter"
   assert "zone" in path, "`zone` is a required path parameter"
@@ -3726,7 +3728,7 @@ proc url_ClouduseraccountsLinuxGetAuthorizedKeysView_598326(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_ClouduseraccountsLinuxGetAuthorizedKeysView_598325(path: JsonNode;
+proc validate_ClouduseraccountsLinuxGetAuthorizedKeysView_580325(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Returns a list of authorized public keys for a specific user account.
   ## 
@@ -3741,21 +3743,21 @@ proc validate_ClouduseraccountsLinuxGetAuthorizedKeysView_598325(path: JsonNode;
   ##          : Project ID for this request.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `zone` field"
-  var valid_598327 = path.getOrDefault("zone")
-  valid_598327 = validateParameter(valid_598327, JString, required = true,
+  var valid_580327 = path.getOrDefault("zone")
+  valid_580327 = validateParameter(valid_580327, JString, required = true,
                                  default = nil)
-  if valid_598327 != nil:
-    section.add "zone", valid_598327
-  var valid_598328 = path.getOrDefault("user")
-  valid_598328 = validateParameter(valid_598328, JString, required = true,
+  if valid_580327 != nil:
+    section.add "zone", valid_580327
+  var valid_580328 = path.getOrDefault("user")
+  valid_580328 = validateParameter(valid_580328, JString, required = true,
                                  default = nil)
-  if valid_598328 != nil:
-    section.add "user", valid_598328
-  var valid_598329 = path.getOrDefault("project")
-  valid_598329 = validateParameter(valid_598329, JString, required = true,
+  if valid_580328 != nil:
+    section.add "user", valid_580328
+  var valid_580329 = path.getOrDefault("project")
+  valid_580329 = validateParameter(valid_580329, JString, required = true,
                                  default = nil)
-  if valid_598329 != nil:
-    section.add "project", valid_598329
+  if valid_580329 != nil:
+    section.add "project", valid_580329
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -3777,52 +3779,52 @@ proc validate_ClouduseraccountsLinuxGetAuthorizedKeysView_598325(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_598330 = query.getOrDefault("fields")
-  valid_598330 = validateParameter(valid_598330, JString, required = false,
+  var valid_580330 = query.getOrDefault("fields")
+  valid_580330 = validateParameter(valid_580330, JString, required = false,
                                  default = nil)
-  if valid_598330 != nil:
-    section.add "fields", valid_598330
-  var valid_598331 = query.getOrDefault("quotaUser")
-  valid_598331 = validateParameter(valid_598331, JString, required = false,
+  if valid_580330 != nil:
+    section.add "fields", valid_580330
+  var valid_580331 = query.getOrDefault("quotaUser")
+  valid_580331 = validateParameter(valid_580331, JString, required = false,
                                  default = nil)
-  if valid_598331 != nil:
-    section.add "quotaUser", valid_598331
-  var valid_598332 = query.getOrDefault("alt")
-  valid_598332 = validateParameter(valid_598332, JString, required = false,
+  if valid_580331 != nil:
+    section.add "quotaUser", valid_580331
+  var valid_580332 = query.getOrDefault("alt")
+  valid_580332 = validateParameter(valid_580332, JString, required = false,
                                  default = newJString("json"))
-  if valid_598332 != nil:
-    section.add "alt", valid_598332
-  var valid_598333 = query.getOrDefault("login")
-  valid_598333 = validateParameter(valid_598333, JBool, required = false, default = nil)
-  if valid_598333 != nil:
-    section.add "login", valid_598333
-  var valid_598334 = query.getOrDefault("oauth_token")
-  valid_598334 = validateParameter(valid_598334, JString, required = false,
+  if valid_580332 != nil:
+    section.add "alt", valid_580332
+  var valid_580333 = query.getOrDefault("login")
+  valid_580333 = validateParameter(valid_580333, JBool, required = false, default = nil)
+  if valid_580333 != nil:
+    section.add "login", valid_580333
+  var valid_580334 = query.getOrDefault("oauth_token")
+  valid_580334 = validateParameter(valid_580334, JString, required = false,
                                  default = nil)
-  if valid_598334 != nil:
-    section.add "oauth_token", valid_598334
-  var valid_598335 = query.getOrDefault("userIp")
-  valid_598335 = validateParameter(valid_598335, JString, required = false,
+  if valid_580334 != nil:
+    section.add "oauth_token", valid_580334
+  var valid_580335 = query.getOrDefault("userIp")
+  valid_580335 = validateParameter(valid_580335, JString, required = false,
                                  default = nil)
-  if valid_598335 != nil:
-    section.add "userIp", valid_598335
-  var valid_598336 = query.getOrDefault("key")
-  valid_598336 = validateParameter(valid_598336, JString, required = false,
+  if valid_580335 != nil:
+    section.add "userIp", valid_580335
+  var valid_580336 = query.getOrDefault("key")
+  valid_580336 = validateParameter(valid_580336, JString, required = false,
                                  default = nil)
-  if valid_598336 != nil:
-    section.add "key", valid_598336
+  if valid_580336 != nil:
+    section.add "key", valid_580336
   assert query != nil,
         "query argument is necessary due to required `instance` field"
-  var valid_598337 = query.getOrDefault("instance")
-  valid_598337 = validateParameter(valid_598337, JString, required = true,
+  var valid_580337 = query.getOrDefault("instance")
+  valid_580337 = validateParameter(valid_580337, JString, required = true,
                                  default = nil)
-  if valid_598337 != nil:
-    section.add "instance", valid_598337
-  var valid_598338 = query.getOrDefault("prettyPrint")
-  valid_598338 = validateParameter(valid_598338, JBool, required = false,
+  if valid_580337 != nil:
+    section.add "instance", valid_580337
+  var valid_580338 = query.getOrDefault("prettyPrint")
+  valid_580338 = validateParameter(valid_580338, JBool, required = false,
                                  default = newJBool(true))
-  if valid_598338 != nil:
-    section.add "prettyPrint", valid_598338
+  if valid_580338 != nil:
+    section.add "prettyPrint", valid_580338
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -3831,21 +3833,21 @@ proc validate_ClouduseraccountsLinuxGetAuthorizedKeysView_598325(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_598339: Call_ClouduseraccountsLinuxGetAuthorizedKeysView_598324;
+proc call*(call_580339: Call_ClouduseraccountsLinuxGetAuthorizedKeysView_580324;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Returns a list of authorized public keys for a specific user account.
   ## 
-  let valid = call_598339.validator(path, query, header, formData, body)
-  let scheme = call_598339.pickScheme
+  let valid = call_580339.validator(path, query, header, formData, body)
+  let scheme = call_580339.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_598339.url(scheme.get, call_598339.host, call_598339.base,
-                         call_598339.route, valid.getOrDefault("path"),
+  let url = call_580339.url(scheme.get, call_580339.host, call_580339.base,
+                         call_580339.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_598339, url, valid)
+  result = hook(call_580339, url, valid)
 
-proc call*(call_598340: Call_ClouduseraccountsLinuxGetAuthorizedKeysView_598324;
+proc call*(call_580340: Call_ClouduseraccountsLinuxGetAuthorizedKeysView_580324;
           zone: string; user: string; instance: string; project: string;
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           login: bool = false; oauthToken: string = ""; userIp: string = "";
@@ -3876,37 +3878,37 @@ proc call*(call_598340: Call_ClouduseraccountsLinuxGetAuthorizedKeysView_598324;
   ##          : Project ID for this request.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_598341 = newJObject()
-  var query_598342 = newJObject()
-  add(path_598341, "zone", newJString(zone))
-  add(query_598342, "fields", newJString(fields))
-  add(query_598342, "quotaUser", newJString(quotaUser))
-  add(query_598342, "alt", newJString(alt))
-  add(path_598341, "user", newJString(user))
-  add(query_598342, "login", newJBool(login))
-  add(query_598342, "oauth_token", newJString(oauthToken))
-  add(query_598342, "userIp", newJString(userIp))
-  add(query_598342, "key", newJString(key))
-  add(query_598342, "instance", newJString(instance))
-  add(path_598341, "project", newJString(project))
-  add(query_598342, "prettyPrint", newJBool(prettyPrint))
-  result = call_598340.call(path_598341, query_598342, nil, nil, nil)
+  var path_580341 = newJObject()
+  var query_580342 = newJObject()
+  add(path_580341, "zone", newJString(zone))
+  add(query_580342, "fields", newJString(fields))
+  add(query_580342, "quotaUser", newJString(quotaUser))
+  add(query_580342, "alt", newJString(alt))
+  add(path_580341, "user", newJString(user))
+  add(query_580342, "login", newJBool(login))
+  add(query_580342, "oauth_token", newJString(oauthToken))
+  add(query_580342, "userIp", newJString(userIp))
+  add(query_580342, "key", newJString(key))
+  add(query_580342, "instance", newJString(instance))
+  add(path_580341, "project", newJString(project))
+  add(query_580342, "prettyPrint", newJBool(prettyPrint))
+  result = call_580340.call(path_580341, query_580342, nil, nil, nil)
 
-var clouduseraccountsLinuxGetAuthorizedKeysView* = Call_ClouduseraccountsLinuxGetAuthorizedKeysView_598324(
+var clouduseraccountsLinuxGetAuthorizedKeysView* = Call_ClouduseraccountsLinuxGetAuthorizedKeysView_580324(
     name: "clouduseraccountsLinuxGetAuthorizedKeysView",
     meth: HttpMethod.HttpPost, host: "www.googleapis.com",
     route: "/{project}/zones/{zone}/authorizedKeysView/{user}",
-    validator: validate_ClouduseraccountsLinuxGetAuthorizedKeysView_598325,
+    validator: validate_ClouduseraccountsLinuxGetAuthorizedKeysView_580325,
     base: "/clouduseraccounts/alpha/projects",
-    url: url_ClouduseraccountsLinuxGetAuthorizedKeysView_598326,
+    url: url_ClouduseraccountsLinuxGetAuthorizedKeysView_580326,
     schemes: {Scheme.Https})
 type
-  Call_ClouduseraccountsLinuxGetLinuxAccountViews_598343 = ref object of OpenApiRestCall_597424
-proc url_ClouduseraccountsLinuxGetLinuxAccountViews_598345(protocol: Scheme;
+  Call_ClouduseraccountsLinuxGetLinuxAccountViews_580343 = ref object of OpenApiRestCall_579424
+proc url_ClouduseraccountsLinuxGetLinuxAccountViews_580345(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "project" in path, "`project` is a required path parameter"
   assert "zone" in path, "`zone` is a required path parameter"
@@ -3921,7 +3923,7 @@ proc url_ClouduseraccountsLinuxGetLinuxAccountViews_598345(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_ClouduseraccountsLinuxGetLinuxAccountViews_598344(path: JsonNode;
+proc validate_ClouduseraccountsLinuxGetLinuxAccountViews_580344(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Retrieves a list of user accounts for an instance within a specific project.
   ## 
@@ -3934,16 +3936,16 @@ proc validate_ClouduseraccountsLinuxGetLinuxAccountViews_598344(path: JsonNode;
   ##          : Project ID for this request.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `zone` field"
-  var valid_598346 = path.getOrDefault("zone")
-  valid_598346 = validateParameter(valid_598346, JString, required = true,
+  var valid_580346 = path.getOrDefault("zone")
+  valid_580346 = validateParameter(valid_580346, JString, required = true,
                                  default = nil)
-  if valid_598346 != nil:
-    section.add "zone", valid_598346
-  var valid_598347 = path.getOrDefault("project")
-  valid_598347 = validateParameter(valid_598347, JString, required = true,
+  if valid_580346 != nil:
+    section.add "zone", valid_580346
+  var valid_580347 = path.getOrDefault("project")
+  valid_580347 = validateParameter(valid_580347, JString, required = true,
                                  default = nil)
-  if valid_598347 != nil:
-    section.add "project", valid_598347
+  if valid_580347 != nil:
+    section.add "project", valid_580347
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -3983,68 +3985,68 @@ proc validate_ClouduseraccountsLinuxGetLinuxAccountViews_598344(path: JsonNode;
   ## 
   ## The Beta API also supports filtering on multiple expressions by providing each separate expression within parentheses. For example, (scheduling.automaticRestart eq true) (zone eq us-central1-f). Multiple expressions are treated as AND expressions, meaning that resources must match all expressions to pass the filters.
   section = newJObject()
-  var valid_598348 = query.getOrDefault("fields")
-  valid_598348 = validateParameter(valid_598348, JString, required = false,
+  var valid_580348 = query.getOrDefault("fields")
+  valid_580348 = validateParameter(valid_580348, JString, required = false,
                                  default = nil)
-  if valid_598348 != nil:
-    section.add "fields", valid_598348
-  var valid_598349 = query.getOrDefault("pageToken")
-  valid_598349 = validateParameter(valid_598349, JString, required = false,
+  if valid_580348 != nil:
+    section.add "fields", valid_580348
+  var valid_580349 = query.getOrDefault("pageToken")
+  valid_580349 = validateParameter(valid_580349, JString, required = false,
                                  default = nil)
-  if valid_598349 != nil:
-    section.add "pageToken", valid_598349
-  var valid_598350 = query.getOrDefault("quotaUser")
-  valid_598350 = validateParameter(valid_598350, JString, required = false,
+  if valid_580349 != nil:
+    section.add "pageToken", valid_580349
+  var valid_580350 = query.getOrDefault("quotaUser")
+  valid_580350 = validateParameter(valid_580350, JString, required = false,
                                  default = nil)
-  if valid_598350 != nil:
-    section.add "quotaUser", valid_598350
-  var valid_598351 = query.getOrDefault("alt")
-  valid_598351 = validateParameter(valid_598351, JString, required = false,
+  if valid_580350 != nil:
+    section.add "quotaUser", valid_580350
+  var valid_580351 = query.getOrDefault("alt")
+  valid_580351 = validateParameter(valid_580351, JString, required = false,
                                  default = newJString("json"))
-  if valid_598351 != nil:
-    section.add "alt", valid_598351
-  var valid_598352 = query.getOrDefault("oauth_token")
-  valid_598352 = validateParameter(valid_598352, JString, required = false,
+  if valid_580351 != nil:
+    section.add "alt", valid_580351
+  var valid_580352 = query.getOrDefault("oauth_token")
+  valid_580352 = validateParameter(valid_580352, JString, required = false,
                                  default = nil)
-  if valid_598352 != nil:
-    section.add "oauth_token", valid_598352
-  var valid_598353 = query.getOrDefault("userIp")
-  valid_598353 = validateParameter(valid_598353, JString, required = false,
+  if valid_580352 != nil:
+    section.add "oauth_token", valid_580352
+  var valid_580353 = query.getOrDefault("userIp")
+  valid_580353 = validateParameter(valid_580353, JString, required = false,
                                  default = nil)
-  if valid_598353 != nil:
-    section.add "userIp", valid_598353
-  var valid_598354 = query.getOrDefault("maxResults")
-  valid_598354 = validateParameter(valid_598354, JInt, required = false,
+  if valid_580353 != nil:
+    section.add "userIp", valid_580353
+  var valid_580354 = query.getOrDefault("maxResults")
+  valid_580354 = validateParameter(valid_580354, JInt, required = false,
                                  default = newJInt(500))
-  if valid_598354 != nil:
-    section.add "maxResults", valid_598354
-  var valid_598355 = query.getOrDefault("orderBy")
-  valid_598355 = validateParameter(valid_598355, JString, required = false,
+  if valid_580354 != nil:
+    section.add "maxResults", valid_580354
+  var valid_580355 = query.getOrDefault("orderBy")
+  valid_580355 = validateParameter(valid_580355, JString, required = false,
                                  default = nil)
-  if valid_598355 != nil:
-    section.add "orderBy", valid_598355
-  var valid_598356 = query.getOrDefault("key")
-  valid_598356 = validateParameter(valid_598356, JString, required = false,
+  if valid_580355 != nil:
+    section.add "orderBy", valid_580355
+  var valid_580356 = query.getOrDefault("key")
+  valid_580356 = validateParameter(valid_580356, JString, required = false,
                                  default = nil)
-  if valid_598356 != nil:
-    section.add "key", valid_598356
+  if valid_580356 != nil:
+    section.add "key", valid_580356
   assert query != nil,
         "query argument is necessary due to required `instance` field"
-  var valid_598357 = query.getOrDefault("instance")
-  valid_598357 = validateParameter(valid_598357, JString, required = true,
+  var valid_580357 = query.getOrDefault("instance")
+  valid_580357 = validateParameter(valid_580357, JString, required = true,
                                  default = nil)
-  if valid_598357 != nil:
-    section.add "instance", valid_598357
-  var valid_598358 = query.getOrDefault("prettyPrint")
-  valid_598358 = validateParameter(valid_598358, JBool, required = false,
+  if valid_580357 != nil:
+    section.add "instance", valid_580357
+  var valid_580358 = query.getOrDefault("prettyPrint")
+  valid_580358 = validateParameter(valid_580358, JBool, required = false,
                                  default = newJBool(true))
-  if valid_598358 != nil:
-    section.add "prettyPrint", valid_598358
-  var valid_598359 = query.getOrDefault("filter")
-  valid_598359 = validateParameter(valid_598359, JString, required = false,
+  if valid_580358 != nil:
+    section.add "prettyPrint", valid_580358
+  var valid_580359 = query.getOrDefault("filter")
+  valid_580359 = validateParameter(valid_580359, JString, required = false,
                                  default = nil)
-  if valid_598359 != nil:
-    section.add "filter", valid_598359
+  if valid_580359 != nil:
+    section.add "filter", valid_580359
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -4053,21 +4055,21 @@ proc validate_ClouduseraccountsLinuxGetLinuxAccountViews_598344(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_598360: Call_ClouduseraccountsLinuxGetLinuxAccountViews_598343;
+proc call*(call_580360: Call_ClouduseraccountsLinuxGetLinuxAccountViews_580343;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Retrieves a list of user accounts for an instance within a specific project.
   ## 
-  let valid = call_598360.validator(path, query, header, formData, body)
-  let scheme = call_598360.pickScheme
+  let valid = call_580360.validator(path, query, header, formData, body)
+  let scheme = call_580360.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_598360.url(scheme.get, call_598360.host, call_598360.base,
-                         call_598360.route, valid.getOrDefault("path"),
+  let url = call_580360.url(scheme.get, call_580360.host, call_580360.base,
+                         call_580360.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_598360, url, valid)
+  result = hook(call_580360, url, valid)
 
-proc call*(call_598361: Call_ClouduseraccountsLinuxGetLinuxAccountViews_598343;
+proc call*(call_580361: Call_ClouduseraccountsLinuxGetLinuxAccountViews_580343;
           zone: string; instance: string; project: string; fields: string = "";
           pageToken: string = ""; quotaUser: string = ""; alt: string = "json";
           oauthToken: string = ""; userIp: string = ""; maxResults: int = 500;
@@ -4115,35 +4117,125 @@ proc call*(call_598361: Call_ClouduseraccountsLinuxGetLinuxAccountViews_598343;
   ## Compute Engine Beta API Only: If you use filtering in the Beta API, you can also filter on nested fields. For example, you could filter on instances that have set the scheduling.automaticRestart field to true. In particular, use filtering on nested fields to take advantage of instance labels to organize and filter results based on label values.
   ## 
   ## The Beta API also supports filtering on multiple expressions by providing each separate expression within parentheses. For example, (scheduling.automaticRestart eq true) (zone eq us-central1-f). Multiple expressions are treated as AND expressions, meaning that resources must match all expressions to pass the filters.
-  var path_598362 = newJObject()
-  var query_598363 = newJObject()
-  add(path_598362, "zone", newJString(zone))
-  add(query_598363, "fields", newJString(fields))
-  add(query_598363, "pageToken", newJString(pageToken))
-  add(query_598363, "quotaUser", newJString(quotaUser))
-  add(query_598363, "alt", newJString(alt))
-  add(query_598363, "oauth_token", newJString(oauthToken))
-  add(query_598363, "userIp", newJString(userIp))
-  add(query_598363, "maxResults", newJInt(maxResults))
-  add(query_598363, "orderBy", newJString(orderBy))
-  add(query_598363, "key", newJString(key))
-  add(query_598363, "instance", newJString(instance))
-  add(path_598362, "project", newJString(project))
-  add(query_598363, "prettyPrint", newJBool(prettyPrint))
-  add(query_598363, "filter", newJString(filter))
-  result = call_598361.call(path_598362, query_598363, nil, nil, nil)
+  var path_580362 = newJObject()
+  var query_580363 = newJObject()
+  add(path_580362, "zone", newJString(zone))
+  add(query_580363, "fields", newJString(fields))
+  add(query_580363, "pageToken", newJString(pageToken))
+  add(query_580363, "quotaUser", newJString(quotaUser))
+  add(query_580363, "alt", newJString(alt))
+  add(query_580363, "oauth_token", newJString(oauthToken))
+  add(query_580363, "userIp", newJString(userIp))
+  add(query_580363, "maxResults", newJInt(maxResults))
+  add(query_580363, "orderBy", newJString(orderBy))
+  add(query_580363, "key", newJString(key))
+  add(query_580363, "instance", newJString(instance))
+  add(path_580362, "project", newJString(project))
+  add(query_580363, "prettyPrint", newJBool(prettyPrint))
+  add(query_580363, "filter", newJString(filter))
+  result = call_580361.call(path_580362, query_580363, nil, nil, nil)
 
-var clouduseraccountsLinuxGetLinuxAccountViews* = Call_ClouduseraccountsLinuxGetLinuxAccountViews_598343(
+var clouduseraccountsLinuxGetLinuxAccountViews* = Call_ClouduseraccountsLinuxGetLinuxAccountViews_580343(
     name: "clouduseraccountsLinuxGetLinuxAccountViews", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com",
     route: "/{project}/zones/{zone}/linuxAccountViews",
-    validator: validate_ClouduseraccountsLinuxGetLinuxAccountViews_598344,
+    validator: validate_ClouduseraccountsLinuxGetLinuxAccountViews_580344,
     base: "/clouduseraccounts/alpha/projects",
-    url: url_ClouduseraccountsLinuxGetLinuxAccountViews_598345,
+    url: url_ClouduseraccountsLinuxGetLinuxAccountViews_580345,
     schemes: {Scheme.Https})
 export
   rest
 
+type
+  GoogleAuth = ref object
+    endpoint*: Uri
+    token: string
+    expiry*: float64
+    issued*: float64
+    email: string
+    key: string
+    scope*: seq[string]
+    form: string
+    digest: Hash
+
+const
+  endpoint = "https://www.googleapis.com/oauth2/v4/token".parseUri
+var auth = GoogleAuth(endpoint: endpoint)
+proc hash(auth: GoogleAuth): Hash =
+  ## yield differing values for effectively different auth payloads
+  result = hash($auth.endpoint)
+  result = result !& hash(auth.email)
+  result = result !& hash(auth.key)
+  result = result !& hash(auth.scope.join(" "))
+  result = !$result
+
+proc newAuthenticator*(path: string): GoogleAuth =
+  let
+    input = readFile(path)
+    js = parseJson(input)
+  auth.email = js["client_email"].getStr
+  auth.key = js["private_key"].getStr
+  result = auth
+
+proc store(auth: var GoogleAuth; token: string; expiry: int; form: string) =
+  auth.token = token
+  auth.issued = epochTime()
+  auth.expiry = auth.issued + expiry.float64
+  auth.form = form
+  auth.digest = auth.hash
+
+proc authenticate*(fresh: float64 = -3600.0; lifetime: int = 3600): Future[bool] {.async.} =
+  ## get or refresh an authentication token; provide `fresh`
+  ## to ensure that the token won't expire in the next N seconds.
+  ## provide `lifetime` to indicate how long the token should last.
+  let clock = epochTime()
+  if auth.expiry > clock + fresh:
+    if auth.hash == auth.digest:
+      return true
+  let
+    expiry = clock.int + lifetime
+    header = JOSEHeader(alg: RS256, typ: "JWT")
+    claims = %*{"iss": auth.email, "scope": auth.scope.join(" "),
+              "aud": "https://www.googleapis.com/oauth2/v4/token", "exp": expiry,
+              "iat": clock.int}
+  var tok = JWT(header: header, claims: toClaims(claims))
+  tok.sign(auth.key)
+  let post = encodeQuery({"grant_type": "urn:ietf:params:oauth:grant-type:jwt-bearer",
+                       "assertion": $tok}, usePlus = false, omitEq = false)
+  var client = newAsyncHttpClient()
+  client.headers = newHttpHeaders({"Content-Type": "application/x-www-form-urlencoded",
+                                 "Content-Length": $post.len})
+  let response = await client.request($auth.endpoint, HttpPost, body = post)
+  if not response.code.is2xx:
+    return false
+  let body = await response.body
+  client.close
+  try:
+    let js = parseJson(body)
+    auth.store(js["access_token"].getStr, js["expires_in"].getInt,
+               js["token_type"].getStr)
+  except KeyError:
+    return false
+  except JsonParsingError:
+    return false
+  return true
+
+proc composeQueryString(query: JsonNode): string =
+  var qs: seq[KeyVal]
+  if query == nil:
+    return ""
+  for k, v in query.pairs:
+    qs.add (key: k, val: v.getStr)
+  result = encodeQuery(qs, usePlus = false, omitEq = false)
+
 method hook(call: OpenApiRestCall; url: Uri; input: JsonNode): Recallable {.base.} =
-  let headers = massageHeaders(input.getOrDefault("header"))
-  result = newRecallable(call, url, headers, input.getOrDefault("body").getStr)
+  var headers = massageHeaders(input.getOrDefault("header"))
+  let body = input.getOrDefault("body").getStr
+  if auth.scope.len == 0:
+    raise newException(ValueError, "specify authentication scopes")
+  if not waitfor authenticate(fresh = 10.0):
+    raise newException(IOError, "unable to refresh authentication token")
+  headers.add ("Authorization", auth.form & " " & auth.token)
+  headers.add ("Content-Type", "application/json")
+  headers.add ("Content-Length", $body.len)
+  result = newRecallable(call, url, headers, body = body)

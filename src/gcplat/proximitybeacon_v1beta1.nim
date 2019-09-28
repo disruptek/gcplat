@@ -1,6 +1,7 @@
 
 import
-  json, options, hashes, uri, openapi/rest, os, uri, strutils, httpcore
+  json, options, hashes, uri, rest, os, uri, strutils, times, httpcore, httpclient,
+  asyncdispatch, jwt
 
 ## auto-generated via openapi macro
 ## title: Proximity Beacon
@@ -28,15 +29,15 @@ type
     url*: proc (protocol: Scheme; host: string; base: string; route: string;
               path: JsonNode; query: JsonNode): Uri
 
-  OpenApiRestCall_593408 = ref object of OpenApiRestCall
+  OpenApiRestCall_579408 = ref object of OpenApiRestCall
 proc hash(scheme: Scheme): Hash {.used.} =
   result = hash(ord(scheme))
 
-proc clone[T: OpenApiRestCall_593408](t: T): T {.used.} =
+proc clone[T: OpenApiRestCall_579408](t: T): T {.used.} =
   result = T(name: t.name, meth: t.meth, host: t.host, base: t.base, route: t.route,
            schemes: t.schemes, validator: t.validator, url: t.url)
 
-proc pickScheme(t: OpenApiRestCall_593408): Option[Scheme] {.used.} =
+proc pickScheme(t: OpenApiRestCall_579408): Option[Scheme] {.used.} =
   ## select a supported scheme from a set of candidates
   for scheme in Scheme.low ..
       Scheme.high:
@@ -104,17 +105,18 @@ proc hydratePath(input: JsonNode; segments: seq[PathToken]): Option[string] =
 
 const
   gcpServiceName = "proximitybeacon"
+proc composeQueryString(query: JsonNode): string
 method hook(call: OpenApiRestCall; url: Uri; input: JsonNode): Recallable {.base.}
 type
-  Call_ProximitybeaconBeaconinfoGetforobserved_593677 = ref object of OpenApiRestCall_593408
-proc url_ProximitybeaconBeaconinfoGetforobserved_593679(protocol: Scheme;
+  Call_ProximitybeaconBeaconinfoGetforobserved_579677 = ref object of OpenApiRestCall_579408
+proc url_ProximitybeaconBeaconinfoGetforobserved_579679(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   result.path = base & route
 
-proc validate_ProximitybeaconBeaconinfoGetforobserved_593678(path: JsonNode;
+proc validate_ProximitybeaconBeaconinfoGetforobserved_579678(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Given one or more beacon observations, returns any beacon information
   ## and attachments accessible to your application. Authorize by using the
@@ -149,61 +151,61 @@ proc validate_ProximitybeaconBeaconinfoGetforobserved_593678(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_593791 = query.getOrDefault("upload_protocol")
-  valid_593791 = validateParameter(valid_593791, JString, required = false,
+  var valid_579791 = query.getOrDefault("upload_protocol")
+  valid_579791 = validateParameter(valid_579791, JString, required = false,
                                  default = nil)
-  if valid_593791 != nil:
-    section.add "upload_protocol", valid_593791
-  var valid_593792 = query.getOrDefault("fields")
-  valid_593792 = validateParameter(valid_593792, JString, required = false,
+  if valid_579791 != nil:
+    section.add "upload_protocol", valid_579791
+  var valid_579792 = query.getOrDefault("fields")
+  valid_579792 = validateParameter(valid_579792, JString, required = false,
                                  default = nil)
-  if valid_593792 != nil:
-    section.add "fields", valid_593792
-  var valid_593793 = query.getOrDefault("quotaUser")
-  valid_593793 = validateParameter(valid_593793, JString, required = false,
+  if valid_579792 != nil:
+    section.add "fields", valid_579792
+  var valid_579793 = query.getOrDefault("quotaUser")
+  valid_579793 = validateParameter(valid_579793, JString, required = false,
                                  default = nil)
-  if valid_593793 != nil:
-    section.add "quotaUser", valid_593793
-  var valid_593807 = query.getOrDefault("alt")
-  valid_593807 = validateParameter(valid_593807, JString, required = false,
+  if valid_579793 != nil:
+    section.add "quotaUser", valid_579793
+  var valid_579807 = query.getOrDefault("alt")
+  valid_579807 = validateParameter(valid_579807, JString, required = false,
                                  default = newJString("json"))
-  if valid_593807 != nil:
-    section.add "alt", valid_593807
-  var valid_593808 = query.getOrDefault("oauth_token")
-  valid_593808 = validateParameter(valid_593808, JString, required = false,
+  if valid_579807 != nil:
+    section.add "alt", valid_579807
+  var valid_579808 = query.getOrDefault("oauth_token")
+  valid_579808 = validateParameter(valid_579808, JString, required = false,
                                  default = nil)
-  if valid_593808 != nil:
-    section.add "oauth_token", valid_593808
-  var valid_593809 = query.getOrDefault("callback")
-  valid_593809 = validateParameter(valid_593809, JString, required = false,
+  if valid_579808 != nil:
+    section.add "oauth_token", valid_579808
+  var valid_579809 = query.getOrDefault("callback")
+  valid_579809 = validateParameter(valid_579809, JString, required = false,
                                  default = nil)
-  if valid_593809 != nil:
-    section.add "callback", valid_593809
-  var valid_593810 = query.getOrDefault("access_token")
-  valid_593810 = validateParameter(valid_593810, JString, required = false,
+  if valid_579809 != nil:
+    section.add "callback", valid_579809
+  var valid_579810 = query.getOrDefault("access_token")
+  valid_579810 = validateParameter(valid_579810, JString, required = false,
                                  default = nil)
-  if valid_593810 != nil:
-    section.add "access_token", valid_593810
-  var valid_593811 = query.getOrDefault("uploadType")
-  valid_593811 = validateParameter(valid_593811, JString, required = false,
+  if valid_579810 != nil:
+    section.add "access_token", valid_579810
+  var valid_579811 = query.getOrDefault("uploadType")
+  valid_579811 = validateParameter(valid_579811, JString, required = false,
                                  default = nil)
-  if valid_593811 != nil:
-    section.add "uploadType", valid_593811
-  var valid_593812 = query.getOrDefault("key")
-  valid_593812 = validateParameter(valid_593812, JString, required = false,
+  if valid_579811 != nil:
+    section.add "uploadType", valid_579811
+  var valid_579812 = query.getOrDefault("key")
+  valid_579812 = validateParameter(valid_579812, JString, required = false,
                                  default = nil)
-  if valid_593812 != nil:
-    section.add "key", valid_593812
-  var valid_593813 = query.getOrDefault("$.xgafv")
-  valid_593813 = validateParameter(valid_593813, JString, required = false,
+  if valid_579812 != nil:
+    section.add "key", valid_579812
+  var valid_579813 = query.getOrDefault("$.xgafv")
+  valid_579813 = validateParameter(valid_579813, JString, required = false,
                                  default = newJString("1"))
-  if valid_593813 != nil:
-    section.add "$.xgafv", valid_593813
-  var valid_593814 = query.getOrDefault("prettyPrint")
-  valid_593814 = validateParameter(valid_593814, JBool, required = false,
+  if valid_579813 != nil:
+    section.add "$.xgafv", valid_579813
+  var valid_579814 = query.getOrDefault("prettyPrint")
+  valid_579814 = validateParameter(valid_579814, JBool, required = false,
                                  default = newJBool(true))
-  if valid_593814 != nil:
-    section.add "prettyPrint", valid_593814
+  if valid_579814 != nil:
+    section.add "prettyPrint", valid_579814
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -215,7 +217,7 @@ proc validate_ProximitybeaconBeaconinfoGetforobserved_593678(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_593838: Call_ProximitybeaconBeaconinfoGetforobserved_593677;
+proc call*(call_579838: Call_ProximitybeaconBeaconinfoGetforobserved_579677;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Given one or more beacon observations, returns any beacon information
@@ -223,16 +225,16 @@ proc call*(call_593838: Call_ProximitybeaconBeaconinfoGetforobserved_593677;
   ## [API key](https://developers.google.com/beacons/proximity/get-started#request_a_browser_api_key)
   ## for the application.
   ## 
-  let valid = call_593838.validator(path, query, header, formData, body)
-  let scheme = call_593838.pickScheme
+  let valid = call_579838.validator(path, query, header, formData, body)
+  let scheme = call_579838.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_593838.url(scheme.get, call_593838.host, call_593838.base,
-                         call_593838.route, valid.getOrDefault("path"),
+  let url = call_579838.url(scheme.get, call_579838.host, call_579838.base,
+                         call_579838.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_593838, url, valid)
+  result = hook(call_579838, url, valid)
 
-proc call*(call_593909: Call_ProximitybeaconBeaconinfoGetforobserved_593677;
+proc call*(call_579909: Call_ProximitybeaconBeaconinfoGetforobserved_579677;
           uploadProtocol: string = ""; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; callback: string = "";
           accessToken: string = ""; uploadType: string = ""; key: string = "";
@@ -265,40 +267,40 @@ proc call*(call_593909: Call_ProximitybeaconBeaconinfoGetforobserved_593677;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var query_593910 = newJObject()
-  var body_593912 = newJObject()
-  add(query_593910, "upload_protocol", newJString(uploadProtocol))
-  add(query_593910, "fields", newJString(fields))
-  add(query_593910, "quotaUser", newJString(quotaUser))
-  add(query_593910, "alt", newJString(alt))
-  add(query_593910, "oauth_token", newJString(oauthToken))
-  add(query_593910, "callback", newJString(callback))
-  add(query_593910, "access_token", newJString(accessToken))
-  add(query_593910, "uploadType", newJString(uploadType))
-  add(query_593910, "key", newJString(key))
-  add(query_593910, "$.xgafv", newJString(Xgafv))
+  var query_579910 = newJObject()
+  var body_579912 = newJObject()
+  add(query_579910, "upload_protocol", newJString(uploadProtocol))
+  add(query_579910, "fields", newJString(fields))
+  add(query_579910, "quotaUser", newJString(quotaUser))
+  add(query_579910, "alt", newJString(alt))
+  add(query_579910, "oauth_token", newJString(oauthToken))
+  add(query_579910, "callback", newJString(callback))
+  add(query_579910, "access_token", newJString(accessToken))
+  add(query_579910, "uploadType", newJString(uploadType))
+  add(query_579910, "key", newJString(key))
+  add(query_579910, "$.xgafv", newJString(Xgafv))
   if body != nil:
-    body_593912 = body
-  add(query_593910, "prettyPrint", newJBool(prettyPrint))
-  result = call_593909.call(nil, query_593910, nil, nil, body_593912)
+    body_579912 = body
+  add(query_579910, "prettyPrint", newJBool(prettyPrint))
+  result = call_579909.call(nil, query_579910, nil, nil, body_579912)
 
-var proximitybeaconBeaconinfoGetforobserved* = Call_ProximitybeaconBeaconinfoGetforobserved_593677(
+var proximitybeaconBeaconinfoGetforobserved* = Call_ProximitybeaconBeaconinfoGetforobserved_579677(
     name: "proximitybeaconBeaconinfoGetforobserved", meth: HttpMethod.HttpPost,
     host: "proximitybeacon.googleapis.com",
     route: "/v1beta1/beaconinfo:getforobserved",
-    validator: validate_ProximitybeaconBeaconinfoGetforobserved_593678, base: "/",
-    url: url_ProximitybeaconBeaconinfoGetforobserved_593679,
+    validator: validate_ProximitybeaconBeaconinfoGetforobserved_579678, base: "/",
+    url: url_ProximitybeaconBeaconinfoGetforobserved_579679,
     schemes: {Scheme.Https})
 type
-  Call_ProximitybeaconBeaconsList_593951 = ref object of OpenApiRestCall_593408
-proc url_ProximitybeaconBeaconsList_593953(protocol: Scheme; host: string;
+  Call_ProximitybeaconBeaconsList_579951 = ref object of OpenApiRestCall_579408
+proc url_ProximitybeaconBeaconsList_579953(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   result.path = base & route
 
-proc validate_ProximitybeaconBeaconsList_593952(path: JsonNode; query: JsonNode;
+proc validate_ProximitybeaconBeaconsList_579952(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Searches the beacon registry for beacons that match the given search
   ## criteria. Only those beacons that the client has permission to list
@@ -413,80 +415,80 @@ proc validate_ProximitybeaconBeaconsList_593952(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_593954 = query.getOrDefault("upload_protocol")
-  valid_593954 = validateParameter(valid_593954, JString, required = false,
+  var valid_579954 = query.getOrDefault("upload_protocol")
+  valid_579954 = validateParameter(valid_579954, JString, required = false,
                                  default = nil)
-  if valid_593954 != nil:
-    section.add "upload_protocol", valid_593954
-  var valid_593955 = query.getOrDefault("fields")
-  valid_593955 = validateParameter(valid_593955, JString, required = false,
+  if valid_579954 != nil:
+    section.add "upload_protocol", valid_579954
+  var valid_579955 = query.getOrDefault("fields")
+  valid_579955 = validateParameter(valid_579955, JString, required = false,
                                  default = nil)
-  if valid_593955 != nil:
-    section.add "fields", valid_593955
-  var valid_593956 = query.getOrDefault("pageToken")
-  valid_593956 = validateParameter(valid_593956, JString, required = false,
+  if valid_579955 != nil:
+    section.add "fields", valid_579955
+  var valid_579956 = query.getOrDefault("pageToken")
+  valid_579956 = validateParameter(valid_579956, JString, required = false,
                                  default = nil)
-  if valid_593956 != nil:
-    section.add "pageToken", valid_593956
-  var valid_593957 = query.getOrDefault("quotaUser")
-  valid_593957 = validateParameter(valid_593957, JString, required = false,
+  if valid_579956 != nil:
+    section.add "pageToken", valid_579956
+  var valid_579957 = query.getOrDefault("quotaUser")
+  valid_579957 = validateParameter(valid_579957, JString, required = false,
                                  default = nil)
-  if valid_593957 != nil:
-    section.add "quotaUser", valid_593957
-  var valid_593958 = query.getOrDefault("alt")
-  valid_593958 = validateParameter(valid_593958, JString, required = false,
+  if valid_579957 != nil:
+    section.add "quotaUser", valid_579957
+  var valid_579958 = query.getOrDefault("alt")
+  valid_579958 = validateParameter(valid_579958, JString, required = false,
                                  default = newJString("json"))
-  if valid_593958 != nil:
-    section.add "alt", valid_593958
-  var valid_593959 = query.getOrDefault("oauth_token")
-  valid_593959 = validateParameter(valid_593959, JString, required = false,
+  if valid_579958 != nil:
+    section.add "alt", valid_579958
+  var valid_579959 = query.getOrDefault("oauth_token")
+  valid_579959 = validateParameter(valid_579959, JString, required = false,
                                  default = nil)
-  if valid_593959 != nil:
-    section.add "oauth_token", valid_593959
-  var valid_593960 = query.getOrDefault("callback")
-  valid_593960 = validateParameter(valid_593960, JString, required = false,
+  if valid_579959 != nil:
+    section.add "oauth_token", valid_579959
+  var valid_579960 = query.getOrDefault("callback")
+  valid_579960 = validateParameter(valid_579960, JString, required = false,
                                  default = nil)
-  if valid_593960 != nil:
-    section.add "callback", valid_593960
-  var valid_593961 = query.getOrDefault("access_token")
-  valid_593961 = validateParameter(valid_593961, JString, required = false,
+  if valid_579960 != nil:
+    section.add "callback", valid_579960
+  var valid_579961 = query.getOrDefault("access_token")
+  valid_579961 = validateParameter(valid_579961, JString, required = false,
                                  default = nil)
-  if valid_593961 != nil:
-    section.add "access_token", valid_593961
-  var valid_593962 = query.getOrDefault("uploadType")
-  valid_593962 = validateParameter(valid_593962, JString, required = false,
+  if valid_579961 != nil:
+    section.add "access_token", valid_579961
+  var valid_579962 = query.getOrDefault("uploadType")
+  valid_579962 = validateParameter(valid_579962, JString, required = false,
                                  default = nil)
-  if valid_593962 != nil:
-    section.add "uploadType", valid_593962
-  var valid_593963 = query.getOrDefault("q")
-  valid_593963 = validateParameter(valid_593963, JString, required = false,
+  if valid_579962 != nil:
+    section.add "uploadType", valid_579962
+  var valid_579963 = query.getOrDefault("q")
+  valid_579963 = validateParameter(valid_579963, JString, required = false,
                                  default = nil)
-  if valid_593963 != nil:
-    section.add "q", valid_593963
-  var valid_593964 = query.getOrDefault("key")
-  valid_593964 = validateParameter(valid_593964, JString, required = false,
+  if valid_579963 != nil:
+    section.add "q", valid_579963
+  var valid_579964 = query.getOrDefault("key")
+  valid_579964 = validateParameter(valid_579964, JString, required = false,
                                  default = nil)
-  if valid_593964 != nil:
-    section.add "key", valid_593964
-  var valid_593965 = query.getOrDefault("$.xgafv")
-  valid_593965 = validateParameter(valid_593965, JString, required = false,
+  if valid_579964 != nil:
+    section.add "key", valid_579964
+  var valid_579965 = query.getOrDefault("$.xgafv")
+  valid_579965 = validateParameter(valid_579965, JString, required = false,
                                  default = newJString("1"))
-  if valid_593965 != nil:
-    section.add "$.xgafv", valid_593965
-  var valid_593966 = query.getOrDefault("pageSize")
-  valid_593966 = validateParameter(valid_593966, JInt, required = false, default = nil)
-  if valid_593966 != nil:
-    section.add "pageSize", valid_593966
-  var valid_593967 = query.getOrDefault("projectId")
-  valid_593967 = validateParameter(valid_593967, JString, required = false,
+  if valid_579965 != nil:
+    section.add "$.xgafv", valid_579965
+  var valid_579966 = query.getOrDefault("pageSize")
+  valid_579966 = validateParameter(valid_579966, JInt, required = false, default = nil)
+  if valid_579966 != nil:
+    section.add "pageSize", valid_579966
+  var valid_579967 = query.getOrDefault("projectId")
+  valid_579967 = validateParameter(valid_579967, JString, required = false,
                                  default = nil)
-  if valid_593967 != nil:
-    section.add "projectId", valid_593967
-  var valid_593968 = query.getOrDefault("prettyPrint")
-  valid_593968 = validateParameter(valid_593968, JBool, required = false,
+  if valid_579967 != nil:
+    section.add "projectId", valid_579967
+  var valid_579968 = query.getOrDefault("prettyPrint")
+  valid_579968 = validateParameter(valid_579968, JBool, required = false,
                                  default = newJBool(true))
-  if valid_593968 != nil:
-    section.add "prettyPrint", valid_593968
+  if valid_579968 != nil:
+    section.add "prettyPrint", valid_579968
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -495,7 +497,7 @@ proc validate_ProximitybeaconBeaconsList_593952(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_593969: Call_ProximitybeaconBeaconsList_593951; path: JsonNode;
+proc call*(call_579969: Call_ProximitybeaconBeaconsList_579951; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Searches the beacon registry for beacons that match the given search
   ## criteria. Only those beacons that the client has permission to list
@@ -505,16 +507,16 @@ proc call*(call_593969: Call_ProximitybeaconBeaconsList_593951; path: JsonNode;
   ## from a signed-in user with **viewer**, **Is owner** or **Can edit**
   ## permissions in the Google Developers Console project.
   ## 
-  let valid = call_593969.validator(path, query, header, formData, body)
-  let scheme = call_593969.pickScheme
+  let valid = call_579969.validator(path, query, header, formData, body)
+  let scheme = call_579969.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_593969.url(scheme.get, call_593969.host, call_593969.base,
-                         call_593969.route, valid.getOrDefault("path"),
+  let url = call_579969.url(scheme.get, call_579969.host, call_579969.base,
+                         call_579969.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_593969, url, valid)
+  result = hook(call_579969, url, valid)
 
-proc call*(call_593970: Call_ProximitybeaconBeaconsList_593951;
+proc call*(call_579970: Call_ProximitybeaconBeaconsList_579951;
           uploadProtocol: string = ""; fields: string = ""; pageToken: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           callback: string = ""; accessToken: string = ""; uploadType: string = "";
@@ -627,39 +629,39 @@ proc call*(call_593970: Call_ProximitybeaconBeaconsList_593951;
   ## Optional.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var query_593971 = newJObject()
-  add(query_593971, "upload_protocol", newJString(uploadProtocol))
-  add(query_593971, "fields", newJString(fields))
-  add(query_593971, "pageToken", newJString(pageToken))
-  add(query_593971, "quotaUser", newJString(quotaUser))
-  add(query_593971, "alt", newJString(alt))
-  add(query_593971, "oauth_token", newJString(oauthToken))
-  add(query_593971, "callback", newJString(callback))
-  add(query_593971, "access_token", newJString(accessToken))
-  add(query_593971, "uploadType", newJString(uploadType))
-  add(query_593971, "q", newJString(q))
-  add(query_593971, "key", newJString(key))
-  add(query_593971, "$.xgafv", newJString(Xgafv))
-  add(query_593971, "pageSize", newJInt(pageSize))
-  add(query_593971, "projectId", newJString(projectId))
-  add(query_593971, "prettyPrint", newJBool(prettyPrint))
-  result = call_593970.call(nil, query_593971, nil, nil, nil)
+  var query_579971 = newJObject()
+  add(query_579971, "upload_protocol", newJString(uploadProtocol))
+  add(query_579971, "fields", newJString(fields))
+  add(query_579971, "pageToken", newJString(pageToken))
+  add(query_579971, "quotaUser", newJString(quotaUser))
+  add(query_579971, "alt", newJString(alt))
+  add(query_579971, "oauth_token", newJString(oauthToken))
+  add(query_579971, "callback", newJString(callback))
+  add(query_579971, "access_token", newJString(accessToken))
+  add(query_579971, "uploadType", newJString(uploadType))
+  add(query_579971, "q", newJString(q))
+  add(query_579971, "key", newJString(key))
+  add(query_579971, "$.xgafv", newJString(Xgafv))
+  add(query_579971, "pageSize", newJInt(pageSize))
+  add(query_579971, "projectId", newJString(projectId))
+  add(query_579971, "prettyPrint", newJBool(prettyPrint))
+  result = call_579970.call(nil, query_579971, nil, nil, nil)
 
-var proximitybeaconBeaconsList* = Call_ProximitybeaconBeaconsList_593951(
+var proximitybeaconBeaconsList* = Call_ProximitybeaconBeaconsList_579951(
     name: "proximitybeaconBeaconsList", meth: HttpMethod.HttpGet,
     host: "proximitybeacon.googleapis.com", route: "/v1beta1/beacons",
-    validator: validate_ProximitybeaconBeaconsList_593952, base: "/",
-    url: url_ProximitybeaconBeaconsList_593953, schemes: {Scheme.Https})
+    validator: validate_ProximitybeaconBeaconsList_579952, base: "/",
+    url: url_ProximitybeaconBeaconsList_579953, schemes: {Scheme.Https})
 type
-  Call_ProximitybeaconBeaconsRegister_593972 = ref object of OpenApiRestCall_593408
-proc url_ProximitybeaconBeaconsRegister_593974(protocol: Scheme; host: string;
+  Call_ProximitybeaconBeaconsRegister_579972 = ref object of OpenApiRestCall_579408
+proc url_ProximitybeaconBeaconsRegister_579974(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   result.path = base & route
 
-proc validate_ProximitybeaconBeaconsRegister_593973(path: JsonNode;
+proc validate_ProximitybeaconBeaconsRegister_579973(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Registers a previously unregistered beacon given its `advertisedId`.
   ## These IDs are unique within the system. An ID can be registered only once.
@@ -701,66 +703,66 @@ proc validate_ProximitybeaconBeaconsRegister_593973(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_593975 = query.getOrDefault("upload_protocol")
-  valid_593975 = validateParameter(valid_593975, JString, required = false,
+  var valid_579975 = query.getOrDefault("upload_protocol")
+  valid_579975 = validateParameter(valid_579975, JString, required = false,
                                  default = nil)
-  if valid_593975 != nil:
-    section.add "upload_protocol", valid_593975
-  var valid_593976 = query.getOrDefault("fields")
-  valid_593976 = validateParameter(valid_593976, JString, required = false,
+  if valid_579975 != nil:
+    section.add "upload_protocol", valid_579975
+  var valid_579976 = query.getOrDefault("fields")
+  valid_579976 = validateParameter(valid_579976, JString, required = false,
                                  default = nil)
-  if valid_593976 != nil:
-    section.add "fields", valid_593976
-  var valid_593977 = query.getOrDefault("quotaUser")
-  valid_593977 = validateParameter(valid_593977, JString, required = false,
+  if valid_579976 != nil:
+    section.add "fields", valid_579976
+  var valid_579977 = query.getOrDefault("quotaUser")
+  valid_579977 = validateParameter(valid_579977, JString, required = false,
                                  default = nil)
-  if valid_593977 != nil:
-    section.add "quotaUser", valid_593977
-  var valid_593978 = query.getOrDefault("alt")
-  valid_593978 = validateParameter(valid_593978, JString, required = false,
+  if valid_579977 != nil:
+    section.add "quotaUser", valid_579977
+  var valid_579978 = query.getOrDefault("alt")
+  valid_579978 = validateParameter(valid_579978, JString, required = false,
                                  default = newJString("json"))
-  if valid_593978 != nil:
-    section.add "alt", valid_593978
-  var valid_593979 = query.getOrDefault("oauth_token")
-  valid_593979 = validateParameter(valid_593979, JString, required = false,
+  if valid_579978 != nil:
+    section.add "alt", valid_579978
+  var valid_579979 = query.getOrDefault("oauth_token")
+  valid_579979 = validateParameter(valid_579979, JString, required = false,
                                  default = nil)
-  if valid_593979 != nil:
-    section.add "oauth_token", valid_593979
-  var valid_593980 = query.getOrDefault("callback")
-  valid_593980 = validateParameter(valid_593980, JString, required = false,
+  if valid_579979 != nil:
+    section.add "oauth_token", valid_579979
+  var valid_579980 = query.getOrDefault("callback")
+  valid_579980 = validateParameter(valid_579980, JString, required = false,
                                  default = nil)
-  if valid_593980 != nil:
-    section.add "callback", valid_593980
-  var valid_593981 = query.getOrDefault("access_token")
-  valid_593981 = validateParameter(valid_593981, JString, required = false,
+  if valid_579980 != nil:
+    section.add "callback", valid_579980
+  var valid_579981 = query.getOrDefault("access_token")
+  valid_579981 = validateParameter(valid_579981, JString, required = false,
                                  default = nil)
-  if valid_593981 != nil:
-    section.add "access_token", valid_593981
-  var valid_593982 = query.getOrDefault("uploadType")
-  valid_593982 = validateParameter(valid_593982, JString, required = false,
+  if valid_579981 != nil:
+    section.add "access_token", valid_579981
+  var valid_579982 = query.getOrDefault("uploadType")
+  valid_579982 = validateParameter(valid_579982, JString, required = false,
                                  default = nil)
-  if valid_593982 != nil:
-    section.add "uploadType", valid_593982
-  var valid_593983 = query.getOrDefault("key")
-  valid_593983 = validateParameter(valid_593983, JString, required = false,
+  if valid_579982 != nil:
+    section.add "uploadType", valid_579982
+  var valid_579983 = query.getOrDefault("key")
+  valid_579983 = validateParameter(valid_579983, JString, required = false,
                                  default = nil)
-  if valid_593983 != nil:
-    section.add "key", valid_593983
-  var valid_593984 = query.getOrDefault("$.xgafv")
-  valid_593984 = validateParameter(valid_593984, JString, required = false,
+  if valid_579983 != nil:
+    section.add "key", valid_579983
+  var valid_579984 = query.getOrDefault("$.xgafv")
+  valid_579984 = validateParameter(valid_579984, JString, required = false,
                                  default = newJString("1"))
-  if valid_593984 != nil:
-    section.add "$.xgafv", valid_593984
-  var valid_593985 = query.getOrDefault("projectId")
-  valid_593985 = validateParameter(valid_593985, JString, required = false,
+  if valid_579984 != nil:
+    section.add "$.xgafv", valid_579984
+  var valid_579985 = query.getOrDefault("projectId")
+  valid_579985 = validateParameter(valid_579985, JString, required = false,
                                  default = nil)
-  if valid_593985 != nil:
-    section.add "projectId", valid_593985
-  var valid_593986 = query.getOrDefault("prettyPrint")
-  valid_593986 = validateParameter(valid_593986, JBool, required = false,
+  if valid_579985 != nil:
+    section.add "projectId", valid_579985
+  var valid_579986 = query.getOrDefault("prettyPrint")
+  valid_579986 = validateParameter(valid_579986, JBool, required = false,
                                  default = newJBool(true))
-  if valid_593986 != nil:
-    section.add "prettyPrint", valid_593986
+  if valid_579986 != nil:
+    section.add "prettyPrint", valid_579986
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -772,7 +774,7 @@ proc validate_ProximitybeaconBeaconsRegister_593973(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_593988: Call_ProximitybeaconBeaconsRegister_593972; path: JsonNode;
+proc call*(call_579988: Call_ProximitybeaconBeaconsRegister_579972; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Registers a previously unregistered beacon given its `advertisedId`.
   ## These IDs are unique within the system. An ID can be registered only once.
@@ -781,16 +783,16 @@ proc call*(call_593988: Call_ProximitybeaconBeaconsRegister_593972; path: JsonNo
   ## from a signed-in user with **Is owner** or **Can edit** permissions in the
   ## Google Developers Console project.
   ## 
-  let valid = call_593988.validator(path, query, header, formData, body)
-  let scheme = call_593988.pickScheme
+  let valid = call_579988.validator(path, query, header, formData, body)
+  let scheme = call_579988.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_593988.url(scheme.get, call_593988.host, call_593988.base,
-                         call_593988.route, valid.getOrDefault("path"),
+  let url = call_579988.url(scheme.get, call_579988.host, call_579988.base,
+                         call_579988.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_593988, url, valid)
+  result = hook(call_579988, url, valid)
 
-proc call*(call_593989: Call_ProximitybeaconBeaconsRegister_593972;
+proc call*(call_579989: Call_ProximitybeaconBeaconsRegister_579972;
           uploadProtocol: string = ""; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; callback: string = "";
           accessToken: string = ""; uploadType: string = ""; key: string = "";
@@ -831,39 +833,39 @@ proc call*(call_593989: Call_ProximitybeaconBeaconsRegister_593972;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var query_593990 = newJObject()
-  var body_593991 = newJObject()
-  add(query_593990, "upload_protocol", newJString(uploadProtocol))
-  add(query_593990, "fields", newJString(fields))
-  add(query_593990, "quotaUser", newJString(quotaUser))
-  add(query_593990, "alt", newJString(alt))
-  add(query_593990, "oauth_token", newJString(oauthToken))
-  add(query_593990, "callback", newJString(callback))
-  add(query_593990, "access_token", newJString(accessToken))
-  add(query_593990, "uploadType", newJString(uploadType))
-  add(query_593990, "key", newJString(key))
-  add(query_593990, "$.xgafv", newJString(Xgafv))
-  add(query_593990, "projectId", newJString(projectId))
+  var query_579990 = newJObject()
+  var body_579991 = newJObject()
+  add(query_579990, "upload_protocol", newJString(uploadProtocol))
+  add(query_579990, "fields", newJString(fields))
+  add(query_579990, "quotaUser", newJString(quotaUser))
+  add(query_579990, "alt", newJString(alt))
+  add(query_579990, "oauth_token", newJString(oauthToken))
+  add(query_579990, "callback", newJString(callback))
+  add(query_579990, "access_token", newJString(accessToken))
+  add(query_579990, "uploadType", newJString(uploadType))
+  add(query_579990, "key", newJString(key))
+  add(query_579990, "$.xgafv", newJString(Xgafv))
+  add(query_579990, "projectId", newJString(projectId))
   if body != nil:
-    body_593991 = body
-  add(query_593990, "prettyPrint", newJBool(prettyPrint))
-  result = call_593989.call(nil, query_593990, nil, nil, body_593991)
+    body_579991 = body
+  add(query_579990, "prettyPrint", newJBool(prettyPrint))
+  result = call_579989.call(nil, query_579990, nil, nil, body_579991)
 
-var proximitybeaconBeaconsRegister* = Call_ProximitybeaconBeaconsRegister_593972(
+var proximitybeaconBeaconsRegister* = Call_ProximitybeaconBeaconsRegister_579972(
     name: "proximitybeaconBeaconsRegister", meth: HttpMethod.HttpPost,
     host: "proximitybeacon.googleapis.com", route: "/v1beta1/beacons:register",
-    validator: validate_ProximitybeaconBeaconsRegister_593973, base: "/",
-    url: url_ProximitybeaconBeaconsRegister_593974, schemes: {Scheme.Https})
+    validator: validate_ProximitybeaconBeaconsRegister_579973, base: "/",
+    url: url_ProximitybeaconBeaconsRegister_579974, schemes: {Scheme.Https})
 type
-  Call_ProximitybeaconGetEidparams_593992 = ref object of OpenApiRestCall_593408
-proc url_ProximitybeaconGetEidparams_593994(protocol: Scheme; host: string;
+  Call_ProximitybeaconGetEidparams_579992 = ref object of OpenApiRestCall_579408
+proc url_ProximitybeaconGetEidparams_579994(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   result.path = base & route
 
-proc validate_ProximitybeaconGetEidparams_593993(path: JsonNode; query: JsonNode;
+proc validate_ProximitybeaconGetEidparams_579993(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Gets the Proximity Beacon API's current public key and associated
   ## parameters used to initiate the Diffie-Hellman key exchange required to
@@ -901,61 +903,61 @@ proc validate_ProximitybeaconGetEidparams_593993(path: JsonNode; query: JsonNode
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_593995 = query.getOrDefault("upload_protocol")
-  valid_593995 = validateParameter(valid_593995, JString, required = false,
+  var valid_579995 = query.getOrDefault("upload_protocol")
+  valid_579995 = validateParameter(valid_579995, JString, required = false,
                                  default = nil)
-  if valid_593995 != nil:
-    section.add "upload_protocol", valid_593995
-  var valid_593996 = query.getOrDefault("fields")
-  valid_593996 = validateParameter(valid_593996, JString, required = false,
+  if valid_579995 != nil:
+    section.add "upload_protocol", valid_579995
+  var valid_579996 = query.getOrDefault("fields")
+  valid_579996 = validateParameter(valid_579996, JString, required = false,
                                  default = nil)
-  if valid_593996 != nil:
-    section.add "fields", valid_593996
-  var valid_593997 = query.getOrDefault("quotaUser")
-  valid_593997 = validateParameter(valid_593997, JString, required = false,
+  if valid_579996 != nil:
+    section.add "fields", valid_579996
+  var valid_579997 = query.getOrDefault("quotaUser")
+  valid_579997 = validateParameter(valid_579997, JString, required = false,
                                  default = nil)
-  if valid_593997 != nil:
-    section.add "quotaUser", valid_593997
-  var valid_593998 = query.getOrDefault("alt")
-  valid_593998 = validateParameter(valid_593998, JString, required = false,
+  if valid_579997 != nil:
+    section.add "quotaUser", valid_579997
+  var valid_579998 = query.getOrDefault("alt")
+  valid_579998 = validateParameter(valid_579998, JString, required = false,
                                  default = newJString("json"))
-  if valid_593998 != nil:
-    section.add "alt", valid_593998
-  var valid_593999 = query.getOrDefault("oauth_token")
-  valid_593999 = validateParameter(valid_593999, JString, required = false,
+  if valid_579998 != nil:
+    section.add "alt", valid_579998
+  var valid_579999 = query.getOrDefault("oauth_token")
+  valid_579999 = validateParameter(valid_579999, JString, required = false,
                                  default = nil)
-  if valid_593999 != nil:
-    section.add "oauth_token", valid_593999
-  var valid_594000 = query.getOrDefault("callback")
-  valid_594000 = validateParameter(valid_594000, JString, required = false,
+  if valid_579999 != nil:
+    section.add "oauth_token", valid_579999
+  var valid_580000 = query.getOrDefault("callback")
+  valid_580000 = validateParameter(valid_580000, JString, required = false,
                                  default = nil)
-  if valid_594000 != nil:
-    section.add "callback", valid_594000
-  var valid_594001 = query.getOrDefault("access_token")
-  valid_594001 = validateParameter(valid_594001, JString, required = false,
+  if valid_580000 != nil:
+    section.add "callback", valid_580000
+  var valid_580001 = query.getOrDefault("access_token")
+  valid_580001 = validateParameter(valid_580001, JString, required = false,
                                  default = nil)
-  if valid_594001 != nil:
-    section.add "access_token", valid_594001
-  var valid_594002 = query.getOrDefault("uploadType")
-  valid_594002 = validateParameter(valid_594002, JString, required = false,
+  if valid_580001 != nil:
+    section.add "access_token", valid_580001
+  var valid_580002 = query.getOrDefault("uploadType")
+  valid_580002 = validateParameter(valid_580002, JString, required = false,
                                  default = nil)
-  if valid_594002 != nil:
-    section.add "uploadType", valid_594002
-  var valid_594003 = query.getOrDefault("key")
-  valid_594003 = validateParameter(valid_594003, JString, required = false,
+  if valid_580002 != nil:
+    section.add "uploadType", valid_580002
+  var valid_580003 = query.getOrDefault("key")
+  valid_580003 = validateParameter(valid_580003, JString, required = false,
                                  default = nil)
-  if valid_594003 != nil:
-    section.add "key", valid_594003
-  var valid_594004 = query.getOrDefault("$.xgafv")
-  valid_594004 = validateParameter(valid_594004, JString, required = false,
+  if valid_580003 != nil:
+    section.add "key", valid_580003
+  var valid_580004 = query.getOrDefault("$.xgafv")
+  valid_580004 = validateParameter(valid_580004, JString, required = false,
                                  default = newJString("1"))
-  if valid_594004 != nil:
-    section.add "$.xgafv", valid_594004
-  var valid_594005 = query.getOrDefault("prettyPrint")
-  valid_594005 = validateParameter(valid_594005, JBool, required = false,
+  if valid_580004 != nil:
+    section.add "$.xgafv", valid_580004
+  var valid_580005 = query.getOrDefault("prettyPrint")
+  valid_580005 = validateParameter(valid_580005, JBool, required = false,
                                  default = newJBool(true))
-  if valid_594005 != nil:
-    section.add "prettyPrint", valid_594005
+  if valid_580005 != nil:
+    section.add "prettyPrint", valid_580005
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -964,7 +966,7 @@ proc validate_ProximitybeaconGetEidparams_593993(path: JsonNode; query: JsonNode
   if body != nil:
     result.add "body", body
 
-proc call*(call_594006: Call_ProximitybeaconGetEidparams_593992; path: JsonNode;
+proc call*(call_580006: Call_ProximitybeaconGetEidparams_579992; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Gets the Proximity Beacon API's current public key and associated
   ## parameters used to initiate the Diffie-Hellman key exchange required to
@@ -974,16 +976,16 @@ proc call*(call_594006: Call_ProximitybeaconGetEidparams_593992; path: JsonNode;
   ## prepared to refresh this key when they encounter an error registering an
   ## Eddystone-EID beacon.
   ## 
-  let valid = call_594006.validator(path, query, header, formData, body)
-  let scheme = call_594006.pickScheme
+  let valid = call_580006.validator(path, query, header, formData, body)
+  let scheme = call_580006.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_594006.url(scheme.get, call_594006.host, call_594006.base,
-                         call_594006.route, valid.getOrDefault("path"),
+  let url = call_580006.url(scheme.get, call_580006.host, call_580006.base,
+                         call_580006.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_594006, url, valid)
+  result = hook(call_580006, url, valid)
 
-proc call*(call_594007: Call_ProximitybeaconGetEidparams_593992;
+proc call*(call_580007: Call_ProximitybeaconGetEidparams_579992;
           uploadProtocol: string = ""; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; callback: string = "";
           accessToken: string = ""; uploadType: string = ""; key: string = "";
@@ -1018,35 +1020,35 @@ proc call*(call_594007: Call_ProximitybeaconGetEidparams_593992;
   ##        : V1 error format.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var query_594008 = newJObject()
-  add(query_594008, "upload_protocol", newJString(uploadProtocol))
-  add(query_594008, "fields", newJString(fields))
-  add(query_594008, "quotaUser", newJString(quotaUser))
-  add(query_594008, "alt", newJString(alt))
-  add(query_594008, "oauth_token", newJString(oauthToken))
-  add(query_594008, "callback", newJString(callback))
-  add(query_594008, "access_token", newJString(accessToken))
-  add(query_594008, "uploadType", newJString(uploadType))
-  add(query_594008, "key", newJString(key))
-  add(query_594008, "$.xgafv", newJString(Xgafv))
-  add(query_594008, "prettyPrint", newJBool(prettyPrint))
-  result = call_594007.call(nil, query_594008, nil, nil, nil)
+  var query_580008 = newJObject()
+  add(query_580008, "upload_protocol", newJString(uploadProtocol))
+  add(query_580008, "fields", newJString(fields))
+  add(query_580008, "quotaUser", newJString(quotaUser))
+  add(query_580008, "alt", newJString(alt))
+  add(query_580008, "oauth_token", newJString(oauthToken))
+  add(query_580008, "callback", newJString(callback))
+  add(query_580008, "access_token", newJString(accessToken))
+  add(query_580008, "uploadType", newJString(uploadType))
+  add(query_580008, "key", newJString(key))
+  add(query_580008, "$.xgafv", newJString(Xgafv))
+  add(query_580008, "prettyPrint", newJBool(prettyPrint))
+  result = call_580007.call(nil, query_580008, nil, nil, nil)
 
-var proximitybeaconGetEidparams* = Call_ProximitybeaconGetEidparams_593992(
+var proximitybeaconGetEidparams* = Call_ProximitybeaconGetEidparams_579992(
     name: "proximitybeaconGetEidparams", meth: HttpMethod.HttpGet,
     host: "proximitybeacon.googleapis.com", route: "/v1beta1/eidparams",
-    validator: validate_ProximitybeaconGetEidparams_593993, base: "/",
-    url: url_ProximitybeaconGetEidparams_593994, schemes: {Scheme.Https})
+    validator: validate_ProximitybeaconGetEidparams_579993, base: "/",
+    url: url_ProximitybeaconGetEidparams_579994, schemes: {Scheme.Https})
 type
-  Call_ProximitybeaconNamespacesList_594009 = ref object of OpenApiRestCall_593408
-proc url_ProximitybeaconNamespacesList_594011(protocol: Scheme; host: string;
+  Call_ProximitybeaconNamespacesList_580009 = ref object of OpenApiRestCall_579408
+proc url_ProximitybeaconNamespacesList_580011(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   result.path = base & route
 
-proc validate_ProximitybeaconNamespacesList_594010(path: JsonNode; query: JsonNode;
+proc validate_ProximitybeaconNamespacesList_580010(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Lists all attachment namespaces owned by your Google Developers Console
   ## project. Attachment data associated with a beacon must include a
@@ -1087,66 +1089,66 @@ proc validate_ProximitybeaconNamespacesList_594010(path: JsonNode; query: JsonNo
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_594012 = query.getOrDefault("upload_protocol")
-  valid_594012 = validateParameter(valid_594012, JString, required = false,
+  var valid_580012 = query.getOrDefault("upload_protocol")
+  valid_580012 = validateParameter(valid_580012, JString, required = false,
                                  default = nil)
-  if valid_594012 != nil:
-    section.add "upload_protocol", valid_594012
-  var valid_594013 = query.getOrDefault("fields")
-  valid_594013 = validateParameter(valid_594013, JString, required = false,
+  if valid_580012 != nil:
+    section.add "upload_protocol", valid_580012
+  var valid_580013 = query.getOrDefault("fields")
+  valid_580013 = validateParameter(valid_580013, JString, required = false,
                                  default = nil)
-  if valid_594013 != nil:
-    section.add "fields", valid_594013
-  var valid_594014 = query.getOrDefault("quotaUser")
-  valid_594014 = validateParameter(valid_594014, JString, required = false,
+  if valid_580013 != nil:
+    section.add "fields", valid_580013
+  var valid_580014 = query.getOrDefault("quotaUser")
+  valid_580014 = validateParameter(valid_580014, JString, required = false,
                                  default = nil)
-  if valid_594014 != nil:
-    section.add "quotaUser", valid_594014
-  var valid_594015 = query.getOrDefault("alt")
-  valid_594015 = validateParameter(valid_594015, JString, required = false,
+  if valid_580014 != nil:
+    section.add "quotaUser", valid_580014
+  var valid_580015 = query.getOrDefault("alt")
+  valid_580015 = validateParameter(valid_580015, JString, required = false,
                                  default = newJString("json"))
-  if valid_594015 != nil:
-    section.add "alt", valid_594015
-  var valid_594016 = query.getOrDefault("oauth_token")
-  valid_594016 = validateParameter(valid_594016, JString, required = false,
+  if valid_580015 != nil:
+    section.add "alt", valid_580015
+  var valid_580016 = query.getOrDefault("oauth_token")
+  valid_580016 = validateParameter(valid_580016, JString, required = false,
                                  default = nil)
-  if valid_594016 != nil:
-    section.add "oauth_token", valid_594016
-  var valid_594017 = query.getOrDefault("callback")
-  valid_594017 = validateParameter(valid_594017, JString, required = false,
+  if valid_580016 != nil:
+    section.add "oauth_token", valid_580016
+  var valid_580017 = query.getOrDefault("callback")
+  valid_580017 = validateParameter(valid_580017, JString, required = false,
                                  default = nil)
-  if valid_594017 != nil:
-    section.add "callback", valid_594017
-  var valid_594018 = query.getOrDefault("access_token")
-  valid_594018 = validateParameter(valid_594018, JString, required = false,
+  if valid_580017 != nil:
+    section.add "callback", valid_580017
+  var valid_580018 = query.getOrDefault("access_token")
+  valid_580018 = validateParameter(valid_580018, JString, required = false,
                                  default = nil)
-  if valid_594018 != nil:
-    section.add "access_token", valid_594018
-  var valid_594019 = query.getOrDefault("uploadType")
-  valid_594019 = validateParameter(valid_594019, JString, required = false,
+  if valid_580018 != nil:
+    section.add "access_token", valid_580018
+  var valid_580019 = query.getOrDefault("uploadType")
+  valid_580019 = validateParameter(valid_580019, JString, required = false,
                                  default = nil)
-  if valid_594019 != nil:
-    section.add "uploadType", valid_594019
-  var valid_594020 = query.getOrDefault("key")
-  valid_594020 = validateParameter(valid_594020, JString, required = false,
+  if valid_580019 != nil:
+    section.add "uploadType", valid_580019
+  var valid_580020 = query.getOrDefault("key")
+  valid_580020 = validateParameter(valid_580020, JString, required = false,
                                  default = nil)
-  if valid_594020 != nil:
-    section.add "key", valid_594020
-  var valid_594021 = query.getOrDefault("$.xgafv")
-  valid_594021 = validateParameter(valid_594021, JString, required = false,
+  if valid_580020 != nil:
+    section.add "key", valid_580020
+  var valid_580021 = query.getOrDefault("$.xgafv")
+  valid_580021 = validateParameter(valid_580021, JString, required = false,
                                  default = newJString("1"))
-  if valid_594021 != nil:
-    section.add "$.xgafv", valid_594021
-  var valid_594022 = query.getOrDefault("projectId")
-  valid_594022 = validateParameter(valid_594022, JString, required = false,
+  if valid_580021 != nil:
+    section.add "$.xgafv", valid_580021
+  var valid_580022 = query.getOrDefault("projectId")
+  valid_580022 = validateParameter(valid_580022, JString, required = false,
                                  default = nil)
-  if valid_594022 != nil:
-    section.add "projectId", valid_594022
-  var valid_594023 = query.getOrDefault("prettyPrint")
-  valid_594023 = validateParameter(valid_594023, JBool, required = false,
+  if valid_580022 != nil:
+    section.add "projectId", valid_580022
+  var valid_580023 = query.getOrDefault("prettyPrint")
+  valid_580023 = validateParameter(valid_580023, JBool, required = false,
                                  default = newJBool(true))
-  if valid_594023 != nil:
-    section.add "prettyPrint", valid_594023
+  if valid_580023 != nil:
+    section.add "prettyPrint", valid_580023
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1155,7 +1157,7 @@ proc validate_ProximitybeaconNamespacesList_594010(path: JsonNode; query: JsonNo
   if body != nil:
     result.add "body", body
 
-proc call*(call_594024: Call_ProximitybeaconNamespacesList_594009; path: JsonNode;
+proc call*(call_580024: Call_ProximitybeaconNamespacesList_580009; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Lists all attachment namespaces owned by your Google Developers Console
   ## project. Attachment data associated with a beacon must include a
@@ -1165,16 +1167,16 @@ proc call*(call_594024: Call_ProximitybeaconNamespacesList_594009; path: JsonNod
   ## from a signed-in user with **viewer**, **Is owner** or **Can edit**
   ## permissions in the Google Developers Console project.
   ## 
-  let valid = call_594024.validator(path, query, header, formData, body)
-  let scheme = call_594024.pickScheme
+  let valid = call_580024.validator(path, query, header, formData, body)
+  let scheme = call_580024.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_594024.url(scheme.get, call_594024.host, call_594024.base,
-                         call_594024.route, valid.getOrDefault("path"),
+  let url = call_580024.url(scheme.get, call_580024.host, call_580024.base,
+                         call_580024.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_594024, url, valid)
+  result = hook(call_580024, url, valid)
 
-proc call*(call_594025: Call_ProximitybeaconNamespacesList_594009;
+proc call*(call_580025: Call_ProximitybeaconNamespacesList_580009;
           uploadProtocol: string = ""; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; callback: string = "";
           accessToken: string = ""; uploadType: string = ""; key: string = "";
@@ -1212,33 +1214,33 @@ proc call*(call_594025: Call_ProximitybeaconNamespacesList_594009;
   ## Optional.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var query_594026 = newJObject()
-  add(query_594026, "upload_protocol", newJString(uploadProtocol))
-  add(query_594026, "fields", newJString(fields))
-  add(query_594026, "quotaUser", newJString(quotaUser))
-  add(query_594026, "alt", newJString(alt))
-  add(query_594026, "oauth_token", newJString(oauthToken))
-  add(query_594026, "callback", newJString(callback))
-  add(query_594026, "access_token", newJString(accessToken))
-  add(query_594026, "uploadType", newJString(uploadType))
-  add(query_594026, "key", newJString(key))
-  add(query_594026, "$.xgafv", newJString(Xgafv))
-  add(query_594026, "projectId", newJString(projectId))
-  add(query_594026, "prettyPrint", newJBool(prettyPrint))
-  result = call_594025.call(nil, query_594026, nil, nil, nil)
+  var query_580026 = newJObject()
+  add(query_580026, "upload_protocol", newJString(uploadProtocol))
+  add(query_580026, "fields", newJString(fields))
+  add(query_580026, "quotaUser", newJString(quotaUser))
+  add(query_580026, "alt", newJString(alt))
+  add(query_580026, "oauth_token", newJString(oauthToken))
+  add(query_580026, "callback", newJString(callback))
+  add(query_580026, "access_token", newJString(accessToken))
+  add(query_580026, "uploadType", newJString(uploadType))
+  add(query_580026, "key", newJString(key))
+  add(query_580026, "$.xgafv", newJString(Xgafv))
+  add(query_580026, "projectId", newJString(projectId))
+  add(query_580026, "prettyPrint", newJBool(prettyPrint))
+  result = call_580025.call(nil, query_580026, nil, nil, nil)
 
-var proximitybeaconNamespacesList* = Call_ProximitybeaconNamespacesList_594009(
+var proximitybeaconNamespacesList* = Call_ProximitybeaconNamespacesList_580009(
     name: "proximitybeaconNamespacesList", meth: HttpMethod.HttpGet,
     host: "proximitybeacon.googleapis.com", route: "/v1beta1/namespaces",
-    validator: validate_ProximitybeaconNamespacesList_594010, base: "/",
-    url: url_ProximitybeaconNamespacesList_594011, schemes: {Scheme.Https})
+    validator: validate_ProximitybeaconNamespacesList_580010, base: "/",
+    url: url_ProximitybeaconNamespacesList_580011, schemes: {Scheme.Https})
 type
-  Call_ProximitybeaconBeaconsAttachmentsDelete_594027 = ref object of OpenApiRestCall_593408
-proc url_ProximitybeaconBeaconsAttachmentsDelete_594029(protocol: Scheme;
+  Call_ProximitybeaconBeaconsAttachmentsDelete_580027 = ref object of OpenApiRestCall_579408
+proc url_ProximitybeaconBeaconsAttachmentsDelete_580029(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "attachmentName" in path, "`attachmentName` is a required path parameter"
   const
@@ -1249,7 +1251,7 @@ proc url_ProximitybeaconBeaconsAttachmentsDelete_594029(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_ProximitybeaconBeaconsAttachmentsDelete_594028(path: JsonNode;
+proc validate_ProximitybeaconBeaconsAttachmentsDelete_580028(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Deletes the specified attachment for the given beacon. Each attachment has
   ## a unique attachment name (`attachmentName`) which is returned when you
@@ -1274,11 +1276,11 @@ proc validate_ProximitybeaconBeaconsAttachmentsDelete_594028(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `attachmentName` field"
-  var valid_594044 = path.getOrDefault("attachmentName")
-  valid_594044 = validateParameter(valid_594044, JString, required = true,
+  var valid_580044 = path.getOrDefault("attachmentName")
+  valid_580044 = validateParameter(valid_580044, JString, required = true,
                                  default = nil)
-  if valid_594044 != nil:
-    section.add "attachmentName", valid_594044
+  if valid_580044 != nil:
+    section.add "attachmentName", valid_580044
   result.add "path", section
   ## parameters in `query` object:
   ##   upload_protocol: JString
@@ -1308,66 +1310,66 @@ proc validate_ProximitybeaconBeaconsAttachmentsDelete_594028(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_594045 = query.getOrDefault("upload_protocol")
-  valid_594045 = validateParameter(valid_594045, JString, required = false,
+  var valid_580045 = query.getOrDefault("upload_protocol")
+  valid_580045 = validateParameter(valid_580045, JString, required = false,
                                  default = nil)
-  if valid_594045 != nil:
-    section.add "upload_protocol", valid_594045
-  var valid_594046 = query.getOrDefault("fields")
-  valid_594046 = validateParameter(valid_594046, JString, required = false,
+  if valid_580045 != nil:
+    section.add "upload_protocol", valid_580045
+  var valid_580046 = query.getOrDefault("fields")
+  valid_580046 = validateParameter(valid_580046, JString, required = false,
                                  default = nil)
-  if valid_594046 != nil:
-    section.add "fields", valid_594046
-  var valid_594047 = query.getOrDefault("quotaUser")
-  valid_594047 = validateParameter(valid_594047, JString, required = false,
+  if valid_580046 != nil:
+    section.add "fields", valid_580046
+  var valid_580047 = query.getOrDefault("quotaUser")
+  valid_580047 = validateParameter(valid_580047, JString, required = false,
                                  default = nil)
-  if valid_594047 != nil:
-    section.add "quotaUser", valid_594047
-  var valid_594048 = query.getOrDefault("alt")
-  valid_594048 = validateParameter(valid_594048, JString, required = false,
+  if valid_580047 != nil:
+    section.add "quotaUser", valid_580047
+  var valid_580048 = query.getOrDefault("alt")
+  valid_580048 = validateParameter(valid_580048, JString, required = false,
                                  default = newJString("json"))
-  if valid_594048 != nil:
-    section.add "alt", valid_594048
-  var valid_594049 = query.getOrDefault("oauth_token")
-  valid_594049 = validateParameter(valid_594049, JString, required = false,
+  if valid_580048 != nil:
+    section.add "alt", valid_580048
+  var valid_580049 = query.getOrDefault("oauth_token")
+  valid_580049 = validateParameter(valid_580049, JString, required = false,
                                  default = nil)
-  if valid_594049 != nil:
-    section.add "oauth_token", valid_594049
-  var valid_594050 = query.getOrDefault("callback")
-  valid_594050 = validateParameter(valid_594050, JString, required = false,
+  if valid_580049 != nil:
+    section.add "oauth_token", valid_580049
+  var valid_580050 = query.getOrDefault("callback")
+  valid_580050 = validateParameter(valid_580050, JString, required = false,
                                  default = nil)
-  if valid_594050 != nil:
-    section.add "callback", valid_594050
-  var valid_594051 = query.getOrDefault("access_token")
-  valid_594051 = validateParameter(valid_594051, JString, required = false,
+  if valid_580050 != nil:
+    section.add "callback", valid_580050
+  var valid_580051 = query.getOrDefault("access_token")
+  valid_580051 = validateParameter(valid_580051, JString, required = false,
                                  default = nil)
-  if valid_594051 != nil:
-    section.add "access_token", valid_594051
-  var valid_594052 = query.getOrDefault("uploadType")
-  valid_594052 = validateParameter(valid_594052, JString, required = false,
+  if valid_580051 != nil:
+    section.add "access_token", valid_580051
+  var valid_580052 = query.getOrDefault("uploadType")
+  valid_580052 = validateParameter(valid_580052, JString, required = false,
                                  default = nil)
-  if valid_594052 != nil:
-    section.add "uploadType", valid_594052
-  var valid_594053 = query.getOrDefault("key")
-  valid_594053 = validateParameter(valid_594053, JString, required = false,
+  if valid_580052 != nil:
+    section.add "uploadType", valid_580052
+  var valid_580053 = query.getOrDefault("key")
+  valid_580053 = validateParameter(valid_580053, JString, required = false,
                                  default = nil)
-  if valid_594053 != nil:
-    section.add "key", valid_594053
-  var valid_594054 = query.getOrDefault("$.xgafv")
-  valid_594054 = validateParameter(valid_594054, JString, required = false,
+  if valid_580053 != nil:
+    section.add "key", valid_580053
+  var valid_580054 = query.getOrDefault("$.xgafv")
+  valid_580054 = validateParameter(valid_580054, JString, required = false,
                                  default = newJString("1"))
-  if valid_594054 != nil:
-    section.add "$.xgafv", valid_594054
-  var valid_594055 = query.getOrDefault("projectId")
-  valid_594055 = validateParameter(valid_594055, JString, required = false,
+  if valid_580054 != nil:
+    section.add "$.xgafv", valid_580054
+  var valid_580055 = query.getOrDefault("projectId")
+  valid_580055 = validateParameter(valid_580055, JString, required = false,
                                  default = nil)
-  if valid_594055 != nil:
-    section.add "projectId", valid_594055
-  var valid_594056 = query.getOrDefault("prettyPrint")
-  valid_594056 = validateParameter(valid_594056, JBool, required = false,
+  if valid_580055 != nil:
+    section.add "projectId", valid_580055
+  var valid_580056 = query.getOrDefault("prettyPrint")
+  valid_580056 = validateParameter(valid_580056, JBool, required = false,
                                  default = newJBool(true))
-  if valid_594056 != nil:
-    section.add "prettyPrint", valid_594056
+  if valid_580056 != nil:
+    section.add "prettyPrint", valid_580056
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1376,7 +1378,7 @@ proc validate_ProximitybeaconBeaconsAttachmentsDelete_594028(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_594057: Call_ProximitybeaconBeaconsAttachmentsDelete_594027;
+proc call*(call_580057: Call_ProximitybeaconBeaconsAttachmentsDelete_580027;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Deletes the specified attachment for the given beacon. Each attachment has
@@ -1389,16 +1391,16 @@ proc call*(call_594057: Call_ProximitybeaconBeaconsAttachmentsDelete_594027;
   ## from a signed-in user with **Is owner** or **Can edit** permissions in the
   ## Google Developers Console project.
   ## 
-  let valid = call_594057.validator(path, query, header, formData, body)
-  let scheme = call_594057.pickScheme
+  let valid = call_580057.validator(path, query, header, formData, body)
+  let scheme = call_580057.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_594057.url(scheme.get, call_594057.host, call_594057.base,
-                         call_594057.route, valid.getOrDefault("path"),
+  let url = call_580057.url(scheme.get, call_580057.host, call_580057.base,
+                         call_580057.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_594057, url, valid)
+  result = hook(call_580057, url, valid)
 
-proc call*(call_594058: Call_ProximitybeaconBeaconsAttachmentsDelete_594027;
+proc call*(call_580058: Call_ProximitybeaconBeaconsAttachmentsDelete_580027;
           attachmentName: string; uploadProtocol: string = ""; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           callback: string = ""; accessToken: string = ""; uploadType: string = "";
@@ -1447,36 +1449,36 @@ proc call*(call_594058: Call_ProximitybeaconBeaconsAttachmentsDelete_594027;
   ## Optional.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_594059 = newJObject()
-  var query_594060 = newJObject()
-  add(query_594060, "upload_protocol", newJString(uploadProtocol))
-  add(query_594060, "fields", newJString(fields))
-  add(query_594060, "quotaUser", newJString(quotaUser))
-  add(path_594059, "attachmentName", newJString(attachmentName))
-  add(query_594060, "alt", newJString(alt))
-  add(query_594060, "oauth_token", newJString(oauthToken))
-  add(query_594060, "callback", newJString(callback))
-  add(query_594060, "access_token", newJString(accessToken))
-  add(query_594060, "uploadType", newJString(uploadType))
-  add(query_594060, "key", newJString(key))
-  add(query_594060, "$.xgafv", newJString(Xgafv))
-  add(query_594060, "projectId", newJString(projectId))
-  add(query_594060, "prettyPrint", newJBool(prettyPrint))
-  result = call_594058.call(path_594059, query_594060, nil, nil, nil)
+  var path_580059 = newJObject()
+  var query_580060 = newJObject()
+  add(query_580060, "upload_protocol", newJString(uploadProtocol))
+  add(query_580060, "fields", newJString(fields))
+  add(query_580060, "quotaUser", newJString(quotaUser))
+  add(path_580059, "attachmentName", newJString(attachmentName))
+  add(query_580060, "alt", newJString(alt))
+  add(query_580060, "oauth_token", newJString(oauthToken))
+  add(query_580060, "callback", newJString(callback))
+  add(query_580060, "access_token", newJString(accessToken))
+  add(query_580060, "uploadType", newJString(uploadType))
+  add(query_580060, "key", newJString(key))
+  add(query_580060, "$.xgafv", newJString(Xgafv))
+  add(query_580060, "projectId", newJString(projectId))
+  add(query_580060, "prettyPrint", newJBool(prettyPrint))
+  result = call_580058.call(path_580059, query_580060, nil, nil, nil)
 
-var proximitybeaconBeaconsAttachmentsDelete* = Call_ProximitybeaconBeaconsAttachmentsDelete_594027(
+var proximitybeaconBeaconsAttachmentsDelete* = Call_ProximitybeaconBeaconsAttachmentsDelete_580027(
     name: "proximitybeaconBeaconsAttachmentsDelete", meth: HttpMethod.HttpDelete,
     host: "proximitybeacon.googleapis.com", route: "/v1beta1/{attachmentName}",
-    validator: validate_ProximitybeaconBeaconsAttachmentsDelete_594028, base: "/",
-    url: url_ProximitybeaconBeaconsAttachmentsDelete_594029,
+    validator: validate_ProximitybeaconBeaconsAttachmentsDelete_580028, base: "/",
+    url: url_ProximitybeaconBeaconsAttachmentsDelete_580029,
     schemes: {Scheme.Https})
 type
-  Call_ProximitybeaconBeaconsUpdate_594081 = ref object of OpenApiRestCall_593408
-proc url_ProximitybeaconBeaconsUpdate_594083(protocol: Scheme; host: string;
+  Call_ProximitybeaconBeaconsUpdate_580081 = ref object of OpenApiRestCall_579408
+proc url_ProximitybeaconBeaconsUpdate_580083(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "beaconName" in path, "`beaconName` is a required path parameter"
   const
@@ -1487,7 +1489,7 @@ proc url_ProximitybeaconBeaconsUpdate_594083(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_ProximitybeaconBeaconsUpdate_594082(path: JsonNode; query: JsonNode;
+proc validate_ProximitybeaconBeaconsUpdate_580082(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Updates the information about the specified beacon. **Any field that you do
   ## not populate in the submitted beacon will be permanently erased**, so you
@@ -1515,11 +1517,11 @@ proc validate_ProximitybeaconBeaconsUpdate_594082(path: JsonNode; query: JsonNod
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `beaconName` field"
-  var valid_594084 = path.getOrDefault("beaconName")
-  valid_594084 = validateParameter(valid_594084, JString, required = true,
+  var valid_580084 = path.getOrDefault("beaconName")
+  valid_580084 = validateParameter(valid_580084, JString, required = true,
                                  default = nil)
-  if valid_594084 != nil:
-    section.add "beaconName", valid_594084
+  if valid_580084 != nil:
+    section.add "beaconName", valid_580084
   result.add "path", section
   ## parameters in `query` object:
   ##   upload_protocol: JString
@@ -1550,66 +1552,66 @@ proc validate_ProximitybeaconBeaconsUpdate_594082(path: JsonNode; query: JsonNod
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_594085 = query.getOrDefault("upload_protocol")
-  valid_594085 = validateParameter(valid_594085, JString, required = false,
+  var valid_580085 = query.getOrDefault("upload_protocol")
+  valid_580085 = validateParameter(valid_580085, JString, required = false,
                                  default = nil)
-  if valid_594085 != nil:
-    section.add "upload_protocol", valid_594085
-  var valid_594086 = query.getOrDefault("fields")
-  valid_594086 = validateParameter(valid_594086, JString, required = false,
+  if valid_580085 != nil:
+    section.add "upload_protocol", valid_580085
+  var valid_580086 = query.getOrDefault("fields")
+  valid_580086 = validateParameter(valid_580086, JString, required = false,
                                  default = nil)
-  if valid_594086 != nil:
-    section.add "fields", valid_594086
-  var valid_594087 = query.getOrDefault("quotaUser")
-  valid_594087 = validateParameter(valid_594087, JString, required = false,
+  if valid_580086 != nil:
+    section.add "fields", valid_580086
+  var valid_580087 = query.getOrDefault("quotaUser")
+  valid_580087 = validateParameter(valid_580087, JString, required = false,
                                  default = nil)
-  if valid_594087 != nil:
-    section.add "quotaUser", valid_594087
-  var valid_594088 = query.getOrDefault("alt")
-  valid_594088 = validateParameter(valid_594088, JString, required = false,
+  if valid_580087 != nil:
+    section.add "quotaUser", valid_580087
+  var valid_580088 = query.getOrDefault("alt")
+  valid_580088 = validateParameter(valid_580088, JString, required = false,
                                  default = newJString("json"))
-  if valid_594088 != nil:
-    section.add "alt", valid_594088
-  var valid_594089 = query.getOrDefault("oauth_token")
-  valid_594089 = validateParameter(valid_594089, JString, required = false,
+  if valid_580088 != nil:
+    section.add "alt", valid_580088
+  var valid_580089 = query.getOrDefault("oauth_token")
+  valid_580089 = validateParameter(valid_580089, JString, required = false,
                                  default = nil)
-  if valid_594089 != nil:
-    section.add "oauth_token", valid_594089
-  var valid_594090 = query.getOrDefault("callback")
-  valid_594090 = validateParameter(valid_594090, JString, required = false,
+  if valid_580089 != nil:
+    section.add "oauth_token", valid_580089
+  var valid_580090 = query.getOrDefault("callback")
+  valid_580090 = validateParameter(valid_580090, JString, required = false,
                                  default = nil)
-  if valid_594090 != nil:
-    section.add "callback", valid_594090
-  var valid_594091 = query.getOrDefault("access_token")
-  valid_594091 = validateParameter(valid_594091, JString, required = false,
+  if valid_580090 != nil:
+    section.add "callback", valid_580090
+  var valid_580091 = query.getOrDefault("access_token")
+  valid_580091 = validateParameter(valid_580091, JString, required = false,
                                  default = nil)
-  if valid_594091 != nil:
-    section.add "access_token", valid_594091
-  var valid_594092 = query.getOrDefault("uploadType")
-  valid_594092 = validateParameter(valid_594092, JString, required = false,
+  if valid_580091 != nil:
+    section.add "access_token", valid_580091
+  var valid_580092 = query.getOrDefault("uploadType")
+  valid_580092 = validateParameter(valid_580092, JString, required = false,
                                  default = nil)
-  if valid_594092 != nil:
-    section.add "uploadType", valid_594092
-  var valid_594093 = query.getOrDefault("key")
-  valid_594093 = validateParameter(valid_594093, JString, required = false,
+  if valid_580092 != nil:
+    section.add "uploadType", valid_580092
+  var valid_580093 = query.getOrDefault("key")
+  valid_580093 = validateParameter(valid_580093, JString, required = false,
                                  default = nil)
-  if valid_594093 != nil:
-    section.add "key", valid_594093
-  var valid_594094 = query.getOrDefault("$.xgafv")
-  valid_594094 = validateParameter(valid_594094, JString, required = false,
+  if valid_580093 != nil:
+    section.add "key", valid_580093
+  var valid_580094 = query.getOrDefault("$.xgafv")
+  valid_580094 = validateParameter(valid_580094, JString, required = false,
                                  default = newJString("1"))
-  if valid_594094 != nil:
-    section.add "$.xgafv", valid_594094
-  var valid_594095 = query.getOrDefault("projectId")
-  valid_594095 = validateParameter(valid_594095, JString, required = false,
+  if valid_580094 != nil:
+    section.add "$.xgafv", valid_580094
+  var valid_580095 = query.getOrDefault("projectId")
+  valid_580095 = validateParameter(valid_580095, JString, required = false,
                                  default = nil)
-  if valid_594095 != nil:
-    section.add "projectId", valid_594095
-  var valid_594096 = query.getOrDefault("prettyPrint")
-  valid_594096 = validateParameter(valid_594096, JBool, required = false,
+  if valid_580095 != nil:
+    section.add "projectId", valid_580095
+  var valid_580096 = query.getOrDefault("prettyPrint")
+  valid_580096 = validateParameter(valid_580096, JBool, required = false,
                                  default = newJBool(true))
-  if valid_594096 != nil:
-    section.add "prettyPrint", valid_594096
+  if valid_580096 != nil:
+    section.add "prettyPrint", valid_580096
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1621,7 +1623,7 @@ proc validate_ProximitybeaconBeaconsUpdate_594082(path: JsonNode; query: JsonNod
   if body != nil:
     result.add "body", body
 
-proc call*(call_594098: Call_ProximitybeaconBeaconsUpdate_594081; path: JsonNode;
+proc call*(call_580098: Call_ProximitybeaconBeaconsUpdate_580081; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Updates the information about the specified beacon. **Any field that you do
   ## not populate in the submitted beacon will be permanently erased**, so you
@@ -1635,16 +1637,16 @@ proc call*(call_594098: Call_ProximitybeaconBeaconsUpdate_594081; path: JsonNode
   ## from a signed-in user with **Is owner** or **Can edit** permissions in the
   ## Google Developers Console project.
   ## 
-  let valid = call_594098.validator(path, query, header, formData, body)
-  let scheme = call_594098.pickScheme
+  let valid = call_580098.validator(path, query, header, formData, body)
+  let scheme = call_580098.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_594098.url(scheme.get, call_594098.host, call_594098.base,
-                         call_594098.route, valid.getOrDefault("path"),
+  let url = call_580098.url(scheme.get, call_580098.host, call_580098.base,
+                         call_580098.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_594098, url, valid)
+  result = hook(call_580098, url, valid)
 
-proc call*(call_594099: Call_ProximitybeaconBeaconsUpdate_594081;
+proc call*(call_580099: Call_ProximitybeaconBeaconsUpdate_580081;
           beaconName: string; uploadProtocol: string = ""; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           callback: string = ""; accessToken: string = ""; uploadType: string = "";
@@ -1698,38 +1700,38 @@ proc call*(call_594099: Call_ProximitybeaconBeaconsUpdate_594081;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_594100 = newJObject()
-  var query_594101 = newJObject()
-  var body_594102 = newJObject()
-  add(query_594101, "upload_protocol", newJString(uploadProtocol))
-  add(query_594101, "fields", newJString(fields))
-  add(query_594101, "quotaUser", newJString(quotaUser))
-  add(query_594101, "alt", newJString(alt))
-  add(query_594101, "oauth_token", newJString(oauthToken))
-  add(query_594101, "callback", newJString(callback))
-  add(query_594101, "access_token", newJString(accessToken))
-  add(query_594101, "uploadType", newJString(uploadType))
-  add(query_594101, "key", newJString(key))
-  add(query_594101, "$.xgafv", newJString(Xgafv))
-  add(query_594101, "projectId", newJString(projectId))
-  add(path_594100, "beaconName", newJString(beaconName))
+  var path_580100 = newJObject()
+  var query_580101 = newJObject()
+  var body_580102 = newJObject()
+  add(query_580101, "upload_protocol", newJString(uploadProtocol))
+  add(query_580101, "fields", newJString(fields))
+  add(query_580101, "quotaUser", newJString(quotaUser))
+  add(query_580101, "alt", newJString(alt))
+  add(query_580101, "oauth_token", newJString(oauthToken))
+  add(query_580101, "callback", newJString(callback))
+  add(query_580101, "access_token", newJString(accessToken))
+  add(query_580101, "uploadType", newJString(uploadType))
+  add(query_580101, "key", newJString(key))
+  add(query_580101, "$.xgafv", newJString(Xgafv))
+  add(query_580101, "projectId", newJString(projectId))
+  add(path_580100, "beaconName", newJString(beaconName))
   if body != nil:
-    body_594102 = body
-  add(query_594101, "prettyPrint", newJBool(prettyPrint))
-  result = call_594099.call(path_594100, query_594101, nil, nil, body_594102)
+    body_580102 = body
+  add(query_580101, "prettyPrint", newJBool(prettyPrint))
+  result = call_580099.call(path_580100, query_580101, nil, nil, body_580102)
 
-var proximitybeaconBeaconsUpdate* = Call_ProximitybeaconBeaconsUpdate_594081(
+var proximitybeaconBeaconsUpdate* = Call_ProximitybeaconBeaconsUpdate_580081(
     name: "proximitybeaconBeaconsUpdate", meth: HttpMethod.HttpPut,
     host: "proximitybeacon.googleapis.com", route: "/v1beta1/{beaconName}",
-    validator: validate_ProximitybeaconBeaconsUpdate_594082, base: "/",
-    url: url_ProximitybeaconBeaconsUpdate_594083, schemes: {Scheme.Https})
+    validator: validate_ProximitybeaconBeaconsUpdate_580082, base: "/",
+    url: url_ProximitybeaconBeaconsUpdate_580083, schemes: {Scheme.Https})
 type
-  Call_ProximitybeaconBeaconsGet_594061 = ref object of OpenApiRestCall_593408
-proc url_ProximitybeaconBeaconsGet_594063(protocol: Scheme; host: string;
+  Call_ProximitybeaconBeaconsGet_580061 = ref object of OpenApiRestCall_579408
+proc url_ProximitybeaconBeaconsGet_580063(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "beaconName" in path, "`beaconName` is a required path parameter"
   const
@@ -1740,7 +1742,7 @@ proc url_ProximitybeaconBeaconsGet_594063(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_ProximitybeaconBeaconsGet_594062(path: JsonNode; query: JsonNode;
+proc validate_ProximitybeaconBeaconsGet_580062(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Returns detailed information about the specified beacon.
   ## 
@@ -1768,11 +1770,11 @@ proc validate_ProximitybeaconBeaconsGet_594062(path: JsonNode; query: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `beaconName` field"
-  var valid_594064 = path.getOrDefault("beaconName")
-  valid_594064 = validateParameter(valid_594064, JString, required = true,
+  var valid_580064 = path.getOrDefault("beaconName")
+  valid_580064 = validateParameter(valid_580064, JString, required = true,
                                  default = nil)
-  if valid_594064 != nil:
-    section.add "beaconName", valid_594064
+  if valid_580064 != nil:
+    section.add "beaconName", valid_580064
   result.add "path", section
   ## parameters in `query` object:
   ##   upload_protocol: JString
@@ -1803,66 +1805,66 @@ proc validate_ProximitybeaconBeaconsGet_594062(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_594065 = query.getOrDefault("upload_protocol")
-  valid_594065 = validateParameter(valid_594065, JString, required = false,
+  var valid_580065 = query.getOrDefault("upload_protocol")
+  valid_580065 = validateParameter(valid_580065, JString, required = false,
                                  default = nil)
-  if valid_594065 != nil:
-    section.add "upload_protocol", valid_594065
-  var valid_594066 = query.getOrDefault("fields")
-  valid_594066 = validateParameter(valid_594066, JString, required = false,
+  if valid_580065 != nil:
+    section.add "upload_protocol", valid_580065
+  var valid_580066 = query.getOrDefault("fields")
+  valid_580066 = validateParameter(valid_580066, JString, required = false,
                                  default = nil)
-  if valid_594066 != nil:
-    section.add "fields", valid_594066
-  var valid_594067 = query.getOrDefault("quotaUser")
-  valid_594067 = validateParameter(valid_594067, JString, required = false,
+  if valid_580066 != nil:
+    section.add "fields", valid_580066
+  var valid_580067 = query.getOrDefault("quotaUser")
+  valid_580067 = validateParameter(valid_580067, JString, required = false,
                                  default = nil)
-  if valid_594067 != nil:
-    section.add "quotaUser", valid_594067
-  var valid_594068 = query.getOrDefault("alt")
-  valid_594068 = validateParameter(valid_594068, JString, required = false,
+  if valid_580067 != nil:
+    section.add "quotaUser", valid_580067
+  var valid_580068 = query.getOrDefault("alt")
+  valid_580068 = validateParameter(valid_580068, JString, required = false,
                                  default = newJString("json"))
-  if valid_594068 != nil:
-    section.add "alt", valid_594068
-  var valid_594069 = query.getOrDefault("oauth_token")
-  valid_594069 = validateParameter(valid_594069, JString, required = false,
+  if valid_580068 != nil:
+    section.add "alt", valid_580068
+  var valid_580069 = query.getOrDefault("oauth_token")
+  valid_580069 = validateParameter(valid_580069, JString, required = false,
                                  default = nil)
-  if valid_594069 != nil:
-    section.add "oauth_token", valid_594069
-  var valid_594070 = query.getOrDefault("callback")
-  valid_594070 = validateParameter(valid_594070, JString, required = false,
+  if valid_580069 != nil:
+    section.add "oauth_token", valid_580069
+  var valid_580070 = query.getOrDefault("callback")
+  valid_580070 = validateParameter(valid_580070, JString, required = false,
                                  default = nil)
-  if valid_594070 != nil:
-    section.add "callback", valid_594070
-  var valid_594071 = query.getOrDefault("access_token")
-  valid_594071 = validateParameter(valid_594071, JString, required = false,
+  if valid_580070 != nil:
+    section.add "callback", valid_580070
+  var valid_580071 = query.getOrDefault("access_token")
+  valid_580071 = validateParameter(valid_580071, JString, required = false,
                                  default = nil)
-  if valid_594071 != nil:
-    section.add "access_token", valid_594071
-  var valid_594072 = query.getOrDefault("uploadType")
-  valid_594072 = validateParameter(valid_594072, JString, required = false,
+  if valid_580071 != nil:
+    section.add "access_token", valid_580071
+  var valid_580072 = query.getOrDefault("uploadType")
+  valid_580072 = validateParameter(valid_580072, JString, required = false,
                                  default = nil)
-  if valid_594072 != nil:
-    section.add "uploadType", valid_594072
-  var valid_594073 = query.getOrDefault("key")
-  valid_594073 = validateParameter(valid_594073, JString, required = false,
+  if valid_580072 != nil:
+    section.add "uploadType", valid_580072
+  var valid_580073 = query.getOrDefault("key")
+  valid_580073 = validateParameter(valid_580073, JString, required = false,
                                  default = nil)
-  if valid_594073 != nil:
-    section.add "key", valid_594073
-  var valid_594074 = query.getOrDefault("$.xgafv")
-  valid_594074 = validateParameter(valid_594074, JString, required = false,
+  if valid_580073 != nil:
+    section.add "key", valid_580073
+  var valid_580074 = query.getOrDefault("$.xgafv")
+  valid_580074 = validateParameter(valid_580074, JString, required = false,
                                  default = newJString("1"))
-  if valid_594074 != nil:
-    section.add "$.xgafv", valid_594074
-  var valid_594075 = query.getOrDefault("projectId")
-  valid_594075 = validateParameter(valid_594075, JString, required = false,
+  if valid_580074 != nil:
+    section.add "$.xgafv", valid_580074
+  var valid_580075 = query.getOrDefault("projectId")
+  valid_580075 = validateParameter(valid_580075, JString, required = false,
                                  default = nil)
-  if valid_594075 != nil:
-    section.add "projectId", valid_594075
-  var valid_594076 = query.getOrDefault("prettyPrint")
-  valid_594076 = validateParameter(valid_594076, JBool, required = false,
+  if valid_580075 != nil:
+    section.add "projectId", valid_580075
+  var valid_580076 = query.getOrDefault("prettyPrint")
+  valid_580076 = validateParameter(valid_580076, JBool, required = false,
                                  default = newJBool(true))
-  if valid_594076 != nil:
-    section.add "prettyPrint", valid_594076
+  if valid_580076 != nil:
+    section.add "prettyPrint", valid_580076
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1871,7 +1873,7 @@ proc validate_ProximitybeaconBeaconsGet_594062(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_594077: Call_ProximitybeaconBeaconsGet_594061; path: JsonNode;
+proc call*(call_580077: Call_ProximitybeaconBeaconsGet_580061; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Returns detailed information about the specified beacon.
   ## 
@@ -1885,16 +1887,16 @@ proc call*(call_594077: Call_ProximitybeaconBeaconsGet_594061; path: JsonNode;
   ## beacon's stable Eddystone-UID. Clients not authorized to resolve the
   ## beacon's ephemeral Eddystone-EID broadcast will receive an error.
   ## 
-  let valid = call_594077.validator(path, query, header, formData, body)
-  let scheme = call_594077.pickScheme
+  let valid = call_580077.validator(path, query, header, formData, body)
+  let scheme = call_580077.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_594077.url(scheme.get, call_594077.host, call_594077.base,
-                         call_594077.route, valid.getOrDefault("path"),
+  let url = call_580077.url(scheme.get, call_580077.host, call_580077.base,
+                         call_580077.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_594077, url, valid)
+  result = hook(call_580077, url, valid)
 
-proc call*(call_594078: Call_ProximitybeaconBeaconsGet_594061; beaconName: string;
+proc call*(call_580078: Call_ProximitybeaconBeaconsGet_580061; beaconName: string;
           uploadProtocol: string = ""; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; callback: string = "";
           accessToken: string = ""; uploadType: string = ""; key: string = "";
@@ -1946,35 +1948,35 @@ proc call*(call_594078: Call_ProximitybeaconBeaconsGet_594061; beaconName: strin
   ## Required.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_594079 = newJObject()
-  var query_594080 = newJObject()
-  add(query_594080, "upload_protocol", newJString(uploadProtocol))
-  add(query_594080, "fields", newJString(fields))
-  add(query_594080, "quotaUser", newJString(quotaUser))
-  add(query_594080, "alt", newJString(alt))
-  add(query_594080, "oauth_token", newJString(oauthToken))
-  add(query_594080, "callback", newJString(callback))
-  add(query_594080, "access_token", newJString(accessToken))
-  add(query_594080, "uploadType", newJString(uploadType))
-  add(query_594080, "key", newJString(key))
-  add(query_594080, "$.xgafv", newJString(Xgafv))
-  add(query_594080, "projectId", newJString(projectId))
-  add(path_594079, "beaconName", newJString(beaconName))
-  add(query_594080, "prettyPrint", newJBool(prettyPrint))
-  result = call_594078.call(path_594079, query_594080, nil, nil, nil)
+  var path_580079 = newJObject()
+  var query_580080 = newJObject()
+  add(query_580080, "upload_protocol", newJString(uploadProtocol))
+  add(query_580080, "fields", newJString(fields))
+  add(query_580080, "quotaUser", newJString(quotaUser))
+  add(query_580080, "alt", newJString(alt))
+  add(query_580080, "oauth_token", newJString(oauthToken))
+  add(query_580080, "callback", newJString(callback))
+  add(query_580080, "access_token", newJString(accessToken))
+  add(query_580080, "uploadType", newJString(uploadType))
+  add(query_580080, "key", newJString(key))
+  add(query_580080, "$.xgafv", newJString(Xgafv))
+  add(query_580080, "projectId", newJString(projectId))
+  add(path_580079, "beaconName", newJString(beaconName))
+  add(query_580080, "prettyPrint", newJBool(prettyPrint))
+  result = call_580078.call(path_580079, query_580080, nil, nil, nil)
 
-var proximitybeaconBeaconsGet* = Call_ProximitybeaconBeaconsGet_594061(
+var proximitybeaconBeaconsGet* = Call_ProximitybeaconBeaconsGet_580061(
     name: "proximitybeaconBeaconsGet", meth: HttpMethod.HttpGet,
     host: "proximitybeacon.googleapis.com", route: "/v1beta1/{beaconName}",
-    validator: validate_ProximitybeaconBeaconsGet_594062, base: "/",
-    url: url_ProximitybeaconBeaconsGet_594063, schemes: {Scheme.Https})
+    validator: validate_ProximitybeaconBeaconsGet_580062, base: "/",
+    url: url_ProximitybeaconBeaconsGet_580063, schemes: {Scheme.Https})
 type
-  Call_ProximitybeaconBeaconsDelete_594103 = ref object of OpenApiRestCall_593408
-proc url_ProximitybeaconBeaconsDelete_594105(protocol: Scheme; host: string;
+  Call_ProximitybeaconBeaconsDelete_580103 = ref object of OpenApiRestCall_579408
+proc url_ProximitybeaconBeaconsDelete_580105(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "beaconName" in path, "`beaconName` is a required path parameter"
   const
@@ -1985,7 +1987,7 @@ proc url_ProximitybeaconBeaconsDelete_594105(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_ProximitybeaconBeaconsDelete_594104(path: JsonNode; query: JsonNode;
+proc validate_ProximitybeaconBeaconsDelete_580104(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Deletes the specified beacon including all diagnostics data for the beacon
   ## as well as any attachments on the beacon (including those belonging to
@@ -2009,11 +2011,11 @@ proc validate_ProximitybeaconBeaconsDelete_594104(path: JsonNode; query: JsonNod
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `beaconName` field"
-  var valid_594106 = path.getOrDefault("beaconName")
-  valid_594106 = validateParameter(valid_594106, JString, required = true,
+  var valid_580106 = path.getOrDefault("beaconName")
+  valid_580106 = validateParameter(valid_580106, JString, required = true,
                                  default = nil)
-  if valid_594106 != nil:
-    section.add "beaconName", valid_594106
+  if valid_580106 != nil:
+    section.add "beaconName", valid_580106
   result.add "path", section
   ## parameters in `query` object:
   ##   upload_protocol: JString
@@ -2043,66 +2045,66 @@ proc validate_ProximitybeaconBeaconsDelete_594104(path: JsonNode; query: JsonNod
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_594107 = query.getOrDefault("upload_protocol")
-  valid_594107 = validateParameter(valid_594107, JString, required = false,
+  var valid_580107 = query.getOrDefault("upload_protocol")
+  valid_580107 = validateParameter(valid_580107, JString, required = false,
                                  default = nil)
-  if valid_594107 != nil:
-    section.add "upload_protocol", valid_594107
-  var valid_594108 = query.getOrDefault("fields")
-  valid_594108 = validateParameter(valid_594108, JString, required = false,
+  if valid_580107 != nil:
+    section.add "upload_protocol", valid_580107
+  var valid_580108 = query.getOrDefault("fields")
+  valid_580108 = validateParameter(valid_580108, JString, required = false,
                                  default = nil)
-  if valid_594108 != nil:
-    section.add "fields", valid_594108
-  var valid_594109 = query.getOrDefault("quotaUser")
-  valid_594109 = validateParameter(valid_594109, JString, required = false,
+  if valid_580108 != nil:
+    section.add "fields", valid_580108
+  var valid_580109 = query.getOrDefault("quotaUser")
+  valid_580109 = validateParameter(valid_580109, JString, required = false,
                                  default = nil)
-  if valid_594109 != nil:
-    section.add "quotaUser", valid_594109
-  var valid_594110 = query.getOrDefault("alt")
-  valid_594110 = validateParameter(valid_594110, JString, required = false,
+  if valid_580109 != nil:
+    section.add "quotaUser", valid_580109
+  var valid_580110 = query.getOrDefault("alt")
+  valid_580110 = validateParameter(valid_580110, JString, required = false,
                                  default = newJString("json"))
-  if valid_594110 != nil:
-    section.add "alt", valid_594110
-  var valid_594111 = query.getOrDefault("oauth_token")
-  valid_594111 = validateParameter(valid_594111, JString, required = false,
+  if valid_580110 != nil:
+    section.add "alt", valid_580110
+  var valid_580111 = query.getOrDefault("oauth_token")
+  valid_580111 = validateParameter(valid_580111, JString, required = false,
                                  default = nil)
-  if valid_594111 != nil:
-    section.add "oauth_token", valid_594111
-  var valid_594112 = query.getOrDefault("callback")
-  valid_594112 = validateParameter(valid_594112, JString, required = false,
+  if valid_580111 != nil:
+    section.add "oauth_token", valid_580111
+  var valid_580112 = query.getOrDefault("callback")
+  valid_580112 = validateParameter(valid_580112, JString, required = false,
                                  default = nil)
-  if valid_594112 != nil:
-    section.add "callback", valid_594112
-  var valid_594113 = query.getOrDefault("access_token")
-  valid_594113 = validateParameter(valid_594113, JString, required = false,
+  if valid_580112 != nil:
+    section.add "callback", valid_580112
+  var valid_580113 = query.getOrDefault("access_token")
+  valid_580113 = validateParameter(valid_580113, JString, required = false,
                                  default = nil)
-  if valid_594113 != nil:
-    section.add "access_token", valid_594113
-  var valid_594114 = query.getOrDefault("uploadType")
-  valid_594114 = validateParameter(valid_594114, JString, required = false,
+  if valid_580113 != nil:
+    section.add "access_token", valid_580113
+  var valid_580114 = query.getOrDefault("uploadType")
+  valid_580114 = validateParameter(valid_580114, JString, required = false,
                                  default = nil)
-  if valid_594114 != nil:
-    section.add "uploadType", valid_594114
-  var valid_594115 = query.getOrDefault("key")
-  valid_594115 = validateParameter(valid_594115, JString, required = false,
+  if valid_580114 != nil:
+    section.add "uploadType", valid_580114
+  var valid_580115 = query.getOrDefault("key")
+  valid_580115 = validateParameter(valid_580115, JString, required = false,
                                  default = nil)
-  if valid_594115 != nil:
-    section.add "key", valid_594115
-  var valid_594116 = query.getOrDefault("$.xgafv")
-  valid_594116 = validateParameter(valid_594116, JString, required = false,
+  if valid_580115 != nil:
+    section.add "key", valid_580115
+  var valid_580116 = query.getOrDefault("$.xgafv")
+  valid_580116 = validateParameter(valid_580116, JString, required = false,
                                  default = newJString("1"))
-  if valid_594116 != nil:
-    section.add "$.xgafv", valid_594116
-  var valid_594117 = query.getOrDefault("projectId")
-  valid_594117 = validateParameter(valid_594117, JString, required = false,
+  if valid_580116 != nil:
+    section.add "$.xgafv", valid_580116
+  var valid_580117 = query.getOrDefault("projectId")
+  valid_580117 = validateParameter(valid_580117, JString, required = false,
                                  default = nil)
-  if valid_594117 != nil:
-    section.add "projectId", valid_594117
-  var valid_594118 = query.getOrDefault("prettyPrint")
-  valid_594118 = validateParameter(valid_594118, JBool, required = false,
+  if valid_580117 != nil:
+    section.add "projectId", valid_580117
+  var valid_580118 = query.getOrDefault("prettyPrint")
+  valid_580118 = validateParameter(valid_580118, JBool, required = false,
                                  default = newJBool(true))
-  if valid_594118 != nil:
-    section.add "prettyPrint", valid_594118
+  if valid_580118 != nil:
+    section.add "prettyPrint", valid_580118
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -2111,7 +2113,7 @@ proc validate_ProximitybeaconBeaconsDelete_594104(path: JsonNode; query: JsonNod
   if body != nil:
     result.add "body", body
 
-proc call*(call_594119: Call_ProximitybeaconBeaconsDelete_594103; path: JsonNode;
+proc call*(call_580119: Call_ProximitybeaconBeaconsDelete_580103; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Deletes the specified beacon including all diagnostics data for the beacon
   ## as well as any attachments on the beacon (including those belonging to
@@ -2121,16 +2123,16 @@ proc call*(call_594119: Call_ProximitybeaconBeaconsDelete_594103; path: JsonNode
   ## from a signed-in user with **Is owner** or **Can edit** permissions in the
   ## Google Developers Console project.
   ## 
-  let valid = call_594119.validator(path, query, header, formData, body)
-  let scheme = call_594119.pickScheme
+  let valid = call_580119.validator(path, query, header, formData, body)
+  let scheme = call_580119.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_594119.url(scheme.get, call_594119.host, call_594119.base,
-                         call_594119.route, valid.getOrDefault("path"),
+  let url = call_580119.url(scheme.get, call_580119.host, call_580119.base,
+                         call_580119.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_594119, url, valid)
+  result = hook(call_580119, url, valid)
 
-proc call*(call_594120: Call_ProximitybeaconBeaconsDelete_594103;
+proc call*(call_580120: Call_ProximitybeaconBeaconsDelete_580103;
           beaconName: string; uploadProtocol: string = ""; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           callback: string = ""; accessToken: string = ""; uploadType: string = "";
@@ -2178,35 +2180,35 @@ proc call*(call_594120: Call_ProximitybeaconBeaconsDelete_594103;
   ## Required.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_594121 = newJObject()
-  var query_594122 = newJObject()
-  add(query_594122, "upload_protocol", newJString(uploadProtocol))
-  add(query_594122, "fields", newJString(fields))
-  add(query_594122, "quotaUser", newJString(quotaUser))
-  add(query_594122, "alt", newJString(alt))
-  add(query_594122, "oauth_token", newJString(oauthToken))
-  add(query_594122, "callback", newJString(callback))
-  add(query_594122, "access_token", newJString(accessToken))
-  add(query_594122, "uploadType", newJString(uploadType))
-  add(query_594122, "key", newJString(key))
-  add(query_594122, "$.xgafv", newJString(Xgafv))
-  add(query_594122, "projectId", newJString(projectId))
-  add(path_594121, "beaconName", newJString(beaconName))
-  add(query_594122, "prettyPrint", newJBool(prettyPrint))
-  result = call_594120.call(path_594121, query_594122, nil, nil, nil)
+  var path_580121 = newJObject()
+  var query_580122 = newJObject()
+  add(query_580122, "upload_protocol", newJString(uploadProtocol))
+  add(query_580122, "fields", newJString(fields))
+  add(query_580122, "quotaUser", newJString(quotaUser))
+  add(query_580122, "alt", newJString(alt))
+  add(query_580122, "oauth_token", newJString(oauthToken))
+  add(query_580122, "callback", newJString(callback))
+  add(query_580122, "access_token", newJString(accessToken))
+  add(query_580122, "uploadType", newJString(uploadType))
+  add(query_580122, "key", newJString(key))
+  add(query_580122, "$.xgafv", newJString(Xgafv))
+  add(query_580122, "projectId", newJString(projectId))
+  add(path_580121, "beaconName", newJString(beaconName))
+  add(query_580122, "prettyPrint", newJBool(prettyPrint))
+  result = call_580120.call(path_580121, query_580122, nil, nil, nil)
 
-var proximitybeaconBeaconsDelete* = Call_ProximitybeaconBeaconsDelete_594103(
+var proximitybeaconBeaconsDelete* = Call_ProximitybeaconBeaconsDelete_580103(
     name: "proximitybeaconBeaconsDelete", meth: HttpMethod.HttpDelete,
     host: "proximitybeacon.googleapis.com", route: "/v1beta1/{beaconName}",
-    validator: validate_ProximitybeaconBeaconsDelete_594104, base: "/",
-    url: url_ProximitybeaconBeaconsDelete_594105, schemes: {Scheme.Https})
+    validator: validate_ProximitybeaconBeaconsDelete_580104, base: "/",
+    url: url_ProximitybeaconBeaconsDelete_580105, schemes: {Scheme.Https})
 type
-  Call_ProximitybeaconBeaconsAttachmentsCreate_594144 = ref object of OpenApiRestCall_593408
-proc url_ProximitybeaconBeaconsAttachmentsCreate_594146(protocol: Scheme;
+  Call_ProximitybeaconBeaconsAttachmentsCreate_580144 = ref object of OpenApiRestCall_579408
+proc url_ProximitybeaconBeaconsAttachmentsCreate_580146(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "beaconName" in path, "`beaconName` is a required path parameter"
   const
@@ -2218,7 +2220,7 @@ proc url_ProximitybeaconBeaconsAttachmentsCreate_594146(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_ProximitybeaconBeaconsAttachmentsCreate_594145(path: JsonNode;
+proc validate_ProximitybeaconBeaconsAttachmentsCreate_580145(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Associates the given data with the specified beacon. Attachment data must
   ## contain two parts:
@@ -2251,11 +2253,11 @@ proc validate_ProximitybeaconBeaconsAttachmentsCreate_594145(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `beaconName` field"
-  var valid_594147 = path.getOrDefault("beaconName")
-  valid_594147 = validateParameter(valid_594147, JString, required = true,
+  var valid_580147 = path.getOrDefault("beaconName")
+  valid_580147 = validateParameter(valid_580147, JString, required = true,
                                  default = nil)
-  if valid_594147 != nil:
-    section.add "beaconName", valid_594147
+  if valid_580147 != nil:
+    section.add "beaconName", valid_580147
   result.add "path", section
   ## parameters in `query` object:
   ##   upload_protocol: JString
@@ -2286,66 +2288,66 @@ proc validate_ProximitybeaconBeaconsAttachmentsCreate_594145(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_594148 = query.getOrDefault("upload_protocol")
-  valid_594148 = validateParameter(valid_594148, JString, required = false,
+  var valid_580148 = query.getOrDefault("upload_protocol")
+  valid_580148 = validateParameter(valid_580148, JString, required = false,
                                  default = nil)
-  if valid_594148 != nil:
-    section.add "upload_protocol", valid_594148
-  var valid_594149 = query.getOrDefault("fields")
-  valid_594149 = validateParameter(valid_594149, JString, required = false,
+  if valid_580148 != nil:
+    section.add "upload_protocol", valid_580148
+  var valid_580149 = query.getOrDefault("fields")
+  valid_580149 = validateParameter(valid_580149, JString, required = false,
                                  default = nil)
-  if valid_594149 != nil:
-    section.add "fields", valid_594149
-  var valid_594150 = query.getOrDefault("quotaUser")
-  valid_594150 = validateParameter(valid_594150, JString, required = false,
+  if valid_580149 != nil:
+    section.add "fields", valid_580149
+  var valid_580150 = query.getOrDefault("quotaUser")
+  valid_580150 = validateParameter(valid_580150, JString, required = false,
                                  default = nil)
-  if valid_594150 != nil:
-    section.add "quotaUser", valid_594150
-  var valid_594151 = query.getOrDefault("alt")
-  valid_594151 = validateParameter(valid_594151, JString, required = false,
+  if valid_580150 != nil:
+    section.add "quotaUser", valid_580150
+  var valid_580151 = query.getOrDefault("alt")
+  valid_580151 = validateParameter(valid_580151, JString, required = false,
                                  default = newJString("json"))
-  if valid_594151 != nil:
-    section.add "alt", valid_594151
-  var valid_594152 = query.getOrDefault("oauth_token")
-  valid_594152 = validateParameter(valid_594152, JString, required = false,
+  if valid_580151 != nil:
+    section.add "alt", valid_580151
+  var valid_580152 = query.getOrDefault("oauth_token")
+  valid_580152 = validateParameter(valid_580152, JString, required = false,
                                  default = nil)
-  if valid_594152 != nil:
-    section.add "oauth_token", valid_594152
-  var valid_594153 = query.getOrDefault("callback")
-  valid_594153 = validateParameter(valid_594153, JString, required = false,
+  if valid_580152 != nil:
+    section.add "oauth_token", valid_580152
+  var valid_580153 = query.getOrDefault("callback")
+  valid_580153 = validateParameter(valid_580153, JString, required = false,
                                  default = nil)
-  if valid_594153 != nil:
-    section.add "callback", valid_594153
-  var valid_594154 = query.getOrDefault("access_token")
-  valid_594154 = validateParameter(valid_594154, JString, required = false,
+  if valid_580153 != nil:
+    section.add "callback", valid_580153
+  var valid_580154 = query.getOrDefault("access_token")
+  valid_580154 = validateParameter(valid_580154, JString, required = false,
                                  default = nil)
-  if valid_594154 != nil:
-    section.add "access_token", valid_594154
-  var valid_594155 = query.getOrDefault("uploadType")
-  valid_594155 = validateParameter(valid_594155, JString, required = false,
+  if valid_580154 != nil:
+    section.add "access_token", valid_580154
+  var valid_580155 = query.getOrDefault("uploadType")
+  valid_580155 = validateParameter(valid_580155, JString, required = false,
                                  default = nil)
-  if valid_594155 != nil:
-    section.add "uploadType", valid_594155
-  var valid_594156 = query.getOrDefault("key")
-  valid_594156 = validateParameter(valid_594156, JString, required = false,
+  if valid_580155 != nil:
+    section.add "uploadType", valid_580155
+  var valid_580156 = query.getOrDefault("key")
+  valid_580156 = validateParameter(valid_580156, JString, required = false,
                                  default = nil)
-  if valid_594156 != nil:
-    section.add "key", valid_594156
-  var valid_594157 = query.getOrDefault("$.xgafv")
-  valid_594157 = validateParameter(valid_594157, JString, required = false,
+  if valid_580156 != nil:
+    section.add "key", valid_580156
+  var valid_580157 = query.getOrDefault("$.xgafv")
+  valid_580157 = validateParameter(valid_580157, JString, required = false,
                                  default = newJString("1"))
-  if valid_594157 != nil:
-    section.add "$.xgafv", valid_594157
-  var valid_594158 = query.getOrDefault("projectId")
-  valid_594158 = validateParameter(valid_594158, JString, required = false,
+  if valid_580157 != nil:
+    section.add "$.xgafv", valid_580157
+  var valid_580158 = query.getOrDefault("projectId")
+  valid_580158 = validateParameter(valid_580158, JString, required = false,
                                  default = nil)
-  if valid_594158 != nil:
-    section.add "projectId", valid_594158
-  var valid_594159 = query.getOrDefault("prettyPrint")
-  valid_594159 = validateParameter(valid_594159, JBool, required = false,
+  if valid_580158 != nil:
+    section.add "projectId", valid_580158
+  var valid_580159 = query.getOrDefault("prettyPrint")
+  valid_580159 = validateParameter(valid_580159, JBool, required = false,
                                  default = newJBool(true))
-  if valid_594159 != nil:
-    section.add "prettyPrint", valid_594159
+  if valid_580159 != nil:
+    section.add "prettyPrint", valid_580159
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -2357,7 +2359,7 @@ proc validate_ProximitybeaconBeaconsAttachmentsCreate_594145(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_594161: Call_ProximitybeaconBeaconsAttachmentsCreate_594144;
+proc call*(call_580161: Call_ProximitybeaconBeaconsAttachmentsCreate_580144;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Associates the given data with the specified beacon. Attachment data must
@@ -2377,16 +2379,16 @@ proc call*(call_594161: Call_ProximitybeaconBeaconsAttachmentsCreate_594144;
   ## from a signed-in user with **Is owner** or **Can edit** permissions in the
   ## Google Developers Console project.
   ## 
-  let valid = call_594161.validator(path, query, header, formData, body)
-  let scheme = call_594161.pickScheme
+  let valid = call_580161.validator(path, query, header, formData, body)
+  let scheme = call_580161.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_594161.url(scheme.get, call_594161.host, call_594161.base,
-                         call_594161.route, valid.getOrDefault("path"),
+  let url = call_580161.url(scheme.get, call_580161.host, call_580161.base,
+                         call_580161.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_594161, url, valid)
+  result = hook(call_580161, url, valid)
 
-proc call*(call_594162: Call_ProximitybeaconBeaconsAttachmentsCreate_594144;
+proc call*(call_580162: Call_ProximitybeaconBeaconsAttachmentsCreate_580144;
           beaconName: string; uploadProtocol: string = ""; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           callback: string = ""; accessToken: string = ""; uploadType: string = "";
@@ -2445,40 +2447,40 @@ proc call*(call_594162: Call_ProximitybeaconBeaconsAttachmentsCreate_594144;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_594163 = newJObject()
-  var query_594164 = newJObject()
-  var body_594165 = newJObject()
-  add(query_594164, "upload_protocol", newJString(uploadProtocol))
-  add(query_594164, "fields", newJString(fields))
-  add(query_594164, "quotaUser", newJString(quotaUser))
-  add(query_594164, "alt", newJString(alt))
-  add(query_594164, "oauth_token", newJString(oauthToken))
-  add(query_594164, "callback", newJString(callback))
-  add(query_594164, "access_token", newJString(accessToken))
-  add(query_594164, "uploadType", newJString(uploadType))
-  add(query_594164, "key", newJString(key))
-  add(query_594164, "$.xgafv", newJString(Xgafv))
-  add(query_594164, "projectId", newJString(projectId))
-  add(path_594163, "beaconName", newJString(beaconName))
+  var path_580163 = newJObject()
+  var query_580164 = newJObject()
+  var body_580165 = newJObject()
+  add(query_580164, "upload_protocol", newJString(uploadProtocol))
+  add(query_580164, "fields", newJString(fields))
+  add(query_580164, "quotaUser", newJString(quotaUser))
+  add(query_580164, "alt", newJString(alt))
+  add(query_580164, "oauth_token", newJString(oauthToken))
+  add(query_580164, "callback", newJString(callback))
+  add(query_580164, "access_token", newJString(accessToken))
+  add(query_580164, "uploadType", newJString(uploadType))
+  add(query_580164, "key", newJString(key))
+  add(query_580164, "$.xgafv", newJString(Xgafv))
+  add(query_580164, "projectId", newJString(projectId))
+  add(path_580163, "beaconName", newJString(beaconName))
   if body != nil:
-    body_594165 = body
-  add(query_594164, "prettyPrint", newJBool(prettyPrint))
-  result = call_594162.call(path_594163, query_594164, nil, nil, body_594165)
+    body_580165 = body
+  add(query_580164, "prettyPrint", newJBool(prettyPrint))
+  result = call_580162.call(path_580163, query_580164, nil, nil, body_580165)
 
-var proximitybeaconBeaconsAttachmentsCreate* = Call_ProximitybeaconBeaconsAttachmentsCreate_594144(
+var proximitybeaconBeaconsAttachmentsCreate* = Call_ProximitybeaconBeaconsAttachmentsCreate_580144(
     name: "proximitybeaconBeaconsAttachmentsCreate", meth: HttpMethod.HttpPost,
     host: "proximitybeacon.googleapis.com",
     route: "/v1beta1/{beaconName}/attachments",
-    validator: validate_ProximitybeaconBeaconsAttachmentsCreate_594145, base: "/",
-    url: url_ProximitybeaconBeaconsAttachmentsCreate_594146,
+    validator: validate_ProximitybeaconBeaconsAttachmentsCreate_580145, base: "/",
+    url: url_ProximitybeaconBeaconsAttachmentsCreate_580146,
     schemes: {Scheme.Https})
 type
-  Call_ProximitybeaconBeaconsAttachmentsList_594123 = ref object of OpenApiRestCall_593408
-proc url_ProximitybeaconBeaconsAttachmentsList_594125(protocol: Scheme;
+  Call_ProximitybeaconBeaconsAttachmentsList_580123 = ref object of OpenApiRestCall_579408
+proc url_ProximitybeaconBeaconsAttachmentsList_580125(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "beaconName" in path, "`beaconName` is a required path parameter"
   const
@@ -2490,7 +2492,7 @@ proc url_ProximitybeaconBeaconsAttachmentsList_594125(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_ProximitybeaconBeaconsAttachmentsList_594124(path: JsonNode;
+proc validate_ProximitybeaconBeaconsAttachmentsList_580124(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Returns the attachments for the specified beacon that match the specified
   ## namespaced-type pattern.
@@ -2518,11 +2520,11 @@ proc validate_ProximitybeaconBeaconsAttachmentsList_594124(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `beaconName` field"
-  var valid_594126 = path.getOrDefault("beaconName")
-  valid_594126 = validateParameter(valid_594126, JString, required = true,
+  var valid_580126 = path.getOrDefault("beaconName")
+  valid_580126 = validateParameter(valid_580126, JString, required = true,
                                  default = nil)
-  if valid_594126 != nil:
-    section.add "beaconName", valid_594126
+  if valid_580126 != nil:
+    section.add "beaconName", valid_580126
   result.add "path", section
   ## parameters in `query` object:
   ##   upload_protocol: JString
@@ -2559,71 +2561,71 @@ proc validate_ProximitybeaconBeaconsAttachmentsList_594124(path: JsonNode;
   ## <var>namespace/type</var> format. Accepts `*/*` to specify
   ## "all types in all namespaces".
   section = newJObject()
-  var valid_594127 = query.getOrDefault("upload_protocol")
-  valid_594127 = validateParameter(valid_594127, JString, required = false,
+  var valid_580127 = query.getOrDefault("upload_protocol")
+  valid_580127 = validateParameter(valid_580127, JString, required = false,
                                  default = nil)
-  if valid_594127 != nil:
-    section.add "upload_protocol", valid_594127
-  var valid_594128 = query.getOrDefault("fields")
-  valid_594128 = validateParameter(valid_594128, JString, required = false,
+  if valid_580127 != nil:
+    section.add "upload_protocol", valid_580127
+  var valid_580128 = query.getOrDefault("fields")
+  valid_580128 = validateParameter(valid_580128, JString, required = false,
                                  default = nil)
-  if valid_594128 != nil:
-    section.add "fields", valid_594128
-  var valid_594129 = query.getOrDefault("quotaUser")
-  valid_594129 = validateParameter(valid_594129, JString, required = false,
+  if valid_580128 != nil:
+    section.add "fields", valid_580128
+  var valid_580129 = query.getOrDefault("quotaUser")
+  valid_580129 = validateParameter(valid_580129, JString, required = false,
                                  default = nil)
-  if valid_594129 != nil:
-    section.add "quotaUser", valid_594129
-  var valid_594130 = query.getOrDefault("alt")
-  valid_594130 = validateParameter(valid_594130, JString, required = false,
+  if valid_580129 != nil:
+    section.add "quotaUser", valid_580129
+  var valid_580130 = query.getOrDefault("alt")
+  valid_580130 = validateParameter(valid_580130, JString, required = false,
                                  default = newJString("json"))
-  if valid_594130 != nil:
-    section.add "alt", valid_594130
-  var valid_594131 = query.getOrDefault("oauth_token")
-  valid_594131 = validateParameter(valid_594131, JString, required = false,
+  if valid_580130 != nil:
+    section.add "alt", valid_580130
+  var valid_580131 = query.getOrDefault("oauth_token")
+  valid_580131 = validateParameter(valid_580131, JString, required = false,
                                  default = nil)
-  if valid_594131 != nil:
-    section.add "oauth_token", valid_594131
-  var valid_594132 = query.getOrDefault("callback")
-  valid_594132 = validateParameter(valid_594132, JString, required = false,
+  if valid_580131 != nil:
+    section.add "oauth_token", valid_580131
+  var valid_580132 = query.getOrDefault("callback")
+  valid_580132 = validateParameter(valid_580132, JString, required = false,
                                  default = nil)
-  if valid_594132 != nil:
-    section.add "callback", valid_594132
-  var valid_594133 = query.getOrDefault("access_token")
-  valid_594133 = validateParameter(valid_594133, JString, required = false,
+  if valid_580132 != nil:
+    section.add "callback", valid_580132
+  var valid_580133 = query.getOrDefault("access_token")
+  valid_580133 = validateParameter(valid_580133, JString, required = false,
                                  default = nil)
-  if valid_594133 != nil:
-    section.add "access_token", valid_594133
-  var valid_594134 = query.getOrDefault("uploadType")
-  valid_594134 = validateParameter(valid_594134, JString, required = false,
+  if valid_580133 != nil:
+    section.add "access_token", valid_580133
+  var valid_580134 = query.getOrDefault("uploadType")
+  valid_580134 = validateParameter(valid_580134, JString, required = false,
                                  default = nil)
-  if valid_594134 != nil:
-    section.add "uploadType", valid_594134
-  var valid_594135 = query.getOrDefault("key")
-  valid_594135 = validateParameter(valid_594135, JString, required = false,
+  if valid_580134 != nil:
+    section.add "uploadType", valid_580134
+  var valid_580135 = query.getOrDefault("key")
+  valid_580135 = validateParameter(valid_580135, JString, required = false,
                                  default = nil)
-  if valid_594135 != nil:
-    section.add "key", valid_594135
-  var valid_594136 = query.getOrDefault("$.xgafv")
-  valid_594136 = validateParameter(valid_594136, JString, required = false,
+  if valid_580135 != nil:
+    section.add "key", valid_580135
+  var valid_580136 = query.getOrDefault("$.xgafv")
+  valid_580136 = validateParameter(valid_580136, JString, required = false,
                                  default = newJString("1"))
-  if valid_594136 != nil:
-    section.add "$.xgafv", valid_594136
-  var valid_594137 = query.getOrDefault("projectId")
-  valid_594137 = validateParameter(valid_594137, JString, required = false,
+  if valid_580136 != nil:
+    section.add "$.xgafv", valid_580136
+  var valid_580137 = query.getOrDefault("projectId")
+  valid_580137 = validateParameter(valid_580137, JString, required = false,
                                  default = nil)
-  if valid_594137 != nil:
-    section.add "projectId", valid_594137
-  var valid_594138 = query.getOrDefault("prettyPrint")
-  valid_594138 = validateParameter(valid_594138, JBool, required = false,
+  if valid_580137 != nil:
+    section.add "projectId", valid_580137
+  var valid_580138 = query.getOrDefault("prettyPrint")
+  valid_580138 = validateParameter(valid_580138, JBool, required = false,
                                  default = newJBool(true))
-  if valid_594138 != nil:
-    section.add "prettyPrint", valid_594138
-  var valid_594139 = query.getOrDefault("namespacedType")
-  valid_594139 = validateParameter(valid_594139, JString, required = false,
+  if valid_580138 != nil:
+    section.add "prettyPrint", valid_580138
+  var valid_580139 = query.getOrDefault("namespacedType")
+  valid_580139 = validateParameter(valid_580139, JString, required = false,
                                  default = nil)
-  if valid_594139 != nil:
-    section.add "namespacedType", valid_594139
+  if valid_580139 != nil:
+    section.add "namespacedType", valid_580139
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -2632,7 +2634,7 @@ proc validate_ProximitybeaconBeaconsAttachmentsList_594124(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_594140: Call_ProximitybeaconBeaconsAttachmentsList_594123;
+proc call*(call_580140: Call_ProximitybeaconBeaconsAttachmentsList_580123;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Returns the attachments for the specified beacon that match the specified
@@ -2647,16 +2649,16 @@ proc call*(call_594140: Call_ProximitybeaconBeaconsAttachmentsList_594123;
   ## from a signed-in user with **viewer**, **Is owner** or **Can edit**
   ## permissions in the Google Developers Console project.
   ## 
-  let valid = call_594140.validator(path, query, header, formData, body)
-  let scheme = call_594140.pickScheme
+  let valid = call_580140.validator(path, query, header, formData, body)
+  let scheme = call_580140.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_594140.url(scheme.get, call_594140.host, call_594140.base,
-                         call_594140.route, valid.getOrDefault("path"),
+  let url = call_580140.url(scheme.get, call_580140.host, call_580140.base,
+                         call_580140.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_594140, url, valid)
+  result = hook(call_580140, url, valid)
 
-proc call*(call_594141: Call_ProximitybeaconBeaconsAttachmentsList_594123;
+proc call*(call_580141: Call_ProximitybeaconBeaconsAttachmentsList_580123;
           beaconName: string; uploadProtocol: string = ""; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           callback: string = ""; accessToken: string = ""; uploadType: string = "";
@@ -2715,37 +2717,37 @@ proc call*(call_594141: Call_ProximitybeaconBeaconsAttachmentsList_594123;
   ##                 : Specifies the namespace and type of attachment to include in response in
   ## <var>namespace/type</var> format. Accepts `*/*` to specify
   ## "all types in all namespaces".
-  var path_594142 = newJObject()
-  var query_594143 = newJObject()
-  add(query_594143, "upload_protocol", newJString(uploadProtocol))
-  add(query_594143, "fields", newJString(fields))
-  add(query_594143, "quotaUser", newJString(quotaUser))
-  add(query_594143, "alt", newJString(alt))
-  add(query_594143, "oauth_token", newJString(oauthToken))
-  add(query_594143, "callback", newJString(callback))
-  add(query_594143, "access_token", newJString(accessToken))
-  add(query_594143, "uploadType", newJString(uploadType))
-  add(query_594143, "key", newJString(key))
-  add(query_594143, "$.xgafv", newJString(Xgafv))
-  add(query_594143, "projectId", newJString(projectId))
-  add(path_594142, "beaconName", newJString(beaconName))
-  add(query_594143, "prettyPrint", newJBool(prettyPrint))
-  add(query_594143, "namespacedType", newJString(namespacedType))
-  result = call_594141.call(path_594142, query_594143, nil, nil, nil)
+  var path_580142 = newJObject()
+  var query_580143 = newJObject()
+  add(query_580143, "upload_protocol", newJString(uploadProtocol))
+  add(query_580143, "fields", newJString(fields))
+  add(query_580143, "quotaUser", newJString(quotaUser))
+  add(query_580143, "alt", newJString(alt))
+  add(query_580143, "oauth_token", newJString(oauthToken))
+  add(query_580143, "callback", newJString(callback))
+  add(query_580143, "access_token", newJString(accessToken))
+  add(query_580143, "uploadType", newJString(uploadType))
+  add(query_580143, "key", newJString(key))
+  add(query_580143, "$.xgafv", newJString(Xgafv))
+  add(query_580143, "projectId", newJString(projectId))
+  add(path_580142, "beaconName", newJString(beaconName))
+  add(query_580143, "prettyPrint", newJBool(prettyPrint))
+  add(query_580143, "namespacedType", newJString(namespacedType))
+  result = call_580141.call(path_580142, query_580143, nil, nil, nil)
 
-var proximitybeaconBeaconsAttachmentsList* = Call_ProximitybeaconBeaconsAttachmentsList_594123(
+var proximitybeaconBeaconsAttachmentsList* = Call_ProximitybeaconBeaconsAttachmentsList_580123(
     name: "proximitybeaconBeaconsAttachmentsList", meth: HttpMethod.HttpGet,
     host: "proximitybeacon.googleapis.com",
     route: "/v1beta1/{beaconName}/attachments",
-    validator: validate_ProximitybeaconBeaconsAttachmentsList_594124, base: "/",
-    url: url_ProximitybeaconBeaconsAttachmentsList_594125, schemes: {Scheme.Https})
+    validator: validate_ProximitybeaconBeaconsAttachmentsList_580124, base: "/",
+    url: url_ProximitybeaconBeaconsAttachmentsList_580125, schemes: {Scheme.Https})
 type
-  Call_ProximitybeaconBeaconsAttachmentsBatchDelete_594166 = ref object of OpenApiRestCall_593408
-proc url_ProximitybeaconBeaconsAttachmentsBatchDelete_594168(protocol: Scheme;
+  Call_ProximitybeaconBeaconsAttachmentsBatchDelete_580166 = ref object of OpenApiRestCall_579408
+proc url_ProximitybeaconBeaconsAttachmentsBatchDelete_580168(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "beaconName" in path, "`beaconName` is a required path parameter"
   const
@@ -2757,7 +2759,7 @@ proc url_ProximitybeaconBeaconsAttachmentsBatchDelete_594168(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_ProximitybeaconBeaconsAttachmentsBatchDelete_594167(path: JsonNode;
+proc validate_ProximitybeaconBeaconsAttachmentsBatchDelete_580167(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Deletes multiple attachments on a given beacon. This operation is
   ## permanent and cannot be undone.
@@ -2785,11 +2787,11 @@ proc validate_ProximitybeaconBeaconsAttachmentsBatchDelete_594167(path: JsonNode
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `beaconName` field"
-  var valid_594169 = path.getOrDefault("beaconName")
-  valid_594169 = validateParameter(valid_594169, JString, required = true,
+  var valid_580169 = path.getOrDefault("beaconName")
+  valid_580169 = validateParameter(valid_580169, JString, required = true,
                                  default = nil)
-  if valid_594169 != nil:
-    section.add "beaconName", valid_594169
+  if valid_580169 != nil:
+    section.add "beaconName", valid_580169
   result.add "path", section
   ## parameters in `query` object:
   ##   upload_protocol: JString
@@ -2827,71 +2829,71 @@ proc validate_ProximitybeaconBeaconsAttachmentsBatchDelete_594167(path: JsonNode
   ## "all types in all namespaces".
   ## Optional.
   section = newJObject()
-  var valid_594170 = query.getOrDefault("upload_protocol")
-  valid_594170 = validateParameter(valid_594170, JString, required = false,
+  var valid_580170 = query.getOrDefault("upload_protocol")
+  valid_580170 = validateParameter(valid_580170, JString, required = false,
                                  default = nil)
-  if valid_594170 != nil:
-    section.add "upload_protocol", valid_594170
-  var valid_594171 = query.getOrDefault("fields")
-  valid_594171 = validateParameter(valid_594171, JString, required = false,
+  if valid_580170 != nil:
+    section.add "upload_protocol", valid_580170
+  var valid_580171 = query.getOrDefault("fields")
+  valid_580171 = validateParameter(valid_580171, JString, required = false,
                                  default = nil)
-  if valid_594171 != nil:
-    section.add "fields", valid_594171
-  var valid_594172 = query.getOrDefault("quotaUser")
-  valid_594172 = validateParameter(valid_594172, JString, required = false,
+  if valid_580171 != nil:
+    section.add "fields", valid_580171
+  var valid_580172 = query.getOrDefault("quotaUser")
+  valid_580172 = validateParameter(valid_580172, JString, required = false,
                                  default = nil)
-  if valid_594172 != nil:
-    section.add "quotaUser", valid_594172
-  var valid_594173 = query.getOrDefault("alt")
-  valid_594173 = validateParameter(valid_594173, JString, required = false,
+  if valid_580172 != nil:
+    section.add "quotaUser", valid_580172
+  var valid_580173 = query.getOrDefault("alt")
+  valid_580173 = validateParameter(valid_580173, JString, required = false,
                                  default = newJString("json"))
-  if valid_594173 != nil:
-    section.add "alt", valid_594173
-  var valid_594174 = query.getOrDefault("oauth_token")
-  valid_594174 = validateParameter(valid_594174, JString, required = false,
+  if valid_580173 != nil:
+    section.add "alt", valid_580173
+  var valid_580174 = query.getOrDefault("oauth_token")
+  valid_580174 = validateParameter(valid_580174, JString, required = false,
                                  default = nil)
-  if valid_594174 != nil:
-    section.add "oauth_token", valid_594174
-  var valid_594175 = query.getOrDefault("callback")
-  valid_594175 = validateParameter(valid_594175, JString, required = false,
+  if valid_580174 != nil:
+    section.add "oauth_token", valid_580174
+  var valid_580175 = query.getOrDefault("callback")
+  valid_580175 = validateParameter(valid_580175, JString, required = false,
                                  default = nil)
-  if valid_594175 != nil:
-    section.add "callback", valid_594175
-  var valid_594176 = query.getOrDefault("access_token")
-  valid_594176 = validateParameter(valid_594176, JString, required = false,
+  if valid_580175 != nil:
+    section.add "callback", valid_580175
+  var valid_580176 = query.getOrDefault("access_token")
+  valid_580176 = validateParameter(valid_580176, JString, required = false,
                                  default = nil)
-  if valid_594176 != nil:
-    section.add "access_token", valid_594176
-  var valid_594177 = query.getOrDefault("uploadType")
-  valid_594177 = validateParameter(valid_594177, JString, required = false,
+  if valid_580176 != nil:
+    section.add "access_token", valid_580176
+  var valid_580177 = query.getOrDefault("uploadType")
+  valid_580177 = validateParameter(valid_580177, JString, required = false,
                                  default = nil)
-  if valid_594177 != nil:
-    section.add "uploadType", valid_594177
-  var valid_594178 = query.getOrDefault("key")
-  valid_594178 = validateParameter(valid_594178, JString, required = false,
+  if valid_580177 != nil:
+    section.add "uploadType", valid_580177
+  var valid_580178 = query.getOrDefault("key")
+  valid_580178 = validateParameter(valid_580178, JString, required = false,
                                  default = nil)
-  if valid_594178 != nil:
-    section.add "key", valid_594178
-  var valid_594179 = query.getOrDefault("$.xgafv")
-  valid_594179 = validateParameter(valid_594179, JString, required = false,
+  if valid_580178 != nil:
+    section.add "key", valid_580178
+  var valid_580179 = query.getOrDefault("$.xgafv")
+  valid_580179 = validateParameter(valid_580179, JString, required = false,
                                  default = newJString("1"))
-  if valid_594179 != nil:
-    section.add "$.xgafv", valid_594179
-  var valid_594180 = query.getOrDefault("projectId")
-  valid_594180 = validateParameter(valid_594180, JString, required = false,
+  if valid_580179 != nil:
+    section.add "$.xgafv", valid_580179
+  var valid_580180 = query.getOrDefault("projectId")
+  valid_580180 = validateParameter(valid_580180, JString, required = false,
                                  default = nil)
-  if valid_594180 != nil:
-    section.add "projectId", valid_594180
-  var valid_594181 = query.getOrDefault("prettyPrint")
-  valid_594181 = validateParameter(valid_594181, JBool, required = false,
+  if valid_580180 != nil:
+    section.add "projectId", valid_580180
+  var valid_580181 = query.getOrDefault("prettyPrint")
+  valid_580181 = validateParameter(valid_580181, JBool, required = false,
                                  default = newJBool(true))
-  if valid_594181 != nil:
-    section.add "prettyPrint", valid_594181
-  var valid_594182 = query.getOrDefault("namespacedType")
-  valid_594182 = validateParameter(valid_594182, JString, required = false,
+  if valid_580181 != nil:
+    section.add "prettyPrint", valid_580181
+  var valid_580182 = query.getOrDefault("namespacedType")
+  valid_580182 = validateParameter(valid_580182, JString, required = false,
                                  default = nil)
-  if valid_594182 != nil:
-    section.add "namespacedType", valid_594182
+  if valid_580182 != nil:
+    section.add "namespacedType", valid_580182
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -2900,7 +2902,7 @@ proc validate_ProximitybeaconBeaconsAttachmentsBatchDelete_594167(path: JsonNode
   if body != nil:
     result.add "body", body
 
-proc call*(call_594183: Call_ProximitybeaconBeaconsAttachmentsBatchDelete_594166;
+proc call*(call_580183: Call_ProximitybeaconBeaconsAttachmentsBatchDelete_580166;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Deletes multiple attachments on a given beacon. This operation is
@@ -2915,16 +2917,16 @@ proc call*(call_594183: Call_ProximitybeaconBeaconsAttachmentsBatchDelete_594166
   ## from a signed-in user with **Is owner** or **Can edit** permissions in the
   ## Google Developers Console project.
   ## 
-  let valid = call_594183.validator(path, query, header, formData, body)
-  let scheme = call_594183.pickScheme
+  let valid = call_580183.validator(path, query, header, formData, body)
+  let scheme = call_580183.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_594183.url(scheme.get, call_594183.host, call_594183.base,
-                         call_594183.route, valid.getOrDefault("path"),
+  let url = call_580183.url(scheme.get, call_580183.host, call_580183.base,
+                         call_580183.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_594183, url, valid)
+  result = hook(call_580183, url, valid)
 
-proc call*(call_594184: Call_ProximitybeaconBeaconsAttachmentsBatchDelete_594166;
+proc call*(call_580184: Call_ProximitybeaconBeaconsAttachmentsBatchDelete_580166;
           beaconName: string; uploadProtocol: string = ""; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           callback: string = ""; accessToken: string = ""; uploadType: string = "";
@@ -2984,38 +2986,38 @@ proc call*(call_594184: Call_ProximitybeaconBeaconsAttachmentsBatchDelete_594166
   ## `namespace/type` format. Accepts `*/*` to specify
   ## "all types in all namespaces".
   ## Optional.
-  var path_594185 = newJObject()
-  var query_594186 = newJObject()
-  add(query_594186, "upload_protocol", newJString(uploadProtocol))
-  add(query_594186, "fields", newJString(fields))
-  add(query_594186, "quotaUser", newJString(quotaUser))
-  add(query_594186, "alt", newJString(alt))
-  add(query_594186, "oauth_token", newJString(oauthToken))
-  add(query_594186, "callback", newJString(callback))
-  add(query_594186, "access_token", newJString(accessToken))
-  add(query_594186, "uploadType", newJString(uploadType))
-  add(query_594186, "key", newJString(key))
-  add(query_594186, "$.xgafv", newJString(Xgafv))
-  add(query_594186, "projectId", newJString(projectId))
-  add(path_594185, "beaconName", newJString(beaconName))
-  add(query_594186, "prettyPrint", newJBool(prettyPrint))
-  add(query_594186, "namespacedType", newJString(namespacedType))
-  result = call_594184.call(path_594185, query_594186, nil, nil, nil)
+  var path_580185 = newJObject()
+  var query_580186 = newJObject()
+  add(query_580186, "upload_protocol", newJString(uploadProtocol))
+  add(query_580186, "fields", newJString(fields))
+  add(query_580186, "quotaUser", newJString(quotaUser))
+  add(query_580186, "alt", newJString(alt))
+  add(query_580186, "oauth_token", newJString(oauthToken))
+  add(query_580186, "callback", newJString(callback))
+  add(query_580186, "access_token", newJString(accessToken))
+  add(query_580186, "uploadType", newJString(uploadType))
+  add(query_580186, "key", newJString(key))
+  add(query_580186, "$.xgafv", newJString(Xgafv))
+  add(query_580186, "projectId", newJString(projectId))
+  add(path_580185, "beaconName", newJString(beaconName))
+  add(query_580186, "prettyPrint", newJBool(prettyPrint))
+  add(query_580186, "namespacedType", newJString(namespacedType))
+  result = call_580184.call(path_580185, query_580186, nil, nil, nil)
 
-var proximitybeaconBeaconsAttachmentsBatchDelete* = Call_ProximitybeaconBeaconsAttachmentsBatchDelete_594166(
+var proximitybeaconBeaconsAttachmentsBatchDelete* = Call_ProximitybeaconBeaconsAttachmentsBatchDelete_580166(
     name: "proximitybeaconBeaconsAttachmentsBatchDelete",
     meth: HttpMethod.HttpPost, host: "proximitybeacon.googleapis.com",
     route: "/v1beta1/{beaconName}/attachments:batchDelete",
-    validator: validate_ProximitybeaconBeaconsAttachmentsBatchDelete_594167,
-    base: "/", url: url_ProximitybeaconBeaconsAttachmentsBatchDelete_594168,
+    validator: validate_ProximitybeaconBeaconsAttachmentsBatchDelete_580167,
+    base: "/", url: url_ProximitybeaconBeaconsAttachmentsBatchDelete_580168,
     schemes: {Scheme.Https})
 type
-  Call_ProximitybeaconBeaconsDiagnosticsList_594187 = ref object of OpenApiRestCall_593408
-proc url_ProximitybeaconBeaconsDiagnosticsList_594189(protocol: Scheme;
+  Call_ProximitybeaconBeaconsDiagnosticsList_580187 = ref object of OpenApiRestCall_579408
+proc url_ProximitybeaconBeaconsDiagnosticsList_580189(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "beaconName" in path, "`beaconName` is a required path parameter"
   const
@@ -3027,7 +3029,7 @@ proc url_ProximitybeaconBeaconsDiagnosticsList_594189(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_ProximitybeaconBeaconsDiagnosticsList_594188(path: JsonNode;
+proc validate_ProximitybeaconBeaconsDiagnosticsList_580188(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## List the diagnostics for a single beacon. You can also list diagnostics for
   ## all the beacons owned by your Google Developers Console project by using
@@ -3045,11 +3047,11 @@ proc validate_ProximitybeaconBeaconsDiagnosticsList_594188(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `beaconName` field"
-  var valid_594190 = path.getOrDefault("beaconName")
-  valid_594190 = validateParameter(valid_594190, JString, required = true,
+  var valid_580190 = path.getOrDefault("beaconName")
+  valid_580190 = validateParameter(valid_580190, JString, required = true,
                                  default = nil)
-  if valid_594190 != nil:
-    section.add "beaconName", valid_594190
+  if valid_580190 != nil:
+    section.add "beaconName", valid_580190
   result.add "path", section
   ## parameters in `query` object:
   ##   upload_protocol: JString
@@ -3088,80 +3090,80 @@ proc validate_ProximitybeaconBeaconsDiagnosticsList_594188(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_594191 = query.getOrDefault("upload_protocol")
-  valid_594191 = validateParameter(valid_594191, JString, required = false,
+  var valid_580191 = query.getOrDefault("upload_protocol")
+  valid_580191 = validateParameter(valid_580191, JString, required = false,
                                  default = nil)
-  if valid_594191 != nil:
-    section.add "upload_protocol", valid_594191
-  var valid_594192 = query.getOrDefault("fields")
-  valid_594192 = validateParameter(valid_594192, JString, required = false,
+  if valid_580191 != nil:
+    section.add "upload_protocol", valid_580191
+  var valid_580192 = query.getOrDefault("fields")
+  valid_580192 = validateParameter(valid_580192, JString, required = false,
                                  default = nil)
-  if valid_594192 != nil:
-    section.add "fields", valid_594192
-  var valid_594193 = query.getOrDefault("alertFilter")
-  valid_594193 = validateParameter(valid_594193, JString, required = false,
+  if valid_580192 != nil:
+    section.add "fields", valid_580192
+  var valid_580193 = query.getOrDefault("alertFilter")
+  valid_580193 = validateParameter(valid_580193, JString, required = false,
                                  default = newJString("ALERT_UNSPECIFIED"))
-  if valid_594193 != nil:
-    section.add "alertFilter", valid_594193
-  var valid_594194 = query.getOrDefault("quotaUser")
-  valid_594194 = validateParameter(valid_594194, JString, required = false,
+  if valid_580193 != nil:
+    section.add "alertFilter", valid_580193
+  var valid_580194 = query.getOrDefault("quotaUser")
+  valid_580194 = validateParameter(valid_580194, JString, required = false,
                                  default = nil)
-  if valid_594194 != nil:
-    section.add "quotaUser", valid_594194
-  var valid_594195 = query.getOrDefault("pageToken")
-  valid_594195 = validateParameter(valid_594195, JString, required = false,
+  if valid_580194 != nil:
+    section.add "quotaUser", valid_580194
+  var valid_580195 = query.getOrDefault("pageToken")
+  valid_580195 = validateParameter(valid_580195, JString, required = false,
                                  default = nil)
-  if valid_594195 != nil:
-    section.add "pageToken", valid_594195
-  var valid_594196 = query.getOrDefault("alt")
-  valid_594196 = validateParameter(valid_594196, JString, required = false,
+  if valid_580195 != nil:
+    section.add "pageToken", valid_580195
+  var valid_580196 = query.getOrDefault("alt")
+  valid_580196 = validateParameter(valid_580196, JString, required = false,
                                  default = newJString("json"))
-  if valid_594196 != nil:
-    section.add "alt", valid_594196
-  var valid_594197 = query.getOrDefault("oauth_token")
-  valid_594197 = validateParameter(valid_594197, JString, required = false,
+  if valid_580196 != nil:
+    section.add "alt", valid_580196
+  var valid_580197 = query.getOrDefault("oauth_token")
+  valid_580197 = validateParameter(valid_580197, JString, required = false,
                                  default = nil)
-  if valid_594197 != nil:
-    section.add "oauth_token", valid_594197
-  var valid_594198 = query.getOrDefault("callback")
-  valid_594198 = validateParameter(valid_594198, JString, required = false,
+  if valid_580197 != nil:
+    section.add "oauth_token", valid_580197
+  var valid_580198 = query.getOrDefault("callback")
+  valid_580198 = validateParameter(valid_580198, JString, required = false,
                                  default = nil)
-  if valid_594198 != nil:
-    section.add "callback", valid_594198
-  var valid_594199 = query.getOrDefault("access_token")
-  valid_594199 = validateParameter(valid_594199, JString, required = false,
+  if valid_580198 != nil:
+    section.add "callback", valid_580198
+  var valid_580199 = query.getOrDefault("access_token")
+  valid_580199 = validateParameter(valid_580199, JString, required = false,
                                  default = nil)
-  if valid_594199 != nil:
-    section.add "access_token", valid_594199
-  var valid_594200 = query.getOrDefault("uploadType")
-  valid_594200 = validateParameter(valid_594200, JString, required = false,
+  if valid_580199 != nil:
+    section.add "access_token", valid_580199
+  var valid_580200 = query.getOrDefault("uploadType")
+  valid_580200 = validateParameter(valid_580200, JString, required = false,
                                  default = nil)
-  if valid_594200 != nil:
-    section.add "uploadType", valid_594200
-  var valid_594201 = query.getOrDefault("key")
-  valid_594201 = validateParameter(valid_594201, JString, required = false,
+  if valid_580200 != nil:
+    section.add "uploadType", valid_580200
+  var valid_580201 = query.getOrDefault("key")
+  valid_580201 = validateParameter(valid_580201, JString, required = false,
                                  default = nil)
-  if valid_594201 != nil:
-    section.add "key", valid_594201
-  var valid_594202 = query.getOrDefault("$.xgafv")
-  valid_594202 = validateParameter(valid_594202, JString, required = false,
+  if valid_580201 != nil:
+    section.add "key", valid_580201
+  var valid_580202 = query.getOrDefault("$.xgafv")
+  valid_580202 = validateParameter(valid_580202, JString, required = false,
                                  default = newJString("1"))
-  if valid_594202 != nil:
-    section.add "$.xgafv", valid_594202
-  var valid_594203 = query.getOrDefault("pageSize")
-  valid_594203 = validateParameter(valid_594203, JInt, required = false, default = nil)
-  if valid_594203 != nil:
-    section.add "pageSize", valid_594203
-  var valid_594204 = query.getOrDefault("projectId")
-  valid_594204 = validateParameter(valid_594204, JString, required = false,
+  if valid_580202 != nil:
+    section.add "$.xgafv", valid_580202
+  var valid_580203 = query.getOrDefault("pageSize")
+  valid_580203 = validateParameter(valid_580203, JInt, required = false, default = nil)
+  if valid_580203 != nil:
+    section.add "pageSize", valid_580203
+  var valid_580204 = query.getOrDefault("projectId")
+  valid_580204 = validateParameter(valid_580204, JString, required = false,
                                  default = nil)
-  if valid_594204 != nil:
-    section.add "projectId", valid_594204
-  var valid_594205 = query.getOrDefault("prettyPrint")
-  valid_594205 = validateParameter(valid_594205, JBool, required = false,
+  if valid_580204 != nil:
+    section.add "projectId", valid_580204
+  var valid_580205 = query.getOrDefault("prettyPrint")
+  valid_580205 = validateParameter(valid_580205, JBool, required = false,
                                  default = newJBool(true))
-  if valid_594205 != nil:
-    section.add "prettyPrint", valid_594205
+  if valid_580205 != nil:
+    section.add "prettyPrint", valid_580205
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -3170,7 +3172,7 @@ proc validate_ProximitybeaconBeaconsDiagnosticsList_594188(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_594206: Call_ProximitybeaconBeaconsDiagnosticsList_594187;
+proc call*(call_580206: Call_ProximitybeaconBeaconsDiagnosticsList_580187;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## List the diagnostics for a single beacon. You can also list diagnostics for
@@ -3181,16 +3183,16 @@ proc call*(call_594206: Call_ProximitybeaconBeaconsDiagnosticsList_594187;
   ## from a signed-in user with **viewer**, **Is owner** or **Can edit**
   ## permissions in the Google Developers Console project.
   ## 
-  let valid = call_594206.validator(path, query, header, formData, body)
-  let scheme = call_594206.pickScheme
+  let valid = call_580206.validator(path, query, header, formData, body)
+  let scheme = call_580206.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_594206.url(scheme.get, call_594206.host, call_594206.base,
-                         call_594206.route, valid.getOrDefault("path"),
+  let url = call_580206.url(scheme.get, call_580206.host, call_580206.base,
+                         call_580206.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_594206, url, valid)
+  result = hook(call_580206, url, valid)
 
-proc call*(call_594207: Call_ProximitybeaconBeaconsDiagnosticsList_594187;
+proc call*(call_580207: Call_ProximitybeaconBeaconsDiagnosticsList_580187;
           beaconName: string; uploadProtocol: string = ""; fields: string = "";
           alertFilter: string = "ALERT_UNSPECIFIED"; quotaUser: string = "";
           pageToken: string = ""; alt: string = "json"; oauthToken: string = "";
@@ -3242,39 +3244,39 @@ proc call*(call_594207: Call_ProximitybeaconBeaconsDiagnosticsList_594187;
   ##             : Beacon that the diagnostics are for.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_594208 = newJObject()
-  var query_594209 = newJObject()
-  add(query_594209, "upload_protocol", newJString(uploadProtocol))
-  add(query_594209, "fields", newJString(fields))
-  add(query_594209, "alertFilter", newJString(alertFilter))
-  add(query_594209, "quotaUser", newJString(quotaUser))
-  add(query_594209, "pageToken", newJString(pageToken))
-  add(query_594209, "alt", newJString(alt))
-  add(query_594209, "oauth_token", newJString(oauthToken))
-  add(query_594209, "callback", newJString(callback))
-  add(query_594209, "access_token", newJString(accessToken))
-  add(query_594209, "uploadType", newJString(uploadType))
-  add(query_594209, "key", newJString(key))
-  add(query_594209, "$.xgafv", newJString(Xgafv))
-  add(query_594209, "pageSize", newJInt(pageSize))
-  add(query_594209, "projectId", newJString(projectId))
-  add(path_594208, "beaconName", newJString(beaconName))
-  add(query_594209, "prettyPrint", newJBool(prettyPrint))
-  result = call_594207.call(path_594208, query_594209, nil, nil, nil)
+  var path_580208 = newJObject()
+  var query_580209 = newJObject()
+  add(query_580209, "upload_protocol", newJString(uploadProtocol))
+  add(query_580209, "fields", newJString(fields))
+  add(query_580209, "alertFilter", newJString(alertFilter))
+  add(query_580209, "quotaUser", newJString(quotaUser))
+  add(query_580209, "pageToken", newJString(pageToken))
+  add(query_580209, "alt", newJString(alt))
+  add(query_580209, "oauth_token", newJString(oauthToken))
+  add(query_580209, "callback", newJString(callback))
+  add(query_580209, "access_token", newJString(accessToken))
+  add(query_580209, "uploadType", newJString(uploadType))
+  add(query_580209, "key", newJString(key))
+  add(query_580209, "$.xgafv", newJString(Xgafv))
+  add(query_580209, "pageSize", newJInt(pageSize))
+  add(query_580209, "projectId", newJString(projectId))
+  add(path_580208, "beaconName", newJString(beaconName))
+  add(query_580209, "prettyPrint", newJBool(prettyPrint))
+  result = call_580207.call(path_580208, query_580209, nil, nil, nil)
 
-var proximitybeaconBeaconsDiagnosticsList* = Call_ProximitybeaconBeaconsDiagnosticsList_594187(
+var proximitybeaconBeaconsDiagnosticsList* = Call_ProximitybeaconBeaconsDiagnosticsList_580187(
     name: "proximitybeaconBeaconsDiagnosticsList", meth: HttpMethod.HttpGet,
     host: "proximitybeacon.googleapis.com",
     route: "/v1beta1/{beaconName}/diagnostics",
-    validator: validate_ProximitybeaconBeaconsDiagnosticsList_594188, base: "/",
-    url: url_ProximitybeaconBeaconsDiagnosticsList_594189, schemes: {Scheme.Https})
+    validator: validate_ProximitybeaconBeaconsDiagnosticsList_580188, base: "/",
+    url: url_ProximitybeaconBeaconsDiagnosticsList_580189, schemes: {Scheme.Https})
 type
-  Call_ProximitybeaconBeaconsActivate_594210 = ref object of OpenApiRestCall_593408
-proc url_ProximitybeaconBeaconsActivate_594212(protocol: Scheme; host: string;
+  Call_ProximitybeaconBeaconsActivate_580210 = ref object of OpenApiRestCall_579408
+proc url_ProximitybeaconBeaconsActivate_580212(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "beaconName" in path, "`beaconName` is a required path parameter"
   const
@@ -3286,7 +3288,7 @@ proc url_ProximitybeaconBeaconsActivate_594212(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_ProximitybeaconBeaconsActivate_594211(path: JsonNode;
+proc validate_ProximitybeaconBeaconsActivate_580211(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Activates a beacon. A beacon that is active will return information
   ## and attachment data when queried via `beaconinfo.getforobserved`.
@@ -3311,11 +3313,11 @@ proc validate_ProximitybeaconBeaconsActivate_594211(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `beaconName` field"
-  var valid_594213 = path.getOrDefault("beaconName")
-  valid_594213 = validateParameter(valid_594213, JString, required = true,
+  var valid_580213 = path.getOrDefault("beaconName")
+  valid_580213 = validateParameter(valid_580213, JString, required = true,
                                  default = nil)
-  if valid_594213 != nil:
-    section.add "beaconName", valid_594213
+  if valid_580213 != nil:
+    section.add "beaconName", valid_580213
   result.add "path", section
   ## parameters in `query` object:
   ##   upload_protocol: JString
@@ -3346,66 +3348,66 @@ proc validate_ProximitybeaconBeaconsActivate_594211(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_594214 = query.getOrDefault("upload_protocol")
-  valid_594214 = validateParameter(valid_594214, JString, required = false,
+  var valid_580214 = query.getOrDefault("upload_protocol")
+  valid_580214 = validateParameter(valid_580214, JString, required = false,
                                  default = nil)
-  if valid_594214 != nil:
-    section.add "upload_protocol", valid_594214
-  var valid_594215 = query.getOrDefault("fields")
-  valid_594215 = validateParameter(valid_594215, JString, required = false,
+  if valid_580214 != nil:
+    section.add "upload_protocol", valid_580214
+  var valid_580215 = query.getOrDefault("fields")
+  valid_580215 = validateParameter(valid_580215, JString, required = false,
                                  default = nil)
-  if valid_594215 != nil:
-    section.add "fields", valid_594215
-  var valid_594216 = query.getOrDefault("quotaUser")
-  valid_594216 = validateParameter(valid_594216, JString, required = false,
+  if valid_580215 != nil:
+    section.add "fields", valid_580215
+  var valid_580216 = query.getOrDefault("quotaUser")
+  valid_580216 = validateParameter(valid_580216, JString, required = false,
                                  default = nil)
-  if valid_594216 != nil:
-    section.add "quotaUser", valid_594216
-  var valid_594217 = query.getOrDefault("alt")
-  valid_594217 = validateParameter(valid_594217, JString, required = false,
+  if valid_580216 != nil:
+    section.add "quotaUser", valid_580216
+  var valid_580217 = query.getOrDefault("alt")
+  valid_580217 = validateParameter(valid_580217, JString, required = false,
                                  default = newJString("json"))
-  if valid_594217 != nil:
-    section.add "alt", valid_594217
-  var valid_594218 = query.getOrDefault("oauth_token")
-  valid_594218 = validateParameter(valid_594218, JString, required = false,
+  if valid_580217 != nil:
+    section.add "alt", valid_580217
+  var valid_580218 = query.getOrDefault("oauth_token")
+  valid_580218 = validateParameter(valid_580218, JString, required = false,
                                  default = nil)
-  if valid_594218 != nil:
-    section.add "oauth_token", valid_594218
-  var valid_594219 = query.getOrDefault("callback")
-  valid_594219 = validateParameter(valid_594219, JString, required = false,
+  if valid_580218 != nil:
+    section.add "oauth_token", valid_580218
+  var valid_580219 = query.getOrDefault("callback")
+  valid_580219 = validateParameter(valid_580219, JString, required = false,
                                  default = nil)
-  if valid_594219 != nil:
-    section.add "callback", valid_594219
-  var valid_594220 = query.getOrDefault("access_token")
-  valid_594220 = validateParameter(valid_594220, JString, required = false,
+  if valid_580219 != nil:
+    section.add "callback", valid_580219
+  var valid_580220 = query.getOrDefault("access_token")
+  valid_580220 = validateParameter(valid_580220, JString, required = false,
                                  default = nil)
-  if valid_594220 != nil:
-    section.add "access_token", valid_594220
-  var valid_594221 = query.getOrDefault("uploadType")
-  valid_594221 = validateParameter(valid_594221, JString, required = false,
+  if valid_580220 != nil:
+    section.add "access_token", valid_580220
+  var valid_580221 = query.getOrDefault("uploadType")
+  valid_580221 = validateParameter(valid_580221, JString, required = false,
                                  default = nil)
-  if valid_594221 != nil:
-    section.add "uploadType", valid_594221
-  var valid_594222 = query.getOrDefault("key")
-  valid_594222 = validateParameter(valid_594222, JString, required = false,
+  if valid_580221 != nil:
+    section.add "uploadType", valid_580221
+  var valid_580222 = query.getOrDefault("key")
+  valid_580222 = validateParameter(valid_580222, JString, required = false,
                                  default = nil)
-  if valid_594222 != nil:
-    section.add "key", valid_594222
-  var valid_594223 = query.getOrDefault("$.xgafv")
-  valid_594223 = validateParameter(valid_594223, JString, required = false,
+  if valid_580222 != nil:
+    section.add "key", valid_580222
+  var valid_580223 = query.getOrDefault("$.xgafv")
+  valid_580223 = validateParameter(valid_580223, JString, required = false,
                                  default = newJString("1"))
-  if valid_594223 != nil:
-    section.add "$.xgafv", valid_594223
-  var valid_594224 = query.getOrDefault("projectId")
-  valid_594224 = validateParameter(valid_594224, JString, required = false,
+  if valid_580223 != nil:
+    section.add "$.xgafv", valid_580223
+  var valid_580224 = query.getOrDefault("projectId")
+  valid_580224 = validateParameter(valid_580224, JString, required = false,
                                  default = nil)
-  if valid_594224 != nil:
-    section.add "projectId", valid_594224
-  var valid_594225 = query.getOrDefault("prettyPrint")
-  valid_594225 = validateParameter(valid_594225, JBool, required = false,
+  if valid_580224 != nil:
+    section.add "projectId", valid_580224
+  var valid_580225 = query.getOrDefault("prettyPrint")
+  valid_580225 = validateParameter(valid_580225, JBool, required = false,
                                  default = newJBool(true))
-  if valid_594225 != nil:
-    section.add "prettyPrint", valid_594225
+  if valid_580225 != nil:
+    section.add "prettyPrint", valid_580225
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -3414,7 +3416,7 @@ proc validate_ProximitybeaconBeaconsActivate_594211(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_594226: Call_ProximitybeaconBeaconsActivate_594210; path: JsonNode;
+proc call*(call_580226: Call_ProximitybeaconBeaconsActivate_580210; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Activates a beacon. A beacon that is active will return information
   ## and attachment data when queried via `beaconinfo.getforobserved`.
@@ -3425,16 +3427,16 @@ proc call*(call_594226: Call_ProximitybeaconBeaconsActivate_594210; path: JsonNo
   ## from a signed-in user with **Is owner** or **Can edit** permissions in the
   ## Google Developers Console project.
   ## 
-  let valid = call_594226.validator(path, query, header, formData, body)
-  let scheme = call_594226.pickScheme
+  let valid = call_580226.validator(path, query, header, formData, body)
+  let scheme = call_580226.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_594226.url(scheme.get, call_594226.host, call_594226.base,
-                         call_594226.route, valid.getOrDefault("path"),
+  let url = call_580226.url(scheme.get, call_580226.host, call_580226.base,
+                         call_580226.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_594226, url, valid)
+  result = hook(call_580226, url, valid)
 
-proc call*(call_594227: Call_ProximitybeaconBeaconsActivate_594210;
+proc call*(call_580227: Call_ProximitybeaconBeaconsActivate_580210;
           beaconName: string; uploadProtocol: string = ""; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           callback: string = ""; accessToken: string = ""; uploadType: string = "";
@@ -3484,36 +3486,36 @@ proc call*(call_594227: Call_ProximitybeaconBeaconsActivate_594210;
   ## Required.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_594228 = newJObject()
-  var query_594229 = newJObject()
-  add(query_594229, "upload_protocol", newJString(uploadProtocol))
-  add(query_594229, "fields", newJString(fields))
-  add(query_594229, "quotaUser", newJString(quotaUser))
-  add(query_594229, "alt", newJString(alt))
-  add(query_594229, "oauth_token", newJString(oauthToken))
-  add(query_594229, "callback", newJString(callback))
-  add(query_594229, "access_token", newJString(accessToken))
-  add(query_594229, "uploadType", newJString(uploadType))
-  add(query_594229, "key", newJString(key))
-  add(query_594229, "$.xgafv", newJString(Xgafv))
-  add(query_594229, "projectId", newJString(projectId))
-  add(path_594228, "beaconName", newJString(beaconName))
-  add(query_594229, "prettyPrint", newJBool(prettyPrint))
-  result = call_594227.call(path_594228, query_594229, nil, nil, nil)
+  var path_580228 = newJObject()
+  var query_580229 = newJObject()
+  add(query_580229, "upload_protocol", newJString(uploadProtocol))
+  add(query_580229, "fields", newJString(fields))
+  add(query_580229, "quotaUser", newJString(quotaUser))
+  add(query_580229, "alt", newJString(alt))
+  add(query_580229, "oauth_token", newJString(oauthToken))
+  add(query_580229, "callback", newJString(callback))
+  add(query_580229, "access_token", newJString(accessToken))
+  add(query_580229, "uploadType", newJString(uploadType))
+  add(query_580229, "key", newJString(key))
+  add(query_580229, "$.xgafv", newJString(Xgafv))
+  add(query_580229, "projectId", newJString(projectId))
+  add(path_580228, "beaconName", newJString(beaconName))
+  add(query_580229, "prettyPrint", newJBool(prettyPrint))
+  result = call_580227.call(path_580228, query_580229, nil, nil, nil)
 
-var proximitybeaconBeaconsActivate* = Call_ProximitybeaconBeaconsActivate_594210(
+var proximitybeaconBeaconsActivate* = Call_ProximitybeaconBeaconsActivate_580210(
     name: "proximitybeaconBeaconsActivate", meth: HttpMethod.HttpPost,
     host: "proximitybeacon.googleapis.com",
     route: "/v1beta1/{beaconName}:activate",
-    validator: validate_ProximitybeaconBeaconsActivate_594211, base: "/",
-    url: url_ProximitybeaconBeaconsActivate_594212, schemes: {Scheme.Https})
+    validator: validate_ProximitybeaconBeaconsActivate_580211, base: "/",
+    url: url_ProximitybeaconBeaconsActivate_580212, schemes: {Scheme.Https})
 type
-  Call_ProximitybeaconBeaconsDeactivate_594230 = ref object of OpenApiRestCall_593408
-proc url_ProximitybeaconBeaconsDeactivate_594232(protocol: Scheme; host: string;
+  Call_ProximitybeaconBeaconsDeactivate_580230 = ref object of OpenApiRestCall_579408
+proc url_ProximitybeaconBeaconsDeactivate_580232(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "beaconName" in path, "`beaconName` is a required path parameter"
   const
@@ -3525,7 +3527,7 @@ proc url_ProximitybeaconBeaconsDeactivate_594232(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_ProximitybeaconBeaconsDeactivate_594231(path: JsonNode;
+proc validate_ProximitybeaconBeaconsDeactivate_580231(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Deactivates a beacon. Once deactivated, the API will not return
   ## information nor attachment data for the beacon when queried via
@@ -3550,11 +3552,11 @@ proc validate_ProximitybeaconBeaconsDeactivate_594231(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `beaconName` field"
-  var valid_594233 = path.getOrDefault("beaconName")
-  valid_594233 = validateParameter(valid_594233, JString, required = true,
+  var valid_580233 = path.getOrDefault("beaconName")
+  valid_580233 = validateParameter(valid_580233, JString, required = true,
                                  default = nil)
-  if valid_594233 != nil:
-    section.add "beaconName", valid_594233
+  if valid_580233 != nil:
+    section.add "beaconName", valid_580233
   result.add "path", section
   ## parameters in `query` object:
   ##   upload_protocol: JString
@@ -3585,66 +3587,66 @@ proc validate_ProximitybeaconBeaconsDeactivate_594231(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_594234 = query.getOrDefault("upload_protocol")
-  valid_594234 = validateParameter(valid_594234, JString, required = false,
+  var valid_580234 = query.getOrDefault("upload_protocol")
+  valid_580234 = validateParameter(valid_580234, JString, required = false,
                                  default = nil)
-  if valid_594234 != nil:
-    section.add "upload_protocol", valid_594234
-  var valid_594235 = query.getOrDefault("fields")
-  valid_594235 = validateParameter(valid_594235, JString, required = false,
+  if valid_580234 != nil:
+    section.add "upload_protocol", valid_580234
+  var valid_580235 = query.getOrDefault("fields")
+  valid_580235 = validateParameter(valid_580235, JString, required = false,
                                  default = nil)
-  if valid_594235 != nil:
-    section.add "fields", valid_594235
-  var valid_594236 = query.getOrDefault("quotaUser")
-  valid_594236 = validateParameter(valid_594236, JString, required = false,
+  if valid_580235 != nil:
+    section.add "fields", valid_580235
+  var valid_580236 = query.getOrDefault("quotaUser")
+  valid_580236 = validateParameter(valid_580236, JString, required = false,
                                  default = nil)
-  if valid_594236 != nil:
-    section.add "quotaUser", valid_594236
-  var valid_594237 = query.getOrDefault("alt")
-  valid_594237 = validateParameter(valid_594237, JString, required = false,
+  if valid_580236 != nil:
+    section.add "quotaUser", valid_580236
+  var valid_580237 = query.getOrDefault("alt")
+  valid_580237 = validateParameter(valid_580237, JString, required = false,
                                  default = newJString("json"))
-  if valid_594237 != nil:
-    section.add "alt", valid_594237
-  var valid_594238 = query.getOrDefault("oauth_token")
-  valid_594238 = validateParameter(valid_594238, JString, required = false,
+  if valid_580237 != nil:
+    section.add "alt", valid_580237
+  var valid_580238 = query.getOrDefault("oauth_token")
+  valid_580238 = validateParameter(valid_580238, JString, required = false,
                                  default = nil)
-  if valid_594238 != nil:
-    section.add "oauth_token", valid_594238
-  var valid_594239 = query.getOrDefault("callback")
-  valid_594239 = validateParameter(valid_594239, JString, required = false,
+  if valid_580238 != nil:
+    section.add "oauth_token", valid_580238
+  var valid_580239 = query.getOrDefault("callback")
+  valid_580239 = validateParameter(valid_580239, JString, required = false,
                                  default = nil)
-  if valid_594239 != nil:
-    section.add "callback", valid_594239
-  var valid_594240 = query.getOrDefault("access_token")
-  valid_594240 = validateParameter(valid_594240, JString, required = false,
+  if valid_580239 != nil:
+    section.add "callback", valid_580239
+  var valid_580240 = query.getOrDefault("access_token")
+  valid_580240 = validateParameter(valid_580240, JString, required = false,
                                  default = nil)
-  if valid_594240 != nil:
-    section.add "access_token", valid_594240
-  var valid_594241 = query.getOrDefault("uploadType")
-  valid_594241 = validateParameter(valid_594241, JString, required = false,
+  if valid_580240 != nil:
+    section.add "access_token", valid_580240
+  var valid_580241 = query.getOrDefault("uploadType")
+  valid_580241 = validateParameter(valid_580241, JString, required = false,
                                  default = nil)
-  if valid_594241 != nil:
-    section.add "uploadType", valid_594241
-  var valid_594242 = query.getOrDefault("key")
-  valid_594242 = validateParameter(valid_594242, JString, required = false,
+  if valid_580241 != nil:
+    section.add "uploadType", valid_580241
+  var valid_580242 = query.getOrDefault("key")
+  valid_580242 = validateParameter(valid_580242, JString, required = false,
                                  default = nil)
-  if valid_594242 != nil:
-    section.add "key", valid_594242
-  var valid_594243 = query.getOrDefault("$.xgafv")
-  valid_594243 = validateParameter(valid_594243, JString, required = false,
+  if valid_580242 != nil:
+    section.add "key", valid_580242
+  var valid_580243 = query.getOrDefault("$.xgafv")
+  valid_580243 = validateParameter(valid_580243, JString, required = false,
                                  default = newJString("1"))
-  if valid_594243 != nil:
-    section.add "$.xgafv", valid_594243
-  var valid_594244 = query.getOrDefault("projectId")
-  valid_594244 = validateParameter(valid_594244, JString, required = false,
+  if valid_580243 != nil:
+    section.add "$.xgafv", valid_580243
+  var valid_580244 = query.getOrDefault("projectId")
+  valid_580244 = validateParameter(valid_580244, JString, required = false,
                                  default = nil)
-  if valid_594244 != nil:
-    section.add "projectId", valid_594244
-  var valid_594245 = query.getOrDefault("prettyPrint")
-  valid_594245 = validateParameter(valid_594245, JBool, required = false,
+  if valid_580244 != nil:
+    section.add "projectId", valid_580244
+  var valid_580245 = query.getOrDefault("prettyPrint")
+  valid_580245 = validateParameter(valid_580245, JBool, required = false,
                                  default = newJBool(true))
-  if valid_594245 != nil:
-    section.add "prettyPrint", valid_594245
+  if valid_580245 != nil:
+    section.add "prettyPrint", valid_580245
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -3653,7 +3655,7 @@ proc validate_ProximitybeaconBeaconsDeactivate_594231(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_594246: Call_ProximitybeaconBeaconsDeactivate_594230;
+proc call*(call_580246: Call_ProximitybeaconBeaconsDeactivate_580230;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Deactivates a beacon. Once deactivated, the API will not return
@@ -3665,16 +3667,16 @@ proc call*(call_594246: Call_ProximitybeaconBeaconsDeactivate_594230;
   ## from a signed-in user with **Is owner** or **Can edit** permissions in the
   ## Google Developers Console project.
   ## 
-  let valid = call_594246.validator(path, query, header, formData, body)
-  let scheme = call_594246.pickScheme
+  let valid = call_580246.validator(path, query, header, formData, body)
+  let scheme = call_580246.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_594246.url(scheme.get, call_594246.host, call_594246.base,
-                         call_594246.route, valid.getOrDefault("path"),
+  let url = call_580246.url(scheme.get, call_580246.host, call_580246.base,
+                         call_580246.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_594246, url, valid)
+  result = hook(call_580246, url, valid)
 
-proc call*(call_594247: Call_ProximitybeaconBeaconsDeactivate_594230;
+proc call*(call_580247: Call_ProximitybeaconBeaconsDeactivate_580230;
           beaconName: string; uploadProtocol: string = ""; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           callback: string = ""; accessToken: string = ""; uploadType: string = "";
@@ -3724,36 +3726,36 @@ proc call*(call_594247: Call_ProximitybeaconBeaconsDeactivate_594230;
   ## Required.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_594248 = newJObject()
-  var query_594249 = newJObject()
-  add(query_594249, "upload_protocol", newJString(uploadProtocol))
-  add(query_594249, "fields", newJString(fields))
-  add(query_594249, "quotaUser", newJString(quotaUser))
-  add(query_594249, "alt", newJString(alt))
-  add(query_594249, "oauth_token", newJString(oauthToken))
-  add(query_594249, "callback", newJString(callback))
-  add(query_594249, "access_token", newJString(accessToken))
-  add(query_594249, "uploadType", newJString(uploadType))
-  add(query_594249, "key", newJString(key))
-  add(query_594249, "$.xgafv", newJString(Xgafv))
-  add(query_594249, "projectId", newJString(projectId))
-  add(path_594248, "beaconName", newJString(beaconName))
-  add(query_594249, "prettyPrint", newJBool(prettyPrint))
-  result = call_594247.call(path_594248, query_594249, nil, nil, nil)
+  var path_580248 = newJObject()
+  var query_580249 = newJObject()
+  add(query_580249, "upload_protocol", newJString(uploadProtocol))
+  add(query_580249, "fields", newJString(fields))
+  add(query_580249, "quotaUser", newJString(quotaUser))
+  add(query_580249, "alt", newJString(alt))
+  add(query_580249, "oauth_token", newJString(oauthToken))
+  add(query_580249, "callback", newJString(callback))
+  add(query_580249, "access_token", newJString(accessToken))
+  add(query_580249, "uploadType", newJString(uploadType))
+  add(query_580249, "key", newJString(key))
+  add(query_580249, "$.xgafv", newJString(Xgafv))
+  add(query_580249, "projectId", newJString(projectId))
+  add(path_580248, "beaconName", newJString(beaconName))
+  add(query_580249, "prettyPrint", newJBool(prettyPrint))
+  result = call_580247.call(path_580248, query_580249, nil, nil, nil)
 
-var proximitybeaconBeaconsDeactivate* = Call_ProximitybeaconBeaconsDeactivate_594230(
+var proximitybeaconBeaconsDeactivate* = Call_ProximitybeaconBeaconsDeactivate_580230(
     name: "proximitybeaconBeaconsDeactivate", meth: HttpMethod.HttpPost,
     host: "proximitybeacon.googleapis.com",
     route: "/v1beta1/{beaconName}:deactivate",
-    validator: validate_ProximitybeaconBeaconsDeactivate_594231, base: "/",
-    url: url_ProximitybeaconBeaconsDeactivate_594232, schemes: {Scheme.Https})
+    validator: validate_ProximitybeaconBeaconsDeactivate_580231, base: "/",
+    url: url_ProximitybeaconBeaconsDeactivate_580232, schemes: {Scheme.Https})
 type
-  Call_ProximitybeaconBeaconsDecommission_594250 = ref object of OpenApiRestCall_593408
-proc url_ProximitybeaconBeaconsDecommission_594252(protocol: Scheme; host: string;
+  Call_ProximitybeaconBeaconsDecommission_580250 = ref object of OpenApiRestCall_579408
+proc url_ProximitybeaconBeaconsDecommission_580252(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "beaconName" in path, "`beaconName` is a required path parameter"
   const
@@ -3765,7 +3767,7 @@ proc url_ProximitybeaconBeaconsDecommission_594252(protocol: Scheme; host: strin
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_ProximitybeaconBeaconsDecommission_594251(path: JsonNode;
+proc validate_ProximitybeaconBeaconsDecommission_580251(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Decommissions the specified beacon in the service. This beacon will no
   ## longer be returned from `beaconinfo.getforobserved`. This operation is
@@ -3790,11 +3792,11 @@ proc validate_ProximitybeaconBeaconsDecommission_594251(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `beaconName` field"
-  var valid_594253 = path.getOrDefault("beaconName")
-  valid_594253 = validateParameter(valid_594253, JString, required = true,
+  var valid_580253 = path.getOrDefault("beaconName")
+  valid_580253 = validateParameter(valid_580253, JString, required = true,
                                  default = nil)
-  if valid_594253 != nil:
-    section.add "beaconName", valid_594253
+  if valid_580253 != nil:
+    section.add "beaconName", valid_580253
   result.add "path", section
   ## parameters in `query` object:
   ##   upload_protocol: JString
@@ -3825,66 +3827,66 @@ proc validate_ProximitybeaconBeaconsDecommission_594251(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_594254 = query.getOrDefault("upload_protocol")
-  valid_594254 = validateParameter(valid_594254, JString, required = false,
+  var valid_580254 = query.getOrDefault("upload_protocol")
+  valid_580254 = validateParameter(valid_580254, JString, required = false,
                                  default = nil)
-  if valid_594254 != nil:
-    section.add "upload_protocol", valid_594254
-  var valid_594255 = query.getOrDefault("fields")
-  valid_594255 = validateParameter(valid_594255, JString, required = false,
+  if valid_580254 != nil:
+    section.add "upload_protocol", valid_580254
+  var valid_580255 = query.getOrDefault("fields")
+  valid_580255 = validateParameter(valid_580255, JString, required = false,
                                  default = nil)
-  if valid_594255 != nil:
-    section.add "fields", valid_594255
-  var valid_594256 = query.getOrDefault("quotaUser")
-  valid_594256 = validateParameter(valid_594256, JString, required = false,
+  if valid_580255 != nil:
+    section.add "fields", valid_580255
+  var valid_580256 = query.getOrDefault("quotaUser")
+  valid_580256 = validateParameter(valid_580256, JString, required = false,
                                  default = nil)
-  if valid_594256 != nil:
-    section.add "quotaUser", valid_594256
-  var valid_594257 = query.getOrDefault("alt")
-  valid_594257 = validateParameter(valid_594257, JString, required = false,
+  if valid_580256 != nil:
+    section.add "quotaUser", valid_580256
+  var valid_580257 = query.getOrDefault("alt")
+  valid_580257 = validateParameter(valid_580257, JString, required = false,
                                  default = newJString("json"))
-  if valid_594257 != nil:
-    section.add "alt", valid_594257
-  var valid_594258 = query.getOrDefault("oauth_token")
-  valid_594258 = validateParameter(valid_594258, JString, required = false,
+  if valid_580257 != nil:
+    section.add "alt", valid_580257
+  var valid_580258 = query.getOrDefault("oauth_token")
+  valid_580258 = validateParameter(valid_580258, JString, required = false,
                                  default = nil)
-  if valid_594258 != nil:
-    section.add "oauth_token", valid_594258
-  var valid_594259 = query.getOrDefault("callback")
-  valid_594259 = validateParameter(valid_594259, JString, required = false,
+  if valid_580258 != nil:
+    section.add "oauth_token", valid_580258
+  var valid_580259 = query.getOrDefault("callback")
+  valid_580259 = validateParameter(valid_580259, JString, required = false,
                                  default = nil)
-  if valid_594259 != nil:
-    section.add "callback", valid_594259
-  var valid_594260 = query.getOrDefault("access_token")
-  valid_594260 = validateParameter(valid_594260, JString, required = false,
+  if valid_580259 != nil:
+    section.add "callback", valid_580259
+  var valid_580260 = query.getOrDefault("access_token")
+  valid_580260 = validateParameter(valid_580260, JString, required = false,
                                  default = nil)
-  if valid_594260 != nil:
-    section.add "access_token", valid_594260
-  var valid_594261 = query.getOrDefault("uploadType")
-  valid_594261 = validateParameter(valid_594261, JString, required = false,
+  if valid_580260 != nil:
+    section.add "access_token", valid_580260
+  var valid_580261 = query.getOrDefault("uploadType")
+  valid_580261 = validateParameter(valid_580261, JString, required = false,
                                  default = nil)
-  if valid_594261 != nil:
-    section.add "uploadType", valid_594261
-  var valid_594262 = query.getOrDefault("key")
-  valid_594262 = validateParameter(valid_594262, JString, required = false,
+  if valid_580261 != nil:
+    section.add "uploadType", valid_580261
+  var valid_580262 = query.getOrDefault("key")
+  valid_580262 = validateParameter(valid_580262, JString, required = false,
                                  default = nil)
-  if valid_594262 != nil:
-    section.add "key", valid_594262
-  var valid_594263 = query.getOrDefault("$.xgafv")
-  valid_594263 = validateParameter(valid_594263, JString, required = false,
+  if valid_580262 != nil:
+    section.add "key", valid_580262
+  var valid_580263 = query.getOrDefault("$.xgafv")
+  valid_580263 = validateParameter(valid_580263, JString, required = false,
                                  default = newJString("1"))
-  if valid_594263 != nil:
-    section.add "$.xgafv", valid_594263
-  var valid_594264 = query.getOrDefault("projectId")
-  valid_594264 = validateParameter(valid_594264, JString, required = false,
+  if valid_580263 != nil:
+    section.add "$.xgafv", valid_580263
+  var valid_580264 = query.getOrDefault("projectId")
+  valid_580264 = validateParameter(valid_580264, JString, required = false,
                                  default = nil)
-  if valid_594264 != nil:
-    section.add "projectId", valid_594264
-  var valid_594265 = query.getOrDefault("prettyPrint")
-  valid_594265 = validateParameter(valid_594265, JBool, required = false,
+  if valid_580264 != nil:
+    section.add "projectId", valid_580264
+  var valid_580265 = query.getOrDefault("prettyPrint")
+  valid_580265 = validateParameter(valid_580265, JBool, required = false,
                                  default = newJBool(true))
-  if valid_594265 != nil:
-    section.add "prettyPrint", valid_594265
+  if valid_580265 != nil:
+    section.add "prettyPrint", valid_580265
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -3893,7 +3895,7 @@ proc validate_ProximitybeaconBeaconsDecommission_594251(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_594266: Call_ProximitybeaconBeaconsDecommission_594250;
+proc call*(call_580266: Call_ProximitybeaconBeaconsDecommission_580250;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Decommissions the specified beacon in the service. This beacon will no
@@ -3905,16 +3907,16 @@ proc call*(call_594266: Call_ProximitybeaconBeaconsDecommission_594250;
   ## from a signed-in user with **Is owner** or **Can edit** permissions in the
   ## Google Developers Console project.
   ## 
-  let valid = call_594266.validator(path, query, header, formData, body)
-  let scheme = call_594266.pickScheme
+  let valid = call_580266.validator(path, query, header, formData, body)
+  let scheme = call_580266.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_594266.url(scheme.get, call_594266.host, call_594266.base,
-                         call_594266.route, valid.getOrDefault("path"),
+  let url = call_580266.url(scheme.get, call_580266.host, call_580266.base,
+                         call_580266.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_594266, url, valid)
+  result = hook(call_580266, url, valid)
 
-proc call*(call_594267: Call_ProximitybeaconBeaconsDecommission_594250;
+proc call*(call_580267: Call_ProximitybeaconBeaconsDecommission_580250;
           beaconName: string; uploadProtocol: string = ""; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           callback: string = ""; accessToken: string = ""; uploadType: string = "";
@@ -3964,36 +3966,36 @@ proc call*(call_594267: Call_ProximitybeaconBeaconsDecommission_594250;
   ## Required.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_594268 = newJObject()
-  var query_594269 = newJObject()
-  add(query_594269, "upload_protocol", newJString(uploadProtocol))
-  add(query_594269, "fields", newJString(fields))
-  add(query_594269, "quotaUser", newJString(quotaUser))
-  add(query_594269, "alt", newJString(alt))
-  add(query_594269, "oauth_token", newJString(oauthToken))
-  add(query_594269, "callback", newJString(callback))
-  add(query_594269, "access_token", newJString(accessToken))
-  add(query_594269, "uploadType", newJString(uploadType))
-  add(query_594269, "key", newJString(key))
-  add(query_594269, "$.xgafv", newJString(Xgafv))
-  add(query_594269, "projectId", newJString(projectId))
-  add(path_594268, "beaconName", newJString(beaconName))
-  add(query_594269, "prettyPrint", newJBool(prettyPrint))
-  result = call_594267.call(path_594268, query_594269, nil, nil, nil)
+  var path_580268 = newJObject()
+  var query_580269 = newJObject()
+  add(query_580269, "upload_protocol", newJString(uploadProtocol))
+  add(query_580269, "fields", newJString(fields))
+  add(query_580269, "quotaUser", newJString(quotaUser))
+  add(query_580269, "alt", newJString(alt))
+  add(query_580269, "oauth_token", newJString(oauthToken))
+  add(query_580269, "callback", newJString(callback))
+  add(query_580269, "access_token", newJString(accessToken))
+  add(query_580269, "uploadType", newJString(uploadType))
+  add(query_580269, "key", newJString(key))
+  add(query_580269, "$.xgafv", newJString(Xgafv))
+  add(query_580269, "projectId", newJString(projectId))
+  add(path_580268, "beaconName", newJString(beaconName))
+  add(query_580269, "prettyPrint", newJBool(prettyPrint))
+  result = call_580267.call(path_580268, query_580269, nil, nil, nil)
 
-var proximitybeaconBeaconsDecommission* = Call_ProximitybeaconBeaconsDecommission_594250(
+var proximitybeaconBeaconsDecommission* = Call_ProximitybeaconBeaconsDecommission_580250(
     name: "proximitybeaconBeaconsDecommission", meth: HttpMethod.HttpPost,
     host: "proximitybeacon.googleapis.com",
     route: "/v1beta1/{beaconName}:decommission",
-    validator: validate_ProximitybeaconBeaconsDecommission_594251, base: "/",
-    url: url_ProximitybeaconBeaconsDecommission_594252, schemes: {Scheme.Https})
+    validator: validate_ProximitybeaconBeaconsDecommission_580251, base: "/",
+    url: url_ProximitybeaconBeaconsDecommission_580252, schemes: {Scheme.Https})
 type
-  Call_ProximitybeaconNamespacesUpdate_594270 = ref object of OpenApiRestCall_593408
-proc url_ProximitybeaconNamespacesUpdate_594272(protocol: Scheme; host: string;
+  Call_ProximitybeaconNamespacesUpdate_580270 = ref object of OpenApiRestCall_579408
+proc url_ProximitybeaconNamespacesUpdate_580272(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "namespaceName" in path, "`namespaceName` is a required path parameter"
   const
@@ -4004,7 +4006,7 @@ proc url_ProximitybeaconNamespacesUpdate_594272(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_ProximitybeaconNamespacesUpdate_594271(path: JsonNode;
+proc validate_ProximitybeaconNamespacesUpdate_580271(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Updates the information about the specified namespace. Only the namespace
   ## visibility can be updated.
@@ -4018,11 +4020,11 @@ proc validate_ProximitybeaconNamespacesUpdate_594271(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `namespaceName` field"
-  var valid_594273 = path.getOrDefault("namespaceName")
-  valid_594273 = validateParameter(valid_594273, JString, required = true,
+  var valid_580273 = path.getOrDefault("namespaceName")
+  valid_580273 = validateParameter(valid_580273, JString, required = true,
                                  default = nil)
-  if valid_594273 != nil:
-    section.add "namespaceName", valid_594273
+  if valid_580273 != nil:
+    section.add "namespaceName", valid_580273
   result.add "path", section
   ## parameters in `query` object:
   ##   upload_protocol: JString
@@ -4053,66 +4055,66 @@ proc validate_ProximitybeaconNamespacesUpdate_594271(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_594274 = query.getOrDefault("upload_protocol")
-  valid_594274 = validateParameter(valid_594274, JString, required = false,
+  var valid_580274 = query.getOrDefault("upload_protocol")
+  valid_580274 = validateParameter(valid_580274, JString, required = false,
                                  default = nil)
-  if valid_594274 != nil:
-    section.add "upload_protocol", valid_594274
-  var valid_594275 = query.getOrDefault("fields")
-  valid_594275 = validateParameter(valid_594275, JString, required = false,
+  if valid_580274 != nil:
+    section.add "upload_protocol", valid_580274
+  var valid_580275 = query.getOrDefault("fields")
+  valid_580275 = validateParameter(valid_580275, JString, required = false,
                                  default = nil)
-  if valid_594275 != nil:
-    section.add "fields", valid_594275
-  var valid_594276 = query.getOrDefault("quotaUser")
-  valid_594276 = validateParameter(valid_594276, JString, required = false,
+  if valid_580275 != nil:
+    section.add "fields", valid_580275
+  var valid_580276 = query.getOrDefault("quotaUser")
+  valid_580276 = validateParameter(valid_580276, JString, required = false,
                                  default = nil)
-  if valid_594276 != nil:
-    section.add "quotaUser", valid_594276
-  var valid_594277 = query.getOrDefault("alt")
-  valid_594277 = validateParameter(valid_594277, JString, required = false,
+  if valid_580276 != nil:
+    section.add "quotaUser", valid_580276
+  var valid_580277 = query.getOrDefault("alt")
+  valid_580277 = validateParameter(valid_580277, JString, required = false,
                                  default = newJString("json"))
-  if valid_594277 != nil:
-    section.add "alt", valid_594277
-  var valid_594278 = query.getOrDefault("oauth_token")
-  valid_594278 = validateParameter(valid_594278, JString, required = false,
+  if valid_580277 != nil:
+    section.add "alt", valid_580277
+  var valid_580278 = query.getOrDefault("oauth_token")
+  valid_580278 = validateParameter(valid_580278, JString, required = false,
                                  default = nil)
-  if valid_594278 != nil:
-    section.add "oauth_token", valid_594278
-  var valid_594279 = query.getOrDefault("callback")
-  valid_594279 = validateParameter(valid_594279, JString, required = false,
+  if valid_580278 != nil:
+    section.add "oauth_token", valid_580278
+  var valid_580279 = query.getOrDefault("callback")
+  valid_580279 = validateParameter(valid_580279, JString, required = false,
                                  default = nil)
-  if valid_594279 != nil:
-    section.add "callback", valid_594279
-  var valid_594280 = query.getOrDefault("access_token")
-  valid_594280 = validateParameter(valid_594280, JString, required = false,
+  if valid_580279 != nil:
+    section.add "callback", valid_580279
+  var valid_580280 = query.getOrDefault("access_token")
+  valid_580280 = validateParameter(valid_580280, JString, required = false,
                                  default = nil)
-  if valid_594280 != nil:
-    section.add "access_token", valid_594280
-  var valid_594281 = query.getOrDefault("uploadType")
-  valid_594281 = validateParameter(valid_594281, JString, required = false,
+  if valid_580280 != nil:
+    section.add "access_token", valid_580280
+  var valid_580281 = query.getOrDefault("uploadType")
+  valid_580281 = validateParameter(valid_580281, JString, required = false,
                                  default = nil)
-  if valid_594281 != nil:
-    section.add "uploadType", valid_594281
-  var valid_594282 = query.getOrDefault("key")
-  valid_594282 = validateParameter(valid_594282, JString, required = false,
+  if valid_580281 != nil:
+    section.add "uploadType", valid_580281
+  var valid_580282 = query.getOrDefault("key")
+  valid_580282 = validateParameter(valid_580282, JString, required = false,
                                  default = nil)
-  if valid_594282 != nil:
-    section.add "key", valid_594282
-  var valid_594283 = query.getOrDefault("$.xgafv")
-  valid_594283 = validateParameter(valid_594283, JString, required = false,
+  if valid_580282 != nil:
+    section.add "key", valid_580282
+  var valid_580283 = query.getOrDefault("$.xgafv")
+  valid_580283 = validateParameter(valid_580283, JString, required = false,
                                  default = newJString("1"))
-  if valid_594283 != nil:
-    section.add "$.xgafv", valid_594283
-  var valid_594284 = query.getOrDefault("projectId")
-  valid_594284 = validateParameter(valid_594284, JString, required = false,
+  if valid_580283 != nil:
+    section.add "$.xgafv", valid_580283
+  var valid_580284 = query.getOrDefault("projectId")
+  valid_580284 = validateParameter(valid_580284, JString, required = false,
                                  default = nil)
-  if valid_594284 != nil:
-    section.add "projectId", valid_594284
-  var valid_594285 = query.getOrDefault("prettyPrint")
-  valid_594285 = validateParameter(valid_594285, JBool, required = false,
+  if valid_580284 != nil:
+    section.add "projectId", valid_580284
+  var valid_580285 = query.getOrDefault("prettyPrint")
+  valid_580285 = validateParameter(valid_580285, JBool, required = false,
                                  default = newJBool(true))
-  if valid_594285 != nil:
-    section.add "prettyPrint", valid_594285
+  if valid_580285 != nil:
+    section.add "prettyPrint", valid_580285
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -4124,22 +4126,22 @@ proc validate_ProximitybeaconNamespacesUpdate_594271(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_594287: Call_ProximitybeaconNamespacesUpdate_594270;
+proc call*(call_580287: Call_ProximitybeaconNamespacesUpdate_580270;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Updates the information about the specified namespace. Only the namespace
   ## visibility can be updated.
   ## 
-  let valid = call_594287.validator(path, query, header, formData, body)
-  let scheme = call_594287.pickScheme
+  let valid = call_580287.validator(path, query, header, formData, body)
+  let scheme = call_580287.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_594287.url(scheme.get, call_594287.host, call_594287.base,
-                         call_594287.route, valid.getOrDefault("path"),
+  let url = call_580287.url(scheme.get, call_580287.host, call_580287.base,
+                         call_580287.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_594287, url, valid)
+  result = hook(call_580287, url, valid)
 
-proc call*(call_594288: Call_ProximitybeaconNamespacesUpdate_594270;
+proc call*(call_580288: Call_ProximitybeaconNamespacesUpdate_580270;
           namespaceName: string; uploadProtocol: string = ""; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           callback: string = ""; accessToken: string = ""; uploadType: string = "";
@@ -4179,34 +4181,124 @@ proc call*(call_594288: Call_ProximitybeaconNamespacesUpdate_594270;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_594289 = newJObject()
-  var query_594290 = newJObject()
-  var body_594291 = newJObject()
-  add(path_594289, "namespaceName", newJString(namespaceName))
-  add(query_594290, "upload_protocol", newJString(uploadProtocol))
-  add(query_594290, "fields", newJString(fields))
-  add(query_594290, "quotaUser", newJString(quotaUser))
-  add(query_594290, "alt", newJString(alt))
-  add(query_594290, "oauth_token", newJString(oauthToken))
-  add(query_594290, "callback", newJString(callback))
-  add(query_594290, "access_token", newJString(accessToken))
-  add(query_594290, "uploadType", newJString(uploadType))
-  add(query_594290, "key", newJString(key))
-  add(query_594290, "$.xgafv", newJString(Xgafv))
-  add(query_594290, "projectId", newJString(projectId))
+  var path_580289 = newJObject()
+  var query_580290 = newJObject()
+  var body_580291 = newJObject()
+  add(path_580289, "namespaceName", newJString(namespaceName))
+  add(query_580290, "upload_protocol", newJString(uploadProtocol))
+  add(query_580290, "fields", newJString(fields))
+  add(query_580290, "quotaUser", newJString(quotaUser))
+  add(query_580290, "alt", newJString(alt))
+  add(query_580290, "oauth_token", newJString(oauthToken))
+  add(query_580290, "callback", newJString(callback))
+  add(query_580290, "access_token", newJString(accessToken))
+  add(query_580290, "uploadType", newJString(uploadType))
+  add(query_580290, "key", newJString(key))
+  add(query_580290, "$.xgafv", newJString(Xgafv))
+  add(query_580290, "projectId", newJString(projectId))
   if body != nil:
-    body_594291 = body
-  add(query_594290, "prettyPrint", newJBool(prettyPrint))
-  result = call_594288.call(path_594289, query_594290, nil, nil, body_594291)
+    body_580291 = body
+  add(query_580290, "prettyPrint", newJBool(prettyPrint))
+  result = call_580288.call(path_580289, query_580290, nil, nil, body_580291)
 
-var proximitybeaconNamespacesUpdate* = Call_ProximitybeaconNamespacesUpdate_594270(
+var proximitybeaconNamespacesUpdate* = Call_ProximitybeaconNamespacesUpdate_580270(
     name: "proximitybeaconNamespacesUpdate", meth: HttpMethod.HttpPut,
     host: "proximitybeacon.googleapis.com", route: "/v1beta1/{namespaceName}",
-    validator: validate_ProximitybeaconNamespacesUpdate_594271, base: "/",
-    url: url_ProximitybeaconNamespacesUpdate_594272, schemes: {Scheme.Https})
+    validator: validate_ProximitybeaconNamespacesUpdate_580271, base: "/",
+    url: url_ProximitybeaconNamespacesUpdate_580272, schemes: {Scheme.Https})
 export
   rest
 
+type
+  GoogleAuth = ref object
+    endpoint*: Uri
+    token: string
+    expiry*: float64
+    issued*: float64
+    email: string
+    key: string
+    scope*: seq[string]
+    form: string
+    digest: Hash
+
+const
+  endpoint = "https://www.googleapis.com/oauth2/v4/token".parseUri
+var auth = GoogleAuth(endpoint: endpoint)
+proc hash(auth: GoogleAuth): Hash =
+  ## yield differing values for effectively different auth payloads
+  result = hash($auth.endpoint)
+  result = result !& hash(auth.email)
+  result = result !& hash(auth.key)
+  result = result !& hash(auth.scope.join(" "))
+  result = !$result
+
+proc newAuthenticator*(path: string): GoogleAuth =
+  let
+    input = readFile(path)
+    js = parseJson(input)
+  auth.email = js["client_email"].getStr
+  auth.key = js["private_key"].getStr
+  result = auth
+
+proc store(auth: var GoogleAuth; token: string; expiry: int; form: string) =
+  auth.token = token
+  auth.issued = epochTime()
+  auth.expiry = auth.issued + expiry.float64
+  auth.form = form
+  auth.digest = auth.hash
+
+proc authenticate*(fresh: float64 = -3600.0; lifetime: int = 3600): Future[bool] {.async.} =
+  ## get or refresh an authentication token; provide `fresh`
+  ## to ensure that the token won't expire in the next N seconds.
+  ## provide `lifetime` to indicate how long the token should last.
+  let clock = epochTime()
+  if auth.expiry > clock + fresh:
+    if auth.hash == auth.digest:
+      return true
+  let
+    expiry = clock.int + lifetime
+    header = JOSEHeader(alg: RS256, typ: "JWT")
+    claims = %*{"iss": auth.email, "scope": auth.scope.join(" "),
+              "aud": "https://www.googleapis.com/oauth2/v4/token", "exp": expiry,
+              "iat": clock.int}
+  var tok = JWT(header: header, claims: toClaims(claims))
+  tok.sign(auth.key)
+  let post = encodeQuery({"grant_type": "urn:ietf:params:oauth:grant-type:jwt-bearer",
+                       "assertion": $tok}, usePlus = false, omitEq = false)
+  var client = newAsyncHttpClient()
+  client.headers = newHttpHeaders({"Content-Type": "application/x-www-form-urlencoded",
+                                 "Content-Length": $post.len})
+  let response = await client.request($auth.endpoint, HttpPost, body = post)
+  if not response.code.is2xx:
+    return false
+  let body = await response.body
+  client.close
+  try:
+    let js = parseJson(body)
+    auth.store(js["access_token"].getStr, js["expires_in"].getInt,
+               js["token_type"].getStr)
+  except KeyError:
+    return false
+  except JsonParsingError:
+    return false
+  return true
+
+proc composeQueryString(query: JsonNode): string =
+  var qs: seq[KeyVal]
+  if query == nil:
+    return ""
+  for k, v in query.pairs:
+    qs.add (key: k, val: v.getStr)
+  result = encodeQuery(qs, usePlus = false, omitEq = false)
+
 method hook(call: OpenApiRestCall; url: Uri; input: JsonNode): Recallable {.base.} =
-  let headers = massageHeaders(input.getOrDefault("header"))
-  result = newRecallable(call, url, headers, input.getOrDefault("body").getStr)
+  var headers = massageHeaders(input.getOrDefault("header"))
+  let body = input.getOrDefault("body").getStr
+  if auth.scope.len == 0:
+    raise newException(ValueError, "specify authentication scopes")
+  if not waitfor authenticate(fresh = 10.0):
+    raise newException(IOError, "unable to refresh authentication token")
+  headers.add ("Authorization", auth.form & " " & auth.token)
+  headers.add ("Content-Type", "application/json")
+  headers.add ("Content-Length", $body.len)
+  result = newRecallable(call, url, headers, body = body)

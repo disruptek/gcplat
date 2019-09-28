@@ -1,6 +1,7 @@
 
 import
-  json, options, hashes, uri, openapi/rest, os, uri, strutils, httpcore
+  json, options, hashes, uri, rest, os, uri, strutils, times, httpcore, httpclient,
+  asyncdispatch, jwt
 
 ## auto-generated via openapi macro
 ## title: URL Shortener
@@ -28,15 +29,15 @@ type
     url*: proc (protocol: Scheme; host: string; base: string; route: string;
               path: JsonNode; query: JsonNode): Uri
 
-  OpenApiRestCall_593408 = ref object of OpenApiRestCall
+  OpenApiRestCall_579408 = ref object of OpenApiRestCall
 proc hash(scheme: Scheme): Hash {.used.} =
   result = hash(ord(scheme))
 
-proc clone[T: OpenApiRestCall_593408](t: T): T {.used.} =
+proc clone[T: OpenApiRestCall_579408](t: T): T {.used.} =
   result = T(name: t.name, meth: t.meth, host: t.host, base: t.base, route: t.route,
            schemes: t.schemes, validator: t.validator, url: t.url)
 
-proc pickScheme(t: OpenApiRestCall_593408): Option[Scheme] {.used.} =
+proc pickScheme(t: OpenApiRestCall_579408): Option[Scheme] {.used.} =
   ## select a supported scheme from a set of candidates
   for scheme in Scheme.low ..
       Scheme.high:
@@ -104,17 +105,18 @@ proc hydratePath(input: JsonNode; segments: seq[PathToken]): Option[string] =
 
 const
   gcpServiceName = "urlshortener"
+proc composeQueryString(query: JsonNode): string
 method hook(call: OpenApiRestCall; url: Uri; input: JsonNode): Recallable {.base.}
 type
-  Call_UrlshortenerUrlInsert_593946 = ref object of OpenApiRestCall_593408
-proc url_UrlshortenerUrlInsert_593948(protocol: Scheme; host: string; base: string;
+  Call_UrlshortenerUrlInsert_579946 = ref object of OpenApiRestCall_579408
+proc url_UrlshortenerUrlInsert_579948(protocol: Scheme; host: string; base: string;
                                      route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   result.path = base & route
 
-proc validate_UrlshortenerUrlInsert_593947(path: JsonNode; query: JsonNode;
+proc validate_UrlshortenerUrlInsert_579947(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Creates a new short URL.
   ## 
@@ -138,41 +140,41 @@ proc validate_UrlshortenerUrlInsert_593947(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_593949 = query.getOrDefault("fields")
-  valid_593949 = validateParameter(valid_593949, JString, required = false,
+  var valid_579949 = query.getOrDefault("fields")
+  valid_579949 = validateParameter(valid_579949, JString, required = false,
                                  default = nil)
-  if valid_593949 != nil:
-    section.add "fields", valid_593949
-  var valid_593950 = query.getOrDefault("quotaUser")
-  valid_593950 = validateParameter(valid_593950, JString, required = false,
+  if valid_579949 != nil:
+    section.add "fields", valid_579949
+  var valid_579950 = query.getOrDefault("quotaUser")
+  valid_579950 = validateParameter(valid_579950, JString, required = false,
                                  default = nil)
-  if valid_593950 != nil:
-    section.add "quotaUser", valid_593950
-  var valid_593951 = query.getOrDefault("alt")
-  valid_593951 = validateParameter(valid_593951, JString, required = false,
+  if valid_579950 != nil:
+    section.add "quotaUser", valid_579950
+  var valid_579951 = query.getOrDefault("alt")
+  valid_579951 = validateParameter(valid_579951, JString, required = false,
                                  default = newJString("json"))
-  if valid_593951 != nil:
-    section.add "alt", valid_593951
-  var valid_593952 = query.getOrDefault("oauth_token")
-  valid_593952 = validateParameter(valid_593952, JString, required = false,
+  if valid_579951 != nil:
+    section.add "alt", valid_579951
+  var valid_579952 = query.getOrDefault("oauth_token")
+  valid_579952 = validateParameter(valid_579952, JString, required = false,
                                  default = nil)
-  if valid_593952 != nil:
-    section.add "oauth_token", valid_593952
-  var valid_593953 = query.getOrDefault("userIp")
-  valid_593953 = validateParameter(valid_593953, JString, required = false,
+  if valid_579952 != nil:
+    section.add "oauth_token", valid_579952
+  var valid_579953 = query.getOrDefault("userIp")
+  valid_579953 = validateParameter(valid_579953, JString, required = false,
                                  default = nil)
-  if valid_593953 != nil:
-    section.add "userIp", valid_593953
-  var valid_593954 = query.getOrDefault("key")
-  valid_593954 = validateParameter(valid_593954, JString, required = false,
+  if valid_579953 != nil:
+    section.add "userIp", valid_579953
+  var valid_579954 = query.getOrDefault("key")
+  valid_579954 = validateParameter(valid_579954, JString, required = false,
                                  default = nil)
-  if valid_593954 != nil:
-    section.add "key", valid_593954
-  var valid_593955 = query.getOrDefault("prettyPrint")
-  valid_593955 = validateParameter(valid_593955, JBool, required = false,
+  if valid_579954 != nil:
+    section.add "key", valid_579954
+  var valid_579955 = query.getOrDefault("prettyPrint")
+  valid_579955 = validateParameter(valid_579955, JBool, required = false,
                                  default = newJBool(true))
-  if valid_593955 != nil:
-    section.add "prettyPrint", valid_593955
+  if valid_579955 != nil:
+    section.add "prettyPrint", valid_579955
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -184,20 +186,20 @@ proc validate_UrlshortenerUrlInsert_593947(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_593957: Call_UrlshortenerUrlInsert_593946; path: JsonNode;
+proc call*(call_579957: Call_UrlshortenerUrlInsert_579946; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Creates a new short URL.
   ## 
-  let valid = call_593957.validator(path, query, header, formData, body)
-  let scheme = call_593957.pickScheme
+  let valid = call_579957.validator(path, query, header, formData, body)
+  let scheme = call_579957.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_593957.url(scheme.get, call_593957.host, call_593957.base,
-                         call_593957.route, valid.getOrDefault("path"),
+  let url = call_579957.url(scheme.get, call_579957.host, call_579957.base,
+                         call_579957.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_593957, url, valid)
+  result = hook(call_579957, url, valid)
 
-proc call*(call_593958: Call_UrlshortenerUrlInsert_593946; fields: string = "";
+proc call*(call_579958: Call_UrlshortenerUrlInsert_579946; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; key: string = ""; body: JsonNode = nil;
           prettyPrint: bool = true): Recallable =
@@ -218,34 +220,34 @@ proc call*(call_593958: Call_UrlshortenerUrlInsert_593946; fields: string = "";
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var query_593959 = newJObject()
-  var body_593960 = newJObject()
-  add(query_593959, "fields", newJString(fields))
-  add(query_593959, "quotaUser", newJString(quotaUser))
-  add(query_593959, "alt", newJString(alt))
-  add(query_593959, "oauth_token", newJString(oauthToken))
-  add(query_593959, "userIp", newJString(userIp))
-  add(query_593959, "key", newJString(key))
+  var query_579959 = newJObject()
+  var body_579960 = newJObject()
+  add(query_579959, "fields", newJString(fields))
+  add(query_579959, "quotaUser", newJString(quotaUser))
+  add(query_579959, "alt", newJString(alt))
+  add(query_579959, "oauth_token", newJString(oauthToken))
+  add(query_579959, "userIp", newJString(userIp))
+  add(query_579959, "key", newJString(key))
   if body != nil:
-    body_593960 = body
-  add(query_593959, "prettyPrint", newJBool(prettyPrint))
-  result = call_593958.call(nil, query_593959, nil, nil, body_593960)
+    body_579960 = body
+  add(query_579959, "prettyPrint", newJBool(prettyPrint))
+  result = call_579958.call(nil, query_579959, nil, nil, body_579960)
 
-var urlshortenerUrlInsert* = Call_UrlshortenerUrlInsert_593946(
+var urlshortenerUrlInsert* = Call_UrlshortenerUrlInsert_579946(
     name: "urlshortenerUrlInsert", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com", route: "/url",
-    validator: validate_UrlshortenerUrlInsert_593947, base: "/urlshortener/v1",
-    url: url_UrlshortenerUrlInsert_593948, schemes: {Scheme.Https})
+    validator: validate_UrlshortenerUrlInsert_579947, base: "/urlshortener/v1",
+    url: url_UrlshortenerUrlInsert_579948, schemes: {Scheme.Https})
 type
-  Call_UrlshortenerUrlGet_593676 = ref object of OpenApiRestCall_593408
-proc url_UrlshortenerUrlGet_593678(protocol: Scheme; host: string; base: string;
+  Call_UrlshortenerUrlGet_579676 = ref object of OpenApiRestCall_579408
+proc url_UrlshortenerUrlGet_579678(protocol: Scheme; host: string; base: string;
                                   route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   result.path = base & route
 
-proc validate_UrlshortenerUrlGet_593677(path: JsonNode; query: JsonNode;
+proc validate_UrlshortenerUrlGet_579677(path: JsonNode; query: JsonNode;
                                        header: JsonNode; formData: JsonNode;
                                        body: JsonNode): JsonNode =
   ## Expands a short URL or gets creation time and analytics.
@@ -274,53 +276,53 @@ proc validate_UrlshortenerUrlGet_593677(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_593790 = query.getOrDefault("fields")
-  valid_593790 = validateParameter(valid_593790, JString, required = false,
+  var valid_579790 = query.getOrDefault("fields")
+  valid_579790 = validateParameter(valid_579790, JString, required = false,
                                  default = nil)
-  if valid_593790 != nil:
-    section.add "fields", valid_593790
-  var valid_593791 = query.getOrDefault("quotaUser")
-  valid_593791 = validateParameter(valid_593791, JString, required = false,
+  if valid_579790 != nil:
+    section.add "fields", valid_579790
+  var valid_579791 = query.getOrDefault("quotaUser")
+  valid_579791 = validateParameter(valid_579791, JString, required = false,
                                  default = nil)
-  if valid_593791 != nil:
-    section.add "quotaUser", valid_593791
-  var valid_593805 = query.getOrDefault("alt")
-  valid_593805 = validateParameter(valid_593805, JString, required = false,
+  if valid_579791 != nil:
+    section.add "quotaUser", valid_579791
+  var valid_579805 = query.getOrDefault("alt")
+  valid_579805 = validateParameter(valid_579805, JString, required = false,
                                  default = newJString("json"))
-  if valid_593805 != nil:
-    section.add "alt", valid_593805
-  var valid_593806 = query.getOrDefault("oauth_token")
-  valid_593806 = validateParameter(valid_593806, JString, required = false,
+  if valid_579805 != nil:
+    section.add "alt", valid_579805
+  var valid_579806 = query.getOrDefault("oauth_token")
+  valid_579806 = validateParameter(valid_579806, JString, required = false,
                                  default = nil)
-  if valid_593806 != nil:
-    section.add "oauth_token", valid_593806
+  if valid_579806 != nil:
+    section.add "oauth_token", valid_579806
   assert query != nil,
         "query argument is necessary due to required `shortUrl` field"
-  var valid_593807 = query.getOrDefault("shortUrl")
-  valid_593807 = validateParameter(valid_593807, JString, required = true,
+  var valid_579807 = query.getOrDefault("shortUrl")
+  valid_579807 = validateParameter(valid_579807, JString, required = true,
                                  default = nil)
-  if valid_593807 != nil:
-    section.add "shortUrl", valid_593807
-  var valid_593808 = query.getOrDefault("userIp")
-  valid_593808 = validateParameter(valid_593808, JString, required = false,
+  if valid_579807 != nil:
+    section.add "shortUrl", valid_579807
+  var valid_579808 = query.getOrDefault("userIp")
+  valid_579808 = validateParameter(valid_579808, JString, required = false,
                                  default = nil)
-  if valid_593808 != nil:
-    section.add "userIp", valid_593808
-  var valid_593809 = query.getOrDefault("key")
-  valid_593809 = validateParameter(valid_593809, JString, required = false,
+  if valid_579808 != nil:
+    section.add "userIp", valid_579808
+  var valid_579809 = query.getOrDefault("key")
+  valid_579809 = validateParameter(valid_579809, JString, required = false,
                                  default = nil)
-  if valid_593809 != nil:
-    section.add "key", valid_593809
-  var valid_593810 = query.getOrDefault("projection")
-  valid_593810 = validateParameter(valid_593810, JString, required = false,
+  if valid_579809 != nil:
+    section.add "key", valid_579809
+  var valid_579810 = query.getOrDefault("projection")
+  valid_579810 = validateParameter(valid_579810, JString, required = false,
                                  default = newJString("ANALYTICS_CLICKS"))
-  if valid_593810 != nil:
-    section.add "projection", valid_593810
-  var valid_593811 = query.getOrDefault("prettyPrint")
-  valid_593811 = validateParameter(valid_593811, JBool, required = false,
+  if valid_579810 != nil:
+    section.add "projection", valid_579810
+  var valid_579811 = query.getOrDefault("prettyPrint")
+  valid_579811 = validateParameter(valid_579811, JBool, required = false,
                                  default = newJBool(true))
-  if valid_593811 != nil:
-    section.add "prettyPrint", valid_593811
+  if valid_579811 != nil:
+    section.add "prettyPrint", valid_579811
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -329,20 +331,20 @@ proc validate_UrlshortenerUrlGet_593677(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_593834: Call_UrlshortenerUrlGet_593676; path: JsonNode;
+proc call*(call_579834: Call_UrlshortenerUrlGet_579676; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Expands a short URL or gets creation time and analytics.
   ## 
-  let valid = call_593834.validator(path, query, header, formData, body)
-  let scheme = call_593834.pickScheme
+  let valid = call_579834.validator(path, query, header, formData, body)
+  let scheme = call_579834.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_593834.url(scheme.get, call_593834.host, call_593834.base,
-                         call_593834.route, valid.getOrDefault("path"),
+  let url = call_579834.url(scheme.get, call_579834.host, call_579834.base,
+                         call_579834.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_593834, url, valid)
+  result = hook(call_579834, url, valid)
 
-proc call*(call_593905: Call_UrlshortenerUrlGet_593676; shortUrl: string;
+proc call*(call_579905: Call_UrlshortenerUrlGet_579676; shortUrl: string;
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           oauthToken: string = ""; userIp: string = ""; key: string = "";
           projection: string = "ANALYTICS_CLICKS"; prettyPrint: bool = true): Recallable =
@@ -366,33 +368,33 @@ proc call*(call_593905: Call_UrlshortenerUrlGet_593676; shortUrl: string;
   ##             : Additional information to return.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var query_593906 = newJObject()
-  add(query_593906, "fields", newJString(fields))
-  add(query_593906, "quotaUser", newJString(quotaUser))
-  add(query_593906, "alt", newJString(alt))
-  add(query_593906, "oauth_token", newJString(oauthToken))
-  add(query_593906, "shortUrl", newJString(shortUrl))
-  add(query_593906, "userIp", newJString(userIp))
-  add(query_593906, "key", newJString(key))
-  add(query_593906, "projection", newJString(projection))
-  add(query_593906, "prettyPrint", newJBool(prettyPrint))
-  result = call_593905.call(nil, query_593906, nil, nil, nil)
+  var query_579906 = newJObject()
+  add(query_579906, "fields", newJString(fields))
+  add(query_579906, "quotaUser", newJString(quotaUser))
+  add(query_579906, "alt", newJString(alt))
+  add(query_579906, "oauth_token", newJString(oauthToken))
+  add(query_579906, "shortUrl", newJString(shortUrl))
+  add(query_579906, "userIp", newJString(userIp))
+  add(query_579906, "key", newJString(key))
+  add(query_579906, "projection", newJString(projection))
+  add(query_579906, "prettyPrint", newJBool(prettyPrint))
+  result = call_579905.call(nil, query_579906, nil, nil, nil)
 
-var urlshortenerUrlGet* = Call_UrlshortenerUrlGet_593676(
+var urlshortenerUrlGet* = Call_UrlshortenerUrlGet_579676(
     name: "urlshortenerUrlGet", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/url",
-    validator: validate_UrlshortenerUrlGet_593677, base: "/urlshortener/v1",
-    url: url_UrlshortenerUrlGet_593678, schemes: {Scheme.Https})
+    validator: validate_UrlshortenerUrlGet_579677, base: "/urlshortener/v1",
+    url: url_UrlshortenerUrlGet_579678, schemes: {Scheme.Https})
 type
-  Call_UrlshortenerUrlList_593961 = ref object of OpenApiRestCall_593408
-proc url_UrlshortenerUrlList_593963(protocol: Scheme; host: string; base: string;
+  Call_UrlshortenerUrlList_579961 = ref object of OpenApiRestCall_579408
+proc url_UrlshortenerUrlList_579963(protocol: Scheme; host: string; base: string;
                                    route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   result.path = base & route
 
-proc validate_UrlshortenerUrlList_593962(path: JsonNode; query: JsonNode;
+proc validate_UrlshortenerUrlList_579962(path: JsonNode; query: JsonNode;
                                         header: JsonNode; formData: JsonNode;
                                         body: JsonNode): JsonNode =
   ## Retrieves a list of URLs shortened by a user.
@@ -421,51 +423,51 @@ proc validate_UrlshortenerUrlList_593962(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_593964 = query.getOrDefault("fields")
-  valid_593964 = validateParameter(valid_593964, JString, required = false,
+  var valid_579964 = query.getOrDefault("fields")
+  valid_579964 = validateParameter(valid_579964, JString, required = false,
                                  default = nil)
-  if valid_593964 != nil:
-    section.add "fields", valid_593964
-  var valid_593965 = query.getOrDefault("quotaUser")
-  valid_593965 = validateParameter(valid_593965, JString, required = false,
+  if valid_579964 != nil:
+    section.add "fields", valid_579964
+  var valid_579965 = query.getOrDefault("quotaUser")
+  valid_579965 = validateParameter(valid_579965, JString, required = false,
                                  default = nil)
-  if valid_593965 != nil:
-    section.add "quotaUser", valid_593965
-  var valid_593966 = query.getOrDefault("alt")
-  valid_593966 = validateParameter(valid_593966, JString, required = false,
+  if valid_579965 != nil:
+    section.add "quotaUser", valid_579965
+  var valid_579966 = query.getOrDefault("alt")
+  valid_579966 = validateParameter(valid_579966, JString, required = false,
                                  default = newJString("json"))
-  if valid_593966 != nil:
-    section.add "alt", valid_593966
-  var valid_593967 = query.getOrDefault("oauth_token")
-  valid_593967 = validateParameter(valid_593967, JString, required = false,
+  if valid_579966 != nil:
+    section.add "alt", valid_579966
+  var valid_579967 = query.getOrDefault("oauth_token")
+  valid_579967 = validateParameter(valid_579967, JString, required = false,
                                  default = nil)
-  if valid_593967 != nil:
-    section.add "oauth_token", valid_593967
-  var valid_593968 = query.getOrDefault("userIp")
-  valid_593968 = validateParameter(valid_593968, JString, required = false,
+  if valid_579967 != nil:
+    section.add "oauth_token", valid_579967
+  var valid_579968 = query.getOrDefault("userIp")
+  valid_579968 = validateParameter(valid_579968, JString, required = false,
                                  default = nil)
-  if valid_593968 != nil:
-    section.add "userIp", valid_593968
-  var valid_593969 = query.getOrDefault("key")
-  valid_593969 = validateParameter(valid_593969, JString, required = false,
+  if valid_579968 != nil:
+    section.add "userIp", valid_579968
+  var valid_579969 = query.getOrDefault("key")
+  valid_579969 = validateParameter(valid_579969, JString, required = false,
                                  default = nil)
-  if valid_593969 != nil:
-    section.add "key", valid_593969
-  var valid_593970 = query.getOrDefault("projection")
-  valid_593970 = validateParameter(valid_593970, JString, required = false,
+  if valid_579969 != nil:
+    section.add "key", valid_579969
+  var valid_579970 = query.getOrDefault("projection")
+  valid_579970 = validateParameter(valid_579970, JString, required = false,
                                  default = newJString("ANALYTICS_CLICKS"))
-  if valid_593970 != nil:
-    section.add "projection", valid_593970
-  var valid_593971 = query.getOrDefault("start-token")
-  valid_593971 = validateParameter(valid_593971, JString, required = false,
+  if valid_579970 != nil:
+    section.add "projection", valid_579970
+  var valid_579971 = query.getOrDefault("start-token")
+  valid_579971 = validateParameter(valid_579971, JString, required = false,
                                  default = nil)
-  if valid_593971 != nil:
-    section.add "start-token", valid_593971
-  var valid_593972 = query.getOrDefault("prettyPrint")
-  valid_593972 = validateParameter(valid_593972, JBool, required = false,
+  if valid_579971 != nil:
+    section.add "start-token", valid_579971
+  var valid_579972 = query.getOrDefault("prettyPrint")
+  valid_579972 = validateParameter(valid_579972, JBool, required = false,
                                  default = newJBool(true))
-  if valid_593972 != nil:
-    section.add "prettyPrint", valid_593972
+  if valid_579972 != nil:
+    section.add "prettyPrint", valid_579972
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -474,20 +476,20 @@ proc validate_UrlshortenerUrlList_593962(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_593973: Call_UrlshortenerUrlList_593961; path: JsonNode;
+proc call*(call_579973: Call_UrlshortenerUrlList_579961; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Retrieves a list of URLs shortened by a user.
   ## 
-  let valid = call_593973.validator(path, query, header, formData, body)
-  let scheme = call_593973.pickScheme
+  let valid = call_579973.validator(path, query, header, formData, body)
+  let scheme = call_579973.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_593973.url(scheme.get, call_593973.host, call_593973.base,
-                         call_593973.route, valid.getOrDefault("path"),
+  let url = call_579973.url(scheme.get, call_579973.host, call_579973.base,
+                         call_579973.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_593973, url, valid)
+  result = hook(call_579973, url, valid)
 
-proc call*(call_593974: Call_UrlshortenerUrlList_593961; fields: string = "";
+proc call*(call_579974: Call_UrlshortenerUrlList_579961; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; key: string = "";
           projection: string = "ANALYTICS_CLICKS"; startToken: string = "";
@@ -512,26 +514,116 @@ proc call*(call_593974: Call_UrlshortenerUrlList_593961; fields: string = "";
   ##             : Token for requesting successive pages of results.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var query_593975 = newJObject()
-  add(query_593975, "fields", newJString(fields))
-  add(query_593975, "quotaUser", newJString(quotaUser))
-  add(query_593975, "alt", newJString(alt))
-  add(query_593975, "oauth_token", newJString(oauthToken))
-  add(query_593975, "userIp", newJString(userIp))
-  add(query_593975, "key", newJString(key))
-  add(query_593975, "projection", newJString(projection))
-  add(query_593975, "start-token", newJString(startToken))
-  add(query_593975, "prettyPrint", newJBool(prettyPrint))
-  result = call_593974.call(nil, query_593975, nil, nil, nil)
+  var query_579975 = newJObject()
+  add(query_579975, "fields", newJString(fields))
+  add(query_579975, "quotaUser", newJString(quotaUser))
+  add(query_579975, "alt", newJString(alt))
+  add(query_579975, "oauth_token", newJString(oauthToken))
+  add(query_579975, "userIp", newJString(userIp))
+  add(query_579975, "key", newJString(key))
+  add(query_579975, "projection", newJString(projection))
+  add(query_579975, "start-token", newJString(startToken))
+  add(query_579975, "prettyPrint", newJBool(prettyPrint))
+  result = call_579974.call(nil, query_579975, nil, nil, nil)
 
-var urlshortenerUrlList* = Call_UrlshortenerUrlList_593961(
+var urlshortenerUrlList* = Call_UrlshortenerUrlList_579961(
     name: "urlshortenerUrlList", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/url/history",
-    validator: validate_UrlshortenerUrlList_593962, base: "/urlshortener/v1",
-    url: url_UrlshortenerUrlList_593963, schemes: {Scheme.Https})
+    validator: validate_UrlshortenerUrlList_579962, base: "/urlshortener/v1",
+    url: url_UrlshortenerUrlList_579963, schemes: {Scheme.Https})
 export
   rest
 
+type
+  GoogleAuth = ref object
+    endpoint*: Uri
+    token: string
+    expiry*: float64
+    issued*: float64
+    email: string
+    key: string
+    scope*: seq[string]
+    form: string
+    digest: Hash
+
+const
+  endpoint = "https://www.googleapis.com/oauth2/v4/token".parseUri
+var auth = GoogleAuth(endpoint: endpoint)
+proc hash(auth: GoogleAuth): Hash =
+  ## yield differing values for effectively different auth payloads
+  result = hash($auth.endpoint)
+  result = result !& hash(auth.email)
+  result = result !& hash(auth.key)
+  result = result !& hash(auth.scope.join(" "))
+  result = !$result
+
+proc newAuthenticator*(path: string): GoogleAuth =
+  let
+    input = readFile(path)
+    js = parseJson(input)
+  auth.email = js["client_email"].getStr
+  auth.key = js["private_key"].getStr
+  result = auth
+
+proc store(auth: var GoogleAuth; token: string; expiry: int; form: string) =
+  auth.token = token
+  auth.issued = epochTime()
+  auth.expiry = auth.issued + expiry.float64
+  auth.form = form
+  auth.digest = auth.hash
+
+proc authenticate*(fresh: float64 = -3600.0; lifetime: int = 3600): Future[bool] {.async.} =
+  ## get or refresh an authentication token; provide `fresh`
+  ## to ensure that the token won't expire in the next N seconds.
+  ## provide `lifetime` to indicate how long the token should last.
+  let clock = epochTime()
+  if auth.expiry > clock + fresh:
+    if auth.hash == auth.digest:
+      return true
+  let
+    expiry = clock.int + lifetime
+    header = JOSEHeader(alg: RS256, typ: "JWT")
+    claims = %*{"iss": auth.email, "scope": auth.scope.join(" "),
+              "aud": "https://www.googleapis.com/oauth2/v4/token", "exp": expiry,
+              "iat": clock.int}
+  var tok = JWT(header: header, claims: toClaims(claims))
+  tok.sign(auth.key)
+  let post = encodeQuery({"grant_type": "urn:ietf:params:oauth:grant-type:jwt-bearer",
+                       "assertion": $tok}, usePlus = false, omitEq = false)
+  var client = newAsyncHttpClient()
+  client.headers = newHttpHeaders({"Content-Type": "application/x-www-form-urlencoded",
+                                 "Content-Length": $post.len})
+  let response = await client.request($auth.endpoint, HttpPost, body = post)
+  if not response.code.is2xx:
+    return false
+  let body = await response.body
+  client.close
+  try:
+    let js = parseJson(body)
+    auth.store(js["access_token"].getStr, js["expires_in"].getInt,
+               js["token_type"].getStr)
+  except KeyError:
+    return false
+  except JsonParsingError:
+    return false
+  return true
+
+proc composeQueryString(query: JsonNode): string =
+  var qs: seq[KeyVal]
+  if query == nil:
+    return ""
+  for k, v in query.pairs:
+    qs.add (key: k, val: v.getStr)
+  result = encodeQuery(qs, usePlus = false, omitEq = false)
+
 method hook(call: OpenApiRestCall; url: Uri; input: JsonNode): Recallable {.base.} =
-  let headers = massageHeaders(input.getOrDefault("header"))
-  result = newRecallable(call, url, headers, input.getOrDefault("body").getStr)
+  var headers = massageHeaders(input.getOrDefault("header"))
+  let body = input.getOrDefault("body").getStr
+  if auth.scope.len == 0:
+    raise newException(ValueError, "specify authentication scopes")
+  if not waitfor authenticate(fresh = 10.0):
+    raise newException(IOError, "unable to refresh authentication token")
+  headers.add ("Authorization", auth.form & " " & auth.token)
+  headers.add ("Content-Type", "application/json")
+  headers.add ("Content-Length", $body.len)
+  result = newRecallable(call, url, headers, body = body)

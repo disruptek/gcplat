@@ -1,6 +1,7 @@
 
 import
-  json, options, hashes, uri, openapi/rest, os, uri, strutils, httpcore
+  json, options, hashes, uri, rest, os, uri, strutils, times, httpcore, httpclient,
+  asyncdispatch, jwt
 
 ## auto-generated via openapi macro
 ## title: YouTube Analytics
@@ -28,15 +29,15 @@ type
     url*: proc (protocol: Scheme; host: string; base: string; route: string;
               path: JsonNode; query: JsonNode): Uri
 
-  OpenApiRestCall_593408 = ref object of OpenApiRestCall
+  OpenApiRestCall_579408 = ref object of OpenApiRestCall
 proc hash(scheme: Scheme): Hash {.used.} =
   result = hash(ord(scheme))
 
-proc clone[T: OpenApiRestCall_593408](t: T): T {.used.} =
+proc clone[T: OpenApiRestCall_579408](t: T): T {.used.} =
   result = T(name: t.name, meth: t.meth, host: t.host, base: t.base, route: t.route,
            schemes: t.schemes, validator: t.validator, url: t.url)
 
-proc pickScheme(t: OpenApiRestCall_593408): Option[Scheme] {.used.} =
+proc pickScheme(t: OpenApiRestCall_579408): Option[Scheme] {.used.} =
   ## select a supported scheme from a set of candidates
   for scheme in Scheme.low ..
       Scheme.high:
@@ -104,17 +105,18 @@ proc hydratePath(input: JsonNode; segments: seq[PathToken]): Option[string] =
 
 const
   gcpServiceName = "youtubeAnalytics"
+proc composeQueryString(query: JsonNode): string
 method hook(call: OpenApiRestCall; url: Uri; input: JsonNode): Recallable {.base.}
 type
-  Call_YoutubeAnalyticsGroupItemsInsert_593951 = ref object of OpenApiRestCall_593408
-proc url_YoutubeAnalyticsGroupItemsInsert_593953(protocol: Scheme; host: string;
+  Call_YoutubeAnalyticsGroupItemsInsert_579951 = ref object of OpenApiRestCall_579408
+proc url_YoutubeAnalyticsGroupItemsInsert_579953(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   result.path = base & route
 
-proc validate_YoutubeAnalyticsGroupItemsInsert_593952(path: JsonNode;
+proc validate_YoutubeAnalyticsGroupItemsInsert_579952(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Creates a group item.
   ## 
@@ -158,66 +160,66 @@ proc validate_YoutubeAnalyticsGroupItemsInsert_593952(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_593954 = query.getOrDefault("onBehalfOfContentOwner")
-  valid_593954 = validateParameter(valid_593954, JString, required = false,
+  var valid_579954 = query.getOrDefault("onBehalfOfContentOwner")
+  valid_579954 = validateParameter(valid_579954, JString, required = false,
                                  default = nil)
-  if valid_593954 != nil:
-    section.add "onBehalfOfContentOwner", valid_593954
-  var valid_593955 = query.getOrDefault("upload_protocol")
-  valid_593955 = validateParameter(valid_593955, JString, required = false,
+  if valid_579954 != nil:
+    section.add "onBehalfOfContentOwner", valid_579954
+  var valid_579955 = query.getOrDefault("upload_protocol")
+  valid_579955 = validateParameter(valid_579955, JString, required = false,
                                  default = nil)
-  if valid_593955 != nil:
-    section.add "upload_protocol", valid_593955
-  var valid_593956 = query.getOrDefault("fields")
-  valid_593956 = validateParameter(valid_593956, JString, required = false,
+  if valid_579955 != nil:
+    section.add "upload_protocol", valid_579955
+  var valid_579956 = query.getOrDefault("fields")
+  valid_579956 = validateParameter(valid_579956, JString, required = false,
                                  default = nil)
-  if valid_593956 != nil:
-    section.add "fields", valid_593956
-  var valid_593957 = query.getOrDefault("quotaUser")
-  valid_593957 = validateParameter(valid_593957, JString, required = false,
+  if valid_579956 != nil:
+    section.add "fields", valid_579956
+  var valid_579957 = query.getOrDefault("quotaUser")
+  valid_579957 = validateParameter(valid_579957, JString, required = false,
                                  default = nil)
-  if valid_593957 != nil:
-    section.add "quotaUser", valid_593957
-  var valid_593958 = query.getOrDefault("alt")
-  valid_593958 = validateParameter(valid_593958, JString, required = false,
+  if valid_579957 != nil:
+    section.add "quotaUser", valid_579957
+  var valid_579958 = query.getOrDefault("alt")
+  valid_579958 = validateParameter(valid_579958, JString, required = false,
                                  default = newJString("json"))
-  if valid_593958 != nil:
-    section.add "alt", valid_593958
-  var valid_593959 = query.getOrDefault("oauth_token")
-  valid_593959 = validateParameter(valid_593959, JString, required = false,
+  if valid_579958 != nil:
+    section.add "alt", valid_579958
+  var valid_579959 = query.getOrDefault("oauth_token")
+  valid_579959 = validateParameter(valid_579959, JString, required = false,
                                  default = nil)
-  if valid_593959 != nil:
-    section.add "oauth_token", valid_593959
-  var valid_593960 = query.getOrDefault("callback")
-  valid_593960 = validateParameter(valid_593960, JString, required = false,
+  if valid_579959 != nil:
+    section.add "oauth_token", valid_579959
+  var valid_579960 = query.getOrDefault("callback")
+  valid_579960 = validateParameter(valid_579960, JString, required = false,
                                  default = nil)
-  if valid_593960 != nil:
-    section.add "callback", valid_593960
-  var valid_593961 = query.getOrDefault("access_token")
-  valid_593961 = validateParameter(valid_593961, JString, required = false,
+  if valid_579960 != nil:
+    section.add "callback", valid_579960
+  var valid_579961 = query.getOrDefault("access_token")
+  valid_579961 = validateParameter(valid_579961, JString, required = false,
                                  default = nil)
-  if valid_593961 != nil:
-    section.add "access_token", valid_593961
-  var valid_593962 = query.getOrDefault("uploadType")
-  valid_593962 = validateParameter(valid_593962, JString, required = false,
+  if valid_579961 != nil:
+    section.add "access_token", valid_579961
+  var valid_579962 = query.getOrDefault("uploadType")
+  valid_579962 = validateParameter(valid_579962, JString, required = false,
                                  default = nil)
-  if valid_593962 != nil:
-    section.add "uploadType", valid_593962
-  var valid_593963 = query.getOrDefault("key")
-  valid_593963 = validateParameter(valid_593963, JString, required = false,
+  if valid_579962 != nil:
+    section.add "uploadType", valid_579962
+  var valid_579963 = query.getOrDefault("key")
+  valid_579963 = validateParameter(valid_579963, JString, required = false,
                                  default = nil)
-  if valid_593963 != nil:
-    section.add "key", valid_593963
-  var valid_593964 = query.getOrDefault("$.xgafv")
-  valid_593964 = validateParameter(valid_593964, JString, required = false,
+  if valid_579963 != nil:
+    section.add "key", valid_579963
+  var valid_579964 = query.getOrDefault("$.xgafv")
+  valid_579964 = validateParameter(valid_579964, JString, required = false,
                                  default = newJString("1"))
-  if valid_593964 != nil:
-    section.add "$.xgafv", valid_593964
-  var valid_593965 = query.getOrDefault("prettyPrint")
-  valid_593965 = validateParameter(valid_593965, JBool, required = false,
+  if valid_579964 != nil:
+    section.add "$.xgafv", valid_579964
+  var valid_579965 = query.getOrDefault("prettyPrint")
+  valid_579965 = validateParameter(valid_579965, JBool, required = false,
                                  default = newJBool(true))
-  if valid_593965 != nil:
-    section.add "prettyPrint", valid_593965
+  if valid_579965 != nil:
+    section.add "prettyPrint", valid_579965
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -229,21 +231,21 @@ proc validate_YoutubeAnalyticsGroupItemsInsert_593952(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_593967: Call_YoutubeAnalyticsGroupItemsInsert_593951;
+proc call*(call_579967: Call_YoutubeAnalyticsGroupItemsInsert_579951;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Creates a group item.
   ## 
-  let valid = call_593967.validator(path, query, header, formData, body)
-  let scheme = call_593967.pickScheme
+  let valid = call_579967.validator(path, query, header, formData, body)
+  let scheme = call_579967.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_593967.url(scheme.get, call_593967.host, call_593967.base,
-                         call_593967.route, valid.getOrDefault("path"),
+  let url = call_579967.url(scheme.get, call_579967.host, call_579967.base,
+                         call_579967.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_593967, url, valid)
+  result = hook(call_579967, url, valid)
 
-proc call*(call_593968: Call_YoutubeAnalyticsGroupItemsInsert_593951;
+proc call*(call_579968: Call_YoutubeAnalyticsGroupItemsInsert_579951;
           onBehalfOfContentOwner: string = ""; uploadProtocol: string = "";
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           oauthToken: string = ""; callback: string = ""; accessToken: string = "";
@@ -286,39 +288,39 @@ proc call*(call_593968: Call_YoutubeAnalyticsGroupItemsInsert_593951;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var query_593969 = newJObject()
-  var body_593970 = newJObject()
-  add(query_593969, "onBehalfOfContentOwner", newJString(onBehalfOfContentOwner))
-  add(query_593969, "upload_protocol", newJString(uploadProtocol))
-  add(query_593969, "fields", newJString(fields))
-  add(query_593969, "quotaUser", newJString(quotaUser))
-  add(query_593969, "alt", newJString(alt))
-  add(query_593969, "oauth_token", newJString(oauthToken))
-  add(query_593969, "callback", newJString(callback))
-  add(query_593969, "access_token", newJString(accessToken))
-  add(query_593969, "uploadType", newJString(uploadType))
-  add(query_593969, "key", newJString(key))
-  add(query_593969, "$.xgafv", newJString(Xgafv))
+  var query_579969 = newJObject()
+  var body_579970 = newJObject()
+  add(query_579969, "onBehalfOfContentOwner", newJString(onBehalfOfContentOwner))
+  add(query_579969, "upload_protocol", newJString(uploadProtocol))
+  add(query_579969, "fields", newJString(fields))
+  add(query_579969, "quotaUser", newJString(quotaUser))
+  add(query_579969, "alt", newJString(alt))
+  add(query_579969, "oauth_token", newJString(oauthToken))
+  add(query_579969, "callback", newJString(callback))
+  add(query_579969, "access_token", newJString(accessToken))
+  add(query_579969, "uploadType", newJString(uploadType))
+  add(query_579969, "key", newJString(key))
+  add(query_579969, "$.xgafv", newJString(Xgafv))
   if body != nil:
-    body_593970 = body
-  add(query_593969, "prettyPrint", newJBool(prettyPrint))
-  result = call_593968.call(nil, query_593969, nil, nil, body_593970)
+    body_579970 = body
+  add(query_579969, "prettyPrint", newJBool(prettyPrint))
+  result = call_579968.call(nil, query_579969, nil, nil, body_579970)
 
-var youtubeAnalyticsGroupItemsInsert* = Call_YoutubeAnalyticsGroupItemsInsert_593951(
+var youtubeAnalyticsGroupItemsInsert* = Call_YoutubeAnalyticsGroupItemsInsert_579951(
     name: "youtubeAnalyticsGroupItemsInsert", meth: HttpMethod.HttpPost,
     host: "youtubeanalytics.googleapis.com", route: "/v2/groupItems",
-    validator: validate_YoutubeAnalyticsGroupItemsInsert_593952, base: "/",
-    url: url_YoutubeAnalyticsGroupItemsInsert_593953, schemes: {Scheme.Https})
+    validator: validate_YoutubeAnalyticsGroupItemsInsert_579952, base: "/",
+    url: url_YoutubeAnalyticsGroupItemsInsert_579953, schemes: {Scheme.Https})
 type
-  Call_YoutubeAnalyticsGroupItemsList_593677 = ref object of OpenApiRestCall_593408
-proc url_YoutubeAnalyticsGroupItemsList_593679(protocol: Scheme; host: string;
+  Call_YoutubeAnalyticsGroupItemsList_579677 = ref object of OpenApiRestCall_579408
+proc url_YoutubeAnalyticsGroupItemsList_579679(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   result.path = base & route
 
-proc validate_YoutubeAnalyticsGroupItemsList_593678(path: JsonNode;
+proc validate_YoutubeAnalyticsGroupItemsList_579678(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Returns a collection of group items that match the API request parameters.
   ## 
@@ -365,71 +367,71 @@ proc validate_YoutubeAnalyticsGroupItemsList_593678(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_593791 = query.getOrDefault("onBehalfOfContentOwner")
-  valid_593791 = validateParameter(valid_593791, JString, required = false,
+  var valid_579791 = query.getOrDefault("onBehalfOfContentOwner")
+  valid_579791 = validateParameter(valid_579791, JString, required = false,
                                  default = nil)
-  if valid_593791 != nil:
-    section.add "onBehalfOfContentOwner", valid_593791
-  var valid_593792 = query.getOrDefault("upload_protocol")
-  valid_593792 = validateParameter(valid_593792, JString, required = false,
+  if valid_579791 != nil:
+    section.add "onBehalfOfContentOwner", valid_579791
+  var valid_579792 = query.getOrDefault("upload_protocol")
+  valid_579792 = validateParameter(valid_579792, JString, required = false,
                                  default = nil)
-  if valid_593792 != nil:
-    section.add "upload_protocol", valid_593792
-  var valid_593793 = query.getOrDefault("fields")
-  valid_593793 = validateParameter(valid_593793, JString, required = false,
+  if valid_579792 != nil:
+    section.add "upload_protocol", valid_579792
+  var valid_579793 = query.getOrDefault("fields")
+  valid_579793 = validateParameter(valid_579793, JString, required = false,
                                  default = nil)
-  if valid_593793 != nil:
-    section.add "fields", valid_593793
-  var valid_593794 = query.getOrDefault("quotaUser")
-  valid_593794 = validateParameter(valid_593794, JString, required = false,
+  if valid_579793 != nil:
+    section.add "fields", valid_579793
+  var valid_579794 = query.getOrDefault("quotaUser")
+  valid_579794 = validateParameter(valid_579794, JString, required = false,
                                  default = nil)
-  if valid_593794 != nil:
-    section.add "quotaUser", valid_593794
-  var valid_593808 = query.getOrDefault("alt")
-  valid_593808 = validateParameter(valid_593808, JString, required = false,
+  if valid_579794 != nil:
+    section.add "quotaUser", valid_579794
+  var valid_579808 = query.getOrDefault("alt")
+  valid_579808 = validateParameter(valid_579808, JString, required = false,
                                  default = newJString("json"))
-  if valid_593808 != nil:
-    section.add "alt", valid_593808
-  var valid_593809 = query.getOrDefault("oauth_token")
-  valid_593809 = validateParameter(valid_593809, JString, required = false,
+  if valid_579808 != nil:
+    section.add "alt", valid_579808
+  var valid_579809 = query.getOrDefault("oauth_token")
+  valid_579809 = validateParameter(valid_579809, JString, required = false,
                                  default = nil)
-  if valid_593809 != nil:
-    section.add "oauth_token", valid_593809
-  var valid_593810 = query.getOrDefault("callback")
-  valid_593810 = validateParameter(valid_593810, JString, required = false,
+  if valid_579809 != nil:
+    section.add "oauth_token", valid_579809
+  var valid_579810 = query.getOrDefault("callback")
+  valid_579810 = validateParameter(valid_579810, JString, required = false,
                                  default = nil)
-  if valid_593810 != nil:
-    section.add "callback", valid_593810
-  var valid_593811 = query.getOrDefault("access_token")
-  valid_593811 = validateParameter(valid_593811, JString, required = false,
+  if valid_579810 != nil:
+    section.add "callback", valid_579810
+  var valid_579811 = query.getOrDefault("access_token")
+  valid_579811 = validateParameter(valid_579811, JString, required = false,
                                  default = nil)
-  if valid_593811 != nil:
-    section.add "access_token", valid_593811
-  var valid_593812 = query.getOrDefault("uploadType")
-  valid_593812 = validateParameter(valid_593812, JString, required = false,
+  if valid_579811 != nil:
+    section.add "access_token", valid_579811
+  var valid_579812 = query.getOrDefault("uploadType")
+  valid_579812 = validateParameter(valid_579812, JString, required = false,
                                  default = nil)
-  if valid_593812 != nil:
-    section.add "uploadType", valid_593812
-  var valid_593813 = query.getOrDefault("groupId")
-  valid_593813 = validateParameter(valid_593813, JString, required = false,
+  if valid_579812 != nil:
+    section.add "uploadType", valid_579812
+  var valid_579813 = query.getOrDefault("groupId")
+  valid_579813 = validateParameter(valid_579813, JString, required = false,
                                  default = nil)
-  if valid_593813 != nil:
-    section.add "groupId", valid_593813
-  var valid_593814 = query.getOrDefault("key")
-  valid_593814 = validateParameter(valid_593814, JString, required = false,
+  if valid_579813 != nil:
+    section.add "groupId", valid_579813
+  var valid_579814 = query.getOrDefault("key")
+  valid_579814 = validateParameter(valid_579814, JString, required = false,
                                  default = nil)
-  if valid_593814 != nil:
-    section.add "key", valid_593814
-  var valid_593815 = query.getOrDefault("$.xgafv")
-  valid_593815 = validateParameter(valid_593815, JString, required = false,
+  if valid_579814 != nil:
+    section.add "key", valid_579814
+  var valid_579815 = query.getOrDefault("$.xgafv")
+  valid_579815 = validateParameter(valid_579815, JString, required = false,
                                  default = newJString("1"))
-  if valid_593815 != nil:
-    section.add "$.xgafv", valid_593815
-  var valid_593816 = query.getOrDefault("prettyPrint")
-  valid_593816 = validateParameter(valid_593816, JBool, required = false,
+  if valid_579815 != nil:
+    section.add "$.xgafv", valid_579815
+  var valid_579816 = query.getOrDefault("prettyPrint")
+  valid_579816 = validateParameter(valid_579816, JBool, required = false,
                                  default = newJBool(true))
-  if valid_593816 != nil:
-    section.add "prettyPrint", valid_593816
+  if valid_579816 != nil:
+    section.add "prettyPrint", valid_579816
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -438,20 +440,20 @@ proc validate_YoutubeAnalyticsGroupItemsList_593678(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_593839: Call_YoutubeAnalyticsGroupItemsList_593677; path: JsonNode;
+proc call*(call_579839: Call_YoutubeAnalyticsGroupItemsList_579677; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Returns a collection of group items that match the API request parameters.
   ## 
-  let valid = call_593839.validator(path, query, header, formData, body)
-  let scheme = call_593839.pickScheme
+  let valid = call_579839.validator(path, query, header, formData, body)
+  let scheme = call_579839.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_593839.url(scheme.get, call_593839.host, call_593839.base,
-                         call_593839.route, valid.getOrDefault("path"),
+  let url = call_579839.url(scheme.get, call_579839.host, call_579839.base,
+                         call_579839.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_593839, url, valid)
+  result = hook(call_579839, url, valid)
 
-proc call*(call_593910: Call_YoutubeAnalyticsGroupItemsList_593677;
+proc call*(call_579910: Call_YoutubeAnalyticsGroupItemsList_579677;
           onBehalfOfContentOwner: string = ""; uploadProtocol: string = "";
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           oauthToken: string = ""; callback: string = ""; accessToken: string = "";
@@ -496,37 +498,37 @@ proc call*(call_593910: Call_YoutubeAnalyticsGroupItemsList_593677;
   ##        : V1 error format.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var query_593911 = newJObject()
-  add(query_593911, "onBehalfOfContentOwner", newJString(onBehalfOfContentOwner))
-  add(query_593911, "upload_protocol", newJString(uploadProtocol))
-  add(query_593911, "fields", newJString(fields))
-  add(query_593911, "quotaUser", newJString(quotaUser))
-  add(query_593911, "alt", newJString(alt))
-  add(query_593911, "oauth_token", newJString(oauthToken))
-  add(query_593911, "callback", newJString(callback))
-  add(query_593911, "access_token", newJString(accessToken))
-  add(query_593911, "uploadType", newJString(uploadType))
-  add(query_593911, "groupId", newJString(groupId))
-  add(query_593911, "key", newJString(key))
-  add(query_593911, "$.xgafv", newJString(Xgafv))
-  add(query_593911, "prettyPrint", newJBool(prettyPrint))
-  result = call_593910.call(nil, query_593911, nil, nil, nil)
+  var query_579911 = newJObject()
+  add(query_579911, "onBehalfOfContentOwner", newJString(onBehalfOfContentOwner))
+  add(query_579911, "upload_protocol", newJString(uploadProtocol))
+  add(query_579911, "fields", newJString(fields))
+  add(query_579911, "quotaUser", newJString(quotaUser))
+  add(query_579911, "alt", newJString(alt))
+  add(query_579911, "oauth_token", newJString(oauthToken))
+  add(query_579911, "callback", newJString(callback))
+  add(query_579911, "access_token", newJString(accessToken))
+  add(query_579911, "uploadType", newJString(uploadType))
+  add(query_579911, "groupId", newJString(groupId))
+  add(query_579911, "key", newJString(key))
+  add(query_579911, "$.xgafv", newJString(Xgafv))
+  add(query_579911, "prettyPrint", newJBool(prettyPrint))
+  result = call_579910.call(nil, query_579911, nil, nil, nil)
 
-var youtubeAnalyticsGroupItemsList* = Call_YoutubeAnalyticsGroupItemsList_593677(
+var youtubeAnalyticsGroupItemsList* = Call_YoutubeAnalyticsGroupItemsList_579677(
     name: "youtubeAnalyticsGroupItemsList", meth: HttpMethod.HttpGet,
     host: "youtubeanalytics.googleapis.com", route: "/v2/groupItems",
-    validator: validate_YoutubeAnalyticsGroupItemsList_593678, base: "/",
-    url: url_YoutubeAnalyticsGroupItemsList_593679, schemes: {Scheme.Https})
+    validator: validate_YoutubeAnalyticsGroupItemsList_579678, base: "/",
+    url: url_YoutubeAnalyticsGroupItemsList_579679, schemes: {Scheme.Https})
 type
-  Call_YoutubeAnalyticsGroupItemsDelete_593971 = ref object of OpenApiRestCall_593408
-proc url_YoutubeAnalyticsGroupItemsDelete_593973(protocol: Scheme; host: string;
+  Call_YoutubeAnalyticsGroupItemsDelete_579971 = ref object of OpenApiRestCall_579408
+proc url_YoutubeAnalyticsGroupItemsDelete_579973(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   result.path = base & route
 
-proc validate_YoutubeAnalyticsGroupItemsDelete_593972(path: JsonNode;
+proc validate_YoutubeAnalyticsGroupItemsDelete_579972(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Removes an item from a group.
   ## 
@@ -573,71 +575,71 @@ proc validate_YoutubeAnalyticsGroupItemsDelete_593972(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_593974 = query.getOrDefault("onBehalfOfContentOwner")
-  valid_593974 = validateParameter(valid_593974, JString, required = false,
+  var valid_579974 = query.getOrDefault("onBehalfOfContentOwner")
+  valid_579974 = validateParameter(valid_579974, JString, required = false,
                                  default = nil)
-  if valid_593974 != nil:
-    section.add "onBehalfOfContentOwner", valid_593974
-  var valid_593975 = query.getOrDefault("upload_protocol")
-  valid_593975 = validateParameter(valid_593975, JString, required = false,
+  if valid_579974 != nil:
+    section.add "onBehalfOfContentOwner", valid_579974
+  var valid_579975 = query.getOrDefault("upload_protocol")
+  valid_579975 = validateParameter(valid_579975, JString, required = false,
                                  default = nil)
-  if valid_593975 != nil:
-    section.add "upload_protocol", valid_593975
-  var valid_593976 = query.getOrDefault("fields")
-  valid_593976 = validateParameter(valid_593976, JString, required = false,
+  if valid_579975 != nil:
+    section.add "upload_protocol", valid_579975
+  var valid_579976 = query.getOrDefault("fields")
+  valid_579976 = validateParameter(valid_579976, JString, required = false,
                                  default = nil)
-  if valid_593976 != nil:
-    section.add "fields", valid_593976
-  var valid_593977 = query.getOrDefault("quotaUser")
-  valid_593977 = validateParameter(valid_593977, JString, required = false,
+  if valid_579976 != nil:
+    section.add "fields", valid_579976
+  var valid_579977 = query.getOrDefault("quotaUser")
+  valid_579977 = validateParameter(valid_579977, JString, required = false,
                                  default = nil)
-  if valid_593977 != nil:
-    section.add "quotaUser", valid_593977
-  var valid_593978 = query.getOrDefault("id")
-  valid_593978 = validateParameter(valid_593978, JString, required = false,
+  if valid_579977 != nil:
+    section.add "quotaUser", valid_579977
+  var valid_579978 = query.getOrDefault("id")
+  valid_579978 = validateParameter(valid_579978, JString, required = false,
                                  default = nil)
-  if valid_593978 != nil:
-    section.add "id", valid_593978
-  var valid_593979 = query.getOrDefault("alt")
-  valid_593979 = validateParameter(valid_593979, JString, required = false,
+  if valid_579978 != nil:
+    section.add "id", valid_579978
+  var valid_579979 = query.getOrDefault("alt")
+  valid_579979 = validateParameter(valid_579979, JString, required = false,
                                  default = newJString("json"))
-  if valid_593979 != nil:
-    section.add "alt", valid_593979
-  var valid_593980 = query.getOrDefault("oauth_token")
-  valid_593980 = validateParameter(valid_593980, JString, required = false,
+  if valid_579979 != nil:
+    section.add "alt", valid_579979
+  var valid_579980 = query.getOrDefault("oauth_token")
+  valid_579980 = validateParameter(valid_579980, JString, required = false,
                                  default = nil)
-  if valid_593980 != nil:
-    section.add "oauth_token", valid_593980
-  var valid_593981 = query.getOrDefault("callback")
-  valid_593981 = validateParameter(valid_593981, JString, required = false,
+  if valid_579980 != nil:
+    section.add "oauth_token", valid_579980
+  var valid_579981 = query.getOrDefault("callback")
+  valid_579981 = validateParameter(valid_579981, JString, required = false,
                                  default = nil)
-  if valid_593981 != nil:
-    section.add "callback", valid_593981
-  var valid_593982 = query.getOrDefault("access_token")
-  valid_593982 = validateParameter(valid_593982, JString, required = false,
+  if valid_579981 != nil:
+    section.add "callback", valid_579981
+  var valid_579982 = query.getOrDefault("access_token")
+  valid_579982 = validateParameter(valid_579982, JString, required = false,
                                  default = nil)
-  if valid_593982 != nil:
-    section.add "access_token", valid_593982
-  var valid_593983 = query.getOrDefault("uploadType")
-  valid_593983 = validateParameter(valid_593983, JString, required = false,
+  if valid_579982 != nil:
+    section.add "access_token", valid_579982
+  var valid_579983 = query.getOrDefault("uploadType")
+  valid_579983 = validateParameter(valid_579983, JString, required = false,
                                  default = nil)
-  if valid_593983 != nil:
-    section.add "uploadType", valid_593983
-  var valid_593984 = query.getOrDefault("key")
-  valid_593984 = validateParameter(valid_593984, JString, required = false,
+  if valid_579983 != nil:
+    section.add "uploadType", valid_579983
+  var valid_579984 = query.getOrDefault("key")
+  valid_579984 = validateParameter(valid_579984, JString, required = false,
                                  default = nil)
-  if valid_593984 != nil:
-    section.add "key", valid_593984
-  var valid_593985 = query.getOrDefault("$.xgafv")
-  valid_593985 = validateParameter(valid_593985, JString, required = false,
+  if valid_579984 != nil:
+    section.add "key", valid_579984
+  var valid_579985 = query.getOrDefault("$.xgafv")
+  valid_579985 = validateParameter(valid_579985, JString, required = false,
                                  default = newJString("1"))
-  if valid_593985 != nil:
-    section.add "$.xgafv", valid_593985
-  var valid_593986 = query.getOrDefault("prettyPrint")
-  valid_593986 = validateParameter(valid_593986, JBool, required = false,
+  if valid_579985 != nil:
+    section.add "$.xgafv", valid_579985
+  var valid_579986 = query.getOrDefault("prettyPrint")
+  valid_579986 = validateParameter(valid_579986, JBool, required = false,
                                  default = newJBool(true))
-  if valid_593986 != nil:
-    section.add "prettyPrint", valid_593986
+  if valid_579986 != nil:
+    section.add "prettyPrint", valid_579986
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -646,21 +648,21 @@ proc validate_YoutubeAnalyticsGroupItemsDelete_593972(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_593987: Call_YoutubeAnalyticsGroupItemsDelete_593971;
+proc call*(call_579987: Call_YoutubeAnalyticsGroupItemsDelete_579971;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Removes an item from a group.
   ## 
-  let valid = call_593987.validator(path, query, header, formData, body)
-  let scheme = call_593987.pickScheme
+  let valid = call_579987.validator(path, query, header, formData, body)
+  let scheme = call_579987.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_593987.url(scheme.get, call_593987.host, call_593987.base,
-                         call_593987.route, valid.getOrDefault("path"),
+  let url = call_579987.url(scheme.get, call_579987.host, call_579987.base,
+                         call_579987.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_593987, url, valid)
+  result = hook(call_579987, url, valid)
 
-proc call*(call_593988: Call_YoutubeAnalyticsGroupItemsDelete_593971;
+proc call*(call_579988: Call_YoutubeAnalyticsGroupItemsDelete_579971;
           onBehalfOfContentOwner: string = ""; uploadProtocol: string = "";
           fields: string = ""; quotaUser: string = ""; id: string = "";
           alt: string = "json"; oauthToken: string = ""; callback: string = "";
@@ -705,37 +707,37 @@ proc call*(call_593988: Call_YoutubeAnalyticsGroupItemsDelete_593971;
   ##        : V1 error format.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var query_593989 = newJObject()
-  add(query_593989, "onBehalfOfContentOwner", newJString(onBehalfOfContentOwner))
-  add(query_593989, "upload_protocol", newJString(uploadProtocol))
-  add(query_593989, "fields", newJString(fields))
-  add(query_593989, "quotaUser", newJString(quotaUser))
-  add(query_593989, "id", newJString(id))
-  add(query_593989, "alt", newJString(alt))
-  add(query_593989, "oauth_token", newJString(oauthToken))
-  add(query_593989, "callback", newJString(callback))
-  add(query_593989, "access_token", newJString(accessToken))
-  add(query_593989, "uploadType", newJString(uploadType))
-  add(query_593989, "key", newJString(key))
-  add(query_593989, "$.xgafv", newJString(Xgafv))
-  add(query_593989, "prettyPrint", newJBool(prettyPrint))
-  result = call_593988.call(nil, query_593989, nil, nil, nil)
+  var query_579989 = newJObject()
+  add(query_579989, "onBehalfOfContentOwner", newJString(onBehalfOfContentOwner))
+  add(query_579989, "upload_protocol", newJString(uploadProtocol))
+  add(query_579989, "fields", newJString(fields))
+  add(query_579989, "quotaUser", newJString(quotaUser))
+  add(query_579989, "id", newJString(id))
+  add(query_579989, "alt", newJString(alt))
+  add(query_579989, "oauth_token", newJString(oauthToken))
+  add(query_579989, "callback", newJString(callback))
+  add(query_579989, "access_token", newJString(accessToken))
+  add(query_579989, "uploadType", newJString(uploadType))
+  add(query_579989, "key", newJString(key))
+  add(query_579989, "$.xgafv", newJString(Xgafv))
+  add(query_579989, "prettyPrint", newJBool(prettyPrint))
+  result = call_579988.call(nil, query_579989, nil, nil, nil)
 
-var youtubeAnalyticsGroupItemsDelete* = Call_YoutubeAnalyticsGroupItemsDelete_593971(
+var youtubeAnalyticsGroupItemsDelete* = Call_YoutubeAnalyticsGroupItemsDelete_579971(
     name: "youtubeAnalyticsGroupItemsDelete", meth: HttpMethod.HttpDelete,
     host: "youtubeanalytics.googleapis.com", route: "/v2/groupItems",
-    validator: validate_YoutubeAnalyticsGroupItemsDelete_593972, base: "/",
-    url: url_YoutubeAnalyticsGroupItemsDelete_593973, schemes: {Scheme.Https})
+    validator: validate_YoutubeAnalyticsGroupItemsDelete_579972, base: "/",
+    url: url_YoutubeAnalyticsGroupItemsDelete_579973, schemes: {Scheme.Https})
 type
-  Call_YoutubeAnalyticsGroupsUpdate_594011 = ref object of OpenApiRestCall_593408
-proc url_YoutubeAnalyticsGroupsUpdate_594013(protocol: Scheme; host: string;
+  Call_YoutubeAnalyticsGroupsUpdate_580011 = ref object of OpenApiRestCall_579408
+proc url_YoutubeAnalyticsGroupsUpdate_580013(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   result.path = base & route
 
-proc validate_YoutubeAnalyticsGroupsUpdate_594012(path: JsonNode; query: JsonNode;
+proc validate_YoutubeAnalyticsGroupsUpdate_580012(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Modifies a group. For example, you could change a group's title.
   ## 
@@ -779,66 +781,66 @@ proc validate_YoutubeAnalyticsGroupsUpdate_594012(path: JsonNode; query: JsonNod
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_594014 = query.getOrDefault("onBehalfOfContentOwner")
-  valid_594014 = validateParameter(valid_594014, JString, required = false,
+  var valid_580014 = query.getOrDefault("onBehalfOfContentOwner")
+  valid_580014 = validateParameter(valid_580014, JString, required = false,
                                  default = nil)
-  if valid_594014 != nil:
-    section.add "onBehalfOfContentOwner", valid_594014
-  var valid_594015 = query.getOrDefault("upload_protocol")
-  valid_594015 = validateParameter(valid_594015, JString, required = false,
+  if valid_580014 != nil:
+    section.add "onBehalfOfContentOwner", valid_580014
+  var valid_580015 = query.getOrDefault("upload_protocol")
+  valid_580015 = validateParameter(valid_580015, JString, required = false,
                                  default = nil)
-  if valid_594015 != nil:
-    section.add "upload_protocol", valid_594015
-  var valid_594016 = query.getOrDefault("fields")
-  valid_594016 = validateParameter(valid_594016, JString, required = false,
+  if valid_580015 != nil:
+    section.add "upload_protocol", valid_580015
+  var valid_580016 = query.getOrDefault("fields")
+  valid_580016 = validateParameter(valid_580016, JString, required = false,
                                  default = nil)
-  if valid_594016 != nil:
-    section.add "fields", valid_594016
-  var valid_594017 = query.getOrDefault("quotaUser")
-  valid_594017 = validateParameter(valid_594017, JString, required = false,
+  if valid_580016 != nil:
+    section.add "fields", valid_580016
+  var valid_580017 = query.getOrDefault("quotaUser")
+  valid_580017 = validateParameter(valid_580017, JString, required = false,
                                  default = nil)
-  if valid_594017 != nil:
-    section.add "quotaUser", valid_594017
-  var valid_594018 = query.getOrDefault("alt")
-  valid_594018 = validateParameter(valid_594018, JString, required = false,
+  if valid_580017 != nil:
+    section.add "quotaUser", valid_580017
+  var valid_580018 = query.getOrDefault("alt")
+  valid_580018 = validateParameter(valid_580018, JString, required = false,
                                  default = newJString("json"))
-  if valid_594018 != nil:
-    section.add "alt", valid_594018
-  var valid_594019 = query.getOrDefault("oauth_token")
-  valid_594019 = validateParameter(valid_594019, JString, required = false,
+  if valid_580018 != nil:
+    section.add "alt", valid_580018
+  var valid_580019 = query.getOrDefault("oauth_token")
+  valid_580019 = validateParameter(valid_580019, JString, required = false,
                                  default = nil)
-  if valid_594019 != nil:
-    section.add "oauth_token", valid_594019
-  var valid_594020 = query.getOrDefault("callback")
-  valid_594020 = validateParameter(valid_594020, JString, required = false,
+  if valid_580019 != nil:
+    section.add "oauth_token", valid_580019
+  var valid_580020 = query.getOrDefault("callback")
+  valid_580020 = validateParameter(valid_580020, JString, required = false,
                                  default = nil)
-  if valid_594020 != nil:
-    section.add "callback", valid_594020
-  var valid_594021 = query.getOrDefault("access_token")
-  valid_594021 = validateParameter(valid_594021, JString, required = false,
+  if valid_580020 != nil:
+    section.add "callback", valid_580020
+  var valid_580021 = query.getOrDefault("access_token")
+  valid_580021 = validateParameter(valid_580021, JString, required = false,
                                  default = nil)
-  if valid_594021 != nil:
-    section.add "access_token", valid_594021
-  var valid_594022 = query.getOrDefault("uploadType")
-  valid_594022 = validateParameter(valid_594022, JString, required = false,
+  if valid_580021 != nil:
+    section.add "access_token", valid_580021
+  var valid_580022 = query.getOrDefault("uploadType")
+  valid_580022 = validateParameter(valid_580022, JString, required = false,
                                  default = nil)
-  if valid_594022 != nil:
-    section.add "uploadType", valid_594022
-  var valid_594023 = query.getOrDefault("key")
-  valid_594023 = validateParameter(valid_594023, JString, required = false,
+  if valid_580022 != nil:
+    section.add "uploadType", valid_580022
+  var valid_580023 = query.getOrDefault("key")
+  valid_580023 = validateParameter(valid_580023, JString, required = false,
                                  default = nil)
-  if valid_594023 != nil:
-    section.add "key", valid_594023
-  var valid_594024 = query.getOrDefault("$.xgafv")
-  valid_594024 = validateParameter(valid_594024, JString, required = false,
+  if valid_580023 != nil:
+    section.add "key", valid_580023
+  var valid_580024 = query.getOrDefault("$.xgafv")
+  valid_580024 = validateParameter(valid_580024, JString, required = false,
                                  default = newJString("1"))
-  if valid_594024 != nil:
-    section.add "$.xgafv", valid_594024
-  var valid_594025 = query.getOrDefault("prettyPrint")
-  valid_594025 = validateParameter(valid_594025, JBool, required = false,
+  if valid_580024 != nil:
+    section.add "$.xgafv", valid_580024
+  var valid_580025 = query.getOrDefault("prettyPrint")
+  valid_580025 = validateParameter(valid_580025, JBool, required = false,
                                  default = newJBool(true))
-  if valid_594025 != nil:
-    section.add "prettyPrint", valid_594025
+  if valid_580025 != nil:
+    section.add "prettyPrint", valid_580025
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -850,20 +852,20 @@ proc validate_YoutubeAnalyticsGroupsUpdate_594012(path: JsonNode; query: JsonNod
   if body != nil:
     result.add "body", body
 
-proc call*(call_594027: Call_YoutubeAnalyticsGroupsUpdate_594011; path: JsonNode;
+proc call*(call_580027: Call_YoutubeAnalyticsGroupsUpdate_580011; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Modifies a group. For example, you could change a group's title.
   ## 
-  let valid = call_594027.validator(path, query, header, formData, body)
-  let scheme = call_594027.pickScheme
+  let valid = call_580027.validator(path, query, header, formData, body)
+  let scheme = call_580027.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_594027.url(scheme.get, call_594027.host, call_594027.base,
-                         call_594027.route, valid.getOrDefault("path"),
+  let url = call_580027.url(scheme.get, call_580027.host, call_580027.base,
+                         call_580027.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_594027, url, valid)
+  result = hook(call_580027, url, valid)
 
-proc call*(call_594028: Call_YoutubeAnalyticsGroupsUpdate_594011;
+proc call*(call_580028: Call_YoutubeAnalyticsGroupsUpdate_580011;
           onBehalfOfContentOwner: string = ""; uploadProtocol: string = "";
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           oauthToken: string = ""; callback: string = ""; accessToken: string = "";
@@ -906,39 +908,39 @@ proc call*(call_594028: Call_YoutubeAnalyticsGroupsUpdate_594011;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var query_594029 = newJObject()
-  var body_594030 = newJObject()
-  add(query_594029, "onBehalfOfContentOwner", newJString(onBehalfOfContentOwner))
-  add(query_594029, "upload_protocol", newJString(uploadProtocol))
-  add(query_594029, "fields", newJString(fields))
-  add(query_594029, "quotaUser", newJString(quotaUser))
-  add(query_594029, "alt", newJString(alt))
-  add(query_594029, "oauth_token", newJString(oauthToken))
-  add(query_594029, "callback", newJString(callback))
-  add(query_594029, "access_token", newJString(accessToken))
-  add(query_594029, "uploadType", newJString(uploadType))
-  add(query_594029, "key", newJString(key))
-  add(query_594029, "$.xgafv", newJString(Xgafv))
+  var query_580029 = newJObject()
+  var body_580030 = newJObject()
+  add(query_580029, "onBehalfOfContentOwner", newJString(onBehalfOfContentOwner))
+  add(query_580029, "upload_protocol", newJString(uploadProtocol))
+  add(query_580029, "fields", newJString(fields))
+  add(query_580029, "quotaUser", newJString(quotaUser))
+  add(query_580029, "alt", newJString(alt))
+  add(query_580029, "oauth_token", newJString(oauthToken))
+  add(query_580029, "callback", newJString(callback))
+  add(query_580029, "access_token", newJString(accessToken))
+  add(query_580029, "uploadType", newJString(uploadType))
+  add(query_580029, "key", newJString(key))
+  add(query_580029, "$.xgafv", newJString(Xgafv))
   if body != nil:
-    body_594030 = body
-  add(query_594029, "prettyPrint", newJBool(prettyPrint))
-  result = call_594028.call(nil, query_594029, nil, nil, body_594030)
+    body_580030 = body
+  add(query_580029, "prettyPrint", newJBool(prettyPrint))
+  result = call_580028.call(nil, query_580029, nil, nil, body_580030)
 
-var youtubeAnalyticsGroupsUpdate* = Call_YoutubeAnalyticsGroupsUpdate_594011(
+var youtubeAnalyticsGroupsUpdate* = Call_YoutubeAnalyticsGroupsUpdate_580011(
     name: "youtubeAnalyticsGroupsUpdate", meth: HttpMethod.HttpPut,
     host: "youtubeanalytics.googleapis.com", route: "/v2/groups",
-    validator: validate_YoutubeAnalyticsGroupsUpdate_594012, base: "/",
-    url: url_YoutubeAnalyticsGroupsUpdate_594013, schemes: {Scheme.Https})
+    validator: validate_YoutubeAnalyticsGroupsUpdate_580012, base: "/",
+    url: url_YoutubeAnalyticsGroupsUpdate_580013, schemes: {Scheme.Https})
 type
-  Call_YoutubeAnalyticsGroupsInsert_594031 = ref object of OpenApiRestCall_593408
-proc url_YoutubeAnalyticsGroupsInsert_594033(protocol: Scheme; host: string;
+  Call_YoutubeAnalyticsGroupsInsert_580031 = ref object of OpenApiRestCall_579408
+proc url_YoutubeAnalyticsGroupsInsert_580033(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   result.path = base & route
 
-proc validate_YoutubeAnalyticsGroupsInsert_594032(path: JsonNode; query: JsonNode;
+proc validate_YoutubeAnalyticsGroupsInsert_580032(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Creates a group.
   ## 
@@ -982,66 +984,66 @@ proc validate_YoutubeAnalyticsGroupsInsert_594032(path: JsonNode; query: JsonNod
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_594034 = query.getOrDefault("onBehalfOfContentOwner")
-  valid_594034 = validateParameter(valid_594034, JString, required = false,
+  var valid_580034 = query.getOrDefault("onBehalfOfContentOwner")
+  valid_580034 = validateParameter(valid_580034, JString, required = false,
                                  default = nil)
-  if valid_594034 != nil:
-    section.add "onBehalfOfContentOwner", valid_594034
-  var valid_594035 = query.getOrDefault("upload_protocol")
-  valid_594035 = validateParameter(valid_594035, JString, required = false,
+  if valid_580034 != nil:
+    section.add "onBehalfOfContentOwner", valid_580034
+  var valid_580035 = query.getOrDefault("upload_protocol")
+  valid_580035 = validateParameter(valid_580035, JString, required = false,
                                  default = nil)
-  if valid_594035 != nil:
-    section.add "upload_protocol", valid_594035
-  var valid_594036 = query.getOrDefault("fields")
-  valid_594036 = validateParameter(valid_594036, JString, required = false,
+  if valid_580035 != nil:
+    section.add "upload_protocol", valid_580035
+  var valid_580036 = query.getOrDefault("fields")
+  valid_580036 = validateParameter(valid_580036, JString, required = false,
                                  default = nil)
-  if valid_594036 != nil:
-    section.add "fields", valid_594036
-  var valid_594037 = query.getOrDefault("quotaUser")
-  valid_594037 = validateParameter(valid_594037, JString, required = false,
+  if valid_580036 != nil:
+    section.add "fields", valid_580036
+  var valid_580037 = query.getOrDefault("quotaUser")
+  valid_580037 = validateParameter(valid_580037, JString, required = false,
                                  default = nil)
-  if valid_594037 != nil:
-    section.add "quotaUser", valid_594037
-  var valid_594038 = query.getOrDefault("alt")
-  valid_594038 = validateParameter(valid_594038, JString, required = false,
+  if valid_580037 != nil:
+    section.add "quotaUser", valid_580037
+  var valid_580038 = query.getOrDefault("alt")
+  valid_580038 = validateParameter(valid_580038, JString, required = false,
                                  default = newJString("json"))
-  if valid_594038 != nil:
-    section.add "alt", valid_594038
-  var valid_594039 = query.getOrDefault("oauth_token")
-  valid_594039 = validateParameter(valid_594039, JString, required = false,
+  if valid_580038 != nil:
+    section.add "alt", valid_580038
+  var valid_580039 = query.getOrDefault("oauth_token")
+  valid_580039 = validateParameter(valid_580039, JString, required = false,
                                  default = nil)
-  if valid_594039 != nil:
-    section.add "oauth_token", valid_594039
-  var valid_594040 = query.getOrDefault("callback")
-  valid_594040 = validateParameter(valid_594040, JString, required = false,
+  if valid_580039 != nil:
+    section.add "oauth_token", valid_580039
+  var valid_580040 = query.getOrDefault("callback")
+  valid_580040 = validateParameter(valid_580040, JString, required = false,
                                  default = nil)
-  if valid_594040 != nil:
-    section.add "callback", valid_594040
-  var valid_594041 = query.getOrDefault("access_token")
-  valid_594041 = validateParameter(valid_594041, JString, required = false,
+  if valid_580040 != nil:
+    section.add "callback", valid_580040
+  var valid_580041 = query.getOrDefault("access_token")
+  valid_580041 = validateParameter(valid_580041, JString, required = false,
                                  default = nil)
-  if valid_594041 != nil:
-    section.add "access_token", valid_594041
-  var valid_594042 = query.getOrDefault("uploadType")
-  valid_594042 = validateParameter(valid_594042, JString, required = false,
+  if valid_580041 != nil:
+    section.add "access_token", valid_580041
+  var valid_580042 = query.getOrDefault("uploadType")
+  valid_580042 = validateParameter(valid_580042, JString, required = false,
                                  default = nil)
-  if valid_594042 != nil:
-    section.add "uploadType", valid_594042
-  var valid_594043 = query.getOrDefault("key")
-  valid_594043 = validateParameter(valid_594043, JString, required = false,
+  if valid_580042 != nil:
+    section.add "uploadType", valid_580042
+  var valid_580043 = query.getOrDefault("key")
+  valid_580043 = validateParameter(valid_580043, JString, required = false,
                                  default = nil)
-  if valid_594043 != nil:
-    section.add "key", valid_594043
-  var valid_594044 = query.getOrDefault("$.xgafv")
-  valid_594044 = validateParameter(valid_594044, JString, required = false,
+  if valid_580043 != nil:
+    section.add "key", valid_580043
+  var valid_580044 = query.getOrDefault("$.xgafv")
+  valid_580044 = validateParameter(valid_580044, JString, required = false,
                                  default = newJString("1"))
-  if valid_594044 != nil:
-    section.add "$.xgafv", valid_594044
-  var valid_594045 = query.getOrDefault("prettyPrint")
-  valid_594045 = validateParameter(valid_594045, JBool, required = false,
+  if valid_580044 != nil:
+    section.add "$.xgafv", valid_580044
+  var valid_580045 = query.getOrDefault("prettyPrint")
+  valid_580045 = validateParameter(valid_580045, JBool, required = false,
                                  default = newJBool(true))
-  if valid_594045 != nil:
-    section.add "prettyPrint", valid_594045
+  if valid_580045 != nil:
+    section.add "prettyPrint", valid_580045
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1053,20 +1055,20 @@ proc validate_YoutubeAnalyticsGroupsInsert_594032(path: JsonNode; query: JsonNod
   if body != nil:
     result.add "body", body
 
-proc call*(call_594047: Call_YoutubeAnalyticsGroupsInsert_594031; path: JsonNode;
+proc call*(call_580047: Call_YoutubeAnalyticsGroupsInsert_580031; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Creates a group.
   ## 
-  let valid = call_594047.validator(path, query, header, formData, body)
-  let scheme = call_594047.pickScheme
+  let valid = call_580047.validator(path, query, header, formData, body)
+  let scheme = call_580047.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_594047.url(scheme.get, call_594047.host, call_594047.base,
-                         call_594047.route, valid.getOrDefault("path"),
+  let url = call_580047.url(scheme.get, call_580047.host, call_580047.base,
+                         call_580047.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_594047, url, valid)
+  result = hook(call_580047, url, valid)
 
-proc call*(call_594048: Call_YoutubeAnalyticsGroupsInsert_594031;
+proc call*(call_580048: Call_YoutubeAnalyticsGroupsInsert_580031;
           onBehalfOfContentOwner: string = ""; uploadProtocol: string = "";
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           oauthToken: string = ""; callback: string = ""; accessToken: string = "";
@@ -1109,39 +1111,39 @@ proc call*(call_594048: Call_YoutubeAnalyticsGroupsInsert_594031;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var query_594049 = newJObject()
-  var body_594050 = newJObject()
-  add(query_594049, "onBehalfOfContentOwner", newJString(onBehalfOfContentOwner))
-  add(query_594049, "upload_protocol", newJString(uploadProtocol))
-  add(query_594049, "fields", newJString(fields))
-  add(query_594049, "quotaUser", newJString(quotaUser))
-  add(query_594049, "alt", newJString(alt))
-  add(query_594049, "oauth_token", newJString(oauthToken))
-  add(query_594049, "callback", newJString(callback))
-  add(query_594049, "access_token", newJString(accessToken))
-  add(query_594049, "uploadType", newJString(uploadType))
-  add(query_594049, "key", newJString(key))
-  add(query_594049, "$.xgafv", newJString(Xgafv))
+  var query_580049 = newJObject()
+  var body_580050 = newJObject()
+  add(query_580049, "onBehalfOfContentOwner", newJString(onBehalfOfContentOwner))
+  add(query_580049, "upload_protocol", newJString(uploadProtocol))
+  add(query_580049, "fields", newJString(fields))
+  add(query_580049, "quotaUser", newJString(quotaUser))
+  add(query_580049, "alt", newJString(alt))
+  add(query_580049, "oauth_token", newJString(oauthToken))
+  add(query_580049, "callback", newJString(callback))
+  add(query_580049, "access_token", newJString(accessToken))
+  add(query_580049, "uploadType", newJString(uploadType))
+  add(query_580049, "key", newJString(key))
+  add(query_580049, "$.xgafv", newJString(Xgafv))
   if body != nil:
-    body_594050 = body
-  add(query_594049, "prettyPrint", newJBool(prettyPrint))
-  result = call_594048.call(nil, query_594049, nil, nil, body_594050)
+    body_580050 = body
+  add(query_580049, "prettyPrint", newJBool(prettyPrint))
+  result = call_580048.call(nil, query_580049, nil, nil, body_580050)
 
-var youtubeAnalyticsGroupsInsert* = Call_YoutubeAnalyticsGroupsInsert_594031(
+var youtubeAnalyticsGroupsInsert* = Call_YoutubeAnalyticsGroupsInsert_580031(
     name: "youtubeAnalyticsGroupsInsert", meth: HttpMethod.HttpPost,
     host: "youtubeanalytics.googleapis.com", route: "/v2/groups",
-    validator: validate_YoutubeAnalyticsGroupsInsert_594032, base: "/",
-    url: url_YoutubeAnalyticsGroupsInsert_594033, schemes: {Scheme.Https})
+    validator: validate_YoutubeAnalyticsGroupsInsert_580032, base: "/",
+    url: url_YoutubeAnalyticsGroupsInsert_580033, schemes: {Scheme.Https})
 type
-  Call_YoutubeAnalyticsGroupsList_593990 = ref object of OpenApiRestCall_593408
-proc url_YoutubeAnalyticsGroupsList_593992(protocol: Scheme; host: string;
+  Call_YoutubeAnalyticsGroupsList_579990 = ref object of OpenApiRestCall_579408
+proc url_YoutubeAnalyticsGroupsList_579992(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   result.path = base & route
 
-proc validate_YoutubeAnalyticsGroupsList_593991(path: JsonNode; query: JsonNode;
+proc validate_YoutubeAnalyticsGroupsList_579991(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Returns a collection of groups that match the API request parameters. For
   ## example, you can retrieve all groups that the authenticated user owns,
@@ -1203,80 +1205,80 @@ proc validate_YoutubeAnalyticsGroupsList_593991(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_593993 = query.getOrDefault("onBehalfOfContentOwner")
-  valid_593993 = validateParameter(valid_593993, JString, required = false,
+  var valid_579993 = query.getOrDefault("onBehalfOfContentOwner")
+  valid_579993 = validateParameter(valid_579993, JString, required = false,
                                  default = nil)
-  if valid_593993 != nil:
-    section.add "onBehalfOfContentOwner", valid_593993
-  var valid_593994 = query.getOrDefault("mine")
-  valid_593994 = validateParameter(valid_593994, JBool, required = false, default = nil)
-  if valid_593994 != nil:
-    section.add "mine", valid_593994
-  var valid_593995 = query.getOrDefault("upload_protocol")
-  valid_593995 = validateParameter(valid_593995, JString, required = false,
+  if valid_579993 != nil:
+    section.add "onBehalfOfContentOwner", valid_579993
+  var valid_579994 = query.getOrDefault("mine")
+  valid_579994 = validateParameter(valid_579994, JBool, required = false, default = nil)
+  if valid_579994 != nil:
+    section.add "mine", valid_579994
+  var valid_579995 = query.getOrDefault("upload_protocol")
+  valid_579995 = validateParameter(valid_579995, JString, required = false,
                                  default = nil)
-  if valid_593995 != nil:
-    section.add "upload_protocol", valid_593995
-  var valid_593996 = query.getOrDefault("fields")
-  valid_593996 = validateParameter(valid_593996, JString, required = false,
+  if valid_579995 != nil:
+    section.add "upload_protocol", valid_579995
+  var valid_579996 = query.getOrDefault("fields")
+  valid_579996 = validateParameter(valid_579996, JString, required = false,
                                  default = nil)
-  if valid_593996 != nil:
-    section.add "fields", valid_593996
-  var valid_593997 = query.getOrDefault("pageToken")
-  valid_593997 = validateParameter(valid_593997, JString, required = false,
+  if valid_579996 != nil:
+    section.add "fields", valid_579996
+  var valid_579997 = query.getOrDefault("pageToken")
+  valid_579997 = validateParameter(valid_579997, JString, required = false,
                                  default = nil)
-  if valid_593997 != nil:
-    section.add "pageToken", valid_593997
-  var valid_593998 = query.getOrDefault("quotaUser")
-  valid_593998 = validateParameter(valid_593998, JString, required = false,
+  if valid_579997 != nil:
+    section.add "pageToken", valid_579997
+  var valid_579998 = query.getOrDefault("quotaUser")
+  valid_579998 = validateParameter(valid_579998, JString, required = false,
                                  default = nil)
-  if valid_593998 != nil:
-    section.add "quotaUser", valid_593998
-  var valid_593999 = query.getOrDefault("id")
-  valid_593999 = validateParameter(valid_593999, JString, required = false,
+  if valid_579998 != nil:
+    section.add "quotaUser", valid_579998
+  var valid_579999 = query.getOrDefault("id")
+  valid_579999 = validateParameter(valid_579999, JString, required = false,
                                  default = nil)
-  if valid_593999 != nil:
-    section.add "id", valid_593999
-  var valid_594000 = query.getOrDefault("alt")
-  valid_594000 = validateParameter(valid_594000, JString, required = false,
+  if valid_579999 != nil:
+    section.add "id", valid_579999
+  var valid_580000 = query.getOrDefault("alt")
+  valid_580000 = validateParameter(valid_580000, JString, required = false,
                                  default = newJString("json"))
-  if valid_594000 != nil:
-    section.add "alt", valid_594000
-  var valid_594001 = query.getOrDefault("oauth_token")
-  valid_594001 = validateParameter(valid_594001, JString, required = false,
+  if valid_580000 != nil:
+    section.add "alt", valid_580000
+  var valid_580001 = query.getOrDefault("oauth_token")
+  valid_580001 = validateParameter(valid_580001, JString, required = false,
                                  default = nil)
-  if valid_594001 != nil:
-    section.add "oauth_token", valid_594001
-  var valid_594002 = query.getOrDefault("callback")
-  valid_594002 = validateParameter(valid_594002, JString, required = false,
+  if valid_580001 != nil:
+    section.add "oauth_token", valid_580001
+  var valid_580002 = query.getOrDefault("callback")
+  valid_580002 = validateParameter(valid_580002, JString, required = false,
                                  default = nil)
-  if valid_594002 != nil:
-    section.add "callback", valid_594002
-  var valid_594003 = query.getOrDefault("access_token")
-  valid_594003 = validateParameter(valid_594003, JString, required = false,
+  if valid_580002 != nil:
+    section.add "callback", valid_580002
+  var valid_580003 = query.getOrDefault("access_token")
+  valid_580003 = validateParameter(valid_580003, JString, required = false,
                                  default = nil)
-  if valid_594003 != nil:
-    section.add "access_token", valid_594003
-  var valid_594004 = query.getOrDefault("uploadType")
-  valid_594004 = validateParameter(valid_594004, JString, required = false,
+  if valid_580003 != nil:
+    section.add "access_token", valid_580003
+  var valid_580004 = query.getOrDefault("uploadType")
+  valid_580004 = validateParameter(valid_580004, JString, required = false,
                                  default = nil)
-  if valid_594004 != nil:
-    section.add "uploadType", valid_594004
-  var valid_594005 = query.getOrDefault("key")
-  valid_594005 = validateParameter(valid_594005, JString, required = false,
+  if valid_580004 != nil:
+    section.add "uploadType", valid_580004
+  var valid_580005 = query.getOrDefault("key")
+  valid_580005 = validateParameter(valid_580005, JString, required = false,
                                  default = nil)
-  if valid_594005 != nil:
-    section.add "key", valid_594005
-  var valid_594006 = query.getOrDefault("$.xgafv")
-  valid_594006 = validateParameter(valid_594006, JString, required = false,
+  if valid_580005 != nil:
+    section.add "key", valid_580005
+  var valid_580006 = query.getOrDefault("$.xgafv")
+  valid_580006 = validateParameter(valid_580006, JString, required = false,
                                  default = newJString("1"))
-  if valid_594006 != nil:
-    section.add "$.xgafv", valid_594006
-  var valid_594007 = query.getOrDefault("prettyPrint")
-  valid_594007 = validateParameter(valid_594007, JBool, required = false,
+  if valid_580006 != nil:
+    section.add "$.xgafv", valid_580006
+  var valid_580007 = query.getOrDefault("prettyPrint")
+  valid_580007 = validateParameter(valid_580007, JBool, required = false,
                                  default = newJBool(true))
-  if valid_594007 != nil:
-    section.add "prettyPrint", valid_594007
+  if valid_580007 != nil:
+    section.add "prettyPrint", valid_580007
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1285,22 +1287,22 @@ proc validate_YoutubeAnalyticsGroupsList_593991(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_594008: Call_YoutubeAnalyticsGroupsList_593990; path: JsonNode;
+proc call*(call_580008: Call_YoutubeAnalyticsGroupsList_579990; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Returns a collection of groups that match the API request parameters. For
   ## example, you can retrieve all groups that the authenticated user owns,
   ## or you can retrieve one or more groups by their unique IDs.
   ## 
-  let valid = call_594008.validator(path, query, header, formData, body)
-  let scheme = call_594008.pickScheme
+  let valid = call_580008.validator(path, query, header, formData, body)
+  let scheme = call_580008.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_594008.url(scheme.get, call_594008.host, call_594008.base,
-                         call_594008.route, valid.getOrDefault("path"),
+  let url = call_580008.url(scheme.get, call_580008.host, call_580008.base,
+                         call_580008.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_594008, url, valid)
+  result = hook(call_580008, url, valid)
 
-proc call*(call_594009: Call_YoutubeAnalyticsGroupsList_593990;
+proc call*(call_580009: Call_YoutubeAnalyticsGroupsList_579990;
           onBehalfOfContentOwner: string = ""; mine: bool = false;
           uploadProtocol: string = ""; fields: string = ""; pageToken: string = "";
           quotaUser: string = ""; id: string = ""; alt: string = "json";
@@ -1361,39 +1363,39 @@ proc call*(call_594009: Call_YoutubeAnalyticsGroupsList_593990;
   ##        : V1 error format.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var query_594010 = newJObject()
-  add(query_594010, "onBehalfOfContentOwner", newJString(onBehalfOfContentOwner))
-  add(query_594010, "mine", newJBool(mine))
-  add(query_594010, "upload_protocol", newJString(uploadProtocol))
-  add(query_594010, "fields", newJString(fields))
-  add(query_594010, "pageToken", newJString(pageToken))
-  add(query_594010, "quotaUser", newJString(quotaUser))
-  add(query_594010, "id", newJString(id))
-  add(query_594010, "alt", newJString(alt))
-  add(query_594010, "oauth_token", newJString(oauthToken))
-  add(query_594010, "callback", newJString(callback))
-  add(query_594010, "access_token", newJString(accessToken))
-  add(query_594010, "uploadType", newJString(uploadType))
-  add(query_594010, "key", newJString(key))
-  add(query_594010, "$.xgafv", newJString(Xgafv))
-  add(query_594010, "prettyPrint", newJBool(prettyPrint))
-  result = call_594009.call(nil, query_594010, nil, nil, nil)
+  var query_580010 = newJObject()
+  add(query_580010, "onBehalfOfContentOwner", newJString(onBehalfOfContentOwner))
+  add(query_580010, "mine", newJBool(mine))
+  add(query_580010, "upload_protocol", newJString(uploadProtocol))
+  add(query_580010, "fields", newJString(fields))
+  add(query_580010, "pageToken", newJString(pageToken))
+  add(query_580010, "quotaUser", newJString(quotaUser))
+  add(query_580010, "id", newJString(id))
+  add(query_580010, "alt", newJString(alt))
+  add(query_580010, "oauth_token", newJString(oauthToken))
+  add(query_580010, "callback", newJString(callback))
+  add(query_580010, "access_token", newJString(accessToken))
+  add(query_580010, "uploadType", newJString(uploadType))
+  add(query_580010, "key", newJString(key))
+  add(query_580010, "$.xgafv", newJString(Xgafv))
+  add(query_580010, "prettyPrint", newJBool(prettyPrint))
+  result = call_580009.call(nil, query_580010, nil, nil, nil)
 
-var youtubeAnalyticsGroupsList* = Call_YoutubeAnalyticsGroupsList_593990(
+var youtubeAnalyticsGroupsList* = Call_YoutubeAnalyticsGroupsList_579990(
     name: "youtubeAnalyticsGroupsList", meth: HttpMethod.HttpGet,
     host: "youtubeanalytics.googleapis.com", route: "/v2/groups",
-    validator: validate_YoutubeAnalyticsGroupsList_593991, base: "/",
-    url: url_YoutubeAnalyticsGroupsList_593992, schemes: {Scheme.Https})
+    validator: validate_YoutubeAnalyticsGroupsList_579991, base: "/",
+    url: url_YoutubeAnalyticsGroupsList_579992, schemes: {Scheme.Https})
 type
-  Call_YoutubeAnalyticsGroupsDelete_594051 = ref object of OpenApiRestCall_593408
-proc url_YoutubeAnalyticsGroupsDelete_594053(protocol: Scheme; host: string;
+  Call_YoutubeAnalyticsGroupsDelete_580051 = ref object of OpenApiRestCall_579408
+proc url_YoutubeAnalyticsGroupsDelete_580053(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   result.path = base & route
 
-proc validate_YoutubeAnalyticsGroupsDelete_594052(path: JsonNode; query: JsonNode;
+proc validate_YoutubeAnalyticsGroupsDelete_580052(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Deletes a group.
   ## 
@@ -1440,71 +1442,71 @@ proc validate_YoutubeAnalyticsGroupsDelete_594052(path: JsonNode; query: JsonNod
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_594054 = query.getOrDefault("onBehalfOfContentOwner")
-  valid_594054 = validateParameter(valid_594054, JString, required = false,
+  var valid_580054 = query.getOrDefault("onBehalfOfContentOwner")
+  valid_580054 = validateParameter(valid_580054, JString, required = false,
                                  default = nil)
-  if valid_594054 != nil:
-    section.add "onBehalfOfContentOwner", valid_594054
-  var valid_594055 = query.getOrDefault("upload_protocol")
-  valid_594055 = validateParameter(valid_594055, JString, required = false,
+  if valid_580054 != nil:
+    section.add "onBehalfOfContentOwner", valid_580054
+  var valid_580055 = query.getOrDefault("upload_protocol")
+  valid_580055 = validateParameter(valid_580055, JString, required = false,
                                  default = nil)
-  if valid_594055 != nil:
-    section.add "upload_protocol", valid_594055
-  var valid_594056 = query.getOrDefault("fields")
-  valid_594056 = validateParameter(valid_594056, JString, required = false,
+  if valid_580055 != nil:
+    section.add "upload_protocol", valid_580055
+  var valid_580056 = query.getOrDefault("fields")
+  valid_580056 = validateParameter(valid_580056, JString, required = false,
                                  default = nil)
-  if valid_594056 != nil:
-    section.add "fields", valid_594056
-  var valid_594057 = query.getOrDefault("quotaUser")
-  valid_594057 = validateParameter(valid_594057, JString, required = false,
+  if valid_580056 != nil:
+    section.add "fields", valid_580056
+  var valid_580057 = query.getOrDefault("quotaUser")
+  valid_580057 = validateParameter(valid_580057, JString, required = false,
                                  default = nil)
-  if valid_594057 != nil:
-    section.add "quotaUser", valid_594057
-  var valid_594058 = query.getOrDefault("id")
-  valid_594058 = validateParameter(valid_594058, JString, required = false,
+  if valid_580057 != nil:
+    section.add "quotaUser", valid_580057
+  var valid_580058 = query.getOrDefault("id")
+  valid_580058 = validateParameter(valid_580058, JString, required = false,
                                  default = nil)
-  if valid_594058 != nil:
-    section.add "id", valid_594058
-  var valid_594059 = query.getOrDefault("alt")
-  valid_594059 = validateParameter(valid_594059, JString, required = false,
+  if valid_580058 != nil:
+    section.add "id", valid_580058
+  var valid_580059 = query.getOrDefault("alt")
+  valid_580059 = validateParameter(valid_580059, JString, required = false,
                                  default = newJString("json"))
-  if valid_594059 != nil:
-    section.add "alt", valid_594059
-  var valid_594060 = query.getOrDefault("oauth_token")
-  valid_594060 = validateParameter(valid_594060, JString, required = false,
+  if valid_580059 != nil:
+    section.add "alt", valid_580059
+  var valid_580060 = query.getOrDefault("oauth_token")
+  valid_580060 = validateParameter(valid_580060, JString, required = false,
                                  default = nil)
-  if valid_594060 != nil:
-    section.add "oauth_token", valid_594060
-  var valid_594061 = query.getOrDefault("callback")
-  valid_594061 = validateParameter(valid_594061, JString, required = false,
+  if valid_580060 != nil:
+    section.add "oauth_token", valid_580060
+  var valid_580061 = query.getOrDefault("callback")
+  valid_580061 = validateParameter(valid_580061, JString, required = false,
                                  default = nil)
-  if valid_594061 != nil:
-    section.add "callback", valid_594061
-  var valid_594062 = query.getOrDefault("access_token")
-  valid_594062 = validateParameter(valid_594062, JString, required = false,
+  if valid_580061 != nil:
+    section.add "callback", valid_580061
+  var valid_580062 = query.getOrDefault("access_token")
+  valid_580062 = validateParameter(valid_580062, JString, required = false,
                                  default = nil)
-  if valid_594062 != nil:
-    section.add "access_token", valid_594062
-  var valid_594063 = query.getOrDefault("uploadType")
-  valid_594063 = validateParameter(valid_594063, JString, required = false,
+  if valid_580062 != nil:
+    section.add "access_token", valid_580062
+  var valid_580063 = query.getOrDefault("uploadType")
+  valid_580063 = validateParameter(valid_580063, JString, required = false,
                                  default = nil)
-  if valid_594063 != nil:
-    section.add "uploadType", valid_594063
-  var valid_594064 = query.getOrDefault("key")
-  valid_594064 = validateParameter(valid_594064, JString, required = false,
+  if valid_580063 != nil:
+    section.add "uploadType", valid_580063
+  var valid_580064 = query.getOrDefault("key")
+  valid_580064 = validateParameter(valid_580064, JString, required = false,
                                  default = nil)
-  if valid_594064 != nil:
-    section.add "key", valid_594064
-  var valid_594065 = query.getOrDefault("$.xgafv")
-  valid_594065 = validateParameter(valid_594065, JString, required = false,
+  if valid_580064 != nil:
+    section.add "key", valid_580064
+  var valid_580065 = query.getOrDefault("$.xgafv")
+  valid_580065 = validateParameter(valid_580065, JString, required = false,
                                  default = newJString("1"))
-  if valid_594065 != nil:
-    section.add "$.xgafv", valid_594065
-  var valid_594066 = query.getOrDefault("prettyPrint")
-  valid_594066 = validateParameter(valid_594066, JBool, required = false,
+  if valid_580065 != nil:
+    section.add "$.xgafv", valid_580065
+  var valid_580066 = query.getOrDefault("prettyPrint")
+  valid_580066 = validateParameter(valid_580066, JBool, required = false,
                                  default = newJBool(true))
-  if valid_594066 != nil:
-    section.add "prettyPrint", valid_594066
+  if valid_580066 != nil:
+    section.add "prettyPrint", valid_580066
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1513,20 +1515,20 @@ proc validate_YoutubeAnalyticsGroupsDelete_594052(path: JsonNode; query: JsonNod
   if body != nil:
     result.add "body", body
 
-proc call*(call_594067: Call_YoutubeAnalyticsGroupsDelete_594051; path: JsonNode;
+proc call*(call_580067: Call_YoutubeAnalyticsGroupsDelete_580051; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Deletes a group.
   ## 
-  let valid = call_594067.validator(path, query, header, formData, body)
-  let scheme = call_594067.pickScheme
+  let valid = call_580067.validator(path, query, header, formData, body)
+  let scheme = call_580067.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_594067.url(scheme.get, call_594067.host, call_594067.base,
-                         call_594067.route, valid.getOrDefault("path"),
+  let url = call_580067.url(scheme.get, call_580067.host, call_580067.base,
+                         call_580067.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_594067, url, valid)
+  result = hook(call_580067, url, valid)
 
-proc call*(call_594068: Call_YoutubeAnalyticsGroupsDelete_594051;
+proc call*(call_580068: Call_YoutubeAnalyticsGroupsDelete_580051;
           onBehalfOfContentOwner: string = ""; uploadProtocol: string = "";
           fields: string = ""; quotaUser: string = ""; id: string = "";
           alt: string = "json"; oauthToken: string = ""; callback: string = "";
@@ -1571,37 +1573,37 @@ proc call*(call_594068: Call_YoutubeAnalyticsGroupsDelete_594051;
   ##        : V1 error format.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var query_594069 = newJObject()
-  add(query_594069, "onBehalfOfContentOwner", newJString(onBehalfOfContentOwner))
-  add(query_594069, "upload_protocol", newJString(uploadProtocol))
-  add(query_594069, "fields", newJString(fields))
-  add(query_594069, "quotaUser", newJString(quotaUser))
-  add(query_594069, "id", newJString(id))
-  add(query_594069, "alt", newJString(alt))
-  add(query_594069, "oauth_token", newJString(oauthToken))
-  add(query_594069, "callback", newJString(callback))
-  add(query_594069, "access_token", newJString(accessToken))
-  add(query_594069, "uploadType", newJString(uploadType))
-  add(query_594069, "key", newJString(key))
-  add(query_594069, "$.xgafv", newJString(Xgafv))
-  add(query_594069, "prettyPrint", newJBool(prettyPrint))
-  result = call_594068.call(nil, query_594069, nil, nil, nil)
+  var query_580069 = newJObject()
+  add(query_580069, "onBehalfOfContentOwner", newJString(onBehalfOfContentOwner))
+  add(query_580069, "upload_protocol", newJString(uploadProtocol))
+  add(query_580069, "fields", newJString(fields))
+  add(query_580069, "quotaUser", newJString(quotaUser))
+  add(query_580069, "id", newJString(id))
+  add(query_580069, "alt", newJString(alt))
+  add(query_580069, "oauth_token", newJString(oauthToken))
+  add(query_580069, "callback", newJString(callback))
+  add(query_580069, "access_token", newJString(accessToken))
+  add(query_580069, "uploadType", newJString(uploadType))
+  add(query_580069, "key", newJString(key))
+  add(query_580069, "$.xgafv", newJString(Xgafv))
+  add(query_580069, "prettyPrint", newJBool(prettyPrint))
+  result = call_580068.call(nil, query_580069, nil, nil, nil)
 
-var youtubeAnalyticsGroupsDelete* = Call_YoutubeAnalyticsGroupsDelete_594051(
+var youtubeAnalyticsGroupsDelete* = Call_YoutubeAnalyticsGroupsDelete_580051(
     name: "youtubeAnalyticsGroupsDelete", meth: HttpMethod.HttpDelete,
     host: "youtubeanalytics.googleapis.com", route: "/v2/groups",
-    validator: validate_YoutubeAnalyticsGroupsDelete_594052, base: "/",
-    url: url_YoutubeAnalyticsGroupsDelete_594053, schemes: {Scheme.Https})
+    validator: validate_YoutubeAnalyticsGroupsDelete_580052, base: "/",
+    url: url_YoutubeAnalyticsGroupsDelete_580053, schemes: {Scheme.Https})
 type
-  Call_YoutubeAnalyticsReportsQuery_594070 = ref object of OpenApiRestCall_593408
-proc url_YoutubeAnalyticsReportsQuery_594072(protocol: Scheme; host: string;
+  Call_YoutubeAnalyticsReportsQuery_580070 = ref object of OpenApiRestCall_579408
+proc url_YoutubeAnalyticsReportsQuery_580072(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   result.path = base & route
 
-proc validate_YoutubeAnalyticsReportsQuery_594071(path: JsonNode; query: JsonNode;
+proc validate_YoutubeAnalyticsReportsQuery_580071(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Retrieve your YouTube Analytics reports.
   ## 
@@ -1701,113 +1703,113 @@ proc validate_YoutubeAnalyticsReportsQuery_594071(path: JsonNode; query: JsonNod
   ## inclusive).",
   ## minValue: 1
   section = newJObject()
-  var valid_594073 = query.getOrDefault("upload_protocol")
-  valid_594073 = validateParameter(valid_594073, JString, required = false,
+  var valid_580073 = query.getOrDefault("upload_protocol")
+  valid_580073 = validateParameter(valid_580073, JString, required = false,
                                  default = nil)
-  if valid_594073 != nil:
-    section.add "upload_protocol", valid_594073
-  var valid_594074 = query.getOrDefault("fields")
-  valid_594074 = validateParameter(valid_594074, JString, required = false,
+  if valid_580073 != nil:
+    section.add "upload_protocol", valid_580073
+  var valid_580074 = query.getOrDefault("fields")
+  valid_580074 = validateParameter(valid_580074, JString, required = false,
                                  default = nil)
-  if valid_594074 != nil:
-    section.add "fields", valid_594074
-  var valid_594075 = query.getOrDefault("quotaUser")
-  valid_594075 = validateParameter(valid_594075, JString, required = false,
+  if valid_580074 != nil:
+    section.add "fields", valid_580074
+  var valid_580075 = query.getOrDefault("quotaUser")
+  valid_580075 = validateParameter(valid_580075, JString, required = false,
                                  default = nil)
-  if valid_594075 != nil:
-    section.add "quotaUser", valid_594075
-  var valid_594076 = query.getOrDefault("alt")
-  valid_594076 = validateParameter(valid_594076, JString, required = false,
+  if valid_580075 != nil:
+    section.add "quotaUser", valid_580075
+  var valid_580076 = query.getOrDefault("alt")
+  valid_580076 = validateParameter(valid_580076, JString, required = false,
                                  default = newJString("json"))
-  if valid_594076 != nil:
-    section.add "alt", valid_594076
-  var valid_594077 = query.getOrDefault("endDate")
-  valid_594077 = validateParameter(valid_594077, JString, required = false,
+  if valid_580076 != nil:
+    section.add "alt", valid_580076
+  var valid_580077 = query.getOrDefault("endDate")
+  valid_580077 = validateParameter(valid_580077, JString, required = false,
                                  default = nil)
-  if valid_594077 != nil:
-    section.add "endDate", valid_594077
-  var valid_594078 = query.getOrDefault("currency")
-  valid_594078 = validateParameter(valid_594078, JString, required = false,
+  if valid_580077 != nil:
+    section.add "endDate", valid_580077
+  var valid_580078 = query.getOrDefault("currency")
+  valid_580078 = validateParameter(valid_580078, JString, required = false,
                                  default = nil)
-  if valid_594078 != nil:
-    section.add "currency", valid_594078
-  var valid_594079 = query.getOrDefault("startDate")
-  valid_594079 = validateParameter(valid_594079, JString, required = false,
+  if valid_580078 != nil:
+    section.add "currency", valid_580078
+  var valid_580079 = query.getOrDefault("startDate")
+  valid_580079 = validateParameter(valid_580079, JString, required = false,
                                  default = nil)
-  if valid_594079 != nil:
-    section.add "startDate", valid_594079
-  var valid_594080 = query.getOrDefault("sort")
-  valid_594080 = validateParameter(valid_594080, JString, required = false,
+  if valid_580079 != nil:
+    section.add "startDate", valid_580079
+  var valid_580080 = query.getOrDefault("sort")
+  valid_580080 = validateParameter(valid_580080, JString, required = false,
                                  default = nil)
-  if valid_594080 != nil:
-    section.add "sort", valid_594080
-  var valid_594081 = query.getOrDefault("metrics")
-  valid_594081 = validateParameter(valid_594081, JString, required = false,
+  if valid_580080 != nil:
+    section.add "sort", valid_580080
+  var valid_580081 = query.getOrDefault("metrics")
+  valid_580081 = validateParameter(valid_580081, JString, required = false,
                                  default = nil)
-  if valid_594081 != nil:
-    section.add "metrics", valid_594081
-  var valid_594082 = query.getOrDefault("oauth_token")
-  valid_594082 = validateParameter(valid_594082, JString, required = false,
+  if valid_580081 != nil:
+    section.add "metrics", valid_580081
+  var valid_580082 = query.getOrDefault("oauth_token")
+  valid_580082 = validateParameter(valid_580082, JString, required = false,
                                  default = nil)
-  if valid_594082 != nil:
-    section.add "oauth_token", valid_594082
-  var valid_594083 = query.getOrDefault("callback")
-  valid_594083 = validateParameter(valid_594083, JString, required = false,
+  if valid_580082 != nil:
+    section.add "oauth_token", valid_580082
+  var valid_580083 = query.getOrDefault("callback")
+  valid_580083 = validateParameter(valid_580083, JString, required = false,
                                  default = nil)
-  if valid_594083 != nil:
-    section.add "callback", valid_594083
-  var valid_594084 = query.getOrDefault("access_token")
-  valid_594084 = validateParameter(valid_594084, JString, required = false,
+  if valid_580083 != nil:
+    section.add "callback", valid_580083
+  var valid_580084 = query.getOrDefault("access_token")
+  valid_580084 = validateParameter(valid_580084, JString, required = false,
                                  default = nil)
-  if valid_594084 != nil:
-    section.add "access_token", valid_594084
-  var valid_594085 = query.getOrDefault("uploadType")
-  valid_594085 = validateParameter(valid_594085, JString, required = false,
+  if valid_580084 != nil:
+    section.add "access_token", valid_580084
+  var valid_580085 = query.getOrDefault("uploadType")
+  valid_580085 = validateParameter(valid_580085, JString, required = false,
                                  default = nil)
-  if valid_594085 != nil:
-    section.add "uploadType", valid_594085
-  var valid_594086 = query.getOrDefault("maxResults")
-  valid_594086 = validateParameter(valid_594086, JInt, required = false, default = nil)
-  if valid_594086 != nil:
-    section.add "maxResults", valid_594086
-  var valid_594087 = query.getOrDefault("dimensions")
-  valid_594087 = validateParameter(valid_594087, JString, required = false,
+  if valid_580085 != nil:
+    section.add "uploadType", valid_580085
+  var valid_580086 = query.getOrDefault("maxResults")
+  valid_580086 = validateParameter(valid_580086, JInt, required = false, default = nil)
+  if valid_580086 != nil:
+    section.add "maxResults", valid_580086
+  var valid_580087 = query.getOrDefault("dimensions")
+  valid_580087 = validateParameter(valid_580087, JString, required = false,
                                  default = nil)
-  if valid_594087 != nil:
-    section.add "dimensions", valid_594087
-  var valid_594088 = query.getOrDefault("ids")
-  valid_594088 = validateParameter(valid_594088, JString, required = false,
+  if valid_580087 != nil:
+    section.add "dimensions", valid_580087
+  var valid_580088 = query.getOrDefault("ids")
+  valid_580088 = validateParameter(valid_580088, JString, required = false,
                                  default = nil)
-  if valid_594088 != nil:
-    section.add "ids", valid_594088
-  var valid_594089 = query.getOrDefault("key")
-  valid_594089 = validateParameter(valid_594089, JString, required = false,
+  if valid_580088 != nil:
+    section.add "ids", valid_580088
+  var valid_580089 = query.getOrDefault("key")
+  valid_580089 = validateParameter(valid_580089, JString, required = false,
                                  default = nil)
-  if valid_594089 != nil:
-    section.add "key", valid_594089
-  var valid_594090 = query.getOrDefault("includeHistoricalChannelData")
-  valid_594090 = validateParameter(valid_594090, JBool, required = false, default = nil)
-  if valid_594090 != nil:
-    section.add "includeHistoricalChannelData", valid_594090
-  var valid_594091 = query.getOrDefault("$.xgafv")
-  valid_594091 = validateParameter(valid_594091, JString, required = false,
+  if valid_580089 != nil:
+    section.add "key", valid_580089
+  var valid_580090 = query.getOrDefault("includeHistoricalChannelData")
+  valid_580090 = validateParameter(valid_580090, JBool, required = false, default = nil)
+  if valid_580090 != nil:
+    section.add "includeHistoricalChannelData", valid_580090
+  var valid_580091 = query.getOrDefault("$.xgafv")
+  valid_580091 = validateParameter(valid_580091, JString, required = false,
                                  default = newJString("1"))
-  if valid_594091 != nil:
-    section.add "$.xgafv", valid_594091
-  var valid_594092 = query.getOrDefault("filters")
-  valid_594092 = validateParameter(valid_594092, JString, required = false,
+  if valid_580091 != nil:
+    section.add "$.xgafv", valid_580091
+  var valid_580092 = query.getOrDefault("filters")
+  valid_580092 = validateParameter(valid_580092, JString, required = false,
                                  default = nil)
-  if valid_594092 != nil:
-    section.add "filters", valid_594092
-  var valid_594093 = query.getOrDefault("prettyPrint")
-  valid_594093 = validateParameter(valid_594093, JBool, required = false,
+  if valid_580092 != nil:
+    section.add "filters", valid_580092
+  var valid_580093 = query.getOrDefault("prettyPrint")
+  valid_580093 = validateParameter(valid_580093, JBool, required = false,
                                  default = newJBool(true))
-  if valid_594093 != nil:
-    section.add "prettyPrint", valid_594093
-  var valid_594094 = query.getOrDefault("startIndex")
-  valid_594094 = validateParameter(valid_594094, JInt, required = false, default = nil)
-  if valid_594094 != nil:
-    section.add "startIndex", valid_594094
+  if valid_580093 != nil:
+    section.add "prettyPrint", valid_580093
+  var valid_580094 = query.getOrDefault("startIndex")
+  valid_580094 = validateParameter(valid_580094, JInt, required = false, default = nil)
+  if valid_580094 != nil:
+    section.add "startIndex", valid_580094
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1816,20 +1818,20 @@ proc validate_YoutubeAnalyticsReportsQuery_594071(path: JsonNode; query: JsonNod
   if body != nil:
     result.add "body", body
 
-proc call*(call_594095: Call_YoutubeAnalyticsReportsQuery_594070; path: JsonNode;
+proc call*(call_580095: Call_YoutubeAnalyticsReportsQuery_580070; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Retrieve your YouTube Analytics reports.
   ## 
-  let valid = call_594095.validator(path, query, header, formData, body)
-  let scheme = call_594095.pickScheme
+  let valid = call_580095.validator(path, query, header, formData, body)
+  let scheme = call_580095.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_594095.url(scheme.get, call_594095.host, call_594095.base,
-                         call_594095.route, valid.getOrDefault("path"),
+  let url = call_580095.url(scheme.get, call_580095.host, call_580095.base,
+                         call_580095.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_594095, url, valid)
+  result = hook(call_580095, url, valid)
 
-proc call*(call_594096: Call_YoutubeAnalyticsReportsQuery_594070;
+proc call*(call_580096: Call_YoutubeAnalyticsReportsQuery_580070;
           uploadProtocol: string = ""; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; endDate: string = ""; currency: string = "";
           startDate: string = ""; sort: string = ""; metrics: string = "";
@@ -1930,40 +1932,130 @@ proc call*(call_594096: Call_YoutubeAnalyticsReportsQuery_594070;
   ## pagination mechanism along with the max-results parameter (one-based,
   ## inclusive).",
   ## minValue: 1
-  var query_594097 = newJObject()
-  add(query_594097, "upload_protocol", newJString(uploadProtocol))
-  add(query_594097, "fields", newJString(fields))
-  add(query_594097, "quotaUser", newJString(quotaUser))
-  add(query_594097, "alt", newJString(alt))
-  add(query_594097, "endDate", newJString(endDate))
-  add(query_594097, "currency", newJString(currency))
-  add(query_594097, "startDate", newJString(startDate))
-  add(query_594097, "sort", newJString(sort))
-  add(query_594097, "metrics", newJString(metrics))
-  add(query_594097, "oauth_token", newJString(oauthToken))
-  add(query_594097, "callback", newJString(callback))
-  add(query_594097, "access_token", newJString(accessToken))
-  add(query_594097, "uploadType", newJString(uploadType))
-  add(query_594097, "maxResults", newJInt(maxResults))
-  add(query_594097, "dimensions", newJString(dimensions))
-  add(query_594097, "ids", newJString(ids))
-  add(query_594097, "key", newJString(key))
-  add(query_594097, "includeHistoricalChannelData",
+  var query_580097 = newJObject()
+  add(query_580097, "upload_protocol", newJString(uploadProtocol))
+  add(query_580097, "fields", newJString(fields))
+  add(query_580097, "quotaUser", newJString(quotaUser))
+  add(query_580097, "alt", newJString(alt))
+  add(query_580097, "endDate", newJString(endDate))
+  add(query_580097, "currency", newJString(currency))
+  add(query_580097, "startDate", newJString(startDate))
+  add(query_580097, "sort", newJString(sort))
+  add(query_580097, "metrics", newJString(metrics))
+  add(query_580097, "oauth_token", newJString(oauthToken))
+  add(query_580097, "callback", newJString(callback))
+  add(query_580097, "access_token", newJString(accessToken))
+  add(query_580097, "uploadType", newJString(uploadType))
+  add(query_580097, "maxResults", newJInt(maxResults))
+  add(query_580097, "dimensions", newJString(dimensions))
+  add(query_580097, "ids", newJString(ids))
+  add(query_580097, "key", newJString(key))
+  add(query_580097, "includeHistoricalChannelData",
       newJBool(includeHistoricalChannelData))
-  add(query_594097, "$.xgafv", newJString(Xgafv))
-  add(query_594097, "filters", newJString(filters))
-  add(query_594097, "prettyPrint", newJBool(prettyPrint))
-  add(query_594097, "startIndex", newJInt(startIndex))
-  result = call_594096.call(nil, query_594097, nil, nil, nil)
+  add(query_580097, "$.xgafv", newJString(Xgafv))
+  add(query_580097, "filters", newJString(filters))
+  add(query_580097, "prettyPrint", newJBool(prettyPrint))
+  add(query_580097, "startIndex", newJInt(startIndex))
+  result = call_580096.call(nil, query_580097, nil, nil, nil)
 
-var youtubeAnalyticsReportsQuery* = Call_YoutubeAnalyticsReportsQuery_594070(
+var youtubeAnalyticsReportsQuery* = Call_YoutubeAnalyticsReportsQuery_580070(
     name: "youtubeAnalyticsReportsQuery", meth: HttpMethod.HttpGet,
     host: "youtubeanalytics.googleapis.com", route: "/v2/reports",
-    validator: validate_YoutubeAnalyticsReportsQuery_594071, base: "/",
-    url: url_YoutubeAnalyticsReportsQuery_594072, schemes: {Scheme.Https})
+    validator: validate_YoutubeAnalyticsReportsQuery_580071, base: "/",
+    url: url_YoutubeAnalyticsReportsQuery_580072, schemes: {Scheme.Https})
 export
   rest
 
+type
+  GoogleAuth = ref object
+    endpoint*: Uri
+    token: string
+    expiry*: float64
+    issued*: float64
+    email: string
+    key: string
+    scope*: seq[string]
+    form: string
+    digest: Hash
+
+const
+  endpoint = "https://www.googleapis.com/oauth2/v4/token".parseUri
+var auth = GoogleAuth(endpoint: endpoint)
+proc hash(auth: GoogleAuth): Hash =
+  ## yield differing values for effectively different auth payloads
+  result = hash($auth.endpoint)
+  result = result !& hash(auth.email)
+  result = result !& hash(auth.key)
+  result = result !& hash(auth.scope.join(" "))
+  result = !$result
+
+proc newAuthenticator*(path: string): GoogleAuth =
+  let
+    input = readFile(path)
+    js = parseJson(input)
+  auth.email = js["client_email"].getStr
+  auth.key = js["private_key"].getStr
+  result = auth
+
+proc store(auth: var GoogleAuth; token: string; expiry: int; form: string) =
+  auth.token = token
+  auth.issued = epochTime()
+  auth.expiry = auth.issued + expiry.float64
+  auth.form = form
+  auth.digest = auth.hash
+
+proc authenticate*(fresh: float64 = -3600.0; lifetime: int = 3600): Future[bool] {.async.} =
+  ## get or refresh an authentication token; provide `fresh`
+  ## to ensure that the token won't expire in the next N seconds.
+  ## provide `lifetime` to indicate how long the token should last.
+  let clock = epochTime()
+  if auth.expiry > clock + fresh:
+    if auth.hash == auth.digest:
+      return true
+  let
+    expiry = clock.int + lifetime
+    header = JOSEHeader(alg: RS256, typ: "JWT")
+    claims = %*{"iss": auth.email, "scope": auth.scope.join(" "),
+              "aud": "https://www.googleapis.com/oauth2/v4/token", "exp": expiry,
+              "iat": clock.int}
+  var tok = JWT(header: header, claims: toClaims(claims))
+  tok.sign(auth.key)
+  let post = encodeQuery({"grant_type": "urn:ietf:params:oauth:grant-type:jwt-bearer",
+                       "assertion": $tok}, usePlus = false, omitEq = false)
+  var client = newAsyncHttpClient()
+  client.headers = newHttpHeaders({"Content-Type": "application/x-www-form-urlencoded",
+                                 "Content-Length": $post.len})
+  let response = await client.request($auth.endpoint, HttpPost, body = post)
+  if not response.code.is2xx:
+    return false
+  let body = await response.body
+  client.close
+  try:
+    let js = parseJson(body)
+    auth.store(js["access_token"].getStr, js["expires_in"].getInt,
+               js["token_type"].getStr)
+  except KeyError:
+    return false
+  except JsonParsingError:
+    return false
+  return true
+
+proc composeQueryString(query: JsonNode): string =
+  var qs: seq[KeyVal]
+  if query == nil:
+    return ""
+  for k, v in query.pairs:
+    qs.add (key: k, val: v.getStr)
+  result = encodeQuery(qs, usePlus = false, omitEq = false)
+
 method hook(call: OpenApiRestCall; url: Uri; input: JsonNode): Recallable {.base.} =
-  let headers = massageHeaders(input.getOrDefault("header"))
-  result = newRecallable(call, url, headers, input.getOrDefault("body").getStr)
+  var headers = massageHeaders(input.getOrDefault("header"))
+  let body = input.getOrDefault("body").getStr
+  if auth.scope.len == 0:
+    raise newException(ValueError, "specify authentication scopes")
+  if not waitfor authenticate(fresh = 10.0):
+    raise newException(IOError, "unable to refresh authentication token")
+  headers.add ("Authorization", auth.form & " " & auth.token)
+  headers.add ("Content-Type", "application/json")
+  headers.add ("Content-Length", $body.len)
+  result = newRecallable(call, url, headers, body = body)

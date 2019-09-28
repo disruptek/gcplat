@@ -1,6 +1,7 @@
 
 import
-  json, options, hashes, uri, openapi/rest, os, uri, strutils, httpcore
+  json, options, hashes, uri, rest, os, uri, strutils, times, httpcore, httpclient,
+  asyncdispatch, jwt
 
 ## auto-generated via openapi macro
 ## title: Search Console
@@ -28,15 +29,15 @@ type
     url*: proc (protocol: Scheme; host: string; base: string; route: string;
               path: JsonNode; query: JsonNode): Uri
 
-  OpenApiRestCall_593408 = ref object of OpenApiRestCall
+  OpenApiRestCall_579408 = ref object of OpenApiRestCall
 proc hash(scheme: Scheme): Hash {.used.} =
   result = hash(ord(scheme))
 
-proc clone[T: OpenApiRestCall_593408](t: T): T {.used.} =
+proc clone[T: OpenApiRestCall_579408](t: T): T {.used.} =
   result = T(name: t.name, meth: t.meth, host: t.host, base: t.base, route: t.route,
            schemes: t.schemes, validator: t.validator, url: t.url)
 
-proc pickScheme(t: OpenApiRestCall_593408): Option[Scheme] {.used.} =
+proc pickScheme(t: OpenApiRestCall_579408): Option[Scheme] {.used.} =
   ## select a supported scheme from a set of candidates
   for scheme in Scheme.low ..
       Scheme.high:
@@ -104,17 +105,18 @@ proc hydratePath(input: JsonNode; segments: seq[PathToken]): Option[string] =
 
 const
   gcpServiceName = "webmasters"
+proc composeQueryString(query: JsonNode): string
 method hook(call: OpenApiRestCall; url: Uri; input: JsonNode): Recallable {.base.}
 type
-  Call_WebmastersSitesList_593676 = ref object of OpenApiRestCall_593408
-proc url_WebmastersSitesList_593678(protocol: Scheme; host: string; base: string;
+  Call_WebmastersSitesList_579676 = ref object of OpenApiRestCall_579408
+proc url_WebmastersSitesList_579678(protocol: Scheme; host: string; base: string;
                                    route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   result.path = base & route
 
-proc validate_WebmastersSitesList_593677(path: JsonNode; query: JsonNode;
+proc validate_WebmastersSitesList_579677(path: JsonNode; query: JsonNode;
                                         header: JsonNode; formData: JsonNode;
                                         body: JsonNode): JsonNode =
   ## Lists the user's Search Console sites.
@@ -139,41 +141,41 @@ proc validate_WebmastersSitesList_593677(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_593790 = query.getOrDefault("fields")
-  valid_593790 = validateParameter(valid_593790, JString, required = false,
+  var valid_579790 = query.getOrDefault("fields")
+  valid_579790 = validateParameter(valid_579790, JString, required = false,
                                  default = nil)
-  if valid_593790 != nil:
-    section.add "fields", valid_593790
-  var valid_593791 = query.getOrDefault("quotaUser")
-  valid_593791 = validateParameter(valid_593791, JString, required = false,
+  if valid_579790 != nil:
+    section.add "fields", valid_579790
+  var valid_579791 = query.getOrDefault("quotaUser")
+  valid_579791 = validateParameter(valid_579791, JString, required = false,
                                  default = nil)
-  if valid_593791 != nil:
-    section.add "quotaUser", valid_593791
-  var valid_593805 = query.getOrDefault("alt")
-  valid_593805 = validateParameter(valid_593805, JString, required = false,
+  if valid_579791 != nil:
+    section.add "quotaUser", valid_579791
+  var valid_579805 = query.getOrDefault("alt")
+  valid_579805 = validateParameter(valid_579805, JString, required = false,
                                  default = newJString("json"))
-  if valid_593805 != nil:
-    section.add "alt", valid_593805
-  var valid_593806 = query.getOrDefault("oauth_token")
-  valid_593806 = validateParameter(valid_593806, JString, required = false,
+  if valid_579805 != nil:
+    section.add "alt", valid_579805
+  var valid_579806 = query.getOrDefault("oauth_token")
+  valid_579806 = validateParameter(valid_579806, JString, required = false,
                                  default = nil)
-  if valid_593806 != nil:
-    section.add "oauth_token", valid_593806
-  var valid_593807 = query.getOrDefault("userIp")
-  valid_593807 = validateParameter(valid_593807, JString, required = false,
+  if valid_579806 != nil:
+    section.add "oauth_token", valid_579806
+  var valid_579807 = query.getOrDefault("userIp")
+  valid_579807 = validateParameter(valid_579807, JString, required = false,
                                  default = nil)
-  if valid_593807 != nil:
-    section.add "userIp", valid_593807
-  var valid_593808 = query.getOrDefault("key")
-  valid_593808 = validateParameter(valid_593808, JString, required = false,
+  if valid_579807 != nil:
+    section.add "userIp", valid_579807
+  var valid_579808 = query.getOrDefault("key")
+  valid_579808 = validateParameter(valid_579808, JString, required = false,
                                  default = nil)
-  if valid_593808 != nil:
-    section.add "key", valid_593808
-  var valid_593809 = query.getOrDefault("prettyPrint")
-  valid_593809 = validateParameter(valid_593809, JBool, required = false,
+  if valid_579808 != nil:
+    section.add "key", valid_579808
+  var valid_579809 = query.getOrDefault("prettyPrint")
+  valid_579809 = validateParameter(valid_579809, JBool, required = false,
                                  default = newJBool(true))
-  if valid_593809 != nil:
-    section.add "prettyPrint", valid_593809
+  if valid_579809 != nil:
+    section.add "prettyPrint", valid_579809
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -182,20 +184,20 @@ proc validate_WebmastersSitesList_593677(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_593832: Call_WebmastersSitesList_593676; path: JsonNode;
+proc call*(call_579832: Call_WebmastersSitesList_579676; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Lists the user's Search Console sites.
   ## 
-  let valid = call_593832.validator(path, query, header, formData, body)
-  let scheme = call_593832.pickScheme
+  let valid = call_579832.validator(path, query, header, formData, body)
+  let scheme = call_579832.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_593832.url(scheme.get, call_593832.host, call_593832.base,
-                         call_593832.route, valid.getOrDefault("path"),
+  let url = call_579832.url(scheme.get, call_579832.host, call_579832.base,
+                         call_579832.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_593832, url, valid)
+  result = hook(call_579832, url, valid)
 
-proc call*(call_593903: Call_WebmastersSitesList_593676; fields: string = "";
+proc call*(call_579903: Call_WebmastersSitesList_579676; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; key: string = ""; prettyPrint: bool = true): Recallable =
   ## webmastersSitesList
@@ -214,28 +216,28 @@ proc call*(call_593903: Call_WebmastersSitesList_593676; fields: string = "";
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var query_593904 = newJObject()
-  add(query_593904, "fields", newJString(fields))
-  add(query_593904, "quotaUser", newJString(quotaUser))
-  add(query_593904, "alt", newJString(alt))
-  add(query_593904, "oauth_token", newJString(oauthToken))
-  add(query_593904, "userIp", newJString(userIp))
-  add(query_593904, "key", newJString(key))
-  add(query_593904, "prettyPrint", newJBool(prettyPrint))
-  result = call_593903.call(nil, query_593904, nil, nil, nil)
+  var query_579904 = newJObject()
+  add(query_579904, "fields", newJString(fields))
+  add(query_579904, "quotaUser", newJString(quotaUser))
+  add(query_579904, "alt", newJString(alt))
+  add(query_579904, "oauth_token", newJString(oauthToken))
+  add(query_579904, "userIp", newJString(userIp))
+  add(query_579904, "key", newJString(key))
+  add(query_579904, "prettyPrint", newJBool(prettyPrint))
+  result = call_579903.call(nil, query_579904, nil, nil, nil)
 
-var webmastersSitesList* = Call_WebmastersSitesList_593676(
+var webmastersSitesList* = Call_WebmastersSitesList_579676(
     name: "webmastersSitesList", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/sites",
-    validator: validate_WebmastersSitesList_593677, base: "/webmasters/v3",
-    url: url_WebmastersSitesList_593678, schemes: {Scheme.Https})
+    validator: validate_WebmastersSitesList_579677, base: "/webmasters/v3",
+    url: url_WebmastersSitesList_579678, schemes: {Scheme.Https})
 type
-  Call_WebmastersSitesAdd_593973 = ref object of OpenApiRestCall_593408
-proc url_WebmastersSitesAdd_593975(protocol: Scheme; host: string; base: string;
+  Call_WebmastersSitesAdd_579973 = ref object of OpenApiRestCall_579408
+proc url_WebmastersSitesAdd_579975(protocol: Scheme; host: string; base: string;
                                   route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "siteUrl" in path, "`siteUrl` is a required path parameter"
   const
@@ -246,7 +248,7 @@ proc url_WebmastersSitesAdd_593975(protocol: Scheme; host: string; base: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_WebmastersSitesAdd_593974(path: JsonNode; query: JsonNode;
+proc validate_WebmastersSitesAdd_579974(path: JsonNode; query: JsonNode;
                                        header: JsonNode; formData: JsonNode;
                                        body: JsonNode): JsonNode =
   ## Adds a site to the set of the user's sites in Search Console.
@@ -258,11 +260,11 @@ proc validate_WebmastersSitesAdd_593974(path: JsonNode; query: JsonNode;
   ##          : The URL of the site to add.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `siteUrl` field"
-  var valid_593976 = path.getOrDefault("siteUrl")
-  valid_593976 = validateParameter(valid_593976, JString, required = true,
+  var valid_579976 = path.getOrDefault("siteUrl")
+  valid_579976 = validateParameter(valid_579976, JString, required = true,
                                  default = nil)
-  if valid_593976 != nil:
-    section.add "siteUrl", valid_593976
+  if valid_579976 != nil:
+    section.add "siteUrl", valid_579976
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -280,41 +282,41 @@ proc validate_WebmastersSitesAdd_593974(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_593977 = query.getOrDefault("fields")
-  valid_593977 = validateParameter(valid_593977, JString, required = false,
+  var valid_579977 = query.getOrDefault("fields")
+  valid_579977 = validateParameter(valid_579977, JString, required = false,
                                  default = nil)
-  if valid_593977 != nil:
-    section.add "fields", valid_593977
-  var valid_593978 = query.getOrDefault("quotaUser")
-  valid_593978 = validateParameter(valid_593978, JString, required = false,
+  if valid_579977 != nil:
+    section.add "fields", valid_579977
+  var valid_579978 = query.getOrDefault("quotaUser")
+  valid_579978 = validateParameter(valid_579978, JString, required = false,
                                  default = nil)
-  if valid_593978 != nil:
-    section.add "quotaUser", valid_593978
-  var valid_593979 = query.getOrDefault("alt")
-  valid_593979 = validateParameter(valid_593979, JString, required = false,
+  if valid_579978 != nil:
+    section.add "quotaUser", valid_579978
+  var valid_579979 = query.getOrDefault("alt")
+  valid_579979 = validateParameter(valid_579979, JString, required = false,
                                  default = newJString("json"))
-  if valid_593979 != nil:
-    section.add "alt", valid_593979
-  var valid_593980 = query.getOrDefault("oauth_token")
-  valid_593980 = validateParameter(valid_593980, JString, required = false,
+  if valid_579979 != nil:
+    section.add "alt", valid_579979
+  var valid_579980 = query.getOrDefault("oauth_token")
+  valid_579980 = validateParameter(valid_579980, JString, required = false,
                                  default = nil)
-  if valid_593980 != nil:
-    section.add "oauth_token", valid_593980
-  var valid_593981 = query.getOrDefault("userIp")
-  valid_593981 = validateParameter(valid_593981, JString, required = false,
+  if valid_579980 != nil:
+    section.add "oauth_token", valid_579980
+  var valid_579981 = query.getOrDefault("userIp")
+  valid_579981 = validateParameter(valid_579981, JString, required = false,
                                  default = nil)
-  if valid_593981 != nil:
-    section.add "userIp", valid_593981
-  var valid_593982 = query.getOrDefault("key")
-  valid_593982 = validateParameter(valid_593982, JString, required = false,
+  if valid_579981 != nil:
+    section.add "userIp", valid_579981
+  var valid_579982 = query.getOrDefault("key")
+  valid_579982 = validateParameter(valid_579982, JString, required = false,
                                  default = nil)
-  if valid_593982 != nil:
-    section.add "key", valid_593982
-  var valid_593983 = query.getOrDefault("prettyPrint")
-  valid_593983 = validateParameter(valid_593983, JBool, required = false,
+  if valid_579982 != nil:
+    section.add "key", valid_579982
+  var valid_579983 = query.getOrDefault("prettyPrint")
+  valid_579983 = validateParameter(valid_579983, JBool, required = false,
                                  default = newJBool(true))
-  if valid_593983 != nil:
-    section.add "prettyPrint", valid_593983
+  if valid_579983 != nil:
+    section.add "prettyPrint", valid_579983
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -323,20 +325,20 @@ proc validate_WebmastersSitesAdd_593974(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_593984: Call_WebmastersSitesAdd_593973; path: JsonNode;
+proc call*(call_579984: Call_WebmastersSitesAdd_579973; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Adds a site to the set of the user's sites in Search Console.
   ## 
-  let valid = call_593984.validator(path, query, header, formData, body)
-  let scheme = call_593984.pickScheme
+  let valid = call_579984.validator(path, query, header, formData, body)
+  let scheme = call_579984.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_593984.url(scheme.get, call_593984.host, call_593984.base,
-                         call_593984.route, valid.getOrDefault("path"),
+  let url = call_579984.url(scheme.get, call_579984.host, call_579984.base,
+                         call_579984.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_593984, url, valid)
+  result = hook(call_579984, url, valid)
 
-proc call*(call_593985: Call_WebmastersSitesAdd_593973; siteUrl: string;
+proc call*(call_579985: Call_WebmastersSitesAdd_579973; siteUrl: string;
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           oauthToken: string = ""; userIp: string = ""; key: string = "";
           prettyPrint: bool = true): Recallable =
@@ -358,30 +360,30 @@ proc call*(call_593985: Call_WebmastersSitesAdd_593973; siteUrl: string;
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_593986 = newJObject()
-  var query_593987 = newJObject()
-  add(query_593987, "fields", newJString(fields))
-  add(query_593987, "quotaUser", newJString(quotaUser))
-  add(path_593986, "siteUrl", newJString(siteUrl))
-  add(query_593987, "alt", newJString(alt))
-  add(query_593987, "oauth_token", newJString(oauthToken))
-  add(query_593987, "userIp", newJString(userIp))
-  add(query_593987, "key", newJString(key))
-  add(query_593987, "prettyPrint", newJBool(prettyPrint))
-  result = call_593985.call(path_593986, query_593987, nil, nil, nil)
+  var path_579986 = newJObject()
+  var query_579987 = newJObject()
+  add(query_579987, "fields", newJString(fields))
+  add(query_579987, "quotaUser", newJString(quotaUser))
+  add(path_579986, "siteUrl", newJString(siteUrl))
+  add(query_579987, "alt", newJString(alt))
+  add(query_579987, "oauth_token", newJString(oauthToken))
+  add(query_579987, "userIp", newJString(userIp))
+  add(query_579987, "key", newJString(key))
+  add(query_579987, "prettyPrint", newJBool(prettyPrint))
+  result = call_579985.call(path_579986, query_579987, nil, nil, nil)
 
-var webmastersSitesAdd* = Call_WebmastersSitesAdd_593973(
+var webmastersSitesAdd* = Call_WebmastersSitesAdd_579973(
     name: "webmastersSitesAdd", meth: HttpMethod.HttpPut,
     host: "www.googleapis.com", route: "/sites/{siteUrl}",
-    validator: validate_WebmastersSitesAdd_593974, base: "/webmasters/v3",
-    url: url_WebmastersSitesAdd_593975, schemes: {Scheme.Https})
+    validator: validate_WebmastersSitesAdd_579974, base: "/webmasters/v3",
+    url: url_WebmastersSitesAdd_579975, schemes: {Scheme.Https})
 type
-  Call_WebmastersSitesGet_593944 = ref object of OpenApiRestCall_593408
-proc url_WebmastersSitesGet_593946(protocol: Scheme; host: string; base: string;
+  Call_WebmastersSitesGet_579944 = ref object of OpenApiRestCall_579408
+proc url_WebmastersSitesGet_579946(protocol: Scheme; host: string; base: string;
                                   route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "siteUrl" in path, "`siteUrl` is a required path parameter"
   const
@@ -392,7 +394,7 @@ proc url_WebmastersSitesGet_593946(protocol: Scheme; host: string; base: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_WebmastersSitesGet_593945(path: JsonNode; query: JsonNode;
+proc validate_WebmastersSitesGet_579945(path: JsonNode; query: JsonNode;
                                        header: JsonNode; formData: JsonNode;
                                        body: JsonNode): JsonNode =
   ## Retrieves information about specific site.
@@ -404,11 +406,11 @@ proc validate_WebmastersSitesGet_593945(path: JsonNode; query: JsonNode;
   ##          : The URI of the property as defined in Search Console. Examples: http://www.example.com/ or android-app://com.example/ Note: for property-sets, use the URI that starts with sc-set: which is used in Search Console URLs.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `siteUrl` field"
-  var valid_593961 = path.getOrDefault("siteUrl")
-  valid_593961 = validateParameter(valid_593961, JString, required = true,
+  var valid_579961 = path.getOrDefault("siteUrl")
+  valid_579961 = validateParameter(valid_579961, JString, required = true,
                                  default = nil)
-  if valid_593961 != nil:
-    section.add "siteUrl", valid_593961
+  if valid_579961 != nil:
+    section.add "siteUrl", valid_579961
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -426,41 +428,41 @@ proc validate_WebmastersSitesGet_593945(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_593962 = query.getOrDefault("fields")
-  valid_593962 = validateParameter(valid_593962, JString, required = false,
+  var valid_579962 = query.getOrDefault("fields")
+  valid_579962 = validateParameter(valid_579962, JString, required = false,
                                  default = nil)
-  if valid_593962 != nil:
-    section.add "fields", valid_593962
-  var valid_593963 = query.getOrDefault("quotaUser")
-  valid_593963 = validateParameter(valid_593963, JString, required = false,
+  if valid_579962 != nil:
+    section.add "fields", valid_579962
+  var valid_579963 = query.getOrDefault("quotaUser")
+  valid_579963 = validateParameter(valid_579963, JString, required = false,
                                  default = nil)
-  if valid_593963 != nil:
-    section.add "quotaUser", valid_593963
-  var valid_593964 = query.getOrDefault("alt")
-  valid_593964 = validateParameter(valid_593964, JString, required = false,
+  if valid_579963 != nil:
+    section.add "quotaUser", valid_579963
+  var valid_579964 = query.getOrDefault("alt")
+  valid_579964 = validateParameter(valid_579964, JString, required = false,
                                  default = newJString("json"))
-  if valid_593964 != nil:
-    section.add "alt", valid_593964
-  var valid_593965 = query.getOrDefault("oauth_token")
-  valid_593965 = validateParameter(valid_593965, JString, required = false,
+  if valid_579964 != nil:
+    section.add "alt", valid_579964
+  var valid_579965 = query.getOrDefault("oauth_token")
+  valid_579965 = validateParameter(valid_579965, JString, required = false,
                                  default = nil)
-  if valid_593965 != nil:
-    section.add "oauth_token", valid_593965
-  var valid_593966 = query.getOrDefault("userIp")
-  valid_593966 = validateParameter(valid_593966, JString, required = false,
+  if valid_579965 != nil:
+    section.add "oauth_token", valid_579965
+  var valid_579966 = query.getOrDefault("userIp")
+  valid_579966 = validateParameter(valid_579966, JString, required = false,
                                  default = nil)
-  if valid_593966 != nil:
-    section.add "userIp", valid_593966
-  var valid_593967 = query.getOrDefault("key")
-  valid_593967 = validateParameter(valid_593967, JString, required = false,
+  if valid_579966 != nil:
+    section.add "userIp", valid_579966
+  var valid_579967 = query.getOrDefault("key")
+  valid_579967 = validateParameter(valid_579967, JString, required = false,
                                  default = nil)
-  if valid_593967 != nil:
-    section.add "key", valid_593967
-  var valid_593968 = query.getOrDefault("prettyPrint")
-  valid_593968 = validateParameter(valid_593968, JBool, required = false,
+  if valid_579967 != nil:
+    section.add "key", valid_579967
+  var valid_579968 = query.getOrDefault("prettyPrint")
+  valid_579968 = validateParameter(valid_579968, JBool, required = false,
                                  default = newJBool(true))
-  if valid_593968 != nil:
-    section.add "prettyPrint", valid_593968
+  if valid_579968 != nil:
+    section.add "prettyPrint", valid_579968
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -469,20 +471,20 @@ proc validate_WebmastersSitesGet_593945(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_593969: Call_WebmastersSitesGet_593944; path: JsonNode;
+proc call*(call_579969: Call_WebmastersSitesGet_579944; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Retrieves information about specific site.
   ## 
-  let valid = call_593969.validator(path, query, header, formData, body)
-  let scheme = call_593969.pickScheme
+  let valid = call_579969.validator(path, query, header, formData, body)
+  let scheme = call_579969.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_593969.url(scheme.get, call_593969.host, call_593969.base,
-                         call_593969.route, valid.getOrDefault("path"),
+  let url = call_579969.url(scheme.get, call_579969.host, call_579969.base,
+                         call_579969.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_593969, url, valid)
+  result = hook(call_579969, url, valid)
 
-proc call*(call_593970: Call_WebmastersSitesGet_593944; siteUrl: string;
+proc call*(call_579970: Call_WebmastersSitesGet_579944; siteUrl: string;
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           oauthToken: string = ""; userIp: string = ""; key: string = "";
           prettyPrint: bool = true): Recallable =
@@ -504,30 +506,30 @@ proc call*(call_593970: Call_WebmastersSitesGet_593944; siteUrl: string;
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_593971 = newJObject()
-  var query_593972 = newJObject()
-  add(query_593972, "fields", newJString(fields))
-  add(query_593972, "quotaUser", newJString(quotaUser))
-  add(path_593971, "siteUrl", newJString(siteUrl))
-  add(query_593972, "alt", newJString(alt))
-  add(query_593972, "oauth_token", newJString(oauthToken))
-  add(query_593972, "userIp", newJString(userIp))
-  add(query_593972, "key", newJString(key))
-  add(query_593972, "prettyPrint", newJBool(prettyPrint))
-  result = call_593970.call(path_593971, query_593972, nil, nil, nil)
+  var path_579971 = newJObject()
+  var query_579972 = newJObject()
+  add(query_579972, "fields", newJString(fields))
+  add(query_579972, "quotaUser", newJString(quotaUser))
+  add(path_579971, "siteUrl", newJString(siteUrl))
+  add(query_579972, "alt", newJString(alt))
+  add(query_579972, "oauth_token", newJString(oauthToken))
+  add(query_579972, "userIp", newJString(userIp))
+  add(query_579972, "key", newJString(key))
+  add(query_579972, "prettyPrint", newJBool(prettyPrint))
+  result = call_579970.call(path_579971, query_579972, nil, nil, nil)
 
-var webmastersSitesGet* = Call_WebmastersSitesGet_593944(
+var webmastersSitesGet* = Call_WebmastersSitesGet_579944(
     name: "webmastersSitesGet", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/sites/{siteUrl}",
-    validator: validate_WebmastersSitesGet_593945, base: "/webmasters/v3",
-    url: url_WebmastersSitesGet_593946, schemes: {Scheme.Https})
+    validator: validate_WebmastersSitesGet_579945, base: "/webmasters/v3",
+    url: url_WebmastersSitesGet_579946, schemes: {Scheme.Https})
 type
-  Call_WebmastersSitesDelete_593988 = ref object of OpenApiRestCall_593408
-proc url_WebmastersSitesDelete_593990(protocol: Scheme; host: string; base: string;
+  Call_WebmastersSitesDelete_579988 = ref object of OpenApiRestCall_579408
+proc url_WebmastersSitesDelete_579990(protocol: Scheme; host: string; base: string;
                                      route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "siteUrl" in path, "`siteUrl` is a required path parameter"
   const
@@ -538,7 +540,7 @@ proc url_WebmastersSitesDelete_593990(protocol: Scheme; host: string; base: stri
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_WebmastersSitesDelete_593989(path: JsonNode; query: JsonNode;
+proc validate_WebmastersSitesDelete_579989(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Removes a site from the set of the user's Search Console sites.
   ## 
@@ -549,11 +551,11 @@ proc validate_WebmastersSitesDelete_593989(path: JsonNode; query: JsonNode;
   ##          : The URI of the property as defined in Search Console. Examples: http://www.example.com/ or android-app://com.example/ Note: for property-sets, use the URI that starts with sc-set: which is used in Search Console URLs.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `siteUrl` field"
-  var valid_593991 = path.getOrDefault("siteUrl")
-  valid_593991 = validateParameter(valid_593991, JString, required = true,
+  var valid_579991 = path.getOrDefault("siteUrl")
+  valid_579991 = validateParameter(valid_579991, JString, required = true,
                                  default = nil)
-  if valid_593991 != nil:
-    section.add "siteUrl", valid_593991
+  if valid_579991 != nil:
+    section.add "siteUrl", valid_579991
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -571,41 +573,41 @@ proc validate_WebmastersSitesDelete_593989(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_593992 = query.getOrDefault("fields")
-  valid_593992 = validateParameter(valid_593992, JString, required = false,
+  var valid_579992 = query.getOrDefault("fields")
+  valid_579992 = validateParameter(valid_579992, JString, required = false,
                                  default = nil)
-  if valid_593992 != nil:
-    section.add "fields", valid_593992
-  var valid_593993 = query.getOrDefault("quotaUser")
-  valid_593993 = validateParameter(valid_593993, JString, required = false,
+  if valid_579992 != nil:
+    section.add "fields", valid_579992
+  var valid_579993 = query.getOrDefault("quotaUser")
+  valid_579993 = validateParameter(valid_579993, JString, required = false,
                                  default = nil)
-  if valid_593993 != nil:
-    section.add "quotaUser", valid_593993
-  var valid_593994 = query.getOrDefault("alt")
-  valid_593994 = validateParameter(valid_593994, JString, required = false,
+  if valid_579993 != nil:
+    section.add "quotaUser", valid_579993
+  var valid_579994 = query.getOrDefault("alt")
+  valid_579994 = validateParameter(valid_579994, JString, required = false,
                                  default = newJString("json"))
-  if valid_593994 != nil:
-    section.add "alt", valid_593994
-  var valid_593995 = query.getOrDefault("oauth_token")
-  valid_593995 = validateParameter(valid_593995, JString, required = false,
+  if valid_579994 != nil:
+    section.add "alt", valid_579994
+  var valid_579995 = query.getOrDefault("oauth_token")
+  valid_579995 = validateParameter(valid_579995, JString, required = false,
                                  default = nil)
-  if valid_593995 != nil:
-    section.add "oauth_token", valid_593995
-  var valid_593996 = query.getOrDefault("userIp")
-  valid_593996 = validateParameter(valid_593996, JString, required = false,
+  if valid_579995 != nil:
+    section.add "oauth_token", valid_579995
+  var valid_579996 = query.getOrDefault("userIp")
+  valid_579996 = validateParameter(valid_579996, JString, required = false,
                                  default = nil)
-  if valid_593996 != nil:
-    section.add "userIp", valid_593996
-  var valid_593997 = query.getOrDefault("key")
-  valid_593997 = validateParameter(valid_593997, JString, required = false,
+  if valid_579996 != nil:
+    section.add "userIp", valid_579996
+  var valid_579997 = query.getOrDefault("key")
+  valid_579997 = validateParameter(valid_579997, JString, required = false,
                                  default = nil)
-  if valid_593997 != nil:
-    section.add "key", valid_593997
-  var valid_593998 = query.getOrDefault("prettyPrint")
-  valid_593998 = validateParameter(valid_593998, JBool, required = false,
+  if valid_579997 != nil:
+    section.add "key", valid_579997
+  var valid_579998 = query.getOrDefault("prettyPrint")
+  valid_579998 = validateParameter(valid_579998, JBool, required = false,
                                  default = newJBool(true))
-  if valid_593998 != nil:
-    section.add "prettyPrint", valid_593998
+  if valid_579998 != nil:
+    section.add "prettyPrint", valid_579998
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -614,20 +616,20 @@ proc validate_WebmastersSitesDelete_593989(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_593999: Call_WebmastersSitesDelete_593988; path: JsonNode;
+proc call*(call_579999: Call_WebmastersSitesDelete_579988; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Removes a site from the set of the user's Search Console sites.
   ## 
-  let valid = call_593999.validator(path, query, header, formData, body)
-  let scheme = call_593999.pickScheme
+  let valid = call_579999.validator(path, query, header, formData, body)
+  let scheme = call_579999.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_593999.url(scheme.get, call_593999.host, call_593999.base,
-                         call_593999.route, valid.getOrDefault("path"),
+  let url = call_579999.url(scheme.get, call_579999.host, call_579999.base,
+                         call_579999.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_593999, url, valid)
+  result = hook(call_579999, url, valid)
 
-proc call*(call_594000: Call_WebmastersSitesDelete_593988; siteUrl: string;
+proc call*(call_580000: Call_WebmastersSitesDelete_579988; siteUrl: string;
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           oauthToken: string = ""; userIp: string = ""; key: string = "";
           prettyPrint: bool = true): Recallable =
@@ -649,30 +651,30 @@ proc call*(call_594000: Call_WebmastersSitesDelete_593988; siteUrl: string;
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_594001 = newJObject()
-  var query_594002 = newJObject()
-  add(query_594002, "fields", newJString(fields))
-  add(query_594002, "quotaUser", newJString(quotaUser))
-  add(path_594001, "siteUrl", newJString(siteUrl))
-  add(query_594002, "alt", newJString(alt))
-  add(query_594002, "oauth_token", newJString(oauthToken))
-  add(query_594002, "userIp", newJString(userIp))
-  add(query_594002, "key", newJString(key))
-  add(query_594002, "prettyPrint", newJBool(prettyPrint))
-  result = call_594000.call(path_594001, query_594002, nil, nil, nil)
+  var path_580001 = newJObject()
+  var query_580002 = newJObject()
+  add(query_580002, "fields", newJString(fields))
+  add(query_580002, "quotaUser", newJString(quotaUser))
+  add(path_580001, "siteUrl", newJString(siteUrl))
+  add(query_580002, "alt", newJString(alt))
+  add(query_580002, "oauth_token", newJString(oauthToken))
+  add(query_580002, "userIp", newJString(userIp))
+  add(query_580002, "key", newJString(key))
+  add(query_580002, "prettyPrint", newJBool(prettyPrint))
+  result = call_580000.call(path_580001, query_580002, nil, nil, nil)
 
-var webmastersSitesDelete* = Call_WebmastersSitesDelete_593988(
+var webmastersSitesDelete* = Call_WebmastersSitesDelete_579988(
     name: "webmastersSitesDelete", meth: HttpMethod.HttpDelete,
     host: "www.googleapis.com", route: "/sites/{siteUrl}",
-    validator: validate_WebmastersSitesDelete_593989, base: "/webmasters/v3",
-    url: url_WebmastersSitesDelete_593990, schemes: {Scheme.Https})
+    validator: validate_WebmastersSitesDelete_579989, base: "/webmasters/v3",
+    url: url_WebmastersSitesDelete_579990, schemes: {Scheme.Https})
 type
-  Call_WebmastersSearchanalyticsQuery_594003 = ref object of OpenApiRestCall_593408
-proc url_WebmastersSearchanalyticsQuery_594005(protocol: Scheme; host: string;
+  Call_WebmastersSearchanalyticsQuery_580003 = ref object of OpenApiRestCall_579408
+proc url_WebmastersSearchanalyticsQuery_580005(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "siteUrl" in path, "`siteUrl` is a required path parameter"
   const
@@ -684,7 +686,7 @@ proc url_WebmastersSearchanalyticsQuery_594005(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_WebmastersSearchanalyticsQuery_594004(path: JsonNode;
+proc validate_WebmastersSearchanalyticsQuery_580004(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Query your data with filters and parameters that you define. Returns zero or more rows grouped by the row keys that you define. You must define a date range of one or more days.
   ## 
@@ -697,11 +699,11 @@ proc validate_WebmastersSearchanalyticsQuery_594004(path: JsonNode;
   ##          : The site's URL, including protocol. For example: http://www.example.com/
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `siteUrl` field"
-  var valid_594006 = path.getOrDefault("siteUrl")
-  valid_594006 = validateParameter(valid_594006, JString, required = true,
+  var valid_580006 = path.getOrDefault("siteUrl")
+  valid_580006 = validateParameter(valid_580006, JString, required = true,
                                  default = nil)
-  if valid_594006 != nil:
-    section.add "siteUrl", valid_594006
+  if valid_580006 != nil:
+    section.add "siteUrl", valid_580006
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -719,41 +721,41 @@ proc validate_WebmastersSearchanalyticsQuery_594004(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_594007 = query.getOrDefault("fields")
-  valid_594007 = validateParameter(valid_594007, JString, required = false,
+  var valid_580007 = query.getOrDefault("fields")
+  valid_580007 = validateParameter(valid_580007, JString, required = false,
                                  default = nil)
-  if valid_594007 != nil:
-    section.add "fields", valid_594007
-  var valid_594008 = query.getOrDefault("quotaUser")
-  valid_594008 = validateParameter(valid_594008, JString, required = false,
+  if valid_580007 != nil:
+    section.add "fields", valid_580007
+  var valid_580008 = query.getOrDefault("quotaUser")
+  valid_580008 = validateParameter(valid_580008, JString, required = false,
                                  default = nil)
-  if valid_594008 != nil:
-    section.add "quotaUser", valid_594008
-  var valid_594009 = query.getOrDefault("alt")
-  valid_594009 = validateParameter(valid_594009, JString, required = false,
+  if valid_580008 != nil:
+    section.add "quotaUser", valid_580008
+  var valid_580009 = query.getOrDefault("alt")
+  valid_580009 = validateParameter(valid_580009, JString, required = false,
                                  default = newJString("json"))
-  if valid_594009 != nil:
-    section.add "alt", valid_594009
-  var valid_594010 = query.getOrDefault("oauth_token")
-  valid_594010 = validateParameter(valid_594010, JString, required = false,
+  if valid_580009 != nil:
+    section.add "alt", valid_580009
+  var valid_580010 = query.getOrDefault("oauth_token")
+  valid_580010 = validateParameter(valid_580010, JString, required = false,
                                  default = nil)
-  if valid_594010 != nil:
-    section.add "oauth_token", valid_594010
-  var valid_594011 = query.getOrDefault("userIp")
-  valid_594011 = validateParameter(valid_594011, JString, required = false,
+  if valid_580010 != nil:
+    section.add "oauth_token", valid_580010
+  var valid_580011 = query.getOrDefault("userIp")
+  valid_580011 = validateParameter(valid_580011, JString, required = false,
                                  default = nil)
-  if valid_594011 != nil:
-    section.add "userIp", valid_594011
-  var valid_594012 = query.getOrDefault("key")
-  valid_594012 = validateParameter(valid_594012, JString, required = false,
+  if valid_580011 != nil:
+    section.add "userIp", valid_580011
+  var valid_580012 = query.getOrDefault("key")
+  valid_580012 = validateParameter(valid_580012, JString, required = false,
                                  default = nil)
-  if valid_594012 != nil:
-    section.add "key", valid_594012
-  var valid_594013 = query.getOrDefault("prettyPrint")
-  valid_594013 = validateParameter(valid_594013, JBool, required = false,
+  if valid_580012 != nil:
+    section.add "key", valid_580012
+  var valid_580013 = query.getOrDefault("prettyPrint")
+  valid_580013 = validateParameter(valid_580013, JBool, required = false,
                                  default = newJBool(true))
-  if valid_594013 != nil:
-    section.add "prettyPrint", valid_594013
+  if valid_580013 != nil:
+    section.add "prettyPrint", valid_580013
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -765,22 +767,22 @@ proc validate_WebmastersSearchanalyticsQuery_594004(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_594015: Call_WebmastersSearchanalyticsQuery_594003; path: JsonNode;
+proc call*(call_580015: Call_WebmastersSearchanalyticsQuery_580003; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Query your data with filters and parameters that you define. Returns zero or more rows grouped by the row keys that you define. You must define a date range of one or more days.
   ## 
   ## When date is one of the group by values, any days without data are omitted from the result list. If you need to know which days have data, issue a broad date range query grouped by date for any metric, and see which day rows are returned.
   ## 
-  let valid = call_594015.validator(path, query, header, formData, body)
-  let scheme = call_594015.pickScheme
+  let valid = call_580015.validator(path, query, header, formData, body)
+  let scheme = call_580015.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_594015.url(scheme.get, call_594015.host, call_594015.base,
-                         call_594015.route, valid.getOrDefault("path"),
+  let url = call_580015.url(scheme.get, call_580015.host, call_580015.base,
+                         call_580015.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_594015, url, valid)
+  result = hook(call_580015, url, valid)
 
-proc call*(call_594016: Call_WebmastersSearchanalyticsQuery_594003;
+proc call*(call_580016: Call_WebmastersSearchanalyticsQuery_580003;
           siteUrl: string; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; userIp: string = "";
           key: string = ""; body: JsonNode = nil; prettyPrint: bool = true): Recallable =
@@ -805,34 +807,34 @@ proc call*(call_594016: Call_WebmastersSearchanalyticsQuery_594003;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_594017 = newJObject()
-  var query_594018 = newJObject()
-  var body_594019 = newJObject()
-  add(query_594018, "fields", newJString(fields))
-  add(query_594018, "quotaUser", newJString(quotaUser))
-  add(path_594017, "siteUrl", newJString(siteUrl))
-  add(query_594018, "alt", newJString(alt))
-  add(query_594018, "oauth_token", newJString(oauthToken))
-  add(query_594018, "userIp", newJString(userIp))
-  add(query_594018, "key", newJString(key))
+  var path_580017 = newJObject()
+  var query_580018 = newJObject()
+  var body_580019 = newJObject()
+  add(query_580018, "fields", newJString(fields))
+  add(query_580018, "quotaUser", newJString(quotaUser))
+  add(path_580017, "siteUrl", newJString(siteUrl))
+  add(query_580018, "alt", newJString(alt))
+  add(query_580018, "oauth_token", newJString(oauthToken))
+  add(query_580018, "userIp", newJString(userIp))
+  add(query_580018, "key", newJString(key))
   if body != nil:
-    body_594019 = body
-  add(query_594018, "prettyPrint", newJBool(prettyPrint))
-  result = call_594016.call(path_594017, query_594018, nil, nil, body_594019)
+    body_580019 = body
+  add(query_580018, "prettyPrint", newJBool(prettyPrint))
+  result = call_580016.call(path_580017, query_580018, nil, nil, body_580019)
 
-var webmastersSearchanalyticsQuery* = Call_WebmastersSearchanalyticsQuery_594003(
+var webmastersSearchanalyticsQuery* = Call_WebmastersSearchanalyticsQuery_580003(
     name: "webmastersSearchanalyticsQuery", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com", route: "/sites/{siteUrl}/searchAnalytics/query",
-    validator: validate_WebmastersSearchanalyticsQuery_594004,
-    base: "/webmasters/v3", url: url_WebmastersSearchanalyticsQuery_594005,
+    validator: validate_WebmastersSearchanalyticsQuery_580004,
+    base: "/webmasters/v3", url: url_WebmastersSearchanalyticsQuery_580005,
     schemes: {Scheme.Https})
 type
-  Call_WebmastersSitemapsList_594020 = ref object of OpenApiRestCall_593408
-proc url_WebmastersSitemapsList_594022(protocol: Scheme; host: string; base: string;
+  Call_WebmastersSitemapsList_580020 = ref object of OpenApiRestCall_579408
+proc url_WebmastersSitemapsList_580022(protocol: Scheme; host: string; base: string;
                                       route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "siteUrl" in path, "`siteUrl` is a required path parameter"
   const
@@ -844,7 +846,7 @@ proc url_WebmastersSitemapsList_594022(protocol: Scheme; host: string; base: str
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_WebmastersSitemapsList_594021(path: JsonNode; query: JsonNode;
+proc validate_WebmastersSitemapsList_580021(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Lists the sitemaps-entries submitted for this site, or included in the sitemap index file (if sitemapIndex is specified in the request).
   ## 
@@ -855,11 +857,11 @@ proc validate_WebmastersSitemapsList_594021(path: JsonNode; query: JsonNode;
   ##          : The site's URL, including protocol. For example: http://www.example.com/
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `siteUrl` field"
-  var valid_594023 = path.getOrDefault("siteUrl")
-  valid_594023 = validateParameter(valid_594023, JString, required = true,
+  var valid_580023 = path.getOrDefault("siteUrl")
+  valid_580023 = validateParameter(valid_580023, JString, required = true,
                                  default = nil)
-  if valid_594023 != nil:
-    section.add "siteUrl", valid_594023
+  if valid_580023 != nil:
+    section.add "siteUrl", valid_580023
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -879,46 +881,46 @@ proc validate_WebmastersSitemapsList_594021(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_594024 = query.getOrDefault("fields")
-  valid_594024 = validateParameter(valid_594024, JString, required = false,
+  var valid_580024 = query.getOrDefault("fields")
+  valid_580024 = validateParameter(valid_580024, JString, required = false,
                                  default = nil)
-  if valid_594024 != nil:
-    section.add "fields", valid_594024
-  var valid_594025 = query.getOrDefault("quotaUser")
-  valid_594025 = validateParameter(valid_594025, JString, required = false,
+  if valid_580024 != nil:
+    section.add "fields", valid_580024
+  var valid_580025 = query.getOrDefault("quotaUser")
+  valid_580025 = validateParameter(valid_580025, JString, required = false,
                                  default = nil)
-  if valid_594025 != nil:
-    section.add "quotaUser", valid_594025
-  var valid_594026 = query.getOrDefault("alt")
-  valid_594026 = validateParameter(valid_594026, JString, required = false,
+  if valid_580025 != nil:
+    section.add "quotaUser", valid_580025
+  var valid_580026 = query.getOrDefault("alt")
+  valid_580026 = validateParameter(valid_580026, JString, required = false,
                                  default = newJString("json"))
-  if valid_594026 != nil:
-    section.add "alt", valid_594026
-  var valid_594027 = query.getOrDefault("sitemapIndex")
-  valid_594027 = validateParameter(valid_594027, JString, required = false,
+  if valid_580026 != nil:
+    section.add "alt", valid_580026
+  var valid_580027 = query.getOrDefault("sitemapIndex")
+  valid_580027 = validateParameter(valid_580027, JString, required = false,
                                  default = nil)
-  if valid_594027 != nil:
-    section.add "sitemapIndex", valid_594027
-  var valid_594028 = query.getOrDefault("oauth_token")
-  valid_594028 = validateParameter(valid_594028, JString, required = false,
+  if valid_580027 != nil:
+    section.add "sitemapIndex", valid_580027
+  var valid_580028 = query.getOrDefault("oauth_token")
+  valid_580028 = validateParameter(valid_580028, JString, required = false,
                                  default = nil)
-  if valid_594028 != nil:
-    section.add "oauth_token", valid_594028
-  var valid_594029 = query.getOrDefault("userIp")
-  valid_594029 = validateParameter(valid_594029, JString, required = false,
+  if valid_580028 != nil:
+    section.add "oauth_token", valid_580028
+  var valid_580029 = query.getOrDefault("userIp")
+  valid_580029 = validateParameter(valid_580029, JString, required = false,
                                  default = nil)
-  if valid_594029 != nil:
-    section.add "userIp", valid_594029
-  var valid_594030 = query.getOrDefault("key")
-  valid_594030 = validateParameter(valid_594030, JString, required = false,
+  if valid_580029 != nil:
+    section.add "userIp", valid_580029
+  var valid_580030 = query.getOrDefault("key")
+  valid_580030 = validateParameter(valid_580030, JString, required = false,
                                  default = nil)
-  if valid_594030 != nil:
-    section.add "key", valid_594030
-  var valid_594031 = query.getOrDefault("prettyPrint")
-  valid_594031 = validateParameter(valid_594031, JBool, required = false,
+  if valid_580030 != nil:
+    section.add "key", valid_580030
+  var valid_580031 = query.getOrDefault("prettyPrint")
+  valid_580031 = validateParameter(valid_580031, JBool, required = false,
                                  default = newJBool(true))
-  if valid_594031 != nil:
-    section.add "prettyPrint", valid_594031
+  if valid_580031 != nil:
+    section.add "prettyPrint", valid_580031
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -927,20 +929,20 @@ proc validate_WebmastersSitemapsList_594021(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_594032: Call_WebmastersSitemapsList_594020; path: JsonNode;
+proc call*(call_580032: Call_WebmastersSitemapsList_580020; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Lists the sitemaps-entries submitted for this site, or included in the sitemap index file (if sitemapIndex is specified in the request).
   ## 
-  let valid = call_594032.validator(path, query, header, formData, body)
-  let scheme = call_594032.pickScheme
+  let valid = call_580032.validator(path, query, header, formData, body)
+  let scheme = call_580032.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_594032.url(scheme.get, call_594032.host, call_594032.base,
-                         call_594032.route, valid.getOrDefault("path"),
+  let url = call_580032.url(scheme.get, call_580032.host, call_580032.base,
+                         call_580032.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_594032, url, valid)
+  result = hook(call_580032, url, valid)
 
-proc call*(call_594033: Call_WebmastersSitemapsList_594020; siteUrl: string;
+proc call*(call_580033: Call_WebmastersSitemapsList_580020; siteUrl: string;
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           sitemapIndex: string = ""; oauthToken: string = ""; userIp: string = "";
           key: string = ""; prettyPrint: bool = true): Recallable =
@@ -964,32 +966,32 @@ proc call*(call_594033: Call_WebmastersSitemapsList_594020; siteUrl: string;
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_594034 = newJObject()
-  var query_594035 = newJObject()
-  add(query_594035, "fields", newJString(fields))
-  add(query_594035, "quotaUser", newJString(quotaUser))
-  add(path_594034, "siteUrl", newJString(siteUrl))
-  add(query_594035, "alt", newJString(alt))
-  add(query_594035, "sitemapIndex", newJString(sitemapIndex))
-  add(query_594035, "oauth_token", newJString(oauthToken))
-  add(query_594035, "userIp", newJString(userIp))
-  add(query_594035, "key", newJString(key))
-  add(query_594035, "prettyPrint", newJBool(prettyPrint))
-  result = call_594033.call(path_594034, query_594035, nil, nil, nil)
+  var path_580034 = newJObject()
+  var query_580035 = newJObject()
+  add(query_580035, "fields", newJString(fields))
+  add(query_580035, "quotaUser", newJString(quotaUser))
+  add(path_580034, "siteUrl", newJString(siteUrl))
+  add(query_580035, "alt", newJString(alt))
+  add(query_580035, "sitemapIndex", newJString(sitemapIndex))
+  add(query_580035, "oauth_token", newJString(oauthToken))
+  add(query_580035, "userIp", newJString(userIp))
+  add(query_580035, "key", newJString(key))
+  add(query_580035, "prettyPrint", newJBool(prettyPrint))
+  result = call_580033.call(path_580034, query_580035, nil, nil, nil)
 
-var webmastersSitemapsList* = Call_WebmastersSitemapsList_594020(
+var webmastersSitemapsList* = Call_WebmastersSitemapsList_580020(
     name: "webmastersSitemapsList", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/sites/{siteUrl}/sitemaps",
-    validator: validate_WebmastersSitemapsList_594021, base: "/webmasters/v3",
-    url: url_WebmastersSitemapsList_594022, schemes: {Scheme.Https})
+    validator: validate_WebmastersSitemapsList_580021, base: "/webmasters/v3",
+    url: url_WebmastersSitemapsList_580022, schemes: {Scheme.Https})
 type
-  Call_WebmastersSitemapsSubmit_594052 = ref object of OpenApiRestCall_593408
-proc url_WebmastersSitemapsSubmit_594054(protocol: Scheme; host: string;
+  Call_WebmastersSitemapsSubmit_580052 = ref object of OpenApiRestCall_579408
+proc url_WebmastersSitemapsSubmit_580054(protocol: Scheme; host: string;
                                         base: string; route: string; path: JsonNode;
                                         query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "siteUrl" in path, "`siteUrl` is a required path parameter"
   assert "feedpath" in path, "`feedpath` is a required path parameter"
@@ -1003,7 +1005,7 @@ proc url_WebmastersSitemapsSubmit_594054(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_WebmastersSitemapsSubmit_594053(path: JsonNode; query: JsonNode;
+proc validate_WebmastersSitemapsSubmit_580053(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Submits a sitemap for a site.
   ## 
@@ -1016,16 +1018,16 @@ proc validate_WebmastersSitemapsSubmit_594053(path: JsonNode; query: JsonNode;
   ##          : The site's URL, including protocol. For example: http://www.example.com/
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `feedpath` field"
-  var valid_594055 = path.getOrDefault("feedpath")
-  valid_594055 = validateParameter(valid_594055, JString, required = true,
+  var valid_580055 = path.getOrDefault("feedpath")
+  valid_580055 = validateParameter(valid_580055, JString, required = true,
                                  default = nil)
-  if valid_594055 != nil:
-    section.add "feedpath", valid_594055
-  var valid_594056 = path.getOrDefault("siteUrl")
-  valid_594056 = validateParameter(valid_594056, JString, required = true,
+  if valid_580055 != nil:
+    section.add "feedpath", valid_580055
+  var valid_580056 = path.getOrDefault("siteUrl")
+  valid_580056 = validateParameter(valid_580056, JString, required = true,
                                  default = nil)
-  if valid_594056 != nil:
-    section.add "siteUrl", valid_594056
+  if valid_580056 != nil:
+    section.add "siteUrl", valid_580056
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -1043,41 +1045,41 @@ proc validate_WebmastersSitemapsSubmit_594053(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_594057 = query.getOrDefault("fields")
-  valid_594057 = validateParameter(valid_594057, JString, required = false,
+  var valid_580057 = query.getOrDefault("fields")
+  valid_580057 = validateParameter(valid_580057, JString, required = false,
                                  default = nil)
-  if valid_594057 != nil:
-    section.add "fields", valid_594057
-  var valid_594058 = query.getOrDefault("quotaUser")
-  valid_594058 = validateParameter(valid_594058, JString, required = false,
+  if valid_580057 != nil:
+    section.add "fields", valid_580057
+  var valid_580058 = query.getOrDefault("quotaUser")
+  valid_580058 = validateParameter(valid_580058, JString, required = false,
                                  default = nil)
-  if valid_594058 != nil:
-    section.add "quotaUser", valid_594058
-  var valid_594059 = query.getOrDefault("alt")
-  valid_594059 = validateParameter(valid_594059, JString, required = false,
+  if valid_580058 != nil:
+    section.add "quotaUser", valid_580058
+  var valid_580059 = query.getOrDefault("alt")
+  valid_580059 = validateParameter(valid_580059, JString, required = false,
                                  default = newJString("json"))
-  if valid_594059 != nil:
-    section.add "alt", valid_594059
-  var valid_594060 = query.getOrDefault("oauth_token")
-  valid_594060 = validateParameter(valid_594060, JString, required = false,
+  if valid_580059 != nil:
+    section.add "alt", valid_580059
+  var valid_580060 = query.getOrDefault("oauth_token")
+  valid_580060 = validateParameter(valid_580060, JString, required = false,
                                  default = nil)
-  if valid_594060 != nil:
-    section.add "oauth_token", valid_594060
-  var valid_594061 = query.getOrDefault("userIp")
-  valid_594061 = validateParameter(valid_594061, JString, required = false,
+  if valid_580060 != nil:
+    section.add "oauth_token", valid_580060
+  var valid_580061 = query.getOrDefault("userIp")
+  valid_580061 = validateParameter(valid_580061, JString, required = false,
                                  default = nil)
-  if valid_594061 != nil:
-    section.add "userIp", valid_594061
-  var valid_594062 = query.getOrDefault("key")
-  valid_594062 = validateParameter(valid_594062, JString, required = false,
+  if valid_580061 != nil:
+    section.add "userIp", valid_580061
+  var valid_580062 = query.getOrDefault("key")
+  valid_580062 = validateParameter(valid_580062, JString, required = false,
                                  default = nil)
-  if valid_594062 != nil:
-    section.add "key", valid_594062
-  var valid_594063 = query.getOrDefault("prettyPrint")
-  valid_594063 = validateParameter(valid_594063, JBool, required = false,
+  if valid_580062 != nil:
+    section.add "key", valid_580062
+  var valid_580063 = query.getOrDefault("prettyPrint")
+  valid_580063 = validateParameter(valid_580063, JBool, required = false,
                                  default = newJBool(true))
-  if valid_594063 != nil:
-    section.add "prettyPrint", valid_594063
+  if valid_580063 != nil:
+    section.add "prettyPrint", valid_580063
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1086,20 +1088,20 @@ proc validate_WebmastersSitemapsSubmit_594053(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_594064: Call_WebmastersSitemapsSubmit_594052; path: JsonNode;
+proc call*(call_580064: Call_WebmastersSitemapsSubmit_580052; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Submits a sitemap for a site.
   ## 
-  let valid = call_594064.validator(path, query, header, formData, body)
-  let scheme = call_594064.pickScheme
+  let valid = call_580064.validator(path, query, header, formData, body)
+  let scheme = call_580064.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_594064.url(scheme.get, call_594064.host, call_594064.base,
-                         call_594064.route, valid.getOrDefault("path"),
+  let url = call_580064.url(scheme.get, call_580064.host, call_580064.base,
+                         call_580064.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_594064, url, valid)
+  result = hook(call_580064, url, valid)
 
-proc call*(call_594065: Call_WebmastersSitemapsSubmit_594052; feedpath: string;
+proc call*(call_580065: Call_WebmastersSitemapsSubmit_580052; feedpath: string;
           siteUrl: string; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; userIp: string = "";
           key: string = ""; prettyPrint: bool = true): Recallable =
@@ -1123,31 +1125,31 @@ proc call*(call_594065: Call_WebmastersSitemapsSubmit_594052; feedpath: string;
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_594066 = newJObject()
-  var query_594067 = newJObject()
-  add(path_594066, "feedpath", newJString(feedpath))
-  add(query_594067, "fields", newJString(fields))
-  add(query_594067, "quotaUser", newJString(quotaUser))
-  add(path_594066, "siteUrl", newJString(siteUrl))
-  add(query_594067, "alt", newJString(alt))
-  add(query_594067, "oauth_token", newJString(oauthToken))
-  add(query_594067, "userIp", newJString(userIp))
-  add(query_594067, "key", newJString(key))
-  add(query_594067, "prettyPrint", newJBool(prettyPrint))
-  result = call_594065.call(path_594066, query_594067, nil, nil, nil)
+  var path_580066 = newJObject()
+  var query_580067 = newJObject()
+  add(path_580066, "feedpath", newJString(feedpath))
+  add(query_580067, "fields", newJString(fields))
+  add(query_580067, "quotaUser", newJString(quotaUser))
+  add(path_580066, "siteUrl", newJString(siteUrl))
+  add(query_580067, "alt", newJString(alt))
+  add(query_580067, "oauth_token", newJString(oauthToken))
+  add(query_580067, "userIp", newJString(userIp))
+  add(query_580067, "key", newJString(key))
+  add(query_580067, "prettyPrint", newJBool(prettyPrint))
+  result = call_580065.call(path_580066, query_580067, nil, nil, nil)
 
-var webmastersSitemapsSubmit* = Call_WebmastersSitemapsSubmit_594052(
+var webmastersSitemapsSubmit* = Call_WebmastersSitemapsSubmit_580052(
     name: "webmastersSitemapsSubmit", meth: HttpMethod.HttpPut,
     host: "www.googleapis.com", route: "/sites/{siteUrl}/sitemaps/{feedpath}",
-    validator: validate_WebmastersSitemapsSubmit_594053, base: "/webmasters/v3",
-    url: url_WebmastersSitemapsSubmit_594054, schemes: {Scheme.Https})
+    validator: validate_WebmastersSitemapsSubmit_580053, base: "/webmasters/v3",
+    url: url_WebmastersSitemapsSubmit_580054, schemes: {Scheme.Https})
 type
-  Call_WebmastersSitemapsGet_594036 = ref object of OpenApiRestCall_593408
-proc url_WebmastersSitemapsGet_594038(protocol: Scheme; host: string; base: string;
+  Call_WebmastersSitemapsGet_580036 = ref object of OpenApiRestCall_579408
+proc url_WebmastersSitemapsGet_580038(protocol: Scheme; host: string; base: string;
                                      route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "siteUrl" in path, "`siteUrl` is a required path parameter"
   assert "feedpath" in path, "`feedpath` is a required path parameter"
@@ -1161,7 +1163,7 @@ proc url_WebmastersSitemapsGet_594038(protocol: Scheme; host: string; base: stri
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_WebmastersSitemapsGet_594037(path: JsonNode; query: JsonNode;
+proc validate_WebmastersSitemapsGet_580037(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Retrieves information about a specific sitemap.
   ## 
@@ -1174,16 +1176,16 @@ proc validate_WebmastersSitemapsGet_594037(path: JsonNode; query: JsonNode;
   ##          : The site's URL, including protocol. For example: http://www.example.com/
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `feedpath` field"
-  var valid_594039 = path.getOrDefault("feedpath")
-  valid_594039 = validateParameter(valid_594039, JString, required = true,
+  var valid_580039 = path.getOrDefault("feedpath")
+  valid_580039 = validateParameter(valid_580039, JString, required = true,
                                  default = nil)
-  if valid_594039 != nil:
-    section.add "feedpath", valid_594039
-  var valid_594040 = path.getOrDefault("siteUrl")
-  valid_594040 = validateParameter(valid_594040, JString, required = true,
+  if valid_580039 != nil:
+    section.add "feedpath", valid_580039
+  var valid_580040 = path.getOrDefault("siteUrl")
+  valid_580040 = validateParameter(valid_580040, JString, required = true,
                                  default = nil)
-  if valid_594040 != nil:
-    section.add "siteUrl", valid_594040
+  if valid_580040 != nil:
+    section.add "siteUrl", valid_580040
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -1201,41 +1203,41 @@ proc validate_WebmastersSitemapsGet_594037(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_594041 = query.getOrDefault("fields")
-  valid_594041 = validateParameter(valid_594041, JString, required = false,
+  var valid_580041 = query.getOrDefault("fields")
+  valid_580041 = validateParameter(valid_580041, JString, required = false,
                                  default = nil)
-  if valid_594041 != nil:
-    section.add "fields", valid_594041
-  var valid_594042 = query.getOrDefault("quotaUser")
-  valid_594042 = validateParameter(valid_594042, JString, required = false,
+  if valid_580041 != nil:
+    section.add "fields", valid_580041
+  var valid_580042 = query.getOrDefault("quotaUser")
+  valid_580042 = validateParameter(valid_580042, JString, required = false,
                                  default = nil)
-  if valid_594042 != nil:
-    section.add "quotaUser", valid_594042
-  var valid_594043 = query.getOrDefault("alt")
-  valid_594043 = validateParameter(valid_594043, JString, required = false,
+  if valid_580042 != nil:
+    section.add "quotaUser", valid_580042
+  var valid_580043 = query.getOrDefault("alt")
+  valid_580043 = validateParameter(valid_580043, JString, required = false,
                                  default = newJString("json"))
-  if valid_594043 != nil:
-    section.add "alt", valid_594043
-  var valid_594044 = query.getOrDefault("oauth_token")
-  valid_594044 = validateParameter(valid_594044, JString, required = false,
+  if valid_580043 != nil:
+    section.add "alt", valid_580043
+  var valid_580044 = query.getOrDefault("oauth_token")
+  valid_580044 = validateParameter(valid_580044, JString, required = false,
                                  default = nil)
-  if valid_594044 != nil:
-    section.add "oauth_token", valid_594044
-  var valid_594045 = query.getOrDefault("userIp")
-  valid_594045 = validateParameter(valid_594045, JString, required = false,
+  if valid_580044 != nil:
+    section.add "oauth_token", valid_580044
+  var valid_580045 = query.getOrDefault("userIp")
+  valid_580045 = validateParameter(valid_580045, JString, required = false,
                                  default = nil)
-  if valid_594045 != nil:
-    section.add "userIp", valid_594045
-  var valid_594046 = query.getOrDefault("key")
-  valid_594046 = validateParameter(valid_594046, JString, required = false,
+  if valid_580045 != nil:
+    section.add "userIp", valid_580045
+  var valid_580046 = query.getOrDefault("key")
+  valid_580046 = validateParameter(valid_580046, JString, required = false,
                                  default = nil)
-  if valid_594046 != nil:
-    section.add "key", valid_594046
-  var valid_594047 = query.getOrDefault("prettyPrint")
-  valid_594047 = validateParameter(valid_594047, JBool, required = false,
+  if valid_580046 != nil:
+    section.add "key", valid_580046
+  var valid_580047 = query.getOrDefault("prettyPrint")
+  valid_580047 = validateParameter(valid_580047, JBool, required = false,
                                  default = newJBool(true))
-  if valid_594047 != nil:
-    section.add "prettyPrint", valid_594047
+  if valid_580047 != nil:
+    section.add "prettyPrint", valid_580047
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1244,20 +1246,20 @@ proc validate_WebmastersSitemapsGet_594037(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_594048: Call_WebmastersSitemapsGet_594036; path: JsonNode;
+proc call*(call_580048: Call_WebmastersSitemapsGet_580036; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Retrieves information about a specific sitemap.
   ## 
-  let valid = call_594048.validator(path, query, header, formData, body)
-  let scheme = call_594048.pickScheme
+  let valid = call_580048.validator(path, query, header, formData, body)
+  let scheme = call_580048.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_594048.url(scheme.get, call_594048.host, call_594048.base,
-                         call_594048.route, valid.getOrDefault("path"),
+  let url = call_580048.url(scheme.get, call_580048.host, call_580048.base,
+                         call_580048.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_594048, url, valid)
+  result = hook(call_580048, url, valid)
 
-proc call*(call_594049: Call_WebmastersSitemapsGet_594036; feedpath: string;
+proc call*(call_580049: Call_WebmastersSitemapsGet_580036; feedpath: string;
           siteUrl: string; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; userIp: string = "";
           key: string = ""; prettyPrint: bool = true): Recallable =
@@ -1281,32 +1283,32 @@ proc call*(call_594049: Call_WebmastersSitemapsGet_594036; feedpath: string;
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_594050 = newJObject()
-  var query_594051 = newJObject()
-  add(path_594050, "feedpath", newJString(feedpath))
-  add(query_594051, "fields", newJString(fields))
-  add(query_594051, "quotaUser", newJString(quotaUser))
-  add(path_594050, "siteUrl", newJString(siteUrl))
-  add(query_594051, "alt", newJString(alt))
-  add(query_594051, "oauth_token", newJString(oauthToken))
-  add(query_594051, "userIp", newJString(userIp))
-  add(query_594051, "key", newJString(key))
-  add(query_594051, "prettyPrint", newJBool(prettyPrint))
-  result = call_594049.call(path_594050, query_594051, nil, nil, nil)
+  var path_580050 = newJObject()
+  var query_580051 = newJObject()
+  add(path_580050, "feedpath", newJString(feedpath))
+  add(query_580051, "fields", newJString(fields))
+  add(query_580051, "quotaUser", newJString(quotaUser))
+  add(path_580050, "siteUrl", newJString(siteUrl))
+  add(query_580051, "alt", newJString(alt))
+  add(query_580051, "oauth_token", newJString(oauthToken))
+  add(query_580051, "userIp", newJString(userIp))
+  add(query_580051, "key", newJString(key))
+  add(query_580051, "prettyPrint", newJBool(prettyPrint))
+  result = call_580049.call(path_580050, query_580051, nil, nil, nil)
 
-var webmastersSitemapsGet* = Call_WebmastersSitemapsGet_594036(
+var webmastersSitemapsGet* = Call_WebmastersSitemapsGet_580036(
     name: "webmastersSitemapsGet", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/sites/{siteUrl}/sitemaps/{feedpath}",
-    validator: validate_WebmastersSitemapsGet_594037, base: "/webmasters/v3",
-    url: url_WebmastersSitemapsGet_594038, schemes: {Scheme.Https})
+    validator: validate_WebmastersSitemapsGet_580037, base: "/webmasters/v3",
+    url: url_WebmastersSitemapsGet_580038, schemes: {Scheme.Https})
 type
-  Call_WebmastersSitemapsDelete_594068 = ref object of OpenApiRestCall_593408
-proc url_WebmastersSitemapsDelete_594070(protocol: Scheme; host: string;
+  Call_WebmastersSitemapsDelete_580068 = ref object of OpenApiRestCall_579408
+proc url_WebmastersSitemapsDelete_580070(protocol: Scheme; host: string;
                                         base: string; route: string; path: JsonNode;
                                         query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "siteUrl" in path, "`siteUrl` is a required path parameter"
   assert "feedpath" in path, "`feedpath` is a required path parameter"
@@ -1320,7 +1322,7 @@ proc url_WebmastersSitemapsDelete_594070(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_WebmastersSitemapsDelete_594069(path: JsonNode; query: JsonNode;
+proc validate_WebmastersSitemapsDelete_580069(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Deletes a sitemap from this site.
   ## 
@@ -1333,16 +1335,16 @@ proc validate_WebmastersSitemapsDelete_594069(path: JsonNode; query: JsonNode;
   ##          : The site's URL, including protocol. For example: http://www.example.com/
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `feedpath` field"
-  var valid_594071 = path.getOrDefault("feedpath")
-  valid_594071 = validateParameter(valid_594071, JString, required = true,
+  var valid_580071 = path.getOrDefault("feedpath")
+  valid_580071 = validateParameter(valid_580071, JString, required = true,
                                  default = nil)
-  if valid_594071 != nil:
-    section.add "feedpath", valid_594071
-  var valid_594072 = path.getOrDefault("siteUrl")
-  valid_594072 = validateParameter(valid_594072, JString, required = true,
+  if valid_580071 != nil:
+    section.add "feedpath", valid_580071
+  var valid_580072 = path.getOrDefault("siteUrl")
+  valid_580072 = validateParameter(valid_580072, JString, required = true,
                                  default = nil)
-  if valid_594072 != nil:
-    section.add "siteUrl", valid_594072
+  if valid_580072 != nil:
+    section.add "siteUrl", valid_580072
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -1360,41 +1362,41 @@ proc validate_WebmastersSitemapsDelete_594069(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_594073 = query.getOrDefault("fields")
-  valid_594073 = validateParameter(valid_594073, JString, required = false,
+  var valid_580073 = query.getOrDefault("fields")
+  valid_580073 = validateParameter(valid_580073, JString, required = false,
                                  default = nil)
-  if valid_594073 != nil:
-    section.add "fields", valid_594073
-  var valid_594074 = query.getOrDefault("quotaUser")
-  valid_594074 = validateParameter(valid_594074, JString, required = false,
+  if valid_580073 != nil:
+    section.add "fields", valid_580073
+  var valid_580074 = query.getOrDefault("quotaUser")
+  valid_580074 = validateParameter(valid_580074, JString, required = false,
                                  default = nil)
-  if valid_594074 != nil:
-    section.add "quotaUser", valid_594074
-  var valid_594075 = query.getOrDefault("alt")
-  valid_594075 = validateParameter(valid_594075, JString, required = false,
+  if valid_580074 != nil:
+    section.add "quotaUser", valid_580074
+  var valid_580075 = query.getOrDefault("alt")
+  valid_580075 = validateParameter(valid_580075, JString, required = false,
                                  default = newJString("json"))
-  if valid_594075 != nil:
-    section.add "alt", valid_594075
-  var valid_594076 = query.getOrDefault("oauth_token")
-  valid_594076 = validateParameter(valid_594076, JString, required = false,
+  if valid_580075 != nil:
+    section.add "alt", valid_580075
+  var valid_580076 = query.getOrDefault("oauth_token")
+  valid_580076 = validateParameter(valid_580076, JString, required = false,
                                  default = nil)
-  if valid_594076 != nil:
-    section.add "oauth_token", valid_594076
-  var valid_594077 = query.getOrDefault("userIp")
-  valid_594077 = validateParameter(valid_594077, JString, required = false,
+  if valid_580076 != nil:
+    section.add "oauth_token", valid_580076
+  var valid_580077 = query.getOrDefault("userIp")
+  valid_580077 = validateParameter(valid_580077, JString, required = false,
                                  default = nil)
-  if valid_594077 != nil:
-    section.add "userIp", valid_594077
-  var valid_594078 = query.getOrDefault("key")
-  valid_594078 = validateParameter(valid_594078, JString, required = false,
+  if valid_580077 != nil:
+    section.add "userIp", valid_580077
+  var valid_580078 = query.getOrDefault("key")
+  valid_580078 = validateParameter(valid_580078, JString, required = false,
                                  default = nil)
-  if valid_594078 != nil:
-    section.add "key", valid_594078
-  var valid_594079 = query.getOrDefault("prettyPrint")
-  valid_594079 = validateParameter(valid_594079, JBool, required = false,
+  if valid_580078 != nil:
+    section.add "key", valid_580078
+  var valid_580079 = query.getOrDefault("prettyPrint")
+  valid_580079 = validateParameter(valid_580079, JBool, required = false,
                                  default = newJBool(true))
-  if valid_594079 != nil:
-    section.add "prettyPrint", valid_594079
+  if valid_580079 != nil:
+    section.add "prettyPrint", valid_580079
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1403,20 +1405,20 @@ proc validate_WebmastersSitemapsDelete_594069(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_594080: Call_WebmastersSitemapsDelete_594068; path: JsonNode;
+proc call*(call_580080: Call_WebmastersSitemapsDelete_580068; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Deletes a sitemap from this site.
   ## 
-  let valid = call_594080.validator(path, query, header, formData, body)
-  let scheme = call_594080.pickScheme
+  let valid = call_580080.validator(path, query, header, formData, body)
+  let scheme = call_580080.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_594080.url(scheme.get, call_594080.host, call_594080.base,
-                         call_594080.route, valid.getOrDefault("path"),
+  let url = call_580080.url(scheme.get, call_580080.host, call_580080.base,
+                         call_580080.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_594080, url, valid)
+  result = hook(call_580080, url, valid)
 
-proc call*(call_594081: Call_WebmastersSitemapsDelete_594068; feedpath: string;
+proc call*(call_580081: Call_WebmastersSitemapsDelete_580068; feedpath: string;
           siteUrl: string; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; userIp: string = "";
           key: string = ""; prettyPrint: bool = true): Recallable =
@@ -1440,27 +1442,117 @@ proc call*(call_594081: Call_WebmastersSitemapsDelete_594068; feedpath: string;
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_594082 = newJObject()
-  var query_594083 = newJObject()
-  add(path_594082, "feedpath", newJString(feedpath))
-  add(query_594083, "fields", newJString(fields))
-  add(query_594083, "quotaUser", newJString(quotaUser))
-  add(path_594082, "siteUrl", newJString(siteUrl))
-  add(query_594083, "alt", newJString(alt))
-  add(query_594083, "oauth_token", newJString(oauthToken))
-  add(query_594083, "userIp", newJString(userIp))
-  add(query_594083, "key", newJString(key))
-  add(query_594083, "prettyPrint", newJBool(prettyPrint))
-  result = call_594081.call(path_594082, query_594083, nil, nil, nil)
+  var path_580082 = newJObject()
+  var query_580083 = newJObject()
+  add(path_580082, "feedpath", newJString(feedpath))
+  add(query_580083, "fields", newJString(fields))
+  add(query_580083, "quotaUser", newJString(quotaUser))
+  add(path_580082, "siteUrl", newJString(siteUrl))
+  add(query_580083, "alt", newJString(alt))
+  add(query_580083, "oauth_token", newJString(oauthToken))
+  add(query_580083, "userIp", newJString(userIp))
+  add(query_580083, "key", newJString(key))
+  add(query_580083, "prettyPrint", newJBool(prettyPrint))
+  result = call_580081.call(path_580082, query_580083, nil, nil, nil)
 
-var webmastersSitemapsDelete* = Call_WebmastersSitemapsDelete_594068(
+var webmastersSitemapsDelete* = Call_WebmastersSitemapsDelete_580068(
     name: "webmastersSitemapsDelete", meth: HttpMethod.HttpDelete,
     host: "www.googleapis.com", route: "/sites/{siteUrl}/sitemaps/{feedpath}",
-    validator: validate_WebmastersSitemapsDelete_594069, base: "/webmasters/v3",
-    url: url_WebmastersSitemapsDelete_594070, schemes: {Scheme.Https})
+    validator: validate_WebmastersSitemapsDelete_580069, base: "/webmasters/v3",
+    url: url_WebmastersSitemapsDelete_580070, schemes: {Scheme.Https})
 export
   rest
 
+type
+  GoogleAuth = ref object
+    endpoint*: Uri
+    token: string
+    expiry*: float64
+    issued*: float64
+    email: string
+    key: string
+    scope*: seq[string]
+    form: string
+    digest: Hash
+
+const
+  endpoint = "https://www.googleapis.com/oauth2/v4/token".parseUri
+var auth = GoogleAuth(endpoint: endpoint)
+proc hash(auth: GoogleAuth): Hash =
+  ## yield differing values for effectively different auth payloads
+  result = hash($auth.endpoint)
+  result = result !& hash(auth.email)
+  result = result !& hash(auth.key)
+  result = result !& hash(auth.scope.join(" "))
+  result = !$result
+
+proc newAuthenticator*(path: string): GoogleAuth =
+  let
+    input = readFile(path)
+    js = parseJson(input)
+  auth.email = js["client_email"].getStr
+  auth.key = js["private_key"].getStr
+  result = auth
+
+proc store(auth: var GoogleAuth; token: string; expiry: int; form: string) =
+  auth.token = token
+  auth.issued = epochTime()
+  auth.expiry = auth.issued + expiry.float64
+  auth.form = form
+  auth.digest = auth.hash
+
+proc authenticate*(fresh: float64 = -3600.0; lifetime: int = 3600): Future[bool] {.async.} =
+  ## get or refresh an authentication token; provide `fresh`
+  ## to ensure that the token won't expire in the next N seconds.
+  ## provide `lifetime` to indicate how long the token should last.
+  let clock = epochTime()
+  if auth.expiry > clock + fresh:
+    if auth.hash == auth.digest:
+      return true
+  let
+    expiry = clock.int + lifetime
+    header = JOSEHeader(alg: RS256, typ: "JWT")
+    claims = %*{"iss": auth.email, "scope": auth.scope.join(" "),
+              "aud": "https://www.googleapis.com/oauth2/v4/token", "exp": expiry,
+              "iat": clock.int}
+  var tok = JWT(header: header, claims: toClaims(claims))
+  tok.sign(auth.key)
+  let post = encodeQuery({"grant_type": "urn:ietf:params:oauth:grant-type:jwt-bearer",
+                       "assertion": $tok}, usePlus = false, omitEq = false)
+  var client = newAsyncHttpClient()
+  client.headers = newHttpHeaders({"Content-Type": "application/x-www-form-urlencoded",
+                                 "Content-Length": $post.len})
+  let response = await client.request($auth.endpoint, HttpPost, body = post)
+  if not response.code.is2xx:
+    return false
+  let body = await response.body
+  client.close
+  try:
+    let js = parseJson(body)
+    auth.store(js["access_token"].getStr, js["expires_in"].getInt,
+               js["token_type"].getStr)
+  except KeyError:
+    return false
+  except JsonParsingError:
+    return false
+  return true
+
+proc composeQueryString(query: JsonNode): string =
+  var qs: seq[KeyVal]
+  if query == nil:
+    return ""
+  for k, v in query.pairs:
+    qs.add (key: k, val: v.getStr)
+  result = encodeQuery(qs, usePlus = false, omitEq = false)
+
 method hook(call: OpenApiRestCall; url: Uri; input: JsonNode): Recallable {.base.} =
-  let headers = massageHeaders(input.getOrDefault("header"))
-  result = newRecallable(call, url, headers, input.getOrDefault("body").getStr)
+  var headers = massageHeaders(input.getOrDefault("header"))
+  let body = input.getOrDefault("body").getStr
+  if auth.scope.len == 0:
+    raise newException(ValueError, "specify authentication scopes")
+  if not waitfor authenticate(fresh = 10.0):
+    raise newException(IOError, "unable to refresh authentication token")
+  headers.add ("Authorization", auth.form & " " & auth.token)
+  headers.add ("Content-Type", "application/json")
+  headers.add ("Content-Length", $body.len)
+  result = newRecallable(call, url, headers, body = body)

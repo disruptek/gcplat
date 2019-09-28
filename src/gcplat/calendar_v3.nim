@@ -1,6 +1,7 @@
 
 import
-  json, options, hashes, uri, openapi/rest, os, uri, strutils, httpcore
+  json, options, hashes, uri, rest, os, uri, strutils, times, httpcore, httpclient,
+  asyncdispatch, jwt
 
 ## auto-generated via openapi macro
 ## title: Calendar
@@ -28,15 +29,15 @@ type
     url*: proc (protocol: Scheme; host: string; base: string; route: string;
               path: JsonNode; query: JsonNode): Uri
 
-  OpenApiRestCall_597424 = ref object of OpenApiRestCall
+  OpenApiRestCall_579424 = ref object of OpenApiRestCall
 proc hash(scheme: Scheme): Hash {.used.} =
   result = hash(ord(scheme))
 
-proc clone[T: OpenApiRestCall_597424](t: T): T {.used.} =
+proc clone[T: OpenApiRestCall_579424](t: T): T {.used.} =
   result = T(name: t.name, meth: t.meth, host: t.host, base: t.base, route: t.route,
            schemes: t.schemes, validator: t.validator, url: t.url)
 
-proc pickScheme(t: OpenApiRestCall_597424): Option[Scheme] {.used.} =
+proc pickScheme(t: OpenApiRestCall_579424): Option[Scheme] {.used.} =
   ## select a supported scheme from a set of candidates
   for scheme in Scheme.low ..
       Scheme.high:
@@ -104,18 +105,19 @@ proc hydratePath(input: JsonNode; segments: seq[PathToken]): Option[string] =
 
 const
   gcpServiceName = "calendar"
+proc composeQueryString(query: JsonNode): string
 method hook(call: OpenApiRestCall; url: Uri; input: JsonNode): Recallable {.base.}
 type
-  Call_CalendarCalendarsInsert_597692 = ref object of OpenApiRestCall_597424
-proc url_CalendarCalendarsInsert_597694(protocol: Scheme; host: string; base: string;
+  Call_CalendarCalendarsInsert_579692 = ref object of OpenApiRestCall_579424
+proc url_CalendarCalendarsInsert_579694(protocol: Scheme; host: string; base: string;
                                        route: string; path: JsonNode;
                                        query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   result.path = base & route
 
-proc validate_CalendarCalendarsInsert_597693(path: JsonNode; query: JsonNode;
+proc validate_CalendarCalendarsInsert_579693(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Creates a secondary calendar.
   ## 
@@ -139,41 +141,41 @@ proc validate_CalendarCalendarsInsert_597693(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_597806 = query.getOrDefault("fields")
-  valid_597806 = validateParameter(valid_597806, JString, required = false,
+  var valid_579806 = query.getOrDefault("fields")
+  valid_579806 = validateParameter(valid_579806, JString, required = false,
                                  default = nil)
-  if valid_597806 != nil:
-    section.add "fields", valid_597806
-  var valid_597807 = query.getOrDefault("quotaUser")
-  valid_597807 = validateParameter(valid_597807, JString, required = false,
+  if valid_579806 != nil:
+    section.add "fields", valid_579806
+  var valid_579807 = query.getOrDefault("quotaUser")
+  valid_579807 = validateParameter(valid_579807, JString, required = false,
                                  default = nil)
-  if valid_597807 != nil:
-    section.add "quotaUser", valid_597807
-  var valid_597821 = query.getOrDefault("alt")
-  valid_597821 = validateParameter(valid_597821, JString, required = false,
+  if valid_579807 != nil:
+    section.add "quotaUser", valid_579807
+  var valid_579821 = query.getOrDefault("alt")
+  valid_579821 = validateParameter(valid_579821, JString, required = false,
                                  default = newJString("json"))
-  if valid_597821 != nil:
-    section.add "alt", valid_597821
-  var valid_597822 = query.getOrDefault("oauth_token")
-  valid_597822 = validateParameter(valid_597822, JString, required = false,
+  if valid_579821 != nil:
+    section.add "alt", valid_579821
+  var valid_579822 = query.getOrDefault("oauth_token")
+  valid_579822 = validateParameter(valid_579822, JString, required = false,
                                  default = nil)
-  if valid_597822 != nil:
-    section.add "oauth_token", valid_597822
-  var valid_597823 = query.getOrDefault("userIp")
-  valid_597823 = validateParameter(valid_597823, JString, required = false,
+  if valid_579822 != nil:
+    section.add "oauth_token", valid_579822
+  var valid_579823 = query.getOrDefault("userIp")
+  valid_579823 = validateParameter(valid_579823, JString, required = false,
                                  default = nil)
-  if valid_597823 != nil:
-    section.add "userIp", valid_597823
-  var valid_597824 = query.getOrDefault("key")
-  valid_597824 = validateParameter(valid_597824, JString, required = false,
+  if valid_579823 != nil:
+    section.add "userIp", valid_579823
+  var valid_579824 = query.getOrDefault("key")
+  valid_579824 = validateParameter(valid_579824, JString, required = false,
                                  default = nil)
-  if valid_597824 != nil:
-    section.add "key", valid_597824
-  var valid_597825 = query.getOrDefault("prettyPrint")
-  valid_597825 = validateParameter(valid_597825, JBool, required = false,
+  if valid_579824 != nil:
+    section.add "key", valid_579824
+  var valid_579825 = query.getOrDefault("prettyPrint")
+  valid_579825 = validateParameter(valid_579825, JBool, required = false,
                                  default = newJBool(true))
-  if valid_597825 != nil:
-    section.add "prettyPrint", valid_597825
+  if valid_579825 != nil:
+    section.add "prettyPrint", valid_579825
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -185,20 +187,20 @@ proc validate_CalendarCalendarsInsert_597693(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_597849: Call_CalendarCalendarsInsert_597692; path: JsonNode;
+proc call*(call_579849: Call_CalendarCalendarsInsert_579692; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Creates a secondary calendar.
   ## 
-  let valid = call_597849.validator(path, query, header, formData, body)
-  let scheme = call_597849.pickScheme
+  let valid = call_579849.validator(path, query, header, formData, body)
+  let scheme = call_579849.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_597849.url(scheme.get, call_597849.host, call_597849.base,
-                         call_597849.route, valid.getOrDefault("path"),
+  let url = call_579849.url(scheme.get, call_579849.host, call_579849.base,
+                         call_579849.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_597849, url, valid)
+  result = hook(call_579849, url, valid)
 
-proc call*(call_597920: Call_CalendarCalendarsInsert_597692; fields: string = "";
+proc call*(call_579920: Call_CalendarCalendarsInsert_579692; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; key: string = ""; body: JsonNode = nil;
           prettyPrint: bool = true): Recallable =
@@ -219,32 +221,32 @@ proc call*(call_597920: Call_CalendarCalendarsInsert_597692; fields: string = ""
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var query_597921 = newJObject()
-  var body_597923 = newJObject()
-  add(query_597921, "fields", newJString(fields))
-  add(query_597921, "quotaUser", newJString(quotaUser))
-  add(query_597921, "alt", newJString(alt))
-  add(query_597921, "oauth_token", newJString(oauthToken))
-  add(query_597921, "userIp", newJString(userIp))
-  add(query_597921, "key", newJString(key))
+  var query_579921 = newJObject()
+  var body_579923 = newJObject()
+  add(query_579921, "fields", newJString(fields))
+  add(query_579921, "quotaUser", newJString(quotaUser))
+  add(query_579921, "alt", newJString(alt))
+  add(query_579921, "oauth_token", newJString(oauthToken))
+  add(query_579921, "userIp", newJString(userIp))
+  add(query_579921, "key", newJString(key))
   if body != nil:
-    body_597923 = body
-  add(query_597921, "prettyPrint", newJBool(prettyPrint))
-  result = call_597920.call(nil, query_597921, nil, nil, body_597923)
+    body_579923 = body
+  add(query_579921, "prettyPrint", newJBool(prettyPrint))
+  result = call_579920.call(nil, query_579921, nil, nil, body_579923)
 
-var calendarCalendarsInsert* = Call_CalendarCalendarsInsert_597692(
+var calendarCalendarsInsert* = Call_CalendarCalendarsInsert_579692(
     name: "calendarCalendarsInsert", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com", route: "/calendars",
-    validator: validate_CalendarCalendarsInsert_597693, base: "/calendar/v3",
-    url: url_CalendarCalendarsInsert_597694, schemes: {Scheme.Https})
+    validator: validate_CalendarCalendarsInsert_579693, base: "/calendar/v3",
+    url: url_CalendarCalendarsInsert_579694, schemes: {Scheme.Https})
 type
-  Call_CalendarCalendarsUpdate_597991 = ref object of OpenApiRestCall_597424
-proc url_CalendarCalendarsUpdate_597993(protocol: Scheme; host: string; base: string;
+  Call_CalendarCalendarsUpdate_579991 = ref object of OpenApiRestCall_579424
+proc url_CalendarCalendarsUpdate_579993(protocol: Scheme; host: string; base: string;
                                        route: string; path: JsonNode;
                                        query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "calendarId" in path, "`calendarId` is a required path parameter"
   const
@@ -255,7 +257,7 @@ proc url_CalendarCalendarsUpdate_597993(protocol: Scheme; host: string; base: st
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_CalendarCalendarsUpdate_597992(path: JsonNode; query: JsonNode;
+proc validate_CalendarCalendarsUpdate_579992(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Updates metadata for a calendar.
   ## 
@@ -267,11 +269,11 @@ proc validate_CalendarCalendarsUpdate_597992(path: JsonNode; query: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `calendarId` field"
-  var valid_597994 = path.getOrDefault("calendarId")
-  valid_597994 = validateParameter(valid_597994, JString, required = true,
+  var valid_579994 = path.getOrDefault("calendarId")
+  valid_579994 = validateParameter(valid_579994, JString, required = true,
                                  default = nil)
-  if valid_597994 != nil:
-    section.add "calendarId", valid_597994
+  if valid_579994 != nil:
+    section.add "calendarId", valid_579994
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -289,41 +291,41 @@ proc validate_CalendarCalendarsUpdate_597992(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_597995 = query.getOrDefault("fields")
-  valid_597995 = validateParameter(valid_597995, JString, required = false,
+  var valid_579995 = query.getOrDefault("fields")
+  valid_579995 = validateParameter(valid_579995, JString, required = false,
                                  default = nil)
-  if valid_597995 != nil:
-    section.add "fields", valid_597995
-  var valid_597996 = query.getOrDefault("quotaUser")
-  valid_597996 = validateParameter(valid_597996, JString, required = false,
+  if valid_579995 != nil:
+    section.add "fields", valid_579995
+  var valid_579996 = query.getOrDefault("quotaUser")
+  valid_579996 = validateParameter(valid_579996, JString, required = false,
                                  default = nil)
-  if valid_597996 != nil:
-    section.add "quotaUser", valid_597996
-  var valid_597997 = query.getOrDefault("alt")
-  valid_597997 = validateParameter(valid_597997, JString, required = false,
+  if valid_579996 != nil:
+    section.add "quotaUser", valid_579996
+  var valid_579997 = query.getOrDefault("alt")
+  valid_579997 = validateParameter(valid_579997, JString, required = false,
                                  default = newJString("json"))
-  if valid_597997 != nil:
-    section.add "alt", valid_597997
-  var valid_597998 = query.getOrDefault("oauth_token")
-  valid_597998 = validateParameter(valid_597998, JString, required = false,
+  if valid_579997 != nil:
+    section.add "alt", valid_579997
+  var valid_579998 = query.getOrDefault("oauth_token")
+  valid_579998 = validateParameter(valid_579998, JString, required = false,
                                  default = nil)
-  if valid_597998 != nil:
-    section.add "oauth_token", valid_597998
-  var valid_597999 = query.getOrDefault("userIp")
-  valid_597999 = validateParameter(valid_597999, JString, required = false,
+  if valid_579998 != nil:
+    section.add "oauth_token", valid_579998
+  var valid_579999 = query.getOrDefault("userIp")
+  valid_579999 = validateParameter(valid_579999, JString, required = false,
                                  default = nil)
-  if valid_597999 != nil:
-    section.add "userIp", valid_597999
-  var valid_598000 = query.getOrDefault("key")
-  valid_598000 = validateParameter(valid_598000, JString, required = false,
+  if valid_579999 != nil:
+    section.add "userIp", valid_579999
+  var valid_580000 = query.getOrDefault("key")
+  valid_580000 = validateParameter(valid_580000, JString, required = false,
                                  default = nil)
-  if valid_598000 != nil:
-    section.add "key", valid_598000
-  var valid_598001 = query.getOrDefault("prettyPrint")
-  valid_598001 = validateParameter(valid_598001, JBool, required = false,
+  if valid_580000 != nil:
+    section.add "key", valid_580000
+  var valid_580001 = query.getOrDefault("prettyPrint")
+  valid_580001 = validateParameter(valid_580001, JBool, required = false,
                                  default = newJBool(true))
-  if valid_598001 != nil:
-    section.add "prettyPrint", valid_598001
+  if valid_580001 != nil:
+    section.add "prettyPrint", valid_580001
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -335,20 +337,20 @@ proc validate_CalendarCalendarsUpdate_597992(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_598003: Call_CalendarCalendarsUpdate_597991; path: JsonNode;
+proc call*(call_580003: Call_CalendarCalendarsUpdate_579991; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Updates metadata for a calendar.
   ## 
-  let valid = call_598003.validator(path, query, header, formData, body)
-  let scheme = call_598003.pickScheme
+  let valid = call_580003.validator(path, query, header, formData, body)
+  let scheme = call_580003.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_598003.url(scheme.get, call_598003.host, call_598003.base,
-                         call_598003.route, valid.getOrDefault("path"),
+  let url = call_580003.url(scheme.get, call_580003.host, call_580003.base,
+                         call_580003.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_598003, url, valid)
+  result = hook(call_580003, url, valid)
 
-proc call*(call_598004: Call_CalendarCalendarsUpdate_597991; calendarId: string;
+proc call*(call_580004: Call_CalendarCalendarsUpdate_579991; calendarId: string;
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           oauthToken: string = ""; userIp: string = ""; key: string = "";
           body: JsonNode = nil; prettyPrint: bool = true): Recallable =
@@ -371,33 +373,33 @@ proc call*(call_598004: Call_CalendarCalendarsUpdate_597991; calendarId: string;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_598005 = newJObject()
-  var query_598006 = newJObject()
-  var body_598007 = newJObject()
-  add(query_598006, "fields", newJString(fields))
-  add(query_598006, "quotaUser", newJString(quotaUser))
-  add(query_598006, "alt", newJString(alt))
-  add(path_598005, "calendarId", newJString(calendarId))
-  add(query_598006, "oauth_token", newJString(oauthToken))
-  add(query_598006, "userIp", newJString(userIp))
-  add(query_598006, "key", newJString(key))
+  var path_580005 = newJObject()
+  var query_580006 = newJObject()
+  var body_580007 = newJObject()
+  add(query_580006, "fields", newJString(fields))
+  add(query_580006, "quotaUser", newJString(quotaUser))
+  add(query_580006, "alt", newJString(alt))
+  add(path_580005, "calendarId", newJString(calendarId))
+  add(query_580006, "oauth_token", newJString(oauthToken))
+  add(query_580006, "userIp", newJString(userIp))
+  add(query_580006, "key", newJString(key))
   if body != nil:
-    body_598007 = body
-  add(query_598006, "prettyPrint", newJBool(prettyPrint))
-  result = call_598004.call(path_598005, query_598006, nil, nil, body_598007)
+    body_580007 = body
+  add(query_580006, "prettyPrint", newJBool(prettyPrint))
+  result = call_580004.call(path_580005, query_580006, nil, nil, body_580007)
 
-var calendarCalendarsUpdate* = Call_CalendarCalendarsUpdate_597991(
+var calendarCalendarsUpdate* = Call_CalendarCalendarsUpdate_579991(
     name: "calendarCalendarsUpdate", meth: HttpMethod.HttpPut,
     host: "www.googleapis.com", route: "/calendars/{calendarId}",
-    validator: validate_CalendarCalendarsUpdate_597992, base: "/calendar/v3",
-    url: url_CalendarCalendarsUpdate_597993, schemes: {Scheme.Https})
+    validator: validate_CalendarCalendarsUpdate_579992, base: "/calendar/v3",
+    url: url_CalendarCalendarsUpdate_579993, schemes: {Scheme.Https})
 type
-  Call_CalendarCalendarsGet_597962 = ref object of OpenApiRestCall_597424
-proc url_CalendarCalendarsGet_597964(protocol: Scheme; host: string; base: string;
+  Call_CalendarCalendarsGet_579962 = ref object of OpenApiRestCall_579424
+proc url_CalendarCalendarsGet_579964(protocol: Scheme; host: string; base: string;
                                     route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "calendarId" in path, "`calendarId` is a required path parameter"
   const
@@ -408,7 +410,7 @@ proc url_CalendarCalendarsGet_597964(protocol: Scheme; host: string; base: strin
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_CalendarCalendarsGet_597963(path: JsonNode; query: JsonNode;
+proc validate_CalendarCalendarsGet_579963(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Returns metadata for a calendar.
   ## 
@@ -420,11 +422,11 @@ proc validate_CalendarCalendarsGet_597963(path: JsonNode; query: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `calendarId` field"
-  var valid_597979 = path.getOrDefault("calendarId")
-  valid_597979 = validateParameter(valid_597979, JString, required = true,
+  var valid_579979 = path.getOrDefault("calendarId")
+  valid_579979 = validateParameter(valid_579979, JString, required = true,
                                  default = nil)
-  if valid_597979 != nil:
-    section.add "calendarId", valid_597979
+  if valid_579979 != nil:
+    section.add "calendarId", valid_579979
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -442,41 +444,41 @@ proc validate_CalendarCalendarsGet_597963(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_597980 = query.getOrDefault("fields")
-  valid_597980 = validateParameter(valid_597980, JString, required = false,
+  var valid_579980 = query.getOrDefault("fields")
+  valid_579980 = validateParameter(valid_579980, JString, required = false,
                                  default = nil)
-  if valid_597980 != nil:
-    section.add "fields", valid_597980
-  var valid_597981 = query.getOrDefault("quotaUser")
-  valid_597981 = validateParameter(valid_597981, JString, required = false,
+  if valid_579980 != nil:
+    section.add "fields", valid_579980
+  var valid_579981 = query.getOrDefault("quotaUser")
+  valid_579981 = validateParameter(valid_579981, JString, required = false,
                                  default = nil)
-  if valid_597981 != nil:
-    section.add "quotaUser", valid_597981
-  var valid_597982 = query.getOrDefault("alt")
-  valid_597982 = validateParameter(valid_597982, JString, required = false,
+  if valid_579981 != nil:
+    section.add "quotaUser", valid_579981
+  var valid_579982 = query.getOrDefault("alt")
+  valid_579982 = validateParameter(valid_579982, JString, required = false,
                                  default = newJString("json"))
-  if valid_597982 != nil:
-    section.add "alt", valid_597982
-  var valid_597983 = query.getOrDefault("oauth_token")
-  valid_597983 = validateParameter(valid_597983, JString, required = false,
+  if valid_579982 != nil:
+    section.add "alt", valid_579982
+  var valid_579983 = query.getOrDefault("oauth_token")
+  valid_579983 = validateParameter(valid_579983, JString, required = false,
                                  default = nil)
-  if valid_597983 != nil:
-    section.add "oauth_token", valid_597983
-  var valid_597984 = query.getOrDefault("userIp")
-  valid_597984 = validateParameter(valid_597984, JString, required = false,
+  if valid_579983 != nil:
+    section.add "oauth_token", valid_579983
+  var valid_579984 = query.getOrDefault("userIp")
+  valid_579984 = validateParameter(valid_579984, JString, required = false,
                                  default = nil)
-  if valid_597984 != nil:
-    section.add "userIp", valid_597984
-  var valid_597985 = query.getOrDefault("key")
-  valid_597985 = validateParameter(valid_597985, JString, required = false,
+  if valid_579984 != nil:
+    section.add "userIp", valid_579984
+  var valid_579985 = query.getOrDefault("key")
+  valid_579985 = validateParameter(valid_579985, JString, required = false,
                                  default = nil)
-  if valid_597985 != nil:
-    section.add "key", valid_597985
-  var valid_597986 = query.getOrDefault("prettyPrint")
-  valid_597986 = validateParameter(valid_597986, JBool, required = false,
+  if valid_579985 != nil:
+    section.add "key", valid_579985
+  var valid_579986 = query.getOrDefault("prettyPrint")
+  valid_579986 = validateParameter(valid_579986, JBool, required = false,
                                  default = newJBool(true))
-  if valid_597986 != nil:
-    section.add "prettyPrint", valid_597986
+  if valid_579986 != nil:
+    section.add "prettyPrint", valid_579986
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -485,20 +487,20 @@ proc validate_CalendarCalendarsGet_597963(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_597987: Call_CalendarCalendarsGet_597962; path: JsonNode;
+proc call*(call_579987: Call_CalendarCalendarsGet_579962; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Returns metadata for a calendar.
   ## 
-  let valid = call_597987.validator(path, query, header, formData, body)
-  let scheme = call_597987.pickScheme
+  let valid = call_579987.validator(path, query, header, formData, body)
+  let scheme = call_579987.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_597987.url(scheme.get, call_597987.host, call_597987.base,
-                         call_597987.route, valid.getOrDefault("path"),
+  let url = call_579987.url(scheme.get, call_579987.host, call_579987.base,
+                         call_579987.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_597987, url, valid)
+  result = hook(call_579987, url, valid)
 
-proc call*(call_597988: Call_CalendarCalendarsGet_597962; calendarId: string;
+proc call*(call_579988: Call_CalendarCalendarsGet_579962; calendarId: string;
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           oauthToken: string = ""; userIp: string = ""; key: string = "";
           prettyPrint: bool = true): Recallable =
@@ -520,30 +522,30 @@ proc call*(call_597988: Call_CalendarCalendarsGet_597962; calendarId: string;
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_597989 = newJObject()
-  var query_597990 = newJObject()
-  add(query_597990, "fields", newJString(fields))
-  add(query_597990, "quotaUser", newJString(quotaUser))
-  add(query_597990, "alt", newJString(alt))
-  add(path_597989, "calendarId", newJString(calendarId))
-  add(query_597990, "oauth_token", newJString(oauthToken))
-  add(query_597990, "userIp", newJString(userIp))
-  add(query_597990, "key", newJString(key))
-  add(query_597990, "prettyPrint", newJBool(prettyPrint))
-  result = call_597988.call(path_597989, query_597990, nil, nil, nil)
+  var path_579989 = newJObject()
+  var query_579990 = newJObject()
+  add(query_579990, "fields", newJString(fields))
+  add(query_579990, "quotaUser", newJString(quotaUser))
+  add(query_579990, "alt", newJString(alt))
+  add(path_579989, "calendarId", newJString(calendarId))
+  add(query_579990, "oauth_token", newJString(oauthToken))
+  add(query_579990, "userIp", newJString(userIp))
+  add(query_579990, "key", newJString(key))
+  add(query_579990, "prettyPrint", newJBool(prettyPrint))
+  result = call_579988.call(path_579989, query_579990, nil, nil, nil)
 
-var calendarCalendarsGet* = Call_CalendarCalendarsGet_597962(
+var calendarCalendarsGet* = Call_CalendarCalendarsGet_579962(
     name: "calendarCalendarsGet", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/calendars/{calendarId}",
-    validator: validate_CalendarCalendarsGet_597963, base: "/calendar/v3",
-    url: url_CalendarCalendarsGet_597964, schemes: {Scheme.Https})
+    validator: validate_CalendarCalendarsGet_579963, base: "/calendar/v3",
+    url: url_CalendarCalendarsGet_579964, schemes: {Scheme.Https})
 type
-  Call_CalendarCalendarsPatch_598023 = ref object of OpenApiRestCall_597424
-proc url_CalendarCalendarsPatch_598025(protocol: Scheme; host: string; base: string;
+  Call_CalendarCalendarsPatch_580023 = ref object of OpenApiRestCall_579424
+proc url_CalendarCalendarsPatch_580025(protocol: Scheme; host: string; base: string;
                                       route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "calendarId" in path, "`calendarId` is a required path parameter"
   const
@@ -554,7 +556,7 @@ proc url_CalendarCalendarsPatch_598025(protocol: Scheme; host: string; base: str
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_CalendarCalendarsPatch_598024(path: JsonNode; query: JsonNode;
+proc validate_CalendarCalendarsPatch_580024(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Updates metadata for a calendar. This method supports patch semantics.
   ## 
@@ -566,11 +568,11 @@ proc validate_CalendarCalendarsPatch_598024(path: JsonNode; query: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `calendarId` field"
-  var valid_598026 = path.getOrDefault("calendarId")
-  valid_598026 = validateParameter(valid_598026, JString, required = true,
+  var valid_580026 = path.getOrDefault("calendarId")
+  valid_580026 = validateParameter(valid_580026, JString, required = true,
                                  default = nil)
-  if valid_598026 != nil:
-    section.add "calendarId", valid_598026
+  if valid_580026 != nil:
+    section.add "calendarId", valid_580026
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -588,41 +590,41 @@ proc validate_CalendarCalendarsPatch_598024(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_598027 = query.getOrDefault("fields")
-  valid_598027 = validateParameter(valid_598027, JString, required = false,
+  var valid_580027 = query.getOrDefault("fields")
+  valid_580027 = validateParameter(valid_580027, JString, required = false,
                                  default = nil)
-  if valid_598027 != nil:
-    section.add "fields", valid_598027
-  var valid_598028 = query.getOrDefault("quotaUser")
-  valid_598028 = validateParameter(valid_598028, JString, required = false,
+  if valid_580027 != nil:
+    section.add "fields", valid_580027
+  var valid_580028 = query.getOrDefault("quotaUser")
+  valid_580028 = validateParameter(valid_580028, JString, required = false,
                                  default = nil)
-  if valid_598028 != nil:
-    section.add "quotaUser", valid_598028
-  var valid_598029 = query.getOrDefault("alt")
-  valid_598029 = validateParameter(valid_598029, JString, required = false,
+  if valid_580028 != nil:
+    section.add "quotaUser", valid_580028
+  var valid_580029 = query.getOrDefault("alt")
+  valid_580029 = validateParameter(valid_580029, JString, required = false,
                                  default = newJString("json"))
-  if valid_598029 != nil:
-    section.add "alt", valid_598029
-  var valid_598030 = query.getOrDefault("oauth_token")
-  valid_598030 = validateParameter(valid_598030, JString, required = false,
+  if valid_580029 != nil:
+    section.add "alt", valid_580029
+  var valid_580030 = query.getOrDefault("oauth_token")
+  valid_580030 = validateParameter(valid_580030, JString, required = false,
                                  default = nil)
-  if valid_598030 != nil:
-    section.add "oauth_token", valid_598030
-  var valid_598031 = query.getOrDefault("userIp")
-  valid_598031 = validateParameter(valid_598031, JString, required = false,
+  if valid_580030 != nil:
+    section.add "oauth_token", valid_580030
+  var valid_580031 = query.getOrDefault("userIp")
+  valid_580031 = validateParameter(valid_580031, JString, required = false,
                                  default = nil)
-  if valid_598031 != nil:
-    section.add "userIp", valid_598031
-  var valid_598032 = query.getOrDefault("key")
-  valid_598032 = validateParameter(valid_598032, JString, required = false,
+  if valid_580031 != nil:
+    section.add "userIp", valid_580031
+  var valid_580032 = query.getOrDefault("key")
+  valid_580032 = validateParameter(valid_580032, JString, required = false,
                                  default = nil)
-  if valid_598032 != nil:
-    section.add "key", valid_598032
-  var valid_598033 = query.getOrDefault("prettyPrint")
-  valid_598033 = validateParameter(valid_598033, JBool, required = false,
+  if valid_580032 != nil:
+    section.add "key", valid_580032
+  var valid_580033 = query.getOrDefault("prettyPrint")
+  valid_580033 = validateParameter(valid_580033, JBool, required = false,
                                  default = newJBool(true))
-  if valid_598033 != nil:
-    section.add "prettyPrint", valid_598033
+  if valid_580033 != nil:
+    section.add "prettyPrint", valid_580033
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -634,20 +636,20 @@ proc validate_CalendarCalendarsPatch_598024(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_598035: Call_CalendarCalendarsPatch_598023; path: JsonNode;
+proc call*(call_580035: Call_CalendarCalendarsPatch_580023; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Updates metadata for a calendar. This method supports patch semantics.
   ## 
-  let valid = call_598035.validator(path, query, header, formData, body)
-  let scheme = call_598035.pickScheme
+  let valid = call_580035.validator(path, query, header, formData, body)
+  let scheme = call_580035.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_598035.url(scheme.get, call_598035.host, call_598035.base,
-                         call_598035.route, valid.getOrDefault("path"),
+  let url = call_580035.url(scheme.get, call_580035.host, call_580035.base,
+                         call_580035.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_598035, url, valid)
+  result = hook(call_580035, url, valid)
 
-proc call*(call_598036: Call_CalendarCalendarsPatch_598023; calendarId: string;
+proc call*(call_580036: Call_CalendarCalendarsPatch_580023; calendarId: string;
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           oauthToken: string = ""; userIp: string = ""; key: string = "";
           body: JsonNode = nil; prettyPrint: bool = true): Recallable =
@@ -670,34 +672,34 @@ proc call*(call_598036: Call_CalendarCalendarsPatch_598023; calendarId: string;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_598037 = newJObject()
-  var query_598038 = newJObject()
-  var body_598039 = newJObject()
-  add(query_598038, "fields", newJString(fields))
-  add(query_598038, "quotaUser", newJString(quotaUser))
-  add(query_598038, "alt", newJString(alt))
-  add(path_598037, "calendarId", newJString(calendarId))
-  add(query_598038, "oauth_token", newJString(oauthToken))
-  add(query_598038, "userIp", newJString(userIp))
-  add(query_598038, "key", newJString(key))
+  var path_580037 = newJObject()
+  var query_580038 = newJObject()
+  var body_580039 = newJObject()
+  add(query_580038, "fields", newJString(fields))
+  add(query_580038, "quotaUser", newJString(quotaUser))
+  add(query_580038, "alt", newJString(alt))
+  add(path_580037, "calendarId", newJString(calendarId))
+  add(query_580038, "oauth_token", newJString(oauthToken))
+  add(query_580038, "userIp", newJString(userIp))
+  add(query_580038, "key", newJString(key))
   if body != nil:
-    body_598039 = body
-  add(query_598038, "prettyPrint", newJBool(prettyPrint))
-  result = call_598036.call(path_598037, query_598038, nil, nil, body_598039)
+    body_580039 = body
+  add(query_580038, "prettyPrint", newJBool(prettyPrint))
+  result = call_580036.call(path_580037, query_580038, nil, nil, body_580039)
 
-var calendarCalendarsPatch* = Call_CalendarCalendarsPatch_598023(
+var calendarCalendarsPatch* = Call_CalendarCalendarsPatch_580023(
     name: "calendarCalendarsPatch", meth: HttpMethod.HttpPatch,
     host: "www.googleapis.com", route: "/calendars/{calendarId}",
-    validator: validate_CalendarCalendarsPatch_598024, base: "/calendar/v3",
-    url: url_CalendarCalendarsPatch_598025, schemes: {Scheme.Https})
+    validator: validate_CalendarCalendarsPatch_580024, base: "/calendar/v3",
+    url: url_CalendarCalendarsPatch_580025, schemes: {Scheme.Https})
 type
-  Call_CalendarCalendarsDelete_598008 = ref object of OpenApiRestCall_597424
-proc url_CalendarCalendarsDelete_598010(protocol: Scheme; host: string; base: string;
+  Call_CalendarCalendarsDelete_580008 = ref object of OpenApiRestCall_579424
+proc url_CalendarCalendarsDelete_580010(protocol: Scheme; host: string; base: string;
                                        route: string; path: JsonNode;
                                        query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "calendarId" in path, "`calendarId` is a required path parameter"
   const
@@ -708,7 +710,7 @@ proc url_CalendarCalendarsDelete_598010(protocol: Scheme; host: string; base: st
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_CalendarCalendarsDelete_598009(path: JsonNode; query: JsonNode;
+proc validate_CalendarCalendarsDelete_580009(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Deletes a secondary calendar. Use calendars.clear for clearing all events on primary calendars.
   ## 
@@ -720,11 +722,11 @@ proc validate_CalendarCalendarsDelete_598009(path: JsonNode; query: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `calendarId` field"
-  var valid_598011 = path.getOrDefault("calendarId")
-  valid_598011 = validateParameter(valid_598011, JString, required = true,
+  var valid_580011 = path.getOrDefault("calendarId")
+  valid_580011 = validateParameter(valid_580011, JString, required = true,
                                  default = nil)
-  if valid_598011 != nil:
-    section.add "calendarId", valid_598011
+  if valid_580011 != nil:
+    section.add "calendarId", valid_580011
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -742,41 +744,41 @@ proc validate_CalendarCalendarsDelete_598009(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_598012 = query.getOrDefault("fields")
-  valid_598012 = validateParameter(valid_598012, JString, required = false,
+  var valid_580012 = query.getOrDefault("fields")
+  valid_580012 = validateParameter(valid_580012, JString, required = false,
                                  default = nil)
-  if valid_598012 != nil:
-    section.add "fields", valid_598012
-  var valid_598013 = query.getOrDefault("quotaUser")
-  valid_598013 = validateParameter(valid_598013, JString, required = false,
+  if valid_580012 != nil:
+    section.add "fields", valid_580012
+  var valid_580013 = query.getOrDefault("quotaUser")
+  valid_580013 = validateParameter(valid_580013, JString, required = false,
                                  default = nil)
-  if valid_598013 != nil:
-    section.add "quotaUser", valid_598013
-  var valid_598014 = query.getOrDefault("alt")
-  valid_598014 = validateParameter(valid_598014, JString, required = false,
+  if valid_580013 != nil:
+    section.add "quotaUser", valid_580013
+  var valid_580014 = query.getOrDefault("alt")
+  valid_580014 = validateParameter(valid_580014, JString, required = false,
                                  default = newJString("json"))
-  if valid_598014 != nil:
-    section.add "alt", valid_598014
-  var valid_598015 = query.getOrDefault("oauth_token")
-  valid_598015 = validateParameter(valid_598015, JString, required = false,
+  if valid_580014 != nil:
+    section.add "alt", valid_580014
+  var valid_580015 = query.getOrDefault("oauth_token")
+  valid_580015 = validateParameter(valid_580015, JString, required = false,
                                  default = nil)
-  if valid_598015 != nil:
-    section.add "oauth_token", valid_598015
-  var valid_598016 = query.getOrDefault("userIp")
-  valid_598016 = validateParameter(valid_598016, JString, required = false,
+  if valid_580015 != nil:
+    section.add "oauth_token", valid_580015
+  var valid_580016 = query.getOrDefault("userIp")
+  valid_580016 = validateParameter(valid_580016, JString, required = false,
                                  default = nil)
-  if valid_598016 != nil:
-    section.add "userIp", valid_598016
-  var valid_598017 = query.getOrDefault("key")
-  valid_598017 = validateParameter(valid_598017, JString, required = false,
+  if valid_580016 != nil:
+    section.add "userIp", valid_580016
+  var valid_580017 = query.getOrDefault("key")
+  valid_580017 = validateParameter(valid_580017, JString, required = false,
                                  default = nil)
-  if valid_598017 != nil:
-    section.add "key", valid_598017
-  var valid_598018 = query.getOrDefault("prettyPrint")
-  valid_598018 = validateParameter(valid_598018, JBool, required = false,
+  if valid_580017 != nil:
+    section.add "key", valid_580017
+  var valid_580018 = query.getOrDefault("prettyPrint")
+  valid_580018 = validateParameter(valid_580018, JBool, required = false,
                                  default = newJBool(true))
-  if valid_598018 != nil:
-    section.add "prettyPrint", valid_598018
+  if valid_580018 != nil:
+    section.add "prettyPrint", valid_580018
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -785,20 +787,20 @@ proc validate_CalendarCalendarsDelete_598009(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_598019: Call_CalendarCalendarsDelete_598008; path: JsonNode;
+proc call*(call_580019: Call_CalendarCalendarsDelete_580008; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Deletes a secondary calendar. Use calendars.clear for clearing all events on primary calendars.
   ## 
-  let valid = call_598019.validator(path, query, header, formData, body)
-  let scheme = call_598019.pickScheme
+  let valid = call_580019.validator(path, query, header, formData, body)
+  let scheme = call_580019.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_598019.url(scheme.get, call_598019.host, call_598019.base,
-                         call_598019.route, valid.getOrDefault("path"),
+  let url = call_580019.url(scheme.get, call_580019.host, call_580019.base,
+                         call_580019.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_598019, url, valid)
+  result = hook(call_580019, url, valid)
 
-proc call*(call_598020: Call_CalendarCalendarsDelete_598008; calendarId: string;
+proc call*(call_580020: Call_CalendarCalendarsDelete_580008; calendarId: string;
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           oauthToken: string = ""; userIp: string = ""; key: string = "";
           prettyPrint: bool = true): Recallable =
@@ -820,30 +822,30 @@ proc call*(call_598020: Call_CalendarCalendarsDelete_598008; calendarId: string;
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_598021 = newJObject()
-  var query_598022 = newJObject()
-  add(query_598022, "fields", newJString(fields))
-  add(query_598022, "quotaUser", newJString(quotaUser))
-  add(query_598022, "alt", newJString(alt))
-  add(path_598021, "calendarId", newJString(calendarId))
-  add(query_598022, "oauth_token", newJString(oauthToken))
-  add(query_598022, "userIp", newJString(userIp))
-  add(query_598022, "key", newJString(key))
-  add(query_598022, "prettyPrint", newJBool(prettyPrint))
-  result = call_598020.call(path_598021, query_598022, nil, nil, nil)
+  var path_580021 = newJObject()
+  var query_580022 = newJObject()
+  add(query_580022, "fields", newJString(fields))
+  add(query_580022, "quotaUser", newJString(quotaUser))
+  add(query_580022, "alt", newJString(alt))
+  add(path_580021, "calendarId", newJString(calendarId))
+  add(query_580022, "oauth_token", newJString(oauthToken))
+  add(query_580022, "userIp", newJString(userIp))
+  add(query_580022, "key", newJString(key))
+  add(query_580022, "prettyPrint", newJBool(prettyPrint))
+  result = call_580020.call(path_580021, query_580022, nil, nil, nil)
 
-var calendarCalendarsDelete* = Call_CalendarCalendarsDelete_598008(
+var calendarCalendarsDelete* = Call_CalendarCalendarsDelete_580008(
     name: "calendarCalendarsDelete", meth: HttpMethod.HttpDelete,
     host: "www.googleapis.com", route: "/calendars/{calendarId}",
-    validator: validate_CalendarCalendarsDelete_598009, base: "/calendar/v3",
-    url: url_CalendarCalendarsDelete_598010, schemes: {Scheme.Https})
+    validator: validate_CalendarCalendarsDelete_580009, base: "/calendar/v3",
+    url: url_CalendarCalendarsDelete_580010, schemes: {Scheme.Https})
 type
-  Call_CalendarAclInsert_598059 = ref object of OpenApiRestCall_597424
-proc url_CalendarAclInsert_598061(protocol: Scheme; host: string; base: string;
+  Call_CalendarAclInsert_580059 = ref object of OpenApiRestCall_579424
+proc url_CalendarAclInsert_580061(protocol: Scheme; host: string; base: string;
                                  route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "calendarId" in path, "`calendarId` is a required path parameter"
   const
@@ -855,7 +857,7 @@ proc url_CalendarAclInsert_598061(protocol: Scheme; host: string; base: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_CalendarAclInsert_598060(path: JsonNode; query: JsonNode;
+proc validate_CalendarAclInsert_580060(path: JsonNode; query: JsonNode;
                                       header: JsonNode; formData: JsonNode;
                                       body: JsonNode): JsonNode =
   ## Creates an access control rule.
@@ -868,11 +870,11 @@ proc validate_CalendarAclInsert_598060(path: JsonNode; query: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `calendarId` field"
-  var valid_598062 = path.getOrDefault("calendarId")
-  valid_598062 = validateParameter(valid_598062, JString, required = true,
+  var valid_580062 = path.getOrDefault("calendarId")
+  valid_580062 = validateParameter(valid_580062, JString, required = true,
                                  default = nil)
-  if valid_598062 != nil:
-    section.add "calendarId", valid_598062
+  if valid_580062 != nil:
+    section.add "calendarId", valid_580062
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -892,45 +894,45 @@ proc validate_CalendarAclInsert_598060(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_598063 = query.getOrDefault("fields")
-  valid_598063 = validateParameter(valid_598063, JString, required = false,
+  var valid_580063 = query.getOrDefault("fields")
+  valid_580063 = validateParameter(valid_580063, JString, required = false,
                                  default = nil)
-  if valid_598063 != nil:
-    section.add "fields", valid_598063
-  var valid_598064 = query.getOrDefault("quotaUser")
-  valid_598064 = validateParameter(valid_598064, JString, required = false,
+  if valid_580063 != nil:
+    section.add "fields", valid_580063
+  var valid_580064 = query.getOrDefault("quotaUser")
+  valid_580064 = validateParameter(valid_580064, JString, required = false,
                                  default = nil)
-  if valid_598064 != nil:
-    section.add "quotaUser", valid_598064
-  var valid_598065 = query.getOrDefault("alt")
-  valid_598065 = validateParameter(valid_598065, JString, required = false,
+  if valid_580064 != nil:
+    section.add "quotaUser", valid_580064
+  var valid_580065 = query.getOrDefault("alt")
+  valid_580065 = validateParameter(valid_580065, JString, required = false,
                                  default = newJString("json"))
-  if valid_598065 != nil:
-    section.add "alt", valid_598065
-  var valid_598066 = query.getOrDefault("sendNotifications")
-  valid_598066 = validateParameter(valid_598066, JBool, required = false, default = nil)
-  if valid_598066 != nil:
-    section.add "sendNotifications", valid_598066
-  var valid_598067 = query.getOrDefault("oauth_token")
-  valid_598067 = validateParameter(valid_598067, JString, required = false,
+  if valid_580065 != nil:
+    section.add "alt", valid_580065
+  var valid_580066 = query.getOrDefault("sendNotifications")
+  valid_580066 = validateParameter(valid_580066, JBool, required = false, default = nil)
+  if valid_580066 != nil:
+    section.add "sendNotifications", valid_580066
+  var valid_580067 = query.getOrDefault("oauth_token")
+  valid_580067 = validateParameter(valid_580067, JString, required = false,
                                  default = nil)
-  if valid_598067 != nil:
-    section.add "oauth_token", valid_598067
-  var valid_598068 = query.getOrDefault("userIp")
-  valid_598068 = validateParameter(valid_598068, JString, required = false,
+  if valid_580067 != nil:
+    section.add "oauth_token", valid_580067
+  var valid_580068 = query.getOrDefault("userIp")
+  valid_580068 = validateParameter(valid_580068, JString, required = false,
                                  default = nil)
-  if valid_598068 != nil:
-    section.add "userIp", valid_598068
-  var valid_598069 = query.getOrDefault("key")
-  valid_598069 = validateParameter(valid_598069, JString, required = false,
+  if valid_580068 != nil:
+    section.add "userIp", valid_580068
+  var valid_580069 = query.getOrDefault("key")
+  valid_580069 = validateParameter(valid_580069, JString, required = false,
                                  default = nil)
-  if valid_598069 != nil:
-    section.add "key", valid_598069
-  var valid_598070 = query.getOrDefault("prettyPrint")
-  valid_598070 = validateParameter(valid_598070, JBool, required = false,
+  if valid_580069 != nil:
+    section.add "key", valid_580069
+  var valid_580070 = query.getOrDefault("prettyPrint")
+  valid_580070 = validateParameter(valid_580070, JBool, required = false,
                                  default = newJBool(true))
-  if valid_598070 != nil:
-    section.add "prettyPrint", valid_598070
+  if valid_580070 != nil:
+    section.add "prettyPrint", valid_580070
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -942,20 +944,20 @@ proc validate_CalendarAclInsert_598060(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_598072: Call_CalendarAclInsert_598059; path: JsonNode;
+proc call*(call_580072: Call_CalendarAclInsert_580059; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Creates an access control rule.
   ## 
-  let valid = call_598072.validator(path, query, header, formData, body)
-  let scheme = call_598072.pickScheme
+  let valid = call_580072.validator(path, query, header, formData, body)
+  let scheme = call_580072.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_598072.url(scheme.get, call_598072.host, call_598072.base,
-                         call_598072.route, valid.getOrDefault("path"),
+  let url = call_580072.url(scheme.get, call_580072.host, call_580072.base,
+                         call_580072.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_598072, url, valid)
+  result = hook(call_580072, url, valid)
 
-proc call*(call_598073: Call_CalendarAclInsert_598059; calendarId: string;
+proc call*(call_580073: Call_CalendarAclInsert_580059; calendarId: string;
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           sendNotifications: bool = false; oauthToken: string = ""; userIp: string = "";
           key: string = ""; body: JsonNode = nil; prettyPrint: bool = true): Recallable =
@@ -980,33 +982,33 @@ proc call*(call_598073: Call_CalendarAclInsert_598059; calendarId: string;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_598074 = newJObject()
-  var query_598075 = newJObject()
-  var body_598076 = newJObject()
-  add(query_598075, "fields", newJString(fields))
-  add(query_598075, "quotaUser", newJString(quotaUser))
-  add(query_598075, "alt", newJString(alt))
-  add(path_598074, "calendarId", newJString(calendarId))
-  add(query_598075, "sendNotifications", newJBool(sendNotifications))
-  add(query_598075, "oauth_token", newJString(oauthToken))
-  add(query_598075, "userIp", newJString(userIp))
-  add(query_598075, "key", newJString(key))
+  var path_580074 = newJObject()
+  var query_580075 = newJObject()
+  var body_580076 = newJObject()
+  add(query_580075, "fields", newJString(fields))
+  add(query_580075, "quotaUser", newJString(quotaUser))
+  add(query_580075, "alt", newJString(alt))
+  add(path_580074, "calendarId", newJString(calendarId))
+  add(query_580075, "sendNotifications", newJBool(sendNotifications))
+  add(query_580075, "oauth_token", newJString(oauthToken))
+  add(query_580075, "userIp", newJString(userIp))
+  add(query_580075, "key", newJString(key))
   if body != nil:
-    body_598076 = body
-  add(query_598075, "prettyPrint", newJBool(prettyPrint))
-  result = call_598073.call(path_598074, query_598075, nil, nil, body_598076)
+    body_580076 = body
+  add(query_580075, "prettyPrint", newJBool(prettyPrint))
+  result = call_580073.call(path_580074, query_580075, nil, nil, body_580076)
 
-var calendarAclInsert* = Call_CalendarAclInsert_598059(name: "calendarAclInsert",
+var calendarAclInsert* = Call_CalendarAclInsert_580059(name: "calendarAclInsert",
     meth: HttpMethod.HttpPost, host: "www.googleapis.com",
-    route: "/calendars/{calendarId}/acl", validator: validate_CalendarAclInsert_598060,
-    base: "/calendar/v3", url: url_CalendarAclInsert_598061, schemes: {Scheme.Https})
+    route: "/calendars/{calendarId}/acl", validator: validate_CalendarAclInsert_580060,
+    base: "/calendar/v3", url: url_CalendarAclInsert_580061, schemes: {Scheme.Https})
 type
-  Call_CalendarAclList_598040 = ref object of OpenApiRestCall_597424
-proc url_CalendarAclList_598042(protocol: Scheme; host: string; base: string;
+  Call_CalendarAclList_580040 = ref object of OpenApiRestCall_579424
+proc url_CalendarAclList_580042(protocol: Scheme; host: string; base: string;
                                route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "calendarId" in path, "`calendarId` is a required path parameter"
   const
@@ -1018,7 +1020,7 @@ proc url_CalendarAclList_598042(protocol: Scheme; host: string; base: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_CalendarAclList_598041(path: JsonNode; query: JsonNode;
+proc validate_CalendarAclList_580041(path: JsonNode; query: JsonNode;
                                     header: JsonNode; formData: JsonNode;
                                     body: JsonNode): JsonNode =
   ## Returns the rules in the access control list for the calendar.
@@ -1031,11 +1033,11 @@ proc validate_CalendarAclList_598041(path: JsonNode; query: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `calendarId` field"
-  var valid_598043 = path.getOrDefault("calendarId")
-  valid_598043 = validateParameter(valid_598043, JString, required = true,
+  var valid_580043 = path.getOrDefault("calendarId")
+  valid_580043 = validateParameter(valid_580043, JString, required = true,
                                  default = nil)
-  if valid_598043 != nil:
-    section.add "calendarId", valid_598043
+  if valid_580043 != nil:
+    section.add "calendarId", valid_580043
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -1064,59 +1066,59 @@ proc validate_CalendarAclList_598041(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_598044 = query.getOrDefault("fields")
-  valid_598044 = validateParameter(valid_598044, JString, required = false,
+  var valid_580044 = query.getOrDefault("fields")
+  valid_580044 = validateParameter(valid_580044, JString, required = false,
                                  default = nil)
-  if valid_598044 != nil:
-    section.add "fields", valid_598044
-  var valid_598045 = query.getOrDefault("pageToken")
-  valid_598045 = validateParameter(valid_598045, JString, required = false,
+  if valid_580044 != nil:
+    section.add "fields", valid_580044
+  var valid_580045 = query.getOrDefault("pageToken")
+  valid_580045 = validateParameter(valid_580045, JString, required = false,
                                  default = nil)
-  if valid_598045 != nil:
-    section.add "pageToken", valid_598045
-  var valid_598046 = query.getOrDefault("quotaUser")
-  valid_598046 = validateParameter(valid_598046, JString, required = false,
+  if valid_580045 != nil:
+    section.add "pageToken", valid_580045
+  var valid_580046 = query.getOrDefault("quotaUser")
+  valid_580046 = validateParameter(valid_580046, JString, required = false,
                                  default = nil)
-  if valid_598046 != nil:
-    section.add "quotaUser", valid_598046
-  var valid_598047 = query.getOrDefault("alt")
-  valid_598047 = validateParameter(valid_598047, JString, required = false,
+  if valid_580046 != nil:
+    section.add "quotaUser", valid_580046
+  var valid_580047 = query.getOrDefault("alt")
+  valid_580047 = validateParameter(valid_580047, JString, required = false,
                                  default = newJString("json"))
-  if valid_598047 != nil:
-    section.add "alt", valid_598047
-  var valid_598048 = query.getOrDefault("oauth_token")
-  valid_598048 = validateParameter(valid_598048, JString, required = false,
+  if valid_580047 != nil:
+    section.add "alt", valid_580047
+  var valid_580048 = query.getOrDefault("oauth_token")
+  valid_580048 = validateParameter(valid_580048, JString, required = false,
                                  default = nil)
-  if valid_598048 != nil:
-    section.add "oauth_token", valid_598048
-  var valid_598049 = query.getOrDefault("syncToken")
-  valid_598049 = validateParameter(valid_598049, JString, required = false,
+  if valid_580048 != nil:
+    section.add "oauth_token", valid_580048
+  var valid_580049 = query.getOrDefault("syncToken")
+  valid_580049 = validateParameter(valid_580049, JString, required = false,
                                  default = nil)
-  if valid_598049 != nil:
-    section.add "syncToken", valid_598049
-  var valid_598050 = query.getOrDefault("userIp")
-  valid_598050 = validateParameter(valid_598050, JString, required = false,
+  if valid_580049 != nil:
+    section.add "syncToken", valid_580049
+  var valid_580050 = query.getOrDefault("userIp")
+  valid_580050 = validateParameter(valid_580050, JString, required = false,
                                  default = nil)
-  if valid_598050 != nil:
-    section.add "userIp", valid_598050
-  var valid_598051 = query.getOrDefault("maxResults")
-  valid_598051 = validateParameter(valid_598051, JInt, required = false, default = nil)
-  if valid_598051 != nil:
-    section.add "maxResults", valid_598051
-  var valid_598052 = query.getOrDefault("showDeleted")
-  valid_598052 = validateParameter(valid_598052, JBool, required = false, default = nil)
-  if valid_598052 != nil:
-    section.add "showDeleted", valid_598052
-  var valid_598053 = query.getOrDefault("key")
-  valid_598053 = validateParameter(valid_598053, JString, required = false,
+  if valid_580050 != nil:
+    section.add "userIp", valid_580050
+  var valid_580051 = query.getOrDefault("maxResults")
+  valid_580051 = validateParameter(valid_580051, JInt, required = false, default = nil)
+  if valid_580051 != nil:
+    section.add "maxResults", valid_580051
+  var valid_580052 = query.getOrDefault("showDeleted")
+  valid_580052 = validateParameter(valid_580052, JBool, required = false, default = nil)
+  if valid_580052 != nil:
+    section.add "showDeleted", valid_580052
+  var valid_580053 = query.getOrDefault("key")
+  valid_580053 = validateParameter(valid_580053, JString, required = false,
                                  default = nil)
-  if valid_598053 != nil:
-    section.add "key", valid_598053
-  var valid_598054 = query.getOrDefault("prettyPrint")
-  valid_598054 = validateParameter(valid_598054, JBool, required = false,
+  if valid_580053 != nil:
+    section.add "key", valid_580053
+  var valid_580054 = query.getOrDefault("prettyPrint")
+  valid_580054 = validateParameter(valid_580054, JBool, required = false,
                                  default = newJBool(true))
-  if valid_598054 != nil:
-    section.add "prettyPrint", valid_598054
+  if valid_580054 != nil:
+    section.add "prettyPrint", valid_580054
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1125,20 +1127,20 @@ proc validate_CalendarAclList_598041(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_598055: Call_CalendarAclList_598040; path: JsonNode; query: JsonNode;
+proc call*(call_580055: Call_CalendarAclList_580040; path: JsonNode; query: JsonNode;
           header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Returns the rules in the access control list for the calendar.
   ## 
-  let valid = call_598055.validator(path, query, header, formData, body)
-  let scheme = call_598055.pickScheme
+  let valid = call_580055.validator(path, query, header, formData, body)
+  let scheme = call_580055.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_598055.url(scheme.get, call_598055.host, call_598055.base,
-                         call_598055.route, valid.getOrDefault("path"),
+  let url = call_580055.url(scheme.get, call_580055.host, call_580055.base,
+                         call_580055.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_598055, url, valid)
+  result = hook(call_580055, url, valid)
 
-proc call*(call_598056: Call_CalendarAclList_598040; calendarId: string;
+proc call*(call_580056: Call_CalendarAclList_580040; calendarId: string;
           fields: string = ""; pageToken: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; syncToken: string = "";
           userIp: string = ""; maxResults: int = 0; showDeleted: bool = false;
@@ -1172,33 +1174,33 @@ proc call*(call_598056: Call_CalendarAclList_598040; calendarId: string;
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_598057 = newJObject()
-  var query_598058 = newJObject()
-  add(query_598058, "fields", newJString(fields))
-  add(query_598058, "pageToken", newJString(pageToken))
-  add(query_598058, "quotaUser", newJString(quotaUser))
-  add(query_598058, "alt", newJString(alt))
-  add(path_598057, "calendarId", newJString(calendarId))
-  add(query_598058, "oauth_token", newJString(oauthToken))
-  add(query_598058, "syncToken", newJString(syncToken))
-  add(query_598058, "userIp", newJString(userIp))
-  add(query_598058, "maxResults", newJInt(maxResults))
-  add(query_598058, "showDeleted", newJBool(showDeleted))
-  add(query_598058, "key", newJString(key))
-  add(query_598058, "prettyPrint", newJBool(prettyPrint))
-  result = call_598056.call(path_598057, query_598058, nil, nil, nil)
+  var path_580057 = newJObject()
+  var query_580058 = newJObject()
+  add(query_580058, "fields", newJString(fields))
+  add(query_580058, "pageToken", newJString(pageToken))
+  add(query_580058, "quotaUser", newJString(quotaUser))
+  add(query_580058, "alt", newJString(alt))
+  add(path_580057, "calendarId", newJString(calendarId))
+  add(query_580058, "oauth_token", newJString(oauthToken))
+  add(query_580058, "syncToken", newJString(syncToken))
+  add(query_580058, "userIp", newJString(userIp))
+  add(query_580058, "maxResults", newJInt(maxResults))
+  add(query_580058, "showDeleted", newJBool(showDeleted))
+  add(query_580058, "key", newJString(key))
+  add(query_580058, "prettyPrint", newJBool(prettyPrint))
+  result = call_580056.call(path_580057, query_580058, nil, nil, nil)
 
-var calendarAclList* = Call_CalendarAclList_598040(name: "calendarAclList",
+var calendarAclList* = Call_CalendarAclList_580040(name: "calendarAclList",
     meth: HttpMethod.HttpGet, host: "www.googleapis.com",
-    route: "/calendars/{calendarId}/acl", validator: validate_CalendarAclList_598041,
-    base: "/calendar/v3", url: url_CalendarAclList_598042, schemes: {Scheme.Https})
+    route: "/calendars/{calendarId}/acl", validator: validate_CalendarAclList_580041,
+    base: "/calendar/v3", url: url_CalendarAclList_580042, schemes: {Scheme.Https})
 type
-  Call_CalendarAclWatch_598077 = ref object of OpenApiRestCall_597424
-proc url_CalendarAclWatch_598079(protocol: Scheme; host: string; base: string;
+  Call_CalendarAclWatch_580077 = ref object of OpenApiRestCall_579424
+proc url_CalendarAclWatch_580079(protocol: Scheme; host: string; base: string;
                                 route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "calendarId" in path, "`calendarId` is a required path parameter"
   const
@@ -1210,7 +1212,7 @@ proc url_CalendarAclWatch_598079(protocol: Scheme; host: string; base: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_CalendarAclWatch_598078(path: JsonNode; query: JsonNode;
+proc validate_CalendarAclWatch_580078(path: JsonNode; query: JsonNode;
                                      header: JsonNode; formData: JsonNode;
                                      body: JsonNode): JsonNode =
   ## Watch for changes to ACL resources.
@@ -1223,11 +1225,11 @@ proc validate_CalendarAclWatch_598078(path: JsonNode; query: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `calendarId` field"
-  var valid_598080 = path.getOrDefault("calendarId")
-  valid_598080 = validateParameter(valid_598080, JString, required = true,
+  var valid_580080 = path.getOrDefault("calendarId")
+  valid_580080 = validateParameter(valid_580080, JString, required = true,
                                  default = nil)
-  if valid_598080 != nil:
-    section.add "calendarId", valid_598080
+  if valid_580080 != nil:
+    section.add "calendarId", valid_580080
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -1256,59 +1258,59 @@ proc validate_CalendarAclWatch_598078(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_598081 = query.getOrDefault("fields")
-  valid_598081 = validateParameter(valid_598081, JString, required = false,
+  var valid_580081 = query.getOrDefault("fields")
+  valid_580081 = validateParameter(valid_580081, JString, required = false,
                                  default = nil)
-  if valid_598081 != nil:
-    section.add "fields", valid_598081
-  var valid_598082 = query.getOrDefault("pageToken")
-  valid_598082 = validateParameter(valid_598082, JString, required = false,
+  if valid_580081 != nil:
+    section.add "fields", valid_580081
+  var valid_580082 = query.getOrDefault("pageToken")
+  valid_580082 = validateParameter(valid_580082, JString, required = false,
                                  default = nil)
-  if valid_598082 != nil:
-    section.add "pageToken", valid_598082
-  var valid_598083 = query.getOrDefault("quotaUser")
-  valid_598083 = validateParameter(valid_598083, JString, required = false,
+  if valid_580082 != nil:
+    section.add "pageToken", valid_580082
+  var valid_580083 = query.getOrDefault("quotaUser")
+  valid_580083 = validateParameter(valid_580083, JString, required = false,
                                  default = nil)
-  if valid_598083 != nil:
-    section.add "quotaUser", valid_598083
-  var valid_598084 = query.getOrDefault("alt")
-  valid_598084 = validateParameter(valid_598084, JString, required = false,
+  if valid_580083 != nil:
+    section.add "quotaUser", valid_580083
+  var valid_580084 = query.getOrDefault("alt")
+  valid_580084 = validateParameter(valid_580084, JString, required = false,
                                  default = newJString("json"))
-  if valid_598084 != nil:
-    section.add "alt", valid_598084
-  var valid_598085 = query.getOrDefault("oauth_token")
-  valid_598085 = validateParameter(valid_598085, JString, required = false,
+  if valid_580084 != nil:
+    section.add "alt", valid_580084
+  var valid_580085 = query.getOrDefault("oauth_token")
+  valid_580085 = validateParameter(valid_580085, JString, required = false,
                                  default = nil)
-  if valid_598085 != nil:
-    section.add "oauth_token", valid_598085
-  var valid_598086 = query.getOrDefault("syncToken")
-  valid_598086 = validateParameter(valid_598086, JString, required = false,
+  if valid_580085 != nil:
+    section.add "oauth_token", valid_580085
+  var valid_580086 = query.getOrDefault("syncToken")
+  valid_580086 = validateParameter(valid_580086, JString, required = false,
                                  default = nil)
-  if valid_598086 != nil:
-    section.add "syncToken", valid_598086
-  var valid_598087 = query.getOrDefault("userIp")
-  valid_598087 = validateParameter(valid_598087, JString, required = false,
+  if valid_580086 != nil:
+    section.add "syncToken", valid_580086
+  var valid_580087 = query.getOrDefault("userIp")
+  valid_580087 = validateParameter(valid_580087, JString, required = false,
                                  default = nil)
-  if valid_598087 != nil:
-    section.add "userIp", valid_598087
-  var valid_598088 = query.getOrDefault("maxResults")
-  valid_598088 = validateParameter(valid_598088, JInt, required = false, default = nil)
-  if valid_598088 != nil:
-    section.add "maxResults", valid_598088
-  var valid_598089 = query.getOrDefault("showDeleted")
-  valid_598089 = validateParameter(valid_598089, JBool, required = false, default = nil)
-  if valid_598089 != nil:
-    section.add "showDeleted", valid_598089
-  var valid_598090 = query.getOrDefault("key")
-  valid_598090 = validateParameter(valid_598090, JString, required = false,
+  if valid_580087 != nil:
+    section.add "userIp", valid_580087
+  var valid_580088 = query.getOrDefault("maxResults")
+  valid_580088 = validateParameter(valid_580088, JInt, required = false, default = nil)
+  if valid_580088 != nil:
+    section.add "maxResults", valid_580088
+  var valid_580089 = query.getOrDefault("showDeleted")
+  valid_580089 = validateParameter(valid_580089, JBool, required = false, default = nil)
+  if valid_580089 != nil:
+    section.add "showDeleted", valid_580089
+  var valid_580090 = query.getOrDefault("key")
+  valid_580090 = validateParameter(valid_580090, JString, required = false,
                                  default = nil)
-  if valid_598090 != nil:
-    section.add "key", valid_598090
-  var valid_598091 = query.getOrDefault("prettyPrint")
-  valid_598091 = validateParameter(valid_598091, JBool, required = false,
+  if valid_580090 != nil:
+    section.add "key", valid_580090
+  var valid_580091 = query.getOrDefault("prettyPrint")
+  valid_580091 = validateParameter(valid_580091, JBool, required = false,
                                  default = newJBool(true))
-  if valid_598091 != nil:
-    section.add "prettyPrint", valid_598091
+  if valid_580091 != nil:
+    section.add "prettyPrint", valid_580091
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1320,20 +1322,20 @@ proc validate_CalendarAclWatch_598078(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_598093: Call_CalendarAclWatch_598077; path: JsonNode;
+proc call*(call_580093: Call_CalendarAclWatch_580077; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Watch for changes to ACL resources.
   ## 
-  let valid = call_598093.validator(path, query, header, formData, body)
-  let scheme = call_598093.pickScheme
+  let valid = call_580093.validator(path, query, header, formData, body)
+  let scheme = call_580093.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_598093.url(scheme.get, call_598093.host, call_598093.base,
-                         call_598093.route, valid.getOrDefault("path"),
+  let url = call_580093.url(scheme.get, call_580093.host, call_580093.base,
+                         call_580093.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_598093, url, valid)
+  result = hook(call_580093, url, valid)
 
-proc call*(call_598094: Call_CalendarAclWatch_598077; calendarId: string;
+proc call*(call_580094: Call_CalendarAclWatch_580077; calendarId: string;
           fields: string = ""; pageToken: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; syncToken: string = "";
           userIp: string = ""; maxResults: int = 0; showDeleted: bool = false;
@@ -1368,37 +1370,37 @@ proc call*(call_598094: Call_CalendarAclWatch_598077; calendarId: string;
   ##   resource: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_598095 = newJObject()
-  var query_598096 = newJObject()
-  var body_598097 = newJObject()
-  add(query_598096, "fields", newJString(fields))
-  add(query_598096, "pageToken", newJString(pageToken))
-  add(query_598096, "quotaUser", newJString(quotaUser))
-  add(query_598096, "alt", newJString(alt))
-  add(path_598095, "calendarId", newJString(calendarId))
-  add(query_598096, "oauth_token", newJString(oauthToken))
-  add(query_598096, "syncToken", newJString(syncToken))
-  add(query_598096, "userIp", newJString(userIp))
-  add(query_598096, "maxResults", newJInt(maxResults))
-  add(query_598096, "showDeleted", newJBool(showDeleted))
-  add(query_598096, "key", newJString(key))
+  var path_580095 = newJObject()
+  var query_580096 = newJObject()
+  var body_580097 = newJObject()
+  add(query_580096, "fields", newJString(fields))
+  add(query_580096, "pageToken", newJString(pageToken))
+  add(query_580096, "quotaUser", newJString(quotaUser))
+  add(query_580096, "alt", newJString(alt))
+  add(path_580095, "calendarId", newJString(calendarId))
+  add(query_580096, "oauth_token", newJString(oauthToken))
+  add(query_580096, "syncToken", newJString(syncToken))
+  add(query_580096, "userIp", newJString(userIp))
+  add(query_580096, "maxResults", newJInt(maxResults))
+  add(query_580096, "showDeleted", newJBool(showDeleted))
+  add(query_580096, "key", newJString(key))
   if resource != nil:
-    body_598097 = resource
-  add(query_598096, "prettyPrint", newJBool(prettyPrint))
-  result = call_598094.call(path_598095, query_598096, nil, nil, body_598097)
+    body_580097 = resource
+  add(query_580096, "prettyPrint", newJBool(prettyPrint))
+  result = call_580094.call(path_580095, query_580096, nil, nil, body_580097)
 
-var calendarAclWatch* = Call_CalendarAclWatch_598077(name: "calendarAclWatch",
+var calendarAclWatch* = Call_CalendarAclWatch_580077(name: "calendarAclWatch",
     meth: HttpMethod.HttpPost, host: "www.googleapis.com",
     route: "/calendars/{calendarId}/acl/watch",
-    validator: validate_CalendarAclWatch_598078, base: "/calendar/v3",
-    url: url_CalendarAclWatch_598079, schemes: {Scheme.Https})
+    validator: validate_CalendarAclWatch_580078, base: "/calendar/v3",
+    url: url_CalendarAclWatch_580079, schemes: {Scheme.Https})
 type
-  Call_CalendarAclUpdate_598114 = ref object of OpenApiRestCall_597424
-proc url_CalendarAclUpdate_598116(protocol: Scheme; host: string; base: string;
+  Call_CalendarAclUpdate_580114 = ref object of OpenApiRestCall_579424
+proc url_CalendarAclUpdate_580116(protocol: Scheme; host: string; base: string;
                                  route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "calendarId" in path, "`calendarId` is a required path parameter"
   assert "ruleId" in path, "`ruleId` is a required path parameter"
@@ -1412,7 +1414,7 @@ proc url_CalendarAclUpdate_598116(protocol: Scheme; host: string; base: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_CalendarAclUpdate_598115(path: JsonNode; query: JsonNode;
+proc validate_CalendarAclUpdate_580115(path: JsonNode; query: JsonNode;
                                       header: JsonNode; formData: JsonNode;
                                       body: JsonNode): JsonNode =
   ## Updates an access control rule.
@@ -1427,16 +1429,16 @@ proc validate_CalendarAclUpdate_598115(path: JsonNode; query: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `calendarId` field"
-  var valid_598117 = path.getOrDefault("calendarId")
-  valid_598117 = validateParameter(valid_598117, JString, required = true,
+  var valid_580117 = path.getOrDefault("calendarId")
+  valid_580117 = validateParameter(valid_580117, JString, required = true,
                                  default = nil)
-  if valid_598117 != nil:
-    section.add "calendarId", valid_598117
-  var valid_598118 = path.getOrDefault("ruleId")
-  valid_598118 = validateParameter(valid_598118, JString, required = true,
+  if valid_580117 != nil:
+    section.add "calendarId", valid_580117
+  var valid_580118 = path.getOrDefault("ruleId")
+  valid_580118 = validateParameter(valid_580118, JString, required = true,
                                  default = nil)
-  if valid_598118 != nil:
-    section.add "ruleId", valid_598118
+  if valid_580118 != nil:
+    section.add "ruleId", valid_580118
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -1456,45 +1458,45 @@ proc validate_CalendarAclUpdate_598115(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_598119 = query.getOrDefault("fields")
-  valid_598119 = validateParameter(valid_598119, JString, required = false,
+  var valid_580119 = query.getOrDefault("fields")
+  valid_580119 = validateParameter(valid_580119, JString, required = false,
                                  default = nil)
-  if valid_598119 != nil:
-    section.add "fields", valid_598119
-  var valid_598120 = query.getOrDefault("quotaUser")
-  valid_598120 = validateParameter(valid_598120, JString, required = false,
+  if valid_580119 != nil:
+    section.add "fields", valid_580119
+  var valid_580120 = query.getOrDefault("quotaUser")
+  valid_580120 = validateParameter(valid_580120, JString, required = false,
                                  default = nil)
-  if valid_598120 != nil:
-    section.add "quotaUser", valid_598120
-  var valid_598121 = query.getOrDefault("alt")
-  valid_598121 = validateParameter(valid_598121, JString, required = false,
+  if valid_580120 != nil:
+    section.add "quotaUser", valid_580120
+  var valid_580121 = query.getOrDefault("alt")
+  valid_580121 = validateParameter(valid_580121, JString, required = false,
                                  default = newJString("json"))
-  if valid_598121 != nil:
-    section.add "alt", valid_598121
-  var valid_598122 = query.getOrDefault("sendNotifications")
-  valid_598122 = validateParameter(valid_598122, JBool, required = false, default = nil)
-  if valid_598122 != nil:
-    section.add "sendNotifications", valid_598122
-  var valid_598123 = query.getOrDefault("oauth_token")
-  valid_598123 = validateParameter(valid_598123, JString, required = false,
+  if valid_580121 != nil:
+    section.add "alt", valid_580121
+  var valid_580122 = query.getOrDefault("sendNotifications")
+  valid_580122 = validateParameter(valid_580122, JBool, required = false, default = nil)
+  if valid_580122 != nil:
+    section.add "sendNotifications", valid_580122
+  var valid_580123 = query.getOrDefault("oauth_token")
+  valid_580123 = validateParameter(valid_580123, JString, required = false,
                                  default = nil)
-  if valid_598123 != nil:
-    section.add "oauth_token", valid_598123
-  var valid_598124 = query.getOrDefault("userIp")
-  valid_598124 = validateParameter(valid_598124, JString, required = false,
+  if valid_580123 != nil:
+    section.add "oauth_token", valid_580123
+  var valid_580124 = query.getOrDefault("userIp")
+  valid_580124 = validateParameter(valid_580124, JString, required = false,
                                  default = nil)
-  if valid_598124 != nil:
-    section.add "userIp", valid_598124
-  var valid_598125 = query.getOrDefault("key")
-  valid_598125 = validateParameter(valid_598125, JString, required = false,
+  if valid_580124 != nil:
+    section.add "userIp", valid_580124
+  var valid_580125 = query.getOrDefault("key")
+  valid_580125 = validateParameter(valid_580125, JString, required = false,
                                  default = nil)
-  if valid_598125 != nil:
-    section.add "key", valid_598125
-  var valid_598126 = query.getOrDefault("prettyPrint")
-  valid_598126 = validateParameter(valid_598126, JBool, required = false,
+  if valid_580125 != nil:
+    section.add "key", valid_580125
+  var valid_580126 = query.getOrDefault("prettyPrint")
+  valid_580126 = validateParameter(valid_580126, JBool, required = false,
                                  default = newJBool(true))
-  if valid_598126 != nil:
-    section.add "prettyPrint", valid_598126
+  if valid_580126 != nil:
+    section.add "prettyPrint", valid_580126
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1506,20 +1508,20 @@ proc validate_CalendarAclUpdate_598115(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_598128: Call_CalendarAclUpdate_598114; path: JsonNode;
+proc call*(call_580128: Call_CalendarAclUpdate_580114; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Updates an access control rule.
   ## 
-  let valid = call_598128.validator(path, query, header, formData, body)
-  let scheme = call_598128.pickScheme
+  let valid = call_580128.validator(path, query, header, formData, body)
+  let scheme = call_580128.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_598128.url(scheme.get, call_598128.host, call_598128.base,
-                         call_598128.route, valid.getOrDefault("path"),
+  let url = call_580128.url(scheme.get, call_580128.host, call_580128.base,
+                         call_580128.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_598128, url, valid)
+  result = hook(call_580128, url, valid)
 
-proc call*(call_598129: Call_CalendarAclUpdate_598114; calendarId: string;
+proc call*(call_580129: Call_CalendarAclUpdate_580114; calendarId: string;
           ruleId: string; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; sendNotifications: bool = false;
           oauthToken: string = ""; userIp: string = ""; key: string = "";
@@ -1547,35 +1549,35 @@ proc call*(call_598129: Call_CalendarAclUpdate_598114; calendarId: string;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_598130 = newJObject()
-  var query_598131 = newJObject()
-  var body_598132 = newJObject()
-  add(query_598131, "fields", newJString(fields))
-  add(query_598131, "quotaUser", newJString(quotaUser))
-  add(query_598131, "alt", newJString(alt))
-  add(path_598130, "calendarId", newJString(calendarId))
-  add(query_598131, "sendNotifications", newJBool(sendNotifications))
-  add(query_598131, "oauth_token", newJString(oauthToken))
-  add(query_598131, "userIp", newJString(userIp))
-  add(query_598131, "key", newJString(key))
-  add(path_598130, "ruleId", newJString(ruleId))
+  var path_580130 = newJObject()
+  var query_580131 = newJObject()
+  var body_580132 = newJObject()
+  add(query_580131, "fields", newJString(fields))
+  add(query_580131, "quotaUser", newJString(quotaUser))
+  add(query_580131, "alt", newJString(alt))
+  add(path_580130, "calendarId", newJString(calendarId))
+  add(query_580131, "sendNotifications", newJBool(sendNotifications))
+  add(query_580131, "oauth_token", newJString(oauthToken))
+  add(query_580131, "userIp", newJString(userIp))
+  add(query_580131, "key", newJString(key))
+  add(path_580130, "ruleId", newJString(ruleId))
   if body != nil:
-    body_598132 = body
-  add(query_598131, "prettyPrint", newJBool(prettyPrint))
-  result = call_598129.call(path_598130, query_598131, nil, nil, body_598132)
+    body_580132 = body
+  add(query_580131, "prettyPrint", newJBool(prettyPrint))
+  result = call_580129.call(path_580130, query_580131, nil, nil, body_580132)
 
-var calendarAclUpdate* = Call_CalendarAclUpdate_598114(name: "calendarAclUpdate",
+var calendarAclUpdate* = Call_CalendarAclUpdate_580114(name: "calendarAclUpdate",
     meth: HttpMethod.HttpPut, host: "www.googleapis.com",
     route: "/calendars/{calendarId}/acl/{ruleId}",
-    validator: validate_CalendarAclUpdate_598115, base: "/calendar/v3",
-    url: url_CalendarAclUpdate_598116, schemes: {Scheme.Https})
+    validator: validate_CalendarAclUpdate_580115, base: "/calendar/v3",
+    url: url_CalendarAclUpdate_580116, schemes: {Scheme.Https})
 type
-  Call_CalendarAclGet_598098 = ref object of OpenApiRestCall_597424
-proc url_CalendarAclGet_598100(protocol: Scheme; host: string; base: string;
+  Call_CalendarAclGet_580098 = ref object of OpenApiRestCall_579424
+proc url_CalendarAclGet_580100(protocol: Scheme; host: string; base: string;
                               route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "calendarId" in path, "`calendarId` is a required path parameter"
   assert "ruleId" in path, "`ruleId` is a required path parameter"
@@ -1589,7 +1591,7 @@ proc url_CalendarAclGet_598100(protocol: Scheme; host: string; base: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_CalendarAclGet_598099(path: JsonNode; query: JsonNode;
+proc validate_CalendarAclGet_580099(path: JsonNode; query: JsonNode;
                                    header: JsonNode; formData: JsonNode;
                                    body: JsonNode): JsonNode =
   ## Returns an access control rule.
@@ -1604,16 +1606,16 @@ proc validate_CalendarAclGet_598099(path: JsonNode; query: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `calendarId` field"
-  var valid_598101 = path.getOrDefault("calendarId")
-  valid_598101 = validateParameter(valid_598101, JString, required = true,
+  var valid_580101 = path.getOrDefault("calendarId")
+  valid_580101 = validateParameter(valid_580101, JString, required = true,
                                  default = nil)
-  if valid_598101 != nil:
-    section.add "calendarId", valid_598101
-  var valid_598102 = path.getOrDefault("ruleId")
-  valid_598102 = validateParameter(valid_598102, JString, required = true,
+  if valid_580101 != nil:
+    section.add "calendarId", valid_580101
+  var valid_580102 = path.getOrDefault("ruleId")
+  valid_580102 = validateParameter(valid_580102, JString, required = true,
                                  default = nil)
-  if valid_598102 != nil:
-    section.add "ruleId", valid_598102
+  if valid_580102 != nil:
+    section.add "ruleId", valid_580102
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -1631,41 +1633,41 @@ proc validate_CalendarAclGet_598099(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_598103 = query.getOrDefault("fields")
-  valid_598103 = validateParameter(valid_598103, JString, required = false,
+  var valid_580103 = query.getOrDefault("fields")
+  valid_580103 = validateParameter(valid_580103, JString, required = false,
                                  default = nil)
-  if valid_598103 != nil:
-    section.add "fields", valid_598103
-  var valid_598104 = query.getOrDefault("quotaUser")
-  valid_598104 = validateParameter(valid_598104, JString, required = false,
+  if valid_580103 != nil:
+    section.add "fields", valid_580103
+  var valid_580104 = query.getOrDefault("quotaUser")
+  valid_580104 = validateParameter(valid_580104, JString, required = false,
                                  default = nil)
-  if valid_598104 != nil:
-    section.add "quotaUser", valid_598104
-  var valid_598105 = query.getOrDefault("alt")
-  valid_598105 = validateParameter(valid_598105, JString, required = false,
+  if valid_580104 != nil:
+    section.add "quotaUser", valid_580104
+  var valid_580105 = query.getOrDefault("alt")
+  valid_580105 = validateParameter(valid_580105, JString, required = false,
                                  default = newJString("json"))
-  if valid_598105 != nil:
-    section.add "alt", valid_598105
-  var valid_598106 = query.getOrDefault("oauth_token")
-  valid_598106 = validateParameter(valid_598106, JString, required = false,
+  if valid_580105 != nil:
+    section.add "alt", valid_580105
+  var valid_580106 = query.getOrDefault("oauth_token")
+  valid_580106 = validateParameter(valid_580106, JString, required = false,
                                  default = nil)
-  if valid_598106 != nil:
-    section.add "oauth_token", valid_598106
-  var valid_598107 = query.getOrDefault("userIp")
-  valid_598107 = validateParameter(valid_598107, JString, required = false,
+  if valid_580106 != nil:
+    section.add "oauth_token", valid_580106
+  var valid_580107 = query.getOrDefault("userIp")
+  valid_580107 = validateParameter(valid_580107, JString, required = false,
                                  default = nil)
-  if valid_598107 != nil:
-    section.add "userIp", valid_598107
-  var valid_598108 = query.getOrDefault("key")
-  valid_598108 = validateParameter(valid_598108, JString, required = false,
+  if valid_580107 != nil:
+    section.add "userIp", valid_580107
+  var valid_580108 = query.getOrDefault("key")
+  valid_580108 = validateParameter(valid_580108, JString, required = false,
                                  default = nil)
-  if valid_598108 != nil:
-    section.add "key", valid_598108
-  var valid_598109 = query.getOrDefault("prettyPrint")
-  valid_598109 = validateParameter(valid_598109, JBool, required = false,
+  if valid_580108 != nil:
+    section.add "key", valid_580108
+  var valid_580109 = query.getOrDefault("prettyPrint")
+  valid_580109 = validateParameter(valid_580109, JBool, required = false,
                                  default = newJBool(true))
-  if valid_598109 != nil:
-    section.add "prettyPrint", valid_598109
+  if valid_580109 != nil:
+    section.add "prettyPrint", valid_580109
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1674,20 +1676,20 @@ proc validate_CalendarAclGet_598099(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_598110: Call_CalendarAclGet_598098; path: JsonNode; query: JsonNode;
+proc call*(call_580110: Call_CalendarAclGet_580098; path: JsonNode; query: JsonNode;
           header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Returns an access control rule.
   ## 
-  let valid = call_598110.validator(path, query, header, formData, body)
-  let scheme = call_598110.pickScheme
+  let valid = call_580110.validator(path, query, header, formData, body)
+  let scheme = call_580110.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_598110.url(scheme.get, call_598110.host, call_598110.base,
-                         call_598110.route, valid.getOrDefault("path"),
+  let url = call_580110.url(scheme.get, call_580110.host, call_580110.base,
+                         call_580110.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_598110, url, valid)
+  result = hook(call_580110, url, valid)
 
-proc call*(call_598111: Call_CalendarAclGet_598098; calendarId: string;
+proc call*(call_580111: Call_CalendarAclGet_580098; calendarId: string;
           ruleId: string; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; userIp: string = "";
           key: string = ""; prettyPrint: bool = true): Recallable =
@@ -1711,31 +1713,31 @@ proc call*(call_598111: Call_CalendarAclGet_598098; calendarId: string;
   ##         : ACL rule identifier.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_598112 = newJObject()
-  var query_598113 = newJObject()
-  add(query_598113, "fields", newJString(fields))
-  add(query_598113, "quotaUser", newJString(quotaUser))
-  add(query_598113, "alt", newJString(alt))
-  add(path_598112, "calendarId", newJString(calendarId))
-  add(query_598113, "oauth_token", newJString(oauthToken))
-  add(query_598113, "userIp", newJString(userIp))
-  add(query_598113, "key", newJString(key))
-  add(path_598112, "ruleId", newJString(ruleId))
-  add(query_598113, "prettyPrint", newJBool(prettyPrint))
-  result = call_598111.call(path_598112, query_598113, nil, nil, nil)
+  var path_580112 = newJObject()
+  var query_580113 = newJObject()
+  add(query_580113, "fields", newJString(fields))
+  add(query_580113, "quotaUser", newJString(quotaUser))
+  add(query_580113, "alt", newJString(alt))
+  add(path_580112, "calendarId", newJString(calendarId))
+  add(query_580113, "oauth_token", newJString(oauthToken))
+  add(query_580113, "userIp", newJString(userIp))
+  add(query_580113, "key", newJString(key))
+  add(path_580112, "ruleId", newJString(ruleId))
+  add(query_580113, "prettyPrint", newJBool(prettyPrint))
+  result = call_580111.call(path_580112, query_580113, nil, nil, nil)
 
-var calendarAclGet* = Call_CalendarAclGet_598098(name: "calendarAclGet",
+var calendarAclGet* = Call_CalendarAclGet_580098(name: "calendarAclGet",
     meth: HttpMethod.HttpGet, host: "www.googleapis.com",
     route: "/calendars/{calendarId}/acl/{ruleId}",
-    validator: validate_CalendarAclGet_598099, base: "/calendar/v3",
-    url: url_CalendarAclGet_598100, schemes: {Scheme.Https})
+    validator: validate_CalendarAclGet_580099, base: "/calendar/v3",
+    url: url_CalendarAclGet_580100, schemes: {Scheme.Https})
 type
-  Call_CalendarAclPatch_598149 = ref object of OpenApiRestCall_597424
-proc url_CalendarAclPatch_598151(protocol: Scheme; host: string; base: string;
+  Call_CalendarAclPatch_580149 = ref object of OpenApiRestCall_579424
+proc url_CalendarAclPatch_580151(protocol: Scheme; host: string; base: string;
                                 route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "calendarId" in path, "`calendarId` is a required path parameter"
   assert "ruleId" in path, "`ruleId` is a required path parameter"
@@ -1749,7 +1751,7 @@ proc url_CalendarAclPatch_598151(protocol: Scheme; host: string; base: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_CalendarAclPatch_598150(path: JsonNode; query: JsonNode;
+proc validate_CalendarAclPatch_580150(path: JsonNode; query: JsonNode;
                                      header: JsonNode; formData: JsonNode;
                                      body: JsonNode): JsonNode =
   ## Updates an access control rule. This method supports patch semantics.
@@ -1764,16 +1766,16 @@ proc validate_CalendarAclPatch_598150(path: JsonNode; query: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `calendarId` field"
-  var valid_598152 = path.getOrDefault("calendarId")
-  valid_598152 = validateParameter(valid_598152, JString, required = true,
+  var valid_580152 = path.getOrDefault("calendarId")
+  valid_580152 = validateParameter(valid_580152, JString, required = true,
                                  default = nil)
-  if valid_598152 != nil:
-    section.add "calendarId", valid_598152
-  var valid_598153 = path.getOrDefault("ruleId")
-  valid_598153 = validateParameter(valid_598153, JString, required = true,
+  if valid_580152 != nil:
+    section.add "calendarId", valid_580152
+  var valid_580153 = path.getOrDefault("ruleId")
+  valid_580153 = validateParameter(valid_580153, JString, required = true,
                                  default = nil)
-  if valid_598153 != nil:
-    section.add "ruleId", valid_598153
+  if valid_580153 != nil:
+    section.add "ruleId", valid_580153
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -1793,45 +1795,45 @@ proc validate_CalendarAclPatch_598150(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_598154 = query.getOrDefault("fields")
-  valid_598154 = validateParameter(valid_598154, JString, required = false,
+  var valid_580154 = query.getOrDefault("fields")
+  valid_580154 = validateParameter(valid_580154, JString, required = false,
                                  default = nil)
-  if valid_598154 != nil:
-    section.add "fields", valid_598154
-  var valid_598155 = query.getOrDefault("quotaUser")
-  valid_598155 = validateParameter(valid_598155, JString, required = false,
+  if valid_580154 != nil:
+    section.add "fields", valid_580154
+  var valid_580155 = query.getOrDefault("quotaUser")
+  valid_580155 = validateParameter(valid_580155, JString, required = false,
                                  default = nil)
-  if valid_598155 != nil:
-    section.add "quotaUser", valid_598155
-  var valid_598156 = query.getOrDefault("alt")
-  valid_598156 = validateParameter(valid_598156, JString, required = false,
+  if valid_580155 != nil:
+    section.add "quotaUser", valid_580155
+  var valid_580156 = query.getOrDefault("alt")
+  valid_580156 = validateParameter(valid_580156, JString, required = false,
                                  default = newJString("json"))
-  if valid_598156 != nil:
-    section.add "alt", valid_598156
-  var valid_598157 = query.getOrDefault("sendNotifications")
-  valid_598157 = validateParameter(valid_598157, JBool, required = false, default = nil)
-  if valid_598157 != nil:
-    section.add "sendNotifications", valid_598157
-  var valid_598158 = query.getOrDefault("oauth_token")
-  valid_598158 = validateParameter(valid_598158, JString, required = false,
+  if valid_580156 != nil:
+    section.add "alt", valid_580156
+  var valid_580157 = query.getOrDefault("sendNotifications")
+  valid_580157 = validateParameter(valid_580157, JBool, required = false, default = nil)
+  if valid_580157 != nil:
+    section.add "sendNotifications", valid_580157
+  var valid_580158 = query.getOrDefault("oauth_token")
+  valid_580158 = validateParameter(valid_580158, JString, required = false,
                                  default = nil)
-  if valid_598158 != nil:
-    section.add "oauth_token", valid_598158
-  var valid_598159 = query.getOrDefault("userIp")
-  valid_598159 = validateParameter(valid_598159, JString, required = false,
+  if valid_580158 != nil:
+    section.add "oauth_token", valid_580158
+  var valid_580159 = query.getOrDefault("userIp")
+  valid_580159 = validateParameter(valid_580159, JString, required = false,
                                  default = nil)
-  if valid_598159 != nil:
-    section.add "userIp", valid_598159
-  var valid_598160 = query.getOrDefault("key")
-  valid_598160 = validateParameter(valid_598160, JString, required = false,
+  if valid_580159 != nil:
+    section.add "userIp", valid_580159
+  var valid_580160 = query.getOrDefault("key")
+  valid_580160 = validateParameter(valid_580160, JString, required = false,
                                  default = nil)
-  if valid_598160 != nil:
-    section.add "key", valid_598160
-  var valid_598161 = query.getOrDefault("prettyPrint")
-  valid_598161 = validateParameter(valid_598161, JBool, required = false,
+  if valid_580160 != nil:
+    section.add "key", valid_580160
+  var valid_580161 = query.getOrDefault("prettyPrint")
+  valid_580161 = validateParameter(valid_580161, JBool, required = false,
                                  default = newJBool(true))
-  if valid_598161 != nil:
-    section.add "prettyPrint", valid_598161
+  if valid_580161 != nil:
+    section.add "prettyPrint", valid_580161
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1843,20 +1845,20 @@ proc validate_CalendarAclPatch_598150(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_598163: Call_CalendarAclPatch_598149; path: JsonNode;
+proc call*(call_580163: Call_CalendarAclPatch_580149; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Updates an access control rule. This method supports patch semantics.
   ## 
-  let valid = call_598163.validator(path, query, header, formData, body)
-  let scheme = call_598163.pickScheme
+  let valid = call_580163.validator(path, query, header, formData, body)
+  let scheme = call_580163.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_598163.url(scheme.get, call_598163.host, call_598163.base,
-                         call_598163.route, valid.getOrDefault("path"),
+  let url = call_580163.url(scheme.get, call_580163.host, call_580163.base,
+                         call_580163.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_598163, url, valid)
+  result = hook(call_580163, url, valid)
 
-proc call*(call_598164: Call_CalendarAclPatch_598149; calendarId: string;
+proc call*(call_580164: Call_CalendarAclPatch_580149; calendarId: string;
           ruleId: string; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; sendNotifications: bool = false;
           oauthToken: string = ""; userIp: string = ""; key: string = "";
@@ -1884,35 +1886,35 @@ proc call*(call_598164: Call_CalendarAclPatch_598149; calendarId: string;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_598165 = newJObject()
-  var query_598166 = newJObject()
-  var body_598167 = newJObject()
-  add(query_598166, "fields", newJString(fields))
-  add(query_598166, "quotaUser", newJString(quotaUser))
-  add(query_598166, "alt", newJString(alt))
-  add(path_598165, "calendarId", newJString(calendarId))
-  add(query_598166, "sendNotifications", newJBool(sendNotifications))
-  add(query_598166, "oauth_token", newJString(oauthToken))
-  add(query_598166, "userIp", newJString(userIp))
-  add(query_598166, "key", newJString(key))
-  add(path_598165, "ruleId", newJString(ruleId))
+  var path_580165 = newJObject()
+  var query_580166 = newJObject()
+  var body_580167 = newJObject()
+  add(query_580166, "fields", newJString(fields))
+  add(query_580166, "quotaUser", newJString(quotaUser))
+  add(query_580166, "alt", newJString(alt))
+  add(path_580165, "calendarId", newJString(calendarId))
+  add(query_580166, "sendNotifications", newJBool(sendNotifications))
+  add(query_580166, "oauth_token", newJString(oauthToken))
+  add(query_580166, "userIp", newJString(userIp))
+  add(query_580166, "key", newJString(key))
+  add(path_580165, "ruleId", newJString(ruleId))
   if body != nil:
-    body_598167 = body
-  add(query_598166, "prettyPrint", newJBool(prettyPrint))
-  result = call_598164.call(path_598165, query_598166, nil, nil, body_598167)
+    body_580167 = body
+  add(query_580166, "prettyPrint", newJBool(prettyPrint))
+  result = call_580164.call(path_580165, query_580166, nil, nil, body_580167)
 
-var calendarAclPatch* = Call_CalendarAclPatch_598149(name: "calendarAclPatch",
+var calendarAclPatch* = Call_CalendarAclPatch_580149(name: "calendarAclPatch",
     meth: HttpMethod.HttpPatch, host: "www.googleapis.com",
     route: "/calendars/{calendarId}/acl/{ruleId}",
-    validator: validate_CalendarAclPatch_598150, base: "/calendar/v3",
-    url: url_CalendarAclPatch_598151, schemes: {Scheme.Https})
+    validator: validate_CalendarAclPatch_580150, base: "/calendar/v3",
+    url: url_CalendarAclPatch_580151, schemes: {Scheme.Https})
 type
-  Call_CalendarAclDelete_598133 = ref object of OpenApiRestCall_597424
-proc url_CalendarAclDelete_598135(protocol: Scheme; host: string; base: string;
+  Call_CalendarAclDelete_580133 = ref object of OpenApiRestCall_579424
+proc url_CalendarAclDelete_580135(protocol: Scheme; host: string; base: string;
                                  route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "calendarId" in path, "`calendarId` is a required path parameter"
   assert "ruleId" in path, "`ruleId` is a required path parameter"
@@ -1926,7 +1928,7 @@ proc url_CalendarAclDelete_598135(protocol: Scheme; host: string; base: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_CalendarAclDelete_598134(path: JsonNode; query: JsonNode;
+proc validate_CalendarAclDelete_580134(path: JsonNode; query: JsonNode;
                                       header: JsonNode; formData: JsonNode;
                                       body: JsonNode): JsonNode =
   ## Deletes an access control rule.
@@ -1941,16 +1943,16 @@ proc validate_CalendarAclDelete_598134(path: JsonNode; query: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `calendarId` field"
-  var valid_598136 = path.getOrDefault("calendarId")
-  valid_598136 = validateParameter(valid_598136, JString, required = true,
+  var valid_580136 = path.getOrDefault("calendarId")
+  valid_580136 = validateParameter(valid_580136, JString, required = true,
                                  default = nil)
-  if valid_598136 != nil:
-    section.add "calendarId", valid_598136
-  var valid_598137 = path.getOrDefault("ruleId")
-  valid_598137 = validateParameter(valid_598137, JString, required = true,
+  if valid_580136 != nil:
+    section.add "calendarId", valid_580136
+  var valid_580137 = path.getOrDefault("ruleId")
+  valid_580137 = validateParameter(valid_580137, JString, required = true,
                                  default = nil)
-  if valid_598137 != nil:
-    section.add "ruleId", valid_598137
+  if valid_580137 != nil:
+    section.add "ruleId", valid_580137
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -1968,41 +1970,41 @@ proc validate_CalendarAclDelete_598134(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_598138 = query.getOrDefault("fields")
-  valid_598138 = validateParameter(valid_598138, JString, required = false,
+  var valid_580138 = query.getOrDefault("fields")
+  valid_580138 = validateParameter(valid_580138, JString, required = false,
                                  default = nil)
-  if valid_598138 != nil:
-    section.add "fields", valid_598138
-  var valid_598139 = query.getOrDefault("quotaUser")
-  valid_598139 = validateParameter(valid_598139, JString, required = false,
+  if valid_580138 != nil:
+    section.add "fields", valid_580138
+  var valid_580139 = query.getOrDefault("quotaUser")
+  valid_580139 = validateParameter(valid_580139, JString, required = false,
                                  default = nil)
-  if valid_598139 != nil:
-    section.add "quotaUser", valid_598139
-  var valid_598140 = query.getOrDefault("alt")
-  valid_598140 = validateParameter(valid_598140, JString, required = false,
+  if valid_580139 != nil:
+    section.add "quotaUser", valid_580139
+  var valid_580140 = query.getOrDefault("alt")
+  valid_580140 = validateParameter(valid_580140, JString, required = false,
                                  default = newJString("json"))
-  if valid_598140 != nil:
-    section.add "alt", valid_598140
-  var valid_598141 = query.getOrDefault("oauth_token")
-  valid_598141 = validateParameter(valid_598141, JString, required = false,
+  if valid_580140 != nil:
+    section.add "alt", valid_580140
+  var valid_580141 = query.getOrDefault("oauth_token")
+  valid_580141 = validateParameter(valid_580141, JString, required = false,
                                  default = nil)
-  if valid_598141 != nil:
-    section.add "oauth_token", valid_598141
-  var valid_598142 = query.getOrDefault("userIp")
-  valid_598142 = validateParameter(valid_598142, JString, required = false,
+  if valid_580141 != nil:
+    section.add "oauth_token", valid_580141
+  var valid_580142 = query.getOrDefault("userIp")
+  valid_580142 = validateParameter(valid_580142, JString, required = false,
                                  default = nil)
-  if valid_598142 != nil:
-    section.add "userIp", valid_598142
-  var valid_598143 = query.getOrDefault("key")
-  valid_598143 = validateParameter(valid_598143, JString, required = false,
+  if valid_580142 != nil:
+    section.add "userIp", valid_580142
+  var valid_580143 = query.getOrDefault("key")
+  valid_580143 = validateParameter(valid_580143, JString, required = false,
                                  default = nil)
-  if valid_598143 != nil:
-    section.add "key", valid_598143
-  var valid_598144 = query.getOrDefault("prettyPrint")
-  valid_598144 = validateParameter(valid_598144, JBool, required = false,
+  if valid_580143 != nil:
+    section.add "key", valid_580143
+  var valid_580144 = query.getOrDefault("prettyPrint")
+  valid_580144 = validateParameter(valid_580144, JBool, required = false,
                                  default = newJBool(true))
-  if valid_598144 != nil:
-    section.add "prettyPrint", valid_598144
+  if valid_580144 != nil:
+    section.add "prettyPrint", valid_580144
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -2011,20 +2013,20 @@ proc validate_CalendarAclDelete_598134(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_598145: Call_CalendarAclDelete_598133; path: JsonNode;
+proc call*(call_580145: Call_CalendarAclDelete_580133; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Deletes an access control rule.
   ## 
-  let valid = call_598145.validator(path, query, header, formData, body)
-  let scheme = call_598145.pickScheme
+  let valid = call_580145.validator(path, query, header, formData, body)
+  let scheme = call_580145.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_598145.url(scheme.get, call_598145.host, call_598145.base,
-                         call_598145.route, valid.getOrDefault("path"),
+  let url = call_580145.url(scheme.get, call_580145.host, call_580145.base,
+                         call_580145.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_598145, url, valid)
+  result = hook(call_580145, url, valid)
 
-proc call*(call_598146: Call_CalendarAclDelete_598133; calendarId: string;
+proc call*(call_580146: Call_CalendarAclDelete_580133; calendarId: string;
           ruleId: string; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; userIp: string = "";
           key: string = ""; prettyPrint: bool = true): Recallable =
@@ -2048,31 +2050,31 @@ proc call*(call_598146: Call_CalendarAclDelete_598133; calendarId: string;
   ##         : ACL rule identifier.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_598147 = newJObject()
-  var query_598148 = newJObject()
-  add(query_598148, "fields", newJString(fields))
-  add(query_598148, "quotaUser", newJString(quotaUser))
-  add(query_598148, "alt", newJString(alt))
-  add(path_598147, "calendarId", newJString(calendarId))
-  add(query_598148, "oauth_token", newJString(oauthToken))
-  add(query_598148, "userIp", newJString(userIp))
-  add(query_598148, "key", newJString(key))
-  add(path_598147, "ruleId", newJString(ruleId))
-  add(query_598148, "prettyPrint", newJBool(prettyPrint))
-  result = call_598146.call(path_598147, query_598148, nil, nil, nil)
+  var path_580147 = newJObject()
+  var query_580148 = newJObject()
+  add(query_580148, "fields", newJString(fields))
+  add(query_580148, "quotaUser", newJString(quotaUser))
+  add(query_580148, "alt", newJString(alt))
+  add(path_580147, "calendarId", newJString(calendarId))
+  add(query_580148, "oauth_token", newJString(oauthToken))
+  add(query_580148, "userIp", newJString(userIp))
+  add(query_580148, "key", newJString(key))
+  add(path_580147, "ruleId", newJString(ruleId))
+  add(query_580148, "prettyPrint", newJBool(prettyPrint))
+  result = call_580146.call(path_580147, query_580148, nil, nil, nil)
 
-var calendarAclDelete* = Call_CalendarAclDelete_598133(name: "calendarAclDelete",
+var calendarAclDelete* = Call_CalendarAclDelete_580133(name: "calendarAclDelete",
     meth: HttpMethod.HttpDelete, host: "www.googleapis.com",
     route: "/calendars/{calendarId}/acl/{ruleId}",
-    validator: validate_CalendarAclDelete_598134, base: "/calendar/v3",
-    url: url_CalendarAclDelete_598135, schemes: {Scheme.Https})
+    validator: validate_CalendarAclDelete_580134, base: "/calendar/v3",
+    url: url_CalendarAclDelete_580135, schemes: {Scheme.Https})
 type
-  Call_CalendarCalendarsClear_598168 = ref object of OpenApiRestCall_597424
-proc url_CalendarCalendarsClear_598170(protocol: Scheme; host: string; base: string;
+  Call_CalendarCalendarsClear_580168 = ref object of OpenApiRestCall_579424
+proc url_CalendarCalendarsClear_580170(protocol: Scheme; host: string; base: string;
                                       route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "calendarId" in path, "`calendarId` is a required path parameter"
   const
@@ -2084,7 +2086,7 @@ proc url_CalendarCalendarsClear_598170(protocol: Scheme; host: string; base: str
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_CalendarCalendarsClear_598169(path: JsonNode; query: JsonNode;
+proc validate_CalendarCalendarsClear_580169(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Clears a primary calendar. This operation deletes all events associated with the primary calendar of an account.
   ## 
@@ -2096,11 +2098,11 @@ proc validate_CalendarCalendarsClear_598169(path: JsonNode; query: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `calendarId` field"
-  var valid_598171 = path.getOrDefault("calendarId")
-  valid_598171 = validateParameter(valid_598171, JString, required = true,
+  var valid_580171 = path.getOrDefault("calendarId")
+  valid_580171 = validateParameter(valid_580171, JString, required = true,
                                  default = nil)
-  if valid_598171 != nil:
-    section.add "calendarId", valid_598171
+  if valid_580171 != nil:
+    section.add "calendarId", valid_580171
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -2118,41 +2120,41 @@ proc validate_CalendarCalendarsClear_598169(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_598172 = query.getOrDefault("fields")
-  valid_598172 = validateParameter(valid_598172, JString, required = false,
+  var valid_580172 = query.getOrDefault("fields")
+  valid_580172 = validateParameter(valid_580172, JString, required = false,
                                  default = nil)
-  if valid_598172 != nil:
-    section.add "fields", valid_598172
-  var valid_598173 = query.getOrDefault("quotaUser")
-  valid_598173 = validateParameter(valid_598173, JString, required = false,
+  if valid_580172 != nil:
+    section.add "fields", valid_580172
+  var valid_580173 = query.getOrDefault("quotaUser")
+  valid_580173 = validateParameter(valid_580173, JString, required = false,
                                  default = nil)
-  if valid_598173 != nil:
-    section.add "quotaUser", valid_598173
-  var valid_598174 = query.getOrDefault("alt")
-  valid_598174 = validateParameter(valid_598174, JString, required = false,
+  if valid_580173 != nil:
+    section.add "quotaUser", valid_580173
+  var valid_580174 = query.getOrDefault("alt")
+  valid_580174 = validateParameter(valid_580174, JString, required = false,
                                  default = newJString("json"))
-  if valid_598174 != nil:
-    section.add "alt", valid_598174
-  var valid_598175 = query.getOrDefault("oauth_token")
-  valid_598175 = validateParameter(valid_598175, JString, required = false,
+  if valid_580174 != nil:
+    section.add "alt", valid_580174
+  var valid_580175 = query.getOrDefault("oauth_token")
+  valid_580175 = validateParameter(valid_580175, JString, required = false,
                                  default = nil)
-  if valid_598175 != nil:
-    section.add "oauth_token", valid_598175
-  var valid_598176 = query.getOrDefault("userIp")
-  valid_598176 = validateParameter(valid_598176, JString, required = false,
+  if valid_580175 != nil:
+    section.add "oauth_token", valid_580175
+  var valid_580176 = query.getOrDefault("userIp")
+  valid_580176 = validateParameter(valid_580176, JString, required = false,
                                  default = nil)
-  if valid_598176 != nil:
-    section.add "userIp", valid_598176
-  var valid_598177 = query.getOrDefault("key")
-  valid_598177 = validateParameter(valid_598177, JString, required = false,
+  if valid_580176 != nil:
+    section.add "userIp", valid_580176
+  var valid_580177 = query.getOrDefault("key")
+  valid_580177 = validateParameter(valid_580177, JString, required = false,
                                  default = nil)
-  if valid_598177 != nil:
-    section.add "key", valid_598177
-  var valid_598178 = query.getOrDefault("prettyPrint")
-  valid_598178 = validateParameter(valid_598178, JBool, required = false,
+  if valid_580177 != nil:
+    section.add "key", valid_580177
+  var valid_580178 = query.getOrDefault("prettyPrint")
+  valid_580178 = validateParameter(valid_580178, JBool, required = false,
                                  default = newJBool(true))
-  if valid_598178 != nil:
-    section.add "prettyPrint", valid_598178
+  if valid_580178 != nil:
+    section.add "prettyPrint", valid_580178
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -2161,20 +2163,20 @@ proc validate_CalendarCalendarsClear_598169(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_598179: Call_CalendarCalendarsClear_598168; path: JsonNode;
+proc call*(call_580179: Call_CalendarCalendarsClear_580168; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Clears a primary calendar. This operation deletes all events associated with the primary calendar of an account.
   ## 
-  let valid = call_598179.validator(path, query, header, formData, body)
-  let scheme = call_598179.pickScheme
+  let valid = call_580179.validator(path, query, header, formData, body)
+  let scheme = call_580179.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_598179.url(scheme.get, call_598179.host, call_598179.base,
-                         call_598179.route, valid.getOrDefault("path"),
+  let url = call_580179.url(scheme.get, call_580179.host, call_580179.base,
+                         call_580179.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_598179, url, valid)
+  result = hook(call_580179, url, valid)
 
-proc call*(call_598180: Call_CalendarCalendarsClear_598168; calendarId: string;
+proc call*(call_580180: Call_CalendarCalendarsClear_580168; calendarId: string;
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           oauthToken: string = ""; userIp: string = ""; key: string = "";
           prettyPrint: bool = true): Recallable =
@@ -2196,30 +2198,30 @@ proc call*(call_598180: Call_CalendarCalendarsClear_598168; calendarId: string;
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_598181 = newJObject()
-  var query_598182 = newJObject()
-  add(query_598182, "fields", newJString(fields))
-  add(query_598182, "quotaUser", newJString(quotaUser))
-  add(query_598182, "alt", newJString(alt))
-  add(path_598181, "calendarId", newJString(calendarId))
-  add(query_598182, "oauth_token", newJString(oauthToken))
-  add(query_598182, "userIp", newJString(userIp))
-  add(query_598182, "key", newJString(key))
-  add(query_598182, "prettyPrint", newJBool(prettyPrint))
-  result = call_598180.call(path_598181, query_598182, nil, nil, nil)
+  var path_580181 = newJObject()
+  var query_580182 = newJObject()
+  add(query_580182, "fields", newJString(fields))
+  add(query_580182, "quotaUser", newJString(quotaUser))
+  add(query_580182, "alt", newJString(alt))
+  add(path_580181, "calendarId", newJString(calendarId))
+  add(query_580182, "oauth_token", newJString(oauthToken))
+  add(query_580182, "userIp", newJString(userIp))
+  add(query_580182, "key", newJString(key))
+  add(query_580182, "prettyPrint", newJBool(prettyPrint))
+  result = call_580180.call(path_580181, query_580182, nil, nil, nil)
 
-var calendarCalendarsClear* = Call_CalendarCalendarsClear_598168(
+var calendarCalendarsClear* = Call_CalendarCalendarsClear_580168(
     name: "calendarCalendarsClear", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com", route: "/calendars/{calendarId}/clear",
-    validator: validate_CalendarCalendarsClear_598169, base: "/calendar/v3",
-    url: url_CalendarCalendarsClear_598170, schemes: {Scheme.Https})
+    validator: validate_CalendarCalendarsClear_580169, base: "/calendar/v3",
+    url: url_CalendarCalendarsClear_580170, schemes: {Scheme.Https})
 type
-  Call_CalendarEventsInsert_598216 = ref object of OpenApiRestCall_597424
-proc url_CalendarEventsInsert_598218(protocol: Scheme; host: string; base: string;
+  Call_CalendarEventsInsert_580216 = ref object of OpenApiRestCall_579424
+proc url_CalendarEventsInsert_580218(protocol: Scheme; host: string; base: string;
                                     route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "calendarId" in path, "`calendarId` is a required path parameter"
   const
@@ -2231,7 +2233,7 @@ proc url_CalendarEventsInsert_598218(protocol: Scheme; host: string; base: strin
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_CalendarEventsInsert_598217(path: JsonNode; query: JsonNode;
+proc validate_CalendarEventsInsert_580217(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Creates an event.
   ## 
@@ -2243,11 +2245,11 @@ proc validate_CalendarEventsInsert_598217(path: JsonNode; query: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `calendarId` field"
-  var valid_598219 = path.getOrDefault("calendarId")
-  valid_598219 = validateParameter(valid_598219, JString, required = true,
+  var valid_580219 = path.getOrDefault("calendarId")
+  valid_580219 = validateParameter(valid_580219, JString, required = true,
                                  default = nil)
-  if valid_598219 != nil:
-    section.add "calendarId", valid_598219
+  if valid_580219 != nil:
+    section.add "calendarId", valid_580219
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -2277,62 +2279,62 @@ proc validate_CalendarEventsInsert_598217(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_598220 = query.getOrDefault("fields")
-  valid_598220 = validateParameter(valid_598220, JString, required = false,
+  var valid_580220 = query.getOrDefault("fields")
+  valid_580220 = validateParameter(valid_580220, JString, required = false,
                                  default = nil)
-  if valid_598220 != nil:
-    section.add "fields", valid_598220
-  var valid_598221 = query.getOrDefault("quotaUser")
-  valid_598221 = validateParameter(valid_598221, JString, required = false,
+  if valid_580220 != nil:
+    section.add "fields", valid_580220
+  var valid_580221 = query.getOrDefault("quotaUser")
+  valid_580221 = validateParameter(valid_580221, JString, required = false,
                                  default = nil)
-  if valid_598221 != nil:
-    section.add "quotaUser", valid_598221
-  var valid_598222 = query.getOrDefault("alt")
-  valid_598222 = validateParameter(valid_598222, JString, required = false,
+  if valid_580221 != nil:
+    section.add "quotaUser", valid_580221
+  var valid_580222 = query.getOrDefault("alt")
+  valid_580222 = validateParameter(valid_580222, JString, required = false,
                                  default = newJString("json"))
-  if valid_598222 != nil:
-    section.add "alt", valid_598222
-  var valid_598223 = query.getOrDefault("supportsAttachments")
-  valid_598223 = validateParameter(valid_598223, JBool, required = false, default = nil)
-  if valid_598223 != nil:
-    section.add "supportsAttachments", valid_598223
-  var valid_598224 = query.getOrDefault("maxAttendees")
-  valid_598224 = validateParameter(valid_598224, JInt, required = false, default = nil)
-  if valid_598224 != nil:
-    section.add "maxAttendees", valid_598224
-  var valid_598225 = query.getOrDefault("sendNotifications")
-  valid_598225 = validateParameter(valid_598225, JBool, required = false, default = nil)
-  if valid_598225 != nil:
-    section.add "sendNotifications", valid_598225
-  var valid_598226 = query.getOrDefault("oauth_token")
-  valid_598226 = validateParameter(valid_598226, JString, required = false,
+  if valid_580222 != nil:
+    section.add "alt", valid_580222
+  var valid_580223 = query.getOrDefault("supportsAttachments")
+  valid_580223 = validateParameter(valid_580223, JBool, required = false, default = nil)
+  if valid_580223 != nil:
+    section.add "supportsAttachments", valid_580223
+  var valid_580224 = query.getOrDefault("maxAttendees")
+  valid_580224 = validateParameter(valid_580224, JInt, required = false, default = nil)
+  if valid_580224 != nil:
+    section.add "maxAttendees", valid_580224
+  var valid_580225 = query.getOrDefault("sendNotifications")
+  valid_580225 = validateParameter(valid_580225, JBool, required = false, default = nil)
+  if valid_580225 != nil:
+    section.add "sendNotifications", valid_580225
+  var valid_580226 = query.getOrDefault("oauth_token")
+  valid_580226 = validateParameter(valid_580226, JString, required = false,
                                  default = nil)
-  if valid_598226 != nil:
-    section.add "oauth_token", valid_598226
-  var valid_598227 = query.getOrDefault("conferenceDataVersion")
-  valid_598227 = validateParameter(valid_598227, JInt, required = false, default = nil)
-  if valid_598227 != nil:
-    section.add "conferenceDataVersion", valid_598227
-  var valid_598228 = query.getOrDefault("userIp")
-  valid_598228 = validateParameter(valid_598228, JString, required = false,
+  if valid_580226 != nil:
+    section.add "oauth_token", valid_580226
+  var valid_580227 = query.getOrDefault("conferenceDataVersion")
+  valid_580227 = validateParameter(valid_580227, JInt, required = false, default = nil)
+  if valid_580227 != nil:
+    section.add "conferenceDataVersion", valid_580227
+  var valid_580228 = query.getOrDefault("userIp")
+  valid_580228 = validateParameter(valid_580228, JString, required = false,
                                  default = nil)
-  if valid_598228 != nil:
-    section.add "userIp", valid_598228
-  var valid_598229 = query.getOrDefault("sendUpdates")
-  valid_598229 = validateParameter(valid_598229, JString, required = false,
+  if valid_580228 != nil:
+    section.add "userIp", valid_580228
+  var valid_580229 = query.getOrDefault("sendUpdates")
+  valid_580229 = validateParameter(valid_580229, JString, required = false,
                                  default = newJString("all"))
-  if valid_598229 != nil:
-    section.add "sendUpdates", valid_598229
-  var valid_598230 = query.getOrDefault("key")
-  valid_598230 = validateParameter(valid_598230, JString, required = false,
+  if valid_580229 != nil:
+    section.add "sendUpdates", valid_580229
+  var valid_580230 = query.getOrDefault("key")
+  valid_580230 = validateParameter(valid_580230, JString, required = false,
                                  default = nil)
-  if valid_598230 != nil:
-    section.add "key", valid_598230
-  var valid_598231 = query.getOrDefault("prettyPrint")
-  valid_598231 = validateParameter(valid_598231, JBool, required = false,
+  if valid_580230 != nil:
+    section.add "key", valid_580230
+  var valid_580231 = query.getOrDefault("prettyPrint")
+  valid_580231 = validateParameter(valid_580231, JBool, required = false,
                                  default = newJBool(true))
-  if valid_598231 != nil:
-    section.add "prettyPrint", valid_598231
+  if valid_580231 != nil:
+    section.add "prettyPrint", valid_580231
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -2344,20 +2346,20 @@ proc validate_CalendarEventsInsert_598217(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_598233: Call_CalendarEventsInsert_598216; path: JsonNode;
+proc call*(call_580233: Call_CalendarEventsInsert_580216; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Creates an event.
   ## 
-  let valid = call_598233.validator(path, query, header, formData, body)
-  let scheme = call_598233.pickScheme
+  let valid = call_580233.validator(path, query, header, formData, body)
+  let scheme = call_580233.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_598233.url(scheme.get, call_598233.host, call_598233.base,
-                         call_598233.route, valid.getOrDefault("path"),
+  let url = call_580233.url(scheme.get, call_580233.host, call_580233.base,
+                         call_580233.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_598233, url, valid)
+  result = hook(call_580233, url, valid)
 
-proc call*(call_598234: Call_CalendarEventsInsert_598216; calendarId: string;
+proc call*(call_580234: Call_CalendarEventsInsert_580216; calendarId: string;
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           supportsAttachments: bool = false; maxAttendees: int = 0;
           sendNotifications: bool = false; oauthToken: string = "";
@@ -2395,38 +2397,38 @@ proc call*(call_598234: Call_CalendarEventsInsert_598216; calendarId: string;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_598235 = newJObject()
-  var query_598236 = newJObject()
-  var body_598237 = newJObject()
-  add(query_598236, "fields", newJString(fields))
-  add(query_598236, "quotaUser", newJString(quotaUser))
-  add(query_598236, "alt", newJString(alt))
-  add(query_598236, "supportsAttachments", newJBool(supportsAttachments))
-  add(query_598236, "maxAttendees", newJInt(maxAttendees))
-  add(path_598235, "calendarId", newJString(calendarId))
-  add(query_598236, "sendNotifications", newJBool(sendNotifications))
-  add(query_598236, "oauth_token", newJString(oauthToken))
-  add(query_598236, "conferenceDataVersion", newJInt(conferenceDataVersion))
-  add(query_598236, "userIp", newJString(userIp))
-  add(query_598236, "sendUpdates", newJString(sendUpdates))
-  add(query_598236, "key", newJString(key))
+  var path_580235 = newJObject()
+  var query_580236 = newJObject()
+  var body_580237 = newJObject()
+  add(query_580236, "fields", newJString(fields))
+  add(query_580236, "quotaUser", newJString(quotaUser))
+  add(query_580236, "alt", newJString(alt))
+  add(query_580236, "supportsAttachments", newJBool(supportsAttachments))
+  add(query_580236, "maxAttendees", newJInt(maxAttendees))
+  add(path_580235, "calendarId", newJString(calendarId))
+  add(query_580236, "sendNotifications", newJBool(sendNotifications))
+  add(query_580236, "oauth_token", newJString(oauthToken))
+  add(query_580236, "conferenceDataVersion", newJInt(conferenceDataVersion))
+  add(query_580236, "userIp", newJString(userIp))
+  add(query_580236, "sendUpdates", newJString(sendUpdates))
+  add(query_580236, "key", newJString(key))
   if body != nil:
-    body_598237 = body
-  add(query_598236, "prettyPrint", newJBool(prettyPrint))
-  result = call_598234.call(path_598235, query_598236, nil, nil, body_598237)
+    body_580237 = body
+  add(query_580236, "prettyPrint", newJBool(prettyPrint))
+  result = call_580234.call(path_580235, query_580236, nil, nil, body_580237)
 
-var calendarEventsInsert* = Call_CalendarEventsInsert_598216(
+var calendarEventsInsert* = Call_CalendarEventsInsert_580216(
     name: "calendarEventsInsert", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com", route: "/calendars/{calendarId}/events",
-    validator: validate_CalendarEventsInsert_598217, base: "/calendar/v3",
-    url: url_CalendarEventsInsert_598218, schemes: {Scheme.Https})
+    validator: validate_CalendarEventsInsert_580217, base: "/calendar/v3",
+    url: url_CalendarEventsInsert_580218, schemes: {Scheme.Https})
 type
-  Call_CalendarEventsList_598183 = ref object of OpenApiRestCall_597424
-proc url_CalendarEventsList_598185(protocol: Scheme; host: string; base: string;
+  Call_CalendarEventsList_580183 = ref object of OpenApiRestCall_579424
+proc url_CalendarEventsList_580185(protocol: Scheme; host: string; base: string;
                                   route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "calendarId" in path, "`calendarId` is a required path parameter"
   const
@@ -2438,7 +2440,7 @@ proc url_CalendarEventsList_598185(protocol: Scheme; host: string; base: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_CalendarEventsList_598184(path: JsonNode; query: JsonNode;
+proc validate_CalendarEventsList_580184(path: JsonNode; query: JsonNode;
                                        header: JsonNode; formData: JsonNode;
                                        body: JsonNode): JsonNode =
   ## Returns events on the specified calendar.
@@ -2451,11 +2453,11 @@ proc validate_CalendarEventsList_598184(path: JsonNode; query: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `calendarId` field"
-  var valid_598186 = path.getOrDefault("calendarId")
-  valid_598186 = validateParameter(valid_598186, JString, required = true,
+  var valid_580186 = path.getOrDefault("calendarId")
+  valid_580186 = validateParameter(valid_580186, JString, required = true,
                                  default = nil)
-  if valid_598186 != nil:
-    section.add "calendarId", valid_598186
+  if valid_580186 != nil:
+    section.add "calendarId", valid_580186
   result.add "path", section
   ## parameters in `query` object:
   ##   privateExtendedProperty: JArray
@@ -2520,121 +2522,121 @@ proc validate_CalendarEventsList_598184(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_598187 = query.getOrDefault("privateExtendedProperty")
-  valid_598187 = validateParameter(valid_598187, JArray, required = false,
+  var valid_580187 = query.getOrDefault("privateExtendedProperty")
+  valid_580187 = validateParameter(valid_580187, JArray, required = false,
                                  default = nil)
-  if valid_598187 != nil:
-    section.add "privateExtendedProperty", valid_598187
-  var valid_598188 = query.getOrDefault("fields")
-  valid_598188 = validateParameter(valid_598188, JString, required = false,
+  if valid_580187 != nil:
+    section.add "privateExtendedProperty", valid_580187
+  var valid_580188 = query.getOrDefault("fields")
+  valid_580188 = validateParameter(valid_580188, JString, required = false,
                                  default = nil)
-  if valid_598188 != nil:
-    section.add "fields", valid_598188
-  var valid_598189 = query.getOrDefault("pageToken")
-  valid_598189 = validateParameter(valid_598189, JString, required = false,
+  if valid_580188 != nil:
+    section.add "fields", valid_580188
+  var valid_580189 = query.getOrDefault("pageToken")
+  valid_580189 = validateParameter(valid_580189, JString, required = false,
                                  default = nil)
-  if valid_598189 != nil:
-    section.add "pageToken", valid_598189
-  var valid_598190 = query.getOrDefault("quotaUser")
-  valid_598190 = validateParameter(valid_598190, JString, required = false,
+  if valid_580189 != nil:
+    section.add "pageToken", valid_580189
+  var valid_580190 = query.getOrDefault("quotaUser")
+  valid_580190 = validateParameter(valid_580190, JString, required = false,
                                  default = nil)
-  if valid_598190 != nil:
-    section.add "quotaUser", valid_598190
-  var valid_598191 = query.getOrDefault("alt")
-  valid_598191 = validateParameter(valid_598191, JString, required = false,
+  if valid_580190 != nil:
+    section.add "quotaUser", valid_580190
+  var valid_580191 = query.getOrDefault("alt")
+  valid_580191 = validateParameter(valid_580191, JString, required = false,
                                  default = newJString("json"))
-  if valid_598191 != nil:
-    section.add "alt", valid_598191
-  var valid_598192 = query.getOrDefault("maxAttendees")
-  valid_598192 = validateParameter(valid_598192, JInt, required = false, default = nil)
-  if valid_598192 != nil:
-    section.add "maxAttendees", valid_598192
-  var valid_598193 = query.getOrDefault("showHiddenInvitations")
-  valid_598193 = validateParameter(valid_598193, JBool, required = false, default = nil)
-  if valid_598193 != nil:
-    section.add "showHiddenInvitations", valid_598193
-  var valid_598194 = query.getOrDefault("timeMax")
-  valid_598194 = validateParameter(valid_598194, JString, required = false,
+  if valid_580191 != nil:
+    section.add "alt", valid_580191
+  var valid_580192 = query.getOrDefault("maxAttendees")
+  valid_580192 = validateParameter(valid_580192, JInt, required = false, default = nil)
+  if valid_580192 != nil:
+    section.add "maxAttendees", valid_580192
+  var valid_580193 = query.getOrDefault("showHiddenInvitations")
+  valid_580193 = validateParameter(valid_580193, JBool, required = false, default = nil)
+  if valid_580193 != nil:
+    section.add "showHiddenInvitations", valid_580193
+  var valid_580194 = query.getOrDefault("timeMax")
+  valid_580194 = validateParameter(valid_580194, JString, required = false,
                                  default = nil)
-  if valid_598194 != nil:
-    section.add "timeMax", valid_598194
-  var valid_598195 = query.getOrDefault("oauth_token")
-  valid_598195 = validateParameter(valid_598195, JString, required = false,
+  if valid_580194 != nil:
+    section.add "timeMax", valid_580194
+  var valid_580195 = query.getOrDefault("oauth_token")
+  valid_580195 = validateParameter(valid_580195, JString, required = false,
                                  default = nil)
-  if valid_598195 != nil:
-    section.add "oauth_token", valid_598195
-  var valid_598196 = query.getOrDefault("timeMin")
-  valid_598196 = validateParameter(valid_598196, JString, required = false,
+  if valid_580195 != nil:
+    section.add "oauth_token", valid_580195
+  var valid_580196 = query.getOrDefault("timeMin")
+  valid_580196 = validateParameter(valid_580196, JString, required = false,
                                  default = nil)
-  if valid_598196 != nil:
-    section.add "timeMin", valid_598196
-  var valid_598197 = query.getOrDefault("syncToken")
-  valid_598197 = validateParameter(valid_598197, JString, required = false,
+  if valid_580196 != nil:
+    section.add "timeMin", valid_580196
+  var valid_580197 = query.getOrDefault("syncToken")
+  valid_580197 = validateParameter(valid_580197, JString, required = false,
                                  default = nil)
-  if valid_598197 != nil:
-    section.add "syncToken", valid_598197
-  var valid_598198 = query.getOrDefault("userIp")
-  valid_598198 = validateParameter(valid_598198, JString, required = false,
+  if valid_580197 != nil:
+    section.add "syncToken", valid_580197
+  var valid_580198 = query.getOrDefault("userIp")
+  valid_580198 = validateParameter(valid_580198, JString, required = false,
                                  default = nil)
-  if valid_598198 != nil:
-    section.add "userIp", valid_598198
-  var valid_598200 = query.getOrDefault("maxResults")
-  valid_598200 = validateParameter(valid_598200, JInt, required = false,
+  if valid_580198 != nil:
+    section.add "userIp", valid_580198
+  var valid_580200 = query.getOrDefault("maxResults")
+  valid_580200 = validateParameter(valid_580200, JInt, required = false,
                                  default = newJInt(250))
-  if valid_598200 != nil:
-    section.add "maxResults", valid_598200
-  var valid_598201 = query.getOrDefault("orderBy")
-  valid_598201 = validateParameter(valid_598201, JString, required = false,
+  if valid_580200 != nil:
+    section.add "maxResults", valid_580200
+  var valid_580201 = query.getOrDefault("orderBy")
+  valid_580201 = validateParameter(valid_580201, JString, required = false,
                                  default = newJString("startTime"))
-  if valid_598201 != nil:
-    section.add "orderBy", valid_598201
-  var valid_598202 = query.getOrDefault("timeZone")
-  valid_598202 = validateParameter(valid_598202, JString, required = false,
+  if valid_580201 != nil:
+    section.add "orderBy", valid_580201
+  var valid_580202 = query.getOrDefault("timeZone")
+  valid_580202 = validateParameter(valid_580202, JString, required = false,
                                  default = nil)
-  if valid_598202 != nil:
-    section.add "timeZone", valid_598202
-  var valid_598203 = query.getOrDefault("q")
-  valid_598203 = validateParameter(valid_598203, JString, required = false,
+  if valid_580202 != nil:
+    section.add "timeZone", valid_580202
+  var valid_580203 = query.getOrDefault("q")
+  valid_580203 = validateParameter(valid_580203, JString, required = false,
                                  default = nil)
-  if valid_598203 != nil:
-    section.add "q", valid_598203
-  var valid_598204 = query.getOrDefault("iCalUID")
-  valid_598204 = validateParameter(valid_598204, JString, required = false,
+  if valid_580203 != nil:
+    section.add "q", valid_580203
+  var valid_580204 = query.getOrDefault("iCalUID")
+  valid_580204 = validateParameter(valid_580204, JString, required = false,
                                  default = nil)
-  if valid_598204 != nil:
-    section.add "iCalUID", valid_598204
-  var valid_598205 = query.getOrDefault("showDeleted")
-  valid_598205 = validateParameter(valid_598205, JBool, required = false, default = nil)
-  if valid_598205 != nil:
-    section.add "showDeleted", valid_598205
-  var valid_598206 = query.getOrDefault("key")
-  valid_598206 = validateParameter(valid_598206, JString, required = false,
+  if valid_580204 != nil:
+    section.add "iCalUID", valid_580204
+  var valid_580205 = query.getOrDefault("showDeleted")
+  valid_580205 = validateParameter(valid_580205, JBool, required = false, default = nil)
+  if valid_580205 != nil:
+    section.add "showDeleted", valid_580205
+  var valid_580206 = query.getOrDefault("key")
+  valid_580206 = validateParameter(valid_580206, JString, required = false,
                                  default = nil)
-  if valid_598206 != nil:
-    section.add "key", valid_598206
-  var valid_598207 = query.getOrDefault("updatedMin")
-  valid_598207 = validateParameter(valid_598207, JString, required = false,
+  if valid_580206 != nil:
+    section.add "key", valid_580206
+  var valid_580207 = query.getOrDefault("updatedMin")
+  valid_580207 = validateParameter(valid_580207, JString, required = false,
                                  default = nil)
-  if valid_598207 != nil:
-    section.add "updatedMin", valid_598207
-  var valid_598208 = query.getOrDefault("singleEvents")
-  valid_598208 = validateParameter(valid_598208, JBool, required = false, default = nil)
-  if valid_598208 != nil:
-    section.add "singleEvents", valid_598208
-  var valid_598209 = query.getOrDefault("sharedExtendedProperty")
-  valid_598209 = validateParameter(valid_598209, JArray, required = false,
+  if valid_580207 != nil:
+    section.add "updatedMin", valid_580207
+  var valid_580208 = query.getOrDefault("singleEvents")
+  valid_580208 = validateParameter(valid_580208, JBool, required = false, default = nil)
+  if valid_580208 != nil:
+    section.add "singleEvents", valid_580208
+  var valid_580209 = query.getOrDefault("sharedExtendedProperty")
+  valid_580209 = validateParameter(valid_580209, JArray, required = false,
                                  default = nil)
-  if valid_598209 != nil:
-    section.add "sharedExtendedProperty", valid_598209
-  var valid_598210 = query.getOrDefault("alwaysIncludeEmail")
-  valid_598210 = validateParameter(valid_598210, JBool, required = false, default = nil)
-  if valid_598210 != nil:
-    section.add "alwaysIncludeEmail", valid_598210
-  var valid_598211 = query.getOrDefault("prettyPrint")
-  valid_598211 = validateParameter(valid_598211, JBool, required = false,
+  if valid_580209 != nil:
+    section.add "sharedExtendedProperty", valid_580209
+  var valid_580210 = query.getOrDefault("alwaysIncludeEmail")
+  valid_580210 = validateParameter(valid_580210, JBool, required = false, default = nil)
+  if valid_580210 != nil:
+    section.add "alwaysIncludeEmail", valid_580210
+  var valid_580211 = query.getOrDefault("prettyPrint")
+  valid_580211 = validateParameter(valid_580211, JBool, required = false,
                                  default = newJBool(true))
-  if valid_598211 != nil:
-    section.add "prettyPrint", valid_598211
+  if valid_580211 != nil:
+    section.add "prettyPrint", valid_580211
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -2643,20 +2645,20 @@ proc validate_CalendarEventsList_598184(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_598212: Call_CalendarEventsList_598183; path: JsonNode;
+proc call*(call_580212: Call_CalendarEventsList_580183; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Returns events on the specified calendar.
   ## 
-  let valid = call_598212.validator(path, query, header, formData, body)
-  let scheme = call_598212.pickScheme
+  let valid = call_580212.validator(path, query, header, formData, body)
+  let scheme = call_580212.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_598212.url(scheme.get, call_598212.host, call_598212.base,
-                         call_598212.route, valid.getOrDefault("path"),
+  let url = call_580212.url(scheme.get, call_580212.host, call_580212.base,
+                         call_580212.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_598212, url, valid)
+  result = hook(call_580212, url, valid)
 
-proc call*(call_598213: Call_CalendarEventsList_598183; calendarId: string;
+proc call*(call_580213: Call_CalendarEventsList_580183; calendarId: string;
           privateExtendedProperty: JsonNode = nil; fields: string = "";
           pageToken: string = ""; quotaUser: string = ""; alt: string = "json";
           maxAttendees: int = 0; showHiddenInvitations: bool = false;
@@ -2732,49 +2734,49 @@ proc call*(call_598213: Call_CalendarEventsList_598183; calendarId: string;
   ##                     : Whether to always include a value in the email field for the organizer, creator and attendees, even if no real email is available (i.e. a generated, non-working value will be provided). The use of this option is discouraged and should only be used by clients which cannot handle the absence of an email address value in the mentioned places. Optional. The default is False.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_598214 = newJObject()
-  var query_598215 = newJObject()
+  var path_580214 = newJObject()
+  var query_580215 = newJObject()
   if privateExtendedProperty != nil:
-    query_598215.add "privateExtendedProperty", privateExtendedProperty
-  add(query_598215, "fields", newJString(fields))
-  add(query_598215, "pageToken", newJString(pageToken))
-  add(query_598215, "quotaUser", newJString(quotaUser))
-  add(query_598215, "alt", newJString(alt))
-  add(query_598215, "maxAttendees", newJInt(maxAttendees))
-  add(query_598215, "showHiddenInvitations", newJBool(showHiddenInvitations))
-  add(path_598214, "calendarId", newJString(calendarId))
-  add(query_598215, "timeMax", newJString(timeMax))
-  add(query_598215, "oauth_token", newJString(oauthToken))
-  add(query_598215, "timeMin", newJString(timeMin))
-  add(query_598215, "syncToken", newJString(syncToken))
-  add(query_598215, "userIp", newJString(userIp))
-  add(query_598215, "maxResults", newJInt(maxResults))
-  add(query_598215, "orderBy", newJString(orderBy))
-  add(query_598215, "timeZone", newJString(timeZone))
-  add(query_598215, "q", newJString(q))
-  add(query_598215, "iCalUID", newJString(iCalUID))
-  add(query_598215, "showDeleted", newJBool(showDeleted))
-  add(query_598215, "key", newJString(key))
-  add(query_598215, "updatedMin", newJString(updatedMin))
-  add(query_598215, "singleEvents", newJBool(singleEvents))
+    query_580215.add "privateExtendedProperty", privateExtendedProperty
+  add(query_580215, "fields", newJString(fields))
+  add(query_580215, "pageToken", newJString(pageToken))
+  add(query_580215, "quotaUser", newJString(quotaUser))
+  add(query_580215, "alt", newJString(alt))
+  add(query_580215, "maxAttendees", newJInt(maxAttendees))
+  add(query_580215, "showHiddenInvitations", newJBool(showHiddenInvitations))
+  add(path_580214, "calendarId", newJString(calendarId))
+  add(query_580215, "timeMax", newJString(timeMax))
+  add(query_580215, "oauth_token", newJString(oauthToken))
+  add(query_580215, "timeMin", newJString(timeMin))
+  add(query_580215, "syncToken", newJString(syncToken))
+  add(query_580215, "userIp", newJString(userIp))
+  add(query_580215, "maxResults", newJInt(maxResults))
+  add(query_580215, "orderBy", newJString(orderBy))
+  add(query_580215, "timeZone", newJString(timeZone))
+  add(query_580215, "q", newJString(q))
+  add(query_580215, "iCalUID", newJString(iCalUID))
+  add(query_580215, "showDeleted", newJBool(showDeleted))
+  add(query_580215, "key", newJString(key))
+  add(query_580215, "updatedMin", newJString(updatedMin))
+  add(query_580215, "singleEvents", newJBool(singleEvents))
   if sharedExtendedProperty != nil:
-    query_598215.add "sharedExtendedProperty", sharedExtendedProperty
-  add(query_598215, "alwaysIncludeEmail", newJBool(alwaysIncludeEmail))
-  add(query_598215, "prettyPrint", newJBool(prettyPrint))
-  result = call_598213.call(path_598214, query_598215, nil, nil, nil)
+    query_580215.add "sharedExtendedProperty", sharedExtendedProperty
+  add(query_580215, "alwaysIncludeEmail", newJBool(alwaysIncludeEmail))
+  add(query_580215, "prettyPrint", newJBool(prettyPrint))
+  result = call_580213.call(path_580214, query_580215, nil, nil, nil)
 
-var calendarEventsList* = Call_CalendarEventsList_598183(
+var calendarEventsList* = Call_CalendarEventsList_580183(
     name: "calendarEventsList", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/calendars/{calendarId}/events",
-    validator: validate_CalendarEventsList_598184, base: "/calendar/v3",
-    url: url_CalendarEventsList_598185, schemes: {Scheme.Https})
+    validator: validate_CalendarEventsList_580184, base: "/calendar/v3",
+    url: url_CalendarEventsList_580185, schemes: {Scheme.Https})
 type
-  Call_CalendarEventsImport_598238 = ref object of OpenApiRestCall_597424
-proc url_CalendarEventsImport_598240(protocol: Scheme; host: string; base: string;
+  Call_CalendarEventsImport_580238 = ref object of OpenApiRestCall_579424
+proc url_CalendarEventsImport_580240(protocol: Scheme; host: string; base: string;
                                     route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "calendarId" in path, "`calendarId` is a required path parameter"
   const
@@ -2786,7 +2788,7 @@ proc url_CalendarEventsImport_598240(protocol: Scheme; host: string; base: strin
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_CalendarEventsImport_598239(path: JsonNode; query: JsonNode;
+proc validate_CalendarEventsImport_580239(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Imports an event. This operation is used to add a private copy of an existing event to a calendar.
   ## 
@@ -2798,11 +2800,11 @@ proc validate_CalendarEventsImport_598239(path: JsonNode; query: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `calendarId` field"
-  var valid_598241 = path.getOrDefault("calendarId")
-  valid_598241 = validateParameter(valid_598241, JString, required = true,
+  var valid_580241 = path.getOrDefault("calendarId")
+  valid_580241 = validateParameter(valid_580241, JString, required = true,
                                  default = nil)
-  if valid_598241 != nil:
-    section.add "calendarId", valid_598241
+  if valid_580241 != nil:
+    section.add "calendarId", valid_580241
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -2824,49 +2826,49 @@ proc validate_CalendarEventsImport_598239(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_598242 = query.getOrDefault("fields")
-  valid_598242 = validateParameter(valid_598242, JString, required = false,
+  var valid_580242 = query.getOrDefault("fields")
+  valid_580242 = validateParameter(valid_580242, JString, required = false,
                                  default = nil)
-  if valid_598242 != nil:
-    section.add "fields", valid_598242
-  var valid_598243 = query.getOrDefault("quotaUser")
-  valid_598243 = validateParameter(valid_598243, JString, required = false,
+  if valid_580242 != nil:
+    section.add "fields", valid_580242
+  var valid_580243 = query.getOrDefault("quotaUser")
+  valid_580243 = validateParameter(valid_580243, JString, required = false,
                                  default = nil)
-  if valid_598243 != nil:
-    section.add "quotaUser", valid_598243
-  var valid_598244 = query.getOrDefault("alt")
-  valid_598244 = validateParameter(valid_598244, JString, required = false,
+  if valid_580243 != nil:
+    section.add "quotaUser", valid_580243
+  var valid_580244 = query.getOrDefault("alt")
+  valid_580244 = validateParameter(valid_580244, JString, required = false,
                                  default = newJString("json"))
-  if valid_598244 != nil:
-    section.add "alt", valid_598244
-  var valid_598245 = query.getOrDefault("supportsAttachments")
-  valid_598245 = validateParameter(valid_598245, JBool, required = false, default = nil)
-  if valid_598245 != nil:
-    section.add "supportsAttachments", valid_598245
-  var valid_598246 = query.getOrDefault("oauth_token")
-  valid_598246 = validateParameter(valid_598246, JString, required = false,
+  if valid_580244 != nil:
+    section.add "alt", valid_580244
+  var valid_580245 = query.getOrDefault("supportsAttachments")
+  valid_580245 = validateParameter(valid_580245, JBool, required = false, default = nil)
+  if valid_580245 != nil:
+    section.add "supportsAttachments", valid_580245
+  var valid_580246 = query.getOrDefault("oauth_token")
+  valid_580246 = validateParameter(valid_580246, JString, required = false,
                                  default = nil)
-  if valid_598246 != nil:
-    section.add "oauth_token", valid_598246
-  var valid_598247 = query.getOrDefault("conferenceDataVersion")
-  valid_598247 = validateParameter(valid_598247, JInt, required = false, default = nil)
-  if valid_598247 != nil:
-    section.add "conferenceDataVersion", valid_598247
-  var valid_598248 = query.getOrDefault("userIp")
-  valid_598248 = validateParameter(valid_598248, JString, required = false,
+  if valid_580246 != nil:
+    section.add "oauth_token", valid_580246
+  var valid_580247 = query.getOrDefault("conferenceDataVersion")
+  valid_580247 = validateParameter(valid_580247, JInt, required = false, default = nil)
+  if valid_580247 != nil:
+    section.add "conferenceDataVersion", valid_580247
+  var valid_580248 = query.getOrDefault("userIp")
+  valid_580248 = validateParameter(valid_580248, JString, required = false,
                                  default = nil)
-  if valid_598248 != nil:
-    section.add "userIp", valid_598248
-  var valid_598249 = query.getOrDefault("key")
-  valid_598249 = validateParameter(valid_598249, JString, required = false,
+  if valid_580248 != nil:
+    section.add "userIp", valid_580248
+  var valid_580249 = query.getOrDefault("key")
+  valid_580249 = validateParameter(valid_580249, JString, required = false,
                                  default = nil)
-  if valid_598249 != nil:
-    section.add "key", valid_598249
-  var valid_598250 = query.getOrDefault("prettyPrint")
-  valid_598250 = validateParameter(valid_598250, JBool, required = false,
+  if valid_580249 != nil:
+    section.add "key", valid_580249
+  var valid_580250 = query.getOrDefault("prettyPrint")
+  valid_580250 = validateParameter(valid_580250, JBool, required = false,
                                  default = newJBool(true))
-  if valid_598250 != nil:
-    section.add "prettyPrint", valid_598250
+  if valid_580250 != nil:
+    section.add "prettyPrint", valid_580250
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -2878,20 +2880,20 @@ proc validate_CalendarEventsImport_598239(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_598252: Call_CalendarEventsImport_598238; path: JsonNode;
+proc call*(call_580252: Call_CalendarEventsImport_580238; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Imports an event. This operation is used to add a private copy of an existing event to a calendar.
   ## 
-  let valid = call_598252.validator(path, query, header, formData, body)
-  let scheme = call_598252.pickScheme
+  let valid = call_580252.validator(path, query, header, formData, body)
+  let scheme = call_580252.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_598252.url(scheme.get, call_598252.host, call_598252.base,
-                         call_598252.route, valid.getOrDefault("path"),
+  let url = call_580252.url(scheme.get, call_580252.host, call_580252.base,
+                         call_580252.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_598252, url, valid)
+  result = hook(call_580252, url, valid)
 
-proc call*(call_598253: Call_CalendarEventsImport_598238; calendarId: string;
+proc call*(call_580253: Call_CalendarEventsImport_580238; calendarId: string;
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           supportsAttachments: bool = false; oauthToken: string = "";
           conferenceDataVersion: int = 0; userIp: string = ""; key: string = "";
@@ -2919,35 +2921,35 @@ proc call*(call_598253: Call_CalendarEventsImport_598238; calendarId: string;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_598254 = newJObject()
-  var query_598255 = newJObject()
-  var body_598256 = newJObject()
-  add(query_598255, "fields", newJString(fields))
-  add(query_598255, "quotaUser", newJString(quotaUser))
-  add(query_598255, "alt", newJString(alt))
-  add(query_598255, "supportsAttachments", newJBool(supportsAttachments))
-  add(path_598254, "calendarId", newJString(calendarId))
-  add(query_598255, "oauth_token", newJString(oauthToken))
-  add(query_598255, "conferenceDataVersion", newJInt(conferenceDataVersion))
-  add(query_598255, "userIp", newJString(userIp))
-  add(query_598255, "key", newJString(key))
+  var path_580254 = newJObject()
+  var query_580255 = newJObject()
+  var body_580256 = newJObject()
+  add(query_580255, "fields", newJString(fields))
+  add(query_580255, "quotaUser", newJString(quotaUser))
+  add(query_580255, "alt", newJString(alt))
+  add(query_580255, "supportsAttachments", newJBool(supportsAttachments))
+  add(path_580254, "calendarId", newJString(calendarId))
+  add(query_580255, "oauth_token", newJString(oauthToken))
+  add(query_580255, "conferenceDataVersion", newJInt(conferenceDataVersion))
+  add(query_580255, "userIp", newJString(userIp))
+  add(query_580255, "key", newJString(key))
   if body != nil:
-    body_598256 = body
-  add(query_598255, "prettyPrint", newJBool(prettyPrint))
-  result = call_598253.call(path_598254, query_598255, nil, nil, body_598256)
+    body_580256 = body
+  add(query_580255, "prettyPrint", newJBool(prettyPrint))
+  result = call_580253.call(path_580254, query_580255, nil, nil, body_580256)
 
-var calendarEventsImport* = Call_CalendarEventsImport_598238(
+var calendarEventsImport* = Call_CalendarEventsImport_580238(
     name: "calendarEventsImport", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com", route: "/calendars/{calendarId}/events/import",
-    validator: validate_CalendarEventsImport_598239, base: "/calendar/v3",
-    url: url_CalendarEventsImport_598240, schemes: {Scheme.Https})
+    validator: validate_CalendarEventsImport_580239, base: "/calendar/v3",
+    url: url_CalendarEventsImport_580240, schemes: {Scheme.Https})
 type
-  Call_CalendarEventsQuickAdd_598257 = ref object of OpenApiRestCall_597424
-proc url_CalendarEventsQuickAdd_598259(protocol: Scheme; host: string; base: string;
+  Call_CalendarEventsQuickAdd_580257 = ref object of OpenApiRestCall_579424
+proc url_CalendarEventsQuickAdd_580259(protocol: Scheme; host: string; base: string;
                                       route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "calendarId" in path, "`calendarId` is a required path parameter"
   const
@@ -2959,7 +2961,7 @@ proc url_CalendarEventsQuickAdd_598259(protocol: Scheme; host: string; base: str
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_CalendarEventsQuickAdd_598258(path: JsonNode; query: JsonNode;
+proc validate_CalendarEventsQuickAdd_580258(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Creates an event based on a simple text string.
   ## 
@@ -2971,11 +2973,11 @@ proc validate_CalendarEventsQuickAdd_598258(path: JsonNode; query: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `calendarId` field"
-  var valid_598260 = path.getOrDefault("calendarId")
-  valid_598260 = validateParameter(valid_598260, JString, required = true,
+  var valid_580260 = path.getOrDefault("calendarId")
+  valid_580260 = validateParameter(valid_580260, JString, required = true,
                                  default = nil)
-  if valid_598260 != nil:
-    section.add "calendarId", valid_598260
+  if valid_580260 != nil:
+    section.add "calendarId", valid_580260
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -3001,56 +3003,56 @@ proc validate_CalendarEventsQuickAdd_598258(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_598261 = query.getOrDefault("fields")
-  valid_598261 = validateParameter(valid_598261, JString, required = false,
+  var valid_580261 = query.getOrDefault("fields")
+  valid_580261 = validateParameter(valid_580261, JString, required = false,
                                  default = nil)
-  if valid_598261 != nil:
-    section.add "fields", valid_598261
-  var valid_598262 = query.getOrDefault("quotaUser")
-  valid_598262 = validateParameter(valid_598262, JString, required = false,
+  if valid_580261 != nil:
+    section.add "fields", valid_580261
+  var valid_580262 = query.getOrDefault("quotaUser")
+  valid_580262 = validateParameter(valid_580262, JString, required = false,
                                  default = nil)
-  if valid_598262 != nil:
-    section.add "quotaUser", valid_598262
-  var valid_598263 = query.getOrDefault("alt")
-  valid_598263 = validateParameter(valid_598263, JString, required = false,
+  if valid_580262 != nil:
+    section.add "quotaUser", valid_580262
+  var valid_580263 = query.getOrDefault("alt")
+  valid_580263 = validateParameter(valid_580263, JString, required = false,
                                  default = newJString("json"))
-  if valid_598263 != nil:
-    section.add "alt", valid_598263
-  var valid_598264 = query.getOrDefault("sendNotifications")
-  valid_598264 = validateParameter(valid_598264, JBool, required = false, default = nil)
-  if valid_598264 != nil:
-    section.add "sendNotifications", valid_598264
-  var valid_598265 = query.getOrDefault("oauth_token")
-  valid_598265 = validateParameter(valid_598265, JString, required = false,
+  if valid_580263 != nil:
+    section.add "alt", valid_580263
+  var valid_580264 = query.getOrDefault("sendNotifications")
+  valid_580264 = validateParameter(valid_580264, JBool, required = false, default = nil)
+  if valid_580264 != nil:
+    section.add "sendNotifications", valid_580264
+  var valid_580265 = query.getOrDefault("oauth_token")
+  valid_580265 = validateParameter(valid_580265, JString, required = false,
                                  default = nil)
-  if valid_598265 != nil:
-    section.add "oauth_token", valid_598265
-  var valid_598266 = query.getOrDefault("userIp")
-  valid_598266 = validateParameter(valid_598266, JString, required = false,
+  if valid_580265 != nil:
+    section.add "oauth_token", valid_580265
+  var valid_580266 = query.getOrDefault("userIp")
+  valid_580266 = validateParameter(valid_580266, JString, required = false,
                                  default = nil)
-  if valid_598266 != nil:
-    section.add "userIp", valid_598266
-  var valid_598267 = query.getOrDefault("sendUpdates")
-  valid_598267 = validateParameter(valid_598267, JString, required = false,
+  if valid_580266 != nil:
+    section.add "userIp", valid_580266
+  var valid_580267 = query.getOrDefault("sendUpdates")
+  valid_580267 = validateParameter(valid_580267, JString, required = false,
                                  default = newJString("all"))
-  if valid_598267 != nil:
-    section.add "sendUpdates", valid_598267
-  var valid_598268 = query.getOrDefault("key")
-  valid_598268 = validateParameter(valid_598268, JString, required = false,
+  if valid_580267 != nil:
+    section.add "sendUpdates", valid_580267
+  var valid_580268 = query.getOrDefault("key")
+  valid_580268 = validateParameter(valid_580268, JString, required = false,
                                  default = nil)
-  if valid_598268 != nil:
-    section.add "key", valid_598268
+  if valid_580268 != nil:
+    section.add "key", valid_580268
   assert query != nil, "query argument is necessary due to required `text` field"
-  var valid_598269 = query.getOrDefault("text")
-  valid_598269 = validateParameter(valid_598269, JString, required = true,
+  var valid_580269 = query.getOrDefault("text")
+  valid_580269 = validateParameter(valid_580269, JString, required = true,
                                  default = nil)
-  if valid_598269 != nil:
-    section.add "text", valid_598269
-  var valid_598270 = query.getOrDefault("prettyPrint")
-  valid_598270 = validateParameter(valid_598270, JBool, required = false,
+  if valid_580269 != nil:
+    section.add "text", valid_580269
+  var valid_580270 = query.getOrDefault("prettyPrint")
+  valid_580270 = validateParameter(valid_580270, JBool, required = false,
                                  default = newJBool(true))
-  if valid_598270 != nil:
-    section.add "prettyPrint", valid_598270
+  if valid_580270 != nil:
+    section.add "prettyPrint", valid_580270
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -3059,20 +3061,20 @@ proc validate_CalendarEventsQuickAdd_598258(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_598271: Call_CalendarEventsQuickAdd_598257; path: JsonNode;
+proc call*(call_580271: Call_CalendarEventsQuickAdd_580257; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Creates an event based on a simple text string.
   ## 
-  let valid = call_598271.validator(path, query, header, formData, body)
-  let scheme = call_598271.pickScheme
+  let valid = call_580271.validator(path, query, header, formData, body)
+  let scheme = call_580271.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_598271.url(scheme.get, call_598271.host, call_598271.base,
-                         call_598271.route, valid.getOrDefault("path"),
+  let url = call_580271.url(scheme.get, call_580271.host, call_580271.base,
+                         call_580271.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_598271, url, valid)
+  result = hook(call_580271, url, valid)
 
-proc call*(call_598272: Call_CalendarEventsQuickAdd_598257; calendarId: string;
+proc call*(call_580272: Call_CalendarEventsQuickAdd_580257; calendarId: string;
           text: string; fields: string = ""; quotaUser: string = ""; alt: string = "json";
           sendNotifications: bool = false; oauthToken: string = ""; userIp: string = "";
           sendUpdates: string = "all"; key: string = ""; prettyPrint: bool = true): Recallable =
@@ -3102,33 +3104,33 @@ proc call*(call_598272: Call_CalendarEventsQuickAdd_598257; calendarId: string;
   ##       : The text describing the event to be created.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_598273 = newJObject()
-  var query_598274 = newJObject()
-  add(query_598274, "fields", newJString(fields))
-  add(query_598274, "quotaUser", newJString(quotaUser))
-  add(query_598274, "alt", newJString(alt))
-  add(path_598273, "calendarId", newJString(calendarId))
-  add(query_598274, "sendNotifications", newJBool(sendNotifications))
-  add(query_598274, "oauth_token", newJString(oauthToken))
-  add(query_598274, "userIp", newJString(userIp))
-  add(query_598274, "sendUpdates", newJString(sendUpdates))
-  add(query_598274, "key", newJString(key))
-  add(query_598274, "text", newJString(text))
-  add(query_598274, "prettyPrint", newJBool(prettyPrint))
-  result = call_598272.call(path_598273, query_598274, nil, nil, nil)
+  var path_580273 = newJObject()
+  var query_580274 = newJObject()
+  add(query_580274, "fields", newJString(fields))
+  add(query_580274, "quotaUser", newJString(quotaUser))
+  add(query_580274, "alt", newJString(alt))
+  add(path_580273, "calendarId", newJString(calendarId))
+  add(query_580274, "sendNotifications", newJBool(sendNotifications))
+  add(query_580274, "oauth_token", newJString(oauthToken))
+  add(query_580274, "userIp", newJString(userIp))
+  add(query_580274, "sendUpdates", newJString(sendUpdates))
+  add(query_580274, "key", newJString(key))
+  add(query_580274, "text", newJString(text))
+  add(query_580274, "prettyPrint", newJBool(prettyPrint))
+  result = call_580272.call(path_580273, query_580274, nil, nil, nil)
 
-var calendarEventsQuickAdd* = Call_CalendarEventsQuickAdd_598257(
+var calendarEventsQuickAdd* = Call_CalendarEventsQuickAdd_580257(
     name: "calendarEventsQuickAdd", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com", route: "/calendars/{calendarId}/events/quickAdd",
-    validator: validate_CalendarEventsQuickAdd_598258, base: "/calendar/v3",
-    url: url_CalendarEventsQuickAdd_598259, schemes: {Scheme.Https})
+    validator: validate_CalendarEventsQuickAdd_580258, base: "/calendar/v3",
+    url: url_CalendarEventsQuickAdd_580259, schemes: {Scheme.Https})
 type
-  Call_CalendarEventsWatch_598275 = ref object of OpenApiRestCall_597424
-proc url_CalendarEventsWatch_598277(protocol: Scheme; host: string; base: string;
+  Call_CalendarEventsWatch_580275 = ref object of OpenApiRestCall_579424
+proc url_CalendarEventsWatch_580277(protocol: Scheme; host: string; base: string;
                                    route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "calendarId" in path, "`calendarId` is a required path parameter"
   const
@@ -3140,7 +3142,7 @@ proc url_CalendarEventsWatch_598277(protocol: Scheme; host: string; base: string
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_CalendarEventsWatch_598276(path: JsonNode; query: JsonNode;
+proc validate_CalendarEventsWatch_580276(path: JsonNode; query: JsonNode;
                                         header: JsonNode; formData: JsonNode;
                                         body: JsonNode): JsonNode =
   ## Watch for changes to Events resources.
@@ -3153,11 +3155,11 @@ proc validate_CalendarEventsWatch_598276(path: JsonNode; query: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `calendarId` field"
-  var valid_598278 = path.getOrDefault("calendarId")
-  valid_598278 = validateParameter(valid_598278, JString, required = true,
+  var valid_580278 = path.getOrDefault("calendarId")
+  valid_580278 = validateParameter(valid_580278, JString, required = true,
                                  default = nil)
-  if valid_598278 != nil:
-    section.add "calendarId", valid_598278
+  if valid_580278 != nil:
+    section.add "calendarId", valid_580278
   result.add "path", section
   ## parameters in `query` object:
   ##   privateExtendedProperty: JArray
@@ -3222,121 +3224,121 @@ proc validate_CalendarEventsWatch_598276(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_598279 = query.getOrDefault("privateExtendedProperty")
-  valid_598279 = validateParameter(valid_598279, JArray, required = false,
+  var valid_580279 = query.getOrDefault("privateExtendedProperty")
+  valid_580279 = validateParameter(valid_580279, JArray, required = false,
                                  default = nil)
-  if valid_598279 != nil:
-    section.add "privateExtendedProperty", valid_598279
-  var valid_598280 = query.getOrDefault("fields")
-  valid_598280 = validateParameter(valid_598280, JString, required = false,
+  if valid_580279 != nil:
+    section.add "privateExtendedProperty", valid_580279
+  var valid_580280 = query.getOrDefault("fields")
+  valid_580280 = validateParameter(valid_580280, JString, required = false,
                                  default = nil)
-  if valid_598280 != nil:
-    section.add "fields", valid_598280
-  var valid_598281 = query.getOrDefault("pageToken")
-  valid_598281 = validateParameter(valid_598281, JString, required = false,
+  if valid_580280 != nil:
+    section.add "fields", valid_580280
+  var valid_580281 = query.getOrDefault("pageToken")
+  valid_580281 = validateParameter(valid_580281, JString, required = false,
                                  default = nil)
-  if valid_598281 != nil:
-    section.add "pageToken", valid_598281
-  var valid_598282 = query.getOrDefault("quotaUser")
-  valid_598282 = validateParameter(valid_598282, JString, required = false,
+  if valid_580281 != nil:
+    section.add "pageToken", valid_580281
+  var valid_580282 = query.getOrDefault("quotaUser")
+  valid_580282 = validateParameter(valid_580282, JString, required = false,
                                  default = nil)
-  if valid_598282 != nil:
-    section.add "quotaUser", valid_598282
-  var valid_598283 = query.getOrDefault("alt")
-  valid_598283 = validateParameter(valid_598283, JString, required = false,
+  if valid_580282 != nil:
+    section.add "quotaUser", valid_580282
+  var valid_580283 = query.getOrDefault("alt")
+  valid_580283 = validateParameter(valid_580283, JString, required = false,
                                  default = newJString("json"))
-  if valid_598283 != nil:
-    section.add "alt", valid_598283
-  var valid_598284 = query.getOrDefault("maxAttendees")
-  valid_598284 = validateParameter(valid_598284, JInt, required = false, default = nil)
-  if valid_598284 != nil:
-    section.add "maxAttendees", valid_598284
-  var valid_598285 = query.getOrDefault("showHiddenInvitations")
-  valid_598285 = validateParameter(valid_598285, JBool, required = false, default = nil)
-  if valid_598285 != nil:
-    section.add "showHiddenInvitations", valid_598285
-  var valid_598286 = query.getOrDefault("timeMax")
-  valid_598286 = validateParameter(valid_598286, JString, required = false,
+  if valid_580283 != nil:
+    section.add "alt", valid_580283
+  var valid_580284 = query.getOrDefault("maxAttendees")
+  valid_580284 = validateParameter(valid_580284, JInt, required = false, default = nil)
+  if valid_580284 != nil:
+    section.add "maxAttendees", valid_580284
+  var valid_580285 = query.getOrDefault("showHiddenInvitations")
+  valid_580285 = validateParameter(valid_580285, JBool, required = false, default = nil)
+  if valid_580285 != nil:
+    section.add "showHiddenInvitations", valid_580285
+  var valid_580286 = query.getOrDefault("timeMax")
+  valid_580286 = validateParameter(valid_580286, JString, required = false,
                                  default = nil)
-  if valid_598286 != nil:
-    section.add "timeMax", valid_598286
-  var valid_598287 = query.getOrDefault("oauth_token")
-  valid_598287 = validateParameter(valid_598287, JString, required = false,
+  if valid_580286 != nil:
+    section.add "timeMax", valid_580286
+  var valid_580287 = query.getOrDefault("oauth_token")
+  valid_580287 = validateParameter(valid_580287, JString, required = false,
                                  default = nil)
-  if valid_598287 != nil:
-    section.add "oauth_token", valid_598287
-  var valid_598288 = query.getOrDefault("timeMin")
-  valid_598288 = validateParameter(valid_598288, JString, required = false,
+  if valid_580287 != nil:
+    section.add "oauth_token", valid_580287
+  var valid_580288 = query.getOrDefault("timeMin")
+  valid_580288 = validateParameter(valid_580288, JString, required = false,
                                  default = nil)
-  if valid_598288 != nil:
-    section.add "timeMin", valid_598288
-  var valid_598289 = query.getOrDefault("syncToken")
-  valid_598289 = validateParameter(valid_598289, JString, required = false,
+  if valid_580288 != nil:
+    section.add "timeMin", valid_580288
+  var valid_580289 = query.getOrDefault("syncToken")
+  valid_580289 = validateParameter(valid_580289, JString, required = false,
                                  default = nil)
-  if valid_598289 != nil:
-    section.add "syncToken", valid_598289
-  var valid_598290 = query.getOrDefault("userIp")
-  valid_598290 = validateParameter(valid_598290, JString, required = false,
+  if valid_580289 != nil:
+    section.add "syncToken", valid_580289
+  var valid_580290 = query.getOrDefault("userIp")
+  valid_580290 = validateParameter(valid_580290, JString, required = false,
                                  default = nil)
-  if valid_598290 != nil:
-    section.add "userIp", valid_598290
-  var valid_598291 = query.getOrDefault("maxResults")
-  valid_598291 = validateParameter(valid_598291, JInt, required = false,
+  if valid_580290 != nil:
+    section.add "userIp", valid_580290
+  var valid_580291 = query.getOrDefault("maxResults")
+  valid_580291 = validateParameter(valid_580291, JInt, required = false,
                                  default = newJInt(250))
-  if valid_598291 != nil:
-    section.add "maxResults", valid_598291
-  var valid_598292 = query.getOrDefault("orderBy")
-  valid_598292 = validateParameter(valid_598292, JString, required = false,
+  if valid_580291 != nil:
+    section.add "maxResults", valid_580291
+  var valid_580292 = query.getOrDefault("orderBy")
+  valid_580292 = validateParameter(valid_580292, JString, required = false,
                                  default = newJString("startTime"))
-  if valid_598292 != nil:
-    section.add "orderBy", valid_598292
-  var valid_598293 = query.getOrDefault("timeZone")
-  valid_598293 = validateParameter(valid_598293, JString, required = false,
+  if valid_580292 != nil:
+    section.add "orderBy", valid_580292
+  var valid_580293 = query.getOrDefault("timeZone")
+  valid_580293 = validateParameter(valid_580293, JString, required = false,
                                  default = nil)
-  if valid_598293 != nil:
-    section.add "timeZone", valid_598293
-  var valid_598294 = query.getOrDefault("q")
-  valid_598294 = validateParameter(valid_598294, JString, required = false,
+  if valid_580293 != nil:
+    section.add "timeZone", valid_580293
+  var valid_580294 = query.getOrDefault("q")
+  valid_580294 = validateParameter(valid_580294, JString, required = false,
                                  default = nil)
-  if valid_598294 != nil:
-    section.add "q", valid_598294
-  var valid_598295 = query.getOrDefault("iCalUID")
-  valid_598295 = validateParameter(valid_598295, JString, required = false,
+  if valid_580294 != nil:
+    section.add "q", valid_580294
+  var valid_580295 = query.getOrDefault("iCalUID")
+  valid_580295 = validateParameter(valid_580295, JString, required = false,
                                  default = nil)
-  if valid_598295 != nil:
-    section.add "iCalUID", valid_598295
-  var valid_598296 = query.getOrDefault("showDeleted")
-  valid_598296 = validateParameter(valid_598296, JBool, required = false, default = nil)
-  if valid_598296 != nil:
-    section.add "showDeleted", valid_598296
-  var valid_598297 = query.getOrDefault("key")
-  valid_598297 = validateParameter(valid_598297, JString, required = false,
+  if valid_580295 != nil:
+    section.add "iCalUID", valid_580295
+  var valid_580296 = query.getOrDefault("showDeleted")
+  valid_580296 = validateParameter(valid_580296, JBool, required = false, default = nil)
+  if valid_580296 != nil:
+    section.add "showDeleted", valid_580296
+  var valid_580297 = query.getOrDefault("key")
+  valid_580297 = validateParameter(valid_580297, JString, required = false,
                                  default = nil)
-  if valid_598297 != nil:
-    section.add "key", valid_598297
-  var valid_598298 = query.getOrDefault("updatedMin")
-  valid_598298 = validateParameter(valid_598298, JString, required = false,
+  if valid_580297 != nil:
+    section.add "key", valid_580297
+  var valid_580298 = query.getOrDefault("updatedMin")
+  valid_580298 = validateParameter(valid_580298, JString, required = false,
                                  default = nil)
-  if valid_598298 != nil:
-    section.add "updatedMin", valid_598298
-  var valid_598299 = query.getOrDefault("singleEvents")
-  valid_598299 = validateParameter(valid_598299, JBool, required = false, default = nil)
-  if valid_598299 != nil:
-    section.add "singleEvents", valid_598299
-  var valid_598300 = query.getOrDefault("sharedExtendedProperty")
-  valid_598300 = validateParameter(valid_598300, JArray, required = false,
+  if valid_580298 != nil:
+    section.add "updatedMin", valid_580298
+  var valid_580299 = query.getOrDefault("singleEvents")
+  valid_580299 = validateParameter(valid_580299, JBool, required = false, default = nil)
+  if valid_580299 != nil:
+    section.add "singleEvents", valid_580299
+  var valid_580300 = query.getOrDefault("sharedExtendedProperty")
+  valid_580300 = validateParameter(valid_580300, JArray, required = false,
                                  default = nil)
-  if valid_598300 != nil:
-    section.add "sharedExtendedProperty", valid_598300
-  var valid_598301 = query.getOrDefault("alwaysIncludeEmail")
-  valid_598301 = validateParameter(valid_598301, JBool, required = false, default = nil)
-  if valid_598301 != nil:
-    section.add "alwaysIncludeEmail", valid_598301
-  var valid_598302 = query.getOrDefault("prettyPrint")
-  valid_598302 = validateParameter(valid_598302, JBool, required = false,
+  if valid_580300 != nil:
+    section.add "sharedExtendedProperty", valid_580300
+  var valid_580301 = query.getOrDefault("alwaysIncludeEmail")
+  valid_580301 = validateParameter(valid_580301, JBool, required = false, default = nil)
+  if valid_580301 != nil:
+    section.add "alwaysIncludeEmail", valid_580301
+  var valid_580302 = query.getOrDefault("prettyPrint")
+  valid_580302 = validateParameter(valid_580302, JBool, required = false,
                                  default = newJBool(true))
-  if valid_598302 != nil:
-    section.add "prettyPrint", valid_598302
+  if valid_580302 != nil:
+    section.add "prettyPrint", valid_580302
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -3348,20 +3350,20 @@ proc validate_CalendarEventsWatch_598276(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_598304: Call_CalendarEventsWatch_598275; path: JsonNode;
+proc call*(call_580304: Call_CalendarEventsWatch_580275; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Watch for changes to Events resources.
   ## 
-  let valid = call_598304.validator(path, query, header, formData, body)
-  let scheme = call_598304.pickScheme
+  let valid = call_580304.validator(path, query, header, formData, body)
+  let scheme = call_580304.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_598304.url(scheme.get, call_598304.host, call_598304.base,
-                         call_598304.route, valid.getOrDefault("path"),
+  let url = call_580304.url(scheme.get, call_580304.host, call_580304.base,
+                         call_580304.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_598304, url, valid)
+  result = hook(call_580304, url, valid)
 
-proc call*(call_598305: Call_CalendarEventsWatch_598275; calendarId: string;
+proc call*(call_580305: Call_CalendarEventsWatch_580275; calendarId: string;
           privateExtendedProperty: JsonNode = nil; fields: string = "";
           pageToken: string = ""; quotaUser: string = ""; alt: string = "json";
           maxAttendees: int = 0; showHiddenInvitations: bool = false;
@@ -3438,52 +3440,52 @@ proc call*(call_598305: Call_CalendarEventsWatch_598275; calendarId: string;
   ##                     : Whether to always include a value in the email field for the organizer, creator and attendees, even if no real email is available (i.e. a generated, non-working value will be provided). The use of this option is discouraged and should only be used by clients which cannot handle the absence of an email address value in the mentioned places. Optional. The default is False.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_598306 = newJObject()
-  var query_598307 = newJObject()
-  var body_598308 = newJObject()
+  var path_580306 = newJObject()
+  var query_580307 = newJObject()
+  var body_580308 = newJObject()
   if privateExtendedProperty != nil:
-    query_598307.add "privateExtendedProperty", privateExtendedProperty
-  add(query_598307, "fields", newJString(fields))
-  add(query_598307, "pageToken", newJString(pageToken))
-  add(query_598307, "quotaUser", newJString(quotaUser))
-  add(query_598307, "alt", newJString(alt))
-  add(query_598307, "maxAttendees", newJInt(maxAttendees))
-  add(query_598307, "showHiddenInvitations", newJBool(showHiddenInvitations))
-  add(path_598306, "calendarId", newJString(calendarId))
-  add(query_598307, "timeMax", newJString(timeMax))
-  add(query_598307, "oauth_token", newJString(oauthToken))
-  add(query_598307, "timeMin", newJString(timeMin))
-  add(query_598307, "syncToken", newJString(syncToken))
-  add(query_598307, "userIp", newJString(userIp))
-  add(query_598307, "maxResults", newJInt(maxResults))
-  add(query_598307, "orderBy", newJString(orderBy))
-  add(query_598307, "timeZone", newJString(timeZone))
-  add(query_598307, "q", newJString(q))
-  add(query_598307, "iCalUID", newJString(iCalUID))
-  add(query_598307, "showDeleted", newJBool(showDeleted))
-  add(query_598307, "key", newJString(key))
-  add(query_598307, "updatedMin", newJString(updatedMin))
-  add(query_598307, "singleEvents", newJBool(singleEvents))
+    query_580307.add "privateExtendedProperty", privateExtendedProperty
+  add(query_580307, "fields", newJString(fields))
+  add(query_580307, "pageToken", newJString(pageToken))
+  add(query_580307, "quotaUser", newJString(quotaUser))
+  add(query_580307, "alt", newJString(alt))
+  add(query_580307, "maxAttendees", newJInt(maxAttendees))
+  add(query_580307, "showHiddenInvitations", newJBool(showHiddenInvitations))
+  add(path_580306, "calendarId", newJString(calendarId))
+  add(query_580307, "timeMax", newJString(timeMax))
+  add(query_580307, "oauth_token", newJString(oauthToken))
+  add(query_580307, "timeMin", newJString(timeMin))
+  add(query_580307, "syncToken", newJString(syncToken))
+  add(query_580307, "userIp", newJString(userIp))
+  add(query_580307, "maxResults", newJInt(maxResults))
+  add(query_580307, "orderBy", newJString(orderBy))
+  add(query_580307, "timeZone", newJString(timeZone))
+  add(query_580307, "q", newJString(q))
+  add(query_580307, "iCalUID", newJString(iCalUID))
+  add(query_580307, "showDeleted", newJBool(showDeleted))
+  add(query_580307, "key", newJString(key))
+  add(query_580307, "updatedMin", newJString(updatedMin))
+  add(query_580307, "singleEvents", newJBool(singleEvents))
   if sharedExtendedProperty != nil:
-    query_598307.add "sharedExtendedProperty", sharedExtendedProperty
+    query_580307.add "sharedExtendedProperty", sharedExtendedProperty
   if resource != nil:
-    body_598308 = resource
-  add(query_598307, "alwaysIncludeEmail", newJBool(alwaysIncludeEmail))
-  add(query_598307, "prettyPrint", newJBool(prettyPrint))
-  result = call_598305.call(path_598306, query_598307, nil, nil, body_598308)
+    body_580308 = resource
+  add(query_580307, "alwaysIncludeEmail", newJBool(alwaysIncludeEmail))
+  add(query_580307, "prettyPrint", newJBool(prettyPrint))
+  result = call_580305.call(path_580306, query_580307, nil, nil, body_580308)
 
-var calendarEventsWatch* = Call_CalendarEventsWatch_598275(
+var calendarEventsWatch* = Call_CalendarEventsWatch_580275(
     name: "calendarEventsWatch", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com", route: "/calendars/{calendarId}/events/watch",
-    validator: validate_CalendarEventsWatch_598276, base: "/calendar/v3",
-    url: url_CalendarEventsWatch_598277, schemes: {Scheme.Https})
+    validator: validate_CalendarEventsWatch_580276, base: "/calendar/v3",
+    url: url_CalendarEventsWatch_580277, schemes: {Scheme.Https})
 type
-  Call_CalendarEventsUpdate_598328 = ref object of OpenApiRestCall_597424
-proc url_CalendarEventsUpdate_598330(protocol: Scheme; host: string; base: string;
+  Call_CalendarEventsUpdate_580328 = ref object of OpenApiRestCall_579424
+proc url_CalendarEventsUpdate_580330(protocol: Scheme; host: string; base: string;
                                     route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "calendarId" in path, "`calendarId` is a required path parameter"
   assert "eventId" in path, "`eventId` is a required path parameter"
@@ -3497,7 +3499,7 @@ proc url_CalendarEventsUpdate_598330(protocol: Scheme; host: string; base: strin
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_CalendarEventsUpdate_598329(path: JsonNode; query: JsonNode;
+proc validate_CalendarEventsUpdate_580329(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Updates an event.
   ## 
@@ -3511,16 +3513,16 @@ proc validate_CalendarEventsUpdate_598329(path: JsonNode; query: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `calendarId` field"
-  var valid_598331 = path.getOrDefault("calendarId")
-  valid_598331 = validateParameter(valid_598331, JString, required = true,
+  var valid_580331 = path.getOrDefault("calendarId")
+  valid_580331 = validateParameter(valid_580331, JString, required = true,
                                  default = nil)
-  if valid_598331 != nil:
-    section.add "calendarId", valid_598331
-  var valid_598332 = path.getOrDefault("eventId")
-  valid_598332 = validateParameter(valid_598332, JString, required = true,
+  if valid_580331 != nil:
+    section.add "calendarId", valid_580331
+  var valid_580332 = path.getOrDefault("eventId")
+  valid_580332 = validateParameter(valid_580332, JString, required = true,
                                  default = nil)
-  if valid_598332 != nil:
-    section.add "eventId", valid_598332
+  if valid_580332 != nil:
+    section.add "eventId", valid_580332
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -3552,66 +3554,66 @@ proc validate_CalendarEventsUpdate_598329(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_598333 = query.getOrDefault("fields")
-  valid_598333 = validateParameter(valid_598333, JString, required = false,
+  var valid_580333 = query.getOrDefault("fields")
+  valid_580333 = validateParameter(valid_580333, JString, required = false,
                                  default = nil)
-  if valid_598333 != nil:
-    section.add "fields", valid_598333
-  var valid_598334 = query.getOrDefault("quotaUser")
-  valid_598334 = validateParameter(valid_598334, JString, required = false,
+  if valid_580333 != nil:
+    section.add "fields", valid_580333
+  var valid_580334 = query.getOrDefault("quotaUser")
+  valid_580334 = validateParameter(valid_580334, JString, required = false,
                                  default = nil)
-  if valid_598334 != nil:
-    section.add "quotaUser", valid_598334
-  var valid_598335 = query.getOrDefault("alt")
-  valid_598335 = validateParameter(valid_598335, JString, required = false,
+  if valid_580334 != nil:
+    section.add "quotaUser", valid_580334
+  var valid_580335 = query.getOrDefault("alt")
+  valid_580335 = validateParameter(valid_580335, JString, required = false,
                                  default = newJString("json"))
-  if valid_598335 != nil:
-    section.add "alt", valid_598335
-  var valid_598336 = query.getOrDefault("supportsAttachments")
-  valid_598336 = validateParameter(valid_598336, JBool, required = false, default = nil)
-  if valid_598336 != nil:
-    section.add "supportsAttachments", valid_598336
-  var valid_598337 = query.getOrDefault("maxAttendees")
-  valid_598337 = validateParameter(valid_598337, JInt, required = false, default = nil)
-  if valid_598337 != nil:
-    section.add "maxAttendees", valid_598337
-  var valid_598338 = query.getOrDefault("sendNotifications")
-  valid_598338 = validateParameter(valid_598338, JBool, required = false, default = nil)
-  if valid_598338 != nil:
-    section.add "sendNotifications", valid_598338
-  var valid_598339 = query.getOrDefault("oauth_token")
-  valid_598339 = validateParameter(valid_598339, JString, required = false,
+  if valid_580335 != nil:
+    section.add "alt", valid_580335
+  var valid_580336 = query.getOrDefault("supportsAttachments")
+  valid_580336 = validateParameter(valid_580336, JBool, required = false, default = nil)
+  if valid_580336 != nil:
+    section.add "supportsAttachments", valid_580336
+  var valid_580337 = query.getOrDefault("maxAttendees")
+  valid_580337 = validateParameter(valid_580337, JInt, required = false, default = nil)
+  if valid_580337 != nil:
+    section.add "maxAttendees", valid_580337
+  var valid_580338 = query.getOrDefault("sendNotifications")
+  valid_580338 = validateParameter(valid_580338, JBool, required = false, default = nil)
+  if valid_580338 != nil:
+    section.add "sendNotifications", valid_580338
+  var valid_580339 = query.getOrDefault("oauth_token")
+  valid_580339 = validateParameter(valid_580339, JString, required = false,
                                  default = nil)
-  if valid_598339 != nil:
-    section.add "oauth_token", valid_598339
-  var valid_598340 = query.getOrDefault("conferenceDataVersion")
-  valid_598340 = validateParameter(valid_598340, JInt, required = false, default = nil)
-  if valid_598340 != nil:
-    section.add "conferenceDataVersion", valid_598340
-  var valid_598341 = query.getOrDefault("userIp")
-  valid_598341 = validateParameter(valid_598341, JString, required = false,
+  if valid_580339 != nil:
+    section.add "oauth_token", valid_580339
+  var valid_580340 = query.getOrDefault("conferenceDataVersion")
+  valid_580340 = validateParameter(valid_580340, JInt, required = false, default = nil)
+  if valid_580340 != nil:
+    section.add "conferenceDataVersion", valid_580340
+  var valid_580341 = query.getOrDefault("userIp")
+  valid_580341 = validateParameter(valid_580341, JString, required = false,
                                  default = nil)
-  if valid_598341 != nil:
-    section.add "userIp", valid_598341
-  var valid_598342 = query.getOrDefault("sendUpdates")
-  valid_598342 = validateParameter(valid_598342, JString, required = false,
+  if valid_580341 != nil:
+    section.add "userIp", valid_580341
+  var valid_580342 = query.getOrDefault("sendUpdates")
+  valid_580342 = validateParameter(valid_580342, JString, required = false,
                                  default = newJString("all"))
-  if valid_598342 != nil:
-    section.add "sendUpdates", valid_598342
-  var valid_598343 = query.getOrDefault("key")
-  valid_598343 = validateParameter(valid_598343, JString, required = false,
+  if valid_580342 != nil:
+    section.add "sendUpdates", valid_580342
+  var valid_580343 = query.getOrDefault("key")
+  valid_580343 = validateParameter(valid_580343, JString, required = false,
                                  default = nil)
-  if valid_598343 != nil:
-    section.add "key", valid_598343
-  var valid_598344 = query.getOrDefault("alwaysIncludeEmail")
-  valid_598344 = validateParameter(valid_598344, JBool, required = false, default = nil)
-  if valid_598344 != nil:
-    section.add "alwaysIncludeEmail", valid_598344
-  var valid_598345 = query.getOrDefault("prettyPrint")
-  valid_598345 = validateParameter(valid_598345, JBool, required = false,
+  if valid_580343 != nil:
+    section.add "key", valid_580343
+  var valid_580344 = query.getOrDefault("alwaysIncludeEmail")
+  valid_580344 = validateParameter(valid_580344, JBool, required = false, default = nil)
+  if valid_580344 != nil:
+    section.add "alwaysIncludeEmail", valid_580344
+  var valid_580345 = query.getOrDefault("prettyPrint")
+  valid_580345 = validateParameter(valid_580345, JBool, required = false,
                                  default = newJBool(true))
-  if valid_598345 != nil:
-    section.add "prettyPrint", valid_598345
+  if valid_580345 != nil:
+    section.add "prettyPrint", valid_580345
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -3623,20 +3625,20 @@ proc validate_CalendarEventsUpdate_598329(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_598347: Call_CalendarEventsUpdate_598328; path: JsonNode;
+proc call*(call_580347: Call_CalendarEventsUpdate_580328; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Updates an event.
   ## 
-  let valid = call_598347.validator(path, query, header, formData, body)
-  let scheme = call_598347.pickScheme
+  let valid = call_580347.validator(path, query, header, formData, body)
+  let scheme = call_580347.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_598347.url(scheme.get, call_598347.host, call_598347.base,
-                         call_598347.route, valid.getOrDefault("path"),
+  let url = call_580347.url(scheme.get, call_580347.host, call_580347.base,
+                         call_580347.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_598347, url, valid)
+  result = hook(call_580347, url, valid)
 
-proc call*(call_598348: Call_CalendarEventsUpdate_598328; calendarId: string;
+proc call*(call_580348: Call_CalendarEventsUpdate_580328; calendarId: string;
           eventId: string; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; supportsAttachments: bool = false;
           maxAttendees: int = 0; sendNotifications: bool = false;
@@ -3679,40 +3681,40 @@ proc call*(call_598348: Call_CalendarEventsUpdate_598328; calendarId: string;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_598349 = newJObject()
-  var query_598350 = newJObject()
-  var body_598351 = newJObject()
-  add(query_598350, "fields", newJString(fields))
-  add(query_598350, "quotaUser", newJString(quotaUser))
-  add(query_598350, "alt", newJString(alt))
-  add(query_598350, "supportsAttachments", newJBool(supportsAttachments))
-  add(query_598350, "maxAttendees", newJInt(maxAttendees))
-  add(path_598349, "calendarId", newJString(calendarId))
-  add(query_598350, "sendNotifications", newJBool(sendNotifications))
-  add(query_598350, "oauth_token", newJString(oauthToken))
-  add(query_598350, "conferenceDataVersion", newJInt(conferenceDataVersion))
-  add(query_598350, "userIp", newJString(userIp))
-  add(query_598350, "sendUpdates", newJString(sendUpdates))
-  add(path_598349, "eventId", newJString(eventId))
-  add(query_598350, "key", newJString(key))
-  add(query_598350, "alwaysIncludeEmail", newJBool(alwaysIncludeEmail))
+  var path_580349 = newJObject()
+  var query_580350 = newJObject()
+  var body_580351 = newJObject()
+  add(query_580350, "fields", newJString(fields))
+  add(query_580350, "quotaUser", newJString(quotaUser))
+  add(query_580350, "alt", newJString(alt))
+  add(query_580350, "supportsAttachments", newJBool(supportsAttachments))
+  add(query_580350, "maxAttendees", newJInt(maxAttendees))
+  add(path_580349, "calendarId", newJString(calendarId))
+  add(query_580350, "sendNotifications", newJBool(sendNotifications))
+  add(query_580350, "oauth_token", newJString(oauthToken))
+  add(query_580350, "conferenceDataVersion", newJInt(conferenceDataVersion))
+  add(query_580350, "userIp", newJString(userIp))
+  add(query_580350, "sendUpdates", newJString(sendUpdates))
+  add(path_580349, "eventId", newJString(eventId))
+  add(query_580350, "key", newJString(key))
+  add(query_580350, "alwaysIncludeEmail", newJBool(alwaysIncludeEmail))
   if body != nil:
-    body_598351 = body
-  add(query_598350, "prettyPrint", newJBool(prettyPrint))
-  result = call_598348.call(path_598349, query_598350, nil, nil, body_598351)
+    body_580351 = body
+  add(query_580350, "prettyPrint", newJBool(prettyPrint))
+  result = call_580348.call(path_580349, query_580350, nil, nil, body_580351)
 
-var calendarEventsUpdate* = Call_CalendarEventsUpdate_598328(
+var calendarEventsUpdate* = Call_CalendarEventsUpdate_580328(
     name: "calendarEventsUpdate", meth: HttpMethod.HttpPut,
     host: "www.googleapis.com", route: "/calendars/{calendarId}/events/{eventId}",
-    validator: validate_CalendarEventsUpdate_598329, base: "/calendar/v3",
-    url: url_CalendarEventsUpdate_598330, schemes: {Scheme.Https})
+    validator: validate_CalendarEventsUpdate_580329, base: "/calendar/v3",
+    url: url_CalendarEventsUpdate_580330, schemes: {Scheme.Https})
 type
-  Call_CalendarEventsGet_598309 = ref object of OpenApiRestCall_597424
-proc url_CalendarEventsGet_598311(protocol: Scheme; host: string; base: string;
+  Call_CalendarEventsGet_580309 = ref object of OpenApiRestCall_579424
+proc url_CalendarEventsGet_580311(protocol: Scheme; host: string; base: string;
                                  route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "calendarId" in path, "`calendarId` is a required path parameter"
   assert "eventId" in path, "`eventId` is a required path parameter"
@@ -3726,7 +3728,7 @@ proc url_CalendarEventsGet_598311(protocol: Scheme; host: string; base: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_CalendarEventsGet_598310(path: JsonNode; query: JsonNode;
+proc validate_CalendarEventsGet_580310(path: JsonNode; query: JsonNode;
                                       header: JsonNode; formData: JsonNode;
                                       body: JsonNode): JsonNode =
   ## Returns an event.
@@ -3741,16 +3743,16 @@ proc validate_CalendarEventsGet_598310(path: JsonNode; query: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `calendarId` field"
-  var valid_598312 = path.getOrDefault("calendarId")
-  valid_598312 = validateParameter(valid_598312, JString, required = true,
+  var valid_580312 = path.getOrDefault("calendarId")
+  valid_580312 = validateParameter(valid_580312, JString, required = true,
                                  default = nil)
-  if valid_598312 != nil:
-    section.add "calendarId", valid_598312
-  var valid_598313 = path.getOrDefault("eventId")
-  valid_598313 = validateParameter(valid_598313, JString, required = true,
+  if valid_580312 != nil:
+    section.add "calendarId", valid_580312
+  var valid_580313 = path.getOrDefault("eventId")
+  valid_580313 = validateParameter(valid_580313, JString, required = true,
                                  default = nil)
-  if valid_598313 != nil:
-    section.add "eventId", valid_598313
+  if valid_580313 != nil:
+    section.add "eventId", valid_580313
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -3774,54 +3776,54 @@ proc validate_CalendarEventsGet_598310(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_598314 = query.getOrDefault("fields")
-  valid_598314 = validateParameter(valid_598314, JString, required = false,
+  var valid_580314 = query.getOrDefault("fields")
+  valid_580314 = validateParameter(valid_580314, JString, required = false,
                                  default = nil)
-  if valid_598314 != nil:
-    section.add "fields", valid_598314
-  var valid_598315 = query.getOrDefault("quotaUser")
-  valid_598315 = validateParameter(valid_598315, JString, required = false,
+  if valid_580314 != nil:
+    section.add "fields", valid_580314
+  var valid_580315 = query.getOrDefault("quotaUser")
+  valid_580315 = validateParameter(valid_580315, JString, required = false,
                                  default = nil)
-  if valid_598315 != nil:
-    section.add "quotaUser", valid_598315
-  var valid_598316 = query.getOrDefault("alt")
-  valid_598316 = validateParameter(valid_598316, JString, required = false,
+  if valid_580315 != nil:
+    section.add "quotaUser", valid_580315
+  var valid_580316 = query.getOrDefault("alt")
+  valid_580316 = validateParameter(valid_580316, JString, required = false,
                                  default = newJString("json"))
-  if valid_598316 != nil:
-    section.add "alt", valid_598316
-  var valid_598317 = query.getOrDefault("maxAttendees")
-  valid_598317 = validateParameter(valid_598317, JInt, required = false, default = nil)
-  if valid_598317 != nil:
-    section.add "maxAttendees", valid_598317
-  var valid_598318 = query.getOrDefault("oauth_token")
-  valid_598318 = validateParameter(valid_598318, JString, required = false,
+  if valid_580316 != nil:
+    section.add "alt", valid_580316
+  var valid_580317 = query.getOrDefault("maxAttendees")
+  valid_580317 = validateParameter(valid_580317, JInt, required = false, default = nil)
+  if valid_580317 != nil:
+    section.add "maxAttendees", valid_580317
+  var valid_580318 = query.getOrDefault("oauth_token")
+  valid_580318 = validateParameter(valid_580318, JString, required = false,
                                  default = nil)
-  if valid_598318 != nil:
-    section.add "oauth_token", valid_598318
-  var valid_598319 = query.getOrDefault("userIp")
-  valid_598319 = validateParameter(valid_598319, JString, required = false,
+  if valid_580318 != nil:
+    section.add "oauth_token", valid_580318
+  var valid_580319 = query.getOrDefault("userIp")
+  valid_580319 = validateParameter(valid_580319, JString, required = false,
                                  default = nil)
-  if valid_598319 != nil:
-    section.add "userIp", valid_598319
-  var valid_598320 = query.getOrDefault("timeZone")
-  valid_598320 = validateParameter(valid_598320, JString, required = false,
+  if valid_580319 != nil:
+    section.add "userIp", valid_580319
+  var valid_580320 = query.getOrDefault("timeZone")
+  valid_580320 = validateParameter(valid_580320, JString, required = false,
                                  default = nil)
-  if valid_598320 != nil:
-    section.add "timeZone", valid_598320
-  var valid_598321 = query.getOrDefault("key")
-  valid_598321 = validateParameter(valid_598321, JString, required = false,
+  if valid_580320 != nil:
+    section.add "timeZone", valid_580320
+  var valid_580321 = query.getOrDefault("key")
+  valid_580321 = validateParameter(valid_580321, JString, required = false,
                                  default = nil)
-  if valid_598321 != nil:
-    section.add "key", valid_598321
-  var valid_598322 = query.getOrDefault("alwaysIncludeEmail")
-  valid_598322 = validateParameter(valid_598322, JBool, required = false, default = nil)
-  if valid_598322 != nil:
-    section.add "alwaysIncludeEmail", valid_598322
-  var valid_598323 = query.getOrDefault("prettyPrint")
-  valid_598323 = validateParameter(valid_598323, JBool, required = false,
+  if valid_580321 != nil:
+    section.add "key", valid_580321
+  var valid_580322 = query.getOrDefault("alwaysIncludeEmail")
+  valid_580322 = validateParameter(valid_580322, JBool, required = false, default = nil)
+  if valid_580322 != nil:
+    section.add "alwaysIncludeEmail", valid_580322
+  var valid_580323 = query.getOrDefault("prettyPrint")
+  valid_580323 = validateParameter(valid_580323, JBool, required = false,
                                  default = newJBool(true))
-  if valid_598323 != nil:
-    section.add "prettyPrint", valid_598323
+  if valid_580323 != nil:
+    section.add "prettyPrint", valid_580323
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -3830,20 +3832,20 @@ proc validate_CalendarEventsGet_598310(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_598324: Call_CalendarEventsGet_598309; path: JsonNode;
+proc call*(call_580324: Call_CalendarEventsGet_580309; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Returns an event.
   ## 
-  let valid = call_598324.validator(path, query, header, formData, body)
-  let scheme = call_598324.pickScheme
+  let valid = call_580324.validator(path, query, header, formData, body)
+  let scheme = call_580324.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_598324.url(scheme.get, call_598324.host, call_598324.base,
-                         call_598324.route, valid.getOrDefault("path"),
+  let url = call_580324.url(scheme.get, call_580324.host, call_580324.base,
+                         call_580324.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_598324, url, valid)
+  result = hook(call_580324, url, valid)
 
-proc call*(call_598325: Call_CalendarEventsGet_598309; calendarId: string;
+proc call*(call_580325: Call_CalendarEventsGet_580309; calendarId: string;
           eventId: string; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; maxAttendees: int = 0; oauthToken: string = "";
           userIp: string = ""; timeZone: string = ""; key: string = "";
@@ -3874,34 +3876,34 @@ proc call*(call_598325: Call_CalendarEventsGet_598309; calendarId: string;
   ##                     : Whether to always include a value in the email field for the organizer, creator and attendees, even if no real email is available (i.e. a generated, non-working value will be provided). The use of this option is discouraged and should only be used by clients which cannot handle the absence of an email address value in the mentioned places. Optional. The default is False.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_598326 = newJObject()
-  var query_598327 = newJObject()
-  add(query_598327, "fields", newJString(fields))
-  add(query_598327, "quotaUser", newJString(quotaUser))
-  add(query_598327, "alt", newJString(alt))
-  add(query_598327, "maxAttendees", newJInt(maxAttendees))
-  add(path_598326, "calendarId", newJString(calendarId))
-  add(query_598327, "oauth_token", newJString(oauthToken))
-  add(query_598327, "userIp", newJString(userIp))
-  add(query_598327, "timeZone", newJString(timeZone))
-  add(path_598326, "eventId", newJString(eventId))
-  add(query_598327, "key", newJString(key))
-  add(query_598327, "alwaysIncludeEmail", newJBool(alwaysIncludeEmail))
-  add(query_598327, "prettyPrint", newJBool(prettyPrint))
-  result = call_598325.call(path_598326, query_598327, nil, nil, nil)
+  var path_580326 = newJObject()
+  var query_580327 = newJObject()
+  add(query_580327, "fields", newJString(fields))
+  add(query_580327, "quotaUser", newJString(quotaUser))
+  add(query_580327, "alt", newJString(alt))
+  add(query_580327, "maxAttendees", newJInt(maxAttendees))
+  add(path_580326, "calendarId", newJString(calendarId))
+  add(query_580327, "oauth_token", newJString(oauthToken))
+  add(query_580327, "userIp", newJString(userIp))
+  add(query_580327, "timeZone", newJString(timeZone))
+  add(path_580326, "eventId", newJString(eventId))
+  add(query_580327, "key", newJString(key))
+  add(query_580327, "alwaysIncludeEmail", newJBool(alwaysIncludeEmail))
+  add(query_580327, "prettyPrint", newJBool(prettyPrint))
+  result = call_580325.call(path_580326, query_580327, nil, nil, nil)
 
-var calendarEventsGet* = Call_CalendarEventsGet_598309(name: "calendarEventsGet",
+var calendarEventsGet* = Call_CalendarEventsGet_580309(name: "calendarEventsGet",
     meth: HttpMethod.HttpGet, host: "www.googleapis.com",
     route: "/calendars/{calendarId}/events/{eventId}",
-    validator: validate_CalendarEventsGet_598310, base: "/calendar/v3",
-    url: url_CalendarEventsGet_598311, schemes: {Scheme.Https})
+    validator: validate_CalendarEventsGet_580310, base: "/calendar/v3",
+    url: url_CalendarEventsGet_580311, schemes: {Scheme.Https})
 type
-  Call_CalendarEventsPatch_598370 = ref object of OpenApiRestCall_597424
-proc url_CalendarEventsPatch_598372(protocol: Scheme; host: string; base: string;
+  Call_CalendarEventsPatch_580370 = ref object of OpenApiRestCall_579424
+proc url_CalendarEventsPatch_580372(protocol: Scheme; host: string; base: string;
                                    route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "calendarId" in path, "`calendarId` is a required path parameter"
   assert "eventId" in path, "`eventId` is a required path parameter"
@@ -3915,7 +3917,7 @@ proc url_CalendarEventsPatch_598372(protocol: Scheme; host: string; base: string
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_CalendarEventsPatch_598371(path: JsonNode; query: JsonNode;
+proc validate_CalendarEventsPatch_580371(path: JsonNode; query: JsonNode;
                                         header: JsonNode; formData: JsonNode;
                                         body: JsonNode): JsonNode =
   ## Updates an event. This method supports patch semantics.
@@ -3930,16 +3932,16 @@ proc validate_CalendarEventsPatch_598371(path: JsonNode; query: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `calendarId` field"
-  var valid_598373 = path.getOrDefault("calendarId")
-  valid_598373 = validateParameter(valid_598373, JString, required = true,
+  var valid_580373 = path.getOrDefault("calendarId")
+  valid_580373 = validateParameter(valid_580373, JString, required = true,
                                  default = nil)
-  if valid_598373 != nil:
-    section.add "calendarId", valid_598373
-  var valid_598374 = path.getOrDefault("eventId")
-  valid_598374 = validateParameter(valid_598374, JString, required = true,
+  if valid_580373 != nil:
+    section.add "calendarId", valid_580373
+  var valid_580374 = path.getOrDefault("eventId")
+  valid_580374 = validateParameter(valid_580374, JString, required = true,
                                  default = nil)
-  if valid_598374 != nil:
-    section.add "eventId", valid_598374
+  if valid_580374 != nil:
+    section.add "eventId", valid_580374
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -3971,66 +3973,66 @@ proc validate_CalendarEventsPatch_598371(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_598375 = query.getOrDefault("fields")
-  valid_598375 = validateParameter(valid_598375, JString, required = false,
+  var valid_580375 = query.getOrDefault("fields")
+  valid_580375 = validateParameter(valid_580375, JString, required = false,
                                  default = nil)
-  if valid_598375 != nil:
-    section.add "fields", valid_598375
-  var valid_598376 = query.getOrDefault("quotaUser")
-  valid_598376 = validateParameter(valid_598376, JString, required = false,
+  if valid_580375 != nil:
+    section.add "fields", valid_580375
+  var valid_580376 = query.getOrDefault("quotaUser")
+  valid_580376 = validateParameter(valid_580376, JString, required = false,
                                  default = nil)
-  if valid_598376 != nil:
-    section.add "quotaUser", valid_598376
-  var valid_598377 = query.getOrDefault("alt")
-  valid_598377 = validateParameter(valid_598377, JString, required = false,
+  if valid_580376 != nil:
+    section.add "quotaUser", valid_580376
+  var valid_580377 = query.getOrDefault("alt")
+  valid_580377 = validateParameter(valid_580377, JString, required = false,
                                  default = newJString("json"))
-  if valid_598377 != nil:
-    section.add "alt", valid_598377
-  var valid_598378 = query.getOrDefault("supportsAttachments")
-  valid_598378 = validateParameter(valid_598378, JBool, required = false, default = nil)
-  if valid_598378 != nil:
-    section.add "supportsAttachments", valid_598378
-  var valid_598379 = query.getOrDefault("maxAttendees")
-  valid_598379 = validateParameter(valid_598379, JInt, required = false, default = nil)
-  if valid_598379 != nil:
-    section.add "maxAttendees", valid_598379
-  var valid_598380 = query.getOrDefault("sendNotifications")
-  valid_598380 = validateParameter(valid_598380, JBool, required = false, default = nil)
-  if valid_598380 != nil:
-    section.add "sendNotifications", valid_598380
-  var valid_598381 = query.getOrDefault("oauth_token")
-  valid_598381 = validateParameter(valid_598381, JString, required = false,
+  if valid_580377 != nil:
+    section.add "alt", valid_580377
+  var valid_580378 = query.getOrDefault("supportsAttachments")
+  valid_580378 = validateParameter(valid_580378, JBool, required = false, default = nil)
+  if valid_580378 != nil:
+    section.add "supportsAttachments", valid_580378
+  var valid_580379 = query.getOrDefault("maxAttendees")
+  valid_580379 = validateParameter(valid_580379, JInt, required = false, default = nil)
+  if valid_580379 != nil:
+    section.add "maxAttendees", valid_580379
+  var valid_580380 = query.getOrDefault("sendNotifications")
+  valid_580380 = validateParameter(valid_580380, JBool, required = false, default = nil)
+  if valid_580380 != nil:
+    section.add "sendNotifications", valid_580380
+  var valid_580381 = query.getOrDefault("oauth_token")
+  valid_580381 = validateParameter(valid_580381, JString, required = false,
                                  default = nil)
-  if valid_598381 != nil:
-    section.add "oauth_token", valid_598381
-  var valid_598382 = query.getOrDefault("conferenceDataVersion")
-  valid_598382 = validateParameter(valid_598382, JInt, required = false, default = nil)
-  if valid_598382 != nil:
-    section.add "conferenceDataVersion", valid_598382
-  var valid_598383 = query.getOrDefault("userIp")
-  valid_598383 = validateParameter(valid_598383, JString, required = false,
+  if valid_580381 != nil:
+    section.add "oauth_token", valid_580381
+  var valid_580382 = query.getOrDefault("conferenceDataVersion")
+  valid_580382 = validateParameter(valid_580382, JInt, required = false, default = nil)
+  if valid_580382 != nil:
+    section.add "conferenceDataVersion", valid_580382
+  var valid_580383 = query.getOrDefault("userIp")
+  valid_580383 = validateParameter(valid_580383, JString, required = false,
                                  default = nil)
-  if valid_598383 != nil:
-    section.add "userIp", valid_598383
-  var valid_598384 = query.getOrDefault("sendUpdates")
-  valid_598384 = validateParameter(valid_598384, JString, required = false,
+  if valid_580383 != nil:
+    section.add "userIp", valid_580383
+  var valid_580384 = query.getOrDefault("sendUpdates")
+  valid_580384 = validateParameter(valid_580384, JString, required = false,
                                  default = newJString("all"))
-  if valid_598384 != nil:
-    section.add "sendUpdates", valid_598384
-  var valid_598385 = query.getOrDefault("key")
-  valid_598385 = validateParameter(valid_598385, JString, required = false,
+  if valid_580384 != nil:
+    section.add "sendUpdates", valid_580384
+  var valid_580385 = query.getOrDefault("key")
+  valid_580385 = validateParameter(valid_580385, JString, required = false,
                                  default = nil)
-  if valid_598385 != nil:
-    section.add "key", valid_598385
-  var valid_598386 = query.getOrDefault("alwaysIncludeEmail")
-  valid_598386 = validateParameter(valid_598386, JBool, required = false, default = nil)
-  if valid_598386 != nil:
-    section.add "alwaysIncludeEmail", valid_598386
-  var valid_598387 = query.getOrDefault("prettyPrint")
-  valid_598387 = validateParameter(valid_598387, JBool, required = false,
+  if valid_580385 != nil:
+    section.add "key", valid_580385
+  var valid_580386 = query.getOrDefault("alwaysIncludeEmail")
+  valid_580386 = validateParameter(valid_580386, JBool, required = false, default = nil)
+  if valid_580386 != nil:
+    section.add "alwaysIncludeEmail", valid_580386
+  var valid_580387 = query.getOrDefault("prettyPrint")
+  valid_580387 = validateParameter(valid_580387, JBool, required = false,
                                  default = newJBool(true))
-  if valid_598387 != nil:
-    section.add "prettyPrint", valid_598387
+  if valid_580387 != nil:
+    section.add "prettyPrint", valid_580387
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -4042,20 +4044,20 @@ proc validate_CalendarEventsPatch_598371(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_598389: Call_CalendarEventsPatch_598370; path: JsonNode;
+proc call*(call_580389: Call_CalendarEventsPatch_580370; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Updates an event. This method supports patch semantics.
   ## 
-  let valid = call_598389.validator(path, query, header, formData, body)
-  let scheme = call_598389.pickScheme
+  let valid = call_580389.validator(path, query, header, formData, body)
+  let scheme = call_580389.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_598389.url(scheme.get, call_598389.host, call_598389.base,
-                         call_598389.route, valid.getOrDefault("path"),
+  let url = call_580389.url(scheme.get, call_580389.host, call_580389.base,
+                         call_580389.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_598389, url, valid)
+  result = hook(call_580389, url, valid)
 
-proc call*(call_598390: Call_CalendarEventsPatch_598370; calendarId: string;
+proc call*(call_580390: Call_CalendarEventsPatch_580370; calendarId: string;
           eventId: string; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; supportsAttachments: bool = false;
           maxAttendees: int = 0; sendNotifications: bool = false;
@@ -4098,40 +4100,40 @@ proc call*(call_598390: Call_CalendarEventsPatch_598370; calendarId: string;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_598391 = newJObject()
-  var query_598392 = newJObject()
-  var body_598393 = newJObject()
-  add(query_598392, "fields", newJString(fields))
-  add(query_598392, "quotaUser", newJString(quotaUser))
-  add(query_598392, "alt", newJString(alt))
-  add(query_598392, "supportsAttachments", newJBool(supportsAttachments))
-  add(query_598392, "maxAttendees", newJInt(maxAttendees))
-  add(path_598391, "calendarId", newJString(calendarId))
-  add(query_598392, "sendNotifications", newJBool(sendNotifications))
-  add(query_598392, "oauth_token", newJString(oauthToken))
-  add(query_598392, "conferenceDataVersion", newJInt(conferenceDataVersion))
-  add(query_598392, "userIp", newJString(userIp))
-  add(query_598392, "sendUpdates", newJString(sendUpdates))
-  add(path_598391, "eventId", newJString(eventId))
-  add(query_598392, "key", newJString(key))
-  add(query_598392, "alwaysIncludeEmail", newJBool(alwaysIncludeEmail))
+  var path_580391 = newJObject()
+  var query_580392 = newJObject()
+  var body_580393 = newJObject()
+  add(query_580392, "fields", newJString(fields))
+  add(query_580392, "quotaUser", newJString(quotaUser))
+  add(query_580392, "alt", newJString(alt))
+  add(query_580392, "supportsAttachments", newJBool(supportsAttachments))
+  add(query_580392, "maxAttendees", newJInt(maxAttendees))
+  add(path_580391, "calendarId", newJString(calendarId))
+  add(query_580392, "sendNotifications", newJBool(sendNotifications))
+  add(query_580392, "oauth_token", newJString(oauthToken))
+  add(query_580392, "conferenceDataVersion", newJInt(conferenceDataVersion))
+  add(query_580392, "userIp", newJString(userIp))
+  add(query_580392, "sendUpdates", newJString(sendUpdates))
+  add(path_580391, "eventId", newJString(eventId))
+  add(query_580392, "key", newJString(key))
+  add(query_580392, "alwaysIncludeEmail", newJBool(alwaysIncludeEmail))
   if body != nil:
-    body_598393 = body
-  add(query_598392, "prettyPrint", newJBool(prettyPrint))
-  result = call_598390.call(path_598391, query_598392, nil, nil, body_598393)
+    body_580393 = body
+  add(query_580392, "prettyPrint", newJBool(prettyPrint))
+  result = call_580390.call(path_580391, query_580392, nil, nil, body_580393)
 
-var calendarEventsPatch* = Call_CalendarEventsPatch_598370(
+var calendarEventsPatch* = Call_CalendarEventsPatch_580370(
     name: "calendarEventsPatch", meth: HttpMethod.HttpPatch,
     host: "www.googleapis.com", route: "/calendars/{calendarId}/events/{eventId}",
-    validator: validate_CalendarEventsPatch_598371, base: "/calendar/v3",
-    url: url_CalendarEventsPatch_598372, schemes: {Scheme.Https})
+    validator: validate_CalendarEventsPatch_580371, base: "/calendar/v3",
+    url: url_CalendarEventsPatch_580372, schemes: {Scheme.Https})
 type
-  Call_CalendarEventsDelete_598352 = ref object of OpenApiRestCall_597424
-proc url_CalendarEventsDelete_598354(protocol: Scheme; host: string; base: string;
+  Call_CalendarEventsDelete_580352 = ref object of OpenApiRestCall_579424
+proc url_CalendarEventsDelete_580354(protocol: Scheme; host: string; base: string;
                                     route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "calendarId" in path, "`calendarId` is a required path parameter"
   assert "eventId" in path, "`eventId` is a required path parameter"
@@ -4145,7 +4147,7 @@ proc url_CalendarEventsDelete_598354(protocol: Scheme; host: string; base: strin
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_CalendarEventsDelete_598353(path: JsonNode; query: JsonNode;
+proc validate_CalendarEventsDelete_580353(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Deletes an event.
   ## 
@@ -4159,16 +4161,16 @@ proc validate_CalendarEventsDelete_598353(path: JsonNode; query: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `calendarId` field"
-  var valid_598355 = path.getOrDefault("calendarId")
-  valid_598355 = validateParameter(valid_598355, JString, required = true,
+  var valid_580355 = path.getOrDefault("calendarId")
+  valid_580355 = validateParameter(valid_580355, JString, required = true,
                                  default = nil)
-  if valid_598355 != nil:
-    section.add "calendarId", valid_598355
-  var valid_598356 = path.getOrDefault("eventId")
-  valid_598356 = validateParameter(valid_598356, JString, required = true,
+  if valid_580355 != nil:
+    section.add "calendarId", valid_580355
+  var valid_580356 = path.getOrDefault("eventId")
+  valid_580356 = validateParameter(valid_580356, JString, required = true,
                                  default = nil)
-  if valid_598356 != nil:
-    section.add "eventId", valid_598356
+  if valid_580356 != nil:
+    section.add "eventId", valid_580356
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -4192,50 +4194,50 @@ proc validate_CalendarEventsDelete_598353(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_598357 = query.getOrDefault("fields")
-  valid_598357 = validateParameter(valid_598357, JString, required = false,
+  var valid_580357 = query.getOrDefault("fields")
+  valid_580357 = validateParameter(valid_580357, JString, required = false,
                                  default = nil)
-  if valid_598357 != nil:
-    section.add "fields", valid_598357
-  var valid_598358 = query.getOrDefault("quotaUser")
-  valid_598358 = validateParameter(valid_598358, JString, required = false,
+  if valid_580357 != nil:
+    section.add "fields", valid_580357
+  var valid_580358 = query.getOrDefault("quotaUser")
+  valid_580358 = validateParameter(valid_580358, JString, required = false,
                                  default = nil)
-  if valid_598358 != nil:
-    section.add "quotaUser", valid_598358
-  var valid_598359 = query.getOrDefault("alt")
-  valid_598359 = validateParameter(valid_598359, JString, required = false,
+  if valid_580358 != nil:
+    section.add "quotaUser", valid_580358
+  var valid_580359 = query.getOrDefault("alt")
+  valid_580359 = validateParameter(valid_580359, JString, required = false,
                                  default = newJString("json"))
-  if valid_598359 != nil:
-    section.add "alt", valid_598359
-  var valid_598360 = query.getOrDefault("sendNotifications")
-  valid_598360 = validateParameter(valid_598360, JBool, required = false, default = nil)
-  if valid_598360 != nil:
-    section.add "sendNotifications", valid_598360
-  var valid_598361 = query.getOrDefault("oauth_token")
-  valid_598361 = validateParameter(valid_598361, JString, required = false,
+  if valid_580359 != nil:
+    section.add "alt", valid_580359
+  var valid_580360 = query.getOrDefault("sendNotifications")
+  valid_580360 = validateParameter(valid_580360, JBool, required = false, default = nil)
+  if valid_580360 != nil:
+    section.add "sendNotifications", valid_580360
+  var valid_580361 = query.getOrDefault("oauth_token")
+  valid_580361 = validateParameter(valid_580361, JString, required = false,
                                  default = nil)
-  if valid_598361 != nil:
-    section.add "oauth_token", valid_598361
-  var valid_598362 = query.getOrDefault("userIp")
-  valid_598362 = validateParameter(valid_598362, JString, required = false,
+  if valid_580361 != nil:
+    section.add "oauth_token", valid_580361
+  var valid_580362 = query.getOrDefault("userIp")
+  valid_580362 = validateParameter(valid_580362, JString, required = false,
                                  default = nil)
-  if valid_598362 != nil:
-    section.add "userIp", valid_598362
-  var valid_598363 = query.getOrDefault("sendUpdates")
-  valid_598363 = validateParameter(valid_598363, JString, required = false,
+  if valid_580362 != nil:
+    section.add "userIp", valid_580362
+  var valid_580363 = query.getOrDefault("sendUpdates")
+  valid_580363 = validateParameter(valid_580363, JString, required = false,
                                  default = newJString("all"))
-  if valid_598363 != nil:
-    section.add "sendUpdates", valid_598363
-  var valid_598364 = query.getOrDefault("key")
-  valid_598364 = validateParameter(valid_598364, JString, required = false,
+  if valid_580363 != nil:
+    section.add "sendUpdates", valid_580363
+  var valid_580364 = query.getOrDefault("key")
+  valid_580364 = validateParameter(valid_580364, JString, required = false,
                                  default = nil)
-  if valid_598364 != nil:
-    section.add "key", valid_598364
-  var valid_598365 = query.getOrDefault("prettyPrint")
-  valid_598365 = validateParameter(valid_598365, JBool, required = false,
+  if valid_580364 != nil:
+    section.add "key", valid_580364
+  var valid_580365 = query.getOrDefault("prettyPrint")
+  valid_580365 = validateParameter(valid_580365, JBool, required = false,
                                  default = newJBool(true))
-  if valid_598365 != nil:
-    section.add "prettyPrint", valid_598365
+  if valid_580365 != nil:
+    section.add "prettyPrint", valid_580365
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -4244,20 +4246,20 @@ proc validate_CalendarEventsDelete_598353(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_598366: Call_CalendarEventsDelete_598352; path: JsonNode;
+proc call*(call_580366: Call_CalendarEventsDelete_580352; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Deletes an event.
   ## 
-  let valid = call_598366.validator(path, query, header, formData, body)
-  let scheme = call_598366.pickScheme
+  let valid = call_580366.validator(path, query, header, formData, body)
+  let scheme = call_580366.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_598366.url(scheme.get, call_598366.host, call_598366.base,
-                         call_598366.route, valid.getOrDefault("path"),
+  let url = call_580366.url(scheme.get, call_580366.host, call_580366.base,
+                         call_580366.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_598366, url, valid)
+  result = hook(call_580366, url, valid)
 
-proc call*(call_598367: Call_CalendarEventsDelete_598352; calendarId: string;
+proc call*(call_580367: Call_CalendarEventsDelete_580352; calendarId: string;
           eventId: string; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; sendNotifications: bool = false;
           oauthToken: string = ""; userIp: string = ""; sendUpdates: string = "all";
@@ -4288,34 +4290,34 @@ proc call*(call_598367: Call_CalendarEventsDelete_598352; calendarId: string;
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_598368 = newJObject()
-  var query_598369 = newJObject()
-  add(query_598369, "fields", newJString(fields))
-  add(query_598369, "quotaUser", newJString(quotaUser))
-  add(query_598369, "alt", newJString(alt))
-  add(path_598368, "calendarId", newJString(calendarId))
-  add(query_598369, "sendNotifications", newJBool(sendNotifications))
-  add(query_598369, "oauth_token", newJString(oauthToken))
-  add(query_598369, "userIp", newJString(userIp))
-  add(query_598369, "sendUpdates", newJString(sendUpdates))
-  add(path_598368, "eventId", newJString(eventId))
-  add(query_598369, "key", newJString(key))
-  add(query_598369, "prettyPrint", newJBool(prettyPrint))
-  result = call_598367.call(path_598368, query_598369, nil, nil, nil)
+  var path_580368 = newJObject()
+  var query_580369 = newJObject()
+  add(query_580369, "fields", newJString(fields))
+  add(query_580369, "quotaUser", newJString(quotaUser))
+  add(query_580369, "alt", newJString(alt))
+  add(path_580368, "calendarId", newJString(calendarId))
+  add(query_580369, "sendNotifications", newJBool(sendNotifications))
+  add(query_580369, "oauth_token", newJString(oauthToken))
+  add(query_580369, "userIp", newJString(userIp))
+  add(query_580369, "sendUpdates", newJString(sendUpdates))
+  add(path_580368, "eventId", newJString(eventId))
+  add(query_580369, "key", newJString(key))
+  add(query_580369, "prettyPrint", newJBool(prettyPrint))
+  result = call_580367.call(path_580368, query_580369, nil, nil, nil)
 
-var calendarEventsDelete* = Call_CalendarEventsDelete_598352(
+var calendarEventsDelete* = Call_CalendarEventsDelete_580352(
     name: "calendarEventsDelete", meth: HttpMethod.HttpDelete,
     host: "www.googleapis.com", route: "/calendars/{calendarId}/events/{eventId}",
-    validator: validate_CalendarEventsDelete_598353, base: "/calendar/v3",
-    url: url_CalendarEventsDelete_598354, schemes: {Scheme.Https})
+    validator: validate_CalendarEventsDelete_580353, base: "/calendar/v3",
+    url: url_CalendarEventsDelete_580354, schemes: {Scheme.Https})
 type
-  Call_CalendarEventsInstances_598394 = ref object of OpenApiRestCall_597424
-proc url_CalendarEventsInstances_598396(protocol: Scheme; host: string; base: string;
+  Call_CalendarEventsInstances_580394 = ref object of OpenApiRestCall_579424
+proc url_CalendarEventsInstances_580396(protocol: Scheme; host: string; base: string;
                                        route: string; path: JsonNode;
                                        query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "calendarId" in path, "`calendarId` is a required path parameter"
   assert "eventId" in path, "`eventId` is a required path parameter"
@@ -4330,7 +4332,7 @@ proc url_CalendarEventsInstances_598396(protocol: Scheme; host: string; base: st
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_CalendarEventsInstances_598395(path: JsonNode; query: JsonNode;
+proc validate_CalendarEventsInstances_580395(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Returns instances of the specified recurring event.
   ## 
@@ -4344,16 +4346,16 @@ proc validate_CalendarEventsInstances_598395(path: JsonNode; query: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `calendarId` field"
-  var valid_598397 = path.getOrDefault("calendarId")
-  valid_598397 = validateParameter(valid_598397, JString, required = true,
+  var valid_580397 = path.getOrDefault("calendarId")
+  valid_580397 = validateParameter(valid_580397, JString, required = true,
                                  default = nil)
-  if valid_598397 != nil:
-    section.add "calendarId", valid_598397
-  var valid_598398 = path.getOrDefault("eventId")
-  valid_598398 = validateParameter(valid_598398, JString, required = true,
+  if valid_580397 != nil:
+    section.add "calendarId", valid_580397
+  var valid_580398 = path.getOrDefault("eventId")
+  valid_580398 = validateParameter(valid_580398, JString, required = true,
                                  default = nil)
-  if valid_598398 != nil:
-    section.add "eventId", valid_598398
+  if valid_580398 != nil:
+    section.add "eventId", valid_580398
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -4389,82 +4391,82 @@ proc validate_CalendarEventsInstances_598395(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_598399 = query.getOrDefault("fields")
-  valid_598399 = validateParameter(valid_598399, JString, required = false,
+  var valid_580399 = query.getOrDefault("fields")
+  valid_580399 = validateParameter(valid_580399, JString, required = false,
                                  default = nil)
-  if valid_598399 != nil:
-    section.add "fields", valid_598399
-  var valid_598400 = query.getOrDefault("pageToken")
-  valid_598400 = validateParameter(valid_598400, JString, required = false,
+  if valid_580399 != nil:
+    section.add "fields", valid_580399
+  var valid_580400 = query.getOrDefault("pageToken")
+  valid_580400 = validateParameter(valid_580400, JString, required = false,
                                  default = nil)
-  if valid_598400 != nil:
-    section.add "pageToken", valid_598400
-  var valid_598401 = query.getOrDefault("quotaUser")
-  valid_598401 = validateParameter(valid_598401, JString, required = false,
+  if valid_580400 != nil:
+    section.add "pageToken", valid_580400
+  var valid_580401 = query.getOrDefault("quotaUser")
+  valid_580401 = validateParameter(valid_580401, JString, required = false,
                                  default = nil)
-  if valid_598401 != nil:
-    section.add "quotaUser", valid_598401
-  var valid_598402 = query.getOrDefault("originalStart")
-  valid_598402 = validateParameter(valid_598402, JString, required = false,
+  if valid_580401 != nil:
+    section.add "quotaUser", valid_580401
+  var valid_580402 = query.getOrDefault("originalStart")
+  valid_580402 = validateParameter(valid_580402, JString, required = false,
                                  default = nil)
-  if valid_598402 != nil:
-    section.add "originalStart", valid_598402
-  var valid_598403 = query.getOrDefault("alt")
-  valid_598403 = validateParameter(valid_598403, JString, required = false,
+  if valid_580402 != nil:
+    section.add "originalStart", valid_580402
+  var valid_580403 = query.getOrDefault("alt")
+  valid_580403 = validateParameter(valid_580403, JString, required = false,
                                  default = newJString("json"))
-  if valid_598403 != nil:
-    section.add "alt", valid_598403
-  var valid_598404 = query.getOrDefault("maxAttendees")
-  valid_598404 = validateParameter(valid_598404, JInt, required = false, default = nil)
-  if valid_598404 != nil:
-    section.add "maxAttendees", valid_598404
-  var valid_598405 = query.getOrDefault("timeMax")
-  valid_598405 = validateParameter(valid_598405, JString, required = false,
+  if valid_580403 != nil:
+    section.add "alt", valid_580403
+  var valid_580404 = query.getOrDefault("maxAttendees")
+  valid_580404 = validateParameter(valid_580404, JInt, required = false, default = nil)
+  if valid_580404 != nil:
+    section.add "maxAttendees", valid_580404
+  var valid_580405 = query.getOrDefault("timeMax")
+  valid_580405 = validateParameter(valid_580405, JString, required = false,
                                  default = nil)
-  if valid_598405 != nil:
-    section.add "timeMax", valid_598405
-  var valid_598406 = query.getOrDefault("oauth_token")
-  valid_598406 = validateParameter(valid_598406, JString, required = false,
+  if valid_580405 != nil:
+    section.add "timeMax", valid_580405
+  var valid_580406 = query.getOrDefault("oauth_token")
+  valid_580406 = validateParameter(valid_580406, JString, required = false,
                                  default = nil)
-  if valid_598406 != nil:
-    section.add "oauth_token", valid_598406
-  var valid_598407 = query.getOrDefault("timeMin")
-  valid_598407 = validateParameter(valid_598407, JString, required = false,
+  if valid_580406 != nil:
+    section.add "oauth_token", valid_580406
+  var valid_580407 = query.getOrDefault("timeMin")
+  valid_580407 = validateParameter(valid_580407, JString, required = false,
                                  default = nil)
-  if valid_598407 != nil:
-    section.add "timeMin", valid_598407
-  var valid_598408 = query.getOrDefault("userIp")
-  valid_598408 = validateParameter(valid_598408, JString, required = false,
+  if valid_580407 != nil:
+    section.add "timeMin", valid_580407
+  var valid_580408 = query.getOrDefault("userIp")
+  valid_580408 = validateParameter(valid_580408, JString, required = false,
                                  default = nil)
-  if valid_598408 != nil:
-    section.add "userIp", valid_598408
-  var valid_598409 = query.getOrDefault("maxResults")
-  valid_598409 = validateParameter(valid_598409, JInt, required = false, default = nil)
-  if valid_598409 != nil:
-    section.add "maxResults", valid_598409
-  var valid_598410 = query.getOrDefault("timeZone")
-  valid_598410 = validateParameter(valid_598410, JString, required = false,
+  if valid_580408 != nil:
+    section.add "userIp", valid_580408
+  var valid_580409 = query.getOrDefault("maxResults")
+  valid_580409 = validateParameter(valid_580409, JInt, required = false, default = nil)
+  if valid_580409 != nil:
+    section.add "maxResults", valid_580409
+  var valid_580410 = query.getOrDefault("timeZone")
+  valid_580410 = validateParameter(valid_580410, JString, required = false,
                                  default = nil)
-  if valid_598410 != nil:
-    section.add "timeZone", valid_598410
-  var valid_598411 = query.getOrDefault("showDeleted")
-  valid_598411 = validateParameter(valid_598411, JBool, required = false, default = nil)
-  if valid_598411 != nil:
-    section.add "showDeleted", valid_598411
-  var valid_598412 = query.getOrDefault("key")
-  valid_598412 = validateParameter(valid_598412, JString, required = false,
+  if valid_580410 != nil:
+    section.add "timeZone", valid_580410
+  var valid_580411 = query.getOrDefault("showDeleted")
+  valid_580411 = validateParameter(valid_580411, JBool, required = false, default = nil)
+  if valid_580411 != nil:
+    section.add "showDeleted", valid_580411
+  var valid_580412 = query.getOrDefault("key")
+  valid_580412 = validateParameter(valid_580412, JString, required = false,
                                  default = nil)
-  if valid_598412 != nil:
-    section.add "key", valid_598412
-  var valid_598413 = query.getOrDefault("alwaysIncludeEmail")
-  valid_598413 = validateParameter(valid_598413, JBool, required = false, default = nil)
-  if valid_598413 != nil:
-    section.add "alwaysIncludeEmail", valid_598413
-  var valid_598414 = query.getOrDefault("prettyPrint")
-  valid_598414 = validateParameter(valid_598414, JBool, required = false,
+  if valid_580412 != nil:
+    section.add "key", valid_580412
+  var valid_580413 = query.getOrDefault("alwaysIncludeEmail")
+  valid_580413 = validateParameter(valid_580413, JBool, required = false, default = nil)
+  if valid_580413 != nil:
+    section.add "alwaysIncludeEmail", valid_580413
+  var valid_580414 = query.getOrDefault("prettyPrint")
+  valid_580414 = validateParameter(valid_580414, JBool, required = false,
                                  default = newJBool(true))
-  if valid_598414 != nil:
-    section.add "prettyPrint", valid_598414
+  if valid_580414 != nil:
+    section.add "prettyPrint", valid_580414
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -4473,20 +4475,20 @@ proc validate_CalendarEventsInstances_598395(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_598415: Call_CalendarEventsInstances_598394; path: JsonNode;
+proc call*(call_580415: Call_CalendarEventsInstances_580394; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Returns instances of the specified recurring event.
   ## 
-  let valid = call_598415.validator(path, query, header, formData, body)
-  let scheme = call_598415.pickScheme
+  let valid = call_580415.validator(path, query, header, formData, body)
+  let scheme = call_580415.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_598415.url(scheme.get, call_598415.host, call_598415.base,
-                         call_598415.route, valid.getOrDefault("path"),
+  let url = call_580415.url(scheme.get, call_580415.host, call_580415.base,
+                         call_580415.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_598415, url, valid)
+  result = hook(call_580415, url, valid)
 
-proc call*(call_598416: Call_CalendarEventsInstances_598394; calendarId: string;
+proc call*(call_580416: Call_CalendarEventsInstances_580394; calendarId: string;
           eventId: string; fields: string = ""; pageToken: string = "";
           quotaUser: string = ""; originalStart: string = ""; alt: string = "json";
           maxAttendees: int = 0; timeMax: string = ""; oauthToken: string = "";
@@ -4531,41 +4533,41 @@ proc call*(call_598416: Call_CalendarEventsInstances_598394; calendarId: string;
   ##                     : Whether to always include a value in the email field for the organizer, creator and attendees, even if no real email is available (i.e. a generated, non-working value will be provided). The use of this option is discouraged and should only be used by clients which cannot handle the absence of an email address value in the mentioned places. Optional. The default is False.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_598417 = newJObject()
-  var query_598418 = newJObject()
-  add(query_598418, "fields", newJString(fields))
-  add(query_598418, "pageToken", newJString(pageToken))
-  add(query_598418, "quotaUser", newJString(quotaUser))
-  add(query_598418, "originalStart", newJString(originalStart))
-  add(query_598418, "alt", newJString(alt))
-  add(query_598418, "maxAttendees", newJInt(maxAttendees))
-  add(path_598417, "calendarId", newJString(calendarId))
-  add(query_598418, "timeMax", newJString(timeMax))
-  add(query_598418, "oauth_token", newJString(oauthToken))
-  add(query_598418, "timeMin", newJString(timeMin))
-  add(query_598418, "userIp", newJString(userIp))
-  add(query_598418, "maxResults", newJInt(maxResults))
-  add(query_598418, "timeZone", newJString(timeZone))
-  add(query_598418, "showDeleted", newJBool(showDeleted))
-  add(path_598417, "eventId", newJString(eventId))
-  add(query_598418, "key", newJString(key))
-  add(query_598418, "alwaysIncludeEmail", newJBool(alwaysIncludeEmail))
-  add(query_598418, "prettyPrint", newJBool(prettyPrint))
-  result = call_598416.call(path_598417, query_598418, nil, nil, nil)
+  var path_580417 = newJObject()
+  var query_580418 = newJObject()
+  add(query_580418, "fields", newJString(fields))
+  add(query_580418, "pageToken", newJString(pageToken))
+  add(query_580418, "quotaUser", newJString(quotaUser))
+  add(query_580418, "originalStart", newJString(originalStart))
+  add(query_580418, "alt", newJString(alt))
+  add(query_580418, "maxAttendees", newJInt(maxAttendees))
+  add(path_580417, "calendarId", newJString(calendarId))
+  add(query_580418, "timeMax", newJString(timeMax))
+  add(query_580418, "oauth_token", newJString(oauthToken))
+  add(query_580418, "timeMin", newJString(timeMin))
+  add(query_580418, "userIp", newJString(userIp))
+  add(query_580418, "maxResults", newJInt(maxResults))
+  add(query_580418, "timeZone", newJString(timeZone))
+  add(query_580418, "showDeleted", newJBool(showDeleted))
+  add(path_580417, "eventId", newJString(eventId))
+  add(query_580418, "key", newJString(key))
+  add(query_580418, "alwaysIncludeEmail", newJBool(alwaysIncludeEmail))
+  add(query_580418, "prettyPrint", newJBool(prettyPrint))
+  result = call_580416.call(path_580417, query_580418, nil, nil, nil)
 
-var calendarEventsInstances* = Call_CalendarEventsInstances_598394(
+var calendarEventsInstances* = Call_CalendarEventsInstances_580394(
     name: "calendarEventsInstances", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com",
     route: "/calendars/{calendarId}/events/{eventId}/instances",
-    validator: validate_CalendarEventsInstances_598395, base: "/calendar/v3",
-    url: url_CalendarEventsInstances_598396, schemes: {Scheme.Https})
+    validator: validate_CalendarEventsInstances_580395, base: "/calendar/v3",
+    url: url_CalendarEventsInstances_580396, schemes: {Scheme.Https})
 type
-  Call_CalendarEventsMove_598419 = ref object of OpenApiRestCall_597424
-proc url_CalendarEventsMove_598421(protocol: Scheme; host: string; base: string;
+  Call_CalendarEventsMove_580419 = ref object of OpenApiRestCall_579424
+proc url_CalendarEventsMove_580421(protocol: Scheme; host: string; base: string;
                                   route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "calendarId" in path, "`calendarId` is a required path parameter"
   assert "eventId" in path, "`eventId` is a required path parameter"
@@ -4580,7 +4582,7 @@ proc url_CalendarEventsMove_598421(protocol: Scheme; host: string; base: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_CalendarEventsMove_598420(path: JsonNode; query: JsonNode;
+proc validate_CalendarEventsMove_580420(path: JsonNode; query: JsonNode;
                                        header: JsonNode; formData: JsonNode;
                                        body: JsonNode): JsonNode =
   ## Moves an event to another calendar, i.e. changes an event's organizer.
@@ -4595,16 +4597,16 @@ proc validate_CalendarEventsMove_598420(path: JsonNode; query: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `calendarId` field"
-  var valid_598422 = path.getOrDefault("calendarId")
-  valid_598422 = validateParameter(valid_598422, JString, required = true,
+  var valid_580422 = path.getOrDefault("calendarId")
+  valid_580422 = validateParameter(valid_580422, JString, required = true,
                                  default = nil)
-  if valid_598422 != nil:
-    section.add "calendarId", valid_598422
-  var valid_598423 = path.getOrDefault("eventId")
-  valid_598423 = validateParameter(valid_598423, JString, required = true,
+  if valid_580422 != nil:
+    section.add "calendarId", valid_580422
+  var valid_580423 = path.getOrDefault("eventId")
+  valid_580423 = validateParameter(valid_580423, JString, required = true,
                                  default = nil)
-  if valid_598423 != nil:
-    section.add "eventId", valid_598423
+  if valid_580423 != nil:
+    section.add "eventId", valid_580423
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -4630,57 +4632,57 @@ proc validate_CalendarEventsMove_598420(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_598424 = query.getOrDefault("fields")
-  valid_598424 = validateParameter(valid_598424, JString, required = false,
+  var valid_580424 = query.getOrDefault("fields")
+  valid_580424 = validateParameter(valid_580424, JString, required = false,
                                  default = nil)
-  if valid_598424 != nil:
-    section.add "fields", valid_598424
-  var valid_598425 = query.getOrDefault("quotaUser")
-  valid_598425 = validateParameter(valid_598425, JString, required = false,
+  if valid_580424 != nil:
+    section.add "fields", valid_580424
+  var valid_580425 = query.getOrDefault("quotaUser")
+  valid_580425 = validateParameter(valid_580425, JString, required = false,
                                  default = nil)
-  if valid_598425 != nil:
-    section.add "quotaUser", valid_598425
-  var valid_598426 = query.getOrDefault("alt")
-  valid_598426 = validateParameter(valid_598426, JString, required = false,
+  if valid_580425 != nil:
+    section.add "quotaUser", valid_580425
+  var valid_580426 = query.getOrDefault("alt")
+  valid_580426 = validateParameter(valid_580426, JString, required = false,
                                  default = newJString("json"))
-  if valid_598426 != nil:
-    section.add "alt", valid_598426
-  var valid_598427 = query.getOrDefault("sendNotifications")
-  valid_598427 = validateParameter(valid_598427, JBool, required = false, default = nil)
-  if valid_598427 != nil:
-    section.add "sendNotifications", valid_598427
-  var valid_598428 = query.getOrDefault("oauth_token")
-  valid_598428 = validateParameter(valid_598428, JString, required = false,
+  if valid_580426 != nil:
+    section.add "alt", valid_580426
+  var valid_580427 = query.getOrDefault("sendNotifications")
+  valid_580427 = validateParameter(valid_580427, JBool, required = false, default = nil)
+  if valid_580427 != nil:
+    section.add "sendNotifications", valid_580427
+  var valid_580428 = query.getOrDefault("oauth_token")
+  valid_580428 = validateParameter(valid_580428, JString, required = false,
                                  default = nil)
-  if valid_598428 != nil:
-    section.add "oauth_token", valid_598428
-  var valid_598429 = query.getOrDefault("userIp")
-  valid_598429 = validateParameter(valid_598429, JString, required = false,
+  if valid_580428 != nil:
+    section.add "oauth_token", valid_580428
+  var valid_580429 = query.getOrDefault("userIp")
+  valid_580429 = validateParameter(valid_580429, JString, required = false,
                                  default = nil)
-  if valid_598429 != nil:
-    section.add "userIp", valid_598429
-  var valid_598430 = query.getOrDefault("sendUpdates")
-  valid_598430 = validateParameter(valid_598430, JString, required = false,
+  if valid_580429 != nil:
+    section.add "userIp", valid_580429
+  var valid_580430 = query.getOrDefault("sendUpdates")
+  valid_580430 = validateParameter(valid_580430, JString, required = false,
                                  default = newJString("all"))
-  if valid_598430 != nil:
-    section.add "sendUpdates", valid_598430
-  var valid_598431 = query.getOrDefault("key")
-  valid_598431 = validateParameter(valid_598431, JString, required = false,
+  if valid_580430 != nil:
+    section.add "sendUpdates", valid_580430
+  var valid_580431 = query.getOrDefault("key")
+  valid_580431 = validateParameter(valid_580431, JString, required = false,
                                  default = nil)
-  if valid_598431 != nil:
-    section.add "key", valid_598431
+  if valid_580431 != nil:
+    section.add "key", valid_580431
   assert query != nil,
         "query argument is necessary due to required `destination` field"
-  var valid_598432 = query.getOrDefault("destination")
-  valid_598432 = validateParameter(valid_598432, JString, required = true,
+  var valid_580432 = query.getOrDefault("destination")
+  valid_580432 = validateParameter(valid_580432, JString, required = true,
                                  default = nil)
-  if valid_598432 != nil:
-    section.add "destination", valid_598432
-  var valid_598433 = query.getOrDefault("prettyPrint")
-  valid_598433 = validateParameter(valid_598433, JBool, required = false,
+  if valid_580432 != nil:
+    section.add "destination", valid_580432
+  var valid_580433 = query.getOrDefault("prettyPrint")
+  valid_580433 = validateParameter(valid_580433, JBool, required = false,
                                  default = newJBool(true))
-  if valid_598433 != nil:
-    section.add "prettyPrint", valid_598433
+  if valid_580433 != nil:
+    section.add "prettyPrint", valid_580433
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -4689,20 +4691,20 @@ proc validate_CalendarEventsMove_598420(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_598434: Call_CalendarEventsMove_598419; path: JsonNode;
+proc call*(call_580434: Call_CalendarEventsMove_580419; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Moves an event to another calendar, i.e. changes an event's organizer.
   ## 
-  let valid = call_598434.validator(path, query, header, formData, body)
-  let scheme = call_598434.pickScheme
+  let valid = call_580434.validator(path, query, header, formData, body)
+  let scheme = call_580434.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_598434.url(scheme.get, call_598434.host, call_598434.base,
-                         call_598434.route, valid.getOrDefault("path"),
+  let url = call_580434.url(scheme.get, call_580434.host, call_580434.base,
+                         call_580434.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_598434, url, valid)
+  result = hook(call_580434, url, valid)
 
-proc call*(call_598435: Call_CalendarEventsMove_598419; calendarId: string;
+proc call*(call_580435: Call_CalendarEventsMove_580419; calendarId: string;
           eventId: string; destination: string; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; sendNotifications: bool = false;
           oauthToken: string = ""; userIp: string = ""; sendUpdates: string = "all";
@@ -4735,38 +4737,38 @@ proc call*(call_598435: Call_CalendarEventsMove_598419; calendarId: string;
   ##              : Calendar identifier of the target calendar where the event is to be moved to.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_598436 = newJObject()
-  var query_598437 = newJObject()
-  add(query_598437, "fields", newJString(fields))
-  add(query_598437, "quotaUser", newJString(quotaUser))
-  add(query_598437, "alt", newJString(alt))
-  add(path_598436, "calendarId", newJString(calendarId))
-  add(query_598437, "sendNotifications", newJBool(sendNotifications))
-  add(query_598437, "oauth_token", newJString(oauthToken))
-  add(query_598437, "userIp", newJString(userIp))
-  add(query_598437, "sendUpdates", newJString(sendUpdates))
-  add(path_598436, "eventId", newJString(eventId))
-  add(query_598437, "key", newJString(key))
-  add(query_598437, "destination", newJString(destination))
-  add(query_598437, "prettyPrint", newJBool(prettyPrint))
-  result = call_598435.call(path_598436, query_598437, nil, nil, nil)
+  var path_580436 = newJObject()
+  var query_580437 = newJObject()
+  add(query_580437, "fields", newJString(fields))
+  add(query_580437, "quotaUser", newJString(quotaUser))
+  add(query_580437, "alt", newJString(alt))
+  add(path_580436, "calendarId", newJString(calendarId))
+  add(query_580437, "sendNotifications", newJBool(sendNotifications))
+  add(query_580437, "oauth_token", newJString(oauthToken))
+  add(query_580437, "userIp", newJString(userIp))
+  add(query_580437, "sendUpdates", newJString(sendUpdates))
+  add(path_580436, "eventId", newJString(eventId))
+  add(query_580437, "key", newJString(key))
+  add(query_580437, "destination", newJString(destination))
+  add(query_580437, "prettyPrint", newJBool(prettyPrint))
+  result = call_580435.call(path_580436, query_580437, nil, nil, nil)
 
-var calendarEventsMove* = Call_CalendarEventsMove_598419(
+var calendarEventsMove* = Call_CalendarEventsMove_580419(
     name: "calendarEventsMove", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com",
     route: "/calendars/{calendarId}/events/{eventId}/move",
-    validator: validate_CalendarEventsMove_598420, base: "/calendar/v3",
-    url: url_CalendarEventsMove_598421, schemes: {Scheme.Https})
+    validator: validate_CalendarEventsMove_580420, base: "/calendar/v3",
+    url: url_CalendarEventsMove_580421, schemes: {Scheme.Https})
 type
-  Call_CalendarChannelsStop_598438 = ref object of OpenApiRestCall_597424
-proc url_CalendarChannelsStop_598440(protocol: Scheme; host: string; base: string;
+  Call_CalendarChannelsStop_580438 = ref object of OpenApiRestCall_579424
+proc url_CalendarChannelsStop_580440(protocol: Scheme; host: string; base: string;
                                     route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   result.path = base & route
 
-proc validate_CalendarChannelsStop_598439(path: JsonNode; query: JsonNode;
+proc validate_CalendarChannelsStop_580439(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Stop watching resources through this channel
   ## 
@@ -4790,41 +4792,41 @@ proc validate_CalendarChannelsStop_598439(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_598441 = query.getOrDefault("fields")
-  valid_598441 = validateParameter(valid_598441, JString, required = false,
+  var valid_580441 = query.getOrDefault("fields")
+  valid_580441 = validateParameter(valid_580441, JString, required = false,
                                  default = nil)
-  if valid_598441 != nil:
-    section.add "fields", valid_598441
-  var valid_598442 = query.getOrDefault("quotaUser")
-  valid_598442 = validateParameter(valid_598442, JString, required = false,
+  if valid_580441 != nil:
+    section.add "fields", valid_580441
+  var valid_580442 = query.getOrDefault("quotaUser")
+  valid_580442 = validateParameter(valid_580442, JString, required = false,
                                  default = nil)
-  if valid_598442 != nil:
-    section.add "quotaUser", valid_598442
-  var valid_598443 = query.getOrDefault("alt")
-  valid_598443 = validateParameter(valid_598443, JString, required = false,
+  if valid_580442 != nil:
+    section.add "quotaUser", valid_580442
+  var valid_580443 = query.getOrDefault("alt")
+  valid_580443 = validateParameter(valid_580443, JString, required = false,
                                  default = newJString("json"))
-  if valid_598443 != nil:
-    section.add "alt", valid_598443
-  var valid_598444 = query.getOrDefault("oauth_token")
-  valid_598444 = validateParameter(valid_598444, JString, required = false,
+  if valid_580443 != nil:
+    section.add "alt", valid_580443
+  var valid_580444 = query.getOrDefault("oauth_token")
+  valid_580444 = validateParameter(valid_580444, JString, required = false,
                                  default = nil)
-  if valid_598444 != nil:
-    section.add "oauth_token", valid_598444
-  var valid_598445 = query.getOrDefault("userIp")
-  valid_598445 = validateParameter(valid_598445, JString, required = false,
+  if valid_580444 != nil:
+    section.add "oauth_token", valid_580444
+  var valid_580445 = query.getOrDefault("userIp")
+  valid_580445 = validateParameter(valid_580445, JString, required = false,
                                  default = nil)
-  if valid_598445 != nil:
-    section.add "userIp", valid_598445
-  var valid_598446 = query.getOrDefault("key")
-  valid_598446 = validateParameter(valid_598446, JString, required = false,
+  if valid_580445 != nil:
+    section.add "userIp", valid_580445
+  var valid_580446 = query.getOrDefault("key")
+  valid_580446 = validateParameter(valid_580446, JString, required = false,
                                  default = nil)
-  if valid_598446 != nil:
-    section.add "key", valid_598446
-  var valid_598447 = query.getOrDefault("prettyPrint")
-  valid_598447 = validateParameter(valid_598447, JBool, required = false,
+  if valid_580446 != nil:
+    section.add "key", valid_580446
+  var valid_580447 = query.getOrDefault("prettyPrint")
+  valid_580447 = validateParameter(valid_580447, JBool, required = false,
                                  default = newJBool(true))
-  if valid_598447 != nil:
-    section.add "prettyPrint", valid_598447
+  if valid_580447 != nil:
+    section.add "prettyPrint", valid_580447
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -4836,20 +4838,20 @@ proc validate_CalendarChannelsStop_598439(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_598449: Call_CalendarChannelsStop_598438; path: JsonNode;
+proc call*(call_580449: Call_CalendarChannelsStop_580438; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Stop watching resources through this channel
   ## 
-  let valid = call_598449.validator(path, query, header, formData, body)
-  let scheme = call_598449.pickScheme
+  let valid = call_580449.validator(path, query, header, formData, body)
+  let scheme = call_580449.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_598449.url(scheme.get, call_598449.host, call_598449.base,
-                         call_598449.route, valid.getOrDefault("path"),
+  let url = call_580449.url(scheme.get, call_580449.host, call_580449.base,
+                         call_580449.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_598449, url, valid)
+  result = hook(call_580449, url, valid)
 
-proc call*(call_598450: Call_CalendarChannelsStop_598438; fields: string = "";
+proc call*(call_580450: Call_CalendarChannelsStop_580438; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; key: string = ""; resource: JsonNode = nil;
           prettyPrint: bool = true): Recallable =
@@ -4870,34 +4872,34 @@ proc call*(call_598450: Call_CalendarChannelsStop_598438; fields: string = "";
   ##   resource: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var query_598451 = newJObject()
-  var body_598452 = newJObject()
-  add(query_598451, "fields", newJString(fields))
-  add(query_598451, "quotaUser", newJString(quotaUser))
-  add(query_598451, "alt", newJString(alt))
-  add(query_598451, "oauth_token", newJString(oauthToken))
-  add(query_598451, "userIp", newJString(userIp))
-  add(query_598451, "key", newJString(key))
+  var query_580451 = newJObject()
+  var body_580452 = newJObject()
+  add(query_580451, "fields", newJString(fields))
+  add(query_580451, "quotaUser", newJString(quotaUser))
+  add(query_580451, "alt", newJString(alt))
+  add(query_580451, "oauth_token", newJString(oauthToken))
+  add(query_580451, "userIp", newJString(userIp))
+  add(query_580451, "key", newJString(key))
   if resource != nil:
-    body_598452 = resource
-  add(query_598451, "prettyPrint", newJBool(prettyPrint))
-  result = call_598450.call(nil, query_598451, nil, nil, body_598452)
+    body_580452 = resource
+  add(query_580451, "prettyPrint", newJBool(prettyPrint))
+  result = call_580450.call(nil, query_580451, nil, nil, body_580452)
 
-var calendarChannelsStop* = Call_CalendarChannelsStop_598438(
+var calendarChannelsStop* = Call_CalendarChannelsStop_580438(
     name: "calendarChannelsStop", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com", route: "/channels/stop",
-    validator: validate_CalendarChannelsStop_598439, base: "/calendar/v3",
-    url: url_CalendarChannelsStop_598440, schemes: {Scheme.Https})
+    validator: validate_CalendarChannelsStop_580439, base: "/calendar/v3",
+    url: url_CalendarChannelsStop_580440, schemes: {Scheme.Https})
 type
-  Call_CalendarColorsGet_598453 = ref object of OpenApiRestCall_597424
-proc url_CalendarColorsGet_598455(protocol: Scheme; host: string; base: string;
+  Call_CalendarColorsGet_580453 = ref object of OpenApiRestCall_579424
+proc url_CalendarColorsGet_580455(protocol: Scheme; host: string; base: string;
                                  route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   result.path = base & route
 
-proc validate_CalendarColorsGet_598454(path: JsonNode; query: JsonNode;
+proc validate_CalendarColorsGet_580454(path: JsonNode; query: JsonNode;
                                       header: JsonNode; formData: JsonNode;
                                       body: JsonNode): JsonNode =
   ## Returns the color definitions for calendars and events.
@@ -4922,41 +4924,41 @@ proc validate_CalendarColorsGet_598454(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_598456 = query.getOrDefault("fields")
-  valid_598456 = validateParameter(valid_598456, JString, required = false,
+  var valid_580456 = query.getOrDefault("fields")
+  valid_580456 = validateParameter(valid_580456, JString, required = false,
                                  default = nil)
-  if valid_598456 != nil:
-    section.add "fields", valid_598456
-  var valid_598457 = query.getOrDefault("quotaUser")
-  valid_598457 = validateParameter(valid_598457, JString, required = false,
+  if valid_580456 != nil:
+    section.add "fields", valid_580456
+  var valid_580457 = query.getOrDefault("quotaUser")
+  valid_580457 = validateParameter(valid_580457, JString, required = false,
                                  default = nil)
-  if valid_598457 != nil:
-    section.add "quotaUser", valid_598457
-  var valid_598458 = query.getOrDefault("alt")
-  valid_598458 = validateParameter(valid_598458, JString, required = false,
+  if valid_580457 != nil:
+    section.add "quotaUser", valid_580457
+  var valid_580458 = query.getOrDefault("alt")
+  valid_580458 = validateParameter(valid_580458, JString, required = false,
                                  default = newJString("json"))
-  if valid_598458 != nil:
-    section.add "alt", valid_598458
-  var valid_598459 = query.getOrDefault("oauth_token")
-  valid_598459 = validateParameter(valid_598459, JString, required = false,
+  if valid_580458 != nil:
+    section.add "alt", valid_580458
+  var valid_580459 = query.getOrDefault("oauth_token")
+  valid_580459 = validateParameter(valid_580459, JString, required = false,
                                  default = nil)
-  if valid_598459 != nil:
-    section.add "oauth_token", valid_598459
-  var valid_598460 = query.getOrDefault("userIp")
-  valid_598460 = validateParameter(valid_598460, JString, required = false,
+  if valid_580459 != nil:
+    section.add "oauth_token", valid_580459
+  var valid_580460 = query.getOrDefault("userIp")
+  valid_580460 = validateParameter(valid_580460, JString, required = false,
                                  default = nil)
-  if valid_598460 != nil:
-    section.add "userIp", valid_598460
-  var valid_598461 = query.getOrDefault("key")
-  valid_598461 = validateParameter(valid_598461, JString, required = false,
+  if valid_580460 != nil:
+    section.add "userIp", valid_580460
+  var valid_580461 = query.getOrDefault("key")
+  valid_580461 = validateParameter(valid_580461, JString, required = false,
                                  default = nil)
-  if valid_598461 != nil:
-    section.add "key", valid_598461
-  var valid_598462 = query.getOrDefault("prettyPrint")
-  valid_598462 = validateParameter(valid_598462, JBool, required = false,
+  if valid_580461 != nil:
+    section.add "key", valid_580461
+  var valid_580462 = query.getOrDefault("prettyPrint")
+  valid_580462 = validateParameter(valid_580462, JBool, required = false,
                                  default = newJBool(true))
-  if valid_598462 != nil:
-    section.add "prettyPrint", valid_598462
+  if valid_580462 != nil:
+    section.add "prettyPrint", valid_580462
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -4965,20 +4967,20 @@ proc validate_CalendarColorsGet_598454(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_598463: Call_CalendarColorsGet_598453; path: JsonNode;
+proc call*(call_580463: Call_CalendarColorsGet_580453; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Returns the color definitions for calendars and events.
   ## 
-  let valid = call_598463.validator(path, query, header, formData, body)
-  let scheme = call_598463.pickScheme
+  let valid = call_580463.validator(path, query, header, formData, body)
+  let scheme = call_580463.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_598463.url(scheme.get, call_598463.host, call_598463.base,
-                         call_598463.route, valid.getOrDefault("path"),
+  let url = call_580463.url(scheme.get, call_580463.host, call_580463.base,
+                         call_580463.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_598463, url, valid)
+  result = hook(call_580463, url, valid)
 
-proc call*(call_598464: Call_CalendarColorsGet_598453; fields: string = "";
+proc call*(call_580464: Call_CalendarColorsGet_580453; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; key: string = ""; prettyPrint: bool = true): Recallable =
   ## calendarColorsGet
@@ -4997,30 +4999,30 @@ proc call*(call_598464: Call_CalendarColorsGet_598453; fields: string = "";
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var query_598465 = newJObject()
-  add(query_598465, "fields", newJString(fields))
-  add(query_598465, "quotaUser", newJString(quotaUser))
-  add(query_598465, "alt", newJString(alt))
-  add(query_598465, "oauth_token", newJString(oauthToken))
-  add(query_598465, "userIp", newJString(userIp))
-  add(query_598465, "key", newJString(key))
-  add(query_598465, "prettyPrint", newJBool(prettyPrint))
-  result = call_598464.call(nil, query_598465, nil, nil, nil)
+  var query_580465 = newJObject()
+  add(query_580465, "fields", newJString(fields))
+  add(query_580465, "quotaUser", newJString(quotaUser))
+  add(query_580465, "alt", newJString(alt))
+  add(query_580465, "oauth_token", newJString(oauthToken))
+  add(query_580465, "userIp", newJString(userIp))
+  add(query_580465, "key", newJString(key))
+  add(query_580465, "prettyPrint", newJBool(prettyPrint))
+  result = call_580464.call(nil, query_580465, nil, nil, nil)
 
-var calendarColorsGet* = Call_CalendarColorsGet_598453(name: "calendarColorsGet",
+var calendarColorsGet* = Call_CalendarColorsGet_580453(name: "calendarColorsGet",
     meth: HttpMethod.HttpGet, host: "www.googleapis.com", route: "/colors",
-    validator: validate_CalendarColorsGet_598454, base: "/calendar/v3",
-    url: url_CalendarColorsGet_598455, schemes: {Scheme.Https})
+    validator: validate_CalendarColorsGet_580454, base: "/calendar/v3",
+    url: url_CalendarColorsGet_580455, schemes: {Scheme.Https})
 type
-  Call_CalendarFreebusyQuery_598466 = ref object of OpenApiRestCall_597424
-proc url_CalendarFreebusyQuery_598468(protocol: Scheme; host: string; base: string;
+  Call_CalendarFreebusyQuery_580466 = ref object of OpenApiRestCall_579424
+proc url_CalendarFreebusyQuery_580468(protocol: Scheme; host: string; base: string;
                                      route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   result.path = base & route
 
-proc validate_CalendarFreebusyQuery_598467(path: JsonNode; query: JsonNode;
+proc validate_CalendarFreebusyQuery_580467(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Returns free/busy information for a set of calendars.
   ## 
@@ -5044,41 +5046,41 @@ proc validate_CalendarFreebusyQuery_598467(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_598469 = query.getOrDefault("fields")
-  valid_598469 = validateParameter(valid_598469, JString, required = false,
+  var valid_580469 = query.getOrDefault("fields")
+  valid_580469 = validateParameter(valid_580469, JString, required = false,
                                  default = nil)
-  if valid_598469 != nil:
-    section.add "fields", valid_598469
-  var valid_598470 = query.getOrDefault("quotaUser")
-  valid_598470 = validateParameter(valid_598470, JString, required = false,
+  if valid_580469 != nil:
+    section.add "fields", valid_580469
+  var valid_580470 = query.getOrDefault("quotaUser")
+  valid_580470 = validateParameter(valid_580470, JString, required = false,
                                  default = nil)
-  if valid_598470 != nil:
-    section.add "quotaUser", valid_598470
-  var valid_598471 = query.getOrDefault("alt")
-  valid_598471 = validateParameter(valid_598471, JString, required = false,
+  if valid_580470 != nil:
+    section.add "quotaUser", valid_580470
+  var valid_580471 = query.getOrDefault("alt")
+  valid_580471 = validateParameter(valid_580471, JString, required = false,
                                  default = newJString("json"))
-  if valid_598471 != nil:
-    section.add "alt", valid_598471
-  var valid_598472 = query.getOrDefault("oauth_token")
-  valid_598472 = validateParameter(valid_598472, JString, required = false,
+  if valid_580471 != nil:
+    section.add "alt", valid_580471
+  var valid_580472 = query.getOrDefault("oauth_token")
+  valid_580472 = validateParameter(valid_580472, JString, required = false,
                                  default = nil)
-  if valid_598472 != nil:
-    section.add "oauth_token", valid_598472
-  var valid_598473 = query.getOrDefault("userIp")
-  valid_598473 = validateParameter(valid_598473, JString, required = false,
+  if valid_580472 != nil:
+    section.add "oauth_token", valid_580472
+  var valid_580473 = query.getOrDefault("userIp")
+  valid_580473 = validateParameter(valid_580473, JString, required = false,
                                  default = nil)
-  if valid_598473 != nil:
-    section.add "userIp", valid_598473
-  var valid_598474 = query.getOrDefault("key")
-  valid_598474 = validateParameter(valid_598474, JString, required = false,
+  if valid_580473 != nil:
+    section.add "userIp", valid_580473
+  var valid_580474 = query.getOrDefault("key")
+  valid_580474 = validateParameter(valid_580474, JString, required = false,
                                  default = nil)
-  if valid_598474 != nil:
-    section.add "key", valid_598474
-  var valid_598475 = query.getOrDefault("prettyPrint")
-  valid_598475 = validateParameter(valid_598475, JBool, required = false,
+  if valid_580474 != nil:
+    section.add "key", valid_580474
+  var valid_580475 = query.getOrDefault("prettyPrint")
+  valid_580475 = validateParameter(valid_580475, JBool, required = false,
                                  default = newJBool(true))
-  if valid_598475 != nil:
-    section.add "prettyPrint", valid_598475
+  if valid_580475 != nil:
+    section.add "prettyPrint", valid_580475
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -5090,20 +5092,20 @@ proc validate_CalendarFreebusyQuery_598467(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_598477: Call_CalendarFreebusyQuery_598466; path: JsonNode;
+proc call*(call_580477: Call_CalendarFreebusyQuery_580466; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Returns free/busy information for a set of calendars.
   ## 
-  let valid = call_598477.validator(path, query, header, formData, body)
-  let scheme = call_598477.pickScheme
+  let valid = call_580477.validator(path, query, header, formData, body)
+  let scheme = call_580477.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_598477.url(scheme.get, call_598477.host, call_598477.base,
-                         call_598477.route, valid.getOrDefault("path"),
+  let url = call_580477.url(scheme.get, call_580477.host, call_580477.base,
+                         call_580477.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_598477, url, valid)
+  result = hook(call_580477, url, valid)
 
-proc call*(call_598478: Call_CalendarFreebusyQuery_598466; fields: string = "";
+proc call*(call_580478: Call_CalendarFreebusyQuery_580466; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; key: string = ""; body: JsonNode = nil;
           prettyPrint: bool = true): Recallable =
@@ -5124,34 +5126,34 @@ proc call*(call_598478: Call_CalendarFreebusyQuery_598466; fields: string = "";
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var query_598479 = newJObject()
-  var body_598480 = newJObject()
-  add(query_598479, "fields", newJString(fields))
-  add(query_598479, "quotaUser", newJString(quotaUser))
-  add(query_598479, "alt", newJString(alt))
-  add(query_598479, "oauth_token", newJString(oauthToken))
-  add(query_598479, "userIp", newJString(userIp))
-  add(query_598479, "key", newJString(key))
+  var query_580479 = newJObject()
+  var body_580480 = newJObject()
+  add(query_580479, "fields", newJString(fields))
+  add(query_580479, "quotaUser", newJString(quotaUser))
+  add(query_580479, "alt", newJString(alt))
+  add(query_580479, "oauth_token", newJString(oauthToken))
+  add(query_580479, "userIp", newJString(userIp))
+  add(query_580479, "key", newJString(key))
   if body != nil:
-    body_598480 = body
-  add(query_598479, "prettyPrint", newJBool(prettyPrint))
-  result = call_598478.call(nil, query_598479, nil, nil, body_598480)
+    body_580480 = body
+  add(query_580479, "prettyPrint", newJBool(prettyPrint))
+  result = call_580478.call(nil, query_580479, nil, nil, body_580480)
 
-var calendarFreebusyQuery* = Call_CalendarFreebusyQuery_598466(
+var calendarFreebusyQuery* = Call_CalendarFreebusyQuery_580466(
     name: "calendarFreebusyQuery", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com", route: "/freeBusy",
-    validator: validate_CalendarFreebusyQuery_598467, base: "/calendar/v3",
-    url: url_CalendarFreebusyQuery_598468, schemes: {Scheme.Https})
+    validator: validate_CalendarFreebusyQuery_580467, base: "/calendar/v3",
+    url: url_CalendarFreebusyQuery_580468, schemes: {Scheme.Https})
 type
-  Call_CalendarCalendarListInsert_598500 = ref object of OpenApiRestCall_597424
-proc url_CalendarCalendarListInsert_598502(protocol: Scheme; host: string;
+  Call_CalendarCalendarListInsert_580500 = ref object of OpenApiRestCall_579424
+proc url_CalendarCalendarListInsert_580502(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   result.path = base & route
 
-proc validate_CalendarCalendarListInsert_598501(path: JsonNode; query: JsonNode;
+proc validate_CalendarCalendarListInsert_580501(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Inserts an existing calendar into the user's calendar list.
   ## 
@@ -5177,45 +5179,45 @@ proc validate_CalendarCalendarListInsert_598501(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_598503 = query.getOrDefault("fields")
-  valid_598503 = validateParameter(valid_598503, JString, required = false,
+  var valid_580503 = query.getOrDefault("fields")
+  valid_580503 = validateParameter(valid_580503, JString, required = false,
                                  default = nil)
-  if valid_598503 != nil:
-    section.add "fields", valid_598503
-  var valid_598504 = query.getOrDefault("quotaUser")
-  valid_598504 = validateParameter(valid_598504, JString, required = false,
+  if valid_580503 != nil:
+    section.add "fields", valid_580503
+  var valid_580504 = query.getOrDefault("quotaUser")
+  valid_580504 = validateParameter(valid_580504, JString, required = false,
                                  default = nil)
-  if valid_598504 != nil:
-    section.add "quotaUser", valid_598504
-  var valid_598505 = query.getOrDefault("alt")
-  valid_598505 = validateParameter(valid_598505, JString, required = false,
+  if valid_580504 != nil:
+    section.add "quotaUser", valid_580504
+  var valid_580505 = query.getOrDefault("alt")
+  valid_580505 = validateParameter(valid_580505, JString, required = false,
                                  default = newJString("json"))
-  if valid_598505 != nil:
-    section.add "alt", valid_598505
-  var valid_598506 = query.getOrDefault("colorRgbFormat")
-  valid_598506 = validateParameter(valid_598506, JBool, required = false, default = nil)
-  if valid_598506 != nil:
-    section.add "colorRgbFormat", valid_598506
-  var valid_598507 = query.getOrDefault("oauth_token")
-  valid_598507 = validateParameter(valid_598507, JString, required = false,
+  if valid_580505 != nil:
+    section.add "alt", valid_580505
+  var valid_580506 = query.getOrDefault("colorRgbFormat")
+  valid_580506 = validateParameter(valid_580506, JBool, required = false, default = nil)
+  if valid_580506 != nil:
+    section.add "colorRgbFormat", valid_580506
+  var valid_580507 = query.getOrDefault("oauth_token")
+  valid_580507 = validateParameter(valid_580507, JString, required = false,
                                  default = nil)
-  if valid_598507 != nil:
-    section.add "oauth_token", valid_598507
-  var valid_598508 = query.getOrDefault("userIp")
-  valid_598508 = validateParameter(valid_598508, JString, required = false,
+  if valid_580507 != nil:
+    section.add "oauth_token", valid_580507
+  var valid_580508 = query.getOrDefault("userIp")
+  valid_580508 = validateParameter(valid_580508, JString, required = false,
                                  default = nil)
-  if valid_598508 != nil:
-    section.add "userIp", valid_598508
-  var valid_598509 = query.getOrDefault("key")
-  valid_598509 = validateParameter(valid_598509, JString, required = false,
+  if valid_580508 != nil:
+    section.add "userIp", valid_580508
+  var valid_580509 = query.getOrDefault("key")
+  valid_580509 = validateParameter(valid_580509, JString, required = false,
                                  default = nil)
-  if valid_598509 != nil:
-    section.add "key", valid_598509
-  var valid_598510 = query.getOrDefault("prettyPrint")
-  valid_598510 = validateParameter(valid_598510, JBool, required = false,
+  if valid_580509 != nil:
+    section.add "key", valid_580509
+  var valid_580510 = query.getOrDefault("prettyPrint")
+  valid_580510 = validateParameter(valid_580510, JBool, required = false,
                                  default = newJBool(true))
-  if valid_598510 != nil:
-    section.add "prettyPrint", valid_598510
+  if valid_580510 != nil:
+    section.add "prettyPrint", valid_580510
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -5227,20 +5229,20 @@ proc validate_CalendarCalendarListInsert_598501(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_598512: Call_CalendarCalendarListInsert_598500; path: JsonNode;
+proc call*(call_580512: Call_CalendarCalendarListInsert_580500; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Inserts an existing calendar into the user's calendar list.
   ## 
-  let valid = call_598512.validator(path, query, header, formData, body)
-  let scheme = call_598512.pickScheme
+  let valid = call_580512.validator(path, query, header, formData, body)
+  let scheme = call_580512.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_598512.url(scheme.get, call_598512.host, call_598512.base,
-                         call_598512.route, valid.getOrDefault("path"),
+  let url = call_580512.url(scheme.get, call_580512.host, call_580512.base,
+                         call_580512.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_598512, url, valid)
+  result = hook(call_580512, url, valid)
 
-proc call*(call_598513: Call_CalendarCalendarListInsert_598500;
+proc call*(call_580513: Call_CalendarCalendarListInsert_580500;
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           colorRgbFormat: bool = false; oauthToken: string = ""; userIp: string = "";
           key: string = ""; body: JsonNode = nil; prettyPrint: bool = true): Recallable =
@@ -5263,36 +5265,36 @@ proc call*(call_598513: Call_CalendarCalendarListInsert_598500;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var query_598514 = newJObject()
-  var body_598515 = newJObject()
-  add(query_598514, "fields", newJString(fields))
-  add(query_598514, "quotaUser", newJString(quotaUser))
-  add(query_598514, "alt", newJString(alt))
-  add(query_598514, "colorRgbFormat", newJBool(colorRgbFormat))
-  add(query_598514, "oauth_token", newJString(oauthToken))
-  add(query_598514, "userIp", newJString(userIp))
-  add(query_598514, "key", newJString(key))
+  var query_580514 = newJObject()
+  var body_580515 = newJObject()
+  add(query_580514, "fields", newJString(fields))
+  add(query_580514, "quotaUser", newJString(quotaUser))
+  add(query_580514, "alt", newJString(alt))
+  add(query_580514, "colorRgbFormat", newJBool(colorRgbFormat))
+  add(query_580514, "oauth_token", newJString(oauthToken))
+  add(query_580514, "userIp", newJString(userIp))
+  add(query_580514, "key", newJString(key))
   if body != nil:
-    body_598515 = body
-  add(query_598514, "prettyPrint", newJBool(prettyPrint))
-  result = call_598513.call(nil, query_598514, nil, nil, body_598515)
+    body_580515 = body
+  add(query_580514, "prettyPrint", newJBool(prettyPrint))
+  result = call_580513.call(nil, query_580514, nil, nil, body_580515)
 
-var calendarCalendarListInsert* = Call_CalendarCalendarListInsert_598500(
+var calendarCalendarListInsert* = Call_CalendarCalendarListInsert_580500(
     name: "calendarCalendarListInsert", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com", route: "/users/me/calendarList",
-    validator: validate_CalendarCalendarListInsert_598501, base: "/calendar/v3",
-    url: url_CalendarCalendarListInsert_598502, schemes: {Scheme.Https})
+    validator: validate_CalendarCalendarListInsert_580501, base: "/calendar/v3",
+    url: url_CalendarCalendarListInsert_580502, schemes: {Scheme.Https})
 type
-  Call_CalendarCalendarListList_598481 = ref object of OpenApiRestCall_597424
-proc url_CalendarCalendarListList_598483(protocol: Scheme; host: string;
+  Call_CalendarCalendarListList_580481 = ref object of OpenApiRestCall_579424
+proc url_CalendarCalendarListList_580483(protocol: Scheme; host: string;
                                         base: string; route: string; path: JsonNode;
                                         query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   result.path = base & route
 
-proc validate_CalendarCalendarListList_598482(path: JsonNode; query: JsonNode;
+proc validate_CalendarCalendarListList_580482(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Returns the calendars on the user's calendar list.
   ## 
@@ -5332,68 +5334,68 @@ proc validate_CalendarCalendarListList_598482(path: JsonNode; query: JsonNode;
   ##   minAccessRole: JString
   ##                : The minimum access role for the user in the returned entries. Optional. The default is no restriction.
   section = newJObject()
-  var valid_598484 = query.getOrDefault("fields")
-  valid_598484 = validateParameter(valid_598484, JString, required = false,
+  var valid_580484 = query.getOrDefault("fields")
+  valid_580484 = validateParameter(valid_580484, JString, required = false,
                                  default = nil)
-  if valid_598484 != nil:
-    section.add "fields", valid_598484
-  var valid_598485 = query.getOrDefault("pageToken")
-  valid_598485 = validateParameter(valid_598485, JString, required = false,
+  if valid_580484 != nil:
+    section.add "fields", valid_580484
+  var valid_580485 = query.getOrDefault("pageToken")
+  valid_580485 = validateParameter(valid_580485, JString, required = false,
                                  default = nil)
-  if valid_598485 != nil:
-    section.add "pageToken", valid_598485
-  var valid_598486 = query.getOrDefault("quotaUser")
-  valid_598486 = validateParameter(valid_598486, JString, required = false,
+  if valid_580485 != nil:
+    section.add "pageToken", valid_580485
+  var valid_580486 = query.getOrDefault("quotaUser")
+  valid_580486 = validateParameter(valid_580486, JString, required = false,
                                  default = nil)
-  if valid_598486 != nil:
-    section.add "quotaUser", valid_598486
-  var valid_598487 = query.getOrDefault("alt")
-  valid_598487 = validateParameter(valid_598487, JString, required = false,
+  if valid_580486 != nil:
+    section.add "quotaUser", valid_580486
+  var valid_580487 = query.getOrDefault("alt")
+  valid_580487 = validateParameter(valid_580487, JString, required = false,
                                  default = newJString("json"))
-  if valid_598487 != nil:
-    section.add "alt", valid_598487
-  var valid_598488 = query.getOrDefault("oauth_token")
-  valid_598488 = validateParameter(valid_598488, JString, required = false,
+  if valid_580487 != nil:
+    section.add "alt", valid_580487
+  var valid_580488 = query.getOrDefault("oauth_token")
+  valid_580488 = validateParameter(valid_580488, JString, required = false,
                                  default = nil)
-  if valid_598488 != nil:
-    section.add "oauth_token", valid_598488
-  var valid_598489 = query.getOrDefault("syncToken")
-  valid_598489 = validateParameter(valid_598489, JString, required = false,
+  if valid_580488 != nil:
+    section.add "oauth_token", valid_580488
+  var valid_580489 = query.getOrDefault("syncToken")
+  valid_580489 = validateParameter(valid_580489, JString, required = false,
                                  default = nil)
-  if valid_598489 != nil:
-    section.add "syncToken", valid_598489
-  var valid_598490 = query.getOrDefault("userIp")
-  valid_598490 = validateParameter(valid_598490, JString, required = false,
+  if valid_580489 != nil:
+    section.add "syncToken", valid_580489
+  var valid_580490 = query.getOrDefault("userIp")
+  valid_580490 = validateParameter(valid_580490, JString, required = false,
                                  default = nil)
-  if valid_598490 != nil:
-    section.add "userIp", valid_598490
-  var valid_598491 = query.getOrDefault("maxResults")
-  valid_598491 = validateParameter(valid_598491, JInt, required = false, default = nil)
-  if valid_598491 != nil:
-    section.add "maxResults", valid_598491
-  var valid_598492 = query.getOrDefault("showHidden")
-  valid_598492 = validateParameter(valid_598492, JBool, required = false, default = nil)
-  if valid_598492 != nil:
-    section.add "showHidden", valid_598492
-  var valid_598493 = query.getOrDefault("showDeleted")
-  valid_598493 = validateParameter(valid_598493, JBool, required = false, default = nil)
-  if valid_598493 != nil:
-    section.add "showDeleted", valid_598493
-  var valid_598494 = query.getOrDefault("key")
-  valid_598494 = validateParameter(valid_598494, JString, required = false,
+  if valid_580490 != nil:
+    section.add "userIp", valid_580490
+  var valid_580491 = query.getOrDefault("maxResults")
+  valid_580491 = validateParameter(valid_580491, JInt, required = false, default = nil)
+  if valid_580491 != nil:
+    section.add "maxResults", valid_580491
+  var valid_580492 = query.getOrDefault("showHidden")
+  valid_580492 = validateParameter(valid_580492, JBool, required = false, default = nil)
+  if valid_580492 != nil:
+    section.add "showHidden", valid_580492
+  var valid_580493 = query.getOrDefault("showDeleted")
+  valid_580493 = validateParameter(valid_580493, JBool, required = false, default = nil)
+  if valid_580493 != nil:
+    section.add "showDeleted", valid_580493
+  var valid_580494 = query.getOrDefault("key")
+  valid_580494 = validateParameter(valid_580494, JString, required = false,
                                  default = nil)
-  if valid_598494 != nil:
-    section.add "key", valid_598494
-  var valid_598495 = query.getOrDefault("prettyPrint")
-  valid_598495 = validateParameter(valid_598495, JBool, required = false,
+  if valid_580494 != nil:
+    section.add "key", valid_580494
+  var valid_580495 = query.getOrDefault("prettyPrint")
+  valid_580495 = validateParameter(valid_580495, JBool, required = false,
                                  default = newJBool(true))
-  if valid_598495 != nil:
-    section.add "prettyPrint", valid_598495
-  var valid_598496 = query.getOrDefault("minAccessRole")
-  valid_598496 = validateParameter(valid_598496, JString, required = false,
+  if valid_580495 != nil:
+    section.add "prettyPrint", valid_580495
+  var valid_580496 = query.getOrDefault("minAccessRole")
+  valid_580496 = validateParameter(valid_580496, JString, required = false,
                                  default = newJString("freeBusyReader"))
-  if valid_598496 != nil:
-    section.add "minAccessRole", valid_598496
+  if valid_580496 != nil:
+    section.add "minAccessRole", valid_580496
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -5402,20 +5404,20 @@ proc validate_CalendarCalendarListList_598482(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_598497: Call_CalendarCalendarListList_598481; path: JsonNode;
+proc call*(call_580497: Call_CalendarCalendarListList_580481; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Returns the calendars on the user's calendar list.
   ## 
-  let valid = call_598497.validator(path, query, header, formData, body)
-  let scheme = call_598497.pickScheme
+  let valid = call_580497.validator(path, query, header, formData, body)
+  let scheme = call_580497.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_598497.url(scheme.get, call_598497.host, call_598497.base,
-                         call_598497.route, valid.getOrDefault("path"),
+  let url = call_580497.url(scheme.get, call_580497.host, call_580497.base,
+                         call_580497.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_598497, url, valid)
+  result = hook(call_580497, url, valid)
 
-proc call*(call_598498: Call_CalendarCalendarListList_598481; fields: string = "";
+proc call*(call_580498: Call_CalendarCalendarListList_580481; fields: string = "";
           pageToken: string = ""; quotaUser: string = ""; alt: string = "json";
           oauthToken: string = ""; syncToken: string = ""; userIp: string = "";
           maxResults: int = 0; showHidden: bool = false; showDeleted: bool = false;
@@ -5453,37 +5455,37 @@ proc call*(call_598498: Call_CalendarCalendarListList_598481; fields: string = "
   ##              : Returns response with indentations and line breaks.
   ##   minAccessRole: string
   ##                : The minimum access role for the user in the returned entries. Optional. The default is no restriction.
-  var query_598499 = newJObject()
-  add(query_598499, "fields", newJString(fields))
-  add(query_598499, "pageToken", newJString(pageToken))
-  add(query_598499, "quotaUser", newJString(quotaUser))
-  add(query_598499, "alt", newJString(alt))
-  add(query_598499, "oauth_token", newJString(oauthToken))
-  add(query_598499, "syncToken", newJString(syncToken))
-  add(query_598499, "userIp", newJString(userIp))
-  add(query_598499, "maxResults", newJInt(maxResults))
-  add(query_598499, "showHidden", newJBool(showHidden))
-  add(query_598499, "showDeleted", newJBool(showDeleted))
-  add(query_598499, "key", newJString(key))
-  add(query_598499, "prettyPrint", newJBool(prettyPrint))
-  add(query_598499, "minAccessRole", newJString(minAccessRole))
-  result = call_598498.call(nil, query_598499, nil, nil, nil)
+  var query_580499 = newJObject()
+  add(query_580499, "fields", newJString(fields))
+  add(query_580499, "pageToken", newJString(pageToken))
+  add(query_580499, "quotaUser", newJString(quotaUser))
+  add(query_580499, "alt", newJString(alt))
+  add(query_580499, "oauth_token", newJString(oauthToken))
+  add(query_580499, "syncToken", newJString(syncToken))
+  add(query_580499, "userIp", newJString(userIp))
+  add(query_580499, "maxResults", newJInt(maxResults))
+  add(query_580499, "showHidden", newJBool(showHidden))
+  add(query_580499, "showDeleted", newJBool(showDeleted))
+  add(query_580499, "key", newJString(key))
+  add(query_580499, "prettyPrint", newJBool(prettyPrint))
+  add(query_580499, "minAccessRole", newJString(minAccessRole))
+  result = call_580498.call(nil, query_580499, nil, nil, nil)
 
-var calendarCalendarListList* = Call_CalendarCalendarListList_598481(
+var calendarCalendarListList* = Call_CalendarCalendarListList_580481(
     name: "calendarCalendarListList", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/users/me/calendarList",
-    validator: validate_CalendarCalendarListList_598482, base: "/calendar/v3",
-    url: url_CalendarCalendarListList_598483, schemes: {Scheme.Https})
+    validator: validate_CalendarCalendarListList_580482, base: "/calendar/v3",
+    url: url_CalendarCalendarListList_580483, schemes: {Scheme.Https})
 type
-  Call_CalendarCalendarListWatch_598516 = ref object of OpenApiRestCall_597424
-proc url_CalendarCalendarListWatch_598518(protocol: Scheme; host: string;
+  Call_CalendarCalendarListWatch_580516 = ref object of OpenApiRestCall_579424
+proc url_CalendarCalendarListWatch_580518(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   result.path = base & route
 
-proc validate_CalendarCalendarListWatch_598517(path: JsonNode; query: JsonNode;
+proc validate_CalendarCalendarListWatch_580517(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Watch for changes to CalendarList resources.
   ## 
@@ -5523,68 +5525,68 @@ proc validate_CalendarCalendarListWatch_598517(path: JsonNode; query: JsonNode;
   ##   minAccessRole: JString
   ##                : The minimum access role for the user in the returned entries. Optional. The default is no restriction.
   section = newJObject()
-  var valid_598519 = query.getOrDefault("fields")
-  valid_598519 = validateParameter(valid_598519, JString, required = false,
+  var valid_580519 = query.getOrDefault("fields")
+  valid_580519 = validateParameter(valid_580519, JString, required = false,
                                  default = nil)
-  if valid_598519 != nil:
-    section.add "fields", valid_598519
-  var valid_598520 = query.getOrDefault("pageToken")
-  valid_598520 = validateParameter(valid_598520, JString, required = false,
+  if valid_580519 != nil:
+    section.add "fields", valid_580519
+  var valid_580520 = query.getOrDefault("pageToken")
+  valid_580520 = validateParameter(valid_580520, JString, required = false,
                                  default = nil)
-  if valid_598520 != nil:
-    section.add "pageToken", valid_598520
-  var valid_598521 = query.getOrDefault("quotaUser")
-  valid_598521 = validateParameter(valid_598521, JString, required = false,
+  if valid_580520 != nil:
+    section.add "pageToken", valid_580520
+  var valid_580521 = query.getOrDefault("quotaUser")
+  valid_580521 = validateParameter(valid_580521, JString, required = false,
                                  default = nil)
-  if valid_598521 != nil:
-    section.add "quotaUser", valid_598521
-  var valid_598522 = query.getOrDefault("alt")
-  valid_598522 = validateParameter(valid_598522, JString, required = false,
+  if valid_580521 != nil:
+    section.add "quotaUser", valid_580521
+  var valid_580522 = query.getOrDefault("alt")
+  valid_580522 = validateParameter(valid_580522, JString, required = false,
                                  default = newJString("json"))
-  if valid_598522 != nil:
-    section.add "alt", valid_598522
-  var valid_598523 = query.getOrDefault("oauth_token")
-  valid_598523 = validateParameter(valid_598523, JString, required = false,
+  if valid_580522 != nil:
+    section.add "alt", valid_580522
+  var valid_580523 = query.getOrDefault("oauth_token")
+  valid_580523 = validateParameter(valid_580523, JString, required = false,
                                  default = nil)
-  if valid_598523 != nil:
-    section.add "oauth_token", valid_598523
-  var valid_598524 = query.getOrDefault("syncToken")
-  valid_598524 = validateParameter(valid_598524, JString, required = false,
+  if valid_580523 != nil:
+    section.add "oauth_token", valid_580523
+  var valid_580524 = query.getOrDefault("syncToken")
+  valid_580524 = validateParameter(valid_580524, JString, required = false,
                                  default = nil)
-  if valid_598524 != nil:
-    section.add "syncToken", valid_598524
-  var valid_598525 = query.getOrDefault("userIp")
-  valid_598525 = validateParameter(valid_598525, JString, required = false,
+  if valid_580524 != nil:
+    section.add "syncToken", valid_580524
+  var valid_580525 = query.getOrDefault("userIp")
+  valid_580525 = validateParameter(valid_580525, JString, required = false,
                                  default = nil)
-  if valid_598525 != nil:
-    section.add "userIp", valid_598525
-  var valid_598526 = query.getOrDefault("maxResults")
-  valid_598526 = validateParameter(valid_598526, JInt, required = false, default = nil)
-  if valid_598526 != nil:
-    section.add "maxResults", valid_598526
-  var valid_598527 = query.getOrDefault("showHidden")
-  valid_598527 = validateParameter(valid_598527, JBool, required = false, default = nil)
-  if valid_598527 != nil:
-    section.add "showHidden", valid_598527
-  var valid_598528 = query.getOrDefault("showDeleted")
-  valid_598528 = validateParameter(valid_598528, JBool, required = false, default = nil)
-  if valid_598528 != nil:
-    section.add "showDeleted", valid_598528
-  var valid_598529 = query.getOrDefault("key")
-  valid_598529 = validateParameter(valid_598529, JString, required = false,
+  if valid_580525 != nil:
+    section.add "userIp", valid_580525
+  var valid_580526 = query.getOrDefault("maxResults")
+  valid_580526 = validateParameter(valid_580526, JInt, required = false, default = nil)
+  if valid_580526 != nil:
+    section.add "maxResults", valid_580526
+  var valid_580527 = query.getOrDefault("showHidden")
+  valid_580527 = validateParameter(valid_580527, JBool, required = false, default = nil)
+  if valid_580527 != nil:
+    section.add "showHidden", valid_580527
+  var valid_580528 = query.getOrDefault("showDeleted")
+  valid_580528 = validateParameter(valid_580528, JBool, required = false, default = nil)
+  if valid_580528 != nil:
+    section.add "showDeleted", valid_580528
+  var valid_580529 = query.getOrDefault("key")
+  valid_580529 = validateParameter(valid_580529, JString, required = false,
                                  default = nil)
-  if valid_598529 != nil:
-    section.add "key", valid_598529
-  var valid_598530 = query.getOrDefault("prettyPrint")
-  valid_598530 = validateParameter(valid_598530, JBool, required = false,
+  if valid_580529 != nil:
+    section.add "key", valid_580529
+  var valid_580530 = query.getOrDefault("prettyPrint")
+  valid_580530 = validateParameter(valid_580530, JBool, required = false,
                                  default = newJBool(true))
-  if valid_598530 != nil:
-    section.add "prettyPrint", valid_598530
-  var valid_598531 = query.getOrDefault("minAccessRole")
-  valid_598531 = validateParameter(valid_598531, JString, required = false,
+  if valid_580530 != nil:
+    section.add "prettyPrint", valid_580530
+  var valid_580531 = query.getOrDefault("minAccessRole")
+  valid_580531 = validateParameter(valid_580531, JString, required = false,
                                  default = newJString("freeBusyReader"))
-  if valid_598531 != nil:
-    section.add "minAccessRole", valid_598531
+  if valid_580531 != nil:
+    section.add "minAccessRole", valid_580531
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -5596,20 +5598,20 @@ proc validate_CalendarCalendarListWatch_598517(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_598533: Call_CalendarCalendarListWatch_598516; path: JsonNode;
+proc call*(call_580533: Call_CalendarCalendarListWatch_580516; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Watch for changes to CalendarList resources.
   ## 
-  let valid = call_598533.validator(path, query, header, formData, body)
-  let scheme = call_598533.pickScheme
+  let valid = call_580533.validator(path, query, header, formData, body)
+  let scheme = call_580533.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_598533.url(scheme.get, call_598533.host, call_598533.base,
-                         call_598533.route, valid.getOrDefault("path"),
+  let url = call_580533.url(scheme.get, call_580533.host, call_580533.base,
+                         call_580533.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_598533, url, valid)
+  result = hook(call_580533, url, valid)
 
-proc call*(call_598534: Call_CalendarCalendarListWatch_598516; fields: string = "";
+proc call*(call_580534: Call_CalendarCalendarListWatch_580516; fields: string = "";
           pageToken: string = ""; quotaUser: string = ""; alt: string = "json";
           oauthToken: string = ""; syncToken: string = ""; userIp: string = "";
           maxResults: int = 0; showHidden: bool = false; showDeleted: bool = false;
@@ -5648,37 +5650,37 @@ proc call*(call_598534: Call_CalendarCalendarListWatch_598516; fields: string = 
   ##              : Returns response with indentations and line breaks.
   ##   minAccessRole: string
   ##                : The minimum access role for the user in the returned entries. Optional. The default is no restriction.
-  var query_598535 = newJObject()
-  var body_598536 = newJObject()
-  add(query_598535, "fields", newJString(fields))
-  add(query_598535, "pageToken", newJString(pageToken))
-  add(query_598535, "quotaUser", newJString(quotaUser))
-  add(query_598535, "alt", newJString(alt))
-  add(query_598535, "oauth_token", newJString(oauthToken))
-  add(query_598535, "syncToken", newJString(syncToken))
-  add(query_598535, "userIp", newJString(userIp))
-  add(query_598535, "maxResults", newJInt(maxResults))
-  add(query_598535, "showHidden", newJBool(showHidden))
-  add(query_598535, "showDeleted", newJBool(showDeleted))
-  add(query_598535, "key", newJString(key))
+  var query_580535 = newJObject()
+  var body_580536 = newJObject()
+  add(query_580535, "fields", newJString(fields))
+  add(query_580535, "pageToken", newJString(pageToken))
+  add(query_580535, "quotaUser", newJString(quotaUser))
+  add(query_580535, "alt", newJString(alt))
+  add(query_580535, "oauth_token", newJString(oauthToken))
+  add(query_580535, "syncToken", newJString(syncToken))
+  add(query_580535, "userIp", newJString(userIp))
+  add(query_580535, "maxResults", newJInt(maxResults))
+  add(query_580535, "showHidden", newJBool(showHidden))
+  add(query_580535, "showDeleted", newJBool(showDeleted))
+  add(query_580535, "key", newJString(key))
   if resource != nil:
-    body_598536 = resource
-  add(query_598535, "prettyPrint", newJBool(prettyPrint))
-  add(query_598535, "minAccessRole", newJString(minAccessRole))
-  result = call_598534.call(nil, query_598535, nil, nil, body_598536)
+    body_580536 = resource
+  add(query_580535, "prettyPrint", newJBool(prettyPrint))
+  add(query_580535, "minAccessRole", newJString(minAccessRole))
+  result = call_580534.call(nil, query_580535, nil, nil, body_580536)
 
-var calendarCalendarListWatch* = Call_CalendarCalendarListWatch_598516(
+var calendarCalendarListWatch* = Call_CalendarCalendarListWatch_580516(
     name: "calendarCalendarListWatch", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com", route: "/users/me/calendarList/watch",
-    validator: validate_CalendarCalendarListWatch_598517, base: "/calendar/v3",
-    url: url_CalendarCalendarListWatch_598518, schemes: {Scheme.Https})
+    validator: validate_CalendarCalendarListWatch_580517, base: "/calendar/v3",
+    url: url_CalendarCalendarListWatch_580518, schemes: {Scheme.Https})
 type
-  Call_CalendarCalendarListUpdate_598552 = ref object of OpenApiRestCall_597424
-proc url_CalendarCalendarListUpdate_598554(protocol: Scheme; host: string;
+  Call_CalendarCalendarListUpdate_580552 = ref object of OpenApiRestCall_579424
+proc url_CalendarCalendarListUpdate_580554(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "calendarId" in path, "`calendarId` is a required path parameter"
   const
@@ -5689,7 +5691,7 @@ proc url_CalendarCalendarListUpdate_598554(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_CalendarCalendarListUpdate_598553(path: JsonNode; query: JsonNode;
+proc validate_CalendarCalendarListUpdate_580553(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Updates an existing calendar on the user's calendar list.
   ## 
@@ -5701,11 +5703,11 @@ proc validate_CalendarCalendarListUpdate_598553(path: JsonNode; query: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `calendarId` field"
-  var valid_598555 = path.getOrDefault("calendarId")
-  valid_598555 = validateParameter(valid_598555, JString, required = true,
+  var valid_580555 = path.getOrDefault("calendarId")
+  valid_580555 = validateParameter(valid_580555, JString, required = true,
                                  default = nil)
-  if valid_598555 != nil:
-    section.add "calendarId", valid_598555
+  if valid_580555 != nil:
+    section.add "calendarId", valid_580555
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -5725,45 +5727,45 @@ proc validate_CalendarCalendarListUpdate_598553(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_598556 = query.getOrDefault("fields")
-  valid_598556 = validateParameter(valid_598556, JString, required = false,
+  var valid_580556 = query.getOrDefault("fields")
+  valid_580556 = validateParameter(valid_580556, JString, required = false,
                                  default = nil)
-  if valid_598556 != nil:
-    section.add "fields", valid_598556
-  var valid_598557 = query.getOrDefault("quotaUser")
-  valid_598557 = validateParameter(valid_598557, JString, required = false,
+  if valid_580556 != nil:
+    section.add "fields", valid_580556
+  var valid_580557 = query.getOrDefault("quotaUser")
+  valid_580557 = validateParameter(valid_580557, JString, required = false,
                                  default = nil)
-  if valid_598557 != nil:
-    section.add "quotaUser", valid_598557
-  var valid_598558 = query.getOrDefault("alt")
-  valid_598558 = validateParameter(valid_598558, JString, required = false,
+  if valid_580557 != nil:
+    section.add "quotaUser", valid_580557
+  var valid_580558 = query.getOrDefault("alt")
+  valid_580558 = validateParameter(valid_580558, JString, required = false,
                                  default = newJString("json"))
-  if valid_598558 != nil:
-    section.add "alt", valid_598558
-  var valid_598559 = query.getOrDefault("colorRgbFormat")
-  valid_598559 = validateParameter(valid_598559, JBool, required = false, default = nil)
-  if valid_598559 != nil:
-    section.add "colorRgbFormat", valid_598559
-  var valid_598560 = query.getOrDefault("oauth_token")
-  valid_598560 = validateParameter(valid_598560, JString, required = false,
+  if valid_580558 != nil:
+    section.add "alt", valid_580558
+  var valid_580559 = query.getOrDefault("colorRgbFormat")
+  valid_580559 = validateParameter(valid_580559, JBool, required = false, default = nil)
+  if valid_580559 != nil:
+    section.add "colorRgbFormat", valid_580559
+  var valid_580560 = query.getOrDefault("oauth_token")
+  valid_580560 = validateParameter(valid_580560, JString, required = false,
                                  default = nil)
-  if valid_598560 != nil:
-    section.add "oauth_token", valid_598560
-  var valid_598561 = query.getOrDefault("userIp")
-  valid_598561 = validateParameter(valid_598561, JString, required = false,
+  if valid_580560 != nil:
+    section.add "oauth_token", valid_580560
+  var valid_580561 = query.getOrDefault("userIp")
+  valid_580561 = validateParameter(valid_580561, JString, required = false,
                                  default = nil)
-  if valid_598561 != nil:
-    section.add "userIp", valid_598561
-  var valid_598562 = query.getOrDefault("key")
-  valid_598562 = validateParameter(valid_598562, JString, required = false,
+  if valid_580561 != nil:
+    section.add "userIp", valid_580561
+  var valid_580562 = query.getOrDefault("key")
+  valid_580562 = validateParameter(valid_580562, JString, required = false,
                                  default = nil)
-  if valid_598562 != nil:
-    section.add "key", valid_598562
-  var valid_598563 = query.getOrDefault("prettyPrint")
-  valid_598563 = validateParameter(valid_598563, JBool, required = false,
+  if valid_580562 != nil:
+    section.add "key", valid_580562
+  var valid_580563 = query.getOrDefault("prettyPrint")
+  valid_580563 = validateParameter(valid_580563, JBool, required = false,
                                  default = newJBool(true))
-  if valid_598563 != nil:
-    section.add "prettyPrint", valid_598563
+  if valid_580563 != nil:
+    section.add "prettyPrint", valid_580563
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -5775,20 +5777,20 @@ proc validate_CalendarCalendarListUpdate_598553(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_598565: Call_CalendarCalendarListUpdate_598552; path: JsonNode;
+proc call*(call_580565: Call_CalendarCalendarListUpdate_580552; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Updates an existing calendar on the user's calendar list.
   ## 
-  let valid = call_598565.validator(path, query, header, formData, body)
-  let scheme = call_598565.pickScheme
+  let valid = call_580565.validator(path, query, header, formData, body)
+  let scheme = call_580565.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_598565.url(scheme.get, call_598565.host, call_598565.base,
-                         call_598565.route, valid.getOrDefault("path"),
+  let url = call_580565.url(scheme.get, call_580565.host, call_580565.base,
+                         call_580565.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_598565, url, valid)
+  result = hook(call_580565, url, valid)
 
-proc call*(call_598566: Call_CalendarCalendarListUpdate_598552; calendarId: string;
+proc call*(call_580566: Call_CalendarCalendarListUpdate_580552; calendarId: string;
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           colorRgbFormat: bool = false; oauthToken: string = ""; userIp: string = "";
           key: string = ""; body: JsonNode = nil; prettyPrint: bool = true): Recallable =
@@ -5813,35 +5815,35 @@ proc call*(call_598566: Call_CalendarCalendarListUpdate_598552; calendarId: stri
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_598567 = newJObject()
-  var query_598568 = newJObject()
-  var body_598569 = newJObject()
-  add(query_598568, "fields", newJString(fields))
-  add(query_598568, "quotaUser", newJString(quotaUser))
-  add(query_598568, "alt", newJString(alt))
-  add(query_598568, "colorRgbFormat", newJBool(colorRgbFormat))
-  add(path_598567, "calendarId", newJString(calendarId))
-  add(query_598568, "oauth_token", newJString(oauthToken))
-  add(query_598568, "userIp", newJString(userIp))
-  add(query_598568, "key", newJString(key))
+  var path_580567 = newJObject()
+  var query_580568 = newJObject()
+  var body_580569 = newJObject()
+  add(query_580568, "fields", newJString(fields))
+  add(query_580568, "quotaUser", newJString(quotaUser))
+  add(query_580568, "alt", newJString(alt))
+  add(query_580568, "colorRgbFormat", newJBool(colorRgbFormat))
+  add(path_580567, "calendarId", newJString(calendarId))
+  add(query_580568, "oauth_token", newJString(oauthToken))
+  add(query_580568, "userIp", newJString(userIp))
+  add(query_580568, "key", newJString(key))
   if body != nil:
-    body_598569 = body
-  add(query_598568, "prettyPrint", newJBool(prettyPrint))
-  result = call_598566.call(path_598567, query_598568, nil, nil, body_598569)
+    body_580569 = body
+  add(query_580568, "prettyPrint", newJBool(prettyPrint))
+  result = call_580566.call(path_580567, query_580568, nil, nil, body_580569)
 
-var calendarCalendarListUpdate* = Call_CalendarCalendarListUpdate_598552(
+var calendarCalendarListUpdate* = Call_CalendarCalendarListUpdate_580552(
     name: "calendarCalendarListUpdate", meth: HttpMethod.HttpPut,
     host: "www.googleapis.com", route: "/users/me/calendarList/{calendarId}",
-    validator: validate_CalendarCalendarListUpdate_598553, base: "/calendar/v3",
-    url: url_CalendarCalendarListUpdate_598554, schemes: {Scheme.Https})
+    validator: validate_CalendarCalendarListUpdate_580553, base: "/calendar/v3",
+    url: url_CalendarCalendarListUpdate_580554, schemes: {Scheme.Https})
 type
-  Call_CalendarCalendarListGet_598537 = ref object of OpenApiRestCall_597424
-proc url_CalendarCalendarListGet_598539(protocol: Scheme; host: string; base: string;
+  Call_CalendarCalendarListGet_580537 = ref object of OpenApiRestCall_579424
+proc url_CalendarCalendarListGet_580539(protocol: Scheme; host: string; base: string;
                                        route: string; path: JsonNode;
                                        query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "calendarId" in path, "`calendarId` is a required path parameter"
   const
@@ -5852,7 +5854,7 @@ proc url_CalendarCalendarListGet_598539(protocol: Scheme; host: string; base: st
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_CalendarCalendarListGet_598538(path: JsonNode; query: JsonNode;
+proc validate_CalendarCalendarListGet_580538(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Returns a calendar from the user's calendar list.
   ## 
@@ -5864,11 +5866,11 @@ proc validate_CalendarCalendarListGet_598538(path: JsonNode; query: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `calendarId` field"
-  var valid_598540 = path.getOrDefault("calendarId")
-  valid_598540 = validateParameter(valid_598540, JString, required = true,
+  var valid_580540 = path.getOrDefault("calendarId")
+  valid_580540 = validateParameter(valid_580540, JString, required = true,
                                  default = nil)
-  if valid_598540 != nil:
-    section.add "calendarId", valid_598540
+  if valid_580540 != nil:
+    section.add "calendarId", valid_580540
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -5886,41 +5888,41 @@ proc validate_CalendarCalendarListGet_598538(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_598541 = query.getOrDefault("fields")
-  valid_598541 = validateParameter(valid_598541, JString, required = false,
+  var valid_580541 = query.getOrDefault("fields")
+  valid_580541 = validateParameter(valid_580541, JString, required = false,
                                  default = nil)
-  if valid_598541 != nil:
-    section.add "fields", valid_598541
-  var valid_598542 = query.getOrDefault("quotaUser")
-  valid_598542 = validateParameter(valid_598542, JString, required = false,
+  if valid_580541 != nil:
+    section.add "fields", valid_580541
+  var valid_580542 = query.getOrDefault("quotaUser")
+  valid_580542 = validateParameter(valid_580542, JString, required = false,
                                  default = nil)
-  if valid_598542 != nil:
-    section.add "quotaUser", valid_598542
-  var valid_598543 = query.getOrDefault("alt")
-  valid_598543 = validateParameter(valid_598543, JString, required = false,
+  if valid_580542 != nil:
+    section.add "quotaUser", valid_580542
+  var valid_580543 = query.getOrDefault("alt")
+  valid_580543 = validateParameter(valid_580543, JString, required = false,
                                  default = newJString("json"))
-  if valid_598543 != nil:
-    section.add "alt", valid_598543
-  var valid_598544 = query.getOrDefault("oauth_token")
-  valid_598544 = validateParameter(valid_598544, JString, required = false,
+  if valid_580543 != nil:
+    section.add "alt", valid_580543
+  var valid_580544 = query.getOrDefault("oauth_token")
+  valid_580544 = validateParameter(valid_580544, JString, required = false,
                                  default = nil)
-  if valid_598544 != nil:
-    section.add "oauth_token", valid_598544
-  var valid_598545 = query.getOrDefault("userIp")
-  valid_598545 = validateParameter(valid_598545, JString, required = false,
+  if valid_580544 != nil:
+    section.add "oauth_token", valid_580544
+  var valid_580545 = query.getOrDefault("userIp")
+  valid_580545 = validateParameter(valid_580545, JString, required = false,
                                  default = nil)
-  if valid_598545 != nil:
-    section.add "userIp", valid_598545
-  var valid_598546 = query.getOrDefault("key")
-  valid_598546 = validateParameter(valid_598546, JString, required = false,
+  if valid_580545 != nil:
+    section.add "userIp", valid_580545
+  var valid_580546 = query.getOrDefault("key")
+  valid_580546 = validateParameter(valid_580546, JString, required = false,
                                  default = nil)
-  if valid_598546 != nil:
-    section.add "key", valid_598546
-  var valid_598547 = query.getOrDefault("prettyPrint")
-  valid_598547 = validateParameter(valid_598547, JBool, required = false,
+  if valid_580546 != nil:
+    section.add "key", valid_580546
+  var valid_580547 = query.getOrDefault("prettyPrint")
+  valid_580547 = validateParameter(valid_580547, JBool, required = false,
                                  default = newJBool(true))
-  if valid_598547 != nil:
-    section.add "prettyPrint", valid_598547
+  if valid_580547 != nil:
+    section.add "prettyPrint", valid_580547
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -5929,20 +5931,20 @@ proc validate_CalendarCalendarListGet_598538(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_598548: Call_CalendarCalendarListGet_598537; path: JsonNode;
+proc call*(call_580548: Call_CalendarCalendarListGet_580537; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Returns a calendar from the user's calendar list.
   ## 
-  let valid = call_598548.validator(path, query, header, formData, body)
-  let scheme = call_598548.pickScheme
+  let valid = call_580548.validator(path, query, header, formData, body)
+  let scheme = call_580548.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_598548.url(scheme.get, call_598548.host, call_598548.base,
-                         call_598548.route, valid.getOrDefault("path"),
+  let url = call_580548.url(scheme.get, call_580548.host, call_580548.base,
+                         call_580548.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_598548, url, valid)
+  result = hook(call_580548, url, valid)
 
-proc call*(call_598549: Call_CalendarCalendarListGet_598537; calendarId: string;
+proc call*(call_580549: Call_CalendarCalendarListGet_580537; calendarId: string;
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           oauthToken: string = ""; userIp: string = ""; key: string = "";
           prettyPrint: bool = true): Recallable =
@@ -5964,30 +5966,30 @@ proc call*(call_598549: Call_CalendarCalendarListGet_598537; calendarId: string;
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_598550 = newJObject()
-  var query_598551 = newJObject()
-  add(query_598551, "fields", newJString(fields))
-  add(query_598551, "quotaUser", newJString(quotaUser))
-  add(query_598551, "alt", newJString(alt))
-  add(path_598550, "calendarId", newJString(calendarId))
-  add(query_598551, "oauth_token", newJString(oauthToken))
-  add(query_598551, "userIp", newJString(userIp))
-  add(query_598551, "key", newJString(key))
-  add(query_598551, "prettyPrint", newJBool(prettyPrint))
-  result = call_598549.call(path_598550, query_598551, nil, nil, nil)
+  var path_580550 = newJObject()
+  var query_580551 = newJObject()
+  add(query_580551, "fields", newJString(fields))
+  add(query_580551, "quotaUser", newJString(quotaUser))
+  add(query_580551, "alt", newJString(alt))
+  add(path_580550, "calendarId", newJString(calendarId))
+  add(query_580551, "oauth_token", newJString(oauthToken))
+  add(query_580551, "userIp", newJString(userIp))
+  add(query_580551, "key", newJString(key))
+  add(query_580551, "prettyPrint", newJBool(prettyPrint))
+  result = call_580549.call(path_580550, query_580551, nil, nil, nil)
 
-var calendarCalendarListGet* = Call_CalendarCalendarListGet_598537(
+var calendarCalendarListGet* = Call_CalendarCalendarListGet_580537(
     name: "calendarCalendarListGet", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/users/me/calendarList/{calendarId}",
-    validator: validate_CalendarCalendarListGet_598538, base: "/calendar/v3",
-    url: url_CalendarCalendarListGet_598539, schemes: {Scheme.Https})
+    validator: validate_CalendarCalendarListGet_580538, base: "/calendar/v3",
+    url: url_CalendarCalendarListGet_580539, schemes: {Scheme.Https})
 type
-  Call_CalendarCalendarListPatch_598585 = ref object of OpenApiRestCall_597424
-proc url_CalendarCalendarListPatch_598587(protocol: Scheme; host: string;
+  Call_CalendarCalendarListPatch_580585 = ref object of OpenApiRestCall_579424
+proc url_CalendarCalendarListPatch_580587(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "calendarId" in path, "`calendarId` is a required path parameter"
   const
@@ -5998,7 +6000,7 @@ proc url_CalendarCalendarListPatch_598587(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_CalendarCalendarListPatch_598586(path: JsonNode; query: JsonNode;
+proc validate_CalendarCalendarListPatch_580586(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Updates an existing calendar on the user's calendar list. This method supports patch semantics.
   ## 
@@ -6010,11 +6012,11 @@ proc validate_CalendarCalendarListPatch_598586(path: JsonNode; query: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `calendarId` field"
-  var valid_598588 = path.getOrDefault("calendarId")
-  valid_598588 = validateParameter(valid_598588, JString, required = true,
+  var valid_580588 = path.getOrDefault("calendarId")
+  valid_580588 = validateParameter(valid_580588, JString, required = true,
                                  default = nil)
-  if valid_598588 != nil:
-    section.add "calendarId", valid_598588
+  if valid_580588 != nil:
+    section.add "calendarId", valid_580588
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -6034,45 +6036,45 @@ proc validate_CalendarCalendarListPatch_598586(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_598589 = query.getOrDefault("fields")
-  valid_598589 = validateParameter(valid_598589, JString, required = false,
+  var valid_580589 = query.getOrDefault("fields")
+  valid_580589 = validateParameter(valid_580589, JString, required = false,
                                  default = nil)
-  if valid_598589 != nil:
-    section.add "fields", valid_598589
-  var valid_598590 = query.getOrDefault("quotaUser")
-  valid_598590 = validateParameter(valid_598590, JString, required = false,
+  if valid_580589 != nil:
+    section.add "fields", valid_580589
+  var valid_580590 = query.getOrDefault("quotaUser")
+  valid_580590 = validateParameter(valid_580590, JString, required = false,
                                  default = nil)
-  if valid_598590 != nil:
-    section.add "quotaUser", valid_598590
-  var valid_598591 = query.getOrDefault("alt")
-  valid_598591 = validateParameter(valid_598591, JString, required = false,
+  if valid_580590 != nil:
+    section.add "quotaUser", valid_580590
+  var valid_580591 = query.getOrDefault("alt")
+  valid_580591 = validateParameter(valid_580591, JString, required = false,
                                  default = newJString("json"))
-  if valid_598591 != nil:
-    section.add "alt", valid_598591
-  var valid_598592 = query.getOrDefault("colorRgbFormat")
-  valid_598592 = validateParameter(valid_598592, JBool, required = false, default = nil)
-  if valid_598592 != nil:
-    section.add "colorRgbFormat", valid_598592
-  var valid_598593 = query.getOrDefault("oauth_token")
-  valid_598593 = validateParameter(valid_598593, JString, required = false,
+  if valid_580591 != nil:
+    section.add "alt", valid_580591
+  var valid_580592 = query.getOrDefault("colorRgbFormat")
+  valid_580592 = validateParameter(valid_580592, JBool, required = false, default = nil)
+  if valid_580592 != nil:
+    section.add "colorRgbFormat", valid_580592
+  var valid_580593 = query.getOrDefault("oauth_token")
+  valid_580593 = validateParameter(valid_580593, JString, required = false,
                                  default = nil)
-  if valid_598593 != nil:
-    section.add "oauth_token", valid_598593
-  var valid_598594 = query.getOrDefault("userIp")
-  valid_598594 = validateParameter(valid_598594, JString, required = false,
+  if valid_580593 != nil:
+    section.add "oauth_token", valid_580593
+  var valid_580594 = query.getOrDefault("userIp")
+  valid_580594 = validateParameter(valid_580594, JString, required = false,
                                  default = nil)
-  if valid_598594 != nil:
-    section.add "userIp", valid_598594
-  var valid_598595 = query.getOrDefault("key")
-  valid_598595 = validateParameter(valid_598595, JString, required = false,
+  if valid_580594 != nil:
+    section.add "userIp", valid_580594
+  var valid_580595 = query.getOrDefault("key")
+  valid_580595 = validateParameter(valid_580595, JString, required = false,
                                  default = nil)
-  if valid_598595 != nil:
-    section.add "key", valid_598595
-  var valid_598596 = query.getOrDefault("prettyPrint")
-  valid_598596 = validateParameter(valid_598596, JBool, required = false,
+  if valid_580595 != nil:
+    section.add "key", valid_580595
+  var valid_580596 = query.getOrDefault("prettyPrint")
+  valid_580596 = validateParameter(valid_580596, JBool, required = false,
                                  default = newJBool(true))
-  if valid_598596 != nil:
-    section.add "prettyPrint", valid_598596
+  if valid_580596 != nil:
+    section.add "prettyPrint", valid_580596
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -6084,20 +6086,20 @@ proc validate_CalendarCalendarListPatch_598586(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_598598: Call_CalendarCalendarListPatch_598585; path: JsonNode;
+proc call*(call_580598: Call_CalendarCalendarListPatch_580585; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Updates an existing calendar on the user's calendar list. This method supports patch semantics.
   ## 
-  let valid = call_598598.validator(path, query, header, formData, body)
-  let scheme = call_598598.pickScheme
+  let valid = call_580598.validator(path, query, header, formData, body)
+  let scheme = call_580598.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_598598.url(scheme.get, call_598598.host, call_598598.base,
-                         call_598598.route, valid.getOrDefault("path"),
+  let url = call_580598.url(scheme.get, call_580598.host, call_580598.base,
+                         call_580598.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_598598, url, valid)
+  result = hook(call_580598, url, valid)
 
-proc call*(call_598599: Call_CalendarCalendarListPatch_598585; calendarId: string;
+proc call*(call_580599: Call_CalendarCalendarListPatch_580585; calendarId: string;
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           colorRgbFormat: bool = false; oauthToken: string = ""; userIp: string = "";
           key: string = ""; body: JsonNode = nil; prettyPrint: bool = true): Recallable =
@@ -6122,34 +6124,34 @@ proc call*(call_598599: Call_CalendarCalendarListPatch_598585; calendarId: strin
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_598600 = newJObject()
-  var query_598601 = newJObject()
-  var body_598602 = newJObject()
-  add(query_598601, "fields", newJString(fields))
-  add(query_598601, "quotaUser", newJString(quotaUser))
-  add(query_598601, "alt", newJString(alt))
-  add(query_598601, "colorRgbFormat", newJBool(colorRgbFormat))
-  add(path_598600, "calendarId", newJString(calendarId))
-  add(query_598601, "oauth_token", newJString(oauthToken))
-  add(query_598601, "userIp", newJString(userIp))
-  add(query_598601, "key", newJString(key))
+  var path_580600 = newJObject()
+  var query_580601 = newJObject()
+  var body_580602 = newJObject()
+  add(query_580601, "fields", newJString(fields))
+  add(query_580601, "quotaUser", newJString(quotaUser))
+  add(query_580601, "alt", newJString(alt))
+  add(query_580601, "colorRgbFormat", newJBool(colorRgbFormat))
+  add(path_580600, "calendarId", newJString(calendarId))
+  add(query_580601, "oauth_token", newJString(oauthToken))
+  add(query_580601, "userIp", newJString(userIp))
+  add(query_580601, "key", newJString(key))
   if body != nil:
-    body_598602 = body
-  add(query_598601, "prettyPrint", newJBool(prettyPrint))
-  result = call_598599.call(path_598600, query_598601, nil, nil, body_598602)
+    body_580602 = body
+  add(query_580601, "prettyPrint", newJBool(prettyPrint))
+  result = call_580599.call(path_580600, query_580601, nil, nil, body_580602)
 
-var calendarCalendarListPatch* = Call_CalendarCalendarListPatch_598585(
+var calendarCalendarListPatch* = Call_CalendarCalendarListPatch_580585(
     name: "calendarCalendarListPatch", meth: HttpMethod.HttpPatch,
     host: "www.googleapis.com", route: "/users/me/calendarList/{calendarId}",
-    validator: validate_CalendarCalendarListPatch_598586, base: "/calendar/v3",
-    url: url_CalendarCalendarListPatch_598587, schemes: {Scheme.Https})
+    validator: validate_CalendarCalendarListPatch_580586, base: "/calendar/v3",
+    url: url_CalendarCalendarListPatch_580587, schemes: {Scheme.Https})
 type
-  Call_CalendarCalendarListDelete_598570 = ref object of OpenApiRestCall_597424
-proc url_CalendarCalendarListDelete_598572(protocol: Scheme; host: string;
+  Call_CalendarCalendarListDelete_580570 = ref object of OpenApiRestCall_579424
+proc url_CalendarCalendarListDelete_580572(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "calendarId" in path, "`calendarId` is a required path parameter"
   const
@@ -6160,7 +6162,7 @@ proc url_CalendarCalendarListDelete_598572(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_CalendarCalendarListDelete_598571(path: JsonNode; query: JsonNode;
+proc validate_CalendarCalendarListDelete_580571(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Removes a calendar from the user's calendar list.
   ## 
@@ -6172,11 +6174,11 @@ proc validate_CalendarCalendarListDelete_598571(path: JsonNode; query: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `calendarId` field"
-  var valid_598573 = path.getOrDefault("calendarId")
-  valid_598573 = validateParameter(valid_598573, JString, required = true,
+  var valid_580573 = path.getOrDefault("calendarId")
+  valid_580573 = validateParameter(valid_580573, JString, required = true,
                                  default = nil)
-  if valid_598573 != nil:
-    section.add "calendarId", valid_598573
+  if valid_580573 != nil:
+    section.add "calendarId", valid_580573
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -6194,41 +6196,41 @@ proc validate_CalendarCalendarListDelete_598571(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_598574 = query.getOrDefault("fields")
-  valid_598574 = validateParameter(valid_598574, JString, required = false,
+  var valid_580574 = query.getOrDefault("fields")
+  valid_580574 = validateParameter(valid_580574, JString, required = false,
                                  default = nil)
-  if valid_598574 != nil:
-    section.add "fields", valid_598574
-  var valid_598575 = query.getOrDefault("quotaUser")
-  valid_598575 = validateParameter(valid_598575, JString, required = false,
+  if valid_580574 != nil:
+    section.add "fields", valid_580574
+  var valid_580575 = query.getOrDefault("quotaUser")
+  valid_580575 = validateParameter(valid_580575, JString, required = false,
                                  default = nil)
-  if valid_598575 != nil:
-    section.add "quotaUser", valid_598575
-  var valid_598576 = query.getOrDefault("alt")
-  valid_598576 = validateParameter(valid_598576, JString, required = false,
+  if valid_580575 != nil:
+    section.add "quotaUser", valid_580575
+  var valid_580576 = query.getOrDefault("alt")
+  valid_580576 = validateParameter(valid_580576, JString, required = false,
                                  default = newJString("json"))
-  if valid_598576 != nil:
-    section.add "alt", valid_598576
-  var valid_598577 = query.getOrDefault("oauth_token")
-  valid_598577 = validateParameter(valid_598577, JString, required = false,
+  if valid_580576 != nil:
+    section.add "alt", valid_580576
+  var valid_580577 = query.getOrDefault("oauth_token")
+  valid_580577 = validateParameter(valid_580577, JString, required = false,
                                  default = nil)
-  if valid_598577 != nil:
-    section.add "oauth_token", valid_598577
-  var valid_598578 = query.getOrDefault("userIp")
-  valid_598578 = validateParameter(valid_598578, JString, required = false,
+  if valid_580577 != nil:
+    section.add "oauth_token", valid_580577
+  var valid_580578 = query.getOrDefault("userIp")
+  valid_580578 = validateParameter(valid_580578, JString, required = false,
                                  default = nil)
-  if valid_598578 != nil:
-    section.add "userIp", valid_598578
-  var valid_598579 = query.getOrDefault("key")
-  valid_598579 = validateParameter(valid_598579, JString, required = false,
+  if valid_580578 != nil:
+    section.add "userIp", valid_580578
+  var valid_580579 = query.getOrDefault("key")
+  valid_580579 = validateParameter(valid_580579, JString, required = false,
                                  default = nil)
-  if valid_598579 != nil:
-    section.add "key", valid_598579
-  var valid_598580 = query.getOrDefault("prettyPrint")
-  valid_598580 = validateParameter(valid_598580, JBool, required = false,
+  if valid_580579 != nil:
+    section.add "key", valid_580579
+  var valid_580580 = query.getOrDefault("prettyPrint")
+  valid_580580 = validateParameter(valid_580580, JBool, required = false,
                                  default = newJBool(true))
-  if valid_598580 != nil:
-    section.add "prettyPrint", valid_598580
+  if valid_580580 != nil:
+    section.add "prettyPrint", valid_580580
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -6237,20 +6239,20 @@ proc validate_CalendarCalendarListDelete_598571(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_598581: Call_CalendarCalendarListDelete_598570; path: JsonNode;
+proc call*(call_580581: Call_CalendarCalendarListDelete_580570; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Removes a calendar from the user's calendar list.
   ## 
-  let valid = call_598581.validator(path, query, header, formData, body)
-  let scheme = call_598581.pickScheme
+  let valid = call_580581.validator(path, query, header, formData, body)
+  let scheme = call_580581.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_598581.url(scheme.get, call_598581.host, call_598581.base,
-                         call_598581.route, valid.getOrDefault("path"),
+  let url = call_580581.url(scheme.get, call_580581.host, call_580581.base,
+                         call_580581.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_598581, url, valid)
+  result = hook(call_580581, url, valid)
 
-proc call*(call_598582: Call_CalendarCalendarListDelete_598570; calendarId: string;
+proc call*(call_580582: Call_CalendarCalendarListDelete_580570; calendarId: string;
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           oauthToken: string = ""; userIp: string = ""; key: string = "";
           prettyPrint: bool = true): Recallable =
@@ -6272,33 +6274,33 @@ proc call*(call_598582: Call_CalendarCalendarListDelete_598570; calendarId: stri
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_598583 = newJObject()
-  var query_598584 = newJObject()
-  add(query_598584, "fields", newJString(fields))
-  add(query_598584, "quotaUser", newJString(quotaUser))
-  add(query_598584, "alt", newJString(alt))
-  add(path_598583, "calendarId", newJString(calendarId))
-  add(query_598584, "oauth_token", newJString(oauthToken))
-  add(query_598584, "userIp", newJString(userIp))
-  add(query_598584, "key", newJString(key))
-  add(query_598584, "prettyPrint", newJBool(prettyPrint))
-  result = call_598582.call(path_598583, query_598584, nil, nil, nil)
+  var path_580583 = newJObject()
+  var query_580584 = newJObject()
+  add(query_580584, "fields", newJString(fields))
+  add(query_580584, "quotaUser", newJString(quotaUser))
+  add(query_580584, "alt", newJString(alt))
+  add(path_580583, "calendarId", newJString(calendarId))
+  add(query_580584, "oauth_token", newJString(oauthToken))
+  add(query_580584, "userIp", newJString(userIp))
+  add(query_580584, "key", newJString(key))
+  add(query_580584, "prettyPrint", newJBool(prettyPrint))
+  result = call_580582.call(path_580583, query_580584, nil, nil, nil)
 
-var calendarCalendarListDelete* = Call_CalendarCalendarListDelete_598570(
+var calendarCalendarListDelete* = Call_CalendarCalendarListDelete_580570(
     name: "calendarCalendarListDelete", meth: HttpMethod.HttpDelete,
     host: "www.googleapis.com", route: "/users/me/calendarList/{calendarId}",
-    validator: validate_CalendarCalendarListDelete_598571, base: "/calendar/v3",
-    url: url_CalendarCalendarListDelete_598572, schemes: {Scheme.Https})
+    validator: validate_CalendarCalendarListDelete_580571, base: "/calendar/v3",
+    url: url_CalendarCalendarListDelete_580572, schemes: {Scheme.Https})
 type
-  Call_CalendarSettingsList_598603 = ref object of OpenApiRestCall_597424
-proc url_CalendarSettingsList_598605(protocol: Scheme; host: string; base: string;
+  Call_CalendarSettingsList_580603 = ref object of OpenApiRestCall_579424
+proc url_CalendarSettingsList_580605(protocol: Scheme; host: string; base: string;
                                     route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   result.path = base & route
 
-proc validate_CalendarSettingsList_598604(path: JsonNode; query: JsonNode;
+proc validate_CalendarSettingsList_580604(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Returns all user settings for the authenticated user.
   ## 
@@ -6331,55 +6333,55 @@ proc validate_CalendarSettingsList_598604(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_598606 = query.getOrDefault("fields")
-  valid_598606 = validateParameter(valid_598606, JString, required = false,
+  var valid_580606 = query.getOrDefault("fields")
+  valid_580606 = validateParameter(valid_580606, JString, required = false,
                                  default = nil)
-  if valid_598606 != nil:
-    section.add "fields", valid_598606
-  var valid_598607 = query.getOrDefault("pageToken")
-  valid_598607 = validateParameter(valid_598607, JString, required = false,
+  if valid_580606 != nil:
+    section.add "fields", valid_580606
+  var valid_580607 = query.getOrDefault("pageToken")
+  valid_580607 = validateParameter(valid_580607, JString, required = false,
                                  default = nil)
-  if valid_598607 != nil:
-    section.add "pageToken", valid_598607
-  var valid_598608 = query.getOrDefault("quotaUser")
-  valid_598608 = validateParameter(valid_598608, JString, required = false,
+  if valid_580607 != nil:
+    section.add "pageToken", valid_580607
+  var valid_580608 = query.getOrDefault("quotaUser")
+  valid_580608 = validateParameter(valid_580608, JString, required = false,
                                  default = nil)
-  if valid_598608 != nil:
-    section.add "quotaUser", valid_598608
-  var valid_598609 = query.getOrDefault("alt")
-  valid_598609 = validateParameter(valid_598609, JString, required = false,
+  if valid_580608 != nil:
+    section.add "quotaUser", valid_580608
+  var valid_580609 = query.getOrDefault("alt")
+  valid_580609 = validateParameter(valid_580609, JString, required = false,
                                  default = newJString("json"))
-  if valid_598609 != nil:
-    section.add "alt", valid_598609
-  var valid_598610 = query.getOrDefault("oauth_token")
-  valid_598610 = validateParameter(valid_598610, JString, required = false,
+  if valid_580609 != nil:
+    section.add "alt", valid_580609
+  var valid_580610 = query.getOrDefault("oauth_token")
+  valid_580610 = validateParameter(valid_580610, JString, required = false,
                                  default = nil)
-  if valid_598610 != nil:
-    section.add "oauth_token", valid_598610
-  var valid_598611 = query.getOrDefault("syncToken")
-  valid_598611 = validateParameter(valid_598611, JString, required = false,
+  if valid_580610 != nil:
+    section.add "oauth_token", valid_580610
+  var valid_580611 = query.getOrDefault("syncToken")
+  valid_580611 = validateParameter(valid_580611, JString, required = false,
                                  default = nil)
-  if valid_598611 != nil:
-    section.add "syncToken", valid_598611
-  var valid_598612 = query.getOrDefault("userIp")
-  valid_598612 = validateParameter(valid_598612, JString, required = false,
+  if valid_580611 != nil:
+    section.add "syncToken", valid_580611
+  var valid_580612 = query.getOrDefault("userIp")
+  valid_580612 = validateParameter(valid_580612, JString, required = false,
                                  default = nil)
-  if valid_598612 != nil:
-    section.add "userIp", valid_598612
-  var valid_598613 = query.getOrDefault("maxResults")
-  valid_598613 = validateParameter(valid_598613, JInt, required = false, default = nil)
-  if valid_598613 != nil:
-    section.add "maxResults", valid_598613
-  var valid_598614 = query.getOrDefault("key")
-  valid_598614 = validateParameter(valid_598614, JString, required = false,
+  if valid_580612 != nil:
+    section.add "userIp", valid_580612
+  var valid_580613 = query.getOrDefault("maxResults")
+  valid_580613 = validateParameter(valid_580613, JInt, required = false, default = nil)
+  if valid_580613 != nil:
+    section.add "maxResults", valid_580613
+  var valid_580614 = query.getOrDefault("key")
+  valid_580614 = validateParameter(valid_580614, JString, required = false,
                                  default = nil)
-  if valid_598614 != nil:
-    section.add "key", valid_598614
-  var valid_598615 = query.getOrDefault("prettyPrint")
-  valid_598615 = validateParameter(valid_598615, JBool, required = false,
+  if valid_580614 != nil:
+    section.add "key", valid_580614
+  var valid_580615 = query.getOrDefault("prettyPrint")
+  valid_580615 = validateParameter(valid_580615, JBool, required = false,
                                  default = newJBool(true))
-  if valid_598615 != nil:
-    section.add "prettyPrint", valid_598615
+  if valid_580615 != nil:
+    section.add "prettyPrint", valid_580615
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -6388,20 +6390,20 @@ proc validate_CalendarSettingsList_598604(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_598616: Call_CalendarSettingsList_598603; path: JsonNode;
+proc call*(call_580616: Call_CalendarSettingsList_580603; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Returns all user settings for the authenticated user.
   ## 
-  let valid = call_598616.validator(path, query, header, formData, body)
-  let scheme = call_598616.pickScheme
+  let valid = call_580616.validator(path, query, header, formData, body)
+  let scheme = call_580616.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_598616.url(scheme.get, call_598616.host, call_598616.base,
-                         call_598616.route, valid.getOrDefault("path"),
+  let url = call_580616.url(scheme.get, call_580616.host, call_580616.base,
+                         call_580616.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_598616, url, valid)
+  result = hook(call_580616, url, valid)
 
-proc call*(call_598617: Call_CalendarSettingsList_598603; fields: string = "";
+proc call*(call_580617: Call_CalendarSettingsList_580603; fields: string = "";
           pageToken: string = ""; quotaUser: string = ""; alt: string = "json";
           oauthToken: string = ""; syncToken: string = ""; userIp: string = "";
           maxResults: int = 0; key: string = ""; prettyPrint: bool = true): Recallable =
@@ -6430,34 +6432,34 @@ proc call*(call_598617: Call_CalendarSettingsList_598603; fields: string = "";
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var query_598618 = newJObject()
-  add(query_598618, "fields", newJString(fields))
-  add(query_598618, "pageToken", newJString(pageToken))
-  add(query_598618, "quotaUser", newJString(quotaUser))
-  add(query_598618, "alt", newJString(alt))
-  add(query_598618, "oauth_token", newJString(oauthToken))
-  add(query_598618, "syncToken", newJString(syncToken))
-  add(query_598618, "userIp", newJString(userIp))
-  add(query_598618, "maxResults", newJInt(maxResults))
-  add(query_598618, "key", newJString(key))
-  add(query_598618, "prettyPrint", newJBool(prettyPrint))
-  result = call_598617.call(nil, query_598618, nil, nil, nil)
+  var query_580618 = newJObject()
+  add(query_580618, "fields", newJString(fields))
+  add(query_580618, "pageToken", newJString(pageToken))
+  add(query_580618, "quotaUser", newJString(quotaUser))
+  add(query_580618, "alt", newJString(alt))
+  add(query_580618, "oauth_token", newJString(oauthToken))
+  add(query_580618, "syncToken", newJString(syncToken))
+  add(query_580618, "userIp", newJString(userIp))
+  add(query_580618, "maxResults", newJInt(maxResults))
+  add(query_580618, "key", newJString(key))
+  add(query_580618, "prettyPrint", newJBool(prettyPrint))
+  result = call_580617.call(nil, query_580618, nil, nil, nil)
 
-var calendarSettingsList* = Call_CalendarSettingsList_598603(
+var calendarSettingsList* = Call_CalendarSettingsList_580603(
     name: "calendarSettingsList", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/users/me/settings",
-    validator: validate_CalendarSettingsList_598604, base: "/calendar/v3",
-    url: url_CalendarSettingsList_598605, schemes: {Scheme.Https})
+    validator: validate_CalendarSettingsList_580604, base: "/calendar/v3",
+    url: url_CalendarSettingsList_580605, schemes: {Scheme.Https})
 type
-  Call_CalendarSettingsWatch_598619 = ref object of OpenApiRestCall_597424
-proc url_CalendarSettingsWatch_598621(protocol: Scheme; host: string; base: string;
+  Call_CalendarSettingsWatch_580619 = ref object of OpenApiRestCall_579424
+proc url_CalendarSettingsWatch_580621(protocol: Scheme; host: string; base: string;
                                      route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   result.path = base & route
 
-proc validate_CalendarSettingsWatch_598620(path: JsonNode; query: JsonNode;
+proc validate_CalendarSettingsWatch_580620(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Watch for changes to Settings resources.
   ## 
@@ -6490,55 +6492,55 @@ proc validate_CalendarSettingsWatch_598620(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_598622 = query.getOrDefault("fields")
-  valid_598622 = validateParameter(valid_598622, JString, required = false,
+  var valid_580622 = query.getOrDefault("fields")
+  valid_580622 = validateParameter(valid_580622, JString, required = false,
                                  default = nil)
-  if valid_598622 != nil:
-    section.add "fields", valid_598622
-  var valid_598623 = query.getOrDefault("pageToken")
-  valid_598623 = validateParameter(valid_598623, JString, required = false,
+  if valid_580622 != nil:
+    section.add "fields", valid_580622
+  var valid_580623 = query.getOrDefault("pageToken")
+  valid_580623 = validateParameter(valid_580623, JString, required = false,
                                  default = nil)
-  if valid_598623 != nil:
-    section.add "pageToken", valid_598623
-  var valid_598624 = query.getOrDefault("quotaUser")
-  valid_598624 = validateParameter(valid_598624, JString, required = false,
+  if valid_580623 != nil:
+    section.add "pageToken", valid_580623
+  var valid_580624 = query.getOrDefault("quotaUser")
+  valid_580624 = validateParameter(valid_580624, JString, required = false,
                                  default = nil)
-  if valid_598624 != nil:
-    section.add "quotaUser", valid_598624
-  var valid_598625 = query.getOrDefault("alt")
-  valid_598625 = validateParameter(valid_598625, JString, required = false,
+  if valid_580624 != nil:
+    section.add "quotaUser", valid_580624
+  var valid_580625 = query.getOrDefault("alt")
+  valid_580625 = validateParameter(valid_580625, JString, required = false,
                                  default = newJString("json"))
-  if valid_598625 != nil:
-    section.add "alt", valid_598625
-  var valid_598626 = query.getOrDefault("oauth_token")
-  valid_598626 = validateParameter(valid_598626, JString, required = false,
+  if valid_580625 != nil:
+    section.add "alt", valid_580625
+  var valid_580626 = query.getOrDefault("oauth_token")
+  valid_580626 = validateParameter(valid_580626, JString, required = false,
                                  default = nil)
-  if valid_598626 != nil:
-    section.add "oauth_token", valid_598626
-  var valid_598627 = query.getOrDefault("syncToken")
-  valid_598627 = validateParameter(valid_598627, JString, required = false,
+  if valid_580626 != nil:
+    section.add "oauth_token", valid_580626
+  var valid_580627 = query.getOrDefault("syncToken")
+  valid_580627 = validateParameter(valid_580627, JString, required = false,
                                  default = nil)
-  if valid_598627 != nil:
-    section.add "syncToken", valid_598627
-  var valid_598628 = query.getOrDefault("userIp")
-  valid_598628 = validateParameter(valid_598628, JString, required = false,
+  if valid_580627 != nil:
+    section.add "syncToken", valid_580627
+  var valid_580628 = query.getOrDefault("userIp")
+  valid_580628 = validateParameter(valid_580628, JString, required = false,
                                  default = nil)
-  if valid_598628 != nil:
-    section.add "userIp", valid_598628
-  var valid_598629 = query.getOrDefault("maxResults")
-  valid_598629 = validateParameter(valid_598629, JInt, required = false, default = nil)
-  if valid_598629 != nil:
-    section.add "maxResults", valid_598629
-  var valid_598630 = query.getOrDefault("key")
-  valid_598630 = validateParameter(valid_598630, JString, required = false,
+  if valid_580628 != nil:
+    section.add "userIp", valid_580628
+  var valid_580629 = query.getOrDefault("maxResults")
+  valid_580629 = validateParameter(valid_580629, JInt, required = false, default = nil)
+  if valid_580629 != nil:
+    section.add "maxResults", valid_580629
+  var valid_580630 = query.getOrDefault("key")
+  valid_580630 = validateParameter(valid_580630, JString, required = false,
                                  default = nil)
-  if valid_598630 != nil:
-    section.add "key", valid_598630
-  var valid_598631 = query.getOrDefault("prettyPrint")
-  valid_598631 = validateParameter(valid_598631, JBool, required = false,
+  if valid_580630 != nil:
+    section.add "key", valid_580630
+  var valid_580631 = query.getOrDefault("prettyPrint")
+  valid_580631 = validateParameter(valid_580631, JBool, required = false,
                                  default = newJBool(true))
-  if valid_598631 != nil:
-    section.add "prettyPrint", valid_598631
+  if valid_580631 != nil:
+    section.add "prettyPrint", valid_580631
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -6550,20 +6552,20 @@ proc validate_CalendarSettingsWatch_598620(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_598633: Call_CalendarSettingsWatch_598619; path: JsonNode;
+proc call*(call_580633: Call_CalendarSettingsWatch_580619; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Watch for changes to Settings resources.
   ## 
-  let valid = call_598633.validator(path, query, header, formData, body)
-  let scheme = call_598633.pickScheme
+  let valid = call_580633.validator(path, query, header, formData, body)
+  let scheme = call_580633.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_598633.url(scheme.get, call_598633.host, call_598633.base,
-                         call_598633.route, valid.getOrDefault("path"),
+  let url = call_580633.url(scheme.get, call_580633.host, call_580633.base,
+                         call_580633.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_598633, url, valid)
+  result = hook(call_580633, url, valid)
 
-proc call*(call_598634: Call_CalendarSettingsWatch_598619; fields: string = "";
+proc call*(call_580634: Call_CalendarSettingsWatch_580619; fields: string = "";
           pageToken: string = ""; quotaUser: string = ""; alt: string = "json";
           oauthToken: string = ""; syncToken: string = ""; userIp: string = "";
           maxResults: int = 0; key: string = ""; resource: JsonNode = nil;
@@ -6594,34 +6596,34 @@ proc call*(call_598634: Call_CalendarSettingsWatch_598619; fields: string = "";
   ##   resource: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var query_598635 = newJObject()
-  var body_598636 = newJObject()
-  add(query_598635, "fields", newJString(fields))
-  add(query_598635, "pageToken", newJString(pageToken))
-  add(query_598635, "quotaUser", newJString(quotaUser))
-  add(query_598635, "alt", newJString(alt))
-  add(query_598635, "oauth_token", newJString(oauthToken))
-  add(query_598635, "syncToken", newJString(syncToken))
-  add(query_598635, "userIp", newJString(userIp))
-  add(query_598635, "maxResults", newJInt(maxResults))
-  add(query_598635, "key", newJString(key))
+  var query_580635 = newJObject()
+  var body_580636 = newJObject()
+  add(query_580635, "fields", newJString(fields))
+  add(query_580635, "pageToken", newJString(pageToken))
+  add(query_580635, "quotaUser", newJString(quotaUser))
+  add(query_580635, "alt", newJString(alt))
+  add(query_580635, "oauth_token", newJString(oauthToken))
+  add(query_580635, "syncToken", newJString(syncToken))
+  add(query_580635, "userIp", newJString(userIp))
+  add(query_580635, "maxResults", newJInt(maxResults))
+  add(query_580635, "key", newJString(key))
   if resource != nil:
-    body_598636 = resource
-  add(query_598635, "prettyPrint", newJBool(prettyPrint))
-  result = call_598634.call(nil, query_598635, nil, nil, body_598636)
+    body_580636 = resource
+  add(query_580635, "prettyPrint", newJBool(prettyPrint))
+  result = call_580634.call(nil, query_580635, nil, nil, body_580636)
 
-var calendarSettingsWatch* = Call_CalendarSettingsWatch_598619(
+var calendarSettingsWatch* = Call_CalendarSettingsWatch_580619(
     name: "calendarSettingsWatch", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com", route: "/users/me/settings/watch",
-    validator: validate_CalendarSettingsWatch_598620, base: "/calendar/v3",
-    url: url_CalendarSettingsWatch_598621, schemes: {Scheme.Https})
+    validator: validate_CalendarSettingsWatch_580620, base: "/calendar/v3",
+    url: url_CalendarSettingsWatch_580621, schemes: {Scheme.Https})
 type
-  Call_CalendarSettingsGet_598637 = ref object of OpenApiRestCall_597424
-proc url_CalendarSettingsGet_598639(protocol: Scheme; host: string; base: string;
+  Call_CalendarSettingsGet_580637 = ref object of OpenApiRestCall_579424
+proc url_CalendarSettingsGet_580639(protocol: Scheme; host: string; base: string;
                                    route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "setting" in path, "`setting` is a required path parameter"
   const
@@ -6632,7 +6634,7 @@ proc url_CalendarSettingsGet_598639(protocol: Scheme; host: string; base: string
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_CalendarSettingsGet_598638(path: JsonNode; query: JsonNode;
+proc validate_CalendarSettingsGet_580638(path: JsonNode; query: JsonNode;
                                         header: JsonNode; formData: JsonNode;
                                         body: JsonNode): JsonNode =
   ## Returns a single user setting.
@@ -6644,11 +6646,11 @@ proc validate_CalendarSettingsGet_598638(path: JsonNode; query: JsonNode;
   ##          : The id of the user setting.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `setting` field"
-  var valid_598640 = path.getOrDefault("setting")
-  valid_598640 = validateParameter(valid_598640, JString, required = true,
+  var valid_580640 = path.getOrDefault("setting")
+  valid_580640 = validateParameter(valid_580640, JString, required = true,
                                  default = nil)
-  if valid_598640 != nil:
-    section.add "setting", valid_598640
+  if valid_580640 != nil:
+    section.add "setting", valid_580640
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -6666,41 +6668,41 @@ proc validate_CalendarSettingsGet_598638(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_598641 = query.getOrDefault("fields")
-  valid_598641 = validateParameter(valid_598641, JString, required = false,
+  var valid_580641 = query.getOrDefault("fields")
+  valid_580641 = validateParameter(valid_580641, JString, required = false,
                                  default = nil)
-  if valid_598641 != nil:
-    section.add "fields", valid_598641
-  var valid_598642 = query.getOrDefault("quotaUser")
-  valid_598642 = validateParameter(valid_598642, JString, required = false,
+  if valid_580641 != nil:
+    section.add "fields", valid_580641
+  var valid_580642 = query.getOrDefault("quotaUser")
+  valid_580642 = validateParameter(valid_580642, JString, required = false,
                                  default = nil)
-  if valid_598642 != nil:
-    section.add "quotaUser", valid_598642
-  var valid_598643 = query.getOrDefault("alt")
-  valid_598643 = validateParameter(valid_598643, JString, required = false,
+  if valid_580642 != nil:
+    section.add "quotaUser", valid_580642
+  var valid_580643 = query.getOrDefault("alt")
+  valid_580643 = validateParameter(valid_580643, JString, required = false,
                                  default = newJString("json"))
-  if valid_598643 != nil:
-    section.add "alt", valid_598643
-  var valid_598644 = query.getOrDefault("oauth_token")
-  valid_598644 = validateParameter(valid_598644, JString, required = false,
+  if valid_580643 != nil:
+    section.add "alt", valid_580643
+  var valid_580644 = query.getOrDefault("oauth_token")
+  valid_580644 = validateParameter(valid_580644, JString, required = false,
                                  default = nil)
-  if valid_598644 != nil:
-    section.add "oauth_token", valid_598644
-  var valid_598645 = query.getOrDefault("userIp")
-  valid_598645 = validateParameter(valid_598645, JString, required = false,
+  if valid_580644 != nil:
+    section.add "oauth_token", valid_580644
+  var valid_580645 = query.getOrDefault("userIp")
+  valid_580645 = validateParameter(valid_580645, JString, required = false,
                                  default = nil)
-  if valid_598645 != nil:
-    section.add "userIp", valid_598645
-  var valid_598646 = query.getOrDefault("key")
-  valid_598646 = validateParameter(valid_598646, JString, required = false,
+  if valid_580645 != nil:
+    section.add "userIp", valid_580645
+  var valid_580646 = query.getOrDefault("key")
+  valid_580646 = validateParameter(valid_580646, JString, required = false,
                                  default = nil)
-  if valid_598646 != nil:
-    section.add "key", valid_598646
-  var valid_598647 = query.getOrDefault("prettyPrint")
-  valid_598647 = validateParameter(valid_598647, JBool, required = false,
+  if valid_580646 != nil:
+    section.add "key", valid_580646
+  var valid_580647 = query.getOrDefault("prettyPrint")
+  valid_580647 = validateParameter(valid_580647, JBool, required = false,
                                  default = newJBool(true))
-  if valid_598647 != nil:
-    section.add "prettyPrint", valid_598647
+  if valid_580647 != nil:
+    section.add "prettyPrint", valid_580647
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -6709,20 +6711,20 @@ proc validate_CalendarSettingsGet_598638(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_598648: Call_CalendarSettingsGet_598637; path: JsonNode;
+proc call*(call_580648: Call_CalendarSettingsGet_580637; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Returns a single user setting.
   ## 
-  let valid = call_598648.validator(path, query, header, formData, body)
-  let scheme = call_598648.pickScheme
+  let valid = call_580648.validator(path, query, header, formData, body)
+  let scheme = call_580648.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_598648.url(scheme.get, call_598648.host, call_598648.base,
-                         call_598648.route, valid.getOrDefault("path"),
+  let url = call_580648.url(scheme.get, call_580648.host, call_580648.base,
+                         call_580648.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_598648, url, valid)
+  result = hook(call_580648, url, valid)
 
-proc call*(call_598649: Call_CalendarSettingsGet_598637; setting: string;
+proc call*(call_580649: Call_CalendarSettingsGet_580637; setting: string;
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           oauthToken: string = ""; userIp: string = ""; key: string = "";
           prettyPrint: bool = true): Recallable =
@@ -6744,26 +6746,116 @@ proc call*(call_598649: Call_CalendarSettingsGet_598637; setting: string;
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_598650 = newJObject()
-  var query_598651 = newJObject()
-  add(query_598651, "fields", newJString(fields))
-  add(query_598651, "quotaUser", newJString(quotaUser))
-  add(query_598651, "alt", newJString(alt))
-  add(query_598651, "oauth_token", newJString(oauthToken))
-  add(query_598651, "userIp", newJString(userIp))
-  add(path_598650, "setting", newJString(setting))
-  add(query_598651, "key", newJString(key))
-  add(query_598651, "prettyPrint", newJBool(prettyPrint))
-  result = call_598649.call(path_598650, query_598651, nil, nil, nil)
+  var path_580650 = newJObject()
+  var query_580651 = newJObject()
+  add(query_580651, "fields", newJString(fields))
+  add(query_580651, "quotaUser", newJString(quotaUser))
+  add(query_580651, "alt", newJString(alt))
+  add(query_580651, "oauth_token", newJString(oauthToken))
+  add(query_580651, "userIp", newJString(userIp))
+  add(path_580650, "setting", newJString(setting))
+  add(query_580651, "key", newJString(key))
+  add(query_580651, "prettyPrint", newJBool(prettyPrint))
+  result = call_580649.call(path_580650, query_580651, nil, nil, nil)
 
-var calendarSettingsGet* = Call_CalendarSettingsGet_598637(
+var calendarSettingsGet* = Call_CalendarSettingsGet_580637(
     name: "calendarSettingsGet", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/users/me/settings/{setting}",
-    validator: validate_CalendarSettingsGet_598638, base: "/calendar/v3",
-    url: url_CalendarSettingsGet_598639, schemes: {Scheme.Https})
+    validator: validate_CalendarSettingsGet_580638, base: "/calendar/v3",
+    url: url_CalendarSettingsGet_580639, schemes: {Scheme.Https})
 export
   rest
 
+type
+  GoogleAuth = ref object
+    endpoint*: Uri
+    token: string
+    expiry*: float64
+    issued*: float64
+    email: string
+    key: string
+    scope*: seq[string]
+    form: string
+    digest: Hash
+
+const
+  endpoint = "https://www.googleapis.com/oauth2/v4/token".parseUri
+var auth = GoogleAuth(endpoint: endpoint)
+proc hash(auth: GoogleAuth): Hash =
+  ## yield differing values for effectively different auth payloads
+  result = hash($auth.endpoint)
+  result = result !& hash(auth.email)
+  result = result !& hash(auth.key)
+  result = result !& hash(auth.scope.join(" "))
+  result = !$result
+
+proc newAuthenticator*(path: string): GoogleAuth =
+  let
+    input = readFile(path)
+    js = parseJson(input)
+  auth.email = js["client_email"].getStr
+  auth.key = js["private_key"].getStr
+  result = auth
+
+proc store(auth: var GoogleAuth; token: string; expiry: int; form: string) =
+  auth.token = token
+  auth.issued = epochTime()
+  auth.expiry = auth.issued + expiry.float64
+  auth.form = form
+  auth.digest = auth.hash
+
+proc authenticate*(fresh: float64 = -3600.0; lifetime: int = 3600): Future[bool] {.async.} =
+  ## get or refresh an authentication token; provide `fresh`
+  ## to ensure that the token won't expire in the next N seconds.
+  ## provide `lifetime` to indicate how long the token should last.
+  let clock = epochTime()
+  if auth.expiry > clock + fresh:
+    if auth.hash == auth.digest:
+      return true
+  let
+    expiry = clock.int + lifetime
+    header = JOSEHeader(alg: RS256, typ: "JWT")
+    claims = %*{"iss": auth.email, "scope": auth.scope.join(" "),
+              "aud": "https://www.googleapis.com/oauth2/v4/token", "exp": expiry,
+              "iat": clock.int}
+  var tok = JWT(header: header, claims: toClaims(claims))
+  tok.sign(auth.key)
+  let post = encodeQuery({"grant_type": "urn:ietf:params:oauth:grant-type:jwt-bearer",
+                       "assertion": $tok}, usePlus = false, omitEq = false)
+  var client = newAsyncHttpClient()
+  client.headers = newHttpHeaders({"Content-Type": "application/x-www-form-urlencoded",
+                                 "Content-Length": $post.len})
+  let response = await client.request($auth.endpoint, HttpPost, body = post)
+  if not response.code.is2xx:
+    return false
+  let body = await response.body
+  client.close
+  try:
+    let js = parseJson(body)
+    auth.store(js["access_token"].getStr, js["expires_in"].getInt,
+               js["token_type"].getStr)
+  except KeyError:
+    return false
+  except JsonParsingError:
+    return false
+  return true
+
+proc composeQueryString(query: JsonNode): string =
+  var qs: seq[KeyVal]
+  if query == nil:
+    return ""
+  for k, v in query.pairs:
+    qs.add (key: k, val: v.getStr)
+  result = encodeQuery(qs, usePlus = false, omitEq = false)
+
 method hook(call: OpenApiRestCall; url: Uri; input: JsonNode): Recallable {.base.} =
-  let headers = massageHeaders(input.getOrDefault("header"))
-  result = newRecallable(call, url, headers, input.getOrDefault("body").getStr)
+  var headers = massageHeaders(input.getOrDefault("header"))
+  let body = input.getOrDefault("body").getStr
+  if auth.scope.len == 0:
+    raise newException(ValueError, "specify authentication scopes")
+  if not waitfor authenticate(fresh = 10.0):
+    raise newException(IOError, "unable to refresh authentication token")
+  headers.add ("Authorization", auth.form & " " & auth.token)
+  headers.add ("Content-Type", "application/json")
+  headers.add ("Content-Length", $body.len)
+  result = newRecallable(call, url, headers, body = body)

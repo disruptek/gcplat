@@ -1,6 +1,7 @@
 
 import
-  json, options, hashes, uri, openapi/rest, os, uri, strutils, httpcore
+  json, options, hashes, uri, rest, os, uri, strutils, times, httpcore, httpclient,
+  asyncdispatch, jwt
 
 ## auto-generated via openapi macro
 ## title: Google Play EMM
@@ -28,15 +29,15 @@ type
     url*: proc (protocol: Scheme; host: string; base: string; route: string;
               path: JsonNode; query: JsonNode): Uri
 
-  OpenApiRestCall_597421 = ref object of OpenApiRestCall
+  OpenApiRestCall_579421 = ref object of OpenApiRestCall
 proc hash(scheme: Scheme): Hash {.used.} =
   result = hash(ord(scheme))
 
-proc clone[T: OpenApiRestCall_597421](t: T): T {.used.} =
+proc clone[T: OpenApiRestCall_579421](t: T): T {.used.} =
   result = T(name: t.name, meth: t.meth, host: t.host, base: t.base, route: t.route,
            schemes: t.schemes, validator: t.validator, url: t.url)
 
-proc pickScheme(t: OpenApiRestCall_597421): Option[Scheme] {.used.} =
+proc pickScheme(t: OpenApiRestCall_579421): Option[Scheme] {.used.} =
   ## select a supported scheme from a set of candidates
   for scheme in Scheme.low ..
       Scheme.high:
@@ -104,17 +105,18 @@ proc hydratePath(input: JsonNode; segments: seq[PathToken]): Option[string] =
 
 const
   gcpServiceName = "androidenterprise"
+proc composeQueryString(query: JsonNode): string
 method hook(call: OpenApiRestCall; url: Uri; input: JsonNode): Recallable {.base.}
 type
-  Call_AndroidenterpriseEnterprisesList_597689 = ref object of OpenApiRestCall_597421
-proc url_AndroidenterpriseEnterprisesList_597691(protocol: Scheme; host: string;
+  Call_AndroidenterpriseEnterprisesList_579689 = ref object of OpenApiRestCall_579421
+proc url_AndroidenterpriseEnterprisesList_579691(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   result.path = base & route
 
-proc validate_AndroidenterpriseEnterprisesList_597690(path: JsonNode;
+proc validate_AndroidenterpriseEnterprisesList_579690(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Looks up an enterprise by domain name. This is only supported for enterprises created via the Google-initiated creation flow. Lookup of the id is not needed for enterprises created via the EMM-initiated flow since the EMM learns the enterprise ID in the callback specified in the Enterprises.generateSignupUrl call.
   ## 
@@ -140,47 +142,47 @@ proc validate_AndroidenterpriseEnterprisesList_597690(path: JsonNode;
   ##   domain: JString (required)
   ##         : The exact primary domain name of the enterprise to look up.
   section = newJObject()
-  var valid_597803 = query.getOrDefault("fields")
-  valid_597803 = validateParameter(valid_597803, JString, required = false,
+  var valid_579803 = query.getOrDefault("fields")
+  valid_579803 = validateParameter(valid_579803, JString, required = false,
                                  default = nil)
-  if valid_597803 != nil:
-    section.add "fields", valid_597803
-  var valid_597804 = query.getOrDefault("quotaUser")
-  valid_597804 = validateParameter(valid_597804, JString, required = false,
+  if valid_579803 != nil:
+    section.add "fields", valid_579803
+  var valid_579804 = query.getOrDefault("quotaUser")
+  valid_579804 = validateParameter(valid_579804, JString, required = false,
                                  default = nil)
-  if valid_597804 != nil:
-    section.add "quotaUser", valid_597804
-  var valid_597818 = query.getOrDefault("alt")
-  valid_597818 = validateParameter(valid_597818, JString, required = false,
+  if valid_579804 != nil:
+    section.add "quotaUser", valid_579804
+  var valid_579818 = query.getOrDefault("alt")
+  valid_579818 = validateParameter(valid_579818, JString, required = false,
                                  default = newJString("json"))
-  if valid_597818 != nil:
-    section.add "alt", valid_597818
-  var valid_597819 = query.getOrDefault("oauth_token")
-  valid_597819 = validateParameter(valid_597819, JString, required = false,
+  if valid_579818 != nil:
+    section.add "alt", valid_579818
+  var valid_579819 = query.getOrDefault("oauth_token")
+  valid_579819 = validateParameter(valid_579819, JString, required = false,
                                  default = nil)
-  if valid_597819 != nil:
-    section.add "oauth_token", valid_597819
-  var valid_597820 = query.getOrDefault("userIp")
-  valid_597820 = validateParameter(valid_597820, JString, required = false,
+  if valid_579819 != nil:
+    section.add "oauth_token", valid_579819
+  var valid_579820 = query.getOrDefault("userIp")
+  valid_579820 = validateParameter(valid_579820, JString, required = false,
                                  default = nil)
-  if valid_597820 != nil:
-    section.add "userIp", valid_597820
-  var valid_597821 = query.getOrDefault("key")
-  valid_597821 = validateParameter(valid_597821, JString, required = false,
+  if valid_579820 != nil:
+    section.add "userIp", valid_579820
+  var valid_579821 = query.getOrDefault("key")
+  valid_579821 = validateParameter(valid_579821, JString, required = false,
                                  default = nil)
-  if valid_597821 != nil:
-    section.add "key", valid_597821
-  var valid_597822 = query.getOrDefault("prettyPrint")
-  valid_597822 = validateParameter(valid_597822, JBool, required = false,
+  if valid_579821 != nil:
+    section.add "key", valid_579821
+  var valid_579822 = query.getOrDefault("prettyPrint")
+  valid_579822 = validateParameter(valid_579822, JBool, required = false,
                                  default = newJBool(true))
-  if valid_597822 != nil:
-    section.add "prettyPrint", valid_597822
+  if valid_579822 != nil:
+    section.add "prettyPrint", valid_579822
   assert query != nil, "query argument is necessary due to required `domain` field"
-  var valid_597823 = query.getOrDefault("domain")
-  valid_597823 = validateParameter(valid_597823, JString, required = true,
+  var valid_579823 = query.getOrDefault("domain")
+  valid_579823 = validateParameter(valid_579823, JString, required = true,
                                  default = nil)
-  if valid_597823 != nil:
-    section.add "domain", valid_597823
+  if valid_579823 != nil:
+    section.add "domain", valid_579823
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -189,21 +191,21 @@ proc validate_AndroidenterpriseEnterprisesList_597690(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_597846: Call_AndroidenterpriseEnterprisesList_597689;
+proc call*(call_579846: Call_AndroidenterpriseEnterprisesList_579689;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Looks up an enterprise by domain name. This is only supported for enterprises created via the Google-initiated creation flow. Lookup of the id is not needed for enterprises created via the EMM-initiated flow since the EMM learns the enterprise ID in the callback specified in the Enterprises.generateSignupUrl call.
   ## 
-  let valid = call_597846.validator(path, query, header, formData, body)
-  let scheme = call_597846.pickScheme
+  let valid = call_579846.validator(path, query, header, formData, body)
+  let scheme = call_579846.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_597846.url(scheme.get, call_597846.host, call_597846.base,
-                         call_597846.route, valid.getOrDefault("path"),
+  let url = call_579846.url(scheme.get, call_579846.host, call_579846.base,
+                         call_579846.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_597846, url, valid)
+  result = hook(call_579846, url, valid)
 
-proc call*(call_597917: Call_AndroidenterpriseEnterprisesList_597689;
+proc call*(call_579917: Call_AndroidenterpriseEnterprisesList_579689;
           domain: string; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; userIp: string = "";
           key: string = ""; prettyPrint: bool = true): Recallable =
@@ -225,34 +227,34 @@ proc call*(call_597917: Call_AndroidenterpriseEnterprisesList_597689;
   ##              : Returns response with indentations and line breaks.
   ##   domain: string (required)
   ##         : The exact primary domain name of the enterprise to look up.
-  var query_597918 = newJObject()
-  add(query_597918, "fields", newJString(fields))
-  add(query_597918, "quotaUser", newJString(quotaUser))
-  add(query_597918, "alt", newJString(alt))
-  add(query_597918, "oauth_token", newJString(oauthToken))
-  add(query_597918, "userIp", newJString(userIp))
-  add(query_597918, "key", newJString(key))
-  add(query_597918, "prettyPrint", newJBool(prettyPrint))
-  add(query_597918, "domain", newJString(domain))
-  result = call_597917.call(nil, query_597918, nil, nil, nil)
+  var query_579918 = newJObject()
+  add(query_579918, "fields", newJString(fields))
+  add(query_579918, "quotaUser", newJString(quotaUser))
+  add(query_579918, "alt", newJString(alt))
+  add(query_579918, "oauth_token", newJString(oauthToken))
+  add(query_579918, "userIp", newJString(userIp))
+  add(query_579918, "key", newJString(key))
+  add(query_579918, "prettyPrint", newJBool(prettyPrint))
+  add(query_579918, "domain", newJString(domain))
+  result = call_579917.call(nil, query_579918, nil, nil, nil)
 
-var androidenterpriseEnterprisesList* = Call_AndroidenterpriseEnterprisesList_597689(
+var androidenterpriseEnterprisesList* = Call_AndroidenterpriseEnterprisesList_579689(
     name: "androidenterpriseEnterprisesList", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/enterprises",
-    validator: validate_AndroidenterpriseEnterprisesList_597690,
-    base: "/androidenterprise/v1", url: url_AndroidenterpriseEnterprisesList_597691,
+    validator: validate_AndroidenterpriseEnterprisesList_579690,
+    base: "/androidenterprise/v1", url: url_AndroidenterpriseEnterprisesList_579691,
     schemes: {Scheme.Https})
 type
-  Call_AndroidenterpriseEnterprisesAcknowledgeNotificationSet_597958 = ref object of OpenApiRestCall_597421
-proc url_AndroidenterpriseEnterprisesAcknowledgeNotificationSet_597960(
+  Call_AndroidenterpriseEnterprisesAcknowledgeNotificationSet_579958 = ref object of OpenApiRestCall_579421
+proc url_AndroidenterpriseEnterprisesAcknowledgeNotificationSet_579960(
     protocol: Scheme; host: string; base: string; route: string; path: JsonNode;
     query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   result.path = base & route
 
-proc validate_AndroidenterpriseEnterprisesAcknowledgeNotificationSet_597959(
+proc validate_AndroidenterpriseEnterprisesAcknowledgeNotificationSet_579959(
     path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
     body: JsonNode): JsonNode =
   ## Acknowledges notifications that were received from Enterprises.PullNotificationSet to prevent subsequent calls from returning the same notifications.
@@ -279,46 +281,46 @@ proc validate_AndroidenterpriseEnterprisesAcknowledgeNotificationSet_597959(
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_597961 = query.getOrDefault("fields")
-  valid_597961 = validateParameter(valid_597961, JString, required = false,
+  var valid_579961 = query.getOrDefault("fields")
+  valid_579961 = validateParameter(valid_579961, JString, required = false,
                                  default = nil)
-  if valid_597961 != nil:
-    section.add "fields", valid_597961
-  var valid_597962 = query.getOrDefault("quotaUser")
-  valid_597962 = validateParameter(valid_597962, JString, required = false,
+  if valid_579961 != nil:
+    section.add "fields", valid_579961
+  var valid_579962 = query.getOrDefault("quotaUser")
+  valid_579962 = validateParameter(valid_579962, JString, required = false,
                                  default = nil)
-  if valid_597962 != nil:
-    section.add "quotaUser", valid_597962
-  var valid_597963 = query.getOrDefault("alt")
-  valid_597963 = validateParameter(valid_597963, JString, required = false,
+  if valid_579962 != nil:
+    section.add "quotaUser", valid_579962
+  var valid_579963 = query.getOrDefault("alt")
+  valid_579963 = validateParameter(valid_579963, JString, required = false,
                                  default = newJString("json"))
-  if valid_597963 != nil:
-    section.add "alt", valid_597963
-  var valid_597964 = query.getOrDefault("oauth_token")
-  valid_597964 = validateParameter(valid_597964, JString, required = false,
+  if valid_579963 != nil:
+    section.add "alt", valid_579963
+  var valid_579964 = query.getOrDefault("oauth_token")
+  valid_579964 = validateParameter(valid_579964, JString, required = false,
                                  default = nil)
-  if valid_597964 != nil:
-    section.add "oauth_token", valid_597964
-  var valid_597965 = query.getOrDefault("userIp")
-  valid_597965 = validateParameter(valid_597965, JString, required = false,
+  if valid_579964 != nil:
+    section.add "oauth_token", valid_579964
+  var valid_579965 = query.getOrDefault("userIp")
+  valid_579965 = validateParameter(valid_579965, JString, required = false,
                                  default = nil)
-  if valid_597965 != nil:
-    section.add "userIp", valid_597965
-  var valid_597966 = query.getOrDefault("notificationSetId")
-  valid_597966 = validateParameter(valid_597966, JString, required = false,
+  if valid_579965 != nil:
+    section.add "userIp", valid_579965
+  var valid_579966 = query.getOrDefault("notificationSetId")
+  valid_579966 = validateParameter(valid_579966, JString, required = false,
                                  default = nil)
-  if valid_597966 != nil:
-    section.add "notificationSetId", valid_597966
-  var valid_597967 = query.getOrDefault("key")
-  valid_597967 = validateParameter(valid_597967, JString, required = false,
+  if valid_579966 != nil:
+    section.add "notificationSetId", valid_579966
+  var valid_579967 = query.getOrDefault("key")
+  valid_579967 = validateParameter(valid_579967, JString, required = false,
                                  default = nil)
-  if valid_597967 != nil:
-    section.add "key", valid_597967
-  var valid_597968 = query.getOrDefault("prettyPrint")
-  valid_597968 = validateParameter(valid_597968, JBool, required = false,
+  if valid_579967 != nil:
+    section.add "key", valid_579967
+  var valid_579968 = query.getOrDefault("prettyPrint")
+  valid_579968 = validateParameter(valid_579968, JBool, required = false,
                                  default = newJBool(true))
-  if valid_597968 != nil:
-    section.add "prettyPrint", valid_597968
+  if valid_579968 != nil:
+    section.add "prettyPrint", valid_579968
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -327,21 +329,21 @@ proc validate_AndroidenterpriseEnterprisesAcknowledgeNotificationSet_597959(
   if body != nil:
     result.add "body", body
 
-proc call*(call_597969: Call_AndroidenterpriseEnterprisesAcknowledgeNotificationSet_597958;
+proc call*(call_579969: Call_AndroidenterpriseEnterprisesAcknowledgeNotificationSet_579958;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Acknowledges notifications that were received from Enterprises.PullNotificationSet to prevent subsequent calls from returning the same notifications.
   ## 
-  let valid = call_597969.validator(path, query, header, formData, body)
-  let scheme = call_597969.pickScheme
+  let valid = call_579969.validator(path, query, header, formData, body)
+  let scheme = call_579969.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_597969.url(scheme.get, call_597969.host, call_597969.base,
-                         call_597969.route, valid.getOrDefault("path"),
+  let url = call_579969.url(scheme.get, call_579969.host, call_579969.base,
+                         call_579969.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_597969, url, valid)
+  result = hook(call_579969, url, valid)
 
-proc call*(call_597970: Call_AndroidenterpriseEnterprisesAcknowledgeNotificationSet_597958;
+proc call*(call_579970: Call_AndroidenterpriseEnterprisesAcknowledgeNotificationSet_579958;
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           oauthToken: string = ""; userIp: string = ""; notificationSetId: string = "";
           key: string = ""; prettyPrint: bool = true): Recallable =
@@ -363,35 +365,35 @@ proc call*(call_597970: Call_AndroidenterpriseEnterprisesAcknowledgeNotification
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var query_597971 = newJObject()
-  add(query_597971, "fields", newJString(fields))
-  add(query_597971, "quotaUser", newJString(quotaUser))
-  add(query_597971, "alt", newJString(alt))
-  add(query_597971, "oauth_token", newJString(oauthToken))
-  add(query_597971, "userIp", newJString(userIp))
-  add(query_597971, "notificationSetId", newJString(notificationSetId))
-  add(query_597971, "key", newJString(key))
-  add(query_597971, "prettyPrint", newJBool(prettyPrint))
-  result = call_597970.call(nil, query_597971, nil, nil, nil)
+  var query_579971 = newJObject()
+  add(query_579971, "fields", newJString(fields))
+  add(query_579971, "quotaUser", newJString(quotaUser))
+  add(query_579971, "alt", newJString(alt))
+  add(query_579971, "oauth_token", newJString(oauthToken))
+  add(query_579971, "userIp", newJString(userIp))
+  add(query_579971, "notificationSetId", newJString(notificationSetId))
+  add(query_579971, "key", newJString(key))
+  add(query_579971, "prettyPrint", newJBool(prettyPrint))
+  result = call_579970.call(nil, query_579971, nil, nil, nil)
 
-var androidenterpriseEnterprisesAcknowledgeNotificationSet* = Call_AndroidenterpriseEnterprisesAcknowledgeNotificationSet_597958(
+var androidenterpriseEnterprisesAcknowledgeNotificationSet* = Call_AndroidenterpriseEnterprisesAcknowledgeNotificationSet_579958(
     name: "androidenterpriseEnterprisesAcknowledgeNotificationSet",
     meth: HttpMethod.HttpPost, host: "www.googleapis.com",
     route: "/enterprises/acknowledgeNotificationSet",
-    validator: validate_AndroidenterpriseEnterprisesAcknowledgeNotificationSet_597959,
+    validator: validate_AndroidenterpriseEnterprisesAcknowledgeNotificationSet_579959,
     base: "/androidenterprise/v1",
-    url: url_AndroidenterpriseEnterprisesAcknowledgeNotificationSet_597960,
+    url: url_AndroidenterpriseEnterprisesAcknowledgeNotificationSet_579960,
     schemes: {Scheme.Https})
 type
-  Call_AndroidenterpriseEnterprisesCompleteSignup_597972 = ref object of OpenApiRestCall_597421
-proc url_AndroidenterpriseEnterprisesCompleteSignup_597974(protocol: Scheme;
+  Call_AndroidenterpriseEnterprisesCompleteSignup_579972 = ref object of OpenApiRestCall_579421
+proc url_AndroidenterpriseEnterprisesCompleteSignup_579974(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   result.path = base & route
 
-proc validate_AndroidenterpriseEnterprisesCompleteSignup_597973(path: JsonNode;
+proc validate_AndroidenterpriseEnterprisesCompleteSignup_579973(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Completes the signup flow, by specifying the Completion token and Enterprise token. This request must not be called multiple times for a given Enterprise Token.
   ## 
@@ -419,51 +421,51 @@ proc validate_AndroidenterpriseEnterprisesCompleteSignup_597973(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_597975 = query.getOrDefault("fields")
-  valid_597975 = validateParameter(valid_597975, JString, required = false,
+  var valid_579975 = query.getOrDefault("fields")
+  valid_579975 = validateParameter(valid_579975, JString, required = false,
                                  default = nil)
-  if valid_597975 != nil:
-    section.add "fields", valid_597975
-  var valid_597976 = query.getOrDefault("completionToken")
-  valid_597976 = validateParameter(valid_597976, JString, required = false,
+  if valid_579975 != nil:
+    section.add "fields", valid_579975
+  var valid_579976 = query.getOrDefault("completionToken")
+  valid_579976 = validateParameter(valid_579976, JString, required = false,
                                  default = nil)
-  if valid_597976 != nil:
-    section.add "completionToken", valid_597976
-  var valid_597977 = query.getOrDefault("quotaUser")
-  valid_597977 = validateParameter(valid_597977, JString, required = false,
+  if valid_579976 != nil:
+    section.add "completionToken", valid_579976
+  var valid_579977 = query.getOrDefault("quotaUser")
+  valid_579977 = validateParameter(valid_579977, JString, required = false,
                                  default = nil)
-  if valid_597977 != nil:
-    section.add "quotaUser", valid_597977
-  var valid_597978 = query.getOrDefault("alt")
-  valid_597978 = validateParameter(valid_597978, JString, required = false,
+  if valid_579977 != nil:
+    section.add "quotaUser", valid_579977
+  var valid_579978 = query.getOrDefault("alt")
+  valid_579978 = validateParameter(valid_579978, JString, required = false,
                                  default = newJString("json"))
-  if valid_597978 != nil:
-    section.add "alt", valid_597978
-  var valid_597979 = query.getOrDefault("oauth_token")
-  valid_597979 = validateParameter(valid_597979, JString, required = false,
+  if valid_579978 != nil:
+    section.add "alt", valid_579978
+  var valid_579979 = query.getOrDefault("oauth_token")
+  valid_579979 = validateParameter(valid_579979, JString, required = false,
                                  default = nil)
-  if valid_597979 != nil:
-    section.add "oauth_token", valid_597979
-  var valid_597980 = query.getOrDefault("userIp")
-  valid_597980 = validateParameter(valid_597980, JString, required = false,
+  if valid_579979 != nil:
+    section.add "oauth_token", valid_579979
+  var valid_579980 = query.getOrDefault("userIp")
+  valid_579980 = validateParameter(valid_579980, JString, required = false,
                                  default = nil)
-  if valid_597980 != nil:
-    section.add "userIp", valid_597980
-  var valid_597981 = query.getOrDefault("enterpriseToken")
-  valid_597981 = validateParameter(valid_597981, JString, required = false,
+  if valid_579980 != nil:
+    section.add "userIp", valid_579980
+  var valid_579981 = query.getOrDefault("enterpriseToken")
+  valid_579981 = validateParameter(valid_579981, JString, required = false,
                                  default = nil)
-  if valid_597981 != nil:
-    section.add "enterpriseToken", valid_597981
-  var valid_597982 = query.getOrDefault("key")
-  valid_597982 = validateParameter(valid_597982, JString, required = false,
+  if valid_579981 != nil:
+    section.add "enterpriseToken", valid_579981
+  var valid_579982 = query.getOrDefault("key")
+  valid_579982 = validateParameter(valid_579982, JString, required = false,
                                  default = nil)
-  if valid_597982 != nil:
-    section.add "key", valid_597982
-  var valid_597983 = query.getOrDefault("prettyPrint")
-  valid_597983 = validateParameter(valid_597983, JBool, required = false,
+  if valid_579982 != nil:
+    section.add "key", valid_579982
+  var valid_579983 = query.getOrDefault("prettyPrint")
+  valid_579983 = validateParameter(valid_579983, JBool, required = false,
                                  default = newJBool(true))
-  if valid_597983 != nil:
-    section.add "prettyPrint", valid_597983
+  if valid_579983 != nil:
+    section.add "prettyPrint", valid_579983
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -472,21 +474,21 @@ proc validate_AndroidenterpriseEnterprisesCompleteSignup_597973(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_597984: Call_AndroidenterpriseEnterprisesCompleteSignup_597972;
+proc call*(call_579984: Call_AndroidenterpriseEnterprisesCompleteSignup_579972;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Completes the signup flow, by specifying the Completion token and Enterprise token. This request must not be called multiple times for a given Enterprise Token.
   ## 
-  let valid = call_597984.validator(path, query, header, formData, body)
-  let scheme = call_597984.pickScheme
+  let valid = call_579984.validator(path, query, header, formData, body)
+  let scheme = call_579984.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_597984.url(scheme.get, call_597984.host, call_597984.base,
-                         call_597984.route, valid.getOrDefault("path"),
+  let url = call_579984.url(scheme.get, call_579984.host, call_579984.base,
+                         call_579984.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_597984, url, valid)
+  result = hook(call_579984, url, valid)
 
-proc call*(call_597985: Call_AndroidenterpriseEnterprisesCompleteSignup_597972;
+proc call*(call_579985: Call_AndroidenterpriseEnterprisesCompleteSignup_579972;
           fields: string = ""; completionToken: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; userIp: string = "";
           enterpriseToken: string = ""; key: string = ""; prettyPrint: bool = true): Recallable =
@@ -510,35 +512,35 @@ proc call*(call_597985: Call_AndroidenterpriseEnterprisesCompleteSignup_597972;
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var query_597986 = newJObject()
-  add(query_597986, "fields", newJString(fields))
-  add(query_597986, "completionToken", newJString(completionToken))
-  add(query_597986, "quotaUser", newJString(quotaUser))
-  add(query_597986, "alt", newJString(alt))
-  add(query_597986, "oauth_token", newJString(oauthToken))
-  add(query_597986, "userIp", newJString(userIp))
-  add(query_597986, "enterpriseToken", newJString(enterpriseToken))
-  add(query_597986, "key", newJString(key))
-  add(query_597986, "prettyPrint", newJBool(prettyPrint))
-  result = call_597985.call(nil, query_597986, nil, nil, nil)
+  var query_579986 = newJObject()
+  add(query_579986, "fields", newJString(fields))
+  add(query_579986, "completionToken", newJString(completionToken))
+  add(query_579986, "quotaUser", newJString(quotaUser))
+  add(query_579986, "alt", newJString(alt))
+  add(query_579986, "oauth_token", newJString(oauthToken))
+  add(query_579986, "userIp", newJString(userIp))
+  add(query_579986, "enterpriseToken", newJString(enterpriseToken))
+  add(query_579986, "key", newJString(key))
+  add(query_579986, "prettyPrint", newJBool(prettyPrint))
+  result = call_579985.call(nil, query_579986, nil, nil, nil)
 
-var androidenterpriseEnterprisesCompleteSignup* = Call_AndroidenterpriseEnterprisesCompleteSignup_597972(
+var androidenterpriseEnterprisesCompleteSignup* = Call_AndroidenterpriseEnterprisesCompleteSignup_579972(
     name: "androidenterpriseEnterprisesCompleteSignup", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com", route: "/enterprises/completeSignup",
-    validator: validate_AndroidenterpriseEnterprisesCompleteSignup_597973,
+    validator: validate_AndroidenterpriseEnterprisesCompleteSignup_579973,
     base: "/androidenterprise/v1",
-    url: url_AndroidenterpriseEnterprisesCompleteSignup_597974,
+    url: url_AndroidenterpriseEnterprisesCompleteSignup_579974,
     schemes: {Scheme.Https})
 type
-  Call_AndroidenterpriseEnterprisesEnroll_597987 = ref object of OpenApiRestCall_597421
-proc url_AndroidenterpriseEnterprisesEnroll_597989(protocol: Scheme; host: string;
+  Call_AndroidenterpriseEnterprisesEnroll_579987 = ref object of OpenApiRestCall_579421
+proc url_AndroidenterpriseEnterprisesEnroll_579989(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   result.path = base & route
 
-proc validate_AndroidenterpriseEnterprisesEnroll_597988(path: JsonNode;
+proc validate_AndroidenterpriseEnterprisesEnroll_579988(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Enrolls an enterprise with the calling EMM.
   ## 
@@ -565,46 +567,46 @@ proc validate_AndroidenterpriseEnterprisesEnroll_597988(path: JsonNode;
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
   assert query != nil, "query argument is necessary due to required `token` field"
-  var valid_597990 = query.getOrDefault("token")
-  valid_597990 = validateParameter(valid_597990, JString, required = true,
+  var valid_579990 = query.getOrDefault("token")
+  valid_579990 = validateParameter(valid_579990, JString, required = true,
                                  default = nil)
-  if valid_597990 != nil:
-    section.add "token", valid_597990
-  var valid_597991 = query.getOrDefault("fields")
-  valid_597991 = validateParameter(valid_597991, JString, required = false,
+  if valid_579990 != nil:
+    section.add "token", valid_579990
+  var valid_579991 = query.getOrDefault("fields")
+  valid_579991 = validateParameter(valid_579991, JString, required = false,
                                  default = nil)
-  if valid_597991 != nil:
-    section.add "fields", valid_597991
-  var valid_597992 = query.getOrDefault("quotaUser")
-  valid_597992 = validateParameter(valid_597992, JString, required = false,
+  if valid_579991 != nil:
+    section.add "fields", valid_579991
+  var valid_579992 = query.getOrDefault("quotaUser")
+  valid_579992 = validateParameter(valid_579992, JString, required = false,
                                  default = nil)
-  if valid_597992 != nil:
-    section.add "quotaUser", valid_597992
-  var valid_597993 = query.getOrDefault("alt")
-  valid_597993 = validateParameter(valid_597993, JString, required = false,
+  if valid_579992 != nil:
+    section.add "quotaUser", valid_579992
+  var valid_579993 = query.getOrDefault("alt")
+  valid_579993 = validateParameter(valid_579993, JString, required = false,
                                  default = newJString("json"))
-  if valid_597993 != nil:
-    section.add "alt", valid_597993
-  var valid_597994 = query.getOrDefault("oauth_token")
-  valid_597994 = validateParameter(valid_597994, JString, required = false,
+  if valid_579993 != nil:
+    section.add "alt", valid_579993
+  var valid_579994 = query.getOrDefault("oauth_token")
+  valid_579994 = validateParameter(valid_579994, JString, required = false,
                                  default = nil)
-  if valid_597994 != nil:
-    section.add "oauth_token", valid_597994
-  var valid_597995 = query.getOrDefault("userIp")
-  valid_597995 = validateParameter(valid_597995, JString, required = false,
+  if valid_579994 != nil:
+    section.add "oauth_token", valid_579994
+  var valid_579995 = query.getOrDefault("userIp")
+  valid_579995 = validateParameter(valid_579995, JString, required = false,
                                  default = nil)
-  if valid_597995 != nil:
-    section.add "userIp", valid_597995
-  var valid_597996 = query.getOrDefault("key")
-  valid_597996 = validateParameter(valid_597996, JString, required = false,
+  if valid_579995 != nil:
+    section.add "userIp", valid_579995
+  var valid_579996 = query.getOrDefault("key")
+  valid_579996 = validateParameter(valid_579996, JString, required = false,
                                  default = nil)
-  if valid_597996 != nil:
-    section.add "key", valid_597996
-  var valid_597997 = query.getOrDefault("prettyPrint")
-  valid_597997 = validateParameter(valid_597997, JBool, required = false,
+  if valid_579996 != nil:
+    section.add "key", valid_579996
+  var valid_579997 = query.getOrDefault("prettyPrint")
+  valid_579997 = validateParameter(valid_579997, JBool, required = false,
                                  default = newJBool(true))
-  if valid_597997 != nil:
-    section.add "prettyPrint", valid_597997
+  if valid_579997 != nil:
+    section.add "prettyPrint", valid_579997
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -616,21 +618,21 @@ proc validate_AndroidenterpriseEnterprisesEnroll_597988(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_597999: Call_AndroidenterpriseEnterprisesEnroll_597987;
+proc call*(call_579999: Call_AndroidenterpriseEnterprisesEnroll_579987;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Enrolls an enterprise with the calling EMM.
   ## 
-  let valid = call_597999.validator(path, query, header, formData, body)
-  let scheme = call_597999.pickScheme
+  let valid = call_579999.validator(path, query, header, formData, body)
+  let scheme = call_579999.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_597999.url(scheme.get, call_597999.host, call_597999.base,
-                         call_597999.route, valid.getOrDefault("path"),
+  let url = call_579999.url(scheme.get, call_579999.host, call_579999.base,
+                         call_579999.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_597999, url, valid)
+  result = hook(call_579999, url, valid)
 
-proc call*(call_598000: Call_AndroidenterpriseEnterprisesEnroll_597987;
+proc call*(call_580000: Call_AndroidenterpriseEnterprisesEnroll_579987;
           token: string; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; userIp: string = "";
           key: string = ""; body: JsonNode = nil; prettyPrint: bool = true): Recallable =
@@ -653,36 +655,36 @@ proc call*(call_598000: Call_AndroidenterpriseEnterprisesEnroll_597987;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var query_598001 = newJObject()
-  var body_598002 = newJObject()
-  add(query_598001, "token", newJString(token))
-  add(query_598001, "fields", newJString(fields))
-  add(query_598001, "quotaUser", newJString(quotaUser))
-  add(query_598001, "alt", newJString(alt))
-  add(query_598001, "oauth_token", newJString(oauthToken))
-  add(query_598001, "userIp", newJString(userIp))
-  add(query_598001, "key", newJString(key))
+  var query_580001 = newJObject()
+  var body_580002 = newJObject()
+  add(query_580001, "token", newJString(token))
+  add(query_580001, "fields", newJString(fields))
+  add(query_580001, "quotaUser", newJString(quotaUser))
+  add(query_580001, "alt", newJString(alt))
+  add(query_580001, "oauth_token", newJString(oauthToken))
+  add(query_580001, "userIp", newJString(userIp))
+  add(query_580001, "key", newJString(key))
   if body != nil:
-    body_598002 = body
-  add(query_598001, "prettyPrint", newJBool(prettyPrint))
-  result = call_598000.call(nil, query_598001, nil, nil, body_598002)
+    body_580002 = body
+  add(query_580001, "prettyPrint", newJBool(prettyPrint))
+  result = call_580000.call(nil, query_580001, nil, nil, body_580002)
 
-var androidenterpriseEnterprisesEnroll* = Call_AndroidenterpriseEnterprisesEnroll_597987(
+var androidenterpriseEnterprisesEnroll* = Call_AndroidenterpriseEnterprisesEnroll_579987(
     name: "androidenterpriseEnterprisesEnroll", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com", route: "/enterprises/enroll",
-    validator: validate_AndroidenterpriseEnterprisesEnroll_597988,
-    base: "/androidenterprise/v1", url: url_AndroidenterpriseEnterprisesEnroll_597989,
+    validator: validate_AndroidenterpriseEnterprisesEnroll_579988,
+    base: "/androidenterprise/v1", url: url_AndroidenterpriseEnterprisesEnroll_579989,
     schemes: {Scheme.Https})
 type
-  Call_AndroidenterpriseEnterprisesPullNotificationSet_598003 = ref object of OpenApiRestCall_597421
-proc url_AndroidenterpriseEnterprisesPullNotificationSet_598005(protocol: Scheme;
+  Call_AndroidenterpriseEnterprisesPullNotificationSet_580003 = ref object of OpenApiRestCall_579421
+proc url_AndroidenterpriseEnterprisesPullNotificationSet_580005(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   result.path = base & route
 
-proc validate_AndroidenterpriseEnterprisesPullNotificationSet_598004(
+proc validate_AndroidenterpriseEnterprisesPullNotificationSet_580004(
     path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
     body: JsonNode): JsonNode =
   ## Pulls and returns a notification set for the enterprises associated with the service account authenticated for the request. The notification set may be empty if no notification are pending.
@@ -716,46 +718,46 @@ proc validate_AndroidenterpriseEnterprisesPullNotificationSet_598004(
   ## Speciying returnImmediately will cause the request to immediately return the pending notifications, or an empty list if no notifications are present.
   ## If omitted, defaults to waitForNotifications.
   section = newJObject()
-  var valid_598006 = query.getOrDefault("fields")
-  valid_598006 = validateParameter(valid_598006, JString, required = false,
+  var valid_580006 = query.getOrDefault("fields")
+  valid_580006 = validateParameter(valid_580006, JString, required = false,
                                  default = nil)
-  if valid_598006 != nil:
-    section.add "fields", valid_598006
-  var valid_598007 = query.getOrDefault("quotaUser")
-  valid_598007 = validateParameter(valid_598007, JString, required = false,
+  if valid_580006 != nil:
+    section.add "fields", valid_580006
+  var valid_580007 = query.getOrDefault("quotaUser")
+  valid_580007 = validateParameter(valid_580007, JString, required = false,
                                  default = nil)
-  if valid_598007 != nil:
-    section.add "quotaUser", valid_598007
-  var valid_598008 = query.getOrDefault("alt")
-  valid_598008 = validateParameter(valid_598008, JString, required = false,
+  if valid_580007 != nil:
+    section.add "quotaUser", valid_580007
+  var valid_580008 = query.getOrDefault("alt")
+  valid_580008 = validateParameter(valid_580008, JString, required = false,
                                  default = newJString("json"))
-  if valid_598008 != nil:
-    section.add "alt", valid_598008
-  var valid_598009 = query.getOrDefault("oauth_token")
-  valid_598009 = validateParameter(valid_598009, JString, required = false,
+  if valid_580008 != nil:
+    section.add "alt", valid_580008
+  var valid_580009 = query.getOrDefault("oauth_token")
+  valid_580009 = validateParameter(valid_580009, JString, required = false,
                                  default = nil)
-  if valid_598009 != nil:
-    section.add "oauth_token", valid_598009
-  var valid_598010 = query.getOrDefault("userIp")
-  valid_598010 = validateParameter(valid_598010, JString, required = false,
+  if valid_580009 != nil:
+    section.add "oauth_token", valid_580009
+  var valid_580010 = query.getOrDefault("userIp")
+  valid_580010 = validateParameter(valid_580010, JString, required = false,
                                  default = nil)
-  if valid_598010 != nil:
-    section.add "userIp", valid_598010
-  var valid_598011 = query.getOrDefault("key")
-  valid_598011 = validateParameter(valid_598011, JString, required = false,
+  if valid_580010 != nil:
+    section.add "userIp", valid_580010
+  var valid_580011 = query.getOrDefault("key")
+  valid_580011 = validateParameter(valid_580011, JString, required = false,
                                  default = nil)
-  if valid_598011 != nil:
-    section.add "key", valid_598011
-  var valid_598012 = query.getOrDefault("prettyPrint")
-  valid_598012 = validateParameter(valid_598012, JBool, required = false,
+  if valid_580011 != nil:
+    section.add "key", valid_580011
+  var valid_580012 = query.getOrDefault("prettyPrint")
+  valid_580012 = validateParameter(valid_580012, JBool, required = false,
                                  default = newJBool(true))
-  if valid_598012 != nil:
-    section.add "prettyPrint", valid_598012
-  var valid_598013 = query.getOrDefault("requestMode")
-  valid_598013 = validateParameter(valid_598013, JString, required = false,
+  if valid_580012 != nil:
+    section.add "prettyPrint", valid_580012
+  var valid_580013 = query.getOrDefault("requestMode")
+  valid_580013 = validateParameter(valid_580013, JString, required = false,
                                  default = newJString("returnImmediately"))
-  if valid_598013 != nil:
-    section.add "requestMode", valid_598013
+  if valid_580013 != nil:
+    section.add "requestMode", valid_580013
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -764,7 +766,7 @@ proc validate_AndroidenterpriseEnterprisesPullNotificationSet_598004(
   if body != nil:
     result.add "body", body
 
-proc call*(call_598014: Call_AndroidenterpriseEnterprisesPullNotificationSet_598003;
+proc call*(call_580014: Call_AndroidenterpriseEnterprisesPullNotificationSet_580003;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Pulls and returns a notification set for the enterprises associated with the service account authenticated for the request. The notification set may be empty if no notification are pending.
@@ -773,16 +775,16 @@ proc call*(call_598014: Call_AndroidenterpriseEnterprisesPullNotificationSet_598
   ## Multiple requests might be performed concurrently to retrieve notifications, in which case the pending notifications (if any) will be split among each caller, if any are pending.
   ## If no notifications are present, an empty notification list is returned. Subsequent requests may return more notifications once they become available.
   ## 
-  let valid = call_598014.validator(path, query, header, formData, body)
-  let scheme = call_598014.pickScheme
+  let valid = call_580014.validator(path, query, header, formData, body)
+  let scheme = call_580014.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_598014.url(scheme.get, call_598014.host, call_598014.base,
-                         call_598014.route, valid.getOrDefault("path"),
+  let url = call_580014.url(scheme.get, call_580014.host, call_580014.base,
+                         call_580014.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_598014, url, valid)
+  result = hook(call_580014, url, valid)
 
-proc call*(call_598015: Call_AndroidenterpriseEnterprisesPullNotificationSet_598003;
+proc call*(call_580015: Call_AndroidenterpriseEnterprisesPullNotificationSet_580003;
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           oauthToken: string = ""; userIp: string = ""; key: string = "";
           prettyPrint: bool = true; requestMode: string = "returnImmediately"): Recallable =
@@ -811,35 +813,35 @@ proc call*(call_598015: Call_AndroidenterpriseEnterprisesPullNotificationSet_598
   ## Specifying waitForNotifications will cause the request to block and wait until one or more notifications are present, or return an empty notification list if no notifications are present after some time.
   ## Speciying returnImmediately will cause the request to immediately return the pending notifications, or an empty list if no notifications are present.
   ## If omitted, defaults to waitForNotifications.
-  var query_598016 = newJObject()
-  add(query_598016, "fields", newJString(fields))
-  add(query_598016, "quotaUser", newJString(quotaUser))
-  add(query_598016, "alt", newJString(alt))
-  add(query_598016, "oauth_token", newJString(oauthToken))
-  add(query_598016, "userIp", newJString(userIp))
-  add(query_598016, "key", newJString(key))
-  add(query_598016, "prettyPrint", newJBool(prettyPrint))
-  add(query_598016, "requestMode", newJString(requestMode))
-  result = call_598015.call(nil, query_598016, nil, nil, nil)
+  var query_580016 = newJObject()
+  add(query_580016, "fields", newJString(fields))
+  add(query_580016, "quotaUser", newJString(quotaUser))
+  add(query_580016, "alt", newJString(alt))
+  add(query_580016, "oauth_token", newJString(oauthToken))
+  add(query_580016, "userIp", newJString(userIp))
+  add(query_580016, "key", newJString(key))
+  add(query_580016, "prettyPrint", newJBool(prettyPrint))
+  add(query_580016, "requestMode", newJString(requestMode))
+  result = call_580015.call(nil, query_580016, nil, nil, nil)
 
-var androidenterpriseEnterprisesPullNotificationSet* = Call_AndroidenterpriseEnterprisesPullNotificationSet_598003(
+var androidenterpriseEnterprisesPullNotificationSet* = Call_AndroidenterpriseEnterprisesPullNotificationSet_580003(
     name: "androidenterpriseEnterprisesPullNotificationSet",
     meth: HttpMethod.HttpPost, host: "www.googleapis.com",
     route: "/enterprises/pullNotificationSet",
-    validator: validate_AndroidenterpriseEnterprisesPullNotificationSet_598004,
+    validator: validate_AndroidenterpriseEnterprisesPullNotificationSet_580004,
     base: "/androidenterprise/v1",
-    url: url_AndroidenterpriseEnterprisesPullNotificationSet_598005,
+    url: url_AndroidenterpriseEnterprisesPullNotificationSet_580005,
     schemes: {Scheme.Https})
 type
-  Call_AndroidenterpriseEnterprisesGenerateSignupUrl_598017 = ref object of OpenApiRestCall_597421
-proc url_AndroidenterpriseEnterprisesGenerateSignupUrl_598019(protocol: Scheme;
+  Call_AndroidenterpriseEnterprisesGenerateSignupUrl_580017 = ref object of OpenApiRestCall_579421
+proc url_AndroidenterpriseEnterprisesGenerateSignupUrl_580019(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   result.path = base & route
 
-proc validate_AndroidenterpriseEnterprisesGenerateSignupUrl_598018(
+proc validate_AndroidenterpriseEnterprisesGenerateSignupUrl_580018(
     path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
     body: JsonNode): JsonNode =
   ## Generates a sign-up URL.
@@ -867,46 +869,46 @@ proc validate_AndroidenterpriseEnterprisesGenerateSignupUrl_598018(
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_598020 = query.getOrDefault("fields")
-  valid_598020 = validateParameter(valid_598020, JString, required = false,
+  var valid_580020 = query.getOrDefault("fields")
+  valid_580020 = validateParameter(valid_580020, JString, required = false,
                                  default = nil)
-  if valid_598020 != nil:
-    section.add "fields", valid_598020
-  var valid_598021 = query.getOrDefault("quotaUser")
-  valid_598021 = validateParameter(valid_598021, JString, required = false,
+  if valid_580020 != nil:
+    section.add "fields", valid_580020
+  var valid_580021 = query.getOrDefault("quotaUser")
+  valid_580021 = validateParameter(valid_580021, JString, required = false,
                                  default = nil)
-  if valid_598021 != nil:
-    section.add "quotaUser", valid_598021
-  var valid_598022 = query.getOrDefault("callbackUrl")
-  valid_598022 = validateParameter(valid_598022, JString, required = false,
+  if valid_580021 != nil:
+    section.add "quotaUser", valid_580021
+  var valid_580022 = query.getOrDefault("callbackUrl")
+  valid_580022 = validateParameter(valid_580022, JString, required = false,
                                  default = nil)
-  if valid_598022 != nil:
-    section.add "callbackUrl", valid_598022
-  var valid_598023 = query.getOrDefault("alt")
-  valid_598023 = validateParameter(valid_598023, JString, required = false,
+  if valid_580022 != nil:
+    section.add "callbackUrl", valid_580022
+  var valid_580023 = query.getOrDefault("alt")
+  valid_580023 = validateParameter(valid_580023, JString, required = false,
                                  default = newJString("json"))
-  if valid_598023 != nil:
-    section.add "alt", valid_598023
-  var valid_598024 = query.getOrDefault("oauth_token")
-  valid_598024 = validateParameter(valid_598024, JString, required = false,
+  if valid_580023 != nil:
+    section.add "alt", valid_580023
+  var valid_580024 = query.getOrDefault("oauth_token")
+  valid_580024 = validateParameter(valid_580024, JString, required = false,
                                  default = nil)
-  if valid_598024 != nil:
-    section.add "oauth_token", valid_598024
-  var valid_598025 = query.getOrDefault("userIp")
-  valid_598025 = validateParameter(valid_598025, JString, required = false,
+  if valid_580024 != nil:
+    section.add "oauth_token", valid_580024
+  var valid_580025 = query.getOrDefault("userIp")
+  valid_580025 = validateParameter(valid_580025, JString, required = false,
                                  default = nil)
-  if valid_598025 != nil:
-    section.add "userIp", valid_598025
-  var valid_598026 = query.getOrDefault("key")
-  valid_598026 = validateParameter(valid_598026, JString, required = false,
+  if valid_580025 != nil:
+    section.add "userIp", valid_580025
+  var valid_580026 = query.getOrDefault("key")
+  valid_580026 = validateParameter(valid_580026, JString, required = false,
                                  default = nil)
-  if valid_598026 != nil:
-    section.add "key", valid_598026
-  var valid_598027 = query.getOrDefault("prettyPrint")
-  valid_598027 = validateParameter(valid_598027, JBool, required = false,
+  if valid_580026 != nil:
+    section.add "key", valid_580026
+  var valid_580027 = query.getOrDefault("prettyPrint")
+  valid_580027 = validateParameter(valid_580027, JBool, required = false,
                                  default = newJBool(true))
-  if valid_598027 != nil:
-    section.add "prettyPrint", valid_598027
+  if valid_580027 != nil:
+    section.add "prettyPrint", valid_580027
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -915,21 +917,21 @@ proc validate_AndroidenterpriseEnterprisesGenerateSignupUrl_598018(
   if body != nil:
     result.add "body", body
 
-proc call*(call_598028: Call_AndroidenterpriseEnterprisesGenerateSignupUrl_598017;
+proc call*(call_580028: Call_AndroidenterpriseEnterprisesGenerateSignupUrl_580017;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Generates a sign-up URL.
   ## 
-  let valid = call_598028.validator(path, query, header, formData, body)
-  let scheme = call_598028.pickScheme
+  let valid = call_580028.validator(path, query, header, formData, body)
+  let scheme = call_580028.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_598028.url(scheme.get, call_598028.host, call_598028.base,
-                         call_598028.route, valid.getOrDefault("path"),
+  let url = call_580028.url(scheme.get, call_580028.host, call_580028.base,
+                         call_580028.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_598028, url, valid)
+  result = hook(call_580028, url, valid)
 
-proc call*(call_598029: Call_AndroidenterpriseEnterprisesGenerateSignupUrl_598017;
+proc call*(call_580029: Call_AndroidenterpriseEnterprisesGenerateSignupUrl_580017;
           fields: string = ""; quotaUser: string = ""; callbackUrl: string = "";
           alt: string = "json"; oauthToken: string = ""; userIp: string = "";
           key: string = ""; prettyPrint: bool = true): Recallable =
@@ -952,32 +954,32 @@ proc call*(call_598029: Call_AndroidenterpriseEnterprisesGenerateSignupUrl_59801
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var query_598030 = newJObject()
-  add(query_598030, "fields", newJString(fields))
-  add(query_598030, "quotaUser", newJString(quotaUser))
-  add(query_598030, "callbackUrl", newJString(callbackUrl))
-  add(query_598030, "alt", newJString(alt))
-  add(query_598030, "oauth_token", newJString(oauthToken))
-  add(query_598030, "userIp", newJString(userIp))
-  add(query_598030, "key", newJString(key))
-  add(query_598030, "prettyPrint", newJBool(prettyPrint))
-  result = call_598029.call(nil, query_598030, nil, nil, nil)
+  var query_580030 = newJObject()
+  add(query_580030, "fields", newJString(fields))
+  add(query_580030, "quotaUser", newJString(quotaUser))
+  add(query_580030, "callbackUrl", newJString(callbackUrl))
+  add(query_580030, "alt", newJString(alt))
+  add(query_580030, "oauth_token", newJString(oauthToken))
+  add(query_580030, "userIp", newJString(userIp))
+  add(query_580030, "key", newJString(key))
+  add(query_580030, "prettyPrint", newJBool(prettyPrint))
+  result = call_580029.call(nil, query_580030, nil, nil, nil)
 
-var androidenterpriseEnterprisesGenerateSignupUrl* = Call_AndroidenterpriseEnterprisesGenerateSignupUrl_598017(
+var androidenterpriseEnterprisesGenerateSignupUrl* = Call_AndroidenterpriseEnterprisesGenerateSignupUrl_580017(
     name: "androidenterpriseEnterprisesGenerateSignupUrl",
     meth: HttpMethod.HttpPost, host: "www.googleapis.com",
     route: "/enterprises/signupUrl",
-    validator: validate_AndroidenterpriseEnterprisesGenerateSignupUrl_598018,
+    validator: validate_AndroidenterpriseEnterprisesGenerateSignupUrl_580018,
     base: "/androidenterprise/v1",
-    url: url_AndroidenterpriseEnterprisesGenerateSignupUrl_598019,
+    url: url_AndroidenterpriseEnterprisesGenerateSignupUrl_580019,
     schemes: {Scheme.Https})
 type
-  Call_AndroidenterpriseEnterprisesGet_598031 = ref object of OpenApiRestCall_597421
-proc url_AndroidenterpriseEnterprisesGet_598033(protocol: Scheme; host: string;
+  Call_AndroidenterpriseEnterprisesGet_580031 = ref object of OpenApiRestCall_579421
+proc url_AndroidenterpriseEnterprisesGet_580033(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "enterpriseId" in path, "`enterpriseId` is a required path parameter"
   const
@@ -988,7 +990,7 @@ proc url_AndroidenterpriseEnterprisesGet_598033(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_AndroidenterpriseEnterprisesGet_598032(path: JsonNode;
+proc validate_AndroidenterpriseEnterprisesGet_580032(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Retrieves the name and domain of an enterprise.
   ## 
@@ -1000,11 +1002,11 @@ proc validate_AndroidenterpriseEnterprisesGet_598032(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `enterpriseId` field"
-  var valid_598048 = path.getOrDefault("enterpriseId")
-  valid_598048 = validateParameter(valid_598048, JString, required = true,
+  var valid_580048 = path.getOrDefault("enterpriseId")
+  valid_580048 = validateParameter(valid_580048, JString, required = true,
                                  default = nil)
-  if valid_598048 != nil:
-    section.add "enterpriseId", valid_598048
+  if valid_580048 != nil:
+    section.add "enterpriseId", valid_580048
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -1022,41 +1024,41 @@ proc validate_AndroidenterpriseEnterprisesGet_598032(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_598049 = query.getOrDefault("fields")
-  valid_598049 = validateParameter(valid_598049, JString, required = false,
+  var valid_580049 = query.getOrDefault("fields")
+  valid_580049 = validateParameter(valid_580049, JString, required = false,
                                  default = nil)
-  if valid_598049 != nil:
-    section.add "fields", valid_598049
-  var valid_598050 = query.getOrDefault("quotaUser")
-  valid_598050 = validateParameter(valid_598050, JString, required = false,
+  if valid_580049 != nil:
+    section.add "fields", valid_580049
+  var valid_580050 = query.getOrDefault("quotaUser")
+  valid_580050 = validateParameter(valid_580050, JString, required = false,
                                  default = nil)
-  if valid_598050 != nil:
-    section.add "quotaUser", valid_598050
-  var valid_598051 = query.getOrDefault("alt")
-  valid_598051 = validateParameter(valid_598051, JString, required = false,
+  if valid_580050 != nil:
+    section.add "quotaUser", valid_580050
+  var valid_580051 = query.getOrDefault("alt")
+  valid_580051 = validateParameter(valid_580051, JString, required = false,
                                  default = newJString("json"))
-  if valid_598051 != nil:
-    section.add "alt", valid_598051
-  var valid_598052 = query.getOrDefault("oauth_token")
-  valid_598052 = validateParameter(valid_598052, JString, required = false,
+  if valid_580051 != nil:
+    section.add "alt", valid_580051
+  var valid_580052 = query.getOrDefault("oauth_token")
+  valid_580052 = validateParameter(valid_580052, JString, required = false,
                                  default = nil)
-  if valid_598052 != nil:
-    section.add "oauth_token", valid_598052
-  var valid_598053 = query.getOrDefault("userIp")
-  valid_598053 = validateParameter(valid_598053, JString, required = false,
+  if valid_580052 != nil:
+    section.add "oauth_token", valid_580052
+  var valid_580053 = query.getOrDefault("userIp")
+  valid_580053 = validateParameter(valid_580053, JString, required = false,
                                  default = nil)
-  if valid_598053 != nil:
-    section.add "userIp", valid_598053
-  var valid_598054 = query.getOrDefault("key")
-  valid_598054 = validateParameter(valid_598054, JString, required = false,
+  if valid_580053 != nil:
+    section.add "userIp", valid_580053
+  var valid_580054 = query.getOrDefault("key")
+  valid_580054 = validateParameter(valid_580054, JString, required = false,
                                  default = nil)
-  if valid_598054 != nil:
-    section.add "key", valid_598054
-  var valid_598055 = query.getOrDefault("prettyPrint")
-  valid_598055 = validateParameter(valid_598055, JBool, required = false,
+  if valid_580054 != nil:
+    section.add "key", valid_580054
+  var valid_580055 = query.getOrDefault("prettyPrint")
+  valid_580055 = validateParameter(valid_580055, JBool, required = false,
                                  default = newJBool(true))
-  if valid_598055 != nil:
-    section.add "prettyPrint", valid_598055
+  if valid_580055 != nil:
+    section.add "prettyPrint", valid_580055
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1065,21 +1067,21 @@ proc validate_AndroidenterpriseEnterprisesGet_598032(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_598056: Call_AndroidenterpriseEnterprisesGet_598031;
+proc call*(call_580056: Call_AndroidenterpriseEnterprisesGet_580031;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Retrieves the name and domain of an enterprise.
   ## 
-  let valid = call_598056.validator(path, query, header, formData, body)
-  let scheme = call_598056.pickScheme
+  let valid = call_580056.validator(path, query, header, formData, body)
+  let scheme = call_580056.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_598056.url(scheme.get, call_598056.host, call_598056.base,
-                         call_598056.route, valid.getOrDefault("path"),
+  let url = call_580056.url(scheme.get, call_580056.host, call_580056.base,
+                         call_580056.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_598056, url, valid)
+  result = hook(call_580056, url, valid)
 
-proc call*(call_598057: Call_AndroidenterpriseEnterprisesGet_598031;
+proc call*(call_580057: Call_AndroidenterpriseEnterprisesGet_580031;
           enterpriseId: string; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; userIp: string = "";
           key: string = ""; prettyPrint: bool = true): Recallable =
@@ -1101,31 +1103,31 @@ proc call*(call_598057: Call_AndroidenterpriseEnterprisesGet_598031;
   ##               : The ID of the enterprise.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_598058 = newJObject()
-  var query_598059 = newJObject()
-  add(query_598059, "fields", newJString(fields))
-  add(query_598059, "quotaUser", newJString(quotaUser))
-  add(query_598059, "alt", newJString(alt))
-  add(query_598059, "oauth_token", newJString(oauthToken))
-  add(query_598059, "userIp", newJString(userIp))
-  add(query_598059, "key", newJString(key))
-  add(path_598058, "enterpriseId", newJString(enterpriseId))
-  add(query_598059, "prettyPrint", newJBool(prettyPrint))
-  result = call_598057.call(path_598058, query_598059, nil, nil, nil)
+  var path_580058 = newJObject()
+  var query_580059 = newJObject()
+  add(query_580059, "fields", newJString(fields))
+  add(query_580059, "quotaUser", newJString(quotaUser))
+  add(query_580059, "alt", newJString(alt))
+  add(query_580059, "oauth_token", newJString(oauthToken))
+  add(query_580059, "userIp", newJString(userIp))
+  add(query_580059, "key", newJString(key))
+  add(path_580058, "enterpriseId", newJString(enterpriseId))
+  add(query_580059, "prettyPrint", newJBool(prettyPrint))
+  result = call_580057.call(path_580058, query_580059, nil, nil, nil)
 
-var androidenterpriseEnterprisesGet* = Call_AndroidenterpriseEnterprisesGet_598031(
+var androidenterpriseEnterprisesGet* = Call_AndroidenterpriseEnterprisesGet_580031(
     name: "androidenterpriseEnterprisesGet", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/enterprises/{enterpriseId}",
-    validator: validate_AndroidenterpriseEnterprisesGet_598032,
-    base: "/androidenterprise/v1", url: url_AndroidenterpriseEnterprisesGet_598033,
+    validator: validate_AndroidenterpriseEnterprisesGet_580032,
+    base: "/androidenterprise/v1", url: url_AndroidenterpriseEnterprisesGet_580033,
     schemes: {Scheme.Https})
 type
-  Call_AndroidenterpriseEnterprisesSetAccount_598060 = ref object of OpenApiRestCall_597421
-proc url_AndroidenterpriseEnterprisesSetAccount_598062(protocol: Scheme;
+  Call_AndroidenterpriseEnterprisesSetAccount_580060 = ref object of OpenApiRestCall_579421
+proc url_AndroidenterpriseEnterprisesSetAccount_580062(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "enterpriseId" in path, "`enterpriseId` is a required path parameter"
   const
@@ -1137,7 +1139,7 @@ proc url_AndroidenterpriseEnterprisesSetAccount_598062(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_AndroidenterpriseEnterprisesSetAccount_598061(path: JsonNode;
+proc validate_AndroidenterpriseEnterprisesSetAccount_580061(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Sets the account that will be used to authenticate to the API as the enterprise.
   ## 
@@ -1149,11 +1151,11 @@ proc validate_AndroidenterpriseEnterprisesSetAccount_598061(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `enterpriseId` field"
-  var valid_598063 = path.getOrDefault("enterpriseId")
-  valid_598063 = validateParameter(valid_598063, JString, required = true,
+  var valid_580063 = path.getOrDefault("enterpriseId")
+  valid_580063 = validateParameter(valid_580063, JString, required = true,
                                  default = nil)
-  if valid_598063 != nil:
-    section.add "enterpriseId", valid_598063
+  if valid_580063 != nil:
+    section.add "enterpriseId", valid_580063
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -1171,41 +1173,41 @@ proc validate_AndroidenterpriseEnterprisesSetAccount_598061(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_598064 = query.getOrDefault("fields")
-  valid_598064 = validateParameter(valid_598064, JString, required = false,
+  var valid_580064 = query.getOrDefault("fields")
+  valid_580064 = validateParameter(valid_580064, JString, required = false,
                                  default = nil)
-  if valid_598064 != nil:
-    section.add "fields", valid_598064
-  var valid_598065 = query.getOrDefault("quotaUser")
-  valid_598065 = validateParameter(valid_598065, JString, required = false,
+  if valid_580064 != nil:
+    section.add "fields", valid_580064
+  var valid_580065 = query.getOrDefault("quotaUser")
+  valid_580065 = validateParameter(valid_580065, JString, required = false,
                                  default = nil)
-  if valid_598065 != nil:
-    section.add "quotaUser", valid_598065
-  var valid_598066 = query.getOrDefault("alt")
-  valid_598066 = validateParameter(valid_598066, JString, required = false,
+  if valid_580065 != nil:
+    section.add "quotaUser", valid_580065
+  var valid_580066 = query.getOrDefault("alt")
+  valid_580066 = validateParameter(valid_580066, JString, required = false,
                                  default = newJString("json"))
-  if valid_598066 != nil:
-    section.add "alt", valid_598066
-  var valid_598067 = query.getOrDefault("oauth_token")
-  valid_598067 = validateParameter(valid_598067, JString, required = false,
+  if valid_580066 != nil:
+    section.add "alt", valid_580066
+  var valid_580067 = query.getOrDefault("oauth_token")
+  valid_580067 = validateParameter(valid_580067, JString, required = false,
                                  default = nil)
-  if valid_598067 != nil:
-    section.add "oauth_token", valid_598067
-  var valid_598068 = query.getOrDefault("userIp")
-  valid_598068 = validateParameter(valid_598068, JString, required = false,
+  if valid_580067 != nil:
+    section.add "oauth_token", valid_580067
+  var valid_580068 = query.getOrDefault("userIp")
+  valid_580068 = validateParameter(valid_580068, JString, required = false,
                                  default = nil)
-  if valid_598068 != nil:
-    section.add "userIp", valid_598068
-  var valid_598069 = query.getOrDefault("key")
-  valid_598069 = validateParameter(valid_598069, JString, required = false,
+  if valid_580068 != nil:
+    section.add "userIp", valid_580068
+  var valid_580069 = query.getOrDefault("key")
+  valid_580069 = validateParameter(valid_580069, JString, required = false,
                                  default = nil)
-  if valid_598069 != nil:
-    section.add "key", valid_598069
-  var valid_598070 = query.getOrDefault("prettyPrint")
-  valid_598070 = validateParameter(valid_598070, JBool, required = false,
+  if valid_580069 != nil:
+    section.add "key", valid_580069
+  var valid_580070 = query.getOrDefault("prettyPrint")
+  valid_580070 = validateParameter(valid_580070, JBool, required = false,
                                  default = newJBool(true))
-  if valid_598070 != nil:
-    section.add "prettyPrint", valid_598070
+  if valid_580070 != nil:
+    section.add "prettyPrint", valid_580070
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1217,21 +1219,21 @@ proc validate_AndroidenterpriseEnterprisesSetAccount_598061(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_598072: Call_AndroidenterpriseEnterprisesSetAccount_598060;
+proc call*(call_580072: Call_AndroidenterpriseEnterprisesSetAccount_580060;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Sets the account that will be used to authenticate to the API as the enterprise.
   ## 
-  let valid = call_598072.validator(path, query, header, formData, body)
-  let scheme = call_598072.pickScheme
+  let valid = call_580072.validator(path, query, header, formData, body)
+  let scheme = call_580072.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_598072.url(scheme.get, call_598072.host, call_598072.base,
-                         call_598072.route, valid.getOrDefault("path"),
+  let url = call_580072.url(scheme.get, call_580072.host, call_580072.base,
+                         call_580072.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_598072, url, valid)
+  result = hook(call_580072, url, valid)
 
-proc call*(call_598073: Call_AndroidenterpriseEnterprisesSetAccount_598060;
+proc call*(call_580073: Call_AndroidenterpriseEnterprisesSetAccount_580060;
           enterpriseId: string; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; userIp: string = "";
           key: string = ""; body: JsonNode = nil; prettyPrint: bool = true): Recallable =
@@ -1254,35 +1256,35 @@ proc call*(call_598073: Call_AndroidenterpriseEnterprisesSetAccount_598060;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_598074 = newJObject()
-  var query_598075 = newJObject()
-  var body_598076 = newJObject()
-  add(query_598075, "fields", newJString(fields))
-  add(query_598075, "quotaUser", newJString(quotaUser))
-  add(query_598075, "alt", newJString(alt))
-  add(query_598075, "oauth_token", newJString(oauthToken))
-  add(query_598075, "userIp", newJString(userIp))
-  add(query_598075, "key", newJString(key))
-  add(path_598074, "enterpriseId", newJString(enterpriseId))
+  var path_580074 = newJObject()
+  var query_580075 = newJObject()
+  var body_580076 = newJObject()
+  add(query_580075, "fields", newJString(fields))
+  add(query_580075, "quotaUser", newJString(quotaUser))
+  add(query_580075, "alt", newJString(alt))
+  add(query_580075, "oauth_token", newJString(oauthToken))
+  add(query_580075, "userIp", newJString(userIp))
+  add(query_580075, "key", newJString(key))
+  add(path_580074, "enterpriseId", newJString(enterpriseId))
   if body != nil:
-    body_598076 = body
-  add(query_598075, "prettyPrint", newJBool(prettyPrint))
-  result = call_598073.call(path_598074, query_598075, nil, nil, body_598076)
+    body_580076 = body
+  add(query_580075, "prettyPrint", newJBool(prettyPrint))
+  result = call_580073.call(path_580074, query_580075, nil, nil, body_580076)
 
-var androidenterpriseEnterprisesSetAccount* = Call_AndroidenterpriseEnterprisesSetAccount_598060(
+var androidenterpriseEnterprisesSetAccount* = Call_AndroidenterpriseEnterprisesSetAccount_580060(
     name: "androidenterpriseEnterprisesSetAccount", meth: HttpMethod.HttpPut,
     host: "www.googleapis.com", route: "/enterprises/{enterpriseId}/account",
-    validator: validate_AndroidenterpriseEnterprisesSetAccount_598061,
+    validator: validate_AndroidenterpriseEnterprisesSetAccount_580061,
     base: "/androidenterprise/v1",
-    url: url_AndroidenterpriseEnterprisesSetAccount_598062,
+    url: url_AndroidenterpriseEnterprisesSetAccount_580062,
     schemes: {Scheme.Https})
 type
-  Call_AndroidenterpriseEnterprisesCreateWebToken_598077 = ref object of OpenApiRestCall_597421
-proc url_AndroidenterpriseEnterprisesCreateWebToken_598079(protocol: Scheme;
+  Call_AndroidenterpriseEnterprisesCreateWebToken_580077 = ref object of OpenApiRestCall_579421
+proc url_AndroidenterpriseEnterprisesCreateWebToken_580079(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "enterpriseId" in path, "`enterpriseId` is a required path parameter"
   const
@@ -1294,7 +1296,7 @@ proc url_AndroidenterpriseEnterprisesCreateWebToken_598079(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_AndroidenterpriseEnterprisesCreateWebToken_598078(path: JsonNode;
+proc validate_AndroidenterpriseEnterprisesCreateWebToken_580078(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Returns a unique token to access an embeddable UI. To generate a web UI, pass the generated token into the managed Google Play javascript API. Each token may only be used to start one UI session. See the javascript API documentation for further information.
   ## 
@@ -1306,11 +1308,11 @@ proc validate_AndroidenterpriseEnterprisesCreateWebToken_598078(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `enterpriseId` field"
-  var valid_598080 = path.getOrDefault("enterpriseId")
-  valid_598080 = validateParameter(valid_598080, JString, required = true,
+  var valid_580080 = path.getOrDefault("enterpriseId")
+  valid_580080 = validateParameter(valid_580080, JString, required = true,
                                  default = nil)
-  if valid_598080 != nil:
-    section.add "enterpriseId", valid_598080
+  if valid_580080 != nil:
+    section.add "enterpriseId", valid_580080
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -1328,41 +1330,41 @@ proc validate_AndroidenterpriseEnterprisesCreateWebToken_598078(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_598081 = query.getOrDefault("fields")
-  valid_598081 = validateParameter(valid_598081, JString, required = false,
+  var valid_580081 = query.getOrDefault("fields")
+  valid_580081 = validateParameter(valid_580081, JString, required = false,
                                  default = nil)
-  if valid_598081 != nil:
-    section.add "fields", valid_598081
-  var valid_598082 = query.getOrDefault("quotaUser")
-  valid_598082 = validateParameter(valid_598082, JString, required = false,
+  if valid_580081 != nil:
+    section.add "fields", valid_580081
+  var valid_580082 = query.getOrDefault("quotaUser")
+  valid_580082 = validateParameter(valid_580082, JString, required = false,
                                  default = nil)
-  if valid_598082 != nil:
-    section.add "quotaUser", valid_598082
-  var valid_598083 = query.getOrDefault("alt")
-  valid_598083 = validateParameter(valid_598083, JString, required = false,
+  if valid_580082 != nil:
+    section.add "quotaUser", valid_580082
+  var valid_580083 = query.getOrDefault("alt")
+  valid_580083 = validateParameter(valid_580083, JString, required = false,
                                  default = newJString("json"))
-  if valid_598083 != nil:
-    section.add "alt", valid_598083
-  var valid_598084 = query.getOrDefault("oauth_token")
-  valid_598084 = validateParameter(valid_598084, JString, required = false,
+  if valid_580083 != nil:
+    section.add "alt", valid_580083
+  var valid_580084 = query.getOrDefault("oauth_token")
+  valid_580084 = validateParameter(valid_580084, JString, required = false,
                                  default = nil)
-  if valid_598084 != nil:
-    section.add "oauth_token", valid_598084
-  var valid_598085 = query.getOrDefault("userIp")
-  valid_598085 = validateParameter(valid_598085, JString, required = false,
+  if valid_580084 != nil:
+    section.add "oauth_token", valid_580084
+  var valid_580085 = query.getOrDefault("userIp")
+  valid_580085 = validateParameter(valid_580085, JString, required = false,
                                  default = nil)
-  if valid_598085 != nil:
-    section.add "userIp", valid_598085
-  var valid_598086 = query.getOrDefault("key")
-  valid_598086 = validateParameter(valid_598086, JString, required = false,
+  if valid_580085 != nil:
+    section.add "userIp", valid_580085
+  var valid_580086 = query.getOrDefault("key")
+  valid_580086 = validateParameter(valid_580086, JString, required = false,
                                  default = nil)
-  if valid_598086 != nil:
-    section.add "key", valid_598086
-  var valid_598087 = query.getOrDefault("prettyPrint")
-  valid_598087 = validateParameter(valid_598087, JBool, required = false,
+  if valid_580086 != nil:
+    section.add "key", valid_580086
+  var valid_580087 = query.getOrDefault("prettyPrint")
+  valid_580087 = validateParameter(valid_580087, JBool, required = false,
                                  default = newJBool(true))
-  if valid_598087 != nil:
-    section.add "prettyPrint", valid_598087
+  if valid_580087 != nil:
+    section.add "prettyPrint", valid_580087
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1374,21 +1376,21 @@ proc validate_AndroidenterpriseEnterprisesCreateWebToken_598078(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_598089: Call_AndroidenterpriseEnterprisesCreateWebToken_598077;
+proc call*(call_580089: Call_AndroidenterpriseEnterprisesCreateWebToken_580077;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Returns a unique token to access an embeddable UI. To generate a web UI, pass the generated token into the managed Google Play javascript API. Each token may only be used to start one UI session. See the javascript API documentation for further information.
   ## 
-  let valid = call_598089.validator(path, query, header, formData, body)
-  let scheme = call_598089.pickScheme
+  let valid = call_580089.validator(path, query, header, formData, body)
+  let scheme = call_580089.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_598089.url(scheme.get, call_598089.host, call_598089.base,
-                         call_598089.route, valid.getOrDefault("path"),
+  let url = call_580089.url(scheme.get, call_580089.host, call_580089.base,
+                         call_580089.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_598089, url, valid)
+  result = hook(call_580089, url, valid)
 
-proc call*(call_598090: Call_AndroidenterpriseEnterprisesCreateWebToken_598077;
+proc call*(call_580090: Call_AndroidenterpriseEnterprisesCreateWebToken_580077;
           enterpriseId: string; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; userIp: string = "";
           key: string = ""; body: JsonNode = nil; prettyPrint: bool = true): Recallable =
@@ -1411,36 +1413,36 @@ proc call*(call_598090: Call_AndroidenterpriseEnterprisesCreateWebToken_598077;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_598091 = newJObject()
-  var query_598092 = newJObject()
-  var body_598093 = newJObject()
-  add(query_598092, "fields", newJString(fields))
-  add(query_598092, "quotaUser", newJString(quotaUser))
-  add(query_598092, "alt", newJString(alt))
-  add(query_598092, "oauth_token", newJString(oauthToken))
-  add(query_598092, "userIp", newJString(userIp))
-  add(query_598092, "key", newJString(key))
-  add(path_598091, "enterpriseId", newJString(enterpriseId))
+  var path_580091 = newJObject()
+  var query_580092 = newJObject()
+  var body_580093 = newJObject()
+  add(query_580092, "fields", newJString(fields))
+  add(query_580092, "quotaUser", newJString(quotaUser))
+  add(query_580092, "alt", newJString(alt))
+  add(query_580092, "oauth_token", newJString(oauthToken))
+  add(query_580092, "userIp", newJString(userIp))
+  add(query_580092, "key", newJString(key))
+  add(path_580091, "enterpriseId", newJString(enterpriseId))
   if body != nil:
-    body_598093 = body
-  add(query_598092, "prettyPrint", newJBool(prettyPrint))
-  result = call_598090.call(path_598091, query_598092, nil, nil, body_598093)
+    body_580093 = body
+  add(query_580092, "prettyPrint", newJBool(prettyPrint))
+  result = call_580090.call(path_580091, query_580092, nil, nil, body_580093)
 
-var androidenterpriseEnterprisesCreateWebToken* = Call_AndroidenterpriseEnterprisesCreateWebToken_598077(
+var androidenterpriseEnterprisesCreateWebToken* = Call_AndroidenterpriseEnterprisesCreateWebToken_580077(
     name: "androidenterpriseEnterprisesCreateWebToken", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com",
     route: "/enterprises/{enterpriseId}/createWebToken",
-    validator: validate_AndroidenterpriseEnterprisesCreateWebToken_598078,
+    validator: validate_AndroidenterpriseEnterprisesCreateWebToken_580078,
     base: "/androidenterprise/v1",
-    url: url_AndroidenterpriseEnterprisesCreateWebToken_598079,
+    url: url_AndroidenterpriseEnterprisesCreateWebToken_580079,
     schemes: {Scheme.Https})
 type
-  Call_AndroidenterpriseGrouplicensesList_598094 = ref object of OpenApiRestCall_597421
-proc url_AndroidenterpriseGrouplicensesList_598096(protocol: Scheme; host: string;
+  Call_AndroidenterpriseGrouplicensesList_580094 = ref object of OpenApiRestCall_579421
+proc url_AndroidenterpriseGrouplicensesList_580096(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "enterpriseId" in path, "`enterpriseId` is a required path parameter"
   const
@@ -1452,7 +1454,7 @@ proc url_AndroidenterpriseGrouplicensesList_598096(protocol: Scheme; host: strin
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_AndroidenterpriseGrouplicensesList_598095(path: JsonNode;
+proc validate_AndroidenterpriseGrouplicensesList_580095(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Retrieves IDs of all products for which the enterprise has a group license.
   ## 
@@ -1464,11 +1466,11 @@ proc validate_AndroidenterpriseGrouplicensesList_598095(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `enterpriseId` field"
-  var valid_598097 = path.getOrDefault("enterpriseId")
-  valid_598097 = validateParameter(valid_598097, JString, required = true,
+  var valid_580097 = path.getOrDefault("enterpriseId")
+  valid_580097 = validateParameter(valid_580097, JString, required = true,
                                  default = nil)
-  if valid_598097 != nil:
-    section.add "enterpriseId", valid_598097
+  if valid_580097 != nil:
+    section.add "enterpriseId", valid_580097
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -1486,41 +1488,41 @@ proc validate_AndroidenterpriseGrouplicensesList_598095(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_598098 = query.getOrDefault("fields")
-  valid_598098 = validateParameter(valid_598098, JString, required = false,
+  var valid_580098 = query.getOrDefault("fields")
+  valid_580098 = validateParameter(valid_580098, JString, required = false,
                                  default = nil)
-  if valid_598098 != nil:
-    section.add "fields", valid_598098
-  var valid_598099 = query.getOrDefault("quotaUser")
-  valid_598099 = validateParameter(valid_598099, JString, required = false,
+  if valid_580098 != nil:
+    section.add "fields", valid_580098
+  var valid_580099 = query.getOrDefault("quotaUser")
+  valid_580099 = validateParameter(valid_580099, JString, required = false,
                                  default = nil)
-  if valid_598099 != nil:
-    section.add "quotaUser", valid_598099
-  var valid_598100 = query.getOrDefault("alt")
-  valid_598100 = validateParameter(valid_598100, JString, required = false,
+  if valid_580099 != nil:
+    section.add "quotaUser", valid_580099
+  var valid_580100 = query.getOrDefault("alt")
+  valid_580100 = validateParameter(valid_580100, JString, required = false,
                                  default = newJString("json"))
-  if valid_598100 != nil:
-    section.add "alt", valid_598100
-  var valid_598101 = query.getOrDefault("oauth_token")
-  valid_598101 = validateParameter(valid_598101, JString, required = false,
+  if valid_580100 != nil:
+    section.add "alt", valid_580100
+  var valid_580101 = query.getOrDefault("oauth_token")
+  valid_580101 = validateParameter(valid_580101, JString, required = false,
                                  default = nil)
-  if valid_598101 != nil:
-    section.add "oauth_token", valid_598101
-  var valid_598102 = query.getOrDefault("userIp")
-  valid_598102 = validateParameter(valid_598102, JString, required = false,
+  if valid_580101 != nil:
+    section.add "oauth_token", valid_580101
+  var valid_580102 = query.getOrDefault("userIp")
+  valid_580102 = validateParameter(valid_580102, JString, required = false,
                                  default = nil)
-  if valid_598102 != nil:
-    section.add "userIp", valid_598102
-  var valid_598103 = query.getOrDefault("key")
-  valid_598103 = validateParameter(valid_598103, JString, required = false,
+  if valid_580102 != nil:
+    section.add "userIp", valid_580102
+  var valid_580103 = query.getOrDefault("key")
+  valid_580103 = validateParameter(valid_580103, JString, required = false,
                                  default = nil)
-  if valid_598103 != nil:
-    section.add "key", valid_598103
-  var valid_598104 = query.getOrDefault("prettyPrint")
-  valid_598104 = validateParameter(valid_598104, JBool, required = false,
+  if valid_580103 != nil:
+    section.add "key", valid_580103
+  var valid_580104 = query.getOrDefault("prettyPrint")
+  valid_580104 = validateParameter(valid_580104, JBool, required = false,
                                  default = newJBool(true))
-  if valid_598104 != nil:
-    section.add "prettyPrint", valid_598104
+  if valid_580104 != nil:
+    section.add "prettyPrint", valid_580104
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1529,21 +1531,21 @@ proc validate_AndroidenterpriseGrouplicensesList_598095(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_598105: Call_AndroidenterpriseGrouplicensesList_598094;
+proc call*(call_580105: Call_AndroidenterpriseGrouplicensesList_580094;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Retrieves IDs of all products for which the enterprise has a group license.
   ## 
-  let valid = call_598105.validator(path, query, header, formData, body)
-  let scheme = call_598105.pickScheme
+  let valid = call_580105.validator(path, query, header, formData, body)
+  let scheme = call_580105.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_598105.url(scheme.get, call_598105.host, call_598105.base,
-                         call_598105.route, valid.getOrDefault("path"),
+  let url = call_580105.url(scheme.get, call_580105.host, call_580105.base,
+                         call_580105.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_598105, url, valid)
+  result = hook(call_580105, url, valid)
 
-proc call*(call_598106: Call_AndroidenterpriseGrouplicensesList_598094;
+proc call*(call_580106: Call_AndroidenterpriseGrouplicensesList_580094;
           enterpriseId: string; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; userIp: string = "";
           key: string = ""; prettyPrint: bool = true): Recallable =
@@ -1565,32 +1567,32 @@ proc call*(call_598106: Call_AndroidenterpriseGrouplicensesList_598094;
   ##               : The ID of the enterprise.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_598107 = newJObject()
-  var query_598108 = newJObject()
-  add(query_598108, "fields", newJString(fields))
-  add(query_598108, "quotaUser", newJString(quotaUser))
-  add(query_598108, "alt", newJString(alt))
-  add(query_598108, "oauth_token", newJString(oauthToken))
-  add(query_598108, "userIp", newJString(userIp))
-  add(query_598108, "key", newJString(key))
-  add(path_598107, "enterpriseId", newJString(enterpriseId))
-  add(query_598108, "prettyPrint", newJBool(prettyPrint))
-  result = call_598106.call(path_598107, query_598108, nil, nil, nil)
+  var path_580107 = newJObject()
+  var query_580108 = newJObject()
+  add(query_580108, "fields", newJString(fields))
+  add(query_580108, "quotaUser", newJString(quotaUser))
+  add(query_580108, "alt", newJString(alt))
+  add(query_580108, "oauth_token", newJString(oauthToken))
+  add(query_580108, "userIp", newJString(userIp))
+  add(query_580108, "key", newJString(key))
+  add(path_580107, "enterpriseId", newJString(enterpriseId))
+  add(query_580108, "prettyPrint", newJBool(prettyPrint))
+  result = call_580106.call(path_580107, query_580108, nil, nil, nil)
 
-var androidenterpriseGrouplicensesList* = Call_AndroidenterpriseGrouplicensesList_598094(
+var androidenterpriseGrouplicensesList* = Call_AndroidenterpriseGrouplicensesList_580094(
     name: "androidenterpriseGrouplicensesList", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com",
     route: "/enterprises/{enterpriseId}/groupLicenses",
-    validator: validate_AndroidenterpriseGrouplicensesList_598095,
-    base: "/androidenterprise/v1", url: url_AndroidenterpriseGrouplicensesList_598096,
+    validator: validate_AndroidenterpriseGrouplicensesList_580095,
+    base: "/androidenterprise/v1", url: url_AndroidenterpriseGrouplicensesList_580096,
     schemes: {Scheme.Https})
 type
-  Call_AndroidenterpriseGrouplicensesGet_598109 = ref object of OpenApiRestCall_597421
-proc url_AndroidenterpriseGrouplicensesGet_598111(protocol: Scheme; host: string;
+  Call_AndroidenterpriseGrouplicensesGet_580109 = ref object of OpenApiRestCall_579421
+proc url_AndroidenterpriseGrouplicensesGet_580111(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "enterpriseId" in path, "`enterpriseId` is a required path parameter"
   assert "groupLicenseId" in path, "`groupLicenseId` is a required path parameter"
@@ -1604,7 +1606,7 @@ proc url_AndroidenterpriseGrouplicensesGet_598111(protocol: Scheme; host: string
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_AndroidenterpriseGrouplicensesGet_598110(path: JsonNode;
+proc validate_AndroidenterpriseGrouplicensesGet_580110(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Retrieves details of an enterprise's group license for a product.
   ## 
@@ -1618,16 +1620,16 @@ proc validate_AndroidenterpriseGrouplicensesGet_598110(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `groupLicenseId` field"
-  var valid_598112 = path.getOrDefault("groupLicenseId")
-  valid_598112 = validateParameter(valid_598112, JString, required = true,
+  var valid_580112 = path.getOrDefault("groupLicenseId")
+  valid_580112 = validateParameter(valid_580112, JString, required = true,
                                  default = nil)
-  if valid_598112 != nil:
-    section.add "groupLicenseId", valid_598112
-  var valid_598113 = path.getOrDefault("enterpriseId")
-  valid_598113 = validateParameter(valid_598113, JString, required = true,
+  if valid_580112 != nil:
+    section.add "groupLicenseId", valid_580112
+  var valid_580113 = path.getOrDefault("enterpriseId")
+  valid_580113 = validateParameter(valid_580113, JString, required = true,
                                  default = nil)
-  if valid_598113 != nil:
-    section.add "enterpriseId", valid_598113
+  if valid_580113 != nil:
+    section.add "enterpriseId", valid_580113
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -1645,41 +1647,41 @@ proc validate_AndroidenterpriseGrouplicensesGet_598110(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_598114 = query.getOrDefault("fields")
-  valid_598114 = validateParameter(valid_598114, JString, required = false,
+  var valid_580114 = query.getOrDefault("fields")
+  valid_580114 = validateParameter(valid_580114, JString, required = false,
                                  default = nil)
-  if valid_598114 != nil:
-    section.add "fields", valid_598114
-  var valid_598115 = query.getOrDefault("quotaUser")
-  valid_598115 = validateParameter(valid_598115, JString, required = false,
+  if valid_580114 != nil:
+    section.add "fields", valid_580114
+  var valid_580115 = query.getOrDefault("quotaUser")
+  valid_580115 = validateParameter(valid_580115, JString, required = false,
                                  default = nil)
-  if valid_598115 != nil:
-    section.add "quotaUser", valid_598115
-  var valid_598116 = query.getOrDefault("alt")
-  valid_598116 = validateParameter(valid_598116, JString, required = false,
+  if valid_580115 != nil:
+    section.add "quotaUser", valid_580115
+  var valid_580116 = query.getOrDefault("alt")
+  valid_580116 = validateParameter(valid_580116, JString, required = false,
                                  default = newJString("json"))
-  if valid_598116 != nil:
-    section.add "alt", valid_598116
-  var valid_598117 = query.getOrDefault("oauth_token")
-  valid_598117 = validateParameter(valid_598117, JString, required = false,
+  if valid_580116 != nil:
+    section.add "alt", valid_580116
+  var valid_580117 = query.getOrDefault("oauth_token")
+  valid_580117 = validateParameter(valid_580117, JString, required = false,
                                  default = nil)
-  if valid_598117 != nil:
-    section.add "oauth_token", valid_598117
-  var valid_598118 = query.getOrDefault("userIp")
-  valid_598118 = validateParameter(valid_598118, JString, required = false,
+  if valid_580117 != nil:
+    section.add "oauth_token", valid_580117
+  var valid_580118 = query.getOrDefault("userIp")
+  valid_580118 = validateParameter(valid_580118, JString, required = false,
                                  default = nil)
-  if valid_598118 != nil:
-    section.add "userIp", valid_598118
-  var valid_598119 = query.getOrDefault("key")
-  valid_598119 = validateParameter(valid_598119, JString, required = false,
+  if valid_580118 != nil:
+    section.add "userIp", valid_580118
+  var valid_580119 = query.getOrDefault("key")
+  valid_580119 = validateParameter(valid_580119, JString, required = false,
                                  default = nil)
-  if valid_598119 != nil:
-    section.add "key", valid_598119
-  var valid_598120 = query.getOrDefault("prettyPrint")
-  valid_598120 = validateParameter(valid_598120, JBool, required = false,
+  if valid_580119 != nil:
+    section.add "key", valid_580119
+  var valid_580120 = query.getOrDefault("prettyPrint")
+  valid_580120 = validateParameter(valid_580120, JBool, required = false,
                                  default = newJBool(true))
-  if valid_598120 != nil:
-    section.add "prettyPrint", valid_598120
+  if valid_580120 != nil:
+    section.add "prettyPrint", valid_580120
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1688,21 +1690,21 @@ proc validate_AndroidenterpriseGrouplicensesGet_598110(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_598121: Call_AndroidenterpriseGrouplicensesGet_598109;
+proc call*(call_580121: Call_AndroidenterpriseGrouplicensesGet_580109;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Retrieves details of an enterprise's group license for a product.
   ## 
-  let valid = call_598121.validator(path, query, header, formData, body)
-  let scheme = call_598121.pickScheme
+  let valid = call_580121.validator(path, query, header, formData, body)
+  let scheme = call_580121.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_598121.url(scheme.get, call_598121.host, call_598121.base,
-                         call_598121.route, valid.getOrDefault("path"),
+  let url = call_580121.url(scheme.get, call_580121.host, call_580121.base,
+                         call_580121.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_598121, url, valid)
+  result = hook(call_580121, url, valid)
 
-proc call*(call_598122: Call_AndroidenterpriseGrouplicensesGet_598109;
+proc call*(call_580122: Call_AndroidenterpriseGrouplicensesGet_580109;
           groupLicenseId: string; enterpriseId: string; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; key: string = ""; prettyPrint: bool = true): Recallable =
@@ -1726,33 +1728,33 @@ proc call*(call_598122: Call_AndroidenterpriseGrouplicensesGet_598109;
   ##               : The ID of the enterprise.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_598123 = newJObject()
-  var query_598124 = newJObject()
-  add(query_598124, "fields", newJString(fields))
-  add(query_598124, "quotaUser", newJString(quotaUser))
-  add(query_598124, "alt", newJString(alt))
-  add(query_598124, "oauth_token", newJString(oauthToken))
-  add(query_598124, "userIp", newJString(userIp))
-  add(path_598123, "groupLicenseId", newJString(groupLicenseId))
-  add(query_598124, "key", newJString(key))
-  add(path_598123, "enterpriseId", newJString(enterpriseId))
-  add(query_598124, "prettyPrint", newJBool(prettyPrint))
-  result = call_598122.call(path_598123, query_598124, nil, nil, nil)
+  var path_580123 = newJObject()
+  var query_580124 = newJObject()
+  add(query_580124, "fields", newJString(fields))
+  add(query_580124, "quotaUser", newJString(quotaUser))
+  add(query_580124, "alt", newJString(alt))
+  add(query_580124, "oauth_token", newJString(oauthToken))
+  add(query_580124, "userIp", newJString(userIp))
+  add(path_580123, "groupLicenseId", newJString(groupLicenseId))
+  add(query_580124, "key", newJString(key))
+  add(path_580123, "enterpriseId", newJString(enterpriseId))
+  add(query_580124, "prettyPrint", newJBool(prettyPrint))
+  result = call_580122.call(path_580123, query_580124, nil, nil, nil)
 
-var androidenterpriseGrouplicensesGet* = Call_AndroidenterpriseGrouplicensesGet_598109(
+var androidenterpriseGrouplicensesGet* = Call_AndroidenterpriseGrouplicensesGet_580109(
     name: "androidenterpriseGrouplicensesGet", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com",
     route: "/enterprises/{enterpriseId}/groupLicenses/{groupLicenseId}",
-    validator: validate_AndroidenterpriseGrouplicensesGet_598110,
-    base: "/androidenterprise/v1", url: url_AndroidenterpriseGrouplicensesGet_598111,
+    validator: validate_AndroidenterpriseGrouplicensesGet_580110,
+    base: "/androidenterprise/v1", url: url_AndroidenterpriseGrouplicensesGet_580111,
     schemes: {Scheme.Https})
 type
-  Call_AndroidenterpriseGrouplicenseusersList_598125 = ref object of OpenApiRestCall_597421
-proc url_AndroidenterpriseGrouplicenseusersList_598127(protocol: Scheme;
+  Call_AndroidenterpriseGrouplicenseusersList_580125 = ref object of OpenApiRestCall_579421
+proc url_AndroidenterpriseGrouplicenseusersList_580127(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "enterpriseId" in path, "`enterpriseId` is a required path parameter"
   assert "groupLicenseId" in path, "`groupLicenseId` is a required path parameter"
@@ -1767,7 +1769,7 @@ proc url_AndroidenterpriseGrouplicenseusersList_598127(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_AndroidenterpriseGrouplicenseusersList_598126(path: JsonNode;
+proc validate_AndroidenterpriseGrouplicenseusersList_580126(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Retrieves the IDs of the users who have been granted entitlements under the license.
   ## 
@@ -1781,16 +1783,16 @@ proc validate_AndroidenterpriseGrouplicenseusersList_598126(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `groupLicenseId` field"
-  var valid_598128 = path.getOrDefault("groupLicenseId")
-  valid_598128 = validateParameter(valid_598128, JString, required = true,
+  var valid_580128 = path.getOrDefault("groupLicenseId")
+  valid_580128 = validateParameter(valid_580128, JString, required = true,
                                  default = nil)
-  if valid_598128 != nil:
-    section.add "groupLicenseId", valid_598128
-  var valid_598129 = path.getOrDefault("enterpriseId")
-  valid_598129 = validateParameter(valid_598129, JString, required = true,
+  if valid_580128 != nil:
+    section.add "groupLicenseId", valid_580128
+  var valid_580129 = path.getOrDefault("enterpriseId")
+  valid_580129 = validateParameter(valid_580129, JString, required = true,
                                  default = nil)
-  if valid_598129 != nil:
-    section.add "enterpriseId", valid_598129
+  if valid_580129 != nil:
+    section.add "enterpriseId", valid_580129
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -1808,41 +1810,41 @@ proc validate_AndroidenterpriseGrouplicenseusersList_598126(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_598130 = query.getOrDefault("fields")
-  valid_598130 = validateParameter(valid_598130, JString, required = false,
+  var valid_580130 = query.getOrDefault("fields")
+  valid_580130 = validateParameter(valid_580130, JString, required = false,
                                  default = nil)
-  if valid_598130 != nil:
-    section.add "fields", valid_598130
-  var valid_598131 = query.getOrDefault("quotaUser")
-  valid_598131 = validateParameter(valid_598131, JString, required = false,
+  if valid_580130 != nil:
+    section.add "fields", valid_580130
+  var valid_580131 = query.getOrDefault("quotaUser")
+  valid_580131 = validateParameter(valid_580131, JString, required = false,
                                  default = nil)
-  if valid_598131 != nil:
-    section.add "quotaUser", valid_598131
-  var valid_598132 = query.getOrDefault("alt")
-  valid_598132 = validateParameter(valid_598132, JString, required = false,
+  if valid_580131 != nil:
+    section.add "quotaUser", valid_580131
+  var valid_580132 = query.getOrDefault("alt")
+  valid_580132 = validateParameter(valid_580132, JString, required = false,
                                  default = newJString("json"))
-  if valid_598132 != nil:
-    section.add "alt", valid_598132
-  var valid_598133 = query.getOrDefault("oauth_token")
-  valid_598133 = validateParameter(valid_598133, JString, required = false,
+  if valid_580132 != nil:
+    section.add "alt", valid_580132
+  var valid_580133 = query.getOrDefault("oauth_token")
+  valid_580133 = validateParameter(valid_580133, JString, required = false,
                                  default = nil)
-  if valid_598133 != nil:
-    section.add "oauth_token", valid_598133
-  var valid_598134 = query.getOrDefault("userIp")
-  valid_598134 = validateParameter(valid_598134, JString, required = false,
+  if valid_580133 != nil:
+    section.add "oauth_token", valid_580133
+  var valid_580134 = query.getOrDefault("userIp")
+  valid_580134 = validateParameter(valid_580134, JString, required = false,
                                  default = nil)
-  if valid_598134 != nil:
-    section.add "userIp", valid_598134
-  var valid_598135 = query.getOrDefault("key")
-  valid_598135 = validateParameter(valid_598135, JString, required = false,
+  if valid_580134 != nil:
+    section.add "userIp", valid_580134
+  var valid_580135 = query.getOrDefault("key")
+  valid_580135 = validateParameter(valid_580135, JString, required = false,
                                  default = nil)
-  if valid_598135 != nil:
-    section.add "key", valid_598135
-  var valid_598136 = query.getOrDefault("prettyPrint")
-  valid_598136 = validateParameter(valid_598136, JBool, required = false,
+  if valid_580135 != nil:
+    section.add "key", valid_580135
+  var valid_580136 = query.getOrDefault("prettyPrint")
+  valid_580136 = validateParameter(valid_580136, JBool, required = false,
                                  default = newJBool(true))
-  if valid_598136 != nil:
-    section.add "prettyPrint", valid_598136
+  if valid_580136 != nil:
+    section.add "prettyPrint", valid_580136
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1851,21 +1853,21 @@ proc validate_AndroidenterpriseGrouplicenseusersList_598126(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_598137: Call_AndroidenterpriseGrouplicenseusersList_598125;
+proc call*(call_580137: Call_AndroidenterpriseGrouplicenseusersList_580125;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Retrieves the IDs of the users who have been granted entitlements under the license.
   ## 
-  let valid = call_598137.validator(path, query, header, formData, body)
-  let scheme = call_598137.pickScheme
+  let valid = call_580137.validator(path, query, header, formData, body)
+  let scheme = call_580137.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_598137.url(scheme.get, call_598137.host, call_598137.base,
-                         call_598137.route, valid.getOrDefault("path"),
+  let url = call_580137.url(scheme.get, call_580137.host, call_580137.base,
+                         call_580137.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_598137, url, valid)
+  result = hook(call_580137, url, valid)
 
-proc call*(call_598138: Call_AndroidenterpriseGrouplicenseusersList_598125;
+proc call*(call_580138: Call_AndroidenterpriseGrouplicenseusersList_580125;
           groupLicenseId: string; enterpriseId: string; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; key: string = ""; prettyPrint: bool = true): Recallable =
@@ -1889,34 +1891,34 @@ proc call*(call_598138: Call_AndroidenterpriseGrouplicenseusersList_598125;
   ##               : The ID of the enterprise.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_598139 = newJObject()
-  var query_598140 = newJObject()
-  add(query_598140, "fields", newJString(fields))
-  add(query_598140, "quotaUser", newJString(quotaUser))
-  add(query_598140, "alt", newJString(alt))
-  add(query_598140, "oauth_token", newJString(oauthToken))
-  add(query_598140, "userIp", newJString(userIp))
-  add(path_598139, "groupLicenseId", newJString(groupLicenseId))
-  add(query_598140, "key", newJString(key))
-  add(path_598139, "enterpriseId", newJString(enterpriseId))
-  add(query_598140, "prettyPrint", newJBool(prettyPrint))
-  result = call_598138.call(path_598139, query_598140, nil, nil, nil)
+  var path_580139 = newJObject()
+  var query_580140 = newJObject()
+  add(query_580140, "fields", newJString(fields))
+  add(query_580140, "quotaUser", newJString(quotaUser))
+  add(query_580140, "alt", newJString(alt))
+  add(query_580140, "oauth_token", newJString(oauthToken))
+  add(query_580140, "userIp", newJString(userIp))
+  add(path_580139, "groupLicenseId", newJString(groupLicenseId))
+  add(query_580140, "key", newJString(key))
+  add(path_580139, "enterpriseId", newJString(enterpriseId))
+  add(query_580140, "prettyPrint", newJBool(prettyPrint))
+  result = call_580138.call(path_580139, query_580140, nil, nil, nil)
 
-var androidenterpriseGrouplicenseusersList* = Call_AndroidenterpriseGrouplicenseusersList_598125(
+var androidenterpriseGrouplicenseusersList* = Call_AndroidenterpriseGrouplicenseusersList_580125(
     name: "androidenterpriseGrouplicenseusersList", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com",
     route: "/enterprises/{enterpriseId}/groupLicenses/{groupLicenseId}/users",
-    validator: validate_AndroidenterpriseGrouplicenseusersList_598126,
+    validator: validate_AndroidenterpriseGrouplicenseusersList_580126,
     base: "/androidenterprise/v1",
-    url: url_AndroidenterpriseGrouplicenseusersList_598127,
+    url: url_AndroidenterpriseGrouplicenseusersList_580127,
     schemes: {Scheme.Https})
 type
-  Call_AndroidenterpriseProductsList_598141 = ref object of OpenApiRestCall_597421
-proc url_AndroidenterpriseProductsList_598143(protocol: Scheme; host: string;
+  Call_AndroidenterpriseProductsList_580141 = ref object of OpenApiRestCall_579421
+proc url_AndroidenterpriseProductsList_580143(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "enterpriseId" in path, "`enterpriseId` is a required path parameter"
   const
@@ -1928,7 +1930,7 @@ proc url_AndroidenterpriseProductsList_598143(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_AndroidenterpriseProductsList_598142(path: JsonNode; query: JsonNode;
+proc validate_AndroidenterpriseProductsList_580142(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Finds approved products that match a query, or all approved products if there is no query.
   ## 
@@ -1940,11 +1942,11 @@ proc validate_AndroidenterpriseProductsList_598142(path: JsonNode; query: JsonNo
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `enterpriseId` field"
-  var valid_598144 = path.getOrDefault("enterpriseId")
-  valid_598144 = validateParameter(valid_598144, JString, required = true,
+  var valid_580144 = path.getOrDefault("enterpriseId")
+  valid_580144 = validateParameter(valid_580144, JString, required = true,
                                  default = nil)
-  if valid_598144 != nil:
-    section.add "enterpriseId", valid_598144
+  if valid_580144 != nil:
+    section.add "enterpriseId", valid_580144
   result.add "path", section
   ## parameters in `query` object:
   ##   token: JString
@@ -1972,64 +1974,64 @@ proc validate_AndroidenterpriseProductsList_598142(path: JsonNode; query: JsonNo
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_598145 = query.getOrDefault("token")
-  valid_598145 = validateParameter(valid_598145, JString, required = false,
+  var valid_580145 = query.getOrDefault("token")
+  valid_580145 = validateParameter(valid_580145, JString, required = false,
                                  default = nil)
-  if valid_598145 != nil:
-    section.add "token", valid_598145
-  var valid_598146 = query.getOrDefault("fields")
-  valid_598146 = validateParameter(valid_598146, JString, required = false,
+  if valid_580145 != nil:
+    section.add "token", valid_580145
+  var valid_580146 = query.getOrDefault("fields")
+  valid_580146 = validateParameter(valid_580146, JString, required = false,
                                  default = nil)
-  if valid_598146 != nil:
-    section.add "fields", valid_598146
-  var valid_598147 = query.getOrDefault("quotaUser")
-  valid_598147 = validateParameter(valid_598147, JString, required = false,
+  if valid_580146 != nil:
+    section.add "fields", valid_580146
+  var valid_580147 = query.getOrDefault("quotaUser")
+  valid_580147 = validateParameter(valid_580147, JString, required = false,
                                  default = nil)
-  if valid_598147 != nil:
-    section.add "quotaUser", valid_598147
-  var valid_598148 = query.getOrDefault("alt")
-  valid_598148 = validateParameter(valid_598148, JString, required = false,
+  if valid_580147 != nil:
+    section.add "quotaUser", valid_580147
+  var valid_580148 = query.getOrDefault("alt")
+  valid_580148 = validateParameter(valid_580148, JString, required = false,
                                  default = newJString("json"))
-  if valid_598148 != nil:
-    section.add "alt", valid_598148
-  var valid_598149 = query.getOrDefault("language")
-  valid_598149 = validateParameter(valid_598149, JString, required = false,
+  if valid_580148 != nil:
+    section.add "alt", valid_580148
+  var valid_580149 = query.getOrDefault("language")
+  valid_580149 = validateParameter(valid_580149, JString, required = false,
                                  default = nil)
-  if valid_598149 != nil:
-    section.add "language", valid_598149
-  var valid_598150 = query.getOrDefault("query")
-  valid_598150 = validateParameter(valid_598150, JString, required = false,
+  if valid_580149 != nil:
+    section.add "language", valid_580149
+  var valid_580150 = query.getOrDefault("query")
+  valid_580150 = validateParameter(valid_580150, JString, required = false,
                                  default = nil)
-  if valid_598150 != nil:
-    section.add "query", valid_598150
-  var valid_598151 = query.getOrDefault("oauth_token")
-  valid_598151 = validateParameter(valid_598151, JString, required = false,
+  if valid_580150 != nil:
+    section.add "query", valid_580150
+  var valid_580151 = query.getOrDefault("oauth_token")
+  valid_580151 = validateParameter(valid_580151, JString, required = false,
                                  default = nil)
-  if valid_598151 != nil:
-    section.add "oauth_token", valid_598151
-  var valid_598152 = query.getOrDefault("userIp")
-  valid_598152 = validateParameter(valid_598152, JString, required = false,
+  if valid_580151 != nil:
+    section.add "oauth_token", valid_580151
+  var valid_580152 = query.getOrDefault("userIp")
+  valid_580152 = validateParameter(valid_580152, JString, required = false,
                                  default = nil)
-  if valid_598152 != nil:
-    section.add "userIp", valid_598152
-  var valid_598153 = query.getOrDefault("maxResults")
-  valid_598153 = validateParameter(valid_598153, JInt, required = false, default = nil)
-  if valid_598153 != nil:
-    section.add "maxResults", valid_598153
-  var valid_598154 = query.getOrDefault("key")
-  valid_598154 = validateParameter(valid_598154, JString, required = false,
+  if valid_580152 != nil:
+    section.add "userIp", valid_580152
+  var valid_580153 = query.getOrDefault("maxResults")
+  valid_580153 = validateParameter(valid_580153, JInt, required = false, default = nil)
+  if valid_580153 != nil:
+    section.add "maxResults", valid_580153
+  var valid_580154 = query.getOrDefault("key")
+  valid_580154 = validateParameter(valid_580154, JString, required = false,
                                  default = nil)
-  if valid_598154 != nil:
-    section.add "key", valid_598154
-  var valid_598155 = query.getOrDefault("approved")
-  valid_598155 = validateParameter(valid_598155, JBool, required = false, default = nil)
-  if valid_598155 != nil:
-    section.add "approved", valid_598155
-  var valid_598156 = query.getOrDefault("prettyPrint")
-  valid_598156 = validateParameter(valid_598156, JBool, required = false,
+  if valid_580154 != nil:
+    section.add "key", valid_580154
+  var valid_580155 = query.getOrDefault("approved")
+  valid_580155 = validateParameter(valid_580155, JBool, required = false, default = nil)
+  if valid_580155 != nil:
+    section.add "approved", valid_580155
+  var valid_580156 = query.getOrDefault("prettyPrint")
+  valid_580156 = validateParameter(valid_580156, JBool, required = false,
                                  default = newJBool(true))
-  if valid_598156 != nil:
-    section.add "prettyPrint", valid_598156
+  if valid_580156 != nil:
+    section.add "prettyPrint", valid_580156
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -2038,20 +2040,20 @@ proc validate_AndroidenterpriseProductsList_598142(path: JsonNode; query: JsonNo
   if body != nil:
     result.add "body", body
 
-proc call*(call_598157: Call_AndroidenterpriseProductsList_598141; path: JsonNode;
+proc call*(call_580157: Call_AndroidenterpriseProductsList_580141; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Finds approved products that match a query, or all approved products if there is no query.
   ## 
-  let valid = call_598157.validator(path, query, header, formData, body)
-  let scheme = call_598157.pickScheme
+  let valid = call_580157.validator(path, query, header, formData, body)
+  let scheme = call_580157.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_598157.url(scheme.get, call_598157.host, call_598157.base,
-                         call_598157.route, valid.getOrDefault("path"),
+  let url = call_580157.url(scheme.get, call_580157.host, call_580157.base,
+                         call_580157.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_598157, url, valid)
+  result = hook(call_580157, url, valid)
 
-proc call*(call_598158: Call_AndroidenterpriseProductsList_598141;
+proc call*(call_580158: Call_AndroidenterpriseProductsList_580141;
           enterpriseId: string; token: string = ""; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; language: string = "";
           query: string = ""; oauthToken: string = ""; userIp: string = "";
@@ -2085,36 +2087,36 @@ proc call*(call_598158: Call_AndroidenterpriseProductsList_598141;
   ##           : Specifies whether to search among all products (false) or among only products that have been approved (true). Only "true" is supported, and should be specified.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_598159 = newJObject()
-  var query_598160 = newJObject()
-  add(query_598160, "token", newJString(token))
-  add(query_598160, "fields", newJString(fields))
-  add(query_598160, "quotaUser", newJString(quotaUser))
-  add(query_598160, "alt", newJString(alt))
-  add(query_598160, "language", newJString(language))
-  add(query_598160, "query", newJString(query))
-  add(query_598160, "oauth_token", newJString(oauthToken))
-  add(query_598160, "userIp", newJString(userIp))
-  add(query_598160, "maxResults", newJInt(maxResults))
-  add(query_598160, "key", newJString(key))
-  add(path_598159, "enterpriseId", newJString(enterpriseId))
-  add(query_598160, "approved", newJBool(approved))
-  add(query_598160, "prettyPrint", newJBool(prettyPrint))
-  result = call_598158.call(path_598159, query_598160, nil, nil, nil)
+  var path_580159 = newJObject()
+  var query_580160 = newJObject()
+  add(query_580160, "token", newJString(token))
+  add(query_580160, "fields", newJString(fields))
+  add(query_580160, "quotaUser", newJString(quotaUser))
+  add(query_580160, "alt", newJString(alt))
+  add(query_580160, "language", newJString(language))
+  add(query_580160, "query", newJString(query))
+  add(query_580160, "oauth_token", newJString(oauthToken))
+  add(query_580160, "userIp", newJString(userIp))
+  add(query_580160, "maxResults", newJInt(maxResults))
+  add(query_580160, "key", newJString(key))
+  add(path_580159, "enterpriseId", newJString(enterpriseId))
+  add(query_580160, "approved", newJBool(approved))
+  add(query_580160, "prettyPrint", newJBool(prettyPrint))
+  result = call_580158.call(path_580159, query_580160, nil, nil, nil)
 
-var androidenterpriseProductsList* = Call_AndroidenterpriseProductsList_598141(
+var androidenterpriseProductsList* = Call_AndroidenterpriseProductsList_580141(
     name: "androidenterpriseProductsList", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/enterprises/{enterpriseId}/products",
-    validator: validate_AndroidenterpriseProductsList_598142,
-    base: "/androidenterprise/v1", url: url_AndroidenterpriseProductsList_598143,
+    validator: validate_AndroidenterpriseProductsList_580142,
+    base: "/androidenterprise/v1", url: url_AndroidenterpriseProductsList_580143,
     schemes: {Scheme.Https})
 type
-  Call_AndroidenterpriseProductsGet_598161 = ref object of OpenApiRestCall_597421
-proc url_AndroidenterpriseProductsGet_598163(protocol: Scheme; host: string;
+  Call_AndroidenterpriseProductsGet_580161 = ref object of OpenApiRestCall_579421
+proc url_AndroidenterpriseProductsGet_580163(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "enterpriseId" in path, "`enterpriseId` is a required path parameter"
   assert "productId" in path, "`productId` is a required path parameter"
@@ -2128,7 +2130,7 @@ proc url_AndroidenterpriseProductsGet_598163(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_AndroidenterpriseProductsGet_598162(path: JsonNode; query: JsonNode;
+proc validate_AndroidenterpriseProductsGet_580162(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Retrieves details of a product for display to an enterprise admin.
   ## 
@@ -2142,16 +2144,16 @@ proc validate_AndroidenterpriseProductsGet_598162(path: JsonNode; query: JsonNod
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `enterpriseId` field"
-  var valid_598164 = path.getOrDefault("enterpriseId")
-  valid_598164 = validateParameter(valid_598164, JString, required = true,
+  var valid_580164 = path.getOrDefault("enterpriseId")
+  valid_580164 = validateParameter(valid_580164, JString, required = true,
                                  default = nil)
-  if valid_598164 != nil:
-    section.add "enterpriseId", valid_598164
-  var valid_598165 = path.getOrDefault("productId")
-  valid_598165 = validateParameter(valid_598165, JString, required = true,
+  if valid_580164 != nil:
+    section.add "enterpriseId", valid_580164
+  var valid_580165 = path.getOrDefault("productId")
+  valid_580165 = validateParameter(valid_580165, JString, required = true,
                                  default = nil)
-  if valid_598165 != nil:
-    section.add "productId", valid_598165
+  if valid_580165 != nil:
+    section.add "productId", valid_580165
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -2171,46 +2173,46 @@ proc validate_AndroidenterpriseProductsGet_598162(path: JsonNode; query: JsonNod
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_598166 = query.getOrDefault("fields")
-  valid_598166 = validateParameter(valid_598166, JString, required = false,
+  var valid_580166 = query.getOrDefault("fields")
+  valid_580166 = validateParameter(valid_580166, JString, required = false,
                                  default = nil)
-  if valid_598166 != nil:
-    section.add "fields", valid_598166
-  var valid_598167 = query.getOrDefault("quotaUser")
-  valid_598167 = validateParameter(valid_598167, JString, required = false,
+  if valid_580166 != nil:
+    section.add "fields", valid_580166
+  var valid_580167 = query.getOrDefault("quotaUser")
+  valid_580167 = validateParameter(valid_580167, JString, required = false,
                                  default = nil)
-  if valid_598167 != nil:
-    section.add "quotaUser", valid_598167
-  var valid_598168 = query.getOrDefault("alt")
-  valid_598168 = validateParameter(valid_598168, JString, required = false,
+  if valid_580167 != nil:
+    section.add "quotaUser", valid_580167
+  var valid_580168 = query.getOrDefault("alt")
+  valid_580168 = validateParameter(valid_580168, JString, required = false,
                                  default = newJString("json"))
-  if valid_598168 != nil:
-    section.add "alt", valid_598168
-  var valid_598169 = query.getOrDefault("language")
-  valid_598169 = validateParameter(valid_598169, JString, required = false,
+  if valid_580168 != nil:
+    section.add "alt", valid_580168
+  var valid_580169 = query.getOrDefault("language")
+  valid_580169 = validateParameter(valid_580169, JString, required = false,
                                  default = nil)
-  if valid_598169 != nil:
-    section.add "language", valid_598169
-  var valid_598170 = query.getOrDefault("oauth_token")
-  valid_598170 = validateParameter(valid_598170, JString, required = false,
+  if valid_580169 != nil:
+    section.add "language", valid_580169
+  var valid_580170 = query.getOrDefault("oauth_token")
+  valid_580170 = validateParameter(valid_580170, JString, required = false,
                                  default = nil)
-  if valid_598170 != nil:
-    section.add "oauth_token", valid_598170
-  var valid_598171 = query.getOrDefault("userIp")
-  valid_598171 = validateParameter(valid_598171, JString, required = false,
+  if valid_580170 != nil:
+    section.add "oauth_token", valid_580170
+  var valid_580171 = query.getOrDefault("userIp")
+  valid_580171 = validateParameter(valid_580171, JString, required = false,
                                  default = nil)
-  if valid_598171 != nil:
-    section.add "userIp", valid_598171
-  var valid_598172 = query.getOrDefault("key")
-  valid_598172 = validateParameter(valid_598172, JString, required = false,
+  if valid_580171 != nil:
+    section.add "userIp", valid_580171
+  var valid_580172 = query.getOrDefault("key")
+  valid_580172 = validateParameter(valid_580172, JString, required = false,
                                  default = nil)
-  if valid_598172 != nil:
-    section.add "key", valid_598172
-  var valid_598173 = query.getOrDefault("prettyPrint")
-  valid_598173 = validateParameter(valid_598173, JBool, required = false,
+  if valid_580172 != nil:
+    section.add "key", valid_580172
+  var valid_580173 = query.getOrDefault("prettyPrint")
+  valid_580173 = validateParameter(valid_580173, JBool, required = false,
                                  default = newJBool(true))
-  if valid_598173 != nil:
-    section.add "prettyPrint", valid_598173
+  if valid_580173 != nil:
+    section.add "prettyPrint", valid_580173
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -2219,20 +2221,20 @@ proc validate_AndroidenterpriseProductsGet_598162(path: JsonNode; query: JsonNod
   if body != nil:
     result.add "body", body
 
-proc call*(call_598174: Call_AndroidenterpriseProductsGet_598161; path: JsonNode;
+proc call*(call_580174: Call_AndroidenterpriseProductsGet_580161; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Retrieves details of a product for display to an enterprise admin.
   ## 
-  let valid = call_598174.validator(path, query, header, formData, body)
-  let scheme = call_598174.pickScheme
+  let valid = call_580174.validator(path, query, header, formData, body)
+  let scheme = call_580174.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_598174.url(scheme.get, call_598174.host, call_598174.base,
-                         call_598174.route, valid.getOrDefault("path"),
+  let url = call_580174.url(scheme.get, call_580174.host, call_580174.base,
+                         call_580174.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_598174, url, valid)
+  result = hook(call_580174, url, valid)
 
-proc call*(call_598175: Call_AndroidenterpriseProductsGet_598161;
+proc call*(call_580175: Call_AndroidenterpriseProductsGet_580161;
           enterpriseId: string; productId: string; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; language: string = "";
           oauthToken: string = ""; userIp: string = ""; key: string = "";
@@ -2259,35 +2261,35 @@ proc call*(call_598175: Call_AndroidenterpriseProductsGet_598161;
   ##            : The ID of the product, e.g. "app:com.google.android.gm".
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_598176 = newJObject()
-  var query_598177 = newJObject()
-  add(query_598177, "fields", newJString(fields))
-  add(query_598177, "quotaUser", newJString(quotaUser))
-  add(query_598177, "alt", newJString(alt))
-  add(query_598177, "language", newJString(language))
-  add(query_598177, "oauth_token", newJString(oauthToken))
-  add(query_598177, "userIp", newJString(userIp))
-  add(query_598177, "key", newJString(key))
-  add(path_598176, "enterpriseId", newJString(enterpriseId))
-  add(path_598176, "productId", newJString(productId))
-  add(query_598177, "prettyPrint", newJBool(prettyPrint))
-  result = call_598175.call(path_598176, query_598177, nil, nil, nil)
+  var path_580176 = newJObject()
+  var query_580177 = newJObject()
+  add(query_580177, "fields", newJString(fields))
+  add(query_580177, "quotaUser", newJString(quotaUser))
+  add(query_580177, "alt", newJString(alt))
+  add(query_580177, "language", newJString(language))
+  add(query_580177, "oauth_token", newJString(oauthToken))
+  add(query_580177, "userIp", newJString(userIp))
+  add(query_580177, "key", newJString(key))
+  add(path_580176, "enterpriseId", newJString(enterpriseId))
+  add(path_580176, "productId", newJString(productId))
+  add(query_580177, "prettyPrint", newJBool(prettyPrint))
+  result = call_580175.call(path_580176, query_580177, nil, nil, nil)
 
-var androidenterpriseProductsGet* = Call_AndroidenterpriseProductsGet_598161(
+var androidenterpriseProductsGet* = Call_AndroidenterpriseProductsGet_580161(
     name: "androidenterpriseProductsGet", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com",
     route: "/enterprises/{enterpriseId}/products/{productId}",
-    validator: validate_AndroidenterpriseProductsGet_598162,
-    base: "/androidenterprise/v1", url: url_AndroidenterpriseProductsGet_598163,
+    validator: validate_AndroidenterpriseProductsGet_580162,
+    base: "/androidenterprise/v1", url: url_AndroidenterpriseProductsGet_580163,
     schemes: {Scheme.Https})
 type
-  Call_AndroidenterpriseProductsGetAppRestrictionsSchema_598178 = ref object of OpenApiRestCall_597421
-proc url_AndroidenterpriseProductsGetAppRestrictionsSchema_598180(
+  Call_AndroidenterpriseProductsGetAppRestrictionsSchema_580178 = ref object of OpenApiRestCall_579421
+proc url_AndroidenterpriseProductsGetAppRestrictionsSchema_580180(
     protocol: Scheme; host: string; base: string; route: string; path: JsonNode;
     query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "enterpriseId" in path, "`enterpriseId` is a required path parameter"
   assert "productId" in path, "`productId` is a required path parameter"
@@ -2302,7 +2304,7 @@ proc url_AndroidenterpriseProductsGetAppRestrictionsSchema_598180(
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_AndroidenterpriseProductsGetAppRestrictionsSchema_598179(
+proc validate_AndroidenterpriseProductsGetAppRestrictionsSchema_580179(
     path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
     body: JsonNode): JsonNode =
   ## Retrieves the schema that defines the configurable properties for this product. All products have a schema, but this schema may be empty if no managed configurations have been defined. This schema can be used to populate a UI that allows an admin to configure the product. To apply a managed configuration based on the schema obtained using this API, see Managed Configurations through Play.
@@ -2317,16 +2319,16 @@ proc validate_AndroidenterpriseProductsGetAppRestrictionsSchema_598179(
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `enterpriseId` field"
-  var valid_598181 = path.getOrDefault("enterpriseId")
-  valid_598181 = validateParameter(valid_598181, JString, required = true,
+  var valid_580181 = path.getOrDefault("enterpriseId")
+  valid_580181 = validateParameter(valid_580181, JString, required = true,
                                  default = nil)
-  if valid_598181 != nil:
-    section.add "enterpriseId", valid_598181
-  var valid_598182 = path.getOrDefault("productId")
-  valid_598182 = validateParameter(valid_598182, JString, required = true,
+  if valid_580181 != nil:
+    section.add "enterpriseId", valid_580181
+  var valid_580182 = path.getOrDefault("productId")
+  valid_580182 = validateParameter(valid_580182, JString, required = true,
                                  default = nil)
-  if valid_598182 != nil:
-    section.add "productId", valid_598182
+  if valid_580182 != nil:
+    section.add "productId", valid_580182
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -2346,46 +2348,46 @@ proc validate_AndroidenterpriseProductsGetAppRestrictionsSchema_598179(
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_598183 = query.getOrDefault("fields")
-  valid_598183 = validateParameter(valid_598183, JString, required = false,
+  var valid_580183 = query.getOrDefault("fields")
+  valid_580183 = validateParameter(valid_580183, JString, required = false,
                                  default = nil)
-  if valid_598183 != nil:
-    section.add "fields", valid_598183
-  var valid_598184 = query.getOrDefault("quotaUser")
-  valid_598184 = validateParameter(valid_598184, JString, required = false,
+  if valid_580183 != nil:
+    section.add "fields", valid_580183
+  var valid_580184 = query.getOrDefault("quotaUser")
+  valid_580184 = validateParameter(valid_580184, JString, required = false,
                                  default = nil)
-  if valid_598184 != nil:
-    section.add "quotaUser", valid_598184
-  var valid_598185 = query.getOrDefault("alt")
-  valid_598185 = validateParameter(valid_598185, JString, required = false,
+  if valid_580184 != nil:
+    section.add "quotaUser", valid_580184
+  var valid_580185 = query.getOrDefault("alt")
+  valid_580185 = validateParameter(valid_580185, JString, required = false,
                                  default = newJString("json"))
-  if valid_598185 != nil:
-    section.add "alt", valid_598185
-  var valid_598186 = query.getOrDefault("language")
-  valid_598186 = validateParameter(valid_598186, JString, required = false,
+  if valid_580185 != nil:
+    section.add "alt", valid_580185
+  var valid_580186 = query.getOrDefault("language")
+  valid_580186 = validateParameter(valid_580186, JString, required = false,
                                  default = nil)
-  if valid_598186 != nil:
-    section.add "language", valid_598186
-  var valid_598187 = query.getOrDefault("oauth_token")
-  valid_598187 = validateParameter(valid_598187, JString, required = false,
+  if valid_580186 != nil:
+    section.add "language", valid_580186
+  var valid_580187 = query.getOrDefault("oauth_token")
+  valid_580187 = validateParameter(valid_580187, JString, required = false,
                                  default = nil)
-  if valid_598187 != nil:
-    section.add "oauth_token", valid_598187
-  var valid_598188 = query.getOrDefault("userIp")
-  valid_598188 = validateParameter(valid_598188, JString, required = false,
+  if valid_580187 != nil:
+    section.add "oauth_token", valid_580187
+  var valid_580188 = query.getOrDefault("userIp")
+  valid_580188 = validateParameter(valid_580188, JString, required = false,
                                  default = nil)
-  if valid_598188 != nil:
-    section.add "userIp", valid_598188
-  var valid_598189 = query.getOrDefault("key")
-  valid_598189 = validateParameter(valid_598189, JString, required = false,
+  if valid_580188 != nil:
+    section.add "userIp", valid_580188
+  var valid_580189 = query.getOrDefault("key")
+  valid_580189 = validateParameter(valid_580189, JString, required = false,
                                  default = nil)
-  if valid_598189 != nil:
-    section.add "key", valid_598189
-  var valid_598190 = query.getOrDefault("prettyPrint")
-  valid_598190 = validateParameter(valid_598190, JBool, required = false,
+  if valid_580189 != nil:
+    section.add "key", valid_580189
+  var valid_580190 = query.getOrDefault("prettyPrint")
+  valid_580190 = validateParameter(valid_580190, JBool, required = false,
                                  default = newJBool(true))
-  if valid_598190 != nil:
-    section.add "prettyPrint", valid_598190
+  if valid_580190 != nil:
+    section.add "prettyPrint", valid_580190
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -2394,21 +2396,21 @@ proc validate_AndroidenterpriseProductsGetAppRestrictionsSchema_598179(
   if body != nil:
     result.add "body", body
 
-proc call*(call_598191: Call_AndroidenterpriseProductsGetAppRestrictionsSchema_598178;
+proc call*(call_580191: Call_AndroidenterpriseProductsGetAppRestrictionsSchema_580178;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Retrieves the schema that defines the configurable properties for this product. All products have a schema, but this schema may be empty if no managed configurations have been defined. This schema can be used to populate a UI that allows an admin to configure the product. To apply a managed configuration based on the schema obtained using this API, see Managed Configurations through Play.
   ## 
-  let valid = call_598191.validator(path, query, header, formData, body)
-  let scheme = call_598191.pickScheme
+  let valid = call_580191.validator(path, query, header, formData, body)
+  let scheme = call_580191.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_598191.url(scheme.get, call_598191.host, call_598191.base,
-                         call_598191.route, valid.getOrDefault("path"),
+  let url = call_580191.url(scheme.get, call_580191.host, call_580191.base,
+                         call_580191.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_598191, url, valid)
+  result = hook(call_580191, url, valid)
 
-proc call*(call_598192: Call_AndroidenterpriseProductsGetAppRestrictionsSchema_598178;
+proc call*(call_580192: Call_AndroidenterpriseProductsGetAppRestrictionsSchema_580178;
           enterpriseId: string; productId: string; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; language: string = "";
           oauthToken: string = ""; userIp: string = ""; key: string = "";
@@ -2435,34 +2437,34 @@ proc call*(call_598192: Call_AndroidenterpriseProductsGetAppRestrictionsSchema_5
   ##            : The ID of the product.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_598193 = newJObject()
-  var query_598194 = newJObject()
-  add(query_598194, "fields", newJString(fields))
-  add(query_598194, "quotaUser", newJString(quotaUser))
-  add(query_598194, "alt", newJString(alt))
-  add(query_598194, "language", newJString(language))
-  add(query_598194, "oauth_token", newJString(oauthToken))
-  add(query_598194, "userIp", newJString(userIp))
-  add(query_598194, "key", newJString(key))
-  add(path_598193, "enterpriseId", newJString(enterpriseId))
-  add(path_598193, "productId", newJString(productId))
-  add(query_598194, "prettyPrint", newJBool(prettyPrint))
-  result = call_598192.call(path_598193, query_598194, nil, nil, nil)
+  var path_580193 = newJObject()
+  var query_580194 = newJObject()
+  add(query_580194, "fields", newJString(fields))
+  add(query_580194, "quotaUser", newJString(quotaUser))
+  add(query_580194, "alt", newJString(alt))
+  add(query_580194, "language", newJString(language))
+  add(query_580194, "oauth_token", newJString(oauthToken))
+  add(query_580194, "userIp", newJString(userIp))
+  add(query_580194, "key", newJString(key))
+  add(path_580193, "enterpriseId", newJString(enterpriseId))
+  add(path_580193, "productId", newJString(productId))
+  add(query_580194, "prettyPrint", newJBool(prettyPrint))
+  result = call_580192.call(path_580193, query_580194, nil, nil, nil)
 
-var androidenterpriseProductsGetAppRestrictionsSchema* = Call_AndroidenterpriseProductsGetAppRestrictionsSchema_598178(
+var androidenterpriseProductsGetAppRestrictionsSchema* = Call_AndroidenterpriseProductsGetAppRestrictionsSchema_580178(
     name: "androidenterpriseProductsGetAppRestrictionsSchema",
     meth: HttpMethod.HttpGet, host: "www.googleapis.com", route: "/enterprises/{enterpriseId}/products/{productId}/appRestrictionsSchema",
-    validator: validate_AndroidenterpriseProductsGetAppRestrictionsSchema_598179,
+    validator: validate_AndroidenterpriseProductsGetAppRestrictionsSchema_580179,
     base: "/androidenterprise/v1",
-    url: url_AndroidenterpriseProductsGetAppRestrictionsSchema_598180,
+    url: url_AndroidenterpriseProductsGetAppRestrictionsSchema_580180,
     schemes: {Scheme.Https})
 type
-  Call_AndroidenterpriseProductsApprove_598195 = ref object of OpenApiRestCall_597421
-proc url_AndroidenterpriseProductsApprove_598197(protocol: Scheme; host: string;
+  Call_AndroidenterpriseProductsApprove_580195 = ref object of OpenApiRestCall_579421
+proc url_AndroidenterpriseProductsApprove_580197(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "enterpriseId" in path, "`enterpriseId` is a required path parameter"
   assert "productId" in path, "`productId` is a required path parameter"
@@ -2477,7 +2479,7 @@ proc url_AndroidenterpriseProductsApprove_598197(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_AndroidenterpriseProductsApprove_598196(path: JsonNode;
+proc validate_AndroidenterpriseProductsApprove_580196(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Approves the specified product and the relevant app permissions, if any. The maximum number of products that you can approve per enterprise customer is 1,000.
   ## 
@@ -2493,16 +2495,16 @@ proc validate_AndroidenterpriseProductsApprove_598196(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `enterpriseId` field"
-  var valid_598198 = path.getOrDefault("enterpriseId")
-  valid_598198 = validateParameter(valid_598198, JString, required = true,
+  var valid_580198 = path.getOrDefault("enterpriseId")
+  valid_580198 = validateParameter(valid_580198, JString, required = true,
                                  default = nil)
-  if valid_598198 != nil:
-    section.add "enterpriseId", valid_598198
-  var valid_598199 = path.getOrDefault("productId")
-  valid_598199 = validateParameter(valid_598199, JString, required = true,
+  if valid_580198 != nil:
+    section.add "enterpriseId", valid_580198
+  var valid_580199 = path.getOrDefault("productId")
+  valid_580199 = validateParameter(valid_580199, JString, required = true,
                                  default = nil)
-  if valid_598199 != nil:
-    section.add "productId", valid_598199
+  if valid_580199 != nil:
+    section.add "productId", valid_580199
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -2520,41 +2522,41 @@ proc validate_AndroidenterpriseProductsApprove_598196(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_598200 = query.getOrDefault("fields")
-  valid_598200 = validateParameter(valid_598200, JString, required = false,
+  var valid_580200 = query.getOrDefault("fields")
+  valid_580200 = validateParameter(valid_580200, JString, required = false,
                                  default = nil)
-  if valid_598200 != nil:
-    section.add "fields", valid_598200
-  var valid_598201 = query.getOrDefault("quotaUser")
-  valid_598201 = validateParameter(valid_598201, JString, required = false,
+  if valid_580200 != nil:
+    section.add "fields", valid_580200
+  var valid_580201 = query.getOrDefault("quotaUser")
+  valid_580201 = validateParameter(valid_580201, JString, required = false,
                                  default = nil)
-  if valid_598201 != nil:
-    section.add "quotaUser", valid_598201
-  var valid_598202 = query.getOrDefault("alt")
-  valid_598202 = validateParameter(valid_598202, JString, required = false,
+  if valid_580201 != nil:
+    section.add "quotaUser", valid_580201
+  var valid_580202 = query.getOrDefault("alt")
+  valid_580202 = validateParameter(valid_580202, JString, required = false,
                                  default = newJString("json"))
-  if valid_598202 != nil:
-    section.add "alt", valid_598202
-  var valid_598203 = query.getOrDefault("oauth_token")
-  valid_598203 = validateParameter(valid_598203, JString, required = false,
+  if valid_580202 != nil:
+    section.add "alt", valid_580202
+  var valid_580203 = query.getOrDefault("oauth_token")
+  valid_580203 = validateParameter(valid_580203, JString, required = false,
                                  default = nil)
-  if valid_598203 != nil:
-    section.add "oauth_token", valid_598203
-  var valid_598204 = query.getOrDefault("userIp")
-  valid_598204 = validateParameter(valid_598204, JString, required = false,
+  if valid_580203 != nil:
+    section.add "oauth_token", valid_580203
+  var valid_580204 = query.getOrDefault("userIp")
+  valid_580204 = validateParameter(valid_580204, JString, required = false,
                                  default = nil)
-  if valid_598204 != nil:
-    section.add "userIp", valid_598204
-  var valid_598205 = query.getOrDefault("key")
-  valid_598205 = validateParameter(valid_598205, JString, required = false,
+  if valid_580204 != nil:
+    section.add "userIp", valid_580204
+  var valid_580205 = query.getOrDefault("key")
+  valid_580205 = validateParameter(valid_580205, JString, required = false,
                                  default = nil)
-  if valid_598205 != nil:
-    section.add "key", valid_598205
-  var valid_598206 = query.getOrDefault("prettyPrint")
-  valid_598206 = validateParameter(valid_598206, JBool, required = false,
+  if valid_580205 != nil:
+    section.add "key", valid_580205
+  var valid_580206 = query.getOrDefault("prettyPrint")
+  valid_580206 = validateParameter(valid_580206, JBool, required = false,
                                  default = newJBool(true))
-  if valid_598206 != nil:
-    section.add "prettyPrint", valid_598206
+  if valid_580206 != nil:
+    section.add "prettyPrint", valid_580206
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -2566,23 +2568,23 @@ proc validate_AndroidenterpriseProductsApprove_598196(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_598208: Call_AndroidenterpriseProductsApprove_598195;
+proc call*(call_580208: Call_AndroidenterpriseProductsApprove_580195;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Approves the specified product and the relevant app permissions, if any. The maximum number of products that you can approve per enterprise customer is 1,000.
   ## 
   ## To learn how to use managed Google Play to design and create a store layout to display approved products to your users, see Store Layout Design.
   ## 
-  let valid = call_598208.validator(path, query, header, formData, body)
-  let scheme = call_598208.pickScheme
+  let valid = call_580208.validator(path, query, header, formData, body)
+  let scheme = call_580208.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_598208.url(scheme.get, call_598208.host, call_598208.base,
-                         call_598208.route, valid.getOrDefault("path"),
+  let url = call_580208.url(scheme.get, call_580208.host, call_580208.base,
+                         call_580208.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_598208, url, valid)
+  result = hook(call_580208, url, valid)
 
-proc call*(call_598209: Call_AndroidenterpriseProductsApprove_598195;
+proc call*(call_580209: Call_AndroidenterpriseProductsApprove_580195;
           enterpriseId: string; productId: string; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; key: string = ""; body: JsonNode = nil;
@@ -2610,36 +2612,36 @@ proc call*(call_598209: Call_AndroidenterpriseProductsApprove_598195;
   ##              : Returns response with indentations and line breaks.
   ##   productId: string (required)
   ##            : The ID of the product.
-  var path_598210 = newJObject()
-  var query_598211 = newJObject()
-  var body_598212 = newJObject()
-  add(query_598211, "fields", newJString(fields))
-  add(query_598211, "quotaUser", newJString(quotaUser))
-  add(query_598211, "alt", newJString(alt))
-  add(query_598211, "oauth_token", newJString(oauthToken))
-  add(query_598211, "userIp", newJString(userIp))
-  add(query_598211, "key", newJString(key))
-  add(path_598210, "enterpriseId", newJString(enterpriseId))
+  var path_580210 = newJObject()
+  var query_580211 = newJObject()
+  var body_580212 = newJObject()
+  add(query_580211, "fields", newJString(fields))
+  add(query_580211, "quotaUser", newJString(quotaUser))
+  add(query_580211, "alt", newJString(alt))
+  add(query_580211, "oauth_token", newJString(oauthToken))
+  add(query_580211, "userIp", newJString(userIp))
+  add(query_580211, "key", newJString(key))
+  add(path_580210, "enterpriseId", newJString(enterpriseId))
   if body != nil:
-    body_598212 = body
-  add(query_598211, "prettyPrint", newJBool(prettyPrint))
-  add(path_598210, "productId", newJString(productId))
-  result = call_598209.call(path_598210, query_598211, nil, nil, body_598212)
+    body_580212 = body
+  add(query_580211, "prettyPrint", newJBool(prettyPrint))
+  add(path_580210, "productId", newJString(productId))
+  result = call_580209.call(path_580210, query_580211, nil, nil, body_580212)
 
-var androidenterpriseProductsApprove* = Call_AndroidenterpriseProductsApprove_598195(
+var androidenterpriseProductsApprove* = Call_AndroidenterpriseProductsApprove_580195(
     name: "androidenterpriseProductsApprove", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com",
     route: "/enterprises/{enterpriseId}/products/{productId}/approve",
-    validator: validate_AndroidenterpriseProductsApprove_598196,
-    base: "/androidenterprise/v1", url: url_AndroidenterpriseProductsApprove_598197,
+    validator: validate_AndroidenterpriseProductsApprove_580196,
+    base: "/androidenterprise/v1", url: url_AndroidenterpriseProductsApprove_580197,
     schemes: {Scheme.Https})
 type
-  Call_AndroidenterpriseProductsGenerateApprovalUrl_598213 = ref object of OpenApiRestCall_597421
-proc url_AndroidenterpriseProductsGenerateApprovalUrl_598215(protocol: Scheme;
+  Call_AndroidenterpriseProductsGenerateApprovalUrl_580213 = ref object of OpenApiRestCall_579421
+proc url_AndroidenterpriseProductsGenerateApprovalUrl_580215(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "enterpriseId" in path, "`enterpriseId` is a required path parameter"
   assert "productId" in path, "`productId` is a required path parameter"
@@ -2654,7 +2656,7 @@ proc url_AndroidenterpriseProductsGenerateApprovalUrl_598215(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_AndroidenterpriseProductsGenerateApprovalUrl_598214(path: JsonNode;
+proc validate_AndroidenterpriseProductsGenerateApprovalUrl_580214(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Generates a URL that can be rendered in an iframe to display the permissions (if any) of a product. An enterprise admin must view these permissions and accept them on behalf of their organization in order to approve that product.
   ## 
@@ -2670,16 +2672,16 @@ proc validate_AndroidenterpriseProductsGenerateApprovalUrl_598214(path: JsonNode
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `enterpriseId` field"
-  var valid_598216 = path.getOrDefault("enterpriseId")
-  valid_598216 = validateParameter(valid_598216, JString, required = true,
+  var valid_580216 = path.getOrDefault("enterpriseId")
+  valid_580216 = validateParameter(valid_580216, JString, required = true,
                                  default = nil)
-  if valid_598216 != nil:
-    section.add "enterpriseId", valid_598216
-  var valid_598217 = path.getOrDefault("productId")
-  valid_598217 = validateParameter(valid_598217, JString, required = true,
+  if valid_580216 != nil:
+    section.add "enterpriseId", valid_580216
+  var valid_580217 = path.getOrDefault("productId")
+  valid_580217 = validateParameter(valid_580217, JString, required = true,
                                  default = nil)
-  if valid_598217 != nil:
-    section.add "productId", valid_598217
+  if valid_580217 != nil:
+    section.add "productId", valid_580217
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -2699,46 +2701,46 @@ proc validate_AndroidenterpriseProductsGenerateApprovalUrl_598214(path: JsonNode
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_598218 = query.getOrDefault("fields")
-  valid_598218 = validateParameter(valid_598218, JString, required = false,
+  var valid_580218 = query.getOrDefault("fields")
+  valid_580218 = validateParameter(valid_580218, JString, required = false,
                                  default = nil)
-  if valid_598218 != nil:
-    section.add "fields", valid_598218
-  var valid_598219 = query.getOrDefault("quotaUser")
-  valid_598219 = validateParameter(valid_598219, JString, required = false,
+  if valid_580218 != nil:
+    section.add "fields", valid_580218
+  var valid_580219 = query.getOrDefault("quotaUser")
+  valid_580219 = validateParameter(valid_580219, JString, required = false,
                                  default = nil)
-  if valid_598219 != nil:
-    section.add "quotaUser", valid_598219
-  var valid_598220 = query.getOrDefault("alt")
-  valid_598220 = validateParameter(valid_598220, JString, required = false,
+  if valid_580219 != nil:
+    section.add "quotaUser", valid_580219
+  var valid_580220 = query.getOrDefault("alt")
+  valid_580220 = validateParameter(valid_580220, JString, required = false,
                                  default = newJString("json"))
-  if valid_598220 != nil:
-    section.add "alt", valid_598220
-  var valid_598221 = query.getOrDefault("oauth_token")
-  valid_598221 = validateParameter(valid_598221, JString, required = false,
+  if valid_580220 != nil:
+    section.add "alt", valid_580220
+  var valid_580221 = query.getOrDefault("oauth_token")
+  valid_580221 = validateParameter(valid_580221, JString, required = false,
                                  default = nil)
-  if valid_598221 != nil:
-    section.add "oauth_token", valid_598221
-  var valid_598222 = query.getOrDefault("userIp")
-  valid_598222 = validateParameter(valid_598222, JString, required = false,
+  if valid_580221 != nil:
+    section.add "oauth_token", valid_580221
+  var valid_580222 = query.getOrDefault("userIp")
+  valid_580222 = validateParameter(valid_580222, JString, required = false,
                                  default = nil)
-  if valid_598222 != nil:
-    section.add "userIp", valid_598222
-  var valid_598223 = query.getOrDefault("key")
-  valid_598223 = validateParameter(valid_598223, JString, required = false,
+  if valid_580222 != nil:
+    section.add "userIp", valid_580222
+  var valid_580223 = query.getOrDefault("key")
+  valid_580223 = validateParameter(valid_580223, JString, required = false,
                                  default = nil)
-  if valid_598223 != nil:
-    section.add "key", valid_598223
-  var valid_598224 = query.getOrDefault("languageCode")
-  valid_598224 = validateParameter(valid_598224, JString, required = false,
+  if valid_580223 != nil:
+    section.add "key", valid_580223
+  var valid_580224 = query.getOrDefault("languageCode")
+  valid_580224 = validateParameter(valid_580224, JString, required = false,
                                  default = nil)
-  if valid_598224 != nil:
-    section.add "languageCode", valid_598224
-  var valid_598225 = query.getOrDefault("prettyPrint")
-  valid_598225 = validateParameter(valid_598225, JBool, required = false,
+  if valid_580224 != nil:
+    section.add "languageCode", valid_580224
+  var valid_580225 = query.getOrDefault("prettyPrint")
+  valid_580225 = validateParameter(valid_580225, JBool, required = false,
                                  default = newJBool(true))
-  if valid_598225 != nil:
-    section.add "prettyPrint", valid_598225
+  if valid_580225 != nil:
+    section.add "prettyPrint", valid_580225
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -2747,23 +2749,23 @@ proc validate_AndroidenterpriseProductsGenerateApprovalUrl_598214(path: JsonNode
   if body != nil:
     result.add "body", body
 
-proc call*(call_598226: Call_AndroidenterpriseProductsGenerateApprovalUrl_598213;
+proc call*(call_580226: Call_AndroidenterpriseProductsGenerateApprovalUrl_580213;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Generates a URL that can be rendered in an iframe to display the permissions (if any) of a product. An enterprise admin must view these permissions and accept them on behalf of their organization in order to approve that product.
   ## 
   ## Admins should accept the displayed permissions by interacting with a separate UI element in the EMM console, which in turn should trigger the use of this URL as the approvalUrlInfo.approvalUrl property in a Products.approve call to approve the product. This URL can only be used to display permissions for up to 1 day.
   ## 
-  let valid = call_598226.validator(path, query, header, formData, body)
-  let scheme = call_598226.pickScheme
+  let valid = call_580226.validator(path, query, header, formData, body)
+  let scheme = call_580226.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_598226.url(scheme.get, call_598226.host, call_598226.base,
-                         call_598226.route, valid.getOrDefault("path"),
+  let url = call_580226.url(scheme.get, call_580226.host, call_580226.base,
+                         call_580226.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_598226, url, valid)
+  result = hook(call_580226, url, valid)
 
-proc call*(call_598227: Call_AndroidenterpriseProductsGenerateApprovalUrl_598213;
+proc call*(call_580227: Call_AndroidenterpriseProductsGenerateApprovalUrl_580213;
           enterpriseId: string; productId: string; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; key: string = ""; languageCode: string = "";
@@ -2792,35 +2794,35 @@ proc call*(call_598227: Call_AndroidenterpriseProductsGenerateApprovalUrl_598213
   ##            : The ID of the product.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_598228 = newJObject()
-  var query_598229 = newJObject()
-  add(query_598229, "fields", newJString(fields))
-  add(query_598229, "quotaUser", newJString(quotaUser))
-  add(query_598229, "alt", newJString(alt))
-  add(query_598229, "oauth_token", newJString(oauthToken))
-  add(query_598229, "userIp", newJString(userIp))
-  add(query_598229, "key", newJString(key))
-  add(query_598229, "languageCode", newJString(languageCode))
-  add(path_598228, "enterpriseId", newJString(enterpriseId))
-  add(path_598228, "productId", newJString(productId))
-  add(query_598229, "prettyPrint", newJBool(prettyPrint))
-  result = call_598227.call(path_598228, query_598229, nil, nil, nil)
+  var path_580228 = newJObject()
+  var query_580229 = newJObject()
+  add(query_580229, "fields", newJString(fields))
+  add(query_580229, "quotaUser", newJString(quotaUser))
+  add(query_580229, "alt", newJString(alt))
+  add(query_580229, "oauth_token", newJString(oauthToken))
+  add(query_580229, "userIp", newJString(userIp))
+  add(query_580229, "key", newJString(key))
+  add(query_580229, "languageCode", newJString(languageCode))
+  add(path_580228, "enterpriseId", newJString(enterpriseId))
+  add(path_580228, "productId", newJString(productId))
+  add(query_580229, "prettyPrint", newJBool(prettyPrint))
+  result = call_580227.call(path_580228, query_580229, nil, nil, nil)
 
-var androidenterpriseProductsGenerateApprovalUrl* = Call_AndroidenterpriseProductsGenerateApprovalUrl_598213(
+var androidenterpriseProductsGenerateApprovalUrl* = Call_AndroidenterpriseProductsGenerateApprovalUrl_580213(
     name: "androidenterpriseProductsGenerateApprovalUrl",
     meth: HttpMethod.HttpPost, host: "www.googleapis.com", route: "/enterprises/{enterpriseId}/products/{productId}/generateApprovalUrl",
-    validator: validate_AndroidenterpriseProductsGenerateApprovalUrl_598214,
+    validator: validate_AndroidenterpriseProductsGenerateApprovalUrl_580214,
     base: "/androidenterprise/v1",
-    url: url_AndroidenterpriseProductsGenerateApprovalUrl_598215,
+    url: url_AndroidenterpriseProductsGenerateApprovalUrl_580215,
     schemes: {Scheme.Https})
 type
-  Call_AndroidenterpriseManagedconfigurationssettingsList_598230 = ref object of OpenApiRestCall_597421
-proc url_AndroidenterpriseManagedconfigurationssettingsList_598232(
+  Call_AndroidenterpriseManagedconfigurationssettingsList_580230 = ref object of OpenApiRestCall_579421
+proc url_AndroidenterpriseManagedconfigurationssettingsList_580232(
     protocol: Scheme; host: string; base: string; route: string; path: JsonNode;
     query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "enterpriseId" in path, "`enterpriseId` is a required path parameter"
   assert "productId" in path, "`productId` is a required path parameter"
@@ -2835,7 +2837,7 @@ proc url_AndroidenterpriseManagedconfigurationssettingsList_598232(
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_AndroidenterpriseManagedconfigurationssettingsList_598231(
+proc validate_AndroidenterpriseManagedconfigurationssettingsList_580231(
     path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
     body: JsonNode): JsonNode =
   ## Lists all the managed configurations settings for the specified app.
@@ -2850,16 +2852,16 @@ proc validate_AndroidenterpriseManagedconfigurationssettingsList_598231(
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `enterpriseId` field"
-  var valid_598233 = path.getOrDefault("enterpriseId")
-  valid_598233 = validateParameter(valid_598233, JString, required = true,
+  var valid_580233 = path.getOrDefault("enterpriseId")
+  valid_580233 = validateParameter(valid_580233, JString, required = true,
                                  default = nil)
-  if valid_598233 != nil:
-    section.add "enterpriseId", valid_598233
-  var valid_598234 = path.getOrDefault("productId")
-  valid_598234 = validateParameter(valid_598234, JString, required = true,
+  if valid_580233 != nil:
+    section.add "enterpriseId", valid_580233
+  var valid_580234 = path.getOrDefault("productId")
+  valid_580234 = validateParameter(valid_580234, JString, required = true,
                                  default = nil)
-  if valid_598234 != nil:
-    section.add "productId", valid_598234
+  if valid_580234 != nil:
+    section.add "productId", valid_580234
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -2877,41 +2879,41 @@ proc validate_AndroidenterpriseManagedconfigurationssettingsList_598231(
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_598235 = query.getOrDefault("fields")
-  valid_598235 = validateParameter(valid_598235, JString, required = false,
+  var valid_580235 = query.getOrDefault("fields")
+  valid_580235 = validateParameter(valid_580235, JString, required = false,
                                  default = nil)
-  if valid_598235 != nil:
-    section.add "fields", valid_598235
-  var valid_598236 = query.getOrDefault("quotaUser")
-  valid_598236 = validateParameter(valid_598236, JString, required = false,
+  if valid_580235 != nil:
+    section.add "fields", valid_580235
+  var valid_580236 = query.getOrDefault("quotaUser")
+  valid_580236 = validateParameter(valid_580236, JString, required = false,
                                  default = nil)
-  if valid_598236 != nil:
-    section.add "quotaUser", valid_598236
-  var valid_598237 = query.getOrDefault("alt")
-  valid_598237 = validateParameter(valid_598237, JString, required = false,
+  if valid_580236 != nil:
+    section.add "quotaUser", valid_580236
+  var valid_580237 = query.getOrDefault("alt")
+  valid_580237 = validateParameter(valid_580237, JString, required = false,
                                  default = newJString("json"))
-  if valid_598237 != nil:
-    section.add "alt", valid_598237
-  var valid_598238 = query.getOrDefault("oauth_token")
-  valid_598238 = validateParameter(valid_598238, JString, required = false,
+  if valid_580237 != nil:
+    section.add "alt", valid_580237
+  var valid_580238 = query.getOrDefault("oauth_token")
+  valid_580238 = validateParameter(valid_580238, JString, required = false,
                                  default = nil)
-  if valid_598238 != nil:
-    section.add "oauth_token", valid_598238
-  var valid_598239 = query.getOrDefault("userIp")
-  valid_598239 = validateParameter(valid_598239, JString, required = false,
+  if valid_580238 != nil:
+    section.add "oauth_token", valid_580238
+  var valid_580239 = query.getOrDefault("userIp")
+  valid_580239 = validateParameter(valid_580239, JString, required = false,
                                  default = nil)
-  if valid_598239 != nil:
-    section.add "userIp", valid_598239
-  var valid_598240 = query.getOrDefault("key")
-  valid_598240 = validateParameter(valid_598240, JString, required = false,
+  if valid_580239 != nil:
+    section.add "userIp", valid_580239
+  var valid_580240 = query.getOrDefault("key")
+  valid_580240 = validateParameter(valid_580240, JString, required = false,
                                  default = nil)
-  if valid_598240 != nil:
-    section.add "key", valid_598240
-  var valid_598241 = query.getOrDefault("prettyPrint")
-  valid_598241 = validateParameter(valid_598241, JBool, required = false,
+  if valid_580240 != nil:
+    section.add "key", valid_580240
+  var valid_580241 = query.getOrDefault("prettyPrint")
+  valid_580241 = validateParameter(valid_580241, JBool, required = false,
                                  default = newJBool(true))
-  if valid_598241 != nil:
-    section.add "prettyPrint", valid_598241
+  if valid_580241 != nil:
+    section.add "prettyPrint", valid_580241
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -2920,21 +2922,21 @@ proc validate_AndroidenterpriseManagedconfigurationssettingsList_598231(
   if body != nil:
     result.add "body", body
 
-proc call*(call_598242: Call_AndroidenterpriseManagedconfigurationssettingsList_598230;
+proc call*(call_580242: Call_AndroidenterpriseManagedconfigurationssettingsList_580230;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Lists all the managed configurations settings for the specified app.
   ## 
-  let valid = call_598242.validator(path, query, header, formData, body)
-  let scheme = call_598242.pickScheme
+  let valid = call_580242.validator(path, query, header, formData, body)
+  let scheme = call_580242.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_598242.url(scheme.get, call_598242.host, call_598242.base,
-                         call_598242.route, valid.getOrDefault("path"),
+  let url = call_580242.url(scheme.get, call_580242.host, call_580242.base,
+                         call_580242.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_598242, url, valid)
+  result = hook(call_580242, url, valid)
 
-proc call*(call_598243: Call_AndroidenterpriseManagedconfigurationssettingsList_598230;
+proc call*(call_580243: Call_AndroidenterpriseManagedconfigurationssettingsList_580230;
           enterpriseId: string; productId: string; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; key: string = ""; prettyPrint: bool = true): Recallable =
@@ -2958,33 +2960,33 @@ proc call*(call_598243: Call_AndroidenterpriseManagedconfigurationssettingsList_
   ##            : The ID of the product for which the managed configurations settings applies to.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_598244 = newJObject()
-  var query_598245 = newJObject()
-  add(query_598245, "fields", newJString(fields))
-  add(query_598245, "quotaUser", newJString(quotaUser))
-  add(query_598245, "alt", newJString(alt))
-  add(query_598245, "oauth_token", newJString(oauthToken))
-  add(query_598245, "userIp", newJString(userIp))
-  add(query_598245, "key", newJString(key))
-  add(path_598244, "enterpriseId", newJString(enterpriseId))
-  add(path_598244, "productId", newJString(productId))
-  add(query_598245, "prettyPrint", newJBool(prettyPrint))
-  result = call_598243.call(path_598244, query_598245, nil, nil, nil)
+  var path_580244 = newJObject()
+  var query_580245 = newJObject()
+  add(query_580245, "fields", newJString(fields))
+  add(query_580245, "quotaUser", newJString(quotaUser))
+  add(query_580245, "alt", newJString(alt))
+  add(query_580245, "oauth_token", newJString(oauthToken))
+  add(query_580245, "userIp", newJString(userIp))
+  add(query_580245, "key", newJString(key))
+  add(path_580244, "enterpriseId", newJString(enterpriseId))
+  add(path_580244, "productId", newJString(productId))
+  add(query_580245, "prettyPrint", newJBool(prettyPrint))
+  result = call_580243.call(path_580244, query_580245, nil, nil, nil)
 
-var androidenterpriseManagedconfigurationssettingsList* = Call_AndroidenterpriseManagedconfigurationssettingsList_598230(
+var androidenterpriseManagedconfigurationssettingsList* = Call_AndroidenterpriseManagedconfigurationssettingsList_580230(
     name: "androidenterpriseManagedconfigurationssettingsList",
     meth: HttpMethod.HttpGet, host: "www.googleapis.com", route: "/enterprises/{enterpriseId}/products/{productId}/managedConfigurationsSettings",
-    validator: validate_AndroidenterpriseManagedconfigurationssettingsList_598231,
+    validator: validate_AndroidenterpriseManagedconfigurationssettingsList_580231,
     base: "/androidenterprise/v1",
-    url: url_AndroidenterpriseManagedconfigurationssettingsList_598232,
+    url: url_AndroidenterpriseManagedconfigurationssettingsList_580232,
     schemes: {Scheme.Https})
 type
-  Call_AndroidenterpriseProductsGetPermissions_598246 = ref object of OpenApiRestCall_597421
-proc url_AndroidenterpriseProductsGetPermissions_598248(protocol: Scheme;
+  Call_AndroidenterpriseProductsGetPermissions_580246 = ref object of OpenApiRestCall_579421
+proc url_AndroidenterpriseProductsGetPermissions_580248(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "enterpriseId" in path, "`enterpriseId` is a required path parameter"
   assert "productId" in path, "`productId` is a required path parameter"
@@ -2999,7 +3001,7 @@ proc url_AndroidenterpriseProductsGetPermissions_598248(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_AndroidenterpriseProductsGetPermissions_598247(path: JsonNode;
+proc validate_AndroidenterpriseProductsGetPermissions_580247(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Retrieves the Android app permissions required by this app.
   ## 
@@ -3013,16 +3015,16 @@ proc validate_AndroidenterpriseProductsGetPermissions_598247(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `enterpriseId` field"
-  var valid_598249 = path.getOrDefault("enterpriseId")
-  valid_598249 = validateParameter(valid_598249, JString, required = true,
+  var valid_580249 = path.getOrDefault("enterpriseId")
+  valid_580249 = validateParameter(valid_580249, JString, required = true,
                                  default = nil)
-  if valid_598249 != nil:
-    section.add "enterpriseId", valid_598249
-  var valid_598250 = path.getOrDefault("productId")
-  valid_598250 = validateParameter(valid_598250, JString, required = true,
+  if valid_580249 != nil:
+    section.add "enterpriseId", valid_580249
+  var valid_580250 = path.getOrDefault("productId")
+  valid_580250 = validateParameter(valid_580250, JString, required = true,
                                  default = nil)
-  if valid_598250 != nil:
-    section.add "productId", valid_598250
+  if valid_580250 != nil:
+    section.add "productId", valid_580250
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -3040,41 +3042,41 @@ proc validate_AndroidenterpriseProductsGetPermissions_598247(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_598251 = query.getOrDefault("fields")
-  valid_598251 = validateParameter(valid_598251, JString, required = false,
+  var valid_580251 = query.getOrDefault("fields")
+  valid_580251 = validateParameter(valid_580251, JString, required = false,
                                  default = nil)
-  if valid_598251 != nil:
-    section.add "fields", valid_598251
-  var valid_598252 = query.getOrDefault("quotaUser")
-  valid_598252 = validateParameter(valid_598252, JString, required = false,
+  if valid_580251 != nil:
+    section.add "fields", valid_580251
+  var valid_580252 = query.getOrDefault("quotaUser")
+  valid_580252 = validateParameter(valid_580252, JString, required = false,
                                  default = nil)
-  if valid_598252 != nil:
-    section.add "quotaUser", valid_598252
-  var valid_598253 = query.getOrDefault("alt")
-  valid_598253 = validateParameter(valid_598253, JString, required = false,
+  if valid_580252 != nil:
+    section.add "quotaUser", valid_580252
+  var valid_580253 = query.getOrDefault("alt")
+  valid_580253 = validateParameter(valid_580253, JString, required = false,
                                  default = newJString("json"))
-  if valid_598253 != nil:
-    section.add "alt", valid_598253
-  var valid_598254 = query.getOrDefault("oauth_token")
-  valid_598254 = validateParameter(valid_598254, JString, required = false,
+  if valid_580253 != nil:
+    section.add "alt", valid_580253
+  var valid_580254 = query.getOrDefault("oauth_token")
+  valid_580254 = validateParameter(valid_580254, JString, required = false,
                                  default = nil)
-  if valid_598254 != nil:
-    section.add "oauth_token", valid_598254
-  var valid_598255 = query.getOrDefault("userIp")
-  valid_598255 = validateParameter(valid_598255, JString, required = false,
+  if valid_580254 != nil:
+    section.add "oauth_token", valid_580254
+  var valid_580255 = query.getOrDefault("userIp")
+  valid_580255 = validateParameter(valid_580255, JString, required = false,
                                  default = nil)
-  if valid_598255 != nil:
-    section.add "userIp", valid_598255
-  var valid_598256 = query.getOrDefault("key")
-  valid_598256 = validateParameter(valid_598256, JString, required = false,
+  if valid_580255 != nil:
+    section.add "userIp", valid_580255
+  var valid_580256 = query.getOrDefault("key")
+  valid_580256 = validateParameter(valid_580256, JString, required = false,
                                  default = nil)
-  if valid_598256 != nil:
-    section.add "key", valid_598256
-  var valid_598257 = query.getOrDefault("prettyPrint")
-  valid_598257 = validateParameter(valid_598257, JBool, required = false,
+  if valid_580256 != nil:
+    section.add "key", valid_580256
+  var valid_580257 = query.getOrDefault("prettyPrint")
+  valid_580257 = validateParameter(valid_580257, JBool, required = false,
                                  default = newJBool(true))
-  if valid_598257 != nil:
-    section.add "prettyPrint", valid_598257
+  if valid_580257 != nil:
+    section.add "prettyPrint", valid_580257
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -3083,21 +3085,21 @@ proc validate_AndroidenterpriseProductsGetPermissions_598247(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_598258: Call_AndroidenterpriseProductsGetPermissions_598246;
+proc call*(call_580258: Call_AndroidenterpriseProductsGetPermissions_580246;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Retrieves the Android app permissions required by this app.
   ## 
-  let valid = call_598258.validator(path, query, header, formData, body)
-  let scheme = call_598258.pickScheme
+  let valid = call_580258.validator(path, query, header, formData, body)
+  let scheme = call_580258.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_598258.url(scheme.get, call_598258.host, call_598258.base,
-                         call_598258.route, valid.getOrDefault("path"),
+  let url = call_580258.url(scheme.get, call_580258.host, call_580258.base,
+                         call_580258.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_598258, url, valid)
+  result = hook(call_580258, url, valid)
 
-proc call*(call_598259: Call_AndroidenterpriseProductsGetPermissions_598246;
+proc call*(call_580259: Call_AndroidenterpriseProductsGetPermissions_580246;
           enterpriseId: string; productId: string; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; key: string = ""; prettyPrint: bool = true): Recallable =
@@ -3121,34 +3123,34 @@ proc call*(call_598259: Call_AndroidenterpriseProductsGetPermissions_598246;
   ##            : The ID of the product.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_598260 = newJObject()
-  var query_598261 = newJObject()
-  add(query_598261, "fields", newJString(fields))
-  add(query_598261, "quotaUser", newJString(quotaUser))
-  add(query_598261, "alt", newJString(alt))
-  add(query_598261, "oauth_token", newJString(oauthToken))
-  add(query_598261, "userIp", newJString(userIp))
-  add(query_598261, "key", newJString(key))
-  add(path_598260, "enterpriseId", newJString(enterpriseId))
-  add(path_598260, "productId", newJString(productId))
-  add(query_598261, "prettyPrint", newJBool(prettyPrint))
-  result = call_598259.call(path_598260, query_598261, nil, nil, nil)
+  var path_580260 = newJObject()
+  var query_580261 = newJObject()
+  add(query_580261, "fields", newJString(fields))
+  add(query_580261, "quotaUser", newJString(quotaUser))
+  add(query_580261, "alt", newJString(alt))
+  add(query_580261, "oauth_token", newJString(oauthToken))
+  add(query_580261, "userIp", newJString(userIp))
+  add(query_580261, "key", newJString(key))
+  add(path_580260, "enterpriseId", newJString(enterpriseId))
+  add(path_580260, "productId", newJString(productId))
+  add(query_580261, "prettyPrint", newJBool(prettyPrint))
+  result = call_580259.call(path_580260, query_580261, nil, nil, nil)
 
-var androidenterpriseProductsGetPermissions* = Call_AndroidenterpriseProductsGetPermissions_598246(
+var androidenterpriseProductsGetPermissions* = Call_AndroidenterpriseProductsGetPermissions_580246(
     name: "androidenterpriseProductsGetPermissions", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com",
     route: "/enterprises/{enterpriseId}/products/{productId}/permissions",
-    validator: validate_AndroidenterpriseProductsGetPermissions_598247,
+    validator: validate_AndroidenterpriseProductsGetPermissions_580247,
     base: "/androidenterprise/v1",
-    url: url_AndroidenterpriseProductsGetPermissions_598248,
+    url: url_AndroidenterpriseProductsGetPermissions_580248,
     schemes: {Scheme.Https})
 type
-  Call_AndroidenterpriseProductsUnapprove_598262 = ref object of OpenApiRestCall_597421
-proc url_AndroidenterpriseProductsUnapprove_598264(protocol: Scheme; host: string;
+  Call_AndroidenterpriseProductsUnapprove_580262 = ref object of OpenApiRestCall_579421
+proc url_AndroidenterpriseProductsUnapprove_580264(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "enterpriseId" in path, "`enterpriseId` is a required path parameter"
   assert "productId" in path, "`productId` is a required path parameter"
@@ -3163,7 +3165,7 @@ proc url_AndroidenterpriseProductsUnapprove_598264(protocol: Scheme; host: strin
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_AndroidenterpriseProductsUnapprove_598263(path: JsonNode;
+proc validate_AndroidenterpriseProductsUnapprove_580263(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Unapproves the specified product (and the relevant app permissions, if any)
   ## 
@@ -3177,16 +3179,16 @@ proc validate_AndroidenterpriseProductsUnapprove_598263(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `enterpriseId` field"
-  var valid_598265 = path.getOrDefault("enterpriseId")
-  valid_598265 = validateParameter(valid_598265, JString, required = true,
+  var valid_580265 = path.getOrDefault("enterpriseId")
+  valid_580265 = validateParameter(valid_580265, JString, required = true,
                                  default = nil)
-  if valid_598265 != nil:
-    section.add "enterpriseId", valid_598265
-  var valid_598266 = path.getOrDefault("productId")
-  valid_598266 = validateParameter(valid_598266, JString, required = true,
+  if valid_580265 != nil:
+    section.add "enterpriseId", valid_580265
+  var valid_580266 = path.getOrDefault("productId")
+  valid_580266 = validateParameter(valid_580266, JString, required = true,
                                  default = nil)
-  if valid_598266 != nil:
-    section.add "productId", valid_598266
+  if valid_580266 != nil:
+    section.add "productId", valid_580266
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -3204,41 +3206,41 @@ proc validate_AndroidenterpriseProductsUnapprove_598263(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_598267 = query.getOrDefault("fields")
-  valid_598267 = validateParameter(valid_598267, JString, required = false,
+  var valid_580267 = query.getOrDefault("fields")
+  valid_580267 = validateParameter(valid_580267, JString, required = false,
                                  default = nil)
-  if valid_598267 != nil:
-    section.add "fields", valid_598267
-  var valid_598268 = query.getOrDefault("quotaUser")
-  valid_598268 = validateParameter(valid_598268, JString, required = false,
+  if valid_580267 != nil:
+    section.add "fields", valid_580267
+  var valid_580268 = query.getOrDefault("quotaUser")
+  valid_580268 = validateParameter(valid_580268, JString, required = false,
                                  default = nil)
-  if valid_598268 != nil:
-    section.add "quotaUser", valid_598268
-  var valid_598269 = query.getOrDefault("alt")
-  valid_598269 = validateParameter(valid_598269, JString, required = false,
+  if valid_580268 != nil:
+    section.add "quotaUser", valid_580268
+  var valid_580269 = query.getOrDefault("alt")
+  valid_580269 = validateParameter(valid_580269, JString, required = false,
                                  default = newJString("json"))
-  if valid_598269 != nil:
-    section.add "alt", valid_598269
-  var valid_598270 = query.getOrDefault("oauth_token")
-  valid_598270 = validateParameter(valid_598270, JString, required = false,
+  if valid_580269 != nil:
+    section.add "alt", valid_580269
+  var valid_580270 = query.getOrDefault("oauth_token")
+  valid_580270 = validateParameter(valid_580270, JString, required = false,
                                  default = nil)
-  if valid_598270 != nil:
-    section.add "oauth_token", valid_598270
-  var valid_598271 = query.getOrDefault("userIp")
-  valid_598271 = validateParameter(valid_598271, JString, required = false,
+  if valid_580270 != nil:
+    section.add "oauth_token", valid_580270
+  var valid_580271 = query.getOrDefault("userIp")
+  valid_580271 = validateParameter(valid_580271, JString, required = false,
                                  default = nil)
-  if valid_598271 != nil:
-    section.add "userIp", valid_598271
-  var valid_598272 = query.getOrDefault("key")
-  valid_598272 = validateParameter(valid_598272, JString, required = false,
+  if valid_580271 != nil:
+    section.add "userIp", valid_580271
+  var valid_580272 = query.getOrDefault("key")
+  valid_580272 = validateParameter(valid_580272, JString, required = false,
                                  default = nil)
-  if valid_598272 != nil:
-    section.add "key", valid_598272
-  var valid_598273 = query.getOrDefault("prettyPrint")
-  valid_598273 = validateParameter(valid_598273, JBool, required = false,
+  if valid_580272 != nil:
+    section.add "key", valid_580272
+  var valid_580273 = query.getOrDefault("prettyPrint")
+  valid_580273 = validateParameter(valid_580273, JBool, required = false,
                                  default = newJBool(true))
-  if valid_598273 != nil:
-    section.add "prettyPrint", valid_598273
+  if valid_580273 != nil:
+    section.add "prettyPrint", valid_580273
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -3247,21 +3249,21 @@ proc validate_AndroidenterpriseProductsUnapprove_598263(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_598274: Call_AndroidenterpriseProductsUnapprove_598262;
+proc call*(call_580274: Call_AndroidenterpriseProductsUnapprove_580262;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Unapproves the specified product (and the relevant app permissions, if any)
   ## 
-  let valid = call_598274.validator(path, query, header, formData, body)
-  let scheme = call_598274.pickScheme
+  let valid = call_580274.validator(path, query, header, formData, body)
+  let scheme = call_580274.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_598274.url(scheme.get, call_598274.host, call_598274.base,
-                         call_598274.route, valid.getOrDefault("path"),
+  let url = call_580274.url(scheme.get, call_580274.host, call_580274.base,
+                         call_580274.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_598274, url, valid)
+  result = hook(call_580274, url, valid)
 
-proc call*(call_598275: Call_AndroidenterpriseProductsUnapprove_598262;
+proc call*(call_580275: Call_AndroidenterpriseProductsUnapprove_580262;
           enterpriseId: string; productId: string; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; key: string = ""; prettyPrint: bool = true): Recallable =
@@ -3285,34 +3287,34 @@ proc call*(call_598275: Call_AndroidenterpriseProductsUnapprove_598262;
   ##            : The ID of the product.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_598276 = newJObject()
-  var query_598277 = newJObject()
-  add(query_598277, "fields", newJString(fields))
-  add(query_598277, "quotaUser", newJString(quotaUser))
-  add(query_598277, "alt", newJString(alt))
-  add(query_598277, "oauth_token", newJString(oauthToken))
-  add(query_598277, "userIp", newJString(userIp))
-  add(query_598277, "key", newJString(key))
-  add(path_598276, "enterpriseId", newJString(enterpriseId))
-  add(path_598276, "productId", newJString(productId))
-  add(query_598277, "prettyPrint", newJBool(prettyPrint))
-  result = call_598275.call(path_598276, query_598277, nil, nil, nil)
+  var path_580276 = newJObject()
+  var query_580277 = newJObject()
+  add(query_580277, "fields", newJString(fields))
+  add(query_580277, "quotaUser", newJString(quotaUser))
+  add(query_580277, "alt", newJString(alt))
+  add(query_580277, "oauth_token", newJString(oauthToken))
+  add(query_580277, "userIp", newJString(userIp))
+  add(query_580277, "key", newJString(key))
+  add(path_580276, "enterpriseId", newJString(enterpriseId))
+  add(path_580276, "productId", newJString(productId))
+  add(query_580277, "prettyPrint", newJBool(prettyPrint))
+  result = call_580275.call(path_580276, query_580277, nil, nil, nil)
 
-var androidenterpriseProductsUnapprove* = Call_AndroidenterpriseProductsUnapprove_598262(
+var androidenterpriseProductsUnapprove* = Call_AndroidenterpriseProductsUnapprove_580262(
     name: "androidenterpriseProductsUnapprove", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com",
     route: "/enterprises/{enterpriseId}/products/{productId}/unapprove",
-    validator: validate_AndroidenterpriseProductsUnapprove_598263,
-    base: "/androidenterprise/v1", url: url_AndroidenterpriseProductsUnapprove_598264,
+    validator: validate_AndroidenterpriseProductsUnapprove_580263,
+    base: "/androidenterprise/v1", url: url_AndroidenterpriseProductsUnapprove_580264,
     schemes: {Scheme.Https})
 type
-  Call_AndroidenterpriseEnterprisesSendTestPushNotification_598278 = ref object of OpenApiRestCall_597421
-proc url_AndroidenterpriseEnterprisesSendTestPushNotification_598280(
+  Call_AndroidenterpriseEnterprisesSendTestPushNotification_580278 = ref object of OpenApiRestCall_579421
+proc url_AndroidenterpriseEnterprisesSendTestPushNotification_580280(
     protocol: Scheme; host: string; base: string; route: string; path: JsonNode;
     query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "enterpriseId" in path, "`enterpriseId` is a required path parameter"
   const
@@ -3324,7 +3326,7 @@ proc url_AndroidenterpriseEnterprisesSendTestPushNotification_598280(
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_AndroidenterpriseEnterprisesSendTestPushNotification_598279(
+proc validate_AndroidenterpriseEnterprisesSendTestPushNotification_580279(
     path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
     body: JsonNode): JsonNode =
   ## Sends a test notification to validate the EMM integration with the Google Cloud Pub/Sub service for this enterprise.
@@ -3337,11 +3339,11 @@ proc validate_AndroidenterpriseEnterprisesSendTestPushNotification_598279(
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `enterpriseId` field"
-  var valid_598281 = path.getOrDefault("enterpriseId")
-  valid_598281 = validateParameter(valid_598281, JString, required = true,
+  var valid_580281 = path.getOrDefault("enterpriseId")
+  valid_580281 = validateParameter(valid_580281, JString, required = true,
                                  default = nil)
-  if valid_598281 != nil:
-    section.add "enterpriseId", valid_598281
+  if valid_580281 != nil:
+    section.add "enterpriseId", valid_580281
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -3359,41 +3361,41 @@ proc validate_AndroidenterpriseEnterprisesSendTestPushNotification_598279(
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_598282 = query.getOrDefault("fields")
-  valid_598282 = validateParameter(valid_598282, JString, required = false,
+  var valid_580282 = query.getOrDefault("fields")
+  valid_580282 = validateParameter(valid_580282, JString, required = false,
                                  default = nil)
-  if valid_598282 != nil:
-    section.add "fields", valid_598282
-  var valid_598283 = query.getOrDefault("quotaUser")
-  valid_598283 = validateParameter(valid_598283, JString, required = false,
+  if valid_580282 != nil:
+    section.add "fields", valid_580282
+  var valid_580283 = query.getOrDefault("quotaUser")
+  valid_580283 = validateParameter(valid_580283, JString, required = false,
                                  default = nil)
-  if valid_598283 != nil:
-    section.add "quotaUser", valid_598283
-  var valid_598284 = query.getOrDefault("alt")
-  valid_598284 = validateParameter(valid_598284, JString, required = false,
+  if valid_580283 != nil:
+    section.add "quotaUser", valid_580283
+  var valid_580284 = query.getOrDefault("alt")
+  valid_580284 = validateParameter(valid_580284, JString, required = false,
                                  default = newJString("json"))
-  if valid_598284 != nil:
-    section.add "alt", valid_598284
-  var valid_598285 = query.getOrDefault("oauth_token")
-  valid_598285 = validateParameter(valid_598285, JString, required = false,
+  if valid_580284 != nil:
+    section.add "alt", valid_580284
+  var valid_580285 = query.getOrDefault("oauth_token")
+  valid_580285 = validateParameter(valid_580285, JString, required = false,
                                  default = nil)
-  if valid_598285 != nil:
-    section.add "oauth_token", valid_598285
-  var valid_598286 = query.getOrDefault("userIp")
-  valid_598286 = validateParameter(valid_598286, JString, required = false,
+  if valid_580285 != nil:
+    section.add "oauth_token", valid_580285
+  var valid_580286 = query.getOrDefault("userIp")
+  valid_580286 = validateParameter(valid_580286, JString, required = false,
                                  default = nil)
-  if valid_598286 != nil:
-    section.add "userIp", valid_598286
-  var valid_598287 = query.getOrDefault("key")
-  valid_598287 = validateParameter(valid_598287, JString, required = false,
+  if valid_580286 != nil:
+    section.add "userIp", valid_580286
+  var valid_580287 = query.getOrDefault("key")
+  valid_580287 = validateParameter(valid_580287, JString, required = false,
                                  default = nil)
-  if valid_598287 != nil:
-    section.add "key", valid_598287
-  var valid_598288 = query.getOrDefault("prettyPrint")
-  valid_598288 = validateParameter(valid_598288, JBool, required = false,
+  if valid_580287 != nil:
+    section.add "key", valid_580287
+  var valid_580288 = query.getOrDefault("prettyPrint")
+  valid_580288 = validateParameter(valid_580288, JBool, required = false,
                                  default = newJBool(true))
-  if valid_598288 != nil:
-    section.add "prettyPrint", valid_598288
+  if valid_580288 != nil:
+    section.add "prettyPrint", valid_580288
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -3402,21 +3404,21 @@ proc validate_AndroidenterpriseEnterprisesSendTestPushNotification_598279(
   if body != nil:
     result.add "body", body
 
-proc call*(call_598289: Call_AndroidenterpriseEnterprisesSendTestPushNotification_598278;
+proc call*(call_580289: Call_AndroidenterpriseEnterprisesSendTestPushNotification_580278;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Sends a test notification to validate the EMM integration with the Google Cloud Pub/Sub service for this enterprise.
   ## 
-  let valid = call_598289.validator(path, query, header, formData, body)
-  let scheme = call_598289.pickScheme
+  let valid = call_580289.validator(path, query, header, formData, body)
+  let scheme = call_580289.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_598289.url(scheme.get, call_598289.host, call_598289.base,
-                         call_598289.route, valid.getOrDefault("path"),
+  let url = call_580289.url(scheme.get, call_580289.host, call_580289.base,
+                         call_580289.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_598289, url, valid)
+  result = hook(call_580289, url, valid)
 
-proc call*(call_598290: Call_AndroidenterpriseEnterprisesSendTestPushNotification_598278;
+proc call*(call_580290: Call_AndroidenterpriseEnterprisesSendTestPushNotification_580278;
           enterpriseId: string; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; userIp: string = "";
           key: string = ""; prettyPrint: bool = true): Recallable =
@@ -3438,33 +3440,33 @@ proc call*(call_598290: Call_AndroidenterpriseEnterprisesSendTestPushNotificatio
   ##               : The ID of the enterprise.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_598291 = newJObject()
-  var query_598292 = newJObject()
-  add(query_598292, "fields", newJString(fields))
-  add(query_598292, "quotaUser", newJString(quotaUser))
-  add(query_598292, "alt", newJString(alt))
-  add(query_598292, "oauth_token", newJString(oauthToken))
-  add(query_598292, "userIp", newJString(userIp))
-  add(query_598292, "key", newJString(key))
-  add(path_598291, "enterpriseId", newJString(enterpriseId))
-  add(query_598292, "prettyPrint", newJBool(prettyPrint))
-  result = call_598290.call(path_598291, query_598292, nil, nil, nil)
+  var path_580291 = newJObject()
+  var query_580292 = newJObject()
+  add(query_580292, "fields", newJString(fields))
+  add(query_580292, "quotaUser", newJString(quotaUser))
+  add(query_580292, "alt", newJString(alt))
+  add(query_580292, "oauth_token", newJString(oauthToken))
+  add(query_580292, "userIp", newJString(userIp))
+  add(query_580292, "key", newJString(key))
+  add(path_580291, "enterpriseId", newJString(enterpriseId))
+  add(query_580292, "prettyPrint", newJBool(prettyPrint))
+  result = call_580290.call(path_580291, query_580292, nil, nil, nil)
 
-var androidenterpriseEnterprisesSendTestPushNotification* = Call_AndroidenterpriseEnterprisesSendTestPushNotification_598278(
+var androidenterpriseEnterprisesSendTestPushNotification* = Call_AndroidenterpriseEnterprisesSendTestPushNotification_580278(
     name: "androidenterpriseEnterprisesSendTestPushNotification",
     meth: HttpMethod.HttpPost, host: "www.googleapis.com",
     route: "/enterprises/{enterpriseId}/sendTestPushNotification",
-    validator: validate_AndroidenterpriseEnterprisesSendTestPushNotification_598279,
+    validator: validate_AndroidenterpriseEnterprisesSendTestPushNotification_580279,
     base: "/androidenterprise/v1",
-    url: url_AndroidenterpriseEnterprisesSendTestPushNotification_598280,
+    url: url_AndroidenterpriseEnterprisesSendTestPushNotification_580280,
     schemes: {Scheme.Https})
 type
-  Call_AndroidenterpriseEnterprisesGetServiceAccount_598293 = ref object of OpenApiRestCall_597421
-proc url_AndroidenterpriseEnterprisesGetServiceAccount_598295(protocol: Scheme;
+  Call_AndroidenterpriseEnterprisesGetServiceAccount_580293 = ref object of OpenApiRestCall_579421
+proc url_AndroidenterpriseEnterprisesGetServiceAccount_580295(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "enterpriseId" in path, "`enterpriseId` is a required path parameter"
   const
@@ -3476,7 +3478,7 @@ proc url_AndroidenterpriseEnterprisesGetServiceAccount_598295(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_AndroidenterpriseEnterprisesGetServiceAccount_598294(
+proc validate_AndroidenterpriseEnterprisesGetServiceAccount_580294(
     path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
     body: JsonNode): JsonNode =
   ## Returns a service account and credentials. The service account can be bound to the enterprise by calling setAccount. The service account is unique to this enterprise and EMM, and will be deleted if the enterprise is unbound. The credentials contain private key data and are not stored server-side.
@@ -3495,11 +3497,11 @@ proc validate_AndroidenterpriseEnterprisesGetServiceAccount_598294(
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `enterpriseId` field"
-  var valid_598296 = path.getOrDefault("enterpriseId")
-  valid_598296 = validateParameter(valid_598296, JString, required = true,
+  var valid_580296 = path.getOrDefault("enterpriseId")
+  valid_580296 = validateParameter(valid_580296, JString, required = true,
                                  default = nil)
-  if valid_598296 != nil:
-    section.add "enterpriseId", valid_598296
+  if valid_580296 != nil:
+    section.add "enterpriseId", valid_580296
   result.add "path", section
   ## parameters in `query` object:
   ##   keyType: JString
@@ -3519,46 +3521,46 @@ proc validate_AndroidenterpriseEnterprisesGetServiceAccount_598294(
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_598297 = query.getOrDefault("keyType")
-  valid_598297 = validateParameter(valid_598297, JString, required = false,
+  var valid_580297 = query.getOrDefault("keyType")
+  valid_580297 = validateParameter(valid_580297, JString, required = false,
                                  default = newJString("googleCredentials"))
-  if valid_598297 != nil:
-    section.add "keyType", valid_598297
-  var valid_598298 = query.getOrDefault("fields")
-  valid_598298 = validateParameter(valid_598298, JString, required = false,
+  if valid_580297 != nil:
+    section.add "keyType", valid_580297
+  var valid_580298 = query.getOrDefault("fields")
+  valid_580298 = validateParameter(valid_580298, JString, required = false,
                                  default = nil)
-  if valid_598298 != nil:
-    section.add "fields", valid_598298
-  var valid_598299 = query.getOrDefault("quotaUser")
-  valid_598299 = validateParameter(valid_598299, JString, required = false,
+  if valid_580298 != nil:
+    section.add "fields", valid_580298
+  var valid_580299 = query.getOrDefault("quotaUser")
+  valid_580299 = validateParameter(valid_580299, JString, required = false,
                                  default = nil)
-  if valid_598299 != nil:
-    section.add "quotaUser", valid_598299
-  var valid_598300 = query.getOrDefault("alt")
-  valid_598300 = validateParameter(valid_598300, JString, required = false,
+  if valid_580299 != nil:
+    section.add "quotaUser", valid_580299
+  var valid_580300 = query.getOrDefault("alt")
+  valid_580300 = validateParameter(valid_580300, JString, required = false,
                                  default = newJString("json"))
-  if valid_598300 != nil:
-    section.add "alt", valid_598300
-  var valid_598301 = query.getOrDefault("oauth_token")
-  valid_598301 = validateParameter(valid_598301, JString, required = false,
+  if valid_580300 != nil:
+    section.add "alt", valid_580300
+  var valid_580301 = query.getOrDefault("oauth_token")
+  valid_580301 = validateParameter(valid_580301, JString, required = false,
                                  default = nil)
-  if valid_598301 != nil:
-    section.add "oauth_token", valid_598301
-  var valid_598302 = query.getOrDefault("userIp")
-  valid_598302 = validateParameter(valid_598302, JString, required = false,
+  if valid_580301 != nil:
+    section.add "oauth_token", valid_580301
+  var valid_580302 = query.getOrDefault("userIp")
+  valid_580302 = validateParameter(valid_580302, JString, required = false,
                                  default = nil)
-  if valid_598302 != nil:
-    section.add "userIp", valid_598302
-  var valid_598303 = query.getOrDefault("key")
-  valid_598303 = validateParameter(valid_598303, JString, required = false,
+  if valid_580302 != nil:
+    section.add "userIp", valid_580302
+  var valid_580303 = query.getOrDefault("key")
+  valid_580303 = validateParameter(valid_580303, JString, required = false,
                                  default = nil)
-  if valid_598303 != nil:
-    section.add "key", valid_598303
-  var valid_598304 = query.getOrDefault("prettyPrint")
-  valid_598304 = validateParameter(valid_598304, JBool, required = false,
+  if valid_580303 != nil:
+    section.add "key", valid_580303
+  var valid_580304 = query.getOrDefault("prettyPrint")
+  valid_580304 = validateParameter(valid_580304, JBool, required = false,
                                  default = newJBool(true))
-  if valid_598304 != nil:
-    section.add "prettyPrint", valid_598304
+  if valid_580304 != nil:
+    section.add "prettyPrint", valid_580304
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -3567,7 +3569,7 @@ proc validate_AndroidenterpriseEnterprisesGetServiceAccount_598294(
   if body != nil:
     result.add "body", body
 
-proc call*(call_598305: Call_AndroidenterpriseEnterprisesGetServiceAccount_598293;
+proc call*(call_580305: Call_AndroidenterpriseEnterprisesGetServiceAccount_580293;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Returns a service account and credentials. The service account can be bound to the enterprise by calling setAccount. The service account is unique to this enterprise and EMM, and will be deleted if the enterprise is unbound. The credentials contain private key data and are not stored server-side.
@@ -3578,16 +3580,16 @@ proc call*(call_598305: Call_AndroidenterpriseEnterprisesGetServiceAccount_59829
   ## 
   ## Once the service account is bound to the enterprise, it can be managed using the serviceAccountKeys resource.
   ## 
-  let valid = call_598305.validator(path, query, header, formData, body)
-  let scheme = call_598305.pickScheme
+  let valid = call_580305.validator(path, query, header, formData, body)
+  let scheme = call_580305.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_598305.url(scheme.get, call_598305.host, call_598305.base,
-                         call_598305.route, valid.getOrDefault("path"),
+  let url = call_580305.url(scheme.get, call_580305.host, call_580305.base,
+                         call_580305.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_598305, url, valid)
+  result = hook(call_580305, url, valid)
 
-proc call*(call_598306: Call_AndroidenterpriseEnterprisesGetServiceAccount_598293;
+proc call*(call_580306: Call_AndroidenterpriseEnterprisesGetServiceAccount_580293;
           enterpriseId: string; keyType: string = "googleCredentials";
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           oauthToken: string = ""; userIp: string = ""; key: string = "";
@@ -3618,34 +3620,34 @@ proc call*(call_598306: Call_AndroidenterpriseEnterprisesGetServiceAccount_59829
   ##               : The ID of the enterprise.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_598307 = newJObject()
-  var query_598308 = newJObject()
-  add(query_598308, "keyType", newJString(keyType))
-  add(query_598308, "fields", newJString(fields))
-  add(query_598308, "quotaUser", newJString(quotaUser))
-  add(query_598308, "alt", newJString(alt))
-  add(query_598308, "oauth_token", newJString(oauthToken))
-  add(query_598308, "userIp", newJString(userIp))
-  add(query_598308, "key", newJString(key))
-  add(path_598307, "enterpriseId", newJString(enterpriseId))
-  add(query_598308, "prettyPrint", newJBool(prettyPrint))
-  result = call_598306.call(path_598307, query_598308, nil, nil, nil)
+  var path_580307 = newJObject()
+  var query_580308 = newJObject()
+  add(query_580308, "keyType", newJString(keyType))
+  add(query_580308, "fields", newJString(fields))
+  add(query_580308, "quotaUser", newJString(quotaUser))
+  add(query_580308, "alt", newJString(alt))
+  add(query_580308, "oauth_token", newJString(oauthToken))
+  add(query_580308, "userIp", newJString(userIp))
+  add(query_580308, "key", newJString(key))
+  add(path_580307, "enterpriseId", newJString(enterpriseId))
+  add(query_580308, "prettyPrint", newJBool(prettyPrint))
+  result = call_580306.call(path_580307, query_580308, nil, nil, nil)
 
-var androidenterpriseEnterprisesGetServiceAccount* = Call_AndroidenterpriseEnterprisesGetServiceAccount_598293(
+var androidenterpriseEnterprisesGetServiceAccount* = Call_AndroidenterpriseEnterprisesGetServiceAccount_580293(
     name: "androidenterpriseEnterprisesGetServiceAccount",
     meth: HttpMethod.HttpGet, host: "www.googleapis.com",
     route: "/enterprises/{enterpriseId}/serviceAccount",
-    validator: validate_AndroidenterpriseEnterprisesGetServiceAccount_598294,
+    validator: validate_AndroidenterpriseEnterprisesGetServiceAccount_580294,
     base: "/androidenterprise/v1",
-    url: url_AndroidenterpriseEnterprisesGetServiceAccount_598295,
+    url: url_AndroidenterpriseEnterprisesGetServiceAccount_580295,
     schemes: {Scheme.Https})
 type
-  Call_AndroidenterpriseServiceaccountkeysInsert_598324 = ref object of OpenApiRestCall_597421
-proc url_AndroidenterpriseServiceaccountkeysInsert_598326(protocol: Scheme;
+  Call_AndroidenterpriseServiceaccountkeysInsert_580324 = ref object of OpenApiRestCall_579421
+proc url_AndroidenterpriseServiceaccountkeysInsert_580326(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "enterpriseId" in path, "`enterpriseId` is a required path parameter"
   const
@@ -3657,7 +3659,7 @@ proc url_AndroidenterpriseServiceaccountkeysInsert_598326(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_AndroidenterpriseServiceaccountkeysInsert_598325(path: JsonNode;
+proc validate_AndroidenterpriseServiceaccountkeysInsert_580325(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Generates new credentials for the service account associated with this enterprise. The calling service account must have been retrieved by calling Enterprises.GetServiceAccount and must have been set as the enterprise service account by calling Enterprises.SetAccount.
   ## 
@@ -3671,11 +3673,11 @@ proc validate_AndroidenterpriseServiceaccountkeysInsert_598325(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `enterpriseId` field"
-  var valid_598327 = path.getOrDefault("enterpriseId")
-  valid_598327 = validateParameter(valid_598327, JString, required = true,
+  var valid_580327 = path.getOrDefault("enterpriseId")
+  valid_580327 = validateParameter(valid_580327, JString, required = true,
                                  default = nil)
-  if valid_598327 != nil:
-    section.add "enterpriseId", valid_598327
+  if valid_580327 != nil:
+    section.add "enterpriseId", valid_580327
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -3693,41 +3695,41 @@ proc validate_AndroidenterpriseServiceaccountkeysInsert_598325(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_598328 = query.getOrDefault("fields")
-  valid_598328 = validateParameter(valid_598328, JString, required = false,
+  var valid_580328 = query.getOrDefault("fields")
+  valid_580328 = validateParameter(valid_580328, JString, required = false,
                                  default = nil)
-  if valid_598328 != nil:
-    section.add "fields", valid_598328
-  var valid_598329 = query.getOrDefault("quotaUser")
-  valid_598329 = validateParameter(valid_598329, JString, required = false,
+  if valid_580328 != nil:
+    section.add "fields", valid_580328
+  var valid_580329 = query.getOrDefault("quotaUser")
+  valid_580329 = validateParameter(valid_580329, JString, required = false,
                                  default = nil)
-  if valid_598329 != nil:
-    section.add "quotaUser", valid_598329
-  var valid_598330 = query.getOrDefault("alt")
-  valid_598330 = validateParameter(valid_598330, JString, required = false,
+  if valid_580329 != nil:
+    section.add "quotaUser", valid_580329
+  var valid_580330 = query.getOrDefault("alt")
+  valid_580330 = validateParameter(valid_580330, JString, required = false,
                                  default = newJString("json"))
-  if valid_598330 != nil:
-    section.add "alt", valid_598330
-  var valid_598331 = query.getOrDefault("oauth_token")
-  valid_598331 = validateParameter(valid_598331, JString, required = false,
+  if valid_580330 != nil:
+    section.add "alt", valid_580330
+  var valid_580331 = query.getOrDefault("oauth_token")
+  valid_580331 = validateParameter(valid_580331, JString, required = false,
                                  default = nil)
-  if valid_598331 != nil:
-    section.add "oauth_token", valid_598331
-  var valid_598332 = query.getOrDefault("userIp")
-  valid_598332 = validateParameter(valid_598332, JString, required = false,
+  if valid_580331 != nil:
+    section.add "oauth_token", valid_580331
+  var valid_580332 = query.getOrDefault("userIp")
+  valid_580332 = validateParameter(valid_580332, JString, required = false,
                                  default = nil)
-  if valid_598332 != nil:
-    section.add "userIp", valid_598332
-  var valid_598333 = query.getOrDefault("key")
-  valid_598333 = validateParameter(valid_598333, JString, required = false,
+  if valid_580332 != nil:
+    section.add "userIp", valid_580332
+  var valid_580333 = query.getOrDefault("key")
+  valid_580333 = validateParameter(valid_580333, JString, required = false,
                                  default = nil)
-  if valid_598333 != nil:
-    section.add "key", valid_598333
-  var valid_598334 = query.getOrDefault("prettyPrint")
-  valid_598334 = validateParameter(valid_598334, JBool, required = false,
+  if valid_580333 != nil:
+    section.add "key", valid_580333
+  var valid_580334 = query.getOrDefault("prettyPrint")
+  valid_580334 = validateParameter(valid_580334, JBool, required = false,
                                  default = newJBool(true))
-  if valid_598334 != nil:
-    section.add "prettyPrint", valid_598334
+  if valid_580334 != nil:
+    section.add "prettyPrint", valid_580334
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -3739,23 +3741,23 @@ proc validate_AndroidenterpriseServiceaccountkeysInsert_598325(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_598336: Call_AndroidenterpriseServiceaccountkeysInsert_598324;
+proc call*(call_580336: Call_AndroidenterpriseServiceaccountkeysInsert_580324;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Generates new credentials for the service account associated with this enterprise. The calling service account must have been retrieved by calling Enterprises.GetServiceAccount and must have been set as the enterprise service account by calling Enterprises.SetAccount.
   ## 
   ## Only the type of the key should be populated in the resource to be inserted.
   ## 
-  let valid = call_598336.validator(path, query, header, formData, body)
-  let scheme = call_598336.pickScheme
+  let valid = call_580336.validator(path, query, header, formData, body)
+  let scheme = call_580336.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_598336.url(scheme.get, call_598336.host, call_598336.base,
-                         call_598336.route, valid.getOrDefault("path"),
+  let url = call_580336.url(scheme.get, call_580336.host, call_580336.base,
+                         call_580336.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_598336, url, valid)
+  result = hook(call_580336, url, valid)
 
-proc call*(call_598337: Call_AndroidenterpriseServiceaccountkeysInsert_598324;
+proc call*(call_580337: Call_AndroidenterpriseServiceaccountkeysInsert_580324;
           enterpriseId: string; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; userIp: string = "";
           key: string = ""; body: JsonNode = nil; prettyPrint: bool = true): Recallable =
@@ -3780,36 +3782,36 @@ proc call*(call_598337: Call_AndroidenterpriseServiceaccountkeysInsert_598324;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_598338 = newJObject()
-  var query_598339 = newJObject()
-  var body_598340 = newJObject()
-  add(query_598339, "fields", newJString(fields))
-  add(query_598339, "quotaUser", newJString(quotaUser))
-  add(query_598339, "alt", newJString(alt))
-  add(query_598339, "oauth_token", newJString(oauthToken))
-  add(query_598339, "userIp", newJString(userIp))
-  add(query_598339, "key", newJString(key))
-  add(path_598338, "enterpriseId", newJString(enterpriseId))
+  var path_580338 = newJObject()
+  var query_580339 = newJObject()
+  var body_580340 = newJObject()
+  add(query_580339, "fields", newJString(fields))
+  add(query_580339, "quotaUser", newJString(quotaUser))
+  add(query_580339, "alt", newJString(alt))
+  add(query_580339, "oauth_token", newJString(oauthToken))
+  add(query_580339, "userIp", newJString(userIp))
+  add(query_580339, "key", newJString(key))
+  add(path_580338, "enterpriseId", newJString(enterpriseId))
   if body != nil:
-    body_598340 = body
-  add(query_598339, "prettyPrint", newJBool(prettyPrint))
-  result = call_598337.call(path_598338, query_598339, nil, nil, body_598340)
+    body_580340 = body
+  add(query_580339, "prettyPrint", newJBool(prettyPrint))
+  result = call_580337.call(path_580338, query_580339, nil, nil, body_580340)
 
-var androidenterpriseServiceaccountkeysInsert* = Call_AndroidenterpriseServiceaccountkeysInsert_598324(
+var androidenterpriseServiceaccountkeysInsert* = Call_AndroidenterpriseServiceaccountkeysInsert_580324(
     name: "androidenterpriseServiceaccountkeysInsert", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com",
     route: "/enterprises/{enterpriseId}/serviceAccountKeys",
-    validator: validate_AndroidenterpriseServiceaccountkeysInsert_598325,
+    validator: validate_AndroidenterpriseServiceaccountkeysInsert_580325,
     base: "/androidenterprise/v1",
-    url: url_AndroidenterpriseServiceaccountkeysInsert_598326,
+    url: url_AndroidenterpriseServiceaccountkeysInsert_580326,
     schemes: {Scheme.Https})
 type
-  Call_AndroidenterpriseServiceaccountkeysList_598309 = ref object of OpenApiRestCall_597421
-proc url_AndroidenterpriseServiceaccountkeysList_598311(protocol: Scheme;
+  Call_AndroidenterpriseServiceaccountkeysList_580309 = ref object of OpenApiRestCall_579421
+proc url_AndroidenterpriseServiceaccountkeysList_580311(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "enterpriseId" in path, "`enterpriseId` is a required path parameter"
   const
@@ -3821,7 +3823,7 @@ proc url_AndroidenterpriseServiceaccountkeysList_598311(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_AndroidenterpriseServiceaccountkeysList_598310(path: JsonNode;
+proc validate_AndroidenterpriseServiceaccountkeysList_580310(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Lists all active credentials for the service account associated with this enterprise. Only the ID and key type are returned. The calling service account must have been retrieved by calling Enterprises.GetServiceAccount and must have been set as the enterprise service account by calling Enterprises.SetAccount.
   ## 
@@ -3833,11 +3835,11 @@ proc validate_AndroidenterpriseServiceaccountkeysList_598310(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `enterpriseId` field"
-  var valid_598312 = path.getOrDefault("enterpriseId")
-  valid_598312 = validateParameter(valid_598312, JString, required = true,
+  var valid_580312 = path.getOrDefault("enterpriseId")
+  valid_580312 = validateParameter(valid_580312, JString, required = true,
                                  default = nil)
-  if valid_598312 != nil:
-    section.add "enterpriseId", valid_598312
+  if valid_580312 != nil:
+    section.add "enterpriseId", valid_580312
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -3855,41 +3857,41 @@ proc validate_AndroidenterpriseServiceaccountkeysList_598310(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_598313 = query.getOrDefault("fields")
-  valid_598313 = validateParameter(valid_598313, JString, required = false,
+  var valid_580313 = query.getOrDefault("fields")
+  valid_580313 = validateParameter(valid_580313, JString, required = false,
                                  default = nil)
-  if valid_598313 != nil:
-    section.add "fields", valid_598313
-  var valid_598314 = query.getOrDefault("quotaUser")
-  valid_598314 = validateParameter(valid_598314, JString, required = false,
+  if valid_580313 != nil:
+    section.add "fields", valid_580313
+  var valid_580314 = query.getOrDefault("quotaUser")
+  valid_580314 = validateParameter(valid_580314, JString, required = false,
                                  default = nil)
-  if valid_598314 != nil:
-    section.add "quotaUser", valid_598314
-  var valid_598315 = query.getOrDefault("alt")
-  valid_598315 = validateParameter(valid_598315, JString, required = false,
+  if valid_580314 != nil:
+    section.add "quotaUser", valid_580314
+  var valid_580315 = query.getOrDefault("alt")
+  valid_580315 = validateParameter(valid_580315, JString, required = false,
                                  default = newJString("json"))
-  if valid_598315 != nil:
-    section.add "alt", valid_598315
-  var valid_598316 = query.getOrDefault("oauth_token")
-  valid_598316 = validateParameter(valid_598316, JString, required = false,
+  if valid_580315 != nil:
+    section.add "alt", valid_580315
+  var valid_580316 = query.getOrDefault("oauth_token")
+  valid_580316 = validateParameter(valid_580316, JString, required = false,
                                  default = nil)
-  if valid_598316 != nil:
-    section.add "oauth_token", valid_598316
-  var valid_598317 = query.getOrDefault("userIp")
-  valid_598317 = validateParameter(valid_598317, JString, required = false,
+  if valid_580316 != nil:
+    section.add "oauth_token", valid_580316
+  var valid_580317 = query.getOrDefault("userIp")
+  valid_580317 = validateParameter(valid_580317, JString, required = false,
                                  default = nil)
-  if valid_598317 != nil:
-    section.add "userIp", valid_598317
-  var valid_598318 = query.getOrDefault("key")
-  valid_598318 = validateParameter(valid_598318, JString, required = false,
+  if valid_580317 != nil:
+    section.add "userIp", valid_580317
+  var valid_580318 = query.getOrDefault("key")
+  valid_580318 = validateParameter(valid_580318, JString, required = false,
                                  default = nil)
-  if valid_598318 != nil:
-    section.add "key", valid_598318
-  var valid_598319 = query.getOrDefault("prettyPrint")
-  valid_598319 = validateParameter(valid_598319, JBool, required = false,
+  if valid_580318 != nil:
+    section.add "key", valid_580318
+  var valid_580319 = query.getOrDefault("prettyPrint")
+  valid_580319 = validateParameter(valid_580319, JBool, required = false,
                                  default = newJBool(true))
-  if valid_598319 != nil:
-    section.add "prettyPrint", valid_598319
+  if valid_580319 != nil:
+    section.add "prettyPrint", valid_580319
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -3898,21 +3900,21 @@ proc validate_AndroidenterpriseServiceaccountkeysList_598310(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_598320: Call_AndroidenterpriseServiceaccountkeysList_598309;
+proc call*(call_580320: Call_AndroidenterpriseServiceaccountkeysList_580309;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Lists all active credentials for the service account associated with this enterprise. Only the ID and key type are returned. The calling service account must have been retrieved by calling Enterprises.GetServiceAccount and must have been set as the enterprise service account by calling Enterprises.SetAccount.
   ## 
-  let valid = call_598320.validator(path, query, header, formData, body)
-  let scheme = call_598320.pickScheme
+  let valid = call_580320.validator(path, query, header, formData, body)
+  let scheme = call_580320.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_598320.url(scheme.get, call_598320.host, call_598320.base,
-                         call_598320.route, valid.getOrDefault("path"),
+  let url = call_580320.url(scheme.get, call_580320.host, call_580320.base,
+                         call_580320.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_598320, url, valid)
+  result = hook(call_580320, url, valid)
 
-proc call*(call_598321: Call_AndroidenterpriseServiceaccountkeysList_598309;
+proc call*(call_580321: Call_AndroidenterpriseServiceaccountkeysList_580309;
           enterpriseId: string; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; userIp: string = "";
           key: string = ""; prettyPrint: bool = true): Recallable =
@@ -3934,33 +3936,33 @@ proc call*(call_598321: Call_AndroidenterpriseServiceaccountkeysList_598309;
   ##               : The ID of the enterprise.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_598322 = newJObject()
-  var query_598323 = newJObject()
-  add(query_598323, "fields", newJString(fields))
-  add(query_598323, "quotaUser", newJString(quotaUser))
-  add(query_598323, "alt", newJString(alt))
-  add(query_598323, "oauth_token", newJString(oauthToken))
-  add(query_598323, "userIp", newJString(userIp))
-  add(query_598323, "key", newJString(key))
-  add(path_598322, "enterpriseId", newJString(enterpriseId))
-  add(query_598323, "prettyPrint", newJBool(prettyPrint))
-  result = call_598321.call(path_598322, query_598323, nil, nil, nil)
+  var path_580322 = newJObject()
+  var query_580323 = newJObject()
+  add(query_580323, "fields", newJString(fields))
+  add(query_580323, "quotaUser", newJString(quotaUser))
+  add(query_580323, "alt", newJString(alt))
+  add(query_580323, "oauth_token", newJString(oauthToken))
+  add(query_580323, "userIp", newJString(userIp))
+  add(query_580323, "key", newJString(key))
+  add(path_580322, "enterpriseId", newJString(enterpriseId))
+  add(query_580323, "prettyPrint", newJBool(prettyPrint))
+  result = call_580321.call(path_580322, query_580323, nil, nil, nil)
 
-var androidenterpriseServiceaccountkeysList* = Call_AndroidenterpriseServiceaccountkeysList_598309(
+var androidenterpriseServiceaccountkeysList* = Call_AndroidenterpriseServiceaccountkeysList_580309(
     name: "androidenterpriseServiceaccountkeysList", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com",
     route: "/enterprises/{enterpriseId}/serviceAccountKeys",
-    validator: validate_AndroidenterpriseServiceaccountkeysList_598310,
+    validator: validate_AndroidenterpriseServiceaccountkeysList_580310,
     base: "/androidenterprise/v1",
-    url: url_AndroidenterpriseServiceaccountkeysList_598311,
+    url: url_AndroidenterpriseServiceaccountkeysList_580311,
     schemes: {Scheme.Https})
 type
-  Call_AndroidenterpriseServiceaccountkeysDelete_598341 = ref object of OpenApiRestCall_597421
-proc url_AndroidenterpriseServiceaccountkeysDelete_598343(protocol: Scheme;
+  Call_AndroidenterpriseServiceaccountkeysDelete_580341 = ref object of OpenApiRestCall_579421
+proc url_AndroidenterpriseServiceaccountkeysDelete_580343(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "enterpriseId" in path, "`enterpriseId` is a required path parameter"
   assert "keyId" in path, "`keyId` is a required path parameter"
@@ -3974,7 +3976,7 @@ proc url_AndroidenterpriseServiceaccountkeysDelete_598343(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_AndroidenterpriseServiceaccountkeysDelete_598342(path: JsonNode;
+proc validate_AndroidenterpriseServiceaccountkeysDelete_580342(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Removes and invalidates the specified credentials for the service account associated with this enterprise. The calling service account must have been retrieved by calling Enterprises.GetServiceAccount and must have been set as the enterprise service account by calling Enterprises.SetAccount.
   ## 
@@ -3987,16 +3989,16 @@ proc validate_AndroidenterpriseServiceaccountkeysDelete_598342(path: JsonNode;
   ##               : The ID of the enterprise.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `keyId` field"
-  var valid_598344 = path.getOrDefault("keyId")
-  valid_598344 = validateParameter(valid_598344, JString, required = true,
+  var valid_580344 = path.getOrDefault("keyId")
+  valid_580344 = validateParameter(valid_580344, JString, required = true,
                                  default = nil)
-  if valid_598344 != nil:
-    section.add "keyId", valid_598344
-  var valid_598345 = path.getOrDefault("enterpriseId")
-  valid_598345 = validateParameter(valid_598345, JString, required = true,
+  if valid_580344 != nil:
+    section.add "keyId", valid_580344
+  var valid_580345 = path.getOrDefault("enterpriseId")
+  valid_580345 = validateParameter(valid_580345, JString, required = true,
                                  default = nil)
-  if valid_598345 != nil:
-    section.add "enterpriseId", valid_598345
+  if valid_580345 != nil:
+    section.add "enterpriseId", valid_580345
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -4014,41 +4016,41 @@ proc validate_AndroidenterpriseServiceaccountkeysDelete_598342(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_598346 = query.getOrDefault("fields")
-  valid_598346 = validateParameter(valid_598346, JString, required = false,
+  var valid_580346 = query.getOrDefault("fields")
+  valid_580346 = validateParameter(valid_580346, JString, required = false,
                                  default = nil)
-  if valid_598346 != nil:
-    section.add "fields", valid_598346
-  var valid_598347 = query.getOrDefault("quotaUser")
-  valid_598347 = validateParameter(valid_598347, JString, required = false,
+  if valid_580346 != nil:
+    section.add "fields", valid_580346
+  var valid_580347 = query.getOrDefault("quotaUser")
+  valid_580347 = validateParameter(valid_580347, JString, required = false,
                                  default = nil)
-  if valid_598347 != nil:
-    section.add "quotaUser", valid_598347
-  var valid_598348 = query.getOrDefault("alt")
-  valid_598348 = validateParameter(valid_598348, JString, required = false,
+  if valid_580347 != nil:
+    section.add "quotaUser", valid_580347
+  var valid_580348 = query.getOrDefault("alt")
+  valid_580348 = validateParameter(valid_580348, JString, required = false,
                                  default = newJString("json"))
-  if valid_598348 != nil:
-    section.add "alt", valid_598348
-  var valid_598349 = query.getOrDefault("oauth_token")
-  valid_598349 = validateParameter(valid_598349, JString, required = false,
+  if valid_580348 != nil:
+    section.add "alt", valid_580348
+  var valid_580349 = query.getOrDefault("oauth_token")
+  valid_580349 = validateParameter(valid_580349, JString, required = false,
                                  default = nil)
-  if valid_598349 != nil:
-    section.add "oauth_token", valid_598349
-  var valid_598350 = query.getOrDefault("userIp")
-  valid_598350 = validateParameter(valid_598350, JString, required = false,
+  if valid_580349 != nil:
+    section.add "oauth_token", valid_580349
+  var valid_580350 = query.getOrDefault("userIp")
+  valid_580350 = validateParameter(valid_580350, JString, required = false,
                                  default = nil)
-  if valid_598350 != nil:
-    section.add "userIp", valid_598350
-  var valid_598351 = query.getOrDefault("key")
-  valid_598351 = validateParameter(valid_598351, JString, required = false,
+  if valid_580350 != nil:
+    section.add "userIp", valid_580350
+  var valid_580351 = query.getOrDefault("key")
+  valid_580351 = validateParameter(valid_580351, JString, required = false,
                                  default = nil)
-  if valid_598351 != nil:
-    section.add "key", valid_598351
-  var valid_598352 = query.getOrDefault("prettyPrint")
-  valid_598352 = validateParameter(valid_598352, JBool, required = false,
+  if valid_580351 != nil:
+    section.add "key", valid_580351
+  var valid_580352 = query.getOrDefault("prettyPrint")
+  valid_580352 = validateParameter(valid_580352, JBool, required = false,
                                  default = newJBool(true))
-  if valid_598352 != nil:
-    section.add "prettyPrint", valid_598352
+  if valid_580352 != nil:
+    section.add "prettyPrint", valid_580352
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -4057,21 +4059,21 @@ proc validate_AndroidenterpriseServiceaccountkeysDelete_598342(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_598353: Call_AndroidenterpriseServiceaccountkeysDelete_598341;
+proc call*(call_580353: Call_AndroidenterpriseServiceaccountkeysDelete_580341;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Removes and invalidates the specified credentials for the service account associated with this enterprise. The calling service account must have been retrieved by calling Enterprises.GetServiceAccount and must have been set as the enterprise service account by calling Enterprises.SetAccount.
   ## 
-  let valid = call_598353.validator(path, query, header, formData, body)
-  let scheme = call_598353.pickScheme
+  let valid = call_580353.validator(path, query, header, formData, body)
+  let scheme = call_580353.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_598353.url(scheme.get, call_598353.host, call_598353.base,
-                         call_598353.route, valid.getOrDefault("path"),
+  let url = call_580353.url(scheme.get, call_580353.host, call_580353.base,
+                         call_580353.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_598353, url, valid)
+  result = hook(call_580353, url, valid)
 
-proc call*(call_598354: Call_AndroidenterpriseServiceaccountkeysDelete_598341;
+proc call*(call_580354: Call_AndroidenterpriseServiceaccountkeysDelete_580341;
           keyId: string; enterpriseId: string; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; key: string = ""; prettyPrint: bool = true): Recallable =
@@ -4095,34 +4097,34 @@ proc call*(call_598354: Call_AndroidenterpriseServiceaccountkeysDelete_598341;
   ##               : The ID of the enterprise.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_598355 = newJObject()
-  var query_598356 = newJObject()
-  add(path_598355, "keyId", newJString(keyId))
-  add(query_598356, "fields", newJString(fields))
-  add(query_598356, "quotaUser", newJString(quotaUser))
-  add(query_598356, "alt", newJString(alt))
-  add(query_598356, "oauth_token", newJString(oauthToken))
-  add(query_598356, "userIp", newJString(userIp))
-  add(query_598356, "key", newJString(key))
-  add(path_598355, "enterpriseId", newJString(enterpriseId))
-  add(query_598356, "prettyPrint", newJBool(prettyPrint))
-  result = call_598354.call(path_598355, query_598356, nil, nil, nil)
+  var path_580355 = newJObject()
+  var query_580356 = newJObject()
+  add(path_580355, "keyId", newJString(keyId))
+  add(query_580356, "fields", newJString(fields))
+  add(query_580356, "quotaUser", newJString(quotaUser))
+  add(query_580356, "alt", newJString(alt))
+  add(query_580356, "oauth_token", newJString(oauthToken))
+  add(query_580356, "userIp", newJString(userIp))
+  add(query_580356, "key", newJString(key))
+  add(path_580355, "enterpriseId", newJString(enterpriseId))
+  add(query_580356, "prettyPrint", newJBool(prettyPrint))
+  result = call_580354.call(path_580355, query_580356, nil, nil, nil)
 
-var androidenterpriseServiceaccountkeysDelete* = Call_AndroidenterpriseServiceaccountkeysDelete_598341(
+var androidenterpriseServiceaccountkeysDelete* = Call_AndroidenterpriseServiceaccountkeysDelete_580341(
     name: "androidenterpriseServiceaccountkeysDelete",
     meth: HttpMethod.HttpDelete, host: "www.googleapis.com",
     route: "/enterprises/{enterpriseId}/serviceAccountKeys/{keyId}",
-    validator: validate_AndroidenterpriseServiceaccountkeysDelete_598342,
+    validator: validate_AndroidenterpriseServiceaccountkeysDelete_580342,
     base: "/androidenterprise/v1",
-    url: url_AndroidenterpriseServiceaccountkeysDelete_598343,
+    url: url_AndroidenterpriseServiceaccountkeysDelete_580343,
     schemes: {Scheme.Https})
 type
-  Call_AndroidenterpriseEnterprisesSetStoreLayout_598372 = ref object of OpenApiRestCall_597421
-proc url_AndroidenterpriseEnterprisesSetStoreLayout_598374(protocol: Scheme;
+  Call_AndroidenterpriseEnterprisesSetStoreLayout_580372 = ref object of OpenApiRestCall_579421
+proc url_AndroidenterpriseEnterprisesSetStoreLayout_580374(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "enterpriseId" in path, "`enterpriseId` is a required path parameter"
   const
@@ -4134,7 +4136,7 @@ proc url_AndroidenterpriseEnterprisesSetStoreLayout_598374(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_AndroidenterpriseEnterprisesSetStoreLayout_598373(path: JsonNode;
+proc validate_AndroidenterpriseEnterprisesSetStoreLayout_580373(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Sets the store layout for the enterprise. By default, storeLayoutType is set to "basic" and the basic store layout is enabled. The basic layout only contains apps approved by the admin, and that have been added to the available product set for a user (using the  setAvailableProductSet call). Apps on the page are sorted in order of their product ID value. If you create a custom store layout (by setting storeLayoutType = "custom" and setting a homepage), the basic store layout is disabled.
   ## 
@@ -4146,11 +4148,11 @@ proc validate_AndroidenterpriseEnterprisesSetStoreLayout_598373(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `enterpriseId` field"
-  var valid_598375 = path.getOrDefault("enterpriseId")
-  valid_598375 = validateParameter(valid_598375, JString, required = true,
+  var valid_580375 = path.getOrDefault("enterpriseId")
+  valid_580375 = validateParameter(valid_580375, JString, required = true,
                                  default = nil)
-  if valid_598375 != nil:
-    section.add "enterpriseId", valid_598375
+  if valid_580375 != nil:
+    section.add "enterpriseId", valid_580375
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -4168,41 +4170,41 @@ proc validate_AndroidenterpriseEnterprisesSetStoreLayout_598373(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_598376 = query.getOrDefault("fields")
-  valid_598376 = validateParameter(valid_598376, JString, required = false,
+  var valid_580376 = query.getOrDefault("fields")
+  valid_580376 = validateParameter(valid_580376, JString, required = false,
                                  default = nil)
-  if valid_598376 != nil:
-    section.add "fields", valid_598376
-  var valid_598377 = query.getOrDefault("quotaUser")
-  valid_598377 = validateParameter(valid_598377, JString, required = false,
+  if valid_580376 != nil:
+    section.add "fields", valid_580376
+  var valid_580377 = query.getOrDefault("quotaUser")
+  valid_580377 = validateParameter(valid_580377, JString, required = false,
                                  default = nil)
-  if valid_598377 != nil:
-    section.add "quotaUser", valid_598377
-  var valid_598378 = query.getOrDefault("alt")
-  valid_598378 = validateParameter(valid_598378, JString, required = false,
+  if valid_580377 != nil:
+    section.add "quotaUser", valid_580377
+  var valid_580378 = query.getOrDefault("alt")
+  valid_580378 = validateParameter(valid_580378, JString, required = false,
                                  default = newJString("json"))
-  if valid_598378 != nil:
-    section.add "alt", valid_598378
-  var valid_598379 = query.getOrDefault("oauth_token")
-  valid_598379 = validateParameter(valid_598379, JString, required = false,
+  if valid_580378 != nil:
+    section.add "alt", valid_580378
+  var valid_580379 = query.getOrDefault("oauth_token")
+  valid_580379 = validateParameter(valid_580379, JString, required = false,
                                  default = nil)
-  if valid_598379 != nil:
-    section.add "oauth_token", valid_598379
-  var valid_598380 = query.getOrDefault("userIp")
-  valid_598380 = validateParameter(valid_598380, JString, required = false,
+  if valid_580379 != nil:
+    section.add "oauth_token", valid_580379
+  var valid_580380 = query.getOrDefault("userIp")
+  valid_580380 = validateParameter(valid_580380, JString, required = false,
                                  default = nil)
-  if valid_598380 != nil:
-    section.add "userIp", valid_598380
-  var valid_598381 = query.getOrDefault("key")
-  valid_598381 = validateParameter(valid_598381, JString, required = false,
+  if valid_580380 != nil:
+    section.add "userIp", valid_580380
+  var valid_580381 = query.getOrDefault("key")
+  valid_580381 = validateParameter(valid_580381, JString, required = false,
                                  default = nil)
-  if valid_598381 != nil:
-    section.add "key", valid_598381
-  var valid_598382 = query.getOrDefault("prettyPrint")
-  valid_598382 = validateParameter(valid_598382, JBool, required = false,
+  if valid_580381 != nil:
+    section.add "key", valid_580381
+  var valid_580382 = query.getOrDefault("prettyPrint")
+  valid_580382 = validateParameter(valid_580382, JBool, required = false,
                                  default = newJBool(true))
-  if valid_598382 != nil:
-    section.add "prettyPrint", valid_598382
+  if valid_580382 != nil:
+    section.add "prettyPrint", valid_580382
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -4214,21 +4216,21 @@ proc validate_AndroidenterpriseEnterprisesSetStoreLayout_598373(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_598384: Call_AndroidenterpriseEnterprisesSetStoreLayout_598372;
+proc call*(call_580384: Call_AndroidenterpriseEnterprisesSetStoreLayout_580372;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Sets the store layout for the enterprise. By default, storeLayoutType is set to "basic" and the basic store layout is enabled. The basic layout only contains apps approved by the admin, and that have been added to the available product set for a user (using the  setAvailableProductSet call). Apps on the page are sorted in order of their product ID value. If you create a custom store layout (by setting storeLayoutType = "custom" and setting a homepage), the basic store layout is disabled.
   ## 
-  let valid = call_598384.validator(path, query, header, formData, body)
-  let scheme = call_598384.pickScheme
+  let valid = call_580384.validator(path, query, header, formData, body)
+  let scheme = call_580384.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_598384.url(scheme.get, call_598384.host, call_598384.base,
-                         call_598384.route, valid.getOrDefault("path"),
+  let url = call_580384.url(scheme.get, call_580384.host, call_580384.base,
+                         call_580384.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_598384, url, valid)
+  result = hook(call_580384, url, valid)
 
-proc call*(call_598385: Call_AndroidenterpriseEnterprisesSetStoreLayout_598372;
+proc call*(call_580385: Call_AndroidenterpriseEnterprisesSetStoreLayout_580372;
           enterpriseId: string; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; userIp: string = "";
           key: string = ""; body: JsonNode = nil; prettyPrint: bool = true): Recallable =
@@ -4251,35 +4253,35 @@ proc call*(call_598385: Call_AndroidenterpriseEnterprisesSetStoreLayout_598372;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_598386 = newJObject()
-  var query_598387 = newJObject()
-  var body_598388 = newJObject()
-  add(query_598387, "fields", newJString(fields))
-  add(query_598387, "quotaUser", newJString(quotaUser))
-  add(query_598387, "alt", newJString(alt))
-  add(query_598387, "oauth_token", newJString(oauthToken))
-  add(query_598387, "userIp", newJString(userIp))
-  add(query_598387, "key", newJString(key))
-  add(path_598386, "enterpriseId", newJString(enterpriseId))
+  var path_580386 = newJObject()
+  var query_580387 = newJObject()
+  var body_580388 = newJObject()
+  add(query_580387, "fields", newJString(fields))
+  add(query_580387, "quotaUser", newJString(quotaUser))
+  add(query_580387, "alt", newJString(alt))
+  add(query_580387, "oauth_token", newJString(oauthToken))
+  add(query_580387, "userIp", newJString(userIp))
+  add(query_580387, "key", newJString(key))
+  add(path_580386, "enterpriseId", newJString(enterpriseId))
   if body != nil:
-    body_598388 = body
-  add(query_598387, "prettyPrint", newJBool(prettyPrint))
-  result = call_598385.call(path_598386, query_598387, nil, nil, body_598388)
+    body_580388 = body
+  add(query_580387, "prettyPrint", newJBool(prettyPrint))
+  result = call_580385.call(path_580386, query_580387, nil, nil, body_580388)
 
-var androidenterpriseEnterprisesSetStoreLayout* = Call_AndroidenterpriseEnterprisesSetStoreLayout_598372(
+var androidenterpriseEnterprisesSetStoreLayout* = Call_AndroidenterpriseEnterprisesSetStoreLayout_580372(
     name: "androidenterpriseEnterprisesSetStoreLayout", meth: HttpMethod.HttpPut,
     host: "www.googleapis.com", route: "/enterprises/{enterpriseId}/storeLayout",
-    validator: validate_AndroidenterpriseEnterprisesSetStoreLayout_598373,
+    validator: validate_AndroidenterpriseEnterprisesSetStoreLayout_580373,
     base: "/androidenterprise/v1",
-    url: url_AndroidenterpriseEnterprisesSetStoreLayout_598374,
+    url: url_AndroidenterpriseEnterprisesSetStoreLayout_580374,
     schemes: {Scheme.Https})
 type
-  Call_AndroidenterpriseEnterprisesGetStoreLayout_598357 = ref object of OpenApiRestCall_597421
-proc url_AndroidenterpriseEnterprisesGetStoreLayout_598359(protocol: Scheme;
+  Call_AndroidenterpriseEnterprisesGetStoreLayout_580357 = ref object of OpenApiRestCall_579421
+proc url_AndroidenterpriseEnterprisesGetStoreLayout_580359(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "enterpriseId" in path, "`enterpriseId` is a required path parameter"
   const
@@ -4291,7 +4293,7 @@ proc url_AndroidenterpriseEnterprisesGetStoreLayout_598359(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_AndroidenterpriseEnterprisesGetStoreLayout_598358(path: JsonNode;
+proc validate_AndroidenterpriseEnterprisesGetStoreLayout_580358(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Returns the store layout for the enterprise. If the store layout has not been set, returns "basic" as the store layout type and no homepage.
   ## 
@@ -4303,11 +4305,11 @@ proc validate_AndroidenterpriseEnterprisesGetStoreLayout_598358(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `enterpriseId` field"
-  var valid_598360 = path.getOrDefault("enterpriseId")
-  valid_598360 = validateParameter(valid_598360, JString, required = true,
+  var valid_580360 = path.getOrDefault("enterpriseId")
+  valid_580360 = validateParameter(valid_580360, JString, required = true,
                                  default = nil)
-  if valid_598360 != nil:
-    section.add "enterpriseId", valid_598360
+  if valid_580360 != nil:
+    section.add "enterpriseId", valid_580360
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -4325,41 +4327,41 @@ proc validate_AndroidenterpriseEnterprisesGetStoreLayout_598358(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_598361 = query.getOrDefault("fields")
-  valid_598361 = validateParameter(valid_598361, JString, required = false,
+  var valid_580361 = query.getOrDefault("fields")
+  valid_580361 = validateParameter(valid_580361, JString, required = false,
                                  default = nil)
-  if valid_598361 != nil:
-    section.add "fields", valid_598361
-  var valid_598362 = query.getOrDefault("quotaUser")
-  valid_598362 = validateParameter(valid_598362, JString, required = false,
+  if valid_580361 != nil:
+    section.add "fields", valid_580361
+  var valid_580362 = query.getOrDefault("quotaUser")
+  valid_580362 = validateParameter(valid_580362, JString, required = false,
                                  default = nil)
-  if valid_598362 != nil:
-    section.add "quotaUser", valid_598362
-  var valid_598363 = query.getOrDefault("alt")
-  valid_598363 = validateParameter(valid_598363, JString, required = false,
+  if valid_580362 != nil:
+    section.add "quotaUser", valid_580362
+  var valid_580363 = query.getOrDefault("alt")
+  valid_580363 = validateParameter(valid_580363, JString, required = false,
                                  default = newJString("json"))
-  if valid_598363 != nil:
-    section.add "alt", valid_598363
-  var valid_598364 = query.getOrDefault("oauth_token")
-  valid_598364 = validateParameter(valid_598364, JString, required = false,
+  if valid_580363 != nil:
+    section.add "alt", valid_580363
+  var valid_580364 = query.getOrDefault("oauth_token")
+  valid_580364 = validateParameter(valid_580364, JString, required = false,
                                  default = nil)
-  if valid_598364 != nil:
-    section.add "oauth_token", valid_598364
-  var valid_598365 = query.getOrDefault("userIp")
-  valid_598365 = validateParameter(valid_598365, JString, required = false,
+  if valid_580364 != nil:
+    section.add "oauth_token", valid_580364
+  var valid_580365 = query.getOrDefault("userIp")
+  valid_580365 = validateParameter(valid_580365, JString, required = false,
                                  default = nil)
-  if valid_598365 != nil:
-    section.add "userIp", valid_598365
-  var valid_598366 = query.getOrDefault("key")
-  valid_598366 = validateParameter(valid_598366, JString, required = false,
+  if valid_580365 != nil:
+    section.add "userIp", valid_580365
+  var valid_580366 = query.getOrDefault("key")
+  valid_580366 = validateParameter(valid_580366, JString, required = false,
                                  default = nil)
-  if valid_598366 != nil:
-    section.add "key", valid_598366
-  var valid_598367 = query.getOrDefault("prettyPrint")
-  valid_598367 = validateParameter(valid_598367, JBool, required = false,
+  if valid_580366 != nil:
+    section.add "key", valid_580366
+  var valid_580367 = query.getOrDefault("prettyPrint")
+  valid_580367 = validateParameter(valid_580367, JBool, required = false,
                                  default = newJBool(true))
-  if valid_598367 != nil:
-    section.add "prettyPrint", valid_598367
+  if valid_580367 != nil:
+    section.add "prettyPrint", valid_580367
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -4368,21 +4370,21 @@ proc validate_AndroidenterpriseEnterprisesGetStoreLayout_598358(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_598368: Call_AndroidenterpriseEnterprisesGetStoreLayout_598357;
+proc call*(call_580368: Call_AndroidenterpriseEnterprisesGetStoreLayout_580357;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Returns the store layout for the enterprise. If the store layout has not been set, returns "basic" as the store layout type and no homepage.
   ## 
-  let valid = call_598368.validator(path, query, header, formData, body)
-  let scheme = call_598368.pickScheme
+  let valid = call_580368.validator(path, query, header, formData, body)
+  let scheme = call_580368.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_598368.url(scheme.get, call_598368.host, call_598368.base,
-                         call_598368.route, valid.getOrDefault("path"),
+  let url = call_580368.url(scheme.get, call_580368.host, call_580368.base,
+                         call_580368.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_598368, url, valid)
+  result = hook(call_580368, url, valid)
 
-proc call*(call_598369: Call_AndroidenterpriseEnterprisesGetStoreLayout_598357;
+proc call*(call_580369: Call_AndroidenterpriseEnterprisesGetStoreLayout_580357;
           enterpriseId: string; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; userIp: string = "";
           key: string = ""; prettyPrint: bool = true): Recallable =
@@ -4404,32 +4406,32 @@ proc call*(call_598369: Call_AndroidenterpriseEnterprisesGetStoreLayout_598357;
   ##               : The ID of the enterprise.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_598370 = newJObject()
-  var query_598371 = newJObject()
-  add(query_598371, "fields", newJString(fields))
-  add(query_598371, "quotaUser", newJString(quotaUser))
-  add(query_598371, "alt", newJString(alt))
-  add(query_598371, "oauth_token", newJString(oauthToken))
-  add(query_598371, "userIp", newJString(userIp))
-  add(query_598371, "key", newJString(key))
-  add(path_598370, "enterpriseId", newJString(enterpriseId))
-  add(query_598371, "prettyPrint", newJBool(prettyPrint))
-  result = call_598369.call(path_598370, query_598371, nil, nil, nil)
+  var path_580370 = newJObject()
+  var query_580371 = newJObject()
+  add(query_580371, "fields", newJString(fields))
+  add(query_580371, "quotaUser", newJString(quotaUser))
+  add(query_580371, "alt", newJString(alt))
+  add(query_580371, "oauth_token", newJString(oauthToken))
+  add(query_580371, "userIp", newJString(userIp))
+  add(query_580371, "key", newJString(key))
+  add(path_580370, "enterpriseId", newJString(enterpriseId))
+  add(query_580371, "prettyPrint", newJBool(prettyPrint))
+  result = call_580369.call(path_580370, query_580371, nil, nil, nil)
 
-var androidenterpriseEnterprisesGetStoreLayout* = Call_AndroidenterpriseEnterprisesGetStoreLayout_598357(
+var androidenterpriseEnterprisesGetStoreLayout* = Call_AndroidenterpriseEnterprisesGetStoreLayout_580357(
     name: "androidenterpriseEnterprisesGetStoreLayout", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/enterprises/{enterpriseId}/storeLayout",
-    validator: validate_AndroidenterpriseEnterprisesGetStoreLayout_598358,
+    validator: validate_AndroidenterpriseEnterprisesGetStoreLayout_580358,
     base: "/androidenterprise/v1",
-    url: url_AndroidenterpriseEnterprisesGetStoreLayout_598359,
+    url: url_AndroidenterpriseEnterprisesGetStoreLayout_580359,
     schemes: {Scheme.Https})
 type
-  Call_AndroidenterpriseStorelayoutpagesInsert_598404 = ref object of OpenApiRestCall_597421
-proc url_AndroidenterpriseStorelayoutpagesInsert_598406(protocol: Scheme;
+  Call_AndroidenterpriseStorelayoutpagesInsert_580404 = ref object of OpenApiRestCall_579421
+proc url_AndroidenterpriseStorelayoutpagesInsert_580406(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "enterpriseId" in path, "`enterpriseId` is a required path parameter"
   const
@@ -4441,7 +4443,7 @@ proc url_AndroidenterpriseStorelayoutpagesInsert_598406(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_AndroidenterpriseStorelayoutpagesInsert_598405(path: JsonNode;
+proc validate_AndroidenterpriseStorelayoutpagesInsert_580405(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Inserts a new store page.
   ## 
@@ -4453,11 +4455,11 @@ proc validate_AndroidenterpriseStorelayoutpagesInsert_598405(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `enterpriseId` field"
-  var valid_598407 = path.getOrDefault("enterpriseId")
-  valid_598407 = validateParameter(valid_598407, JString, required = true,
+  var valid_580407 = path.getOrDefault("enterpriseId")
+  valid_580407 = validateParameter(valid_580407, JString, required = true,
                                  default = nil)
-  if valid_598407 != nil:
-    section.add "enterpriseId", valid_598407
+  if valid_580407 != nil:
+    section.add "enterpriseId", valid_580407
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -4475,41 +4477,41 @@ proc validate_AndroidenterpriseStorelayoutpagesInsert_598405(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_598408 = query.getOrDefault("fields")
-  valid_598408 = validateParameter(valid_598408, JString, required = false,
+  var valid_580408 = query.getOrDefault("fields")
+  valid_580408 = validateParameter(valid_580408, JString, required = false,
                                  default = nil)
-  if valid_598408 != nil:
-    section.add "fields", valid_598408
-  var valid_598409 = query.getOrDefault("quotaUser")
-  valid_598409 = validateParameter(valid_598409, JString, required = false,
+  if valid_580408 != nil:
+    section.add "fields", valid_580408
+  var valid_580409 = query.getOrDefault("quotaUser")
+  valid_580409 = validateParameter(valid_580409, JString, required = false,
                                  default = nil)
-  if valid_598409 != nil:
-    section.add "quotaUser", valid_598409
-  var valid_598410 = query.getOrDefault("alt")
-  valid_598410 = validateParameter(valid_598410, JString, required = false,
+  if valid_580409 != nil:
+    section.add "quotaUser", valid_580409
+  var valid_580410 = query.getOrDefault("alt")
+  valid_580410 = validateParameter(valid_580410, JString, required = false,
                                  default = newJString("json"))
-  if valid_598410 != nil:
-    section.add "alt", valid_598410
-  var valid_598411 = query.getOrDefault("oauth_token")
-  valid_598411 = validateParameter(valid_598411, JString, required = false,
+  if valid_580410 != nil:
+    section.add "alt", valid_580410
+  var valid_580411 = query.getOrDefault("oauth_token")
+  valid_580411 = validateParameter(valid_580411, JString, required = false,
                                  default = nil)
-  if valid_598411 != nil:
-    section.add "oauth_token", valid_598411
-  var valid_598412 = query.getOrDefault("userIp")
-  valid_598412 = validateParameter(valid_598412, JString, required = false,
+  if valid_580411 != nil:
+    section.add "oauth_token", valid_580411
+  var valid_580412 = query.getOrDefault("userIp")
+  valid_580412 = validateParameter(valid_580412, JString, required = false,
                                  default = nil)
-  if valid_598412 != nil:
-    section.add "userIp", valid_598412
-  var valid_598413 = query.getOrDefault("key")
-  valid_598413 = validateParameter(valid_598413, JString, required = false,
+  if valid_580412 != nil:
+    section.add "userIp", valid_580412
+  var valid_580413 = query.getOrDefault("key")
+  valid_580413 = validateParameter(valid_580413, JString, required = false,
                                  default = nil)
-  if valid_598413 != nil:
-    section.add "key", valid_598413
-  var valid_598414 = query.getOrDefault("prettyPrint")
-  valid_598414 = validateParameter(valid_598414, JBool, required = false,
+  if valid_580413 != nil:
+    section.add "key", valid_580413
+  var valid_580414 = query.getOrDefault("prettyPrint")
+  valid_580414 = validateParameter(valid_580414, JBool, required = false,
                                  default = newJBool(true))
-  if valid_598414 != nil:
-    section.add "prettyPrint", valid_598414
+  if valid_580414 != nil:
+    section.add "prettyPrint", valid_580414
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -4521,21 +4523,21 @@ proc validate_AndroidenterpriseStorelayoutpagesInsert_598405(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_598416: Call_AndroidenterpriseStorelayoutpagesInsert_598404;
+proc call*(call_580416: Call_AndroidenterpriseStorelayoutpagesInsert_580404;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Inserts a new store page.
   ## 
-  let valid = call_598416.validator(path, query, header, formData, body)
-  let scheme = call_598416.pickScheme
+  let valid = call_580416.validator(path, query, header, formData, body)
+  let scheme = call_580416.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_598416.url(scheme.get, call_598416.host, call_598416.base,
-                         call_598416.route, valid.getOrDefault("path"),
+  let url = call_580416.url(scheme.get, call_580416.host, call_580416.base,
+                         call_580416.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_598416, url, valid)
+  result = hook(call_580416, url, valid)
 
-proc call*(call_598417: Call_AndroidenterpriseStorelayoutpagesInsert_598404;
+proc call*(call_580417: Call_AndroidenterpriseStorelayoutpagesInsert_580404;
           enterpriseId: string; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; userIp: string = "";
           key: string = ""; body: JsonNode = nil; prettyPrint: bool = true): Recallable =
@@ -4558,36 +4560,36 @@ proc call*(call_598417: Call_AndroidenterpriseStorelayoutpagesInsert_598404;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_598418 = newJObject()
-  var query_598419 = newJObject()
-  var body_598420 = newJObject()
-  add(query_598419, "fields", newJString(fields))
-  add(query_598419, "quotaUser", newJString(quotaUser))
-  add(query_598419, "alt", newJString(alt))
-  add(query_598419, "oauth_token", newJString(oauthToken))
-  add(query_598419, "userIp", newJString(userIp))
-  add(query_598419, "key", newJString(key))
-  add(path_598418, "enterpriseId", newJString(enterpriseId))
+  var path_580418 = newJObject()
+  var query_580419 = newJObject()
+  var body_580420 = newJObject()
+  add(query_580419, "fields", newJString(fields))
+  add(query_580419, "quotaUser", newJString(quotaUser))
+  add(query_580419, "alt", newJString(alt))
+  add(query_580419, "oauth_token", newJString(oauthToken))
+  add(query_580419, "userIp", newJString(userIp))
+  add(query_580419, "key", newJString(key))
+  add(path_580418, "enterpriseId", newJString(enterpriseId))
   if body != nil:
-    body_598420 = body
-  add(query_598419, "prettyPrint", newJBool(prettyPrint))
-  result = call_598417.call(path_598418, query_598419, nil, nil, body_598420)
+    body_580420 = body
+  add(query_580419, "prettyPrint", newJBool(prettyPrint))
+  result = call_580417.call(path_580418, query_580419, nil, nil, body_580420)
 
-var androidenterpriseStorelayoutpagesInsert* = Call_AndroidenterpriseStorelayoutpagesInsert_598404(
+var androidenterpriseStorelayoutpagesInsert* = Call_AndroidenterpriseStorelayoutpagesInsert_580404(
     name: "androidenterpriseStorelayoutpagesInsert", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com",
     route: "/enterprises/{enterpriseId}/storeLayout/pages",
-    validator: validate_AndroidenterpriseStorelayoutpagesInsert_598405,
+    validator: validate_AndroidenterpriseStorelayoutpagesInsert_580405,
     base: "/androidenterprise/v1",
-    url: url_AndroidenterpriseStorelayoutpagesInsert_598406,
+    url: url_AndroidenterpriseStorelayoutpagesInsert_580406,
     schemes: {Scheme.Https})
 type
-  Call_AndroidenterpriseStorelayoutpagesList_598389 = ref object of OpenApiRestCall_597421
-proc url_AndroidenterpriseStorelayoutpagesList_598391(protocol: Scheme;
+  Call_AndroidenterpriseStorelayoutpagesList_580389 = ref object of OpenApiRestCall_579421
+proc url_AndroidenterpriseStorelayoutpagesList_580391(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "enterpriseId" in path, "`enterpriseId` is a required path parameter"
   const
@@ -4599,7 +4601,7 @@ proc url_AndroidenterpriseStorelayoutpagesList_598391(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_AndroidenterpriseStorelayoutpagesList_598390(path: JsonNode;
+proc validate_AndroidenterpriseStorelayoutpagesList_580390(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Retrieves the details of all pages in the store.
   ## 
@@ -4611,11 +4613,11 @@ proc validate_AndroidenterpriseStorelayoutpagesList_598390(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `enterpriseId` field"
-  var valid_598392 = path.getOrDefault("enterpriseId")
-  valid_598392 = validateParameter(valid_598392, JString, required = true,
+  var valid_580392 = path.getOrDefault("enterpriseId")
+  valid_580392 = validateParameter(valid_580392, JString, required = true,
                                  default = nil)
-  if valid_598392 != nil:
-    section.add "enterpriseId", valid_598392
+  if valid_580392 != nil:
+    section.add "enterpriseId", valid_580392
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -4633,41 +4635,41 @@ proc validate_AndroidenterpriseStorelayoutpagesList_598390(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_598393 = query.getOrDefault("fields")
-  valid_598393 = validateParameter(valid_598393, JString, required = false,
+  var valid_580393 = query.getOrDefault("fields")
+  valid_580393 = validateParameter(valid_580393, JString, required = false,
                                  default = nil)
-  if valid_598393 != nil:
-    section.add "fields", valid_598393
-  var valid_598394 = query.getOrDefault("quotaUser")
-  valid_598394 = validateParameter(valid_598394, JString, required = false,
+  if valid_580393 != nil:
+    section.add "fields", valid_580393
+  var valid_580394 = query.getOrDefault("quotaUser")
+  valid_580394 = validateParameter(valid_580394, JString, required = false,
                                  default = nil)
-  if valid_598394 != nil:
-    section.add "quotaUser", valid_598394
-  var valid_598395 = query.getOrDefault("alt")
-  valid_598395 = validateParameter(valid_598395, JString, required = false,
+  if valid_580394 != nil:
+    section.add "quotaUser", valid_580394
+  var valid_580395 = query.getOrDefault("alt")
+  valid_580395 = validateParameter(valid_580395, JString, required = false,
                                  default = newJString("json"))
-  if valid_598395 != nil:
-    section.add "alt", valid_598395
-  var valid_598396 = query.getOrDefault("oauth_token")
-  valid_598396 = validateParameter(valid_598396, JString, required = false,
+  if valid_580395 != nil:
+    section.add "alt", valid_580395
+  var valid_580396 = query.getOrDefault("oauth_token")
+  valid_580396 = validateParameter(valid_580396, JString, required = false,
                                  default = nil)
-  if valid_598396 != nil:
-    section.add "oauth_token", valid_598396
-  var valid_598397 = query.getOrDefault("userIp")
-  valid_598397 = validateParameter(valid_598397, JString, required = false,
+  if valid_580396 != nil:
+    section.add "oauth_token", valid_580396
+  var valid_580397 = query.getOrDefault("userIp")
+  valid_580397 = validateParameter(valid_580397, JString, required = false,
                                  default = nil)
-  if valid_598397 != nil:
-    section.add "userIp", valid_598397
-  var valid_598398 = query.getOrDefault("key")
-  valid_598398 = validateParameter(valid_598398, JString, required = false,
+  if valid_580397 != nil:
+    section.add "userIp", valid_580397
+  var valid_580398 = query.getOrDefault("key")
+  valid_580398 = validateParameter(valid_580398, JString, required = false,
                                  default = nil)
-  if valid_598398 != nil:
-    section.add "key", valid_598398
-  var valid_598399 = query.getOrDefault("prettyPrint")
-  valid_598399 = validateParameter(valid_598399, JBool, required = false,
+  if valid_580398 != nil:
+    section.add "key", valid_580398
+  var valid_580399 = query.getOrDefault("prettyPrint")
+  valid_580399 = validateParameter(valid_580399, JBool, required = false,
                                  default = newJBool(true))
-  if valid_598399 != nil:
-    section.add "prettyPrint", valid_598399
+  if valid_580399 != nil:
+    section.add "prettyPrint", valid_580399
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -4676,21 +4678,21 @@ proc validate_AndroidenterpriseStorelayoutpagesList_598390(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_598400: Call_AndroidenterpriseStorelayoutpagesList_598389;
+proc call*(call_580400: Call_AndroidenterpriseStorelayoutpagesList_580389;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Retrieves the details of all pages in the store.
   ## 
-  let valid = call_598400.validator(path, query, header, formData, body)
-  let scheme = call_598400.pickScheme
+  let valid = call_580400.validator(path, query, header, formData, body)
+  let scheme = call_580400.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_598400.url(scheme.get, call_598400.host, call_598400.base,
-                         call_598400.route, valid.getOrDefault("path"),
+  let url = call_580400.url(scheme.get, call_580400.host, call_580400.base,
+                         call_580400.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_598400, url, valid)
+  result = hook(call_580400, url, valid)
 
-proc call*(call_598401: Call_AndroidenterpriseStorelayoutpagesList_598389;
+proc call*(call_580401: Call_AndroidenterpriseStorelayoutpagesList_580389;
           enterpriseId: string; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; userIp: string = "";
           key: string = ""; prettyPrint: bool = true): Recallable =
@@ -4712,32 +4714,32 @@ proc call*(call_598401: Call_AndroidenterpriseStorelayoutpagesList_598389;
   ##               : The ID of the enterprise.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_598402 = newJObject()
-  var query_598403 = newJObject()
-  add(query_598403, "fields", newJString(fields))
-  add(query_598403, "quotaUser", newJString(quotaUser))
-  add(query_598403, "alt", newJString(alt))
-  add(query_598403, "oauth_token", newJString(oauthToken))
-  add(query_598403, "userIp", newJString(userIp))
-  add(query_598403, "key", newJString(key))
-  add(path_598402, "enterpriseId", newJString(enterpriseId))
-  add(query_598403, "prettyPrint", newJBool(prettyPrint))
-  result = call_598401.call(path_598402, query_598403, nil, nil, nil)
+  var path_580402 = newJObject()
+  var query_580403 = newJObject()
+  add(query_580403, "fields", newJString(fields))
+  add(query_580403, "quotaUser", newJString(quotaUser))
+  add(query_580403, "alt", newJString(alt))
+  add(query_580403, "oauth_token", newJString(oauthToken))
+  add(query_580403, "userIp", newJString(userIp))
+  add(query_580403, "key", newJString(key))
+  add(path_580402, "enterpriseId", newJString(enterpriseId))
+  add(query_580403, "prettyPrint", newJBool(prettyPrint))
+  result = call_580401.call(path_580402, query_580403, nil, nil, nil)
 
-var androidenterpriseStorelayoutpagesList* = Call_AndroidenterpriseStorelayoutpagesList_598389(
+var androidenterpriseStorelayoutpagesList* = Call_AndroidenterpriseStorelayoutpagesList_580389(
     name: "androidenterpriseStorelayoutpagesList", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com",
     route: "/enterprises/{enterpriseId}/storeLayout/pages",
-    validator: validate_AndroidenterpriseStorelayoutpagesList_598390,
-    base: "/androidenterprise/v1", url: url_AndroidenterpriseStorelayoutpagesList_598391,
+    validator: validate_AndroidenterpriseStorelayoutpagesList_580390,
+    base: "/androidenterprise/v1", url: url_AndroidenterpriseStorelayoutpagesList_580391,
     schemes: {Scheme.Https})
 type
-  Call_AndroidenterpriseStorelayoutpagesUpdate_598437 = ref object of OpenApiRestCall_597421
-proc url_AndroidenterpriseStorelayoutpagesUpdate_598439(protocol: Scheme;
+  Call_AndroidenterpriseStorelayoutpagesUpdate_580437 = ref object of OpenApiRestCall_579421
+proc url_AndroidenterpriseStorelayoutpagesUpdate_580439(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "enterpriseId" in path, "`enterpriseId` is a required path parameter"
   assert "pageId" in path, "`pageId` is a required path parameter"
@@ -4751,7 +4753,7 @@ proc url_AndroidenterpriseStorelayoutpagesUpdate_598439(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_AndroidenterpriseStorelayoutpagesUpdate_598438(path: JsonNode;
+proc validate_AndroidenterpriseStorelayoutpagesUpdate_580438(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Updates the content of a store page.
   ## 
@@ -4765,16 +4767,16 @@ proc validate_AndroidenterpriseStorelayoutpagesUpdate_598438(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `enterpriseId` field"
-  var valid_598440 = path.getOrDefault("enterpriseId")
-  valid_598440 = validateParameter(valid_598440, JString, required = true,
+  var valid_580440 = path.getOrDefault("enterpriseId")
+  valid_580440 = validateParameter(valid_580440, JString, required = true,
                                  default = nil)
-  if valid_598440 != nil:
-    section.add "enterpriseId", valid_598440
-  var valid_598441 = path.getOrDefault("pageId")
-  valid_598441 = validateParameter(valid_598441, JString, required = true,
+  if valid_580440 != nil:
+    section.add "enterpriseId", valid_580440
+  var valid_580441 = path.getOrDefault("pageId")
+  valid_580441 = validateParameter(valid_580441, JString, required = true,
                                  default = nil)
-  if valid_598441 != nil:
-    section.add "pageId", valid_598441
+  if valid_580441 != nil:
+    section.add "pageId", valid_580441
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -4792,41 +4794,41 @@ proc validate_AndroidenterpriseStorelayoutpagesUpdate_598438(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_598442 = query.getOrDefault("fields")
-  valid_598442 = validateParameter(valid_598442, JString, required = false,
+  var valid_580442 = query.getOrDefault("fields")
+  valid_580442 = validateParameter(valid_580442, JString, required = false,
                                  default = nil)
-  if valid_598442 != nil:
-    section.add "fields", valid_598442
-  var valid_598443 = query.getOrDefault("quotaUser")
-  valid_598443 = validateParameter(valid_598443, JString, required = false,
+  if valid_580442 != nil:
+    section.add "fields", valid_580442
+  var valid_580443 = query.getOrDefault("quotaUser")
+  valid_580443 = validateParameter(valid_580443, JString, required = false,
                                  default = nil)
-  if valid_598443 != nil:
-    section.add "quotaUser", valid_598443
-  var valid_598444 = query.getOrDefault("alt")
-  valid_598444 = validateParameter(valid_598444, JString, required = false,
+  if valid_580443 != nil:
+    section.add "quotaUser", valid_580443
+  var valid_580444 = query.getOrDefault("alt")
+  valid_580444 = validateParameter(valid_580444, JString, required = false,
                                  default = newJString("json"))
-  if valid_598444 != nil:
-    section.add "alt", valid_598444
-  var valid_598445 = query.getOrDefault("oauth_token")
-  valid_598445 = validateParameter(valid_598445, JString, required = false,
+  if valid_580444 != nil:
+    section.add "alt", valid_580444
+  var valid_580445 = query.getOrDefault("oauth_token")
+  valid_580445 = validateParameter(valid_580445, JString, required = false,
                                  default = nil)
-  if valid_598445 != nil:
-    section.add "oauth_token", valid_598445
-  var valid_598446 = query.getOrDefault("userIp")
-  valid_598446 = validateParameter(valid_598446, JString, required = false,
+  if valid_580445 != nil:
+    section.add "oauth_token", valid_580445
+  var valid_580446 = query.getOrDefault("userIp")
+  valid_580446 = validateParameter(valid_580446, JString, required = false,
                                  default = nil)
-  if valid_598446 != nil:
-    section.add "userIp", valid_598446
-  var valid_598447 = query.getOrDefault("key")
-  valid_598447 = validateParameter(valid_598447, JString, required = false,
+  if valid_580446 != nil:
+    section.add "userIp", valid_580446
+  var valid_580447 = query.getOrDefault("key")
+  valid_580447 = validateParameter(valid_580447, JString, required = false,
                                  default = nil)
-  if valid_598447 != nil:
-    section.add "key", valid_598447
-  var valid_598448 = query.getOrDefault("prettyPrint")
-  valid_598448 = validateParameter(valid_598448, JBool, required = false,
+  if valid_580447 != nil:
+    section.add "key", valid_580447
+  var valid_580448 = query.getOrDefault("prettyPrint")
+  valid_580448 = validateParameter(valid_580448, JBool, required = false,
                                  default = newJBool(true))
-  if valid_598448 != nil:
-    section.add "prettyPrint", valid_598448
+  if valid_580448 != nil:
+    section.add "prettyPrint", valid_580448
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -4838,21 +4840,21 @@ proc validate_AndroidenterpriseStorelayoutpagesUpdate_598438(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_598450: Call_AndroidenterpriseStorelayoutpagesUpdate_598437;
+proc call*(call_580450: Call_AndroidenterpriseStorelayoutpagesUpdate_580437;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Updates the content of a store page.
   ## 
-  let valid = call_598450.validator(path, query, header, formData, body)
-  let scheme = call_598450.pickScheme
+  let valid = call_580450.validator(path, query, header, formData, body)
+  let scheme = call_580450.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_598450.url(scheme.get, call_598450.host, call_598450.base,
-                         call_598450.route, valid.getOrDefault("path"),
+  let url = call_580450.url(scheme.get, call_580450.host, call_580450.base,
+                         call_580450.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_598450, url, valid)
+  result = hook(call_580450, url, valid)
 
-proc call*(call_598451: Call_AndroidenterpriseStorelayoutpagesUpdate_598437;
+proc call*(call_580451: Call_AndroidenterpriseStorelayoutpagesUpdate_580437;
           enterpriseId: string; pageId: string; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; key: string = ""; body: JsonNode = nil;
@@ -4878,37 +4880,37 @@ proc call*(call_598451: Call_AndroidenterpriseStorelayoutpagesUpdate_598437;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_598452 = newJObject()
-  var query_598453 = newJObject()
-  var body_598454 = newJObject()
-  add(query_598453, "fields", newJString(fields))
-  add(query_598453, "quotaUser", newJString(quotaUser))
-  add(query_598453, "alt", newJString(alt))
-  add(query_598453, "oauth_token", newJString(oauthToken))
-  add(query_598453, "userIp", newJString(userIp))
-  add(query_598453, "key", newJString(key))
-  add(path_598452, "enterpriseId", newJString(enterpriseId))
-  add(path_598452, "pageId", newJString(pageId))
+  var path_580452 = newJObject()
+  var query_580453 = newJObject()
+  var body_580454 = newJObject()
+  add(query_580453, "fields", newJString(fields))
+  add(query_580453, "quotaUser", newJString(quotaUser))
+  add(query_580453, "alt", newJString(alt))
+  add(query_580453, "oauth_token", newJString(oauthToken))
+  add(query_580453, "userIp", newJString(userIp))
+  add(query_580453, "key", newJString(key))
+  add(path_580452, "enterpriseId", newJString(enterpriseId))
+  add(path_580452, "pageId", newJString(pageId))
   if body != nil:
-    body_598454 = body
-  add(query_598453, "prettyPrint", newJBool(prettyPrint))
-  result = call_598451.call(path_598452, query_598453, nil, nil, body_598454)
+    body_580454 = body
+  add(query_580453, "prettyPrint", newJBool(prettyPrint))
+  result = call_580451.call(path_580452, query_580453, nil, nil, body_580454)
 
-var androidenterpriseStorelayoutpagesUpdate* = Call_AndroidenterpriseStorelayoutpagesUpdate_598437(
+var androidenterpriseStorelayoutpagesUpdate* = Call_AndroidenterpriseStorelayoutpagesUpdate_580437(
     name: "androidenterpriseStorelayoutpagesUpdate", meth: HttpMethod.HttpPut,
     host: "www.googleapis.com",
     route: "/enterprises/{enterpriseId}/storeLayout/pages/{pageId}",
-    validator: validate_AndroidenterpriseStorelayoutpagesUpdate_598438,
+    validator: validate_AndroidenterpriseStorelayoutpagesUpdate_580438,
     base: "/androidenterprise/v1",
-    url: url_AndroidenterpriseStorelayoutpagesUpdate_598439,
+    url: url_AndroidenterpriseStorelayoutpagesUpdate_580439,
     schemes: {Scheme.Https})
 type
-  Call_AndroidenterpriseStorelayoutpagesGet_598421 = ref object of OpenApiRestCall_597421
-proc url_AndroidenterpriseStorelayoutpagesGet_598423(protocol: Scheme;
+  Call_AndroidenterpriseStorelayoutpagesGet_580421 = ref object of OpenApiRestCall_579421
+proc url_AndroidenterpriseStorelayoutpagesGet_580423(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "enterpriseId" in path, "`enterpriseId` is a required path parameter"
   assert "pageId" in path, "`pageId` is a required path parameter"
@@ -4922,7 +4924,7 @@ proc url_AndroidenterpriseStorelayoutpagesGet_598423(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_AndroidenterpriseStorelayoutpagesGet_598422(path: JsonNode;
+proc validate_AndroidenterpriseStorelayoutpagesGet_580422(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Retrieves details of a store page.
   ## 
@@ -4936,16 +4938,16 @@ proc validate_AndroidenterpriseStorelayoutpagesGet_598422(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `enterpriseId` field"
-  var valid_598424 = path.getOrDefault("enterpriseId")
-  valid_598424 = validateParameter(valid_598424, JString, required = true,
+  var valid_580424 = path.getOrDefault("enterpriseId")
+  valid_580424 = validateParameter(valid_580424, JString, required = true,
                                  default = nil)
-  if valid_598424 != nil:
-    section.add "enterpriseId", valid_598424
-  var valid_598425 = path.getOrDefault("pageId")
-  valid_598425 = validateParameter(valid_598425, JString, required = true,
+  if valid_580424 != nil:
+    section.add "enterpriseId", valid_580424
+  var valid_580425 = path.getOrDefault("pageId")
+  valid_580425 = validateParameter(valid_580425, JString, required = true,
                                  default = nil)
-  if valid_598425 != nil:
-    section.add "pageId", valid_598425
+  if valid_580425 != nil:
+    section.add "pageId", valid_580425
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -4963,41 +4965,41 @@ proc validate_AndroidenterpriseStorelayoutpagesGet_598422(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_598426 = query.getOrDefault("fields")
-  valid_598426 = validateParameter(valid_598426, JString, required = false,
+  var valid_580426 = query.getOrDefault("fields")
+  valid_580426 = validateParameter(valid_580426, JString, required = false,
                                  default = nil)
-  if valid_598426 != nil:
-    section.add "fields", valid_598426
-  var valid_598427 = query.getOrDefault("quotaUser")
-  valid_598427 = validateParameter(valid_598427, JString, required = false,
+  if valid_580426 != nil:
+    section.add "fields", valid_580426
+  var valid_580427 = query.getOrDefault("quotaUser")
+  valid_580427 = validateParameter(valid_580427, JString, required = false,
                                  default = nil)
-  if valid_598427 != nil:
-    section.add "quotaUser", valid_598427
-  var valid_598428 = query.getOrDefault("alt")
-  valid_598428 = validateParameter(valid_598428, JString, required = false,
+  if valid_580427 != nil:
+    section.add "quotaUser", valid_580427
+  var valid_580428 = query.getOrDefault("alt")
+  valid_580428 = validateParameter(valid_580428, JString, required = false,
                                  default = newJString("json"))
-  if valid_598428 != nil:
-    section.add "alt", valid_598428
-  var valid_598429 = query.getOrDefault("oauth_token")
-  valid_598429 = validateParameter(valid_598429, JString, required = false,
+  if valid_580428 != nil:
+    section.add "alt", valid_580428
+  var valid_580429 = query.getOrDefault("oauth_token")
+  valid_580429 = validateParameter(valid_580429, JString, required = false,
                                  default = nil)
-  if valid_598429 != nil:
-    section.add "oauth_token", valid_598429
-  var valid_598430 = query.getOrDefault("userIp")
-  valid_598430 = validateParameter(valid_598430, JString, required = false,
+  if valid_580429 != nil:
+    section.add "oauth_token", valid_580429
+  var valid_580430 = query.getOrDefault("userIp")
+  valid_580430 = validateParameter(valid_580430, JString, required = false,
                                  default = nil)
-  if valid_598430 != nil:
-    section.add "userIp", valid_598430
-  var valid_598431 = query.getOrDefault("key")
-  valid_598431 = validateParameter(valid_598431, JString, required = false,
+  if valid_580430 != nil:
+    section.add "userIp", valid_580430
+  var valid_580431 = query.getOrDefault("key")
+  valid_580431 = validateParameter(valid_580431, JString, required = false,
                                  default = nil)
-  if valid_598431 != nil:
-    section.add "key", valid_598431
-  var valid_598432 = query.getOrDefault("prettyPrint")
-  valid_598432 = validateParameter(valid_598432, JBool, required = false,
+  if valid_580431 != nil:
+    section.add "key", valid_580431
+  var valid_580432 = query.getOrDefault("prettyPrint")
+  valid_580432 = validateParameter(valid_580432, JBool, required = false,
                                  default = newJBool(true))
-  if valid_598432 != nil:
-    section.add "prettyPrint", valid_598432
+  if valid_580432 != nil:
+    section.add "prettyPrint", valid_580432
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -5006,21 +5008,21 @@ proc validate_AndroidenterpriseStorelayoutpagesGet_598422(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_598433: Call_AndroidenterpriseStorelayoutpagesGet_598421;
+proc call*(call_580433: Call_AndroidenterpriseStorelayoutpagesGet_580421;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Retrieves details of a store page.
   ## 
-  let valid = call_598433.validator(path, query, header, formData, body)
-  let scheme = call_598433.pickScheme
+  let valid = call_580433.validator(path, query, header, formData, body)
+  let scheme = call_580433.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_598433.url(scheme.get, call_598433.host, call_598433.base,
-                         call_598433.route, valid.getOrDefault("path"),
+  let url = call_580433.url(scheme.get, call_580433.host, call_580433.base,
+                         call_580433.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_598433, url, valid)
+  result = hook(call_580433, url, valid)
 
-proc call*(call_598434: Call_AndroidenterpriseStorelayoutpagesGet_598421;
+proc call*(call_580434: Call_AndroidenterpriseStorelayoutpagesGet_580421;
           enterpriseId: string; pageId: string; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; key: string = ""; prettyPrint: bool = true): Recallable =
@@ -5044,33 +5046,33 @@ proc call*(call_598434: Call_AndroidenterpriseStorelayoutpagesGet_598421;
   ##         : The ID of the page.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_598435 = newJObject()
-  var query_598436 = newJObject()
-  add(query_598436, "fields", newJString(fields))
-  add(query_598436, "quotaUser", newJString(quotaUser))
-  add(query_598436, "alt", newJString(alt))
-  add(query_598436, "oauth_token", newJString(oauthToken))
-  add(query_598436, "userIp", newJString(userIp))
-  add(query_598436, "key", newJString(key))
-  add(path_598435, "enterpriseId", newJString(enterpriseId))
-  add(path_598435, "pageId", newJString(pageId))
-  add(query_598436, "prettyPrint", newJBool(prettyPrint))
-  result = call_598434.call(path_598435, query_598436, nil, nil, nil)
+  var path_580435 = newJObject()
+  var query_580436 = newJObject()
+  add(query_580436, "fields", newJString(fields))
+  add(query_580436, "quotaUser", newJString(quotaUser))
+  add(query_580436, "alt", newJString(alt))
+  add(query_580436, "oauth_token", newJString(oauthToken))
+  add(query_580436, "userIp", newJString(userIp))
+  add(query_580436, "key", newJString(key))
+  add(path_580435, "enterpriseId", newJString(enterpriseId))
+  add(path_580435, "pageId", newJString(pageId))
+  add(query_580436, "prettyPrint", newJBool(prettyPrint))
+  result = call_580434.call(path_580435, query_580436, nil, nil, nil)
 
-var androidenterpriseStorelayoutpagesGet* = Call_AndroidenterpriseStorelayoutpagesGet_598421(
+var androidenterpriseStorelayoutpagesGet* = Call_AndroidenterpriseStorelayoutpagesGet_580421(
     name: "androidenterpriseStorelayoutpagesGet", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com",
     route: "/enterprises/{enterpriseId}/storeLayout/pages/{pageId}",
-    validator: validate_AndroidenterpriseStorelayoutpagesGet_598422,
-    base: "/androidenterprise/v1", url: url_AndroidenterpriseStorelayoutpagesGet_598423,
+    validator: validate_AndroidenterpriseStorelayoutpagesGet_580422,
+    base: "/androidenterprise/v1", url: url_AndroidenterpriseStorelayoutpagesGet_580423,
     schemes: {Scheme.Https})
 type
-  Call_AndroidenterpriseStorelayoutpagesPatch_598471 = ref object of OpenApiRestCall_597421
-proc url_AndroidenterpriseStorelayoutpagesPatch_598473(protocol: Scheme;
+  Call_AndroidenterpriseStorelayoutpagesPatch_580471 = ref object of OpenApiRestCall_579421
+proc url_AndroidenterpriseStorelayoutpagesPatch_580473(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "enterpriseId" in path, "`enterpriseId` is a required path parameter"
   assert "pageId" in path, "`pageId` is a required path parameter"
@@ -5084,7 +5086,7 @@ proc url_AndroidenterpriseStorelayoutpagesPatch_598473(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_AndroidenterpriseStorelayoutpagesPatch_598472(path: JsonNode;
+proc validate_AndroidenterpriseStorelayoutpagesPatch_580472(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Updates the content of a store page. This method supports patch semantics.
   ## 
@@ -5098,16 +5100,16 @@ proc validate_AndroidenterpriseStorelayoutpagesPatch_598472(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `enterpriseId` field"
-  var valid_598474 = path.getOrDefault("enterpriseId")
-  valid_598474 = validateParameter(valid_598474, JString, required = true,
+  var valid_580474 = path.getOrDefault("enterpriseId")
+  valid_580474 = validateParameter(valid_580474, JString, required = true,
                                  default = nil)
-  if valid_598474 != nil:
-    section.add "enterpriseId", valid_598474
-  var valid_598475 = path.getOrDefault("pageId")
-  valid_598475 = validateParameter(valid_598475, JString, required = true,
+  if valid_580474 != nil:
+    section.add "enterpriseId", valid_580474
+  var valid_580475 = path.getOrDefault("pageId")
+  valid_580475 = validateParameter(valid_580475, JString, required = true,
                                  default = nil)
-  if valid_598475 != nil:
-    section.add "pageId", valid_598475
+  if valid_580475 != nil:
+    section.add "pageId", valid_580475
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -5125,41 +5127,41 @@ proc validate_AndroidenterpriseStorelayoutpagesPatch_598472(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_598476 = query.getOrDefault("fields")
-  valid_598476 = validateParameter(valid_598476, JString, required = false,
+  var valid_580476 = query.getOrDefault("fields")
+  valid_580476 = validateParameter(valid_580476, JString, required = false,
                                  default = nil)
-  if valid_598476 != nil:
-    section.add "fields", valid_598476
-  var valid_598477 = query.getOrDefault("quotaUser")
-  valid_598477 = validateParameter(valid_598477, JString, required = false,
+  if valid_580476 != nil:
+    section.add "fields", valid_580476
+  var valid_580477 = query.getOrDefault("quotaUser")
+  valid_580477 = validateParameter(valid_580477, JString, required = false,
                                  default = nil)
-  if valid_598477 != nil:
-    section.add "quotaUser", valid_598477
-  var valid_598478 = query.getOrDefault("alt")
-  valid_598478 = validateParameter(valid_598478, JString, required = false,
+  if valid_580477 != nil:
+    section.add "quotaUser", valid_580477
+  var valid_580478 = query.getOrDefault("alt")
+  valid_580478 = validateParameter(valid_580478, JString, required = false,
                                  default = newJString("json"))
-  if valid_598478 != nil:
-    section.add "alt", valid_598478
-  var valid_598479 = query.getOrDefault("oauth_token")
-  valid_598479 = validateParameter(valid_598479, JString, required = false,
+  if valid_580478 != nil:
+    section.add "alt", valid_580478
+  var valid_580479 = query.getOrDefault("oauth_token")
+  valid_580479 = validateParameter(valid_580479, JString, required = false,
                                  default = nil)
-  if valid_598479 != nil:
-    section.add "oauth_token", valid_598479
-  var valid_598480 = query.getOrDefault("userIp")
-  valid_598480 = validateParameter(valid_598480, JString, required = false,
+  if valid_580479 != nil:
+    section.add "oauth_token", valid_580479
+  var valid_580480 = query.getOrDefault("userIp")
+  valid_580480 = validateParameter(valid_580480, JString, required = false,
                                  default = nil)
-  if valid_598480 != nil:
-    section.add "userIp", valid_598480
-  var valid_598481 = query.getOrDefault("key")
-  valid_598481 = validateParameter(valid_598481, JString, required = false,
+  if valid_580480 != nil:
+    section.add "userIp", valid_580480
+  var valid_580481 = query.getOrDefault("key")
+  valid_580481 = validateParameter(valid_580481, JString, required = false,
                                  default = nil)
-  if valid_598481 != nil:
-    section.add "key", valid_598481
-  var valid_598482 = query.getOrDefault("prettyPrint")
-  valid_598482 = validateParameter(valid_598482, JBool, required = false,
+  if valid_580481 != nil:
+    section.add "key", valid_580481
+  var valid_580482 = query.getOrDefault("prettyPrint")
+  valid_580482 = validateParameter(valid_580482, JBool, required = false,
                                  default = newJBool(true))
-  if valid_598482 != nil:
-    section.add "prettyPrint", valid_598482
+  if valid_580482 != nil:
+    section.add "prettyPrint", valid_580482
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -5171,21 +5173,21 @@ proc validate_AndroidenterpriseStorelayoutpagesPatch_598472(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_598484: Call_AndroidenterpriseStorelayoutpagesPatch_598471;
+proc call*(call_580484: Call_AndroidenterpriseStorelayoutpagesPatch_580471;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Updates the content of a store page. This method supports patch semantics.
   ## 
-  let valid = call_598484.validator(path, query, header, formData, body)
-  let scheme = call_598484.pickScheme
+  let valid = call_580484.validator(path, query, header, formData, body)
+  let scheme = call_580484.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_598484.url(scheme.get, call_598484.host, call_598484.base,
-                         call_598484.route, valid.getOrDefault("path"),
+  let url = call_580484.url(scheme.get, call_580484.host, call_580484.base,
+                         call_580484.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_598484, url, valid)
+  result = hook(call_580484, url, valid)
 
-proc call*(call_598485: Call_AndroidenterpriseStorelayoutpagesPatch_598471;
+proc call*(call_580485: Call_AndroidenterpriseStorelayoutpagesPatch_580471;
           enterpriseId: string; pageId: string; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; key: string = ""; body: JsonNode = nil;
@@ -5211,37 +5213,37 @@ proc call*(call_598485: Call_AndroidenterpriseStorelayoutpagesPatch_598471;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_598486 = newJObject()
-  var query_598487 = newJObject()
-  var body_598488 = newJObject()
-  add(query_598487, "fields", newJString(fields))
-  add(query_598487, "quotaUser", newJString(quotaUser))
-  add(query_598487, "alt", newJString(alt))
-  add(query_598487, "oauth_token", newJString(oauthToken))
-  add(query_598487, "userIp", newJString(userIp))
-  add(query_598487, "key", newJString(key))
-  add(path_598486, "enterpriseId", newJString(enterpriseId))
-  add(path_598486, "pageId", newJString(pageId))
+  var path_580486 = newJObject()
+  var query_580487 = newJObject()
+  var body_580488 = newJObject()
+  add(query_580487, "fields", newJString(fields))
+  add(query_580487, "quotaUser", newJString(quotaUser))
+  add(query_580487, "alt", newJString(alt))
+  add(query_580487, "oauth_token", newJString(oauthToken))
+  add(query_580487, "userIp", newJString(userIp))
+  add(query_580487, "key", newJString(key))
+  add(path_580486, "enterpriseId", newJString(enterpriseId))
+  add(path_580486, "pageId", newJString(pageId))
   if body != nil:
-    body_598488 = body
-  add(query_598487, "prettyPrint", newJBool(prettyPrint))
-  result = call_598485.call(path_598486, query_598487, nil, nil, body_598488)
+    body_580488 = body
+  add(query_580487, "prettyPrint", newJBool(prettyPrint))
+  result = call_580485.call(path_580486, query_580487, nil, nil, body_580488)
 
-var androidenterpriseStorelayoutpagesPatch* = Call_AndroidenterpriseStorelayoutpagesPatch_598471(
+var androidenterpriseStorelayoutpagesPatch* = Call_AndroidenterpriseStorelayoutpagesPatch_580471(
     name: "androidenterpriseStorelayoutpagesPatch", meth: HttpMethod.HttpPatch,
     host: "www.googleapis.com",
     route: "/enterprises/{enterpriseId}/storeLayout/pages/{pageId}",
-    validator: validate_AndroidenterpriseStorelayoutpagesPatch_598472,
+    validator: validate_AndroidenterpriseStorelayoutpagesPatch_580472,
     base: "/androidenterprise/v1",
-    url: url_AndroidenterpriseStorelayoutpagesPatch_598473,
+    url: url_AndroidenterpriseStorelayoutpagesPatch_580473,
     schemes: {Scheme.Https})
 type
-  Call_AndroidenterpriseStorelayoutpagesDelete_598455 = ref object of OpenApiRestCall_597421
-proc url_AndroidenterpriseStorelayoutpagesDelete_598457(protocol: Scheme;
+  Call_AndroidenterpriseStorelayoutpagesDelete_580455 = ref object of OpenApiRestCall_579421
+proc url_AndroidenterpriseStorelayoutpagesDelete_580457(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "enterpriseId" in path, "`enterpriseId` is a required path parameter"
   assert "pageId" in path, "`pageId` is a required path parameter"
@@ -5255,7 +5257,7 @@ proc url_AndroidenterpriseStorelayoutpagesDelete_598457(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_AndroidenterpriseStorelayoutpagesDelete_598456(path: JsonNode;
+proc validate_AndroidenterpriseStorelayoutpagesDelete_580456(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Deletes a store page.
   ## 
@@ -5269,16 +5271,16 @@ proc validate_AndroidenterpriseStorelayoutpagesDelete_598456(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `enterpriseId` field"
-  var valid_598458 = path.getOrDefault("enterpriseId")
-  valid_598458 = validateParameter(valid_598458, JString, required = true,
+  var valid_580458 = path.getOrDefault("enterpriseId")
+  valid_580458 = validateParameter(valid_580458, JString, required = true,
                                  default = nil)
-  if valid_598458 != nil:
-    section.add "enterpriseId", valid_598458
-  var valid_598459 = path.getOrDefault("pageId")
-  valid_598459 = validateParameter(valid_598459, JString, required = true,
+  if valid_580458 != nil:
+    section.add "enterpriseId", valid_580458
+  var valid_580459 = path.getOrDefault("pageId")
+  valid_580459 = validateParameter(valid_580459, JString, required = true,
                                  default = nil)
-  if valid_598459 != nil:
-    section.add "pageId", valid_598459
+  if valid_580459 != nil:
+    section.add "pageId", valid_580459
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -5296,41 +5298,41 @@ proc validate_AndroidenterpriseStorelayoutpagesDelete_598456(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_598460 = query.getOrDefault("fields")
-  valid_598460 = validateParameter(valid_598460, JString, required = false,
+  var valid_580460 = query.getOrDefault("fields")
+  valid_580460 = validateParameter(valid_580460, JString, required = false,
                                  default = nil)
-  if valid_598460 != nil:
-    section.add "fields", valid_598460
-  var valid_598461 = query.getOrDefault("quotaUser")
-  valid_598461 = validateParameter(valid_598461, JString, required = false,
+  if valid_580460 != nil:
+    section.add "fields", valid_580460
+  var valid_580461 = query.getOrDefault("quotaUser")
+  valid_580461 = validateParameter(valid_580461, JString, required = false,
                                  default = nil)
-  if valid_598461 != nil:
-    section.add "quotaUser", valid_598461
-  var valid_598462 = query.getOrDefault("alt")
-  valid_598462 = validateParameter(valid_598462, JString, required = false,
+  if valid_580461 != nil:
+    section.add "quotaUser", valid_580461
+  var valid_580462 = query.getOrDefault("alt")
+  valid_580462 = validateParameter(valid_580462, JString, required = false,
                                  default = newJString("json"))
-  if valid_598462 != nil:
-    section.add "alt", valid_598462
-  var valid_598463 = query.getOrDefault("oauth_token")
-  valid_598463 = validateParameter(valid_598463, JString, required = false,
+  if valid_580462 != nil:
+    section.add "alt", valid_580462
+  var valid_580463 = query.getOrDefault("oauth_token")
+  valid_580463 = validateParameter(valid_580463, JString, required = false,
                                  default = nil)
-  if valid_598463 != nil:
-    section.add "oauth_token", valid_598463
-  var valid_598464 = query.getOrDefault("userIp")
-  valid_598464 = validateParameter(valid_598464, JString, required = false,
+  if valid_580463 != nil:
+    section.add "oauth_token", valid_580463
+  var valid_580464 = query.getOrDefault("userIp")
+  valid_580464 = validateParameter(valid_580464, JString, required = false,
                                  default = nil)
-  if valid_598464 != nil:
-    section.add "userIp", valid_598464
-  var valid_598465 = query.getOrDefault("key")
-  valid_598465 = validateParameter(valid_598465, JString, required = false,
+  if valid_580464 != nil:
+    section.add "userIp", valid_580464
+  var valid_580465 = query.getOrDefault("key")
+  valid_580465 = validateParameter(valid_580465, JString, required = false,
                                  default = nil)
-  if valid_598465 != nil:
-    section.add "key", valid_598465
-  var valid_598466 = query.getOrDefault("prettyPrint")
-  valid_598466 = validateParameter(valid_598466, JBool, required = false,
+  if valid_580465 != nil:
+    section.add "key", valid_580465
+  var valid_580466 = query.getOrDefault("prettyPrint")
+  valid_580466 = validateParameter(valid_580466, JBool, required = false,
                                  default = newJBool(true))
-  if valid_598466 != nil:
-    section.add "prettyPrint", valid_598466
+  if valid_580466 != nil:
+    section.add "prettyPrint", valid_580466
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -5339,21 +5341,21 @@ proc validate_AndroidenterpriseStorelayoutpagesDelete_598456(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_598467: Call_AndroidenterpriseStorelayoutpagesDelete_598455;
+proc call*(call_580467: Call_AndroidenterpriseStorelayoutpagesDelete_580455;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Deletes a store page.
   ## 
-  let valid = call_598467.validator(path, query, header, formData, body)
-  let scheme = call_598467.pickScheme
+  let valid = call_580467.validator(path, query, header, formData, body)
+  let scheme = call_580467.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_598467.url(scheme.get, call_598467.host, call_598467.base,
-                         call_598467.route, valid.getOrDefault("path"),
+  let url = call_580467.url(scheme.get, call_580467.host, call_580467.base,
+                         call_580467.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_598467, url, valid)
+  result = hook(call_580467, url, valid)
 
-proc call*(call_598468: Call_AndroidenterpriseStorelayoutpagesDelete_598455;
+proc call*(call_580468: Call_AndroidenterpriseStorelayoutpagesDelete_580455;
           enterpriseId: string; pageId: string; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; key: string = ""; prettyPrint: bool = true): Recallable =
@@ -5377,34 +5379,34 @@ proc call*(call_598468: Call_AndroidenterpriseStorelayoutpagesDelete_598455;
   ##         : The ID of the page.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_598469 = newJObject()
-  var query_598470 = newJObject()
-  add(query_598470, "fields", newJString(fields))
-  add(query_598470, "quotaUser", newJString(quotaUser))
-  add(query_598470, "alt", newJString(alt))
-  add(query_598470, "oauth_token", newJString(oauthToken))
-  add(query_598470, "userIp", newJString(userIp))
-  add(query_598470, "key", newJString(key))
-  add(path_598469, "enterpriseId", newJString(enterpriseId))
-  add(path_598469, "pageId", newJString(pageId))
-  add(query_598470, "prettyPrint", newJBool(prettyPrint))
-  result = call_598468.call(path_598469, query_598470, nil, nil, nil)
+  var path_580469 = newJObject()
+  var query_580470 = newJObject()
+  add(query_580470, "fields", newJString(fields))
+  add(query_580470, "quotaUser", newJString(quotaUser))
+  add(query_580470, "alt", newJString(alt))
+  add(query_580470, "oauth_token", newJString(oauthToken))
+  add(query_580470, "userIp", newJString(userIp))
+  add(query_580470, "key", newJString(key))
+  add(path_580469, "enterpriseId", newJString(enterpriseId))
+  add(path_580469, "pageId", newJString(pageId))
+  add(query_580470, "prettyPrint", newJBool(prettyPrint))
+  result = call_580468.call(path_580469, query_580470, nil, nil, nil)
 
-var androidenterpriseStorelayoutpagesDelete* = Call_AndroidenterpriseStorelayoutpagesDelete_598455(
+var androidenterpriseStorelayoutpagesDelete* = Call_AndroidenterpriseStorelayoutpagesDelete_580455(
     name: "androidenterpriseStorelayoutpagesDelete", meth: HttpMethod.HttpDelete,
     host: "www.googleapis.com",
     route: "/enterprises/{enterpriseId}/storeLayout/pages/{pageId}",
-    validator: validate_AndroidenterpriseStorelayoutpagesDelete_598456,
+    validator: validate_AndroidenterpriseStorelayoutpagesDelete_580456,
     base: "/androidenterprise/v1",
-    url: url_AndroidenterpriseStorelayoutpagesDelete_598457,
+    url: url_AndroidenterpriseStorelayoutpagesDelete_580457,
     schemes: {Scheme.Https})
 type
-  Call_AndroidenterpriseStorelayoutclustersInsert_598505 = ref object of OpenApiRestCall_597421
-proc url_AndroidenterpriseStorelayoutclustersInsert_598507(protocol: Scheme;
+  Call_AndroidenterpriseStorelayoutclustersInsert_580505 = ref object of OpenApiRestCall_579421
+proc url_AndroidenterpriseStorelayoutclustersInsert_580507(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "enterpriseId" in path, "`enterpriseId` is a required path parameter"
   assert "pageId" in path, "`pageId` is a required path parameter"
@@ -5419,7 +5421,7 @@ proc url_AndroidenterpriseStorelayoutclustersInsert_598507(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_AndroidenterpriseStorelayoutclustersInsert_598506(path: JsonNode;
+proc validate_AndroidenterpriseStorelayoutclustersInsert_580506(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Inserts a new cluster in a page.
   ## 
@@ -5433,16 +5435,16 @@ proc validate_AndroidenterpriseStorelayoutclustersInsert_598506(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `enterpriseId` field"
-  var valid_598508 = path.getOrDefault("enterpriseId")
-  valid_598508 = validateParameter(valid_598508, JString, required = true,
+  var valid_580508 = path.getOrDefault("enterpriseId")
+  valid_580508 = validateParameter(valid_580508, JString, required = true,
                                  default = nil)
-  if valid_598508 != nil:
-    section.add "enterpriseId", valid_598508
-  var valid_598509 = path.getOrDefault("pageId")
-  valid_598509 = validateParameter(valid_598509, JString, required = true,
+  if valid_580508 != nil:
+    section.add "enterpriseId", valid_580508
+  var valid_580509 = path.getOrDefault("pageId")
+  valid_580509 = validateParameter(valid_580509, JString, required = true,
                                  default = nil)
-  if valid_598509 != nil:
-    section.add "pageId", valid_598509
+  if valid_580509 != nil:
+    section.add "pageId", valid_580509
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -5460,41 +5462,41 @@ proc validate_AndroidenterpriseStorelayoutclustersInsert_598506(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_598510 = query.getOrDefault("fields")
-  valid_598510 = validateParameter(valid_598510, JString, required = false,
+  var valid_580510 = query.getOrDefault("fields")
+  valid_580510 = validateParameter(valid_580510, JString, required = false,
                                  default = nil)
-  if valid_598510 != nil:
-    section.add "fields", valid_598510
-  var valid_598511 = query.getOrDefault("quotaUser")
-  valid_598511 = validateParameter(valid_598511, JString, required = false,
+  if valid_580510 != nil:
+    section.add "fields", valid_580510
+  var valid_580511 = query.getOrDefault("quotaUser")
+  valid_580511 = validateParameter(valid_580511, JString, required = false,
                                  default = nil)
-  if valid_598511 != nil:
-    section.add "quotaUser", valid_598511
-  var valid_598512 = query.getOrDefault("alt")
-  valid_598512 = validateParameter(valid_598512, JString, required = false,
+  if valid_580511 != nil:
+    section.add "quotaUser", valid_580511
+  var valid_580512 = query.getOrDefault("alt")
+  valid_580512 = validateParameter(valid_580512, JString, required = false,
                                  default = newJString("json"))
-  if valid_598512 != nil:
-    section.add "alt", valid_598512
-  var valid_598513 = query.getOrDefault("oauth_token")
-  valid_598513 = validateParameter(valid_598513, JString, required = false,
+  if valid_580512 != nil:
+    section.add "alt", valid_580512
+  var valid_580513 = query.getOrDefault("oauth_token")
+  valid_580513 = validateParameter(valid_580513, JString, required = false,
                                  default = nil)
-  if valid_598513 != nil:
-    section.add "oauth_token", valid_598513
-  var valid_598514 = query.getOrDefault("userIp")
-  valid_598514 = validateParameter(valid_598514, JString, required = false,
+  if valid_580513 != nil:
+    section.add "oauth_token", valid_580513
+  var valid_580514 = query.getOrDefault("userIp")
+  valid_580514 = validateParameter(valid_580514, JString, required = false,
                                  default = nil)
-  if valid_598514 != nil:
-    section.add "userIp", valid_598514
-  var valid_598515 = query.getOrDefault("key")
-  valid_598515 = validateParameter(valid_598515, JString, required = false,
+  if valid_580514 != nil:
+    section.add "userIp", valid_580514
+  var valid_580515 = query.getOrDefault("key")
+  valid_580515 = validateParameter(valid_580515, JString, required = false,
                                  default = nil)
-  if valid_598515 != nil:
-    section.add "key", valid_598515
-  var valid_598516 = query.getOrDefault("prettyPrint")
-  valid_598516 = validateParameter(valid_598516, JBool, required = false,
+  if valid_580515 != nil:
+    section.add "key", valid_580515
+  var valid_580516 = query.getOrDefault("prettyPrint")
+  valid_580516 = validateParameter(valid_580516, JBool, required = false,
                                  default = newJBool(true))
-  if valid_598516 != nil:
-    section.add "prettyPrint", valid_598516
+  if valid_580516 != nil:
+    section.add "prettyPrint", valid_580516
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -5506,21 +5508,21 @@ proc validate_AndroidenterpriseStorelayoutclustersInsert_598506(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_598518: Call_AndroidenterpriseStorelayoutclustersInsert_598505;
+proc call*(call_580518: Call_AndroidenterpriseStorelayoutclustersInsert_580505;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Inserts a new cluster in a page.
   ## 
-  let valid = call_598518.validator(path, query, header, formData, body)
-  let scheme = call_598518.pickScheme
+  let valid = call_580518.validator(path, query, header, formData, body)
+  let scheme = call_580518.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_598518.url(scheme.get, call_598518.host, call_598518.base,
-                         call_598518.route, valid.getOrDefault("path"),
+  let url = call_580518.url(scheme.get, call_580518.host, call_580518.base,
+                         call_580518.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_598518, url, valid)
+  result = hook(call_580518, url, valid)
 
-proc call*(call_598519: Call_AndroidenterpriseStorelayoutclustersInsert_598505;
+proc call*(call_580519: Call_AndroidenterpriseStorelayoutclustersInsert_580505;
           enterpriseId: string; pageId: string; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; key: string = ""; body: JsonNode = nil;
@@ -5546,37 +5548,37 @@ proc call*(call_598519: Call_AndroidenterpriseStorelayoutclustersInsert_598505;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_598520 = newJObject()
-  var query_598521 = newJObject()
-  var body_598522 = newJObject()
-  add(query_598521, "fields", newJString(fields))
-  add(query_598521, "quotaUser", newJString(quotaUser))
-  add(query_598521, "alt", newJString(alt))
-  add(query_598521, "oauth_token", newJString(oauthToken))
-  add(query_598521, "userIp", newJString(userIp))
-  add(query_598521, "key", newJString(key))
-  add(path_598520, "enterpriseId", newJString(enterpriseId))
-  add(path_598520, "pageId", newJString(pageId))
+  var path_580520 = newJObject()
+  var query_580521 = newJObject()
+  var body_580522 = newJObject()
+  add(query_580521, "fields", newJString(fields))
+  add(query_580521, "quotaUser", newJString(quotaUser))
+  add(query_580521, "alt", newJString(alt))
+  add(query_580521, "oauth_token", newJString(oauthToken))
+  add(query_580521, "userIp", newJString(userIp))
+  add(query_580521, "key", newJString(key))
+  add(path_580520, "enterpriseId", newJString(enterpriseId))
+  add(path_580520, "pageId", newJString(pageId))
   if body != nil:
-    body_598522 = body
-  add(query_598521, "prettyPrint", newJBool(prettyPrint))
-  result = call_598519.call(path_598520, query_598521, nil, nil, body_598522)
+    body_580522 = body
+  add(query_580521, "prettyPrint", newJBool(prettyPrint))
+  result = call_580519.call(path_580520, query_580521, nil, nil, body_580522)
 
-var androidenterpriseStorelayoutclustersInsert* = Call_AndroidenterpriseStorelayoutclustersInsert_598505(
+var androidenterpriseStorelayoutclustersInsert* = Call_AndroidenterpriseStorelayoutclustersInsert_580505(
     name: "androidenterpriseStorelayoutclustersInsert", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com",
     route: "/enterprises/{enterpriseId}/storeLayout/pages/{pageId}/clusters",
-    validator: validate_AndroidenterpriseStorelayoutclustersInsert_598506,
+    validator: validate_AndroidenterpriseStorelayoutclustersInsert_580506,
     base: "/androidenterprise/v1",
-    url: url_AndroidenterpriseStorelayoutclustersInsert_598507,
+    url: url_AndroidenterpriseStorelayoutclustersInsert_580507,
     schemes: {Scheme.Https})
 type
-  Call_AndroidenterpriseStorelayoutclustersList_598489 = ref object of OpenApiRestCall_597421
-proc url_AndroidenterpriseStorelayoutclustersList_598491(protocol: Scheme;
+  Call_AndroidenterpriseStorelayoutclustersList_580489 = ref object of OpenApiRestCall_579421
+proc url_AndroidenterpriseStorelayoutclustersList_580491(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "enterpriseId" in path, "`enterpriseId` is a required path parameter"
   assert "pageId" in path, "`pageId` is a required path parameter"
@@ -5591,7 +5593,7 @@ proc url_AndroidenterpriseStorelayoutclustersList_598491(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_AndroidenterpriseStorelayoutclustersList_598490(path: JsonNode;
+proc validate_AndroidenterpriseStorelayoutclustersList_580490(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Retrieves the details of all clusters on the specified page.
   ## 
@@ -5605,16 +5607,16 @@ proc validate_AndroidenterpriseStorelayoutclustersList_598490(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `enterpriseId` field"
-  var valid_598492 = path.getOrDefault("enterpriseId")
-  valid_598492 = validateParameter(valid_598492, JString, required = true,
+  var valid_580492 = path.getOrDefault("enterpriseId")
+  valid_580492 = validateParameter(valid_580492, JString, required = true,
                                  default = nil)
-  if valid_598492 != nil:
-    section.add "enterpriseId", valid_598492
-  var valid_598493 = path.getOrDefault("pageId")
-  valid_598493 = validateParameter(valid_598493, JString, required = true,
+  if valid_580492 != nil:
+    section.add "enterpriseId", valid_580492
+  var valid_580493 = path.getOrDefault("pageId")
+  valid_580493 = validateParameter(valid_580493, JString, required = true,
                                  default = nil)
-  if valid_598493 != nil:
-    section.add "pageId", valid_598493
+  if valid_580493 != nil:
+    section.add "pageId", valid_580493
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -5632,41 +5634,41 @@ proc validate_AndroidenterpriseStorelayoutclustersList_598490(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_598494 = query.getOrDefault("fields")
-  valid_598494 = validateParameter(valid_598494, JString, required = false,
+  var valid_580494 = query.getOrDefault("fields")
+  valid_580494 = validateParameter(valid_580494, JString, required = false,
                                  default = nil)
-  if valid_598494 != nil:
-    section.add "fields", valid_598494
-  var valid_598495 = query.getOrDefault("quotaUser")
-  valid_598495 = validateParameter(valid_598495, JString, required = false,
+  if valid_580494 != nil:
+    section.add "fields", valid_580494
+  var valid_580495 = query.getOrDefault("quotaUser")
+  valid_580495 = validateParameter(valid_580495, JString, required = false,
                                  default = nil)
-  if valid_598495 != nil:
-    section.add "quotaUser", valid_598495
-  var valid_598496 = query.getOrDefault("alt")
-  valid_598496 = validateParameter(valid_598496, JString, required = false,
+  if valid_580495 != nil:
+    section.add "quotaUser", valid_580495
+  var valid_580496 = query.getOrDefault("alt")
+  valid_580496 = validateParameter(valid_580496, JString, required = false,
                                  default = newJString("json"))
-  if valid_598496 != nil:
-    section.add "alt", valid_598496
-  var valid_598497 = query.getOrDefault("oauth_token")
-  valid_598497 = validateParameter(valid_598497, JString, required = false,
+  if valid_580496 != nil:
+    section.add "alt", valid_580496
+  var valid_580497 = query.getOrDefault("oauth_token")
+  valid_580497 = validateParameter(valid_580497, JString, required = false,
                                  default = nil)
-  if valid_598497 != nil:
-    section.add "oauth_token", valid_598497
-  var valid_598498 = query.getOrDefault("userIp")
-  valid_598498 = validateParameter(valid_598498, JString, required = false,
+  if valid_580497 != nil:
+    section.add "oauth_token", valid_580497
+  var valid_580498 = query.getOrDefault("userIp")
+  valid_580498 = validateParameter(valid_580498, JString, required = false,
                                  default = nil)
-  if valid_598498 != nil:
-    section.add "userIp", valid_598498
-  var valid_598499 = query.getOrDefault("key")
-  valid_598499 = validateParameter(valid_598499, JString, required = false,
+  if valid_580498 != nil:
+    section.add "userIp", valid_580498
+  var valid_580499 = query.getOrDefault("key")
+  valid_580499 = validateParameter(valid_580499, JString, required = false,
                                  default = nil)
-  if valid_598499 != nil:
-    section.add "key", valid_598499
-  var valid_598500 = query.getOrDefault("prettyPrint")
-  valid_598500 = validateParameter(valid_598500, JBool, required = false,
+  if valid_580499 != nil:
+    section.add "key", valid_580499
+  var valid_580500 = query.getOrDefault("prettyPrint")
+  valid_580500 = validateParameter(valid_580500, JBool, required = false,
                                  default = newJBool(true))
-  if valid_598500 != nil:
-    section.add "prettyPrint", valid_598500
+  if valid_580500 != nil:
+    section.add "prettyPrint", valid_580500
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -5675,21 +5677,21 @@ proc validate_AndroidenterpriseStorelayoutclustersList_598490(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_598501: Call_AndroidenterpriseStorelayoutclustersList_598489;
+proc call*(call_580501: Call_AndroidenterpriseStorelayoutclustersList_580489;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Retrieves the details of all clusters on the specified page.
   ## 
-  let valid = call_598501.validator(path, query, header, formData, body)
-  let scheme = call_598501.pickScheme
+  let valid = call_580501.validator(path, query, header, formData, body)
+  let scheme = call_580501.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_598501.url(scheme.get, call_598501.host, call_598501.base,
-                         call_598501.route, valid.getOrDefault("path"),
+  let url = call_580501.url(scheme.get, call_580501.host, call_580501.base,
+                         call_580501.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_598501, url, valid)
+  result = hook(call_580501, url, valid)
 
-proc call*(call_598502: Call_AndroidenterpriseStorelayoutclustersList_598489;
+proc call*(call_580502: Call_AndroidenterpriseStorelayoutclustersList_580489;
           enterpriseId: string; pageId: string; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; key: string = ""; prettyPrint: bool = true): Recallable =
@@ -5713,34 +5715,34 @@ proc call*(call_598502: Call_AndroidenterpriseStorelayoutclustersList_598489;
   ##         : The ID of the page.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_598503 = newJObject()
-  var query_598504 = newJObject()
-  add(query_598504, "fields", newJString(fields))
-  add(query_598504, "quotaUser", newJString(quotaUser))
-  add(query_598504, "alt", newJString(alt))
-  add(query_598504, "oauth_token", newJString(oauthToken))
-  add(query_598504, "userIp", newJString(userIp))
-  add(query_598504, "key", newJString(key))
-  add(path_598503, "enterpriseId", newJString(enterpriseId))
-  add(path_598503, "pageId", newJString(pageId))
-  add(query_598504, "prettyPrint", newJBool(prettyPrint))
-  result = call_598502.call(path_598503, query_598504, nil, nil, nil)
+  var path_580503 = newJObject()
+  var query_580504 = newJObject()
+  add(query_580504, "fields", newJString(fields))
+  add(query_580504, "quotaUser", newJString(quotaUser))
+  add(query_580504, "alt", newJString(alt))
+  add(query_580504, "oauth_token", newJString(oauthToken))
+  add(query_580504, "userIp", newJString(userIp))
+  add(query_580504, "key", newJString(key))
+  add(path_580503, "enterpriseId", newJString(enterpriseId))
+  add(path_580503, "pageId", newJString(pageId))
+  add(query_580504, "prettyPrint", newJBool(prettyPrint))
+  result = call_580502.call(path_580503, query_580504, nil, nil, nil)
 
-var androidenterpriseStorelayoutclustersList* = Call_AndroidenterpriseStorelayoutclustersList_598489(
+var androidenterpriseStorelayoutclustersList* = Call_AndroidenterpriseStorelayoutclustersList_580489(
     name: "androidenterpriseStorelayoutclustersList", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com",
     route: "/enterprises/{enterpriseId}/storeLayout/pages/{pageId}/clusters",
-    validator: validate_AndroidenterpriseStorelayoutclustersList_598490,
+    validator: validate_AndroidenterpriseStorelayoutclustersList_580490,
     base: "/androidenterprise/v1",
-    url: url_AndroidenterpriseStorelayoutclustersList_598491,
+    url: url_AndroidenterpriseStorelayoutclustersList_580491,
     schemes: {Scheme.Https})
 type
-  Call_AndroidenterpriseStorelayoutclustersUpdate_598540 = ref object of OpenApiRestCall_597421
-proc url_AndroidenterpriseStorelayoutclustersUpdate_598542(protocol: Scheme;
+  Call_AndroidenterpriseStorelayoutclustersUpdate_580540 = ref object of OpenApiRestCall_579421
+proc url_AndroidenterpriseStorelayoutclustersUpdate_580542(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "enterpriseId" in path, "`enterpriseId` is a required path parameter"
   assert "pageId" in path, "`pageId` is a required path parameter"
@@ -5757,7 +5759,7 @@ proc url_AndroidenterpriseStorelayoutclustersUpdate_598542(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_AndroidenterpriseStorelayoutclustersUpdate_598541(path: JsonNode;
+proc validate_AndroidenterpriseStorelayoutclustersUpdate_580541(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Updates a cluster.
   ## 
@@ -5773,21 +5775,21 @@ proc validate_AndroidenterpriseStorelayoutclustersUpdate_598541(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `enterpriseId` field"
-  var valid_598543 = path.getOrDefault("enterpriseId")
-  valid_598543 = validateParameter(valid_598543, JString, required = true,
+  var valid_580543 = path.getOrDefault("enterpriseId")
+  valid_580543 = validateParameter(valid_580543, JString, required = true,
                                  default = nil)
-  if valid_598543 != nil:
-    section.add "enterpriseId", valid_598543
-  var valid_598544 = path.getOrDefault("pageId")
-  valid_598544 = validateParameter(valid_598544, JString, required = true,
+  if valid_580543 != nil:
+    section.add "enterpriseId", valid_580543
+  var valid_580544 = path.getOrDefault("pageId")
+  valid_580544 = validateParameter(valid_580544, JString, required = true,
                                  default = nil)
-  if valid_598544 != nil:
-    section.add "pageId", valid_598544
-  var valid_598545 = path.getOrDefault("clusterId")
-  valid_598545 = validateParameter(valid_598545, JString, required = true,
+  if valid_580544 != nil:
+    section.add "pageId", valid_580544
+  var valid_580545 = path.getOrDefault("clusterId")
+  valid_580545 = validateParameter(valid_580545, JString, required = true,
                                  default = nil)
-  if valid_598545 != nil:
-    section.add "clusterId", valid_598545
+  if valid_580545 != nil:
+    section.add "clusterId", valid_580545
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -5805,41 +5807,41 @@ proc validate_AndroidenterpriseStorelayoutclustersUpdate_598541(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_598546 = query.getOrDefault("fields")
-  valid_598546 = validateParameter(valid_598546, JString, required = false,
+  var valid_580546 = query.getOrDefault("fields")
+  valid_580546 = validateParameter(valid_580546, JString, required = false,
                                  default = nil)
-  if valid_598546 != nil:
-    section.add "fields", valid_598546
-  var valid_598547 = query.getOrDefault("quotaUser")
-  valid_598547 = validateParameter(valid_598547, JString, required = false,
+  if valid_580546 != nil:
+    section.add "fields", valid_580546
+  var valid_580547 = query.getOrDefault("quotaUser")
+  valid_580547 = validateParameter(valid_580547, JString, required = false,
                                  default = nil)
-  if valid_598547 != nil:
-    section.add "quotaUser", valid_598547
-  var valid_598548 = query.getOrDefault("alt")
-  valid_598548 = validateParameter(valid_598548, JString, required = false,
+  if valid_580547 != nil:
+    section.add "quotaUser", valid_580547
+  var valid_580548 = query.getOrDefault("alt")
+  valid_580548 = validateParameter(valid_580548, JString, required = false,
                                  default = newJString("json"))
-  if valid_598548 != nil:
-    section.add "alt", valid_598548
-  var valid_598549 = query.getOrDefault("oauth_token")
-  valid_598549 = validateParameter(valid_598549, JString, required = false,
+  if valid_580548 != nil:
+    section.add "alt", valid_580548
+  var valid_580549 = query.getOrDefault("oauth_token")
+  valid_580549 = validateParameter(valid_580549, JString, required = false,
                                  default = nil)
-  if valid_598549 != nil:
-    section.add "oauth_token", valid_598549
-  var valid_598550 = query.getOrDefault("userIp")
-  valid_598550 = validateParameter(valid_598550, JString, required = false,
+  if valid_580549 != nil:
+    section.add "oauth_token", valid_580549
+  var valid_580550 = query.getOrDefault("userIp")
+  valid_580550 = validateParameter(valid_580550, JString, required = false,
                                  default = nil)
-  if valid_598550 != nil:
-    section.add "userIp", valid_598550
-  var valid_598551 = query.getOrDefault("key")
-  valid_598551 = validateParameter(valid_598551, JString, required = false,
+  if valid_580550 != nil:
+    section.add "userIp", valid_580550
+  var valid_580551 = query.getOrDefault("key")
+  valid_580551 = validateParameter(valid_580551, JString, required = false,
                                  default = nil)
-  if valid_598551 != nil:
-    section.add "key", valid_598551
-  var valid_598552 = query.getOrDefault("prettyPrint")
-  valid_598552 = validateParameter(valid_598552, JBool, required = false,
+  if valid_580551 != nil:
+    section.add "key", valid_580551
+  var valid_580552 = query.getOrDefault("prettyPrint")
+  valid_580552 = validateParameter(valid_580552, JBool, required = false,
                                  default = newJBool(true))
-  if valid_598552 != nil:
-    section.add "prettyPrint", valid_598552
+  if valid_580552 != nil:
+    section.add "prettyPrint", valid_580552
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -5851,21 +5853,21 @@ proc validate_AndroidenterpriseStorelayoutclustersUpdate_598541(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_598554: Call_AndroidenterpriseStorelayoutclustersUpdate_598540;
+proc call*(call_580554: Call_AndroidenterpriseStorelayoutclustersUpdate_580540;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Updates a cluster.
   ## 
-  let valid = call_598554.validator(path, query, header, formData, body)
-  let scheme = call_598554.pickScheme
+  let valid = call_580554.validator(path, query, header, formData, body)
+  let scheme = call_580554.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_598554.url(scheme.get, call_598554.host, call_598554.base,
-                         call_598554.route, valid.getOrDefault("path"),
+  let url = call_580554.url(scheme.get, call_580554.host, call_580554.base,
+                         call_580554.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_598554, url, valid)
+  result = hook(call_580554, url, valid)
 
-proc call*(call_598555: Call_AndroidenterpriseStorelayoutclustersUpdate_598540;
+proc call*(call_580555: Call_AndroidenterpriseStorelayoutclustersUpdate_580540;
           enterpriseId: string; pageId: string; clusterId: string;
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           oauthToken: string = ""; userIp: string = ""; key: string = "";
@@ -5893,37 +5895,37 @@ proc call*(call_598555: Call_AndroidenterpriseStorelayoutclustersUpdate_598540;
   ##              : Returns response with indentations and line breaks.
   ##   clusterId: string (required)
   ##            : The ID of the cluster.
-  var path_598556 = newJObject()
-  var query_598557 = newJObject()
-  var body_598558 = newJObject()
-  add(query_598557, "fields", newJString(fields))
-  add(query_598557, "quotaUser", newJString(quotaUser))
-  add(query_598557, "alt", newJString(alt))
-  add(query_598557, "oauth_token", newJString(oauthToken))
-  add(query_598557, "userIp", newJString(userIp))
-  add(query_598557, "key", newJString(key))
-  add(path_598556, "enterpriseId", newJString(enterpriseId))
-  add(path_598556, "pageId", newJString(pageId))
+  var path_580556 = newJObject()
+  var query_580557 = newJObject()
+  var body_580558 = newJObject()
+  add(query_580557, "fields", newJString(fields))
+  add(query_580557, "quotaUser", newJString(quotaUser))
+  add(query_580557, "alt", newJString(alt))
+  add(query_580557, "oauth_token", newJString(oauthToken))
+  add(query_580557, "userIp", newJString(userIp))
+  add(query_580557, "key", newJString(key))
+  add(path_580556, "enterpriseId", newJString(enterpriseId))
+  add(path_580556, "pageId", newJString(pageId))
   if body != nil:
-    body_598558 = body
-  add(query_598557, "prettyPrint", newJBool(prettyPrint))
-  add(path_598556, "clusterId", newJString(clusterId))
-  result = call_598555.call(path_598556, query_598557, nil, nil, body_598558)
+    body_580558 = body
+  add(query_580557, "prettyPrint", newJBool(prettyPrint))
+  add(path_580556, "clusterId", newJString(clusterId))
+  result = call_580555.call(path_580556, query_580557, nil, nil, body_580558)
 
-var androidenterpriseStorelayoutclustersUpdate* = Call_AndroidenterpriseStorelayoutclustersUpdate_598540(
+var androidenterpriseStorelayoutclustersUpdate* = Call_AndroidenterpriseStorelayoutclustersUpdate_580540(
     name: "androidenterpriseStorelayoutclustersUpdate", meth: HttpMethod.HttpPut,
     host: "www.googleapis.com", route: "/enterprises/{enterpriseId}/storeLayout/pages/{pageId}/clusters/{clusterId}",
-    validator: validate_AndroidenterpriseStorelayoutclustersUpdate_598541,
+    validator: validate_AndroidenterpriseStorelayoutclustersUpdate_580541,
     base: "/androidenterprise/v1",
-    url: url_AndroidenterpriseStorelayoutclustersUpdate_598542,
+    url: url_AndroidenterpriseStorelayoutclustersUpdate_580542,
     schemes: {Scheme.Https})
 type
-  Call_AndroidenterpriseStorelayoutclustersGet_598523 = ref object of OpenApiRestCall_597421
-proc url_AndroidenterpriseStorelayoutclustersGet_598525(protocol: Scheme;
+  Call_AndroidenterpriseStorelayoutclustersGet_580523 = ref object of OpenApiRestCall_579421
+proc url_AndroidenterpriseStorelayoutclustersGet_580525(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "enterpriseId" in path, "`enterpriseId` is a required path parameter"
   assert "pageId" in path, "`pageId` is a required path parameter"
@@ -5940,7 +5942,7 @@ proc url_AndroidenterpriseStorelayoutclustersGet_598525(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_AndroidenterpriseStorelayoutclustersGet_598524(path: JsonNode;
+proc validate_AndroidenterpriseStorelayoutclustersGet_580524(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Retrieves details of a cluster.
   ## 
@@ -5956,21 +5958,21 @@ proc validate_AndroidenterpriseStorelayoutclustersGet_598524(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `enterpriseId` field"
-  var valid_598526 = path.getOrDefault("enterpriseId")
-  valid_598526 = validateParameter(valid_598526, JString, required = true,
+  var valid_580526 = path.getOrDefault("enterpriseId")
+  valid_580526 = validateParameter(valid_580526, JString, required = true,
                                  default = nil)
-  if valid_598526 != nil:
-    section.add "enterpriseId", valid_598526
-  var valid_598527 = path.getOrDefault("pageId")
-  valid_598527 = validateParameter(valid_598527, JString, required = true,
+  if valid_580526 != nil:
+    section.add "enterpriseId", valid_580526
+  var valid_580527 = path.getOrDefault("pageId")
+  valid_580527 = validateParameter(valid_580527, JString, required = true,
                                  default = nil)
-  if valid_598527 != nil:
-    section.add "pageId", valid_598527
-  var valid_598528 = path.getOrDefault("clusterId")
-  valid_598528 = validateParameter(valid_598528, JString, required = true,
+  if valid_580527 != nil:
+    section.add "pageId", valid_580527
+  var valid_580528 = path.getOrDefault("clusterId")
+  valid_580528 = validateParameter(valid_580528, JString, required = true,
                                  default = nil)
-  if valid_598528 != nil:
-    section.add "clusterId", valid_598528
+  if valid_580528 != nil:
+    section.add "clusterId", valid_580528
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -5988,41 +5990,41 @@ proc validate_AndroidenterpriseStorelayoutclustersGet_598524(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_598529 = query.getOrDefault("fields")
-  valid_598529 = validateParameter(valid_598529, JString, required = false,
+  var valid_580529 = query.getOrDefault("fields")
+  valid_580529 = validateParameter(valid_580529, JString, required = false,
                                  default = nil)
-  if valid_598529 != nil:
-    section.add "fields", valid_598529
-  var valid_598530 = query.getOrDefault("quotaUser")
-  valid_598530 = validateParameter(valid_598530, JString, required = false,
+  if valid_580529 != nil:
+    section.add "fields", valid_580529
+  var valid_580530 = query.getOrDefault("quotaUser")
+  valid_580530 = validateParameter(valid_580530, JString, required = false,
                                  default = nil)
-  if valid_598530 != nil:
-    section.add "quotaUser", valid_598530
-  var valid_598531 = query.getOrDefault("alt")
-  valid_598531 = validateParameter(valid_598531, JString, required = false,
+  if valid_580530 != nil:
+    section.add "quotaUser", valid_580530
+  var valid_580531 = query.getOrDefault("alt")
+  valid_580531 = validateParameter(valid_580531, JString, required = false,
                                  default = newJString("json"))
-  if valid_598531 != nil:
-    section.add "alt", valid_598531
-  var valid_598532 = query.getOrDefault("oauth_token")
-  valid_598532 = validateParameter(valid_598532, JString, required = false,
+  if valid_580531 != nil:
+    section.add "alt", valid_580531
+  var valid_580532 = query.getOrDefault("oauth_token")
+  valid_580532 = validateParameter(valid_580532, JString, required = false,
                                  default = nil)
-  if valid_598532 != nil:
-    section.add "oauth_token", valid_598532
-  var valid_598533 = query.getOrDefault("userIp")
-  valid_598533 = validateParameter(valid_598533, JString, required = false,
+  if valid_580532 != nil:
+    section.add "oauth_token", valid_580532
+  var valid_580533 = query.getOrDefault("userIp")
+  valid_580533 = validateParameter(valid_580533, JString, required = false,
                                  default = nil)
-  if valid_598533 != nil:
-    section.add "userIp", valid_598533
-  var valid_598534 = query.getOrDefault("key")
-  valid_598534 = validateParameter(valid_598534, JString, required = false,
+  if valid_580533 != nil:
+    section.add "userIp", valid_580533
+  var valid_580534 = query.getOrDefault("key")
+  valid_580534 = validateParameter(valid_580534, JString, required = false,
                                  default = nil)
-  if valid_598534 != nil:
-    section.add "key", valid_598534
-  var valid_598535 = query.getOrDefault("prettyPrint")
-  valid_598535 = validateParameter(valid_598535, JBool, required = false,
+  if valid_580534 != nil:
+    section.add "key", valid_580534
+  var valid_580535 = query.getOrDefault("prettyPrint")
+  valid_580535 = validateParameter(valid_580535, JBool, required = false,
                                  default = newJBool(true))
-  if valid_598535 != nil:
-    section.add "prettyPrint", valid_598535
+  if valid_580535 != nil:
+    section.add "prettyPrint", valid_580535
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -6031,21 +6033,21 @@ proc validate_AndroidenterpriseStorelayoutclustersGet_598524(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_598536: Call_AndroidenterpriseStorelayoutclustersGet_598523;
+proc call*(call_580536: Call_AndroidenterpriseStorelayoutclustersGet_580523;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Retrieves details of a cluster.
   ## 
-  let valid = call_598536.validator(path, query, header, formData, body)
-  let scheme = call_598536.pickScheme
+  let valid = call_580536.validator(path, query, header, formData, body)
+  let scheme = call_580536.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_598536.url(scheme.get, call_598536.host, call_598536.base,
-                         call_598536.route, valid.getOrDefault("path"),
+  let url = call_580536.url(scheme.get, call_580536.host, call_580536.base,
+                         call_580536.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_598536, url, valid)
+  result = hook(call_580536, url, valid)
 
-proc call*(call_598537: Call_AndroidenterpriseStorelayoutclustersGet_598523;
+proc call*(call_580537: Call_AndroidenterpriseStorelayoutclustersGet_580523;
           enterpriseId: string; pageId: string; clusterId: string;
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           oauthToken: string = ""; userIp: string = ""; key: string = "";
@@ -6072,34 +6074,34 @@ proc call*(call_598537: Call_AndroidenterpriseStorelayoutclustersGet_598523;
   ##              : Returns response with indentations and line breaks.
   ##   clusterId: string (required)
   ##            : The ID of the cluster.
-  var path_598538 = newJObject()
-  var query_598539 = newJObject()
-  add(query_598539, "fields", newJString(fields))
-  add(query_598539, "quotaUser", newJString(quotaUser))
-  add(query_598539, "alt", newJString(alt))
-  add(query_598539, "oauth_token", newJString(oauthToken))
-  add(query_598539, "userIp", newJString(userIp))
-  add(query_598539, "key", newJString(key))
-  add(path_598538, "enterpriseId", newJString(enterpriseId))
-  add(path_598538, "pageId", newJString(pageId))
-  add(query_598539, "prettyPrint", newJBool(prettyPrint))
-  add(path_598538, "clusterId", newJString(clusterId))
-  result = call_598537.call(path_598538, query_598539, nil, nil, nil)
+  var path_580538 = newJObject()
+  var query_580539 = newJObject()
+  add(query_580539, "fields", newJString(fields))
+  add(query_580539, "quotaUser", newJString(quotaUser))
+  add(query_580539, "alt", newJString(alt))
+  add(query_580539, "oauth_token", newJString(oauthToken))
+  add(query_580539, "userIp", newJString(userIp))
+  add(query_580539, "key", newJString(key))
+  add(path_580538, "enterpriseId", newJString(enterpriseId))
+  add(path_580538, "pageId", newJString(pageId))
+  add(query_580539, "prettyPrint", newJBool(prettyPrint))
+  add(path_580538, "clusterId", newJString(clusterId))
+  result = call_580537.call(path_580538, query_580539, nil, nil, nil)
 
-var androidenterpriseStorelayoutclustersGet* = Call_AndroidenterpriseStorelayoutclustersGet_598523(
+var androidenterpriseStorelayoutclustersGet* = Call_AndroidenterpriseStorelayoutclustersGet_580523(
     name: "androidenterpriseStorelayoutclustersGet", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/enterprises/{enterpriseId}/storeLayout/pages/{pageId}/clusters/{clusterId}",
-    validator: validate_AndroidenterpriseStorelayoutclustersGet_598524,
+    validator: validate_AndroidenterpriseStorelayoutclustersGet_580524,
     base: "/androidenterprise/v1",
-    url: url_AndroidenterpriseStorelayoutclustersGet_598525,
+    url: url_AndroidenterpriseStorelayoutclustersGet_580525,
     schemes: {Scheme.Https})
 type
-  Call_AndroidenterpriseStorelayoutclustersPatch_598576 = ref object of OpenApiRestCall_597421
-proc url_AndroidenterpriseStorelayoutclustersPatch_598578(protocol: Scheme;
+  Call_AndroidenterpriseStorelayoutclustersPatch_580576 = ref object of OpenApiRestCall_579421
+proc url_AndroidenterpriseStorelayoutclustersPatch_580578(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "enterpriseId" in path, "`enterpriseId` is a required path parameter"
   assert "pageId" in path, "`pageId` is a required path parameter"
@@ -6116,7 +6118,7 @@ proc url_AndroidenterpriseStorelayoutclustersPatch_598578(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_AndroidenterpriseStorelayoutclustersPatch_598577(path: JsonNode;
+proc validate_AndroidenterpriseStorelayoutclustersPatch_580577(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Updates a cluster. This method supports patch semantics.
   ## 
@@ -6132,21 +6134,21 @@ proc validate_AndroidenterpriseStorelayoutclustersPatch_598577(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `enterpriseId` field"
-  var valid_598579 = path.getOrDefault("enterpriseId")
-  valid_598579 = validateParameter(valid_598579, JString, required = true,
+  var valid_580579 = path.getOrDefault("enterpriseId")
+  valid_580579 = validateParameter(valid_580579, JString, required = true,
                                  default = nil)
-  if valid_598579 != nil:
-    section.add "enterpriseId", valid_598579
-  var valid_598580 = path.getOrDefault("pageId")
-  valid_598580 = validateParameter(valid_598580, JString, required = true,
+  if valid_580579 != nil:
+    section.add "enterpriseId", valid_580579
+  var valid_580580 = path.getOrDefault("pageId")
+  valid_580580 = validateParameter(valid_580580, JString, required = true,
                                  default = nil)
-  if valid_598580 != nil:
-    section.add "pageId", valid_598580
-  var valid_598581 = path.getOrDefault("clusterId")
-  valid_598581 = validateParameter(valid_598581, JString, required = true,
+  if valid_580580 != nil:
+    section.add "pageId", valid_580580
+  var valid_580581 = path.getOrDefault("clusterId")
+  valid_580581 = validateParameter(valid_580581, JString, required = true,
                                  default = nil)
-  if valid_598581 != nil:
-    section.add "clusterId", valid_598581
+  if valid_580581 != nil:
+    section.add "clusterId", valid_580581
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -6164,41 +6166,41 @@ proc validate_AndroidenterpriseStorelayoutclustersPatch_598577(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_598582 = query.getOrDefault("fields")
-  valid_598582 = validateParameter(valid_598582, JString, required = false,
+  var valid_580582 = query.getOrDefault("fields")
+  valid_580582 = validateParameter(valid_580582, JString, required = false,
                                  default = nil)
-  if valid_598582 != nil:
-    section.add "fields", valid_598582
-  var valid_598583 = query.getOrDefault("quotaUser")
-  valid_598583 = validateParameter(valid_598583, JString, required = false,
+  if valid_580582 != nil:
+    section.add "fields", valid_580582
+  var valid_580583 = query.getOrDefault("quotaUser")
+  valid_580583 = validateParameter(valid_580583, JString, required = false,
                                  default = nil)
-  if valid_598583 != nil:
-    section.add "quotaUser", valid_598583
-  var valid_598584 = query.getOrDefault("alt")
-  valid_598584 = validateParameter(valid_598584, JString, required = false,
+  if valid_580583 != nil:
+    section.add "quotaUser", valid_580583
+  var valid_580584 = query.getOrDefault("alt")
+  valid_580584 = validateParameter(valid_580584, JString, required = false,
                                  default = newJString("json"))
-  if valid_598584 != nil:
-    section.add "alt", valid_598584
-  var valid_598585 = query.getOrDefault("oauth_token")
-  valid_598585 = validateParameter(valid_598585, JString, required = false,
+  if valid_580584 != nil:
+    section.add "alt", valid_580584
+  var valid_580585 = query.getOrDefault("oauth_token")
+  valid_580585 = validateParameter(valid_580585, JString, required = false,
                                  default = nil)
-  if valid_598585 != nil:
-    section.add "oauth_token", valid_598585
-  var valid_598586 = query.getOrDefault("userIp")
-  valid_598586 = validateParameter(valid_598586, JString, required = false,
+  if valid_580585 != nil:
+    section.add "oauth_token", valid_580585
+  var valid_580586 = query.getOrDefault("userIp")
+  valid_580586 = validateParameter(valid_580586, JString, required = false,
                                  default = nil)
-  if valid_598586 != nil:
-    section.add "userIp", valid_598586
-  var valid_598587 = query.getOrDefault("key")
-  valid_598587 = validateParameter(valid_598587, JString, required = false,
+  if valid_580586 != nil:
+    section.add "userIp", valid_580586
+  var valid_580587 = query.getOrDefault("key")
+  valid_580587 = validateParameter(valid_580587, JString, required = false,
                                  default = nil)
-  if valid_598587 != nil:
-    section.add "key", valid_598587
-  var valid_598588 = query.getOrDefault("prettyPrint")
-  valid_598588 = validateParameter(valid_598588, JBool, required = false,
+  if valid_580587 != nil:
+    section.add "key", valid_580587
+  var valid_580588 = query.getOrDefault("prettyPrint")
+  valid_580588 = validateParameter(valid_580588, JBool, required = false,
                                  default = newJBool(true))
-  if valid_598588 != nil:
-    section.add "prettyPrint", valid_598588
+  if valid_580588 != nil:
+    section.add "prettyPrint", valid_580588
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -6210,21 +6212,21 @@ proc validate_AndroidenterpriseStorelayoutclustersPatch_598577(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_598590: Call_AndroidenterpriseStorelayoutclustersPatch_598576;
+proc call*(call_580590: Call_AndroidenterpriseStorelayoutclustersPatch_580576;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Updates a cluster. This method supports patch semantics.
   ## 
-  let valid = call_598590.validator(path, query, header, formData, body)
-  let scheme = call_598590.pickScheme
+  let valid = call_580590.validator(path, query, header, formData, body)
+  let scheme = call_580590.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_598590.url(scheme.get, call_598590.host, call_598590.base,
-                         call_598590.route, valid.getOrDefault("path"),
+  let url = call_580590.url(scheme.get, call_580590.host, call_580590.base,
+                         call_580590.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_598590, url, valid)
+  result = hook(call_580590, url, valid)
 
-proc call*(call_598591: Call_AndroidenterpriseStorelayoutclustersPatch_598576;
+proc call*(call_580591: Call_AndroidenterpriseStorelayoutclustersPatch_580576;
           enterpriseId: string; pageId: string; clusterId: string;
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           oauthToken: string = ""; userIp: string = ""; key: string = "";
@@ -6252,37 +6254,37 @@ proc call*(call_598591: Call_AndroidenterpriseStorelayoutclustersPatch_598576;
   ##              : Returns response with indentations and line breaks.
   ##   clusterId: string (required)
   ##            : The ID of the cluster.
-  var path_598592 = newJObject()
-  var query_598593 = newJObject()
-  var body_598594 = newJObject()
-  add(query_598593, "fields", newJString(fields))
-  add(query_598593, "quotaUser", newJString(quotaUser))
-  add(query_598593, "alt", newJString(alt))
-  add(query_598593, "oauth_token", newJString(oauthToken))
-  add(query_598593, "userIp", newJString(userIp))
-  add(query_598593, "key", newJString(key))
-  add(path_598592, "enterpriseId", newJString(enterpriseId))
-  add(path_598592, "pageId", newJString(pageId))
+  var path_580592 = newJObject()
+  var query_580593 = newJObject()
+  var body_580594 = newJObject()
+  add(query_580593, "fields", newJString(fields))
+  add(query_580593, "quotaUser", newJString(quotaUser))
+  add(query_580593, "alt", newJString(alt))
+  add(query_580593, "oauth_token", newJString(oauthToken))
+  add(query_580593, "userIp", newJString(userIp))
+  add(query_580593, "key", newJString(key))
+  add(path_580592, "enterpriseId", newJString(enterpriseId))
+  add(path_580592, "pageId", newJString(pageId))
   if body != nil:
-    body_598594 = body
-  add(query_598593, "prettyPrint", newJBool(prettyPrint))
-  add(path_598592, "clusterId", newJString(clusterId))
-  result = call_598591.call(path_598592, query_598593, nil, nil, body_598594)
+    body_580594 = body
+  add(query_580593, "prettyPrint", newJBool(prettyPrint))
+  add(path_580592, "clusterId", newJString(clusterId))
+  result = call_580591.call(path_580592, query_580593, nil, nil, body_580594)
 
-var androidenterpriseStorelayoutclustersPatch* = Call_AndroidenterpriseStorelayoutclustersPatch_598576(
+var androidenterpriseStorelayoutclustersPatch* = Call_AndroidenterpriseStorelayoutclustersPatch_580576(
     name: "androidenterpriseStorelayoutclustersPatch", meth: HttpMethod.HttpPatch,
     host: "www.googleapis.com", route: "/enterprises/{enterpriseId}/storeLayout/pages/{pageId}/clusters/{clusterId}",
-    validator: validate_AndroidenterpriseStorelayoutclustersPatch_598577,
+    validator: validate_AndroidenterpriseStorelayoutclustersPatch_580577,
     base: "/androidenterprise/v1",
-    url: url_AndroidenterpriseStorelayoutclustersPatch_598578,
+    url: url_AndroidenterpriseStorelayoutclustersPatch_580578,
     schemes: {Scheme.Https})
 type
-  Call_AndroidenterpriseStorelayoutclustersDelete_598559 = ref object of OpenApiRestCall_597421
-proc url_AndroidenterpriseStorelayoutclustersDelete_598561(protocol: Scheme;
+  Call_AndroidenterpriseStorelayoutclustersDelete_580559 = ref object of OpenApiRestCall_579421
+proc url_AndroidenterpriseStorelayoutclustersDelete_580561(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "enterpriseId" in path, "`enterpriseId` is a required path parameter"
   assert "pageId" in path, "`pageId` is a required path parameter"
@@ -6299,7 +6301,7 @@ proc url_AndroidenterpriseStorelayoutclustersDelete_598561(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_AndroidenterpriseStorelayoutclustersDelete_598560(path: JsonNode;
+proc validate_AndroidenterpriseStorelayoutclustersDelete_580560(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Deletes a cluster.
   ## 
@@ -6315,21 +6317,21 @@ proc validate_AndroidenterpriseStorelayoutclustersDelete_598560(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `enterpriseId` field"
-  var valid_598562 = path.getOrDefault("enterpriseId")
-  valid_598562 = validateParameter(valid_598562, JString, required = true,
+  var valid_580562 = path.getOrDefault("enterpriseId")
+  valid_580562 = validateParameter(valid_580562, JString, required = true,
                                  default = nil)
-  if valid_598562 != nil:
-    section.add "enterpriseId", valid_598562
-  var valid_598563 = path.getOrDefault("pageId")
-  valid_598563 = validateParameter(valid_598563, JString, required = true,
+  if valid_580562 != nil:
+    section.add "enterpriseId", valid_580562
+  var valid_580563 = path.getOrDefault("pageId")
+  valid_580563 = validateParameter(valid_580563, JString, required = true,
                                  default = nil)
-  if valid_598563 != nil:
-    section.add "pageId", valid_598563
-  var valid_598564 = path.getOrDefault("clusterId")
-  valid_598564 = validateParameter(valid_598564, JString, required = true,
+  if valid_580563 != nil:
+    section.add "pageId", valid_580563
+  var valid_580564 = path.getOrDefault("clusterId")
+  valid_580564 = validateParameter(valid_580564, JString, required = true,
                                  default = nil)
-  if valid_598564 != nil:
-    section.add "clusterId", valid_598564
+  if valid_580564 != nil:
+    section.add "clusterId", valid_580564
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -6347,41 +6349,41 @@ proc validate_AndroidenterpriseStorelayoutclustersDelete_598560(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_598565 = query.getOrDefault("fields")
-  valid_598565 = validateParameter(valid_598565, JString, required = false,
+  var valid_580565 = query.getOrDefault("fields")
+  valid_580565 = validateParameter(valid_580565, JString, required = false,
                                  default = nil)
-  if valid_598565 != nil:
-    section.add "fields", valid_598565
-  var valid_598566 = query.getOrDefault("quotaUser")
-  valid_598566 = validateParameter(valid_598566, JString, required = false,
+  if valid_580565 != nil:
+    section.add "fields", valid_580565
+  var valid_580566 = query.getOrDefault("quotaUser")
+  valid_580566 = validateParameter(valid_580566, JString, required = false,
                                  default = nil)
-  if valid_598566 != nil:
-    section.add "quotaUser", valid_598566
-  var valid_598567 = query.getOrDefault("alt")
-  valid_598567 = validateParameter(valid_598567, JString, required = false,
+  if valid_580566 != nil:
+    section.add "quotaUser", valid_580566
+  var valid_580567 = query.getOrDefault("alt")
+  valid_580567 = validateParameter(valid_580567, JString, required = false,
                                  default = newJString("json"))
-  if valid_598567 != nil:
-    section.add "alt", valid_598567
-  var valid_598568 = query.getOrDefault("oauth_token")
-  valid_598568 = validateParameter(valid_598568, JString, required = false,
+  if valid_580567 != nil:
+    section.add "alt", valid_580567
+  var valid_580568 = query.getOrDefault("oauth_token")
+  valid_580568 = validateParameter(valid_580568, JString, required = false,
                                  default = nil)
-  if valid_598568 != nil:
-    section.add "oauth_token", valid_598568
-  var valid_598569 = query.getOrDefault("userIp")
-  valid_598569 = validateParameter(valid_598569, JString, required = false,
+  if valid_580568 != nil:
+    section.add "oauth_token", valid_580568
+  var valid_580569 = query.getOrDefault("userIp")
+  valid_580569 = validateParameter(valid_580569, JString, required = false,
                                  default = nil)
-  if valid_598569 != nil:
-    section.add "userIp", valid_598569
-  var valid_598570 = query.getOrDefault("key")
-  valid_598570 = validateParameter(valid_598570, JString, required = false,
+  if valid_580569 != nil:
+    section.add "userIp", valid_580569
+  var valid_580570 = query.getOrDefault("key")
+  valid_580570 = validateParameter(valid_580570, JString, required = false,
                                  default = nil)
-  if valid_598570 != nil:
-    section.add "key", valid_598570
-  var valid_598571 = query.getOrDefault("prettyPrint")
-  valid_598571 = validateParameter(valid_598571, JBool, required = false,
+  if valid_580570 != nil:
+    section.add "key", valid_580570
+  var valid_580571 = query.getOrDefault("prettyPrint")
+  valid_580571 = validateParameter(valid_580571, JBool, required = false,
                                  default = newJBool(true))
-  if valid_598571 != nil:
-    section.add "prettyPrint", valid_598571
+  if valid_580571 != nil:
+    section.add "prettyPrint", valid_580571
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -6390,21 +6392,21 @@ proc validate_AndroidenterpriseStorelayoutclustersDelete_598560(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_598572: Call_AndroidenterpriseStorelayoutclustersDelete_598559;
+proc call*(call_580572: Call_AndroidenterpriseStorelayoutclustersDelete_580559;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Deletes a cluster.
   ## 
-  let valid = call_598572.validator(path, query, header, formData, body)
-  let scheme = call_598572.pickScheme
+  let valid = call_580572.validator(path, query, header, formData, body)
+  let scheme = call_580572.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_598572.url(scheme.get, call_598572.host, call_598572.base,
-                         call_598572.route, valid.getOrDefault("path"),
+  let url = call_580572.url(scheme.get, call_580572.host, call_580572.base,
+                         call_580572.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_598572, url, valid)
+  result = hook(call_580572, url, valid)
 
-proc call*(call_598573: Call_AndroidenterpriseStorelayoutclustersDelete_598559;
+proc call*(call_580573: Call_AndroidenterpriseStorelayoutclustersDelete_580559;
           enterpriseId: string; pageId: string; clusterId: string;
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           oauthToken: string = ""; userIp: string = ""; key: string = "";
@@ -6431,34 +6433,34 @@ proc call*(call_598573: Call_AndroidenterpriseStorelayoutclustersDelete_598559;
   ##              : Returns response with indentations and line breaks.
   ##   clusterId: string (required)
   ##            : The ID of the cluster.
-  var path_598574 = newJObject()
-  var query_598575 = newJObject()
-  add(query_598575, "fields", newJString(fields))
-  add(query_598575, "quotaUser", newJString(quotaUser))
-  add(query_598575, "alt", newJString(alt))
-  add(query_598575, "oauth_token", newJString(oauthToken))
-  add(query_598575, "userIp", newJString(userIp))
-  add(query_598575, "key", newJString(key))
-  add(path_598574, "enterpriseId", newJString(enterpriseId))
-  add(path_598574, "pageId", newJString(pageId))
-  add(query_598575, "prettyPrint", newJBool(prettyPrint))
-  add(path_598574, "clusterId", newJString(clusterId))
-  result = call_598573.call(path_598574, query_598575, nil, nil, nil)
+  var path_580574 = newJObject()
+  var query_580575 = newJObject()
+  add(query_580575, "fields", newJString(fields))
+  add(query_580575, "quotaUser", newJString(quotaUser))
+  add(query_580575, "alt", newJString(alt))
+  add(query_580575, "oauth_token", newJString(oauthToken))
+  add(query_580575, "userIp", newJString(userIp))
+  add(query_580575, "key", newJString(key))
+  add(path_580574, "enterpriseId", newJString(enterpriseId))
+  add(path_580574, "pageId", newJString(pageId))
+  add(query_580575, "prettyPrint", newJBool(prettyPrint))
+  add(path_580574, "clusterId", newJString(clusterId))
+  result = call_580573.call(path_580574, query_580575, nil, nil, nil)
 
-var androidenterpriseStorelayoutclustersDelete* = Call_AndroidenterpriseStorelayoutclustersDelete_598559(
+var androidenterpriseStorelayoutclustersDelete* = Call_AndroidenterpriseStorelayoutclustersDelete_580559(
     name: "androidenterpriseStorelayoutclustersDelete",
     meth: HttpMethod.HttpDelete, host: "www.googleapis.com", route: "/enterprises/{enterpriseId}/storeLayout/pages/{pageId}/clusters/{clusterId}",
-    validator: validate_AndroidenterpriseStorelayoutclustersDelete_598560,
+    validator: validate_AndroidenterpriseStorelayoutclustersDelete_580560,
     base: "/androidenterprise/v1",
-    url: url_AndroidenterpriseStorelayoutclustersDelete_598561,
+    url: url_AndroidenterpriseStorelayoutclustersDelete_580561,
     schemes: {Scheme.Https})
 type
-  Call_AndroidenterpriseEnterprisesUnenroll_598595 = ref object of OpenApiRestCall_597421
-proc url_AndroidenterpriseEnterprisesUnenroll_598597(protocol: Scheme;
+  Call_AndroidenterpriseEnterprisesUnenroll_580595 = ref object of OpenApiRestCall_579421
+proc url_AndroidenterpriseEnterprisesUnenroll_580597(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "enterpriseId" in path, "`enterpriseId` is a required path parameter"
   const
@@ -6470,7 +6472,7 @@ proc url_AndroidenterpriseEnterprisesUnenroll_598597(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_AndroidenterpriseEnterprisesUnenroll_598596(path: JsonNode;
+proc validate_AndroidenterpriseEnterprisesUnenroll_580596(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Unenrolls an enterprise from the calling EMM.
   ## 
@@ -6482,11 +6484,11 @@ proc validate_AndroidenterpriseEnterprisesUnenroll_598596(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `enterpriseId` field"
-  var valid_598598 = path.getOrDefault("enterpriseId")
-  valid_598598 = validateParameter(valid_598598, JString, required = true,
+  var valid_580598 = path.getOrDefault("enterpriseId")
+  valid_580598 = validateParameter(valid_580598, JString, required = true,
                                  default = nil)
-  if valid_598598 != nil:
-    section.add "enterpriseId", valid_598598
+  if valid_580598 != nil:
+    section.add "enterpriseId", valid_580598
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -6504,41 +6506,41 @@ proc validate_AndroidenterpriseEnterprisesUnenroll_598596(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_598599 = query.getOrDefault("fields")
-  valid_598599 = validateParameter(valid_598599, JString, required = false,
+  var valid_580599 = query.getOrDefault("fields")
+  valid_580599 = validateParameter(valid_580599, JString, required = false,
                                  default = nil)
-  if valid_598599 != nil:
-    section.add "fields", valid_598599
-  var valid_598600 = query.getOrDefault("quotaUser")
-  valid_598600 = validateParameter(valid_598600, JString, required = false,
+  if valid_580599 != nil:
+    section.add "fields", valid_580599
+  var valid_580600 = query.getOrDefault("quotaUser")
+  valid_580600 = validateParameter(valid_580600, JString, required = false,
                                  default = nil)
-  if valid_598600 != nil:
-    section.add "quotaUser", valid_598600
-  var valid_598601 = query.getOrDefault("alt")
-  valid_598601 = validateParameter(valid_598601, JString, required = false,
+  if valid_580600 != nil:
+    section.add "quotaUser", valid_580600
+  var valid_580601 = query.getOrDefault("alt")
+  valid_580601 = validateParameter(valid_580601, JString, required = false,
                                  default = newJString("json"))
-  if valid_598601 != nil:
-    section.add "alt", valid_598601
-  var valid_598602 = query.getOrDefault("oauth_token")
-  valid_598602 = validateParameter(valid_598602, JString, required = false,
+  if valid_580601 != nil:
+    section.add "alt", valid_580601
+  var valid_580602 = query.getOrDefault("oauth_token")
+  valid_580602 = validateParameter(valid_580602, JString, required = false,
                                  default = nil)
-  if valid_598602 != nil:
-    section.add "oauth_token", valid_598602
-  var valid_598603 = query.getOrDefault("userIp")
-  valid_598603 = validateParameter(valid_598603, JString, required = false,
+  if valid_580602 != nil:
+    section.add "oauth_token", valid_580602
+  var valid_580603 = query.getOrDefault("userIp")
+  valid_580603 = validateParameter(valid_580603, JString, required = false,
                                  default = nil)
-  if valid_598603 != nil:
-    section.add "userIp", valid_598603
-  var valid_598604 = query.getOrDefault("key")
-  valid_598604 = validateParameter(valid_598604, JString, required = false,
+  if valid_580603 != nil:
+    section.add "userIp", valid_580603
+  var valid_580604 = query.getOrDefault("key")
+  valid_580604 = validateParameter(valid_580604, JString, required = false,
                                  default = nil)
-  if valid_598604 != nil:
-    section.add "key", valid_598604
-  var valid_598605 = query.getOrDefault("prettyPrint")
-  valid_598605 = validateParameter(valid_598605, JBool, required = false,
+  if valid_580604 != nil:
+    section.add "key", valid_580604
+  var valid_580605 = query.getOrDefault("prettyPrint")
+  valid_580605 = validateParameter(valid_580605, JBool, required = false,
                                  default = newJBool(true))
-  if valid_598605 != nil:
-    section.add "prettyPrint", valid_598605
+  if valid_580605 != nil:
+    section.add "prettyPrint", valid_580605
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -6547,21 +6549,21 @@ proc validate_AndroidenterpriseEnterprisesUnenroll_598596(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_598606: Call_AndroidenterpriseEnterprisesUnenroll_598595;
+proc call*(call_580606: Call_AndroidenterpriseEnterprisesUnenroll_580595;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Unenrolls an enterprise from the calling EMM.
   ## 
-  let valid = call_598606.validator(path, query, header, formData, body)
-  let scheme = call_598606.pickScheme
+  let valid = call_580606.validator(path, query, header, formData, body)
+  let scheme = call_580606.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_598606.url(scheme.get, call_598606.host, call_598606.base,
-                         call_598606.route, valid.getOrDefault("path"),
+  let url = call_580606.url(scheme.get, call_580606.host, call_580606.base,
+                         call_580606.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_598606, url, valid)
+  result = hook(call_580606, url, valid)
 
-proc call*(call_598607: Call_AndroidenterpriseEnterprisesUnenroll_598595;
+proc call*(call_580607: Call_AndroidenterpriseEnterprisesUnenroll_580595;
           enterpriseId: string; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; userIp: string = "";
           key: string = ""; prettyPrint: bool = true): Recallable =
@@ -6583,31 +6585,31 @@ proc call*(call_598607: Call_AndroidenterpriseEnterprisesUnenroll_598595;
   ##               : The ID of the enterprise.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_598608 = newJObject()
-  var query_598609 = newJObject()
-  add(query_598609, "fields", newJString(fields))
-  add(query_598609, "quotaUser", newJString(quotaUser))
-  add(query_598609, "alt", newJString(alt))
-  add(query_598609, "oauth_token", newJString(oauthToken))
-  add(query_598609, "userIp", newJString(userIp))
-  add(query_598609, "key", newJString(key))
-  add(path_598608, "enterpriseId", newJString(enterpriseId))
-  add(query_598609, "prettyPrint", newJBool(prettyPrint))
-  result = call_598607.call(path_598608, query_598609, nil, nil, nil)
+  var path_580608 = newJObject()
+  var query_580609 = newJObject()
+  add(query_580609, "fields", newJString(fields))
+  add(query_580609, "quotaUser", newJString(quotaUser))
+  add(query_580609, "alt", newJString(alt))
+  add(query_580609, "oauth_token", newJString(oauthToken))
+  add(query_580609, "userIp", newJString(userIp))
+  add(query_580609, "key", newJString(key))
+  add(path_580608, "enterpriseId", newJString(enterpriseId))
+  add(query_580609, "prettyPrint", newJBool(prettyPrint))
+  result = call_580607.call(path_580608, query_580609, nil, nil, nil)
 
-var androidenterpriseEnterprisesUnenroll* = Call_AndroidenterpriseEnterprisesUnenroll_598595(
+var androidenterpriseEnterprisesUnenroll* = Call_AndroidenterpriseEnterprisesUnenroll_580595(
     name: "androidenterpriseEnterprisesUnenroll", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com", route: "/enterprises/{enterpriseId}/unenroll",
-    validator: validate_AndroidenterpriseEnterprisesUnenroll_598596,
-    base: "/androidenterprise/v1", url: url_AndroidenterpriseEnterprisesUnenroll_598597,
+    validator: validate_AndroidenterpriseEnterprisesUnenroll_580596,
+    base: "/androidenterprise/v1", url: url_AndroidenterpriseEnterprisesUnenroll_580597,
     schemes: {Scheme.Https})
 type
-  Call_AndroidenterpriseUsersInsert_598626 = ref object of OpenApiRestCall_597421
-proc url_AndroidenterpriseUsersInsert_598628(protocol: Scheme; host: string;
+  Call_AndroidenterpriseUsersInsert_580626 = ref object of OpenApiRestCall_579421
+proc url_AndroidenterpriseUsersInsert_580628(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "enterpriseId" in path, "`enterpriseId` is a required path parameter"
   const
@@ -6619,7 +6621,7 @@ proc url_AndroidenterpriseUsersInsert_598628(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_AndroidenterpriseUsersInsert_598627(path: JsonNode; query: JsonNode;
+proc validate_AndroidenterpriseUsersInsert_580627(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Creates a new EMM-managed user.
   ## 
@@ -6634,11 +6636,11 @@ proc validate_AndroidenterpriseUsersInsert_598627(path: JsonNode; query: JsonNod
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `enterpriseId` field"
-  var valid_598629 = path.getOrDefault("enterpriseId")
-  valid_598629 = validateParameter(valid_598629, JString, required = true,
+  var valid_580629 = path.getOrDefault("enterpriseId")
+  valid_580629 = validateParameter(valid_580629, JString, required = true,
                                  default = nil)
-  if valid_598629 != nil:
-    section.add "enterpriseId", valid_598629
+  if valid_580629 != nil:
+    section.add "enterpriseId", valid_580629
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -6656,41 +6658,41 @@ proc validate_AndroidenterpriseUsersInsert_598627(path: JsonNode; query: JsonNod
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_598630 = query.getOrDefault("fields")
-  valid_598630 = validateParameter(valid_598630, JString, required = false,
+  var valid_580630 = query.getOrDefault("fields")
+  valid_580630 = validateParameter(valid_580630, JString, required = false,
                                  default = nil)
-  if valid_598630 != nil:
-    section.add "fields", valid_598630
-  var valid_598631 = query.getOrDefault("quotaUser")
-  valid_598631 = validateParameter(valid_598631, JString, required = false,
+  if valid_580630 != nil:
+    section.add "fields", valid_580630
+  var valid_580631 = query.getOrDefault("quotaUser")
+  valid_580631 = validateParameter(valid_580631, JString, required = false,
                                  default = nil)
-  if valid_598631 != nil:
-    section.add "quotaUser", valid_598631
-  var valid_598632 = query.getOrDefault("alt")
-  valid_598632 = validateParameter(valid_598632, JString, required = false,
+  if valid_580631 != nil:
+    section.add "quotaUser", valid_580631
+  var valid_580632 = query.getOrDefault("alt")
+  valid_580632 = validateParameter(valid_580632, JString, required = false,
                                  default = newJString("json"))
-  if valid_598632 != nil:
-    section.add "alt", valid_598632
-  var valid_598633 = query.getOrDefault("oauth_token")
-  valid_598633 = validateParameter(valid_598633, JString, required = false,
+  if valid_580632 != nil:
+    section.add "alt", valid_580632
+  var valid_580633 = query.getOrDefault("oauth_token")
+  valid_580633 = validateParameter(valid_580633, JString, required = false,
                                  default = nil)
-  if valid_598633 != nil:
-    section.add "oauth_token", valid_598633
-  var valid_598634 = query.getOrDefault("userIp")
-  valid_598634 = validateParameter(valid_598634, JString, required = false,
+  if valid_580633 != nil:
+    section.add "oauth_token", valid_580633
+  var valid_580634 = query.getOrDefault("userIp")
+  valid_580634 = validateParameter(valid_580634, JString, required = false,
                                  default = nil)
-  if valid_598634 != nil:
-    section.add "userIp", valid_598634
-  var valid_598635 = query.getOrDefault("key")
-  valid_598635 = validateParameter(valid_598635, JString, required = false,
+  if valid_580634 != nil:
+    section.add "userIp", valid_580634
+  var valid_580635 = query.getOrDefault("key")
+  valid_580635 = validateParameter(valid_580635, JString, required = false,
                                  default = nil)
-  if valid_598635 != nil:
-    section.add "key", valid_598635
-  var valid_598636 = query.getOrDefault("prettyPrint")
-  valid_598636 = validateParameter(valid_598636, JBool, required = false,
+  if valid_580635 != nil:
+    section.add "key", valid_580635
+  var valid_580636 = query.getOrDefault("prettyPrint")
+  valid_580636 = validateParameter(valid_580636, JBool, required = false,
                                  default = newJBool(true))
-  if valid_598636 != nil:
-    section.add "prettyPrint", valid_598636
+  if valid_580636 != nil:
+    section.add "prettyPrint", valid_580636
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -6702,23 +6704,23 @@ proc validate_AndroidenterpriseUsersInsert_598627(path: JsonNode; query: JsonNod
   if body != nil:
     result.add "body", body
 
-proc call*(call_598638: Call_AndroidenterpriseUsersInsert_598626; path: JsonNode;
+proc call*(call_580638: Call_AndroidenterpriseUsersInsert_580626; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Creates a new EMM-managed user.
   ## 
   ## The Users resource passed in the body of the request should include an accountIdentifier and an accountType.
   ## If a corresponding user already exists with the same account identifier, the user will be updated with the resource. In this case only the displayName field can be changed.
   ## 
-  let valid = call_598638.validator(path, query, header, formData, body)
-  let scheme = call_598638.pickScheme
+  let valid = call_580638.validator(path, query, header, formData, body)
+  let scheme = call_580638.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_598638.url(scheme.get, call_598638.host, call_598638.base,
-                         call_598638.route, valid.getOrDefault("path"),
+  let url = call_580638.url(scheme.get, call_580638.host, call_580638.base,
+                         call_580638.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_598638, url, valid)
+  result = hook(call_580638, url, valid)
 
-proc call*(call_598639: Call_AndroidenterpriseUsersInsert_598626;
+proc call*(call_580639: Call_AndroidenterpriseUsersInsert_580626;
           enterpriseId: string; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; userIp: string = "";
           key: string = ""; body: JsonNode = nil; prettyPrint: bool = true): Recallable =
@@ -6744,34 +6746,34 @@ proc call*(call_598639: Call_AndroidenterpriseUsersInsert_598626;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_598640 = newJObject()
-  var query_598641 = newJObject()
-  var body_598642 = newJObject()
-  add(query_598641, "fields", newJString(fields))
-  add(query_598641, "quotaUser", newJString(quotaUser))
-  add(query_598641, "alt", newJString(alt))
-  add(query_598641, "oauth_token", newJString(oauthToken))
-  add(query_598641, "userIp", newJString(userIp))
-  add(query_598641, "key", newJString(key))
-  add(path_598640, "enterpriseId", newJString(enterpriseId))
+  var path_580640 = newJObject()
+  var query_580641 = newJObject()
+  var body_580642 = newJObject()
+  add(query_580641, "fields", newJString(fields))
+  add(query_580641, "quotaUser", newJString(quotaUser))
+  add(query_580641, "alt", newJString(alt))
+  add(query_580641, "oauth_token", newJString(oauthToken))
+  add(query_580641, "userIp", newJString(userIp))
+  add(query_580641, "key", newJString(key))
+  add(path_580640, "enterpriseId", newJString(enterpriseId))
   if body != nil:
-    body_598642 = body
-  add(query_598641, "prettyPrint", newJBool(prettyPrint))
-  result = call_598639.call(path_598640, query_598641, nil, nil, body_598642)
+    body_580642 = body
+  add(query_580641, "prettyPrint", newJBool(prettyPrint))
+  result = call_580639.call(path_580640, query_580641, nil, nil, body_580642)
 
-var androidenterpriseUsersInsert* = Call_AndroidenterpriseUsersInsert_598626(
+var androidenterpriseUsersInsert* = Call_AndroidenterpriseUsersInsert_580626(
     name: "androidenterpriseUsersInsert", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com", route: "/enterprises/{enterpriseId}/users",
-    validator: validate_AndroidenterpriseUsersInsert_598627,
-    base: "/androidenterprise/v1", url: url_AndroidenterpriseUsersInsert_598628,
+    validator: validate_AndroidenterpriseUsersInsert_580627,
+    base: "/androidenterprise/v1", url: url_AndroidenterpriseUsersInsert_580628,
     schemes: {Scheme.Https})
 type
-  Call_AndroidenterpriseUsersList_598610 = ref object of OpenApiRestCall_597421
-proc url_AndroidenterpriseUsersList_598612(protocol: Scheme; host: string;
+  Call_AndroidenterpriseUsersList_580610 = ref object of OpenApiRestCall_579421
+proc url_AndroidenterpriseUsersList_580612(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "enterpriseId" in path, "`enterpriseId` is a required path parameter"
   const
@@ -6783,7 +6785,7 @@ proc url_AndroidenterpriseUsersList_598612(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_AndroidenterpriseUsersList_598611(path: JsonNode; query: JsonNode;
+proc validate_AndroidenterpriseUsersList_580611(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Looks up a user by primary email address. This is only supported for Google-managed users. Lookup of the id is not needed for EMM-managed users because the id is already returned in the result of the Users.insert call.
   ## 
@@ -6795,11 +6797,11 @@ proc validate_AndroidenterpriseUsersList_598611(path: JsonNode; query: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `enterpriseId` field"
-  var valid_598613 = path.getOrDefault("enterpriseId")
-  valid_598613 = validateParameter(valid_598613, JString, required = true,
+  var valid_580613 = path.getOrDefault("enterpriseId")
+  valid_580613 = validateParameter(valid_580613, JString, required = true,
                                  default = nil)
-  if valid_598613 != nil:
-    section.add "enterpriseId", valid_598613
+  if valid_580613 != nil:
+    section.add "enterpriseId", valid_580613
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -6819,47 +6821,47 @@ proc validate_AndroidenterpriseUsersList_598611(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_598614 = query.getOrDefault("fields")
-  valid_598614 = validateParameter(valid_598614, JString, required = false,
+  var valid_580614 = query.getOrDefault("fields")
+  valid_580614 = validateParameter(valid_580614, JString, required = false,
                                  default = nil)
-  if valid_598614 != nil:
-    section.add "fields", valid_598614
-  var valid_598615 = query.getOrDefault("quotaUser")
-  valid_598615 = validateParameter(valid_598615, JString, required = false,
+  if valid_580614 != nil:
+    section.add "fields", valid_580614
+  var valid_580615 = query.getOrDefault("quotaUser")
+  valid_580615 = validateParameter(valid_580615, JString, required = false,
                                  default = nil)
-  if valid_598615 != nil:
-    section.add "quotaUser", valid_598615
-  var valid_598616 = query.getOrDefault("alt")
-  valid_598616 = validateParameter(valid_598616, JString, required = false,
+  if valid_580615 != nil:
+    section.add "quotaUser", valid_580615
+  var valid_580616 = query.getOrDefault("alt")
+  valid_580616 = validateParameter(valid_580616, JString, required = false,
                                  default = newJString("json"))
-  if valid_598616 != nil:
-    section.add "alt", valid_598616
-  var valid_598617 = query.getOrDefault("oauth_token")
-  valid_598617 = validateParameter(valid_598617, JString, required = false,
+  if valid_580616 != nil:
+    section.add "alt", valid_580616
+  var valid_580617 = query.getOrDefault("oauth_token")
+  valid_580617 = validateParameter(valid_580617, JString, required = false,
                                  default = nil)
-  if valid_598617 != nil:
-    section.add "oauth_token", valid_598617
-  var valid_598618 = query.getOrDefault("userIp")
-  valid_598618 = validateParameter(valid_598618, JString, required = false,
+  if valid_580617 != nil:
+    section.add "oauth_token", valid_580617
+  var valid_580618 = query.getOrDefault("userIp")
+  valid_580618 = validateParameter(valid_580618, JString, required = false,
                                  default = nil)
-  if valid_598618 != nil:
-    section.add "userIp", valid_598618
+  if valid_580618 != nil:
+    section.add "userIp", valid_580618
   assert query != nil, "query argument is necessary due to required `email` field"
-  var valid_598619 = query.getOrDefault("email")
-  valid_598619 = validateParameter(valid_598619, JString, required = true,
+  var valid_580619 = query.getOrDefault("email")
+  valid_580619 = validateParameter(valid_580619, JString, required = true,
                                  default = nil)
-  if valid_598619 != nil:
-    section.add "email", valid_598619
-  var valid_598620 = query.getOrDefault("key")
-  valid_598620 = validateParameter(valid_598620, JString, required = false,
+  if valid_580619 != nil:
+    section.add "email", valid_580619
+  var valid_580620 = query.getOrDefault("key")
+  valid_580620 = validateParameter(valid_580620, JString, required = false,
                                  default = nil)
-  if valid_598620 != nil:
-    section.add "key", valid_598620
-  var valid_598621 = query.getOrDefault("prettyPrint")
-  valid_598621 = validateParameter(valid_598621, JBool, required = false,
+  if valid_580620 != nil:
+    section.add "key", valid_580620
+  var valid_580621 = query.getOrDefault("prettyPrint")
+  valid_580621 = validateParameter(valid_580621, JBool, required = false,
                                  default = newJBool(true))
-  if valid_598621 != nil:
-    section.add "prettyPrint", valid_598621
+  if valid_580621 != nil:
+    section.add "prettyPrint", valid_580621
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -6868,20 +6870,20 @@ proc validate_AndroidenterpriseUsersList_598611(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_598622: Call_AndroidenterpriseUsersList_598610; path: JsonNode;
+proc call*(call_580622: Call_AndroidenterpriseUsersList_580610; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Looks up a user by primary email address. This is only supported for Google-managed users. Lookup of the id is not needed for EMM-managed users because the id is already returned in the result of the Users.insert call.
   ## 
-  let valid = call_598622.validator(path, query, header, formData, body)
-  let scheme = call_598622.pickScheme
+  let valid = call_580622.validator(path, query, header, formData, body)
+  let scheme = call_580622.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_598622.url(scheme.get, call_598622.host, call_598622.base,
-                         call_598622.route, valid.getOrDefault("path"),
+  let url = call_580622.url(scheme.get, call_580622.host, call_580622.base,
+                         call_580622.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_598622, url, valid)
+  result = hook(call_580622, url, valid)
 
-proc call*(call_598623: Call_AndroidenterpriseUsersList_598610; email: string;
+proc call*(call_580623: Call_AndroidenterpriseUsersList_580610; email: string;
           enterpriseId: string; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; userIp: string = "";
           key: string = ""; prettyPrint: bool = true): Recallable =
@@ -6905,32 +6907,32 @@ proc call*(call_598623: Call_AndroidenterpriseUsersList_598610; email: string;
   ##               : The ID of the enterprise.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_598624 = newJObject()
-  var query_598625 = newJObject()
-  add(query_598625, "fields", newJString(fields))
-  add(query_598625, "quotaUser", newJString(quotaUser))
-  add(query_598625, "alt", newJString(alt))
-  add(query_598625, "oauth_token", newJString(oauthToken))
-  add(query_598625, "userIp", newJString(userIp))
-  add(query_598625, "email", newJString(email))
-  add(query_598625, "key", newJString(key))
-  add(path_598624, "enterpriseId", newJString(enterpriseId))
-  add(query_598625, "prettyPrint", newJBool(prettyPrint))
-  result = call_598623.call(path_598624, query_598625, nil, nil, nil)
+  var path_580624 = newJObject()
+  var query_580625 = newJObject()
+  add(query_580625, "fields", newJString(fields))
+  add(query_580625, "quotaUser", newJString(quotaUser))
+  add(query_580625, "alt", newJString(alt))
+  add(query_580625, "oauth_token", newJString(oauthToken))
+  add(query_580625, "userIp", newJString(userIp))
+  add(query_580625, "email", newJString(email))
+  add(query_580625, "key", newJString(key))
+  add(path_580624, "enterpriseId", newJString(enterpriseId))
+  add(query_580625, "prettyPrint", newJBool(prettyPrint))
+  result = call_580623.call(path_580624, query_580625, nil, nil, nil)
 
-var androidenterpriseUsersList* = Call_AndroidenterpriseUsersList_598610(
+var androidenterpriseUsersList* = Call_AndroidenterpriseUsersList_580610(
     name: "androidenterpriseUsersList", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/enterprises/{enterpriseId}/users",
-    validator: validate_AndroidenterpriseUsersList_598611,
-    base: "/androidenterprise/v1", url: url_AndroidenterpriseUsersList_598612,
+    validator: validate_AndroidenterpriseUsersList_580611,
+    base: "/androidenterprise/v1", url: url_AndroidenterpriseUsersList_580612,
     schemes: {Scheme.Https})
 type
-  Call_AndroidenterpriseUsersUpdate_598659 = ref object of OpenApiRestCall_597421
-proc url_AndroidenterpriseUsersUpdate_598661(protocol: Scheme; host: string;
+  Call_AndroidenterpriseUsersUpdate_580659 = ref object of OpenApiRestCall_579421
+proc url_AndroidenterpriseUsersUpdate_580661(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "enterpriseId" in path, "`enterpriseId` is a required path parameter"
   assert "userId" in path, "`userId` is a required path parameter"
@@ -6944,7 +6946,7 @@ proc url_AndroidenterpriseUsersUpdate_598661(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_AndroidenterpriseUsersUpdate_598660(path: JsonNode; query: JsonNode;
+proc validate_AndroidenterpriseUsersUpdate_580660(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Updates the details of an EMM-managed user.
   ## 
@@ -6960,16 +6962,16 @@ proc validate_AndroidenterpriseUsersUpdate_598660(path: JsonNode; query: JsonNod
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `enterpriseId` field"
-  var valid_598662 = path.getOrDefault("enterpriseId")
-  valid_598662 = validateParameter(valid_598662, JString, required = true,
+  var valid_580662 = path.getOrDefault("enterpriseId")
+  valid_580662 = validateParameter(valid_580662, JString, required = true,
                                  default = nil)
-  if valid_598662 != nil:
-    section.add "enterpriseId", valid_598662
-  var valid_598663 = path.getOrDefault("userId")
-  valid_598663 = validateParameter(valid_598663, JString, required = true,
+  if valid_580662 != nil:
+    section.add "enterpriseId", valid_580662
+  var valid_580663 = path.getOrDefault("userId")
+  valid_580663 = validateParameter(valid_580663, JString, required = true,
                                  default = nil)
-  if valid_598663 != nil:
-    section.add "userId", valid_598663
+  if valid_580663 != nil:
+    section.add "userId", valid_580663
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -6987,41 +6989,41 @@ proc validate_AndroidenterpriseUsersUpdate_598660(path: JsonNode; query: JsonNod
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_598664 = query.getOrDefault("fields")
-  valid_598664 = validateParameter(valid_598664, JString, required = false,
+  var valid_580664 = query.getOrDefault("fields")
+  valid_580664 = validateParameter(valid_580664, JString, required = false,
                                  default = nil)
-  if valid_598664 != nil:
-    section.add "fields", valid_598664
-  var valid_598665 = query.getOrDefault("quotaUser")
-  valid_598665 = validateParameter(valid_598665, JString, required = false,
+  if valid_580664 != nil:
+    section.add "fields", valid_580664
+  var valid_580665 = query.getOrDefault("quotaUser")
+  valid_580665 = validateParameter(valid_580665, JString, required = false,
                                  default = nil)
-  if valid_598665 != nil:
-    section.add "quotaUser", valid_598665
-  var valid_598666 = query.getOrDefault("alt")
-  valid_598666 = validateParameter(valid_598666, JString, required = false,
+  if valid_580665 != nil:
+    section.add "quotaUser", valid_580665
+  var valid_580666 = query.getOrDefault("alt")
+  valid_580666 = validateParameter(valid_580666, JString, required = false,
                                  default = newJString("json"))
-  if valid_598666 != nil:
-    section.add "alt", valid_598666
-  var valid_598667 = query.getOrDefault("oauth_token")
-  valid_598667 = validateParameter(valid_598667, JString, required = false,
+  if valid_580666 != nil:
+    section.add "alt", valid_580666
+  var valid_580667 = query.getOrDefault("oauth_token")
+  valid_580667 = validateParameter(valid_580667, JString, required = false,
                                  default = nil)
-  if valid_598667 != nil:
-    section.add "oauth_token", valid_598667
-  var valid_598668 = query.getOrDefault("userIp")
-  valid_598668 = validateParameter(valid_598668, JString, required = false,
+  if valid_580667 != nil:
+    section.add "oauth_token", valid_580667
+  var valid_580668 = query.getOrDefault("userIp")
+  valid_580668 = validateParameter(valid_580668, JString, required = false,
                                  default = nil)
-  if valid_598668 != nil:
-    section.add "userIp", valid_598668
-  var valid_598669 = query.getOrDefault("key")
-  valid_598669 = validateParameter(valid_598669, JString, required = false,
+  if valid_580668 != nil:
+    section.add "userIp", valid_580668
+  var valid_580669 = query.getOrDefault("key")
+  valid_580669 = validateParameter(valid_580669, JString, required = false,
                                  default = nil)
-  if valid_598669 != nil:
-    section.add "key", valid_598669
-  var valid_598670 = query.getOrDefault("prettyPrint")
-  valid_598670 = validateParameter(valid_598670, JBool, required = false,
+  if valid_580669 != nil:
+    section.add "key", valid_580669
+  var valid_580670 = query.getOrDefault("prettyPrint")
+  valid_580670 = validateParameter(valid_580670, JBool, required = false,
                                  default = newJBool(true))
-  if valid_598670 != nil:
-    section.add "prettyPrint", valid_598670
+  if valid_580670 != nil:
+    section.add "prettyPrint", valid_580670
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -7033,22 +7035,22 @@ proc validate_AndroidenterpriseUsersUpdate_598660(path: JsonNode; query: JsonNod
   if body != nil:
     result.add "body", body
 
-proc call*(call_598672: Call_AndroidenterpriseUsersUpdate_598659; path: JsonNode;
+proc call*(call_580672: Call_AndroidenterpriseUsersUpdate_580659; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Updates the details of an EMM-managed user.
   ## 
   ## Can be used with EMM-managed users only (not Google managed users). Pass the new details in the Users resource in the request body. Only the displayName field can be changed. Other fields must either be unset or have the currently active value.
   ## 
-  let valid = call_598672.validator(path, query, header, formData, body)
-  let scheme = call_598672.pickScheme
+  let valid = call_580672.validator(path, query, header, formData, body)
+  let scheme = call_580672.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_598672.url(scheme.get, call_598672.host, call_598672.base,
-                         call_598672.route, valid.getOrDefault("path"),
+  let url = call_580672.url(scheme.get, call_580672.host, call_580672.base,
+                         call_580672.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_598672, url, valid)
+  result = hook(call_580672, url, valid)
 
-proc call*(call_598673: Call_AndroidenterpriseUsersUpdate_598659;
+proc call*(call_580673: Call_AndroidenterpriseUsersUpdate_580659;
           enterpriseId: string; userId: string; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; key: string = ""; body: JsonNode = nil;
@@ -7076,36 +7078,36 @@ proc call*(call_598673: Call_AndroidenterpriseUsersUpdate_598659;
   ##              : Returns response with indentations and line breaks.
   ##   userId: string (required)
   ##         : The ID of the user.
-  var path_598674 = newJObject()
-  var query_598675 = newJObject()
-  var body_598676 = newJObject()
-  add(query_598675, "fields", newJString(fields))
-  add(query_598675, "quotaUser", newJString(quotaUser))
-  add(query_598675, "alt", newJString(alt))
-  add(query_598675, "oauth_token", newJString(oauthToken))
-  add(query_598675, "userIp", newJString(userIp))
-  add(query_598675, "key", newJString(key))
-  add(path_598674, "enterpriseId", newJString(enterpriseId))
+  var path_580674 = newJObject()
+  var query_580675 = newJObject()
+  var body_580676 = newJObject()
+  add(query_580675, "fields", newJString(fields))
+  add(query_580675, "quotaUser", newJString(quotaUser))
+  add(query_580675, "alt", newJString(alt))
+  add(query_580675, "oauth_token", newJString(oauthToken))
+  add(query_580675, "userIp", newJString(userIp))
+  add(query_580675, "key", newJString(key))
+  add(path_580674, "enterpriseId", newJString(enterpriseId))
   if body != nil:
-    body_598676 = body
-  add(query_598675, "prettyPrint", newJBool(prettyPrint))
-  add(path_598674, "userId", newJString(userId))
-  result = call_598673.call(path_598674, query_598675, nil, nil, body_598676)
+    body_580676 = body
+  add(query_580675, "prettyPrint", newJBool(prettyPrint))
+  add(path_580674, "userId", newJString(userId))
+  result = call_580673.call(path_580674, query_580675, nil, nil, body_580676)
 
-var androidenterpriseUsersUpdate* = Call_AndroidenterpriseUsersUpdate_598659(
+var androidenterpriseUsersUpdate* = Call_AndroidenterpriseUsersUpdate_580659(
     name: "androidenterpriseUsersUpdate", meth: HttpMethod.HttpPut,
     host: "www.googleapis.com",
     route: "/enterprises/{enterpriseId}/users/{userId}",
-    validator: validate_AndroidenterpriseUsersUpdate_598660,
-    base: "/androidenterprise/v1", url: url_AndroidenterpriseUsersUpdate_598661,
+    validator: validate_AndroidenterpriseUsersUpdate_580660,
+    base: "/androidenterprise/v1", url: url_AndroidenterpriseUsersUpdate_580661,
     schemes: {Scheme.Https})
 type
-  Call_AndroidenterpriseUsersGet_598643 = ref object of OpenApiRestCall_597421
-proc url_AndroidenterpriseUsersGet_598645(protocol: Scheme; host: string;
+  Call_AndroidenterpriseUsersGet_580643 = ref object of OpenApiRestCall_579421
+proc url_AndroidenterpriseUsersGet_580645(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "enterpriseId" in path, "`enterpriseId` is a required path parameter"
   assert "userId" in path, "`userId` is a required path parameter"
@@ -7119,7 +7121,7 @@ proc url_AndroidenterpriseUsersGet_598645(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_AndroidenterpriseUsersGet_598644(path: JsonNode; query: JsonNode;
+proc validate_AndroidenterpriseUsersGet_580644(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Retrieves a user's details.
   ## 
@@ -7133,16 +7135,16 @@ proc validate_AndroidenterpriseUsersGet_598644(path: JsonNode; query: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `enterpriseId` field"
-  var valid_598646 = path.getOrDefault("enterpriseId")
-  valid_598646 = validateParameter(valid_598646, JString, required = true,
+  var valid_580646 = path.getOrDefault("enterpriseId")
+  valid_580646 = validateParameter(valid_580646, JString, required = true,
                                  default = nil)
-  if valid_598646 != nil:
-    section.add "enterpriseId", valid_598646
-  var valid_598647 = path.getOrDefault("userId")
-  valid_598647 = validateParameter(valid_598647, JString, required = true,
+  if valid_580646 != nil:
+    section.add "enterpriseId", valid_580646
+  var valid_580647 = path.getOrDefault("userId")
+  valid_580647 = validateParameter(valid_580647, JString, required = true,
                                  default = nil)
-  if valid_598647 != nil:
-    section.add "userId", valid_598647
+  if valid_580647 != nil:
+    section.add "userId", valid_580647
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -7160,41 +7162,41 @@ proc validate_AndroidenterpriseUsersGet_598644(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_598648 = query.getOrDefault("fields")
-  valid_598648 = validateParameter(valid_598648, JString, required = false,
+  var valid_580648 = query.getOrDefault("fields")
+  valid_580648 = validateParameter(valid_580648, JString, required = false,
                                  default = nil)
-  if valid_598648 != nil:
-    section.add "fields", valid_598648
-  var valid_598649 = query.getOrDefault("quotaUser")
-  valid_598649 = validateParameter(valid_598649, JString, required = false,
+  if valid_580648 != nil:
+    section.add "fields", valid_580648
+  var valid_580649 = query.getOrDefault("quotaUser")
+  valid_580649 = validateParameter(valid_580649, JString, required = false,
                                  default = nil)
-  if valid_598649 != nil:
-    section.add "quotaUser", valid_598649
-  var valid_598650 = query.getOrDefault("alt")
-  valid_598650 = validateParameter(valid_598650, JString, required = false,
+  if valid_580649 != nil:
+    section.add "quotaUser", valid_580649
+  var valid_580650 = query.getOrDefault("alt")
+  valid_580650 = validateParameter(valid_580650, JString, required = false,
                                  default = newJString("json"))
-  if valid_598650 != nil:
-    section.add "alt", valid_598650
-  var valid_598651 = query.getOrDefault("oauth_token")
-  valid_598651 = validateParameter(valid_598651, JString, required = false,
+  if valid_580650 != nil:
+    section.add "alt", valid_580650
+  var valid_580651 = query.getOrDefault("oauth_token")
+  valid_580651 = validateParameter(valid_580651, JString, required = false,
                                  default = nil)
-  if valid_598651 != nil:
-    section.add "oauth_token", valid_598651
-  var valid_598652 = query.getOrDefault("userIp")
-  valid_598652 = validateParameter(valid_598652, JString, required = false,
+  if valid_580651 != nil:
+    section.add "oauth_token", valid_580651
+  var valid_580652 = query.getOrDefault("userIp")
+  valid_580652 = validateParameter(valid_580652, JString, required = false,
                                  default = nil)
-  if valid_598652 != nil:
-    section.add "userIp", valid_598652
-  var valid_598653 = query.getOrDefault("key")
-  valid_598653 = validateParameter(valid_598653, JString, required = false,
+  if valid_580652 != nil:
+    section.add "userIp", valid_580652
+  var valid_580653 = query.getOrDefault("key")
+  valid_580653 = validateParameter(valid_580653, JString, required = false,
                                  default = nil)
-  if valid_598653 != nil:
-    section.add "key", valid_598653
-  var valid_598654 = query.getOrDefault("prettyPrint")
-  valid_598654 = validateParameter(valid_598654, JBool, required = false,
+  if valid_580653 != nil:
+    section.add "key", valid_580653
+  var valid_580654 = query.getOrDefault("prettyPrint")
+  valid_580654 = validateParameter(valid_580654, JBool, required = false,
                                  default = newJBool(true))
-  if valid_598654 != nil:
-    section.add "prettyPrint", valid_598654
+  if valid_580654 != nil:
+    section.add "prettyPrint", valid_580654
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -7203,20 +7205,20 @@ proc validate_AndroidenterpriseUsersGet_598644(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_598655: Call_AndroidenterpriseUsersGet_598643; path: JsonNode;
+proc call*(call_580655: Call_AndroidenterpriseUsersGet_580643; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Retrieves a user's details.
   ## 
-  let valid = call_598655.validator(path, query, header, formData, body)
-  let scheme = call_598655.pickScheme
+  let valid = call_580655.validator(path, query, header, formData, body)
+  let scheme = call_580655.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_598655.url(scheme.get, call_598655.host, call_598655.base,
-                         call_598655.route, valid.getOrDefault("path"),
+  let url = call_580655.url(scheme.get, call_580655.host, call_580655.base,
+                         call_580655.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_598655, url, valid)
+  result = hook(call_580655, url, valid)
 
-proc call*(call_598656: Call_AndroidenterpriseUsersGet_598643;
+proc call*(call_580656: Call_AndroidenterpriseUsersGet_580643;
           enterpriseId: string; userId: string; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; key: string = ""; prettyPrint: bool = true): Recallable =
@@ -7240,33 +7242,33 @@ proc call*(call_598656: Call_AndroidenterpriseUsersGet_598643;
   ##              : Returns response with indentations and line breaks.
   ##   userId: string (required)
   ##         : The ID of the user.
-  var path_598657 = newJObject()
-  var query_598658 = newJObject()
-  add(query_598658, "fields", newJString(fields))
-  add(query_598658, "quotaUser", newJString(quotaUser))
-  add(query_598658, "alt", newJString(alt))
-  add(query_598658, "oauth_token", newJString(oauthToken))
-  add(query_598658, "userIp", newJString(userIp))
-  add(query_598658, "key", newJString(key))
-  add(path_598657, "enterpriseId", newJString(enterpriseId))
-  add(query_598658, "prettyPrint", newJBool(prettyPrint))
-  add(path_598657, "userId", newJString(userId))
-  result = call_598656.call(path_598657, query_598658, nil, nil, nil)
+  var path_580657 = newJObject()
+  var query_580658 = newJObject()
+  add(query_580658, "fields", newJString(fields))
+  add(query_580658, "quotaUser", newJString(quotaUser))
+  add(query_580658, "alt", newJString(alt))
+  add(query_580658, "oauth_token", newJString(oauthToken))
+  add(query_580658, "userIp", newJString(userIp))
+  add(query_580658, "key", newJString(key))
+  add(path_580657, "enterpriseId", newJString(enterpriseId))
+  add(query_580658, "prettyPrint", newJBool(prettyPrint))
+  add(path_580657, "userId", newJString(userId))
+  result = call_580656.call(path_580657, query_580658, nil, nil, nil)
 
-var androidenterpriseUsersGet* = Call_AndroidenterpriseUsersGet_598643(
+var androidenterpriseUsersGet* = Call_AndroidenterpriseUsersGet_580643(
     name: "androidenterpriseUsersGet", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com",
     route: "/enterprises/{enterpriseId}/users/{userId}",
-    validator: validate_AndroidenterpriseUsersGet_598644,
-    base: "/androidenterprise/v1", url: url_AndroidenterpriseUsersGet_598645,
+    validator: validate_AndroidenterpriseUsersGet_580644,
+    base: "/androidenterprise/v1", url: url_AndroidenterpriseUsersGet_580645,
     schemes: {Scheme.Https})
 type
-  Call_AndroidenterpriseUsersPatch_598693 = ref object of OpenApiRestCall_597421
-proc url_AndroidenterpriseUsersPatch_598695(protocol: Scheme; host: string;
+  Call_AndroidenterpriseUsersPatch_580693 = ref object of OpenApiRestCall_579421
+proc url_AndroidenterpriseUsersPatch_580695(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "enterpriseId" in path, "`enterpriseId` is a required path parameter"
   assert "userId" in path, "`userId` is a required path parameter"
@@ -7280,7 +7282,7 @@ proc url_AndroidenterpriseUsersPatch_598695(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_AndroidenterpriseUsersPatch_598694(path: JsonNode; query: JsonNode;
+proc validate_AndroidenterpriseUsersPatch_580694(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Updates the details of an EMM-managed user.
   ## 
@@ -7296,16 +7298,16 @@ proc validate_AndroidenterpriseUsersPatch_598694(path: JsonNode; query: JsonNode
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `enterpriseId` field"
-  var valid_598696 = path.getOrDefault("enterpriseId")
-  valid_598696 = validateParameter(valid_598696, JString, required = true,
+  var valid_580696 = path.getOrDefault("enterpriseId")
+  valid_580696 = validateParameter(valid_580696, JString, required = true,
                                  default = nil)
-  if valid_598696 != nil:
-    section.add "enterpriseId", valid_598696
-  var valid_598697 = path.getOrDefault("userId")
-  valid_598697 = validateParameter(valid_598697, JString, required = true,
+  if valid_580696 != nil:
+    section.add "enterpriseId", valid_580696
+  var valid_580697 = path.getOrDefault("userId")
+  valid_580697 = validateParameter(valid_580697, JString, required = true,
                                  default = nil)
-  if valid_598697 != nil:
-    section.add "userId", valid_598697
+  if valid_580697 != nil:
+    section.add "userId", valid_580697
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -7323,41 +7325,41 @@ proc validate_AndroidenterpriseUsersPatch_598694(path: JsonNode; query: JsonNode
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_598698 = query.getOrDefault("fields")
-  valid_598698 = validateParameter(valid_598698, JString, required = false,
+  var valid_580698 = query.getOrDefault("fields")
+  valid_580698 = validateParameter(valid_580698, JString, required = false,
                                  default = nil)
-  if valid_598698 != nil:
-    section.add "fields", valid_598698
-  var valid_598699 = query.getOrDefault("quotaUser")
-  valid_598699 = validateParameter(valid_598699, JString, required = false,
+  if valid_580698 != nil:
+    section.add "fields", valid_580698
+  var valid_580699 = query.getOrDefault("quotaUser")
+  valid_580699 = validateParameter(valid_580699, JString, required = false,
                                  default = nil)
-  if valid_598699 != nil:
-    section.add "quotaUser", valid_598699
-  var valid_598700 = query.getOrDefault("alt")
-  valid_598700 = validateParameter(valid_598700, JString, required = false,
+  if valid_580699 != nil:
+    section.add "quotaUser", valid_580699
+  var valid_580700 = query.getOrDefault("alt")
+  valid_580700 = validateParameter(valid_580700, JString, required = false,
                                  default = newJString("json"))
-  if valid_598700 != nil:
-    section.add "alt", valid_598700
-  var valid_598701 = query.getOrDefault("oauth_token")
-  valid_598701 = validateParameter(valid_598701, JString, required = false,
+  if valid_580700 != nil:
+    section.add "alt", valid_580700
+  var valid_580701 = query.getOrDefault("oauth_token")
+  valid_580701 = validateParameter(valid_580701, JString, required = false,
                                  default = nil)
-  if valid_598701 != nil:
-    section.add "oauth_token", valid_598701
-  var valid_598702 = query.getOrDefault("userIp")
-  valid_598702 = validateParameter(valid_598702, JString, required = false,
+  if valid_580701 != nil:
+    section.add "oauth_token", valid_580701
+  var valid_580702 = query.getOrDefault("userIp")
+  valid_580702 = validateParameter(valid_580702, JString, required = false,
                                  default = nil)
-  if valid_598702 != nil:
-    section.add "userIp", valid_598702
-  var valid_598703 = query.getOrDefault("key")
-  valid_598703 = validateParameter(valid_598703, JString, required = false,
+  if valid_580702 != nil:
+    section.add "userIp", valid_580702
+  var valid_580703 = query.getOrDefault("key")
+  valid_580703 = validateParameter(valid_580703, JString, required = false,
                                  default = nil)
-  if valid_598703 != nil:
-    section.add "key", valid_598703
-  var valid_598704 = query.getOrDefault("prettyPrint")
-  valid_598704 = validateParameter(valid_598704, JBool, required = false,
+  if valid_580703 != nil:
+    section.add "key", valid_580703
+  var valid_580704 = query.getOrDefault("prettyPrint")
+  valid_580704 = validateParameter(valid_580704, JBool, required = false,
                                  default = newJBool(true))
-  if valid_598704 != nil:
-    section.add "prettyPrint", valid_598704
+  if valid_580704 != nil:
+    section.add "prettyPrint", valid_580704
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -7369,22 +7371,22 @@ proc validate_AndroidenterpriseUsersPatch_598694(path: JsonNode; query: JsonNode
   if body != nil:
     result.add "body", body
 
-proc call*(call_598706: Call_AndroidenterpriseUsersPatch_598693; path: JsonNode;
+proc call*(call_580706: Call_AndroidenterpriseUsersPatch_580693; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Updates the details of an EMM-managed user.
   ## 
   ## Can be used with EMM-managed users only (not Google managed users). Pass the new details in the Users resource in the request body. Only the displayName field can be changed. Other fields must either be unset or have the currently active value. This method supports patch semantics.
   ## 
-  let valid = call_598706.validator(path, query, header, formData, body)
-  let scheme = call_598706.pickScheme
+  let valid = call_580706.validator(path, query, header, formData, body)
+  let scheme = call_580706.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_598706.url(scheme.get, call_598706.host, call_598706.base,
-                         call_598706.route, valid.getOrDefault("path"),
+  let url = call_580706.url(scheme.get, call_580706.host, call_580706.base,
+                         call_580706.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_598706, url, valid)
+  result = hook(call_580706, url, valid)
 
-proc call*(call_598707: Call_AndroidenterpriseUsersPatch_598693;
+proc call*(call_580707: Call_AndroidenterpriseUsersPatch_580693;
           enterpriseId: string; userId: string; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; key: string = ""; body: JsonNode = nil;
@@ -7412,36 +7414,36 @@ proc call*(call_598707: Call_AndroidenterpriseUsersPatch_598693;
   ##              : Returns response with indentations and line breaks.
   ##   userId: string (required)
   ##         : The ID of the user.
-  var path_598708 = newJObject()
-  var query_598709 = newJObject()
-  var body_598710 = newJObject()
-  add(query_598709, "fields", newJString(fields))
-  add(query_598709, "quotaUser", newJString(quotaUser))
-  add(query_598709, "alt", newJString(alt))
-  add(query_598709, "oauth_token", newJString(oauthToken))
-  add(query_598709, "userIp", newJString(userIp))
-  add(query_598709, "key", newJString(key))
-  add(path_598708, "enterpriseId", newJString(enterpriseId))
+  var path_580708 = newJObject()
+  var query_580709 = newJObject()
+  var body_580710 = newJObject()
+  add(query_580709, "fields", newJString(fields))
+  add(query_580709, "quotaUser", newJString(quotaUser))
+  add(query_580709, "alt", newJString(alt))
+  add(query_580709, "oauth_token", newJString(oauthToken))
+  add(query_580709, "userIp", newJString(userIp))
+  add(query_580709, "key", newJString(key))
+  add(path_580708, "enterpriseId", newJString(enterpriseId))
   if body != nil:
-    body_598710 = body
-  add(query_598709, "prettyPrint", newJBool(prettyPrint))
-  add(path_598708, "userId", newJString(userId))
-  result = call_598707.call(path_598708, query_598709, nil, nil, body_598710)
+    body_580710 = body
+  add(query_580709, "prettyPrint", newJBool(prettyPrint))
+  add(path_580708, "userId", newJString(userId))
+  result = call_580707.call(path_580708, query_580709, nil, nil, body_580710)
 
-var androidenterpriseUsersPatch* = Call_AndroidenterpriseUsersPatch_598693(
+var androidenterpriseUsersPatch* = Call_AndroidenterpriseUsersPatch_580693(
     name: "androidenterpriseUsersPatch", meth: HttpMethod.HttpPatch,
     host: "www.googleapis.com",
     route: "/enterprises/{enterpriseId}/users/{userId}",
-    validator: validate_AndroidenterpriseUsersPatch_598694,
-    base: "/androidenterprise/v1", url: url_AndroidenterpriseUsersPatch_598695,
+    validator: validate_AndroidenterpriseUsersPatch_580694,
+    base: "/androidenterprise/v1", url: url_AndroidenterpriseUsersPatch_580695,
     schemes: {Scheme.Https})
 type
-  Call_AndroidenterpriseUsersDelete_598677 = ref object of OpenApiRestCall_597421
-proc url_AndroidenterpriseUsersDelete_598679(protocol: Scheme; host: string;
+  Call_AndroidenterpriseUsersDelete_580677 = ref object of OpenApiRestCall_579421
+proc url_AndroidenterpriseUsersDelete_580679(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "enterpriseId" in path, "`enterpriseId` is a required path parameter"
   assert "userId" in path, "`userId` is a required path parameter"
@@ -7455,7 +7457,7 @@ proc url_AndroidenterpriseUsersDelete_598679(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_AndroidenterpriseUsersDelete_598678(path: JsonNode; query: JsonNode;
+proc validate_AndroidenterpriseUsersDelete_580678(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Deleted an EMM-managed user.
   ## 
@@ -7469,16 +7471,16 @@ proc validate_AndroidenterpriseUsersDelete_598678(path: JsonNode; query: JsonNod
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `enterpriseId` field"
-  var valid_598680 = path.getOrDefault("enterpriseId")
-  valid_598680 = validateParameter(valid_598680, JString, required = true,
+  var valid_580680 = path.getOrDefault("enterpriseId")
+  valid_580680 = validateParameter(valid_580680, JString, required = true,
                                  default = nil)
-  if valid_598680 != nil:
-    section.add "enterpriseId", valid_598680
-  var valid_598681 = path.getOrDefault("userId")
-  valid_598681 = validateParameter(valid_598681, JString, required = true,
+  if valid_580680 != nil:
+    section.add "enterpriseId", valid_580680
+  var valid_580681 = path.getOrDefault("userId")
+  valid_580681 = validateParameter(valid_580681, JString, required = true,
                                  default = nil)
-  if valid_598681 != nil:
-    section.add "userId", valid_598681
+  if valid_580681 != nil:
+    section.add "userId", valid_580681
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -7496,41 +7498,41 @@ proc validate_AndroidenterpriseUsersDelete_598678(path: JsonNode; query: JsonNod
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_598682 = query.getOrDefault("fields")
-  valid_598682 = validateParameter(valid_598682, JString, required = false,
+  var valid_580682 = query.getOrDefault("fields")
+  valid_580682 = validateParameter(valid_580682, JString, required = false,
                                  default = nil)
-  if valid_598682 != nil:
-    section.add "fields", valid_598682
-  var valid_598683 = query.getOrDefault("quotaUser")
-  valid_598683 = validateParameter(valid_598683, JString, required = false,
+  if valid_580682 != nil:
+    section.add "fields", valid_580682
+  var valid_580683 = query.getOrDefault("quotaUser")
+  valid_580683 = validateParameter(valid_580683, JString, required = false,
                                  default = nil)
-  if valid_598683 != nil:
-    section.add "quotaUser", valid_598683
-  var valid_598684 = query.getOrDefault("alt")
-  valid_598684 = validateParameter(valid_598684, JString, required = false,
+  if valid_580683 != nil:
+    section.add "quotaUser", valid_580683
+  var valid_580684 = query.getOrDefault("alt")
+  valid_580684 = validateParameter(valid_580684, JString, required = false,
                                  default = newJString("json"))
-  if valid_598684 != nil:
-    section.add "alt", valid_598684
-  var valid_598685 = query.getOrDefault("oauth_token")
-  valid_598685 = validateParameter(valid_598685, JString, required = false,
+  if valid_580684 != nil:
+    section.add "alt", valid_580684
+  var valid_580685 = query.getOrDefault("oauth_token")
+  valid_580685 = validateParameter(valid_580685, JString, required = false,
                                  default = nil)
-  if valid_598685 != nil:
-    section.add "oauth_token", valid_598685
-  var valid_598686 = query.getOrDefault("userIp")
-  valid_598686 = validateParameter(valid_598686, JString, required = false,
+  if valid_580685 != nil:
+    section.add "oauth_token", valid_580685
+  var valid_580686 = query.getOrDefault("userIp")
+  valid_580686 = validateParameter(valid_580686, JString, required = false,
                                  default = nil)
-  if valid_598686 != nil:
-    section.add "userIp", valid_598686
-  var valid_598687 = query.getOrDefault("key")
-  valid_598687 = validateParameter(valid_598687, JString, required = false,
+  if valid_580686 != nil:
+    section.add "userIp", valid_580686
+  var valid_580687 = query.getOrDefault("key")
+  valid_580687 = validateParameter(valid_580687, JString, required = false,
                                  default = nil)
-  if valid_598687 != nil:
-    section.add "key", valid_598687
-  var valid_598688 = query.getOrDefault("prettyPrint")
-  valid_598688 = validateParameter(valid_598688, JBool, required = false,
+  if valid_580687 != nil:
+    section.add "key", valid_580687
+  var valid_580688 = query.getOrDefault("prettyPrint")
+  valid_580688 = validateParameter(valid_580688, JBool, required = false,
                                  default = newJBool(true))
-  if valid_598688 != nil:
-    section.add "prettyPrint", valid_598688
+  if valid_580688 != nil:
+    section.add "prettyPrint", valid_580688
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -7539,20 +7541,20 @@ proc validate_AndroidenterpriseUsersDelete_598678(path: JsonNode; query: JsonNod
   if body != nil:
     result.add "body", body
 
-proc call*(call_598689: Call_AndroidenterpriseUsersDelete_598677; path: JsonNode;
+proc call*(call_580689: Call_AndroidenterpriseUsersDelete_580677; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Deleted an EMM-managed user.
   ## 
-  let valid = call_598689.validator(path, query, header, formData, body)
-  let scheme = call_598689.pickScheme
+  let valid = call_580689.validator(path, query, header, formData, body)
+  let scheme = call_580689.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_598689.url(scheme.get, call_598689.host, call_598689.base,
-                         call_598689.route, valid.getOrDefault("path"),
+  let url = call_580689.url(scheme.get, call_580689.host, call_580689.base,
+                         call_580689.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_598689, url, valid)
+  result = hook(call_580689, url, valid)
 
-proc call*(call_598690: Call_AndroidenterpriseUsersDelete_598677;
+proc call*(call_580690: Call_AndroidenterpriseUsersDelete_580677;
           enterpriseId: string; userId: string; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; key: string = ""; prettyPrint: bool = true): Recallable =
@@ -7576,34 +7578,34 @@ proc call*(call_598690: Call_AndroidenterpriseUsersDelete_598677;
   ##              : Returns response with indentations and line breaks.
   ##   userId: string (required)
   ##         : The ID of the user.
-  var path_598691 = newJObject()
-  var query_598692 = newJObject()
-  add(query_598692, "fields", newJString(fields))
-  add(query_598692, "quotaUser", newJString(quotaUser))
-  add(query_598692, "alt", newJString(alt))
-  add(query_598692, "oauth_token", newJString(oauthToken))
-  add(query_598692, "userIp", newJString(userIp))
-  add(query_598692, "key", newJString(key))
-  add(path_598691, "enterpriseId", newJString(enterpriseId))
-  add(query_598692, "prettyPrint", newJBool(prettyPrint))
-  add(path_598691, "userId", newJString(userId))
-  result = call_598690.call(path_598691, query_598692, nil, nil, nil)
+  var path_580691 = newJObject()
+  var query_580692 = newJObject()
+  add(query_580692, "fields", newJString(fields))
+  add(query_580692, "quotaUser", newJString(quotaUser))
+  add(query_580692, "alt", newJString(alt))
+  add(query_580692, "oauth_token", newJString(oauthToken))
+  add(query_580692, "userIp", newJString(userIp))
+  add(query_580692, "key", newJString(key))
+  add(path_580691, "enterpriseId", newJString(enterpriseId))
+  add(query_580692, "prettyPrint", newJBool(prettyPrint))
+  add(path_580691, "userId", newJString(userId))
+  result = call_580690.call(path_580691, query_580692, nil, nil, nil)
 
-var androidenterpriseUsersDelete* = Call_AndroidenterpriseUsersDelete_598677(
+var androidenterpriseUsersDelete* = Call_AndroidenterpriseUsersDelete_580677(
     name: "androidenterpriseUsersDelete", meth: HttpMethod.HttpDelete,
     host: "www.googleapis.com",
     route: "/enterprises/{enterpriseId}/users/{userId}",
-    validator: validate_AndroidenterpriseUsersDelete_598678,
-    base: "/androidenterprise/v1", url: url_AndroidenterpriseUsersDelete_598679,
+    validator: validate_AndroidenterpriseUsersDelete_580678,
+    base: "/androidenterprise/v1", url: url_AndroidenterpriseUsersDelete_580679,
     schemes: {Scheme.Https})
 type
-  Call_AndroidenterpriseUsersGenerateAuthenticationToken_598711 = ref object of OpenApiRestCall_597421
-proc url_AndroidenterpriseUsersGenerateAuthenticationToken_598713(
+  Call_AndroidenterpriseUsersGenerateAuthenticationToken_580711 = ref object of OpenApiRestCall_579421
+proc url_AndroidenterpriseUsersGenerateAuthenticationToken_580713(
     protocol: Scheme; host: string; base: string; route: string; path: JsonNode;
     query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "enterpriseId" in path, "`enterpriseId` is a required path parameter"
   assert "userId" in path, "`userId` is a required path parameter"
@@ -7618,7 +7620,7 @@ proc url_AndroidenterpriseUsersGenerateAuthenticationToken_598713(
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_AndroidenterpriseUsersGenerateAuthenticationToken_598712(
+proc validate_AndroidenterpriseUsersGenerateAuthenticationToken_580712(
     path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
     body: JsonNode): JsonNode =
   ## Generates an authentication token which the device policy client can use to provision the given EMM-managed user account on a device. The generated token is single-use and expires after a few minutes.
@@ -7637,16 +7639,16 @@ proc validate_AndroidenterpriseUsersGenerateAuthenticationToken_598712(
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `enterpriseId` field"
-  var valid_598714 = path.getOrDefault("enterpriseId")
-  valid_598714 = validateParameter(valid_598714, JString, required = true,
+  var valid_580714 = path.getOrDefault("enterpriseId")
+  valid_580714 = validateParameter(valid_580714, JString, required = true,
                                  default = nil)
-  if valid_598714 != nil:
-    section.add "enterpriseId", valid_598714
-  var valid_598715 = path.getOrDefault("userId")
-  valid_598715 = validateParameter(valid_598715, JString, required = true,
+  if valid_580714 != nil:
+    section.add "enterpriseId", valid_580714
+  var valid_580715 = path.getOrDefault("userId")
+  valid_580715 = validateParameter(valid_580715, JString, required = true,
                                  default = nil)
-  if valid_598715 != nil:
-    section.add "userId", valid_598715
+  if valid_580715 != nil:
+    section.add "userId", valid_580715
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -7664,41 +7666,41 @@ proc validate_AndroidenterpriseUsersGenerateAuthenticationToken_598712(
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_598716 = query.getOrDefault("fields")
-  valid_598716 = validateParameter(valid_598716, JString, required = false,
+  var valid_580716 = query.getOrDefault("fields")
+  valid_580716 = validateParameter(valid_580716, JString, required = false,
                                  default = nil)
-  if valid_598716 != nil:
-    section.add "fields", valid_598716
-  var valid_598717 = query.getOrDefault("quotaUser")
-  valid_598717 = validateParameter(valid_598717, JString, required = false,
+  if valid_580716 != nil:
+    section.add "fields", valid_580716
+  var valid_580717 = query.getOrDefault("quotaUser")
+  valid_580717 = validateParameter(valid_580717, JString, required = false,
                                  default = nil)
-  if valid_598717 != nil:
-    section.add "quotaUser", valid_598717
-  var valid_598718 = query.getOrDefault("alt")
-  valid_598718 = validateParameter(valid_598718, JString, required = false,
+  if valid_580717 != nil:
+    section.add "quotaUser", valid_580717
+  var valid_580718 = query.getOrDefault("alt")
+  valid_580718 = validateParameter(valid_580718, JString, required = false,
                                  default = newJString("json"))
-  if valid_598718 != nil:
-    section.add "alt", valid_598718
-  var valid_598719 = query.getOrDefault("oauth_token")
-  valid_598719 = validateParameter(valid_598719, JString, required = false,
+  if valid_580718 != nil:
+    section.add "alt", valid_580718
+  var valid_580719 = query.getOrDefault("oauth_token")
+  valid_580719 = validateParameter(valid_580719, JString, required = false,
                                  default = nil)
-  if valid_598719 != nil:
-    section.add "oauth_token", valid_598719
-  var valid_598720 = query.getOrDefault("userIp")
-  valid_598720 = validateParameter(valid_598720, JString, required = false,
+  if valid_580719 != nil:
+    section.add "oauth_token", valid_580719
+  var valid_580720 = query.getOrDefault("userIp")
+  valid_580720 = validateParameter(valid_580720, JString, required = false,
                                  default = nil)
-  if valid_598720 != nil:
-    section.add "userIp", valid_598720
-  var valid_598721 = query.getOrDefault("key")
-  valid_598721 = validateParameter(valid_598721, JString, required = false,
+  if valid_580720 != nil:
+    section.add "userIp", valid_580720
+  var valid_580721 = query.getOrDefault("key")
+  valid_580721 = validateParameter(valid_580721, JString, required = false,
                                  default = nil)
-  if valid_598721 != nil:
-    section.add "key", valid_598721
-  var valid_598722 = query.getOrDefault("prettyPrint")
-  valid_598722 = validateParameter(valid_598722, JBool, required = false,
+  if valid_580721 != nil:
+    section.add "key", valid_580721
+  var valid_580722 = query.getOrDefault("prettyPrint")
+  valid_580722 = validateParameter(valid_580722, JBool, required = false,
                                  default = newJBool(true))
-  if valid_598722 != nil:
-    section.add "prettyPrint", valid_598722
+  if valid_580722 != nil:
+    section.add "prettyPrint", valid_580722
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -7707,7 +7709,7 @@ proc validate_AndroidenterpriseUsersGenerateAuthenticationToken_598712(
   if body != nil:
     result.add "body", body
 
-proc call*(call_598723: Call_AndroidenterpriseUsersGenerateAuthenticationToken_598711;
+proc call*(call_580723: Call_AndroidenterpriseUsersGenerateAuthenticationToken_580711;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Generates an authentication token which the device policy client can use to provision the given EMM-managed user account on a device. The generated token is single-use and expires after a few minutes.
@@ -7716,16 +7718,16 @@ proc call*(call_598723: Call_AndroidenterpriseUsersGenerateAuthenticationToken_5
   ## 
   ## This call only works with EMM-managed accounts.
   ## 
-  let valid = call_598723.validator(path, query, header, formData, body)
-  let scheme = call_598723.pickScheme
+  let valid = call_580723.validator(path, query, header, formData, body)
+  let scheme = call_580723.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_598723.url(scheme.get, call_598723.host, call_598723.base,
-                         call_598723.route, valid.getOrDefault("path"),
+  let url = call_580723.url(scheme.get, call_580723.host, call_580723.base,
+                         call_580723.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_598723, url, valid)
+  result = hook(call_580723, url, valid)
 
-proc call*(call_598724: Call_AndroidenterpriseUsersGenerateAuthenticationToken_598711;
+proc call*(call_580724: Call_AndroidenterpriseUsersGenerateAuthenticationToken_580711;
           enterpriseId: string; userId: string; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; key: string = ""; prettyPrint: bool = true): Recallable =
@@ -7753,34 +7755,34 @@ proc call*(call_598724: Call_AndroidenterpriseUsersGenerateAuthenticationToken_5
   ##              : Returns response with indentations and line breaks.
   ##   userId: string (required)
   ##         : The ID of the user.
-  var path_598725 = newJObject()
-  var query_598726 = newJObject()
-  add(query_598726, "fields", newJString(fields))
-  add(query_598726, "quotaUser", newJString(quotaUser))
-  add(query_598726, "alt", newJString(alt))
-  add(query_598726, "oauth_token", newJString(oauthToken))
-  add(query_598726, "userIp", newJString(userIp))
-  add(query_598726, "key", newJString(key))
-  add(path_598725, "enterpriseId", newJString(enterpriseId))
-  add(query_598726, "prettyPrint", newJBool(prettyPrint))
-  add(path_598725, "userId", newJString(userId))
-  result = call_598724.call(path_598725, query_598726, nil, nil, nil)
+  var path_580725 = newJObject()
+  var query_580726 = newJObject()
+  add(query_580726, "fields", newJString(fields))
+  add(query_580726, "quotaUser", newJString(quotaUser))
+  add(query_580726, "alt", newJString(alt))
+  add(query_580726, "oauth_token", newJString(oauthToken))
+  add(query_580726, "userIp", newJString(userIp))
+  add(query_580726, "key", newJString(key))
+  add(path_580725, "enterpriseId", newJString(enterpriseId))
+  add(query_580726, "prettyPrint", newJBool(prettyPrint))
+  add(path_580725, "userId", newJString(userId))
+  result = call_580724.call(path_580725, query_580726, nil, nil, nil)
 
-var androidenterpriseUsersGenerateAuthenticationToken* = Call_AndroidenterpriseUsersGenerateAuthenticationToken_598711(
+var androidenterpriseUsersGenerateAuthenticationToken* = Call_AndroidenterpriseUsersGenerateAuthenticationToken_580711(
     name: "androidenterpriseUsersGenerateAuthenticationToken",
     meth: HttpMethod.HttpPost, host: "www.googleapis.com",
     route: "/enterprises/{enterpriseId}/users/{userId}/authenticationToken",
-    validator: validate_AndroidenterpriseUsersGenerateAuthenticationToken_598712,
+    validator: validate_AndroidenterpriseUsersGenerateAuthenticationToken_580712,
     base: "/androidenterprise/v1",
-    url: url_AndroidenterpriseUsersGenerateAuthenticationToken_598713,
+    url: url_AndroidenterpriseUsersGenerateAuthenticationToken_580713,
     schemes: {Scheme.Https})
 type
-  Call_AndroidenterpriseUsersSetAvailableProductSet_598743 = ref object of OpenApiRestCall_597421
-proc url_AndroidenterpriseUsersSetAvailableProductSet_598745(protocol: Scheme;
+  Call_AndroidenterpriseUsersSetAvailableProductSet_580743 = ref object of OpenApiRestCall_579421
+proc url_AndroidenterpriseUsersSetAvailableProductSet_580745(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "enterpriseId" in path, "`enterpriseId` is a required path parameter"
   assert "userId" in path, "`userId` is a required path parameter"
@@ -7795,7 +7797,7 @@ proc url_AndroidenterpriseUsersSetAvailableProductSet_598745(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_AndroidenterpriseUsersSetAvailableProductSet_598744(path: JsonNode;
+proc validate_AndroidenterpriseUsersSetAvailableProductSet_580744(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Modifies the set of products that a user is entitled to access (referred to as whitelisted products). Only products that are approved or products that were previously approved (products with revoked approval) can be whitelisted.
   ## 
@@ -7809,16 +7811,16 @@ proc validate_AndroidenterpriseUsersSetAvailableProductSet_598744(path: JsonNode
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `enterpriseId` field"
-  var valid_598746 = path.getOrDefault("enterpriseId")
-  valid_598746 = validateParameter(valid_598746, JString, required = true,
+  var valid_580746 = path.getOrDefault("enterpriseId")
+  valid_580746 = validateParameter(valid_580746, JString, required = true,
                                  default = nil)
-  if valid_598746 != nil:
-    section.add "enterpriseId", valid_598746
-  var valid_598747 = path.getOrDefault("userId")
-  valid_598747 = validateParameter(valid_598747, JString, required = true,
+  if valid_580746 != nil:
+    section.add "enterpriseId", valid_580746
+  var valid_580747 = path.getOrDefault("userId")
+  valid_580747 = validateParameter(valid_580747, JString, required = true,
                                  default = nil)
-  if valid_598747 != nil:
-    section.add "userId", valid_598747
+  if valid_580747 != nil:
+    section.add "userId", valid_580747
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -7836,41 +7838,41 @@ proc validate_AndroidenterpriseUsersSetAvailableProductSet_598744(path: JsonNode
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_598748 = query.getOrDefault("fields")
-  valid_598748 = validateParameter(valid_598748, JString, required = false,
+  var valid_580748 = query.getOrDefault("fields")
+  valid_580748 = validateParameter(valid_580748, JString, required = false,
                                  default = nil)
-  if valid_598748 != nil:
-    section.add "fields", valid_598748
-  var valid_598749 = query.getOrDefault("quotaUser")
-  valid_598749 = validateParameter(valid_598749, JString, required = false,
+  if valid_580748 != nil:
+    section.add "fields", valid_580748
+  var valid_580749 = query.getOrDefault("quotaUser")
+  valid_580749 = validateParameter(valid_580749, JString, required = false,
                                  default = nil)
-  if valid_598749 != nil:
-    section.add "quotaUser", valid_598749
-  var valid_598750 = query.getOrDefault("alt")
-  valid_598750 = validateParameter(valid_598750, JString, required = false,
+  if valid_580749 != nil:
+    section.add "quotaUser", valid_580749
+  var valid_580750 = query.getOrDefault("alt")
+  valid_580750 = validateParameter(valid_580750, JString, required = false,
                                  default = newJString("json"))
-  if valid_598750 != nil:
-    section.add "alt", valid_598750
-  var valid_598751 = query.getOrDefault("oauth_token")
-  valid_598751 = validateParameter(valid_598751, JString, required = false,
+  if valid_580750 != nil:
+    section.add "alt", valid_580750
+  var valid_580751 = query.getOrDefault("oauth_token")
+  valid_580751 = validateParameter(valid_580751, JString, required = false,
                                  default = nil)
-  if valid_598751 != nil:
-    section.add "oauth_token", valid_598751
-  var valid_598752 = query.getOrDefault("userIp")
-  valid_598752 = validateParameter(valid_598752, JString, required = false,
+  if valid_580751 != nil:
+    section.add "oauth_token", valid_580751
+  var valid_580752 = query.getOrDefault("userIp")
+  valid_580752 = validateParameter(valid_580752, JString, required = false,
                                  default = nil)
-  if valid_598752 != nil:
-    section.add "userIp", valid_598752
-  var valid_598753 = query.getOrDefault("key")
-  valid_598753 = validateParameter(valid_598753, JString, required = false,
+  if valid_580752 != nil:
+    section.add "userIp", valid_580752
+  var valid_580753 = query.getOrDefault("key")
+  valid_580753 = validateParameter(valid_580753, JString, required = false,
                                  default = nil)
-  if valid_598753 != nil:
-    section.add "key", valid_598753
-  var valid_598754 = query.getOrDefault("prettyPrint")
-  valid_598754 = validateParameter(valid_598754, JBool, required = false,
+  if valid_580753 != nil:
+    section.add "key", valid_580753
+  var valid_580754 = query.getOrDefault("prettyPrint")
+  valid_580754 = validateParameter(valid_580754, JBool, required = false,
                                  default = newJBool(true))
-  if valid_598754 != nil:
-    section.add "prettyPrint", valid_598754
+  if valid_580754 != nil:
+    section.add "prettyPrint", valid_580754
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -7882,21 +7884,21 @@ proc validate_AndroidenterpriseUsersSetAvailableProductSet_598744(path: JsonNode
   if body != nil:
     result.add "body", body
 
-proc call*(call_598756: Call_AndroidenterpriseUsersSetAvailableProductSet_598743;
+proc call*(call_580756: Call_AndroidenterpriseUsersSetAvailableProductSet_580743;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Modifies the set of products that a user is entitled to access (referred to as whitelisted products). Only products that are approved or products that were previously approved (products with revoked approval) can be whitelisted.
   ## 
-  let valid = call_598756.validator(path, query, header, formData, body)
-  let scheme = call_598756.pickScheme
+  let valid = call_580756.validator(path, query, header, formData, body)
+  let scheme = call_580756.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_598756.url(scheme.get, call_598756.host, call_598756.base,
-                         call_598756.route, valid.getOrDefault("path"),
+  let url = call_580756.url(scheme.get, call_580756.host, call_580756.base,
+                         call_580756.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_598756, url, valid)
+  result = hook(call_580756, url, valid)
 
-proc call*(call_598757: Call_AndroidenterpriseUsersSetAvailableProductSet_598743;
+proc call*(call_580757: Call_AndroidenterpriseUsersSetAvailableProductSet_580743;
           enterpriseId: string; userId: string; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; key: string = ""; body: JsonNode = nil;
@@ -7922,37 +7924,37 @@ proc call*(call_598757: Call_AndroidenterpriseUsersSetAvailableProductSet_598743
   ##              : Returns response with indentations and line breaks.
   ##   userId: string (required)
   ##         : The ID of the user.
-  var path_598758 = newJObject()
-  var query_598759 = newJObject()
-  var body_598760 = newJObject()
-  add(query_598759, "fields", newJString(fields))
-  add(query_598759, "quotaUser", newJString(quotaUser))
-  add(query_598759, "alt", newJString(alt))
-  add(query_598759, "oauth_token", newJString(oauthToken))
-  add(query_598759, "userIp", newJString(userIp))
-  add(query_598759, "key", newJString(key))
-  add(path_598758, "enterpriseId", newJString(enterpriseId))
+  var path_580758 = newJObject()
+  var query_580759 = newJObject()
+  var body_580760 = newJObject()
+  add(query_580759, "fields", newJString(fields))
+  add(query_580759, "quotaUser", newJString(quotaUser))
+  add(query_580759, "alt", newJString(alt))
+  add(query_580759, "oauth_token", newJString(oauthToken))
+  add(query_580759, "userIp", newJString(userIp))
+  add(query_580759, "key", newJString(key))
+  add(path_580758, "enterpriseId", newJString(enterpriseId))
   if body != nil:
-    body_598760 = body
-  add(query_598759, "prettyPrint", newJBool(prettyPrint))
-  add(path_598758, "userId", newJString(userId))
-  result = call_598757.call(path_598758, query_598759, nil, nil, body_598760)
+    body_580760 = body
+  add(query_580759, "prettyPrint", newJBool(prettyPrint))
+  add(path_580758, "userId", newJString(userId))
+  result = call_580757.call(path_580758, query_580759, nil, nil, body_580760)
 
-var androidenterpriseUsersSetAvailableProductSet* = Call_AndroidenterpriseUsersSetAvailableProductSet_598743(
+var androidenterpriseUsersSetAvailableProductSet* = Call_AndroidenterpriseUsersSetAvailableProductSet_580743(
     name: "androidenterpriseUsersSetAvailableProductSet",
     meth: HttpMethod.HttpPut, host: "www.googleapis.com",
     route: "/enterprises/{enterpriseId}/users/{userId}/availableProductSet",
-    validator: validate_AndroidenterpriseUsersSetAvailableProductSet_598744,
+    validator: validate_AndroidenterpriseUsersSetAvailableProductSet_580744,
     base: "/androidenterprise/v1",
-    url: url_AndroidenterpriseUsersSetAvailableProductSet_598745,
+    url: url_AndroidenterpriseUsersSetAvailableProductSet_580745,
     schemes: {Scheme.Https})
 type
-  Call_AndroidenterpriseUsersGetAvailableProductSet_598727 = ref object of OpenApiRestCall_597421
-proc url_AndroidenterpriseUsersGetAvailableProductSet_598729(protocol: Scheme;
+  Call_AndroidenterpriseUsersGetAvailableProductSet_580727 = ref object of OpenApiRestCall_579421
+proc url_AndroidenterpriseUsersGetAvailableProductSet_580729(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "enterpriseId" in path, "`enterpriseId` is a required path parameter"
   assert "userId" in path, "`userId` is a required path parameter"
@@ -7967,7 +7969,7 @@ proc url_AndroidenterpriseUsersGetAvailableProductSet_598729(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_AndroidenterpriseUsersGetAvailableProductSet_598728(path: JsonNode;
+proc validate_AndroidenterpriseUsersGetAvailableProductSet_580728(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Retrieves the set of products a user is entitled to access.
   ## 
@@ -7981,16 +7983,16 @@ proc validate_AndroidenterpriseUsersGetAvailableProductSet_598728(path: JsonNode
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `enterpriseId` field"
-  var valid_598730 = path.getOrDefault("enterpriseId")
-  valid_598730 = validateParameter(valid_598730, JString, required = true,
+  var valid_580730 = path.getOrDefault("enterpriseId")
+  valid_580730 = validateParameter(valid_580730, JString, required = true,
                                  default = nil)
-  if valid_598730 != nil:
-    section.add "enterpriseId", valid_598730
-  var valid_598731 = path.getOrDefault("userId")
-  valid_598731 = validateParameter(valid_598731, JString, required = true,
+  if valid_580730 != nil:
+    section.add "enterpriseId", valid_580730
+  var valid_580731 = path.getOrDefault("userId")
+  valid_580731 = validateParameter(valid_580731, JString, required = true,
                                  default = nil)
-  if valid_598731 != nil:
-    section.add "userId", valid_598731
+  if valid_580731 != nil:
+    section.add "userId", valid_580731
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -8008,41 +8010,41 @@ proc validate_AndroidenterpriseUsersGetAvailableProductSet_598728(path: JsonNode
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_598732 = query.getOrDefault("fields")
-  valid_598732 = validateParameter(valid_598732, JString, required = false,
+  var valid_580732 = query.getOrDefault("fields")
+  valid_580732 = validateParameter(valid_580732, JString, required = false,
                                  default = nil)
-  if valid_598732 != nil:
-    section.add "fields", valid_598732
-  var valid_598733 = query.getOrDefault("quotaUser")
-  valid_598733 = validateParameter(valid_598733, JString, required = false,
+  if valid_580732 != nil:
+    section.add "fields", valid_580732
+  var valid_580733 = query.getOrDefault("quotaUser")
+  valid_580733 = validateParameter(valid_580733, JString, required = false,
                                  default = nil)
-  if valid_598733 != nil:
-    section.add "quotaUser", valid_598733
-  var valid_598734 = query.getOrDefault("alt")
-  valid_598734 = validateParameter(valid_598734, JString, required = false,
+  if valid_580733 != nil:
+    section.add "quotaUser", valid_580733
+  var valid_580734 = query.getOrDefault("alt")
+  valid_580734 = validateParameter(valid_580734, JString, required = false,
                                  default = newJString("json"))
-  if valid_598734 != nil:
-    section.add "alt", valid_598734
-  var valid_598735 = query.getOrDefault("oauth_token")
-  valid_598735 = validateParameter(valid_598735, JString, required = false,
+  if valid_580734 != nil:
+    section.add "alt", valid_580734
+  var valid_580735 = query.getOrDefault("oauth_token")
+  valid_580735 = validateParameter(valid_580735, JString, required = false,
                                  default = nil)
-  if valid_598735 != nil:
-    section.add "oauth_token", valid_598735
-  var valid_598736 = query.getOrDefault("userIp")
-  valid_598736 = validateParameter(valid_598736, JString, required = false,
+  if valid_580735 != nil:
+    section.add "oauth_token", valid_580735
+  var valid_580736 = query.getOrDefault("userIp")
+  valid_580736 = validateParameter(valid_580736, JString, required = false,
                                  default = nil)
-  if valid_598736 != nil:
-    section.add "userIp", valid_598736
-  var valid_598737 = query.getOrDefault("key")
-  valid_598737 = validateParameter(valid_598737, JString, required = false,
+  if valid_580736 != nil:
+    section.add "userIp", valid_580736
+  var valid_580737 = query.getOrDefault("key")
+  valid_580737 = validateParameter(valid_580737, JString, required = false,
                                  default = nil)
-  if valid_598737 != nil:
-    section.add "key", valid_598737
-  var valid_598738 = query.getOrDefault("prettyPrint")
-  valid_598738 = validateParameter(valid_598738, JBool, required = false,
+  if valid_580737 != nil:
+    section.add "key", valid_580737
+  var valid_580738 = query.getOrDefault("prettyPrint")
+  valid_580738 = validateParameter(valid_580738, JBool, required = false,
                                  default = newJBool(true))
-  if valid_598738 != nil:
-    section.add "prettyPrint", valid_598738
+  if valid_580738 != nil:
+    section.add "prettyPrint", valid_580738
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -8051,21 +8053,21 @@ proc validate_AndroidenterpriseUsersGetAvailableProductSet_598728(path: JsonNode
   if body != nil:
     result.add "body", body
 
-proc call*(call_598739: Call_AndroidenterpriseUsersGetAvailableProductSet_598727;
+proc call*(call_580739: Call_AndroidenterpriseUsersGetAvailableProductSet_580727;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Retrieves the set of products a user is entitled to access.
   ## 
-  let valid = call_598739.validator(path, query, header, formData, body)
-  let scheme = call_598739.pickScheme
+  let valid = call_580739.validator(path, query, header, formData, body)
+  let scheme = call_580739.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_598739.url(scheme.get, call_598739.host, call_598739.base,
-                         call_598739.route, valid.getOrDefault("path"),
+  let url = call_580739.url(scheme.get, call_580739.host, call_580739.base,
+                         call_580739.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_598739, url, valid)
+  result = hook(call_580739, url, valid)
 
-proc call*(call_598740: Call_AndroidenterpriseUsersGetAvailableProductSet_598727;
+proc call*(call_580740: Call_AndroidenterpriseUsersGetAvailableProductSet_580727;
           enterpriseId: string; userId: string; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; key: string = ""; prettyPrint: bool = true): Recallable =
@@ -8089,34 +8091,34 @@ proc call*(call_598740: Call_AndroidenterpriseUsersGetAvailableProductSet_598727
   ##              : Returns response with indentations and line breaks.
   ##   userId: string (required)
   ##         : The ID of the user.
-  var path_598741 = newJObject()
-  var query_598742 = newJObject()
-  add(query_598742, "fields", newJString(fields))
-  add(query_598742, "quotaUser", newJString(quotaUser))
-  add(query_598742, "alt", newJString(alt))
-  add(query_598742, "oauth_token", newJString(oauthToken))
-  add(query_598742, "userIp", newJString(userIp))
-  add(query_598742, "key", newJString(key))
-  add(path_598741, "enterpriseId", newJString(enterpriseId))
-  add(query_598742, "prettyPrint", newJBool(prettyPrint))
-  add(path_598741, "userId", newJString(userId))
-  result = call_598740.call(path_598741, query_598742, nil, nil, nil)
+  var path_580741 = newJObject()
+  var query_580742 = newJObject()
+  add(query_580742, "fields", newJString(fields))
+  add(query_580742, "quotaUser", newJString(quotaUser))
+  add(query_580742, "alt", newJString(alt))
+  add(query_580742, "oauth_token", newJString(oauthToken))
+  add(query_580742, "userIp", newJString(userIp))
+  add(query_580742, "key", newJString(key))
+  add(path_580741, "enterpriseId", newJString(enterpriseId))
+  add(query_580742, "prettyPrint", newJBool(prettyPrint))
+  add(path_580741, "userId", newJString(userId))
+  result = call_580740.call(path_580741, query_580742, nil, nil, nil)
 
-var androidenterpriseUsersGetAvailableProductSet* = Call_AndroidenterpriseUsersGetAvailableProductSet_598727(
+var androidenterpriseUsersGetAvailableProductSet* = Call_AndroidenterpriseUsersGetAvailableProductSet_580727(
     name: "androidenterpriseUsersGetAvailableProductSet",
     meth: HttpMethod.HttpGet, host: "www.googleapis.com",
     route: "/enterprises/{enterpriseId}/users/{userId}/availableProductSet",
-    validator: validate_AndroidenterpriseUsersGetAvailableProductSet_598728,
+    validator: validate_AndroidenterpriseUsersGetAvailableProductSet_580728,
     base: "/androidenterprise/v1",
-    url: url_AndroidenterpriseUsersGetAvailableProductSet_598729,
+    url: url_AndroidenterpriseUsersGetAvailableProductSet_580729,
     schemes: {Scheme.Https})
 type
-  Call_AndroidenterpriseUsersRevokeDeviceAccess_598761 = ref object of OpenApiRestCall_597421
-proc url_AndroidenterpriseUsersRevokeDeviceAccess_598763(protocol: Scheme;
+  Call_AndroidenterpriseUsersRevokeDeviceAccess_580761 = ref object of OpenApiRestCall_579421
+proc url_AndroidenterpriseUsersRevokeDeviceAccess_580763(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "enterpriseId" in path, "`enterpriseId` is a required path parameter"
   assert "userId" in path, "`userId` is a required path parameter"
@@ -8131,7 +8133,7 @@ proc url_AndroidenterpriseUsersRevokeDeviceAccess_598763(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_AndroidenterpriseUsersRevokeDeviceAccess_598762(path: JsonNode;
+proc validate_AndroidenterpriseUsersRevokeDeviceAccess_580762(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Revokes access to all devices currently provisioned to the user. The user will no longer be able to use the managed Play store on any of their managed devices.
   ## 
@@ -8147,16 +8149,16 @@ proc validate_AndroidenterpriseUsersRevokeDeviceAccess_598762(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `enterpriseId` field"
-  var valid_598764 = path.getOrDefault("enterpriseId")
-  valid_598764 = validateParameter(valid_598764, JString, required = true,
+  var valid_580764 = path.getOrDefault("enterpriseId")
+  valid_580764 = validateParameter(valid_580764, JString, required = true,
                                  default = nil)
-  if valid_598764 != nil:
-    section.add "enterpriseId", valid_598764
-  var valid_598765 = path.getOrDefault("userId")
-  valid_598765 = validateParameter(valid_598765, JString, required = true,
+  if valid_580764 != nil:
+    section.add "enterpriseId", valid_580764
+  var valid_580765 = path.getOrDefault("userId")
+  valid_580765 = validateParameter(valid_580765, JString, required = true,
                                  default = nil)
-  if valid_598765 != nil:
-    section.add "userId", valid_598765
+  if valid_580765 != nil:
+    section.add "userId", valid_580765
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -8174,41 +8176,41 @@ proc validate_AndroidenterpriseUsersRevokeDeviceAccess_598762(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_598766 = query.getOrDefault("fields")
-  valid_598766 = validateParameter(valid_598766, JString, required = false,
+  var valid_580766 = query.getOrDefault("fields")
+  valid_580766 = validateParameter(valid_580766, JString, required = false,
                                  default = nil)
-  if valid_598766 != nil:
-    section.add "fields", valid_598766
-  var valid_598767 = query.getOrDefault("quotaUser")
-  valid_598767 = validateParameter(valid_598767, JString, required = false,
+  if valid_580766 != nil:
+    section.add "fields", valid_580766
+  var valid_580767 = query.getOrDefault("quotaUser")
+  valid_580767 = validateParameter(valid_580767, JString, required = false,
                                  default = nil)
-  if valid_598767 != nil:
-    section.add "quotaUser", valid_598767
-  var valid_598768 = query.getOrDefault("alt")
-  valid_598768 = validateParameter(valid_598768, JString, required = false,
+  if valid_580767 != nil:
+    section.add "quotaUser", valid_580767
+  var valid_580768 = query.getOrDefault("alt")
+  valid_580768 = validateParameter(valid_580768, JString, required = false,
                                  default = newJString("json"))
-  if valid_598768 != nil:
-    section.add "alt", valid_598768
-  var valid_598769 = query.getOrDefault("oauth_token")
-  valid_598769 = validateParameter(valid_598769, JString, required = false,
+  if valid_580768 != nil:
+    section.add "alt", valid_580768
+  var valid_580769 = query.getOrDefault("oauth_token")
+  valid_580769 = validateParameter(valid_580769, JString, required = false,
                                  default = nil)
-  if valid_598769 != nil:
-    section.add "oauth_token", valid_598769
-  var valid_598770 = query.getOrDefault("userIp")
-  valid_598770 = validateParameter(valid_598770, JString, required = false,
+  if valid_580769 != nil:
+    section.add "oauth_token", valid_580769
+  var valid_580770 = query.getOrDefault("userIp")
+  valid_580770 = validateParameter(valid_580770, JString, required = false,
                                  default = nil)
-  if valid_598770 != nil:
-    section.add "userIp", valid_598770
-  var valid_598771 = query.getOrDefault("key")
-  valid_598771 = validateParameter(valid_598771, JString, required = false,
+  if valid_580770 != nil:
+    section.add "userIp", valid_580770
+  var valid_580771 = query.getOrDefault("key")
+  valid_580771 = validateParameter(valid_580771, JString, required = false,
                                  default = nil)
-  if valid_598771 != nil:
-    section.add "key", valid_598771
-  var valid_598772 = query.getOrDefault("prettyPrint")
-  valid_598772 = validateParameter(valid_598772, JBool, required = false,
+  if valid_580771 != nil:
+    section.add "key", valid_580771
+  var valid_580772 = query.getOrDefault("prettyPrint")
+  valid_580772 = validateParameter(valid_580772, JBool, required = false,
                                  default = newJBool(true))
-  if valid_598772 != nil:
-    section.add "prettyPrint", valid_598772
+  if valid_580772 != nil:
+    section.add "prettyPrint", valid_580772
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -8217,23 +8219,23 @@ proc validate_AndroidenterpriseUsersRevokeDeviceAccess_598762(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_598773: Call_AndroidenterpriseUsersRevokeDeviceAccess_598761;
+proc call*(call_580773: Call_AndroidenterpriseUsersRevokeDeviceAccess_580761;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Revokes access to all devices currently provisioned to the user. The user will no longer be able to use the managed Play store on any of their managed devices.
   ## 
   ## This call only works with EMM-managed accounts.
   ## 
-  let valid = call_598773.validator(path, query, header, formData, body)
-  let scheme = call_598773.pickScheme
+  let valid = call_580773.validator(path, query, header, formData, body)
+  let scheme = call_580773.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_598773.url(scheme.get, call_598773.host, call_598773.base,
-                         call_598773.route, valid.getOrDefault("path"),
+  let url = call_580773.url(scheme.get, call_580773.host, call_580773.base,
+                         call_580773.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_598773, url, valid)
+  result = hook(call_580773, url, valid)
 
-proc call*(call_598774: Call_AndroidenterpriseUsersRevokeDeviceAccess_598761;
+proc call*(call_580774: Call_AndroidenterpriseUsersRevokeDeviceAccess_580761;
           enterpriseId: string; userId: string; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; key: string = ""; prettyPrint: bool = true): Recallable =
@@ -8259,34 +8261,34 @@ proc call*(call_598774: Call_AndroidenterpriseUsersRevokeDeviceAccess_598761;
   ##              : Returns response with indentations and line breaks.
   ##   userId: string (required)
   ##         : The ID of the user.
-  var path_598775 = newJObject()
-  var query_598776 = newJObject()
-  add(query_598776, "fields", newJString(fields))
-  add(query_598776, "quotaUser", newJString(quotaUser))
-  add(query_598776, "alt", newJString(alt))
-  add(query_598776, "oauth_token", newJString(oauthToken))
-  add(query_598776, "userIp", newJString(userIp))
-  add(query_598776, "key", newJString(key))
-  add(path_598775, "enterpriseId", newJString(enterpriseId))
-  add(query_598776, "prettyPrint", newJBool(prettyPrint))
-  add(path_598775, "userId", newJString(userId))
-  result = call_598774.call(path_598775, query_598776, nil, nil, nil)
+  var path_580775 = newJObject()
+  var query_580776 = newJObject()
+  add(query_580776, "fields", newJString(fields))
+  add(query_580776, "quotaUser", newJString(quotaUser))
+  add(query_580776, "alt", newJString(alt))
+  add(query_580776, "oauth_token", newJString(oauthToken))
+  add(query_580776, "userIp", newJString(userIp))
+  add(query_580776, "key", newJString(key))
+  add(path_580775, "enterpriseId", newJString(enterpriseId))
+  add(query_580776, "prettyPrint", newJBool(prettyPrint))
+  add(path_580775, "userId", newJString(userId))
+  result = call_580774.call(path_580775, query_580776, nil, nil, nil)
 
-var androidenterpriseUsersRevokeDeviceAccess* = Call_AndroidenterpriseUsersRevokeDeviceAccess_598761(
+var androidenterpriseUsersRevokeDeviceAccess* = Call_AndroidenterpriseUsersRevokeDeviceAccess_580761(
     name: "androidenterpriseUsersRevokeDeviceAccess", meth: HttpMethod.HttpDelete,
     host: "www.googleapis.com",
     route: "/enterprises/{enterpriseId}/users/{userId}/deviceAccess",
-    validator: validate_AndroidenterpriseUsersRevokeDeviceAccess_598762,
+    validator: validate_AndroidenterpriseUsersRevokeDeviceAccess_580762,
     base: "/androidenterprise/v1",
-    url: url_AndroidenterpriseUsersRevokeDeviceAccess_598763,
+    url: url_AndroidenterpriseUsersRevokeDeviceAccess_580763,
     schemes: {Scheme.Https})
 type
-  Call_AndroidenterpriseDevicesList_598777 = ref object of OpenApiRestCall_597421
-proc url_AndroidenterpriseDevicesList_598779(protocol: Scheme; host: string;
+  Call_AndroidenterpriseDevicesList_580777 = ref object of OpenApiRestCall_579421
+proc url_AndroidenterpriseDevicesList_580779(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "enterpriseId" in path, "`enterpriseId` is a required path parameter"
   assert "userId" in path, "`userId` is a required path parameter"
@@ -8301,7 +8303,7 @@ proc url_AndroidenterpriseDevicesList_598779(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_AndroidenterpriseDevicesList_598778(path: JsonNode; query: JsonNode;
+proc validate_AndroidenterpriseDevicesList_580778(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Retrieves the IDs of all of a user's devices.
   ## 
@@ -8315,16 +8317,16 @@ proc validate_AndroidenterpriseDevicesList_598778(path: JsonNode; query: JsonNod
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `enterpriseId` field"
-  var valid_598780 = path.getOrDefault("enterpriseId")
-  valid_598780 = validateParameter(valid_598780, JString, required = true,
+  var valid_580780 = path.getOrDefault("enterpriseId")
+  valid_580780 = validateParameter(valid_580780, JString, required = true,
                                  default = nil)
-  if valid_598780 != nil:
-    section.add "enterpriseId", valid_598780
-  var valid_598781 = path.getOrDefault("userId")
-  valid_598781 = validateParameter(valid_598781, JString, required = true,
+  if valid_580780 != nil:
+    section.add "enterpriseId", valid_580780
+  var valid_580781 = path.getOrDefault("userId")
+  valid_580781 = validateParameter(valid_580781, JString, required = true,
                                  default = nil)
-  if valid_598781 != nil:
-    section.add "userId", valid_598781
+  if valid_580781 != nil:
+    section.add "userId", valid_580781
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -8342,41 +8344,41 @@ proc validate_AndroidenterpriseDevicesList_598778(path: JsonNode; query: JsonNod
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_598782 = query.getOrDefault("fields")
-  valid_598782 = validateParameter(valid_598782, JString, required = false,
+  var valid_580782 = query.getOrDefault("fields")
+  valid_580782 = validateParameter(valid_580782, JString, required = false,
                                  default = nil)
-  if valid_598782 != nil:
-    section.add "fields", valid_598782
-  var valid_598783 = query.getOrDefault("quotaUser")
-  valid_598783 = validateParameter(valid_598783, JString, required = false,
+  if valid_580782 != nil:
+    section.add "fields", valid_580782
+  var valid_580783 = query.getOrDefault("quotaUser")
+  valid_580783 = validateParameter(valid_580783, JString, required = false,
                                  default = nil)
-  if valid_598783 != nil:
-    section.add "quotaUser", valid_598783
-  var valid_598784 = query.getOrDefault("alt")
-  valid_598784 = validateParameter(valid_598784, JString, required = false,
+  if valid_580783 != nil:
+    section.add "quotaUser", valid_580783
+  var valid_580784 = query.getOrDefault("alt")
+  valid_580784 = validateParameter(valid_580784, JString, required = false,
                                  default = newJString("json"))
-  if valid_598784 != nil:
-    section.add "alt", valid_598784
-  var valid_598785 = query.getOrDefault("oauth_token")
-  valid_598785 = validateParameter(valid_598785, JString, required = false,
+  if valid_580784 != nil:
+    section.add "alt", valid_580784
+  var valid_580785 = query.getOrDefault("oauth_token")
+  valid_580785 = validateParameter(valid_580785, JString, required = false,
                                  default = nil)
-  if valid_598785 != nil:
-    section.add "oauth_token", valid_598785
-  var valid_598786 = query.getOrDefault("userIp")
-  valid_598786 = validateParameter(valid_598786, JString, required = false,
+  if valid_580785 != nil:
+    section.add "oauth_token", valid_580785
+  var valid_580786 = query.getOrDefault("userIp")
+  valid_580786 = validateParameter(valid_580786, JString, required = false,
                                  default = nil)
-  if valid_598786 != nil:
-    section.add "userIp", valid_598786
-  var valid_598787 = query.getOrDefault("key")
-  valid_598787 = validateParameter(valid_598787, JString, required = false,
+  if valid_580786 != nil:
+    section.add "userIp", valid_580786
+  var valid_580787 = query.getOrDefault("key")
+  valid_580787 = validateParameter(valid_580787, JString, required = false,
                                  default = nil)
-  if valid_598787 != nil:
-    section.add "key", valid_598787
-  var valid_598788 = query.getOrDefault("prettyPrint")
-  valid_598788 = validateParameter(valid_598788, JBool, required = false,
+  if valid_580787 != nil:
+    section.add "key", valid_580787
+  var valid_580788 = query.getOrDefault("prettyPrint")
+  valid_580788 = validateParameter(valid_580788, JBool, required = false,
                                  default = newJBool(true))
-  if valid_598788 != nil:
-    section.add "prettyPrint", valid_598788
+  if valid_580788 != nil:
+    section.add "prettyPrint", valid_580788
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -8385,20 +8387,20 @@ proc validate_AndroidenterpriseDevicesList_598778(path: JsonNode; query: JsonNod
   if body != nil:
     result.add "body", body
 
-proc call*(call_598789: Call_AndroidenterpriseDevicesList_598777; path: JsonNode;
+proc call*(call_580789: Call_AndroidenterpriseDevicesList_580777; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Retrieves the IDs of all of a user's devices.
   ## 
-  let valid = call_598789.validator(path, query, header, formData, body)
-  let scheme = call_598789.pickScheme
+  let valid = call_580789.validator(path, query, header, formData, body)
+  let scheme = call_580789.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_598789.url(scheme.get, call_598789.host, call_598789.base,
-                         call_598789.route, valid.getOrDefault("path"),
+  let url = call_580789.url(scheme.get, call_580789.host, call_580789.base,
+                         call_580789.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_598789, url, valid)
+  result = hook(call_580789, url, valid)
 
-proc call*(call_598790: Call_AndroidenterpriseDevicesList_598777;
+proc call*(call_580790: Call_AndroidenterpriseDevicesList_580777;
           enterpriseId: string; userId: string; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; key: string = ""; prettyPrint: bool = true): Recallable =
@@ -8422,33 +8424,33 @@ proc call*(call_598790: Call_AndroidenterpriseDevicesList_598777;
   ##              : Returns response with indentations and line breaks.
   ##   userId: string (required)
   ##         : The ID of the user.
-  var path_598791 = newJObject()
-  var query_598792 = newJObject()
-  add(query_598792, "fields", newJString(fields))
-  add(query_598792, "quotaUser", newJString(quotaUser))
-  add(query_598792, "alt", newJString(alt))
-  add(query_598792, "oauth_token", newJString(oauthToken))
-  add(query_598792, "userIp", newJString(userIp))
-  add(query_598792, "key", newJString(key))
-  add(path_598791, "enterpriseId", newJString(enterpriseId))
-  add(query_598792, "prettyPrint", newJBool(prettyPrint))
-  add(path_598791, "userId", newJString(userId))
-  result = call_598790.call(path_598791, query_598792, nil, nil, nil)
+  var path_580791 = newJObject()
+  var query_580792 = newJObject()
+  add(query_580792, "fields", newJString(fields))
+  add(query_580792, "quotaUser", newJString(quotaUser))
+  add(query_580792, "alt", newJString(alt))
+  add(query_580792, "oauth_token", newJString(oauthToken))
+  add(query_580792, "userIp", newJString(userIp))
+  add(query_580792, "key", newJString(key))
+  add(path_580791, "enterpriseId", newJString(enterpriseId))
+  add(query_580792, "prettyPrint", newJBool(prettyPrint))
+  add(path_580791, "userId", newJString(userId))
+  result = call_580790.call(path_580791, query_580792, nil, nil, nil)
 
-var androidenterpriseDevicesList* = Call_AndroidenterpriseDevicesList_598777(
+var androidenterpriseDevicesList* = Call_AndroidenterpriseDevicesList_580777(
     name: "androidenterpriseDevicesList", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com",
     route: "/enterprises/{enterpriseId}/users/{userId}/devices",
-    validator: validate_AndroidenterpriseDevicesList_598778,
-    base: "/androidenterprise/v1", url: url_AndroidenterpriseDevicesList_598779,
+    validator: validate_AndroidenterpriseDevicesList_580778,
+    base: "/androidenterprise/v1", url: url_AndroidenterpriseDevicesList_580779,
     schemes: {Scheme.Https})
 type
-  Call_AndroidenterpriseDevicesUpdate_598810 = ref object of OpenApiRestCall_597421
-proc url_AndroidenterpriseDevicesUpdate_598812(protocol: Scheme; host: string;
+  Call_AndroidenterpriseDevicesUpdate_580810 = ref object of OpenApiRestCall_579421
+proc url_AndroidenterpriseDevicesUpdate_580812(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "enterpriseId" in path, "`enterpriseId` is a required path parameter"
   assert "userId" in path, "`userId` is a required path parameter"
@@ -8465,7 +8467,7 @@ proc url_AndroidenterpriseDevicesUpdate_598812(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_AndroidenterpriseDevicesUpdate_598811(path: JsonNode;
+proc validate_AndroidenterpriseDevicesUpdate_580811(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Updates the device policy
   ## 
@@ -8480,21 +8482,21 @@ proc validate_AndroidenterpriseDevicesUpdate_598811(path: JsonNode;
   ##         : The ID of the user.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `deviceId` field"
-  var valid_598813 = path.getOrDefault("deviceId")
-  valid_598813 = validateParameter(valid_598813, JString, required = true,
+  var valid_580813 = path.getOrDefault("deviceId")
+  valid_580813 = validateParameter(valid_580813, JString, required = true,
                                  default = nil)
-  if valid_598813 != nil:
-    section.add "deviceId", valid_598813
-  var valid_598814 = path.getOrDefault("enterpriseId")
-  valid_598814 = validateParameter(valid_598814, JString, required = true,
+  if valid_580813 != nil:
+    section.add "deviceId", valid_580813
+  var valid_580814 = path.getOrDefault("enterpriseId")
+  valid_580814 = validateParameter(valid_580814, JString, required = true,
                                  default = nil)
-  if valid_598814 != nil:
-    section.add "enterpriseId", valid_598814
-  var valid_598815 = path.getOrDefault("userId")
-  valid_598815 = validateParameter(valid_598815, JString, required = true,
+  if valid_580814 != nil:
+    section.add "enterpriseId", valid_580814
+  var valid_580815 = path.getOrDefault("userId")
+  valid_580815 = validateParameter(valid_580815, JString, required = true,
                                  default = nil)
-  if valid_598815 != nil:
-    section.add "userId", valid_598815
+  if valid_580815 != nil:
+    section.add "userId", valid_580815
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -8516,46 +8518,46 @@ proc validate_AndroidenterpriseDevicesUpdate_598811(path: JsonNode;
   ## 
   ## When set in a query parameter, this field should be specified as updateMask=<field1>,<field2>,...
   section = newJObject()
-  var valid_598816 = query.getOrDefault("fields")
-  valid_598816 = validateParameter(valid_598816, JString, required = false,
+  var valid_580816 = query.getOrDefault("fields")
+  valid_580816 = validateParameter(valid_580816, JString, required = false,
                                  default = nil)
-  if valid_598816 != nil:
-    section.add "fields", valid_598816
-  var valid_598817 = query.getOrDefault("quotaUser")
-  valid_598817 = validateParameter(valid_598817, JString, required = false,
+  if valid_580816 != nil:
+    section.add "fields", valid_580816
+  var valid_580817 = query.getOrDefault("quotaUser")
+  valid_580817 = validateParameter(valid_580817, JString, required = false,
                                  default = nil)
-  if valid_598817 != nil:
-    section.add "quotaUser", valid_598817
-  var valid_598818 = query.getOrDefault("alt")
-  valid_598818 = validateParameter(valid_598818, JString, required = false,
+  if valid_580817 != nil:
+    section.add "quotaUser", valid_580817
+  var valid_580818 = query.getOrDefault("alt")
+  valid_580818 = validateParameter(valid_580818, JString, required = false,
                                  default = newJString("json"))
-  if valid_598818 != nil:
-    section.add "alt", valid_598818
-  var valid_598819 = query.getOrDefault("oauth_token")
-  valid_598819 = validateParameter(valid_598819, JString, required = false,
+  if valid_580818 != nil:
+    section.add "alt", valid_580818
+  var valid_580819 = query.getOrDefault("oauth_token")
+  valid_580819 = validateParameter(valid_580819, JString, required = false,
                                  default = nil)
-  if valid_598819 != nil:
-    section.add "oauth_token", valid_598819
-  var valid_598820 = query.getOrDefault("userIp")
-  valid_598820 = validateParameter(valid_598820, JString, required = false,
+  if valid_580819 != nil:
+    section.add "oauth_token", valid_580819
+  var valid_580820 = query.getOrDefault("userIp")
+  valid_580820 = validateParameter(valid_580820, JString, required = false,
                                  default = nil)
-  if valid_598820 != nil:
-    section.add "userIp", valid_598820
-  var valid_598821 = query.getOrDefault("key")
-  valid_598821 = validateParameter(valid_598821, JString, required = false,
+  if valid_580820 != nil:
+    section.add "userIp", valid_580820
+  var valid_580821 = query.getOrDefault("key")
+  valid_580821 = validateParameter(valid_580821, JString, required = false,
                                  default = nil)
-  if valid_598821 != nil:
-    section.add "key", valid_598821
-  var valid_598822 = query.getOrDefault("prettyPrint")
-  valid_598822 = validateParameter(valid_598822, JBool, required = false,
+  if valid_580821 != nil:
+    section.add "key", valid_580821
+  var valid_580822 = query.getOrDefault("prettyPrint")
+  valid_580822 = validateParameter(valid_580822, JBool, required = false,
                                  default = newJBool(true))
-  if valid_598822 != nil:
-    section.add "prettyPrint", valid_598822
-  var valid_598823 = query.getOrDefault("updateMask")
-  valid_598823 = validateParameter(valid_598823, JString, required = false,
+  if valid_580822 != nil:
+    section.add "prettyPrint", valid_580822
+  var valid_580823 = query.getOrDefault("updateMask")
+  valid_580823 = validateParameter(valid_580823, JString, required = false,
                                  default = nil)
-  if valid_598823 != nil:
-    section.add "updateMask", valid_598823
+  if valid_580823 != nil:
+    section.add "updateMask", valid_580823
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -8567,20 +8569,20 @@ proc validate_AndroidenterpriseDevicesUpdate_598811(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_598825: Call_AndroidenterpriseDevicesUpdate_598810; path: JsonNode;
+proc call*(call_580825: Call_AndroidenterpriseDevicesUpdate_580810; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Updates the device policy
   ## 
-  let valid = call_598825.validator(path, query, header, formData, body)
-  let scheme = call_598825.pickScheme
+  let valid = call_580825.validator(path, query, header, formData, body)
+  let scheme = call_580825.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_598825.url(scheme.get, call_598825.host, call_598825.base,
-                         call_598825.route, valid.getOrDefault("path"),
+  let url = call_580825.url(scheme.get, call_580825.host, call_580825.base,
+                         call_580825.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_598825, url, valid)
+  result = hook(call_580825, url, valid)
 
-proc call*(call_598826: Call_AndroidenterpriseDevicesUpdate_598810;
+proc call*(call_580826: Call_AndroidenterpriseDevicesUpdate_580810;
           deviceId: string; enterpriseId: string; userId: string; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; key: string = ""; body: JsonNode = nil;
@@ -8612,38 +8614,38 @@ proc call*(call_598826: Call_AndroidenterpriseDevicesUpdate_598810;
   ## When set in a query parameter, this field should be specified as updateMask=<field1>,<field2>,...
   ##   userId: string (required)
   ##         : The ID of the user.
-  var path_598827 = newJObject()
-  var query_598828 = newJObject()
-  var body_598829 = newJObject()
-  add(query_598828, "fields", newJString(fields))
-  add(query_598828, "quotaUser", newJString(quotaUser))
-  add(query_598828, "alt", newJString(alt))
-  add(path_598827, "deviceId", newJString(deviceId))
-  add(query_598828, "oauth_token", newJString(oauthToken))
-  add(query_598828, "userIp", newJString(userIp))
-  add(query_598828, "key", newJString(key))
-  add(path_598827, "enterpriseId", newJString(enterpriseId))
+  var path_580827 = newJObject()
+  var query_580828 = newJObject()
+  var body_580829 = newJObject()
+  add(query_580828, "fields", newJString(fields))
+  add(query_580828, "quotaUser", newJString(quotaUser))
+  add(query_580828, "alt", newJString(alt))
+  add(path_580827, "deviceId", newJString(deviceId))
+  add(query_580828, "oauth_token", newJString(oauthToken))
+  add(query_580828, "userIp", newJString(userIp))
+  add(query_580828, "key", newJString(key))
+  add(path_580827, "enterpriseId", newJString(enterpriseId))
   if body != nil:
-    body_598829 = body
-  add(query_598828, "prettyPrint", newJBool(prettyPrint))
-  add(query_598828, "updateMask", newJString(updateMask))
-  add(path_598827, "userId", newJString(userId))
-  result = call_598826.call(path_598827, query_598828, nil, nil, body_598829)
+    body_580829 = body
+  add(query_580828, "prettyPrint", newJBool(prettyPrint))
+  add(query_580828, "updateMask", newJString(updateMask))
+  add(path_580827, "userId", newJString(userId))
+  result = call_580826.call(path_580827, query_580828, nil, nil, body_580829)
 
-var androidenterpriseDevicesUpdate* = Call_AndroidenterpriseDevicesUpdate_598810(
+var androidenterpriseDevicesUpdate* = Call_AndroidenterpriseDevicesUpdate_580810(
     name: "androidenterpriseDevicesUpdate", meth: HttpMethod.HttpPut,
     host: "www.googleapis.com",
     route: "/enterprises/{enterpriseId}/users/{userId}/devices/{deviceId}",
-    validator: validate_AndroidenterpriseDevicesUpdate_598811,
-    base: "/androidenterprise/v1", url: url_AndroidenterpriseDevicesUpdate_598812,
+    validator: validate_AndroidenterpriseDevicesUpdate_580811,
+    base: "/androidenterprise/v1", url: url_AndroidenterpriseDevicesUpdate_580812,
     schemes: {Scheme.Https})
 type
-  Call_AndroidenterpriseDevicesGet_598793 = ref object of OpenApiRestCall_597421
-proc url_AndroidenterpriseDevicesGet_598795(protocol: Scheme; host: string;
+  Call_AndroidenterpriseDevicesGet_580793 = ref object of OpenApiRestCall_579421
+proc url_AndroidenterpriseDevicesGet_580795(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "enterpriseId" in path, "`enterpriseId` is a required path parameter"
   assert "userId" in path, "`userId` is a required path parameter"
@@ -8660,7 +8662,7 @@ proc url_AndroidenterpriseDevicesGet_598795(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_AndroidenterpriseDevicesGet_598794(path: JsonNode; query: JsonNode;
+proc validate_AndroidenterpriseDevicesGet_580794(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Retrieves the details of a device.
   ## 
@@ -8675,21 +8677,21 @@ proc validate_AndroidenterpriseDevicesGet_598794(path: JsonNode; query: JsonNode
   ##         : The ID of the user.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `deviceId` field"
-  var valid_598796 = path.getOrDefault("deviceId")
-  valid_598796 = validateParameter(valid_598796, JString, required = true,
+  var valid_580796 = path.getOrDefault("deviceId")
+  valid_580796 = validateParameter(valid_580796, JString, required = true,
                                  default = nil)
-  if valid_598796 != nil:
-    section.add "deviceId", valid_598796
-  var valid_598797 = path.getOrDefault("enterpriseId")
-  valid_598797 = validateParameter(valid_598797, JString, required = true,
+  if valid_580796 != nil:
+    section.add "deviceId", valid_580796
+  var valid_580797 = path.getOrDefault("enterpriseId")
+  valid_580797 = validateParameter(valid_580797, JString, required = true,
                                  default = nil)
-  if valid_598797 != nil:
-    section.add "enterpriseId", valid_598797
-  var valid_598798 = path.getOrDefault("userId")
-  valid_598798 = validateParameter(valid_598798, JString, required = true,
+  if valid_580797 != nil:
+    section.add "enterpriseId", valid_580797
+  var valid_580798 = path.getOrDefault("userId")
+  valid_580798 = validateParameter(valid_580798, JString, required = true,
                                  default = nil)
-  if valid_598798 != nil:
-    section.add "userId", valid_598798
+  if valid_580798 != nil:
+    section.add "userId", valid_580798
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -8707,41 +8709,41 @@ proc validate_AndroidenterpriseDevicesGet_598794(path: JsonNode; query: JsonNode
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_598799 = query.getOrDefault("fields")
-  valid_598799 = validateParameter(valid_598799, JString, required = false,
+  var valid_580799 = query.getOrDefault("fields")
+  valid_580799 = validateParameter(valid_580799, JString, required = false,
                                  default = nil)
-  if valid_598799 != nil:
-    section.add "fields", valid_598799
-  var valid_598800 = query.getOrDefault("quotaUser")
-  valid_598800 = validateParameter(valid_598800, JString, required = false,
+  if valid_580799 != nil:
+    section.add "fields", valid_580799
+  var valid_580800 = query.getOrDefault("quotaUser")
+  valid_580800 = validateParameter(valid_580800, JString, required = false,
                                  default = nil)
-  if valid_598800 != nil:
-    section.add "quotaUser", valid_598800
-  var valid_598801 = query.getOrDefault("alt")
-  valid_598801 = validateParameter(valid_598801, JString, required = false,
+  if valid_580800 != nil:
+    section.add "quotaUser", valid_580800
+  var valid_580801 = query.getOrDefault("alt")
+  valid_580801 = validateParameter(valid_580801, JString, required = false,
                                  default = newJString("json"))
-  if valid_598801 != nil:
-    section.add "alt", valid_598801
-  var valid_598802 = query.getOrDefault("oauth_token")
-  valid_598802 = validateParameter(valid_598802, JString, required = false,
+  if valid_580801 != nil:
+    section.add "alt", valid_580801
+  var valid_580802 = query.getOrDefault("oauth_token")
+  valid_580802 = validateParameter(valid_580802, JString, required = false,
                                  default = nil)
-  if valid_598802 != nil:
-    section.add "oauth_token", valid_598802
-  var valid_598803 = query.getOrDefault("userIp")
-  valid_598803 = validateParameter(valid_598803, JString, required = false,
+  if valid_580802 != nil:
+    section.add "oauth_token", valid_580802
+  var valid_580803 = query.getOrDefault("userIp")
+  valid_580803 = validateParameter(valid_580803, JString, required = false,
                                  default = nil)
-  if valid_598803 != nil:
-    section.add "userIp", valid_598803
-  var valid_598804 = query.getOrDefault("key")
-  valid_598804 = validateParameter(valid_598804, JString, required = false,
+  if valid_580803 != nil:
+    section.add "userIp", valid_580803
+  var valid_580804 = query.getOrDefault("key")
+  valid_580804 = validateParameter(valid_580804, JString, required = false,
                                  default = nil)
-  if valid_598804 != nil:
-    section.add "key", valid_598804
-  var valid_598805 = query.getOrDefault("prettyPrint")
-  valid_598805 = validateParameter(valid_598805, JBool, required = false,
+  if valid_580804 != nil:
+    section.add "key", valid_580804
+  var valid_580805 = query.getOrDefault("prettyPrint")
+  valid_580805 = validateParameter(valid_580805, JBool, required = false,
                                  default = newJBool(true))
-  if valid_598805 != nil:
-    section.add "prettyPrint", valid_598805
+  if valid_580805 != nil:
+    section.add "prettyPrint", valid_580805
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -8750,20 +8752,20 @@ proc validate_AndroidenterpriseDevicesGet_598794(path: JsonNode; query: JsonNode
   if body != nil:
     result.add "body", body
 
-proc call*(call_598806: Call_AndroidenterpriseDevicesGet_598793; path: JsonNode;
+proc call*(call_580806: Call_AndroidenterpriseDevicesGet_580793; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Retrieves the details of a device.
   ## 
-  let valid = call_598806.validator(path, query, header, formData, body)
-  let scheme = call_598806.pickScheme
+  let valid = call_580806.validator(path, query, header, formData, body)
+  let scheme = call_580806.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_598806.url(scheme.get, call_598806.host, call_598806.base,
-                         call_598806.route, valid.getOrDefault("path"),
+  let url = call_580806.url(scheme.get, call_580806.host, call_580806.base,
+                         call_580806.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_598806, url, valid)
+  result = hook(call_580806, url, valid)
 
-proc call*(call_598807: Call_AndroidenterpriseDevicesGet_598793; deviceId: string;
+proc call*(call_580807: Call_AndroidenterpriseDevicesGet_580793; deviceId: string;
           enterpriseId: string; userId: string; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; key: string = ""; prettyPrint: bool = true): Recallable =
@@ -8789,34 +8791,34 @@ proc call*(call_598807: Call_AndroidenterpriseDevicesGet_598793; deviceId: strin
   ##              : Returns response with indentations and line breaks.
   ##   userId: string (required)
   ##         : The ID of the user.
-  var path_598808 = newJObject()
-  var query_598809 = newJObject()
-  add(query_598809, "fields", newJString(fields))
-  add(query_598809, "quotaUser", newJString(quotaUser))
-  add(query_598809, "alt", newJString(alt))
-  add(path_598808, "deviceId", newJString(deviceId))
-  add(query_598809, "oauth_token", newJString(oauthToken))
-  add(query_598809, "userIp", newJString(userIp))
-  add(query_598809, "key", newJString(key))
-  add(path_598808, "enterpriseId", newJString(enterpriseId))
-  add(query_598809, "prettyPrint", newJBool(prettyPrint))
-  add(path_598808, "userId", newJString(userId))
-  result = call_598807.call(path_598808, query_598809, nil, nil, nil)
+  var path_580808 = newJObject()
+  var query_580809 = newJObject()
+  add(query_580809, "fields", newJString(fields))
+  add(query_580809, "quotaUser", newJString(quotaUser))
+  add(query_580809, "alt", newJString(alt))
+  add(path_580808, "deviceId", newJString(deviceId))
+  add(query_580809, "oauth_token", newJString(oauthToken))
+  add(query_580809, "userIp", newJString(userIp))
+  add(query_580809, "key", newJString(key))
+  add(path_580808, "enterpriseId", newJString(enterpriseId))
+  add(query_580809, "prettyPrint", newJBool(prettyPrint))
+  add(path_580808, "userId", newJString(userId))
+  result = call_580807.call(path_580808, query_580809, nil, nil, nil)
 
-var androidenterpriseDevicesGet* = Call_AndroidenterpriseDevicesGet_598793(
+var androidenterpriseDevicesGet* = Call_AndroidenterpriseDevicesGet_580793(
     name: "androidenterpriseDevicesGet", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com",
     route: "/enterprises/{enterpriseId}/users/{userId}/devices/{deviceId}",
-    validator: validate_AndroidenterpriseDevicesGet_598794,
-    base: "/androidenterprise/v1", url: url_AndroidenterpriseDevicesGet_598795,
+    validator: validate_AndroidenterpriseDevicesGet_580794,
+    base: "/androidenterprise/v1", url: url_AndroidenterpriseDevicesGet_580795,
     schemes: {Scheme.Https})
 type
-  Call_AndroidenterpriseDevicesPatch_598830 = ref object of OpenApiRestCall_597421
-proc url_AndroidenterpriseDevicesPatch_598832(protocol: Scheme; host: string;
+  Call_AndroidenterpriseDevicesPatch_580830 = ref object of OpenApiRestCall_579421
+proc url_AndroidenterpriseDevicesPatch_580832(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "enterpriseId" in path, "`enterpriseId` is a required path parameter"
   assert "userId" in path, "`userId` is a required path parameter"
@@ -8833,7 +8835,7 @@ proc url_AndroidenterpriseDevicesPatch_598832(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_AndroidenterpriseDevicesPatch_598831(path: JsonNode; query: JsonNode;
+proc validate_AndroidenterpriseDevicesPatch_580831(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Updates the device policy. This method supports patch semantics.
   ## 
@@ -8848,21 +8850,21 @@ proc validate_AndroidenterpriseDevicesPatch_598831(path: JsonNode; query: JsonNo
   ##         : The ID of the user.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `deviceId` field"
-  var valid_598833 = path.getOrDefault("deviceId")
-  valid_598833 = validateParameter(valid_598833, JString, required = true,
+  var valid_580833 = path.getOrDefault("deviceId")
+  valid_580833 = validateParameter(valid_580833, JString, required = true,
                                  default = nil)
-  if valid_598833 != nil:
-    section.add "deviceId", valid_598833
-  var valid_598834 = path.getOrDefault("enterpriseId")
-  valid_598834 = validateParameter(valid_598834, JString, required = true,
+  if valid_580833 != nil:
+    section.add "deviceId", valid_580833
+  var valid_580834 = path.getOrDefault("enterpriseId")
+  valid_580834 = validateParameter(valid_580834, JString, required = true,
                                  default = nil)
-  if valid_598834 != nil:
-    section.add "enterpriseId", valid_598834
-  var valid_598835 = path.getOrDefault("userId")
-  valid_598835 = validateParameter(valid_598835, JString, required = true,
+  if valid_580834 != nil:
+    section.add "enterpriseId", valid_580834
+  var valid_580835 = path.getOrDefault("userId")
+  valid_580835 = validateParameter(valid_580835, JString, required = true,
                                  default = nil)
-  if valid_598835 != nil:
-    section.add "userId", valid_598835
+  if valid_580835 != nil:
+    section.add "userId", valid_580835
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -8884,46 +8886,46 @@ proc validate_AndroidenterpriseDevicesPatch_598831(path: JsonNode; query: JsonNo
   ## 
   ## When set in a query parameter, this field should be specified as updateMask=<field1>,<field2>,...
   section = newJObject()
-  var valid_598836 = query.getOrDefault("fields")
-  valid_598836 = validateParameter(valid_598836, JString, required = false,
+  var valid_580836 = query.getOrDefault("fields")
+  valid_580836 = validateParameter(valid_580836, JString, required = false,
                                  default = nil)
-  if valid_598836 != nil:
-    section.add "fields", valid_598836
-  var valid_598837 = query.getOrDefault("quotaUser")
-  valid_598837 = validateParameter(valid_598837, JString, required = false,
+  if valid_580836 != nil:
+    section.add "fields", valid_580836
+  var valid_580837 = query.getOrDefault("quotaUser")
+  valid_580837 = validateParameter(valid_580837, JString, required = false,
                                  default = nil)
-  if valid_598837 != nil:
-    section.add "quotaUser", valid_598837
-  var valid_598838 = query.getOrDefault("alt")
-  valid_598838 = validateParameter(valid_598838, JString, required = false,
+  if valid_580837 != nil:
+    section.add "quotaUser", valid_580837
+  var valid_580838 = query.getOrDefault("alt")
+  valid_580838 = validateParameter(valid_580838, JString, required = false,
                                  default = newJString("json"))
-  if valid_598838 != nil:
-    section.add "alt", valid_598838
-  var valid_598839 = query.getOrDefault("oauth_token")
-  valid_598839 = validateParameter(valid_598839, JString, required = false,
+  if valid_580838 != nil:
+    section.add "alt", valid_580838
+  var valid_580839 = query.getOrDefault("oauth_token")
+  valid_580839 = validateParameter(valid_580839, JString, required = false,
                                  default = nil)
-  if valid_598839 != nil:
-    section.add "oauth_token", valid_598839
-  var valid_598840 = query.getOrDefault("userIp")
-  valid_598840 = validateParameter(valid_598840, JString, required = false,
+  if valid_580839 != nil:
+    section.add "oauth_token", valid_580839
+  var valid_580840 = query.getOrDefault("userIp")
+  valid_580840 = validateParameter(valid_580840, JString, required = false,
                                  default = nil)
-  if valid_598840 != nil:
-    section.add "userIp", valid_598840
-  var valid_598841 = query.getOrDefault("key")
-  valid_598841 = validateParameter(valid_598841, JString, required = false,
+  if valid_580840 != nil:
+    section.add "userIp", valid_580840
+  var valid_580841 = query.getOrDefault("key")
+  valid_580841 = validateParameter(valid_580841, JString, required = false,
                                  default = nil)
-  if valid_598841 != nil:
-    section.add "key", valid_598841
-  var valid_598842 = query.getOrDefault("prettyPrint")
-  valid_598842 = validateParameter(valid_598842, JBool, required = false,
+  if valid_580841 != nil:
+    section.add "key", valid_580841
+  var valid_580842 = query.getOrDefault("prettyPrint")
+  valid_580842 = validateParameter(valid_580842, JBool, required = false,
                                  default = newJBool(true))
-  if valid_598842 != nil:
-    section.add "prettyPrint", valid_598842
-  var valid_598843 = query.getOrDefault("updateMask")
-  valid_598843 = validateParameter(valid_598843, JString, required = false,
+  if valid_580842 != nil:
+    section.add "prettyPrint", valid_580842
+  var valid_580843 = query.getOrDefault("updateMask")
+  valid_580843 = validateParameter(valid_580843, JString, required = false,
                                  default = nil)
-  if valid_598843 != nil:
-    section.add "updateMask", valid_598843
+  if valid_580843 != nil:
+    section.add "updateMask", valid_580843
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -8935,20 +8937,20 @@ proc validate_AndroidenterpriseDevicesPatch_598831(path: JsonNode; query: JsonNo
   if body != nil:
     result.add "body", body
 
-proc call*(call_598845: Call_AndroidenterpriseDevicesPatch_598830; path: JsonNode;
+proc call*(call_580845: Call_AndroidenterpriseDevicesPatch_580830; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Updates the device policy. This method supports patch semantics.
   ## 
-  let valid = call_598845.validator(path, query, header, formData, body)
-  let scheme = call_598845.pickScheme
+  let valid = call_580845.validator(path, query, header, formData, body)
+  let scheme = call_580845.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_598845.url(scheme.get, call_598845.host, call_598845.base,
-                         call_598845.route, valid.getOrDefault("path"),
+  let url = call_580845.url(scheme.get, call_580845.host, call_580845.base,
+                         call_580845.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_598845, url, valid)
+  result = hook(call_580845, url, valid)
 
-proc call*(call_598846: Call_AndroidenterpriseDevicesPatch_598830;
+proc call*(call_580846: Call_AndroidenterpriseDevicesPatch_580830;
           deviceId: string; enterpriseId: string; userId: string; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; key: string = ""; body: JsonNode = nil;
@@ -8980,38 +8982,38 @@ proc call*(call_598846: Call_AndroidenterpriseDevicesPatch_598830;
   ## When set in a query parameter, this field should be specified as updateMask=<field1>,<field2>,...
   ##   userId: string (required)
   ##         : The ID of the user.
-  var path_598847 = newJObject()
-  var query_598848 = newJObject()
-  var body_598849 = newJObject()
-  add(query_598848, "fields", newJString(fields))
-  add(query_598848, "quotaUser", newJString(quotaUser))
-  add(query_598848, "alt", newJString(alt))
-  add(path_598847, "deviceId", newJString(deviceId))
-  add(query_598848, "oauth_token", newJString(oauthToken))
-  add(query_598848, "userIp", newJString(userIp))
-  add(query_598848, "key", newJString(key))
-  add(path_598847, "enterpriseId", newJString(enterpriseId))
+  var path_580847 = newJObject()
+  var query_580848 = newJObject()
+  var body_580849 = newJObject()
+  add(query_580848, "fields", newJString(fields))
+  add(query_580848, "quotaUser", newJString(quotaUser))
+  add(query_580848, "alt", newJString(alt))
+  add(path_580847, "deviceId", newJString(deviceId))
+  add(query_580848, "oauth_token", newJString(oauthToken))
+  add(query_580848, "userIp", newJString(userIp))
+  add(query_580848, "key", newJString(key))
+  add(path_580847, "enterpriseId", newJString(enterpriseId))
   if body != nil:
-    body_598849 = body
-  add(query_598848, "prettyPrint", newJBool(prettyPrint))
-  add(query_598848, "updateMask", newJString(updateMask))
-  add(path_598847, "userId", newJString(userId))
-  result = call_598846.call(path_598847, query_598848, nil, nil, body_598849)
+    body_580849 = body
+  add(query_580848, "prettyPrint", newJBool(prettyPrint))
+  add(query_580848, "updateMask", newJString(updateMask))
+  add(path_580847, "userId", newJString(userId))
+  result = call_580846.call(path_580847, query_580848, nil, nil, body_580849)
 
-var androidenterpriseDevicesPatch* = Call_AndroidenterpriseDevicesPatch_598830(
+var androidenterpriseDevicesPatch* = Call_AndroidenterpriseDevicesPatch_580830(
     name: "androidenterpriseDevicesPatch", meth: HttpMethod.HttpPatch,
     host: "www.googleapis.com",
     route: "/enterprises/{enterpriseId}/users/{userId}/devices/{deviceId}",
-    validator: validate_AndroidenterpriseDevicesPatch_598831,
-    base: "/androidenterprise/v1", url: url_AndroidenterpriseDevicesPatch_598832,
+    validator: validate_AndroidenterpriseDevicesPatch_580831,
+    base: "/androidenterprise/v1", url: url_AndroidenterpriseDevicesPatch_580832,
     schemes: {Scheme.Https})
 type
-  Call_AndroidenterpriseDevicesForceReportUpload_598850 = ref object of OpenApiRestCall_597421
-proc url_AndroidenterpriseDevicesForceReportUpload_598852(protocol: Scheme;
+  Call_AndroidenterpriseDevicesForceReportUpload_580850 = ref object of OpenApiRestCall_579421
+proc url_AndroidenterpriseDevicesForceReportUpload_580852(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "enterpriseId" in path, "`enterpriseId` is a required path parameter"
   assert "userId" in path, "`userId` is a required path parameter"
@@ -9029,7 +9031,7 @@ proc url_AndroidenterpriseDevicesForceReportUpload_598852(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_AndroidenterpriseDevicesForceReportUpload_598851(path: JsonNode;
+proc validate_AndroidenterpriseDevicesForceReportUpload_580851(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Uploads a report containing any changes in app states on the device since the last report was generated. You can call this method up to 3 times every 24 hours for a given device.
   ## 
@@ -9044,21 +9046,21 @@ proc validate_AndroidenterpriseDevicesForceReportUpload_598851(path: JsonNode;
   ##         : The ID of the user.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `deviceId` field"
-  var valid_598853 = path.getOrDefault("deviceId")
-  valid_598853 = validateParameter(valid_598853, JString, required = true,
+  var valid_580853 = path.getOrDefault("deviceId")
+  valid_580853 = validateParameter(valid_580853, JString, required = true,
                                  default = nil)
-  if valid_598853 != nil:
-    section.add "deviceId", valid_598853
-  var valid_598854 = path.getOrDefault("enterpriseId")
-  valid_598854 = validateParameter(valid_598854, JString, required = true,
+  if valid_580853 != nil:
+    section.add "deviceId", valid_580853
+  var valid_580854 = path.getOrDefault("enterpriseId")
+  valid_580854 = validateParameter(valid_580854, JString, required = true,
                                  default = nil)
-  if valid_598854 != nil:
-    section.add "enterpriseId", valid_598854
-  var valid_598855 = path.getOrDefault("userId")
-  valid_598855 = validateParameter(valid_598855, JString, required = true,
+  if valid_580854 != nil:
+    section.add "enterpriseId", valid_580854
+  var valid_580855 = path.getOrDefault("userId")
+  valid_580855 = validateParameter(valid_580855, JString, required = true,
                                  default = nil)
-  if valid_598855 != nil:
-    section.add "userId", valid_598855
+  if valid_580855 != nil:
+    section.add "userId", valid_580855
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -9076,41 +9078,41 @@ proc validate_AndroidenterpriseDevicesForceReportUpload_598851(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_598856 = query.getOrDefault("fields")
-  valid_598856 = validateParameter(valid_598856, JString, required = false,
+  var valid_580856 = query.getOrDefault("fields")
+  valid_580856 = validateParameter(valid_580856, JString, required = false,
                                  default = nil)
-  if valid_598856 != nil:
-    section.add "fields", valid_598856
-  var valid_598857 = query.getOrDefault("quotaUser")
-  valid_598857 = validateParameter(valid_598857, JString, required = false,
+  if valid_580856 != nil:
+    section.add "fields", valid_580856
+  var valid_580857 = query.getOrDefault("quotaUser")
+  valid_580857 = validateParameter(valid_580857, JString, required = false,
                                  default = nil)
-  if valid_598857 != nil:
-    section.add "quotaUser", valid_598857
-  var valid_598858 = query.getOrDefault("alt")
-  valid_598858 = validateParameter(valid_598858, JString, required = false,
+  if valid_580857 != nil:
+    section.add "quotaUser", valid_580857
+  var valid_580858 = query.getOrDefault("alt")
+  valid_580858 = validateParameter(valid_580858, JString, required = false,
                                  default = newJString("json"))
-  if valid_598858 != nil:
-    section.add "alt", valid_598858
-  var valid_598859 = query.getOrDefault("oauth_token")
-  valid_598859 = validateParameter(valid_598859, JString, required = false,
+  if valid_580858 != nil:
+    section.add "alt", valid_580858
+  var valid_580859 = query.getOrDefault("oauth_token")
+  valid_580859 = validateParameter(valid_580859, JString, required = false,
                                  default = nil)
-  if valid_598859 != nil:
-    section.add "oauth_token", valid_598859
-  var valid_598860 = query.getOrDefault("userIp")
-  valid_598860 = validateParameter(valid_598860, JString, required = false,
+  if valid_580859 != nil:
+    section.add "oauth_token", valid_580859
+  var valid_580860 = query.getOrDefault("userIp")
+  valid_580860 = validateParameter(valid_580860, JString, required = false,
                                  default = nil)
-  if valid_598860 != nil:
-    section.add "userIp", valid_598860
-  var valid_598861 = query.getOrDefault("key")
-  valid_598861 = validateParameter(valid_598861, JString, required = false,
+  if valid_580860 != nil:
+    section.add "userIp", valid_580860
+  var valid_580861 = query.getOrDefault("key")
+  valid_580861 = validateParameter(valid_580861, JString, required = false,
                                  default = nil)
-  if valid_598861 != nil:
-    section.add "key", valid_598861
-  var valid_598862 = query.getOrDefault("prettyPrint")
-  valid_598862 = validateParameter(valid_598862, JBool, required = false,
+  if valid_580861 != nil:
+    section.add "key", valid_580861
+  var valid_580862 = query.getOrDefault("prettyPrint")
+  valid_580862 = validateParameter(valid_580862, JBool, required = false,
                                  default = newJBool(true))
-  if valid_598862 != nil:
-    section.add "prettyPrint", valid_598862
+  if valid_580862 != nil:
+    section.add "prettyPrint", valid_580862
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -9119,21 +9121,21 @@ proc validate_AndroidenterpriseDevicesForceReportUpload_598851(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_598863: Call_AndroidenterpriseDevicesForceReportUpload_598850;
+proc call*(call_580863: Call_AndroidenterpriseDevicesForceReportUpload_580850;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Uploads a report containing any changes in app states on the device since the last report was generated. You can call this method up to 3 times every 24 hours for a given device.
   ## 
-  let valid = call_598863.validator(path, query, header, formData, body)
-  let scheme = call_598863.pickScheme
+  let valid = call_580863.validator(path, query, header, formData, body)
+  let scheme = call_580863.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_598863.url(scheme.get, call_598863.host, call_598863.base,
-                         call_598863.route, valid.getOrDefault("path"),
+  let url = call_580863.url(scheme.get, call_580863.host, call_580863.base,
+                         call_580863.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_598863, url, valid)
+  result = hook(call_580863, url, valid)
 
-proc call*(call_598864: Call_AndroidenterpriseDevicesForceReportUpload_598850;
+proc call*(call_580864: Call_AndroidenterpriseDevicesForceReportUpload_580850;
           deviceId: string; enterpriseId: string; userId: string; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; key: string = ""; prettyPrint: bool = true): Recallable =
@@ -9159,34 +9161,34 @@ proc call*(call_598864: Call_AndroidenterpriseDevicesForceReportUpload_598850;
   ##              : Returns response with indentations and line breaks.
   ##   userId: string (required)
   ##         : The ID of the user.
-  var path_598865 = newJObject()
-  var query_598866 = newJObject()
-  add(query_598866, "fields", newJString(fields))
-  add(query_598866, "quotaUser", newJString(quotaUser))
-  add(query_598866, "alt", newJString(alt))
-  add(path_598865, "deviceId", newJString(deviceId))
-  add(query_598866, "oauth_token", newJString(oauthToken))
-  add(query_598866, "userIp", newJString(userIp))
-  add(query_598866, "key", newJString(key))
-  add(path_598865, "enterpriseId", newJString(enterpriseId))
-  add(query_598866, "prettyPrint", newJBool(prettyPrint))
-  add(path_598865, "userId", newJString(userId))
-  result = call_598864.call(path_598865, query_598866, nil, nil, nil)
+  var path_580865 = newJObject()
+  var query_580866 = newJObject()
+  add(query_580866, "fields", newJString(fields))
+  add(query_580866, "quotaUser", newJString(quotaUser))
+  add(query_580866, "alt", newJString(alt))
+  add(path_580865, "deviceId", newJString(deviceId))
+  add(query_580866, "oauth_token", newJString(oauthToken))
+  add(query_580866, "userIp", newJString(userIp))
+  add(query_580866, "key", newJString(key))
+  add(path_580865, "enterpriseId", newJString(enterpriseId))
+  add(query_580866, "prettyPrint", newJBool(prettyPrint))
+  add(path_580865, "userId", newJString(userId))
+  result = call_580864.call(path_580865, query_580866, nil, nil, nil)
 
-var androidenterpriseDevicesForceReportUpload* = Call_AndroidenterpriseDevicesForceReportUpload_598850(
+var androidenterpriseDevicesForceReportUpload* = Call_AndroidenterpriseDevicesForceReportUpload_580850(
     name: "androidenterpriseDevicesForceReportUpload", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com", route: "/enterprises/{enterpriseId}/users/{userId}/devices/{deviceId}/forceReportUpload",
-    validator: validate_AndroidenterpriseDevicesForceReportUpload_598851,
+    validator: validate_AndroidenterpriseDevicesForceReportUpload_580851,
     base: "/androidenterprise/v1",
-    url: url_AndroidenterpriseDevicesForceReportUpload_598852,
+    url: url_AndroidenterpriseDevicesForceReportUpload_580852,
     schemes: {Scheme.Https})
 type
-  Call_AndroidenterpriseInstallsList_598867 = ref object of OpenApiRestCall_597421
-proc url_AndroidenterpriseInstallsList_598869(protocol: Scheme; host: string;
+  Call_AndroidenterpriseInstallsList_580867 = ref object of OpenApiRestCall_579421
+proc url_AndroidenterpriseInstallsList_580869(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "enterpriseId" in path, "`enterpriseId` is a required path parameter"
   assert "userId" in path, "`userId` is a required path parameter"
@@ -9204,7 +9206,7 @@ proc url_AndroidenterpriseInstallsList_598869(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_AndroidenterpriseInstallsList_598868(path: JsonNode; query: JsonNode;
+proc validate_AndroidenterpriseInstallsList_580868(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Retrieves the details of all apps installed on the specified device.
   ## 
@@ -9219,21 +9221,21 @@ proc validate_AndroidenterpriseInstallsList_598868(path: JsonNode; query: JsonNo
   ##         : The ID of the user.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `deviceId` field"
-  var valid_598870 = path.getOrDefault("deviceId")
-  valid_598870 = validateParameter(valid_598870, JString, required = true,
+  var valid_580870 = path.getOrDefault("deviceId")
+  valid_580870 = validateParameter(valid_580870, JString, required = true,
                                  default = nil)
-  if valid_598870 != nil:
-    section.add "deviceId", valid_598870
-  var valid_598871 = path.getOrDefault("enterpriseId")
-  valid_598871 = validateParameter(valid_598871, JString, required = true,
+  if valid_580870 != nil:
+    section.add "deviceId", valid_580870
+  var valid_580871 = path.getOrDefault("enterpriseId")
+  valid_580871 = validateParameter(valid_580871, JString, required = true,
                                  default = nil)
-  if valid_598871 != nil:
-    section.add "enterpriseId", valid_598871
-  var valid_598872 = path.getOrDefault("userId")
-  valid_598872 = validateParameter(valid_598872, JString, required = true,
+  if valid_580871 != nil:
+    section.add "enterpriseId", valid_580871
+  var valid_580872 = path.getOrDefault("userId")
+  valid_580872 = validateParameter(valid_580872, JString, required = true,
                                  default = nil)
-  if valid_598872 != nil:
-    section.add "userId", valid_598872
+  if valid_580872 != nil:
+    section.add "userId", valid_580872
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -9251,41 +9253,41 @@ proc validate_AndroidenterpriseInstallsList_598868(path: JsonNode; query: JsonNo
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_598873 = query.getOrDefault("fields")
-  valid_598873 = validateParameter(valid_598873, JString, required = false,
+  var valid_580873 = query.getOrDefault("fields")
+  valid_580873 = validateParameter(valid_580873, JString, required = false,
                                  default = nil)
-  if valid_598873 != nil:
-    section.add "fields", valid_598873
-  var valid_598874 = query.getOrDefault("quotaUser")
-  valid_598874 = validateParameter(valid_598874, JString, required = false,
+  if valid_580873 != nil:
+    section.add "fields", valid_580873
+  var valid_580874 = query.getOrDefault("quotaUser")
+  valid_580874 = validateParameter(valid_580874, JString, required = false,
                                  default = nil)
-  if valid_598874 != nil:
-    section.add "quotaUser", valid_598874
-  var valid_598875 = query.getOrDefault("alt")
-  valid_598875 = validateParameter(valid_598875, JString, required = false,
+  if valid_580874 != nil:
+    section.add "quotaUser", valid_580874
+  var valid_580875 = query.getOrDefault("alt")
+  valid_580875 = validateParameter(valid_580875, JString, required = false,
                                  default = newJString("json"))
-  if valid_598875 != nil:
-    section.add "alt", valid_598875
-  var valid_598876 = query.getOrDefault("oauth_token")
-  valid_598876 = validateParameter(valid_598876, JString, required = false,
+  if valid_580875 != nil:
+    section.add "alt", valid_580875
+  var valid_580876 = query.getOrDefault("oauth_token")
+  valid_580876 = validateParameter(valid_580876, JString, required = false,
                                  default = nil)
-  if valid_598876 != nil:
-    section.add "oauth_token", valid_598876
-  var valid_598877 = query.getOrDefault("userIp")
-  valid_598877 = validateParameter(valid_598877, JString, required = false,
+  if valid_580876 != nil:
+    section.add "oauth_token", valid_580876
+  var valid_580877 = query.getOrDefault("userIp")
+  valid_580877 = validateParameter(valid_580877, JString, required = false,
                                  default = nil)
-  if valid_598877 != nil:
-    section.add "userIp", valid_598877
-  var valid_598878 = query.getOrDefault("key")
-  valid_598878 = validateParameter(valid_598878, JString, required = false,
+  if valid_580877 != nil:
+    section.add "userIp", valid_580877
+  var valid_580878 = query.getOrDefault("key")
+  valid_580878 = validateParameter(valid_580878, JString, required = false,
                                  default = nil)
-  if valid_598878 != nil:
-    section.add "key", valid_598878
-  var valid_598879 = query.getOrDefault("prettyPrint")
-  valid_598879 = validateParameter(valid_598879, JBool, required = false,
+  if valid_580878 != nil:
+    section.add "key", valid_580878
+  var valid_580879 = query.getOrDefault("prettyPrint")
+  valid_580879 = validateParameter(valid_580879, JBool, required = false,
                                  default = newJBool(true))
-  if valid_598879 != nil:
-    section.add "prettyPrint", valid_598879
+  if valid_580879 != nil:
+    section.add "prettyPrint", valid_580879
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -9294,20 +9296,20 @@ proc validate_AndroidenterpriseInstallsList_598868(path: JsonNode; query: JsonNo
   if body != nil:
     result.add "body", body
 
-proc call*(call_598880: Call_AndroidenterpriseInstallsList_598867; path: JsonNode;
+proc call*(call_580880: Call_AndroidenterpriseInstallsList_580867; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Retrieves the details of all apps installed on the specified device.
   ## 
-  let valid = call_598880.validator(path, query, header, formData, body)
-  let scheme = call_598880.pickScheme
+  let valid = call_580880.validator(path, query, header, formData, body)
+  let scheme = call_580880.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_598880.url(scheme.get, call_598880.host, call_598880.base,
-                         call_598880.route, valid.getOrDefault("path"),
+  let url = call_580880.url(scheme.get, call_580880.host, call_580880.base,
+                         call_580880.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_598880, url, valid)
+  result = hook(call_580880, url, valid)
 
-proc call*(call_598881: Call_AndroidenterpriseInstallsList_598867;
+proc call*(call_580881: Call_AndroidenterpriseInstallsList_580867;
           deviceId: string; enterpriseId: string; userId: string; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; key: string = ""; prettyPrint: bool = true): Recallable =
@@ -9333,33 +9335,33 @@ proc call*(call_598881: Call_AndroidenterpriseInstallsList_598867;
   ##              : Returns response with indentations and line breaks.
   ##   userId: string (required)
   ##         : The ID of the user.
-  var path_598882 = newJObject()
-  var query_598883 = newJObject()
-  add(query_598883, "fields", newJString(fields))
-  add(query_598883, "quotaUser", newJString(quotaUser))
-  add(query_598883, "alt", newJString(alt))
-  add(path_598882, "deviceId", newJString(deviceId))
-  add(query_598883, "oauth_token", newJString(oauthToken))
-  add(query_598883, "userIp", newJString(userIp))
-  add(query_598883, "key", newJString(key))
-  add(path_598882, "enterpriseId", newJString(enterpriseId))
-  add(query_598883, "prettyPrint", newJBool(prettyPrint))
-  add(path_598882, "userId", newJString(userId))
-  result = call_598881.call(path_598882, query_598883, nil, nil, nil)
+  var path_580882 = newJObject()
+  var query_580883 = newJObject()
+  add(query_580883, "fields", newJString(fields))
+  add(query_580883, "quotaUser", newJString(quotaUser))
+  add(query_580883, "alt", newJString(alt))
+  add(path_580882, "deviceId", newJString(deviceId))
+  add(query_580883, "oauth_token", newJString(oauthToken))
+  add(query_580883, "userIp", newJString(userIp))
+  add(query_580883, "key", newJString(key))
+  add(path_580882, "enterpriseId", newJString(enterpriseId))
+  add(query_580883, "prettyPrint", newJBool(prettyPrint))
+  add(path_580882, "userId", newJString(userId))
+  result = call_580881.call(path_580882, query_580883, nil, nil, nil)
 
-var androidenterpriseInstallsList* = Call_AndroidenterpriseInstallsList_598867(
+var androidenterpriseInstallsList* = Call_AndroidenterpriseInstallsList_580867(
     name: "androidenterpriseInstallsList", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/enterprises/{enterpriseId}/users/{userId}/devices/{deviceId}/installs",
-    validator: validate_AndroidenterpriseInstallsList_598868,
-    base: "/androidenterprise/v1", url: url_AndroidenterpriseInstallsList_598869,
+    validator: validate_AndroidenterpriseInstallsList_580868,
+    base: "/androidenterprise/v1", url: url_AndroidenterpriseInstallsList_580869,
     schemes: {Scheme.Https})
 type
-  Call_AndroidenterpriseInstallsUpdate_598902 = ref object of OpenApiRestCall_597421
-proc url_AndroidenterpriseInstallsUpdate_598904(protocol: Scheme; host: string;
+  Call_AndroidenterpriseInstallsUpdate_580902 = ref object of OpenApiRestCall_579421
+proc url_AndroidenterpriseInstallsUpdate_580904(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "enterpriseId" in path, "`enterpriseId` is a required path parameter"
   assert "userId" in path, "`userId` is a required path parameter"
@@ -9379,7 +9381,7 @@ proc url_AndroidenterpriseInstallsUpdate_598904(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_AndroidenterpriseInstallsUpdate_598903(path: JsonNode;
+proc validate_AndroidenterpriseInstallsUpdate_580903(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Requests to install the latest version of an app to a device. If the app is already installed, then it is updated to the latest version if necessary.
   ## 
@@ -9396,26 +9398,26 @@ proc validate_AndroidenterpriseInstallsUpdate_598903(path: JsonNode;
   ##         : The ID of the user.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `installId` field"
-  var valid_598905 = path.getOrDefault("installId")
-  valid_598905 = validateParameter(valid_598905, JString, required = true,
+  var valid_580905 = path.getOrDefault("installId")
+  valid_580905 = validateParameter(valid_580905, JString, required = true,
                                  default = nil)
-  if valid_598905 != nil:
-    section.add "installId", valid_598905
-  var valid_598906 = path.getOrDefault("deviceId")
-  valid_598906 = validateParameter(valid_598906, JString, required = true,
+  if valid_580905 != nil:
+    section.add "installId", valid_580905
+  var valid_580906 = path.getOrDefault("deviceId")
+  valid_580906 = validateParameter(valid_580906, JString, required = true,
                                  default = nil)
-  if valid_598906 != nil:
-    section.add "deviceId", valid_598906
-  var valid_598907 = path.getOrDefault("enterpriseId")
-  valid_598907 = validateParameter(valid_598907, JString, required = true,
+  if valid_580906 != nil:
+    section.add "deviceId", valid_580906
+  var valid_580907 = path.getOrDefault("enterpriseId")
+  valid_580907 = validateParameter(valid_580907, JString, required = true,
                                  default = nil)
-  if valid_598907 != nil:
-    section.add "enterpriseId", valid_598907
-  var valid_598908 = path.getOrDefault("userId")
-  valid_598908 = validateParameter(valid_598908, JString, required = true,
+  if valid_580907 != nil:
+    section.add "enterpriseId", valid_580907
+  var valid_580908 = path.getOrDefault("userId")
+  valid_580908 = validateParameter(valid_580908, JString, required = true,
                                  default = nil)
-  if valid_598908 != nil:
-    section.add "userId", valid_598908
+  if valid_580908 != nil:
+    section.add "userId", valid_580908
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -9433,41 +9435,41 @@ proc validate_AndroidenterpriseInstallsUpdate_598903(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_598909 = query.getOrDefault("fields")
-  valid_598909 = validateParameter(valid_598909, JString, required = false,
+  var valid_580909 = query.getOrDefault("fields")
+  valid_580909 = validateParameter(valid_580909, JString, required = false,
                                  default = nil)
-  if valid_598909 != nil:
-    section.add "fields", valid_598909
-  var valid_598910 = query.getOrDefault("quotaUser")
-  valid_598910 = validateParameter(valid_598910, JString, required = false,
+  if valid_580909 != nil:
+    section.add "fields", valid_580909
+  var valid_580910 = query.getOrDefault("quotaUser")
+  valid_580910 = validateParameter(valid_580910, JString, required = false,
                                  default = nil)
-  if valid_598910 != nil:
-    section.add "quotaUser", valid_598910
-  var valid_598911 = query.getOrDefault("alt")
-  valid_598911 = validateParameter(valid_598911, JString, required = false,
+  if valid_580910 != nil:
+    section.add "quotaUser", valid_580910
+  var valid_580911 = query.getOrDefault("alt")
+  valid_580911 = validateParameter(valid_580911, JString, required = false,
                                  default = newJString("json"))
-  if valid_598911 != nil:
-    section.add "alt", valid_598911
-  var valid_598912 = query.getOrDefault("oauth_token")
-  valid_598912 = validateParameter(valid_598912, JString, required = false,
+  if valid_580911 != nil:
+    section.add "alt", valid_580911
+  var valid_580912 = query.getOrDefault("oauth_token")
+  valid_580912 = validateParameter(valid_580912, JString, required = false,
                                  default = nil)
-  if valid_598912 != nil:
-    section.add "oauth_token", valid_598912
-  var valid_598913 = query.getOrDefault("userIp")
-  valid_598913 = validateParameter(valid_598913, JString, required = false,
+  if valid_580912 != nil:
+    section.add "oauth_token", valid_580912
+  var valid_580913 = query.getOrDefault("userIp")
+  valid_580913 = validateParameter(valid_580913, JString, required = false,
                                  default = nil)
-  if valid_598913 != nil:
-    section.add "userIp", valid_598913
-  var valid_598914 = query.getOrDefault("key")
-  valid_598914 = validateParameter(valid_598914, JString, required = false,
+  if valid_580913 != nil:
+    section.add "userIp", valid_580913
+  var valid_580914 = query.getOrDefault("key")
+  valid_580914 = validateParameter(valid_580914, JString, required = false,
                                  default = nil)
-  if valid_598914 != nil:
-    section.add "key", valid_598914
-  var valid_598915 = query.getOrDefault("prettyPrint")
-  valid_598915 = validateParameter(valid_598915, JBool, required = false,
+  if valid_580914 != nil:
+    section.add "key", valid_580914
+  var valid_580915 = query.getOrDefault("prettyPrint")
+  valid_580915 = validateParameter(valid_580915, JBool, required = false,
                                  default = newJBool(true))
-  if valid_598915 != nil:
-    section.add "prettyPrint", valid_598915
+  if valid_580915 != nil:
+    section.add "prettyPrint", valid_580915
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -9479,21 +9481,21 @@ proc validate_AndroidenterpriseInstallsUpdate_598903(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_598917: Call_AndroidenterpriseInstallsUpdate_598902;
+proc call*(call_580917: Call_AndroidenterpriseInstallsUpdate_580902;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Requests to install the latest version of an app to a device. If the app is already installed, then it is updated to the latest version if necessary.
   ## 
-  let valid = call_598917.validator(path, query, header, formData, body)
-  let scheme = call_598917.pickScheme
+  let valid = call_580917.validator(path, query, header, formData, body)
+  let scheme = call_580917.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_598917.url(scheme.get, call_598917.host, call_598917.base,
-                         call_598917.route, valid.getOrDefault("path"),
+  let url = call_580917.url(scheme.get, call_580917.host, call_580917.base,
+                         call_580917.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_598917, url, valid)
+  result = hook(call_580917, url, valid)
 
-proc call*(call_598918: Call_AndroidenterpriseInstallsUpdate_598902;
+proc call*(call_580918: Call_AndroidenterpriseInstallsUpdate_580902;
           installId: string; deviceId: string; enterpriseId: string; userId: string;
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           oauthToken: string = ""; userIp: string = ""; key: string = "";
@@ -9523,37 +9525,37 @@ proc call*(call_598918: Call_AndroidenterpriseInstallsUpdate_598902;
   ##              : Returns response with indentations and line breaks.
   ##   userId: string (required)
   ##         : The ID of the user.
-  var path_598919 = newJObject()
-  var query_598920 = newJObject()
-  var body_598921 = newJObject()
-  add(query_598920, "fields", newJString(fields))
-  add(query_598920, "quotaUser", newJString(quotaUser))
-  add(path_598919, "installId", newJString(installId))
-  add(query_598920, "alt", newJString(alt))
-  add(path_598919, "deviceId", newJString(deviceId))
-  add(query_598920, "oauth_token", newJString(oauthToken))
-  add(query_598920, "userIp", newJString(userIp))
-  add(query_598920, "key", newJString(key))
-  add(path_598919, "enterpriseId", newJString(enterpriseId))
+  var path_580919 = newJObject()
+  var query_580920 = newJObject()
+  var body_580921 = newJObject()
+  add(query_580920, "fields", newJString(fields))
+  add(query_580920, "quotaUser", newJString(quotaUser))
+  add(path_580919, "installId", newJString(installId))
+  add(query_580920, "alt", newJString(alt))
+  add(path_580919, "deviceId", newJString(deviceId))
+  add(query_580920, "oauth_token", newJString(oauthToken))
+  add(query_580920, "userIp", newJString(userIp))
+  add(query_580920, "key", newJString(key))
+  add(path_580919, "enterpriseId", newJString(enterpriseId))
   if body != nil:
-    body_598921 = body
-  add(query_598920, "prettyPrint", newJBool(prettyPrint))
-  add(path_598919, "userId", newJString(userId))
-  result = call_598918.call(path_598919, query_598920, nil, nil, body_598921)
+    body_580921 = body
+  add(query_580920, "prettyPrint", newJBool(prettyPrint))
+  add(path_580919, "userId", newJString(userId))
+  result = call_580918.call(path_580919, query_580920, nil, nil, body_580921)
 
-var androidenterpriseInstallsUpdate* = Call_AndroidenterpriseInstallsUpdate_598902(
+var androidenterpriseInstallsUpdate* = Call_AndroidenterpriseInstallsUpdate_580902(
     name: "androidenterpriseInstallsUpdate", meth: HttpMethod.HttpPut,
     host: "www.googleapis.com", route: "/enterprises/{enterpriseId}/users/{userId}/devices/{deviceId}/installs/{installId}",
-    validator: validate_AndroidenterpriseInstallsUpdate_598903,
-    base: "/androidenterprise/v1", url: url_AndroidenterpriseInstallsUpdate_598904,
+    validator: validate_AndroidenterpriseInstallsUpdate_580903,
+    base: "/androidenterprise/v1", url: url_AndroidenterpriseInstallsUpdate_580904,
     schemes: {Scheme.Https})
 type
-  Call_AndroidenterpriseInstallsGet_598884 = ref object of OpenApiRestCall_597421
-proc url_AndroidenterpriseInstallsGet_598886(protocol: Scheme; host: string;
+  Call_AndroidenterpriseInstallsGet_580884 = ref object of OpenApiRestCall_579421
+proc url_AndroidenterpriseInstallsGet_580886(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "enterpriseId" in path, "`enterpriseId` is a required path parameter"
   assert "userId" in path, "`userId` is a required path parameter"
@@ -9573,7 +9575,7 @@ proc url_AndroidenterpriseInstallsGet_598886(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_AndroidenterpriseInstallsGet_598885(path: JsonNode; query: JsonNode;
+proc validate_AndroidenterpriseInstallsGet_580885(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Retrieves details of an installation of an app on a device.
   ## 
@@ -9590,26 +9592,26 @@ proc validate_AndroidenterpriseInstallsGet_598885(path: JsonNode; query: JsonNod
   ##         : The ID of the user.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `installId` field"
-  var valid_598887 = path.getOrDefault("installId")
-  valid_598887 = validateParameter(valid_598887, JString, required = true,
+  var valid_580887 = path.getOrDefault("installId")
+  valid_580887 = validateParameter(valid_580887, JString, required = true,
                                  default = nil)
-  if valid_598887 != nil:
-    section.add "installId", valid_598887
-  var valid_598888 = path.getOrDefault("deviceId")
-  valid_598888 = validateParameter(valid_598888, JString, required = true,
+  if valid_580887 != nil:
+    section.add "installId", valid_580887
+  var valid_580888 = path.getOrDefault("deviceId")
+  valid_580888 = validateParameter(valid_580888, JString, required = true,
                                  default = nil)
-  if valid_598888 != nil:
-    section.add "deviceId", valid_598888
-  var valid_598889 = path.getOrDefault("enterpriseId")
-  valid_598889 = validateParameter(valid_598889, JString, required = true,
+  if valid_580888 != nil:
+    section.add "deviceId", valid_580888
+  var valid_580889 = path.getOrDefault("enterpriseId")
+  valid_580889 = validateParameter(valid_580889, JString, required = true,
                                  default = nil)
-  if valid_598889 != nil:
-    section.add "enterpriseId", valid_598889
-  var valid_598890 = path.getOrDefault("userId")
-  valid_598890 = validateParameter(valid_598890, JString, required = true,
+  if valid_580889 != nil:
+    section.add "enterpriseId", valid_580889
+  var valid_580890 = path.getOrDefault("userId")
+  valid_580890 = validateParameter(valid_580890, JString, required = true,
                                  default = nil)
-  if valid_598890 != nil:
-    section.add "userId", valid_598890
+  if valid_580890 != nil:
+    section.add "userId", valid_580890
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -9627,41 +9629,41 @@ proc validate_AndroidenterpriseInstallsGet_598885(path: JsonNode; query: JsonNod
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_598891 = query.getOrDefault("fields")
-  valid_598891 = validateParameter(valid_598891, JString, required = false,
+  var valid_580891 = query.getOrDefault("fields")
+  valid_580891 = validateParameter(valid_580891, JString, required = false,
                                  default = nil)
-  if valid_598891 != nil:
-    section.add "fields", valid_598891
-  var valid_598892 = query.getOrDefault("quotaUser")
-  valid_598892 = validateParameter(valid_598892, JString, required = false,
+  if valid_580891 != nil:
+    section.add "fields", valid_580891
+  var valid_580892 = query.getOrDefault("quotaUser")
+  valid_580892 = validateParameter(valid_580892, JString, required = false,
                                  default = nil)
-  if valid_598892 != nil:
-    section.add "quotaUser", valid_598892
-  var valid_598893 = query.getOrDefault("alt")
-  valid_598893 = validateParameter(valid_598893, JString, required = false,
+  if valid_580892 != nil:
+    section.add "quotaUser", valid_580892
+  var valid_580893 = query.getOrDefault("alt")
+  valid_580893 = validateParameter(valid_580893, JString, required = false,
                                  default = newJString("json"))
-  if valid_598893 != nil:
-    section.add "alt", valid_598893
-  var valid_598894 = query.getOrDefault("oauth_token")
-  valid_598894 = validateParameter(valid_598894, JString, required = false,
+  if valid_580893 != nil:
+    section.add "alt", valid_580893
+  var valid_580894 = query.getOrDefault("oauth_token")
+  valid_580894 = validateParameter(valid_580894, JString, required = false,
                                  default = nil)
-  if valid_598894 != nil:
-    section.add "oauth_token", valid_598894
-  var valid_598895 = query.getOrDefault("userIp")
-  valid_598895 = validateParameter(valid_598895, JString, required = false,
+  if valid_580894 != nil:
+    section.add "oauth_token", valid_580894
+  var valid_580895 = query.getOrDefault("userIp")
+  valid_580895 = validateParameter(valid_580895, JString, required = false,
                                  default = nil)
-  if valid_598895 != nil:
-    section.add "userIp", valid_598895
-  var valid_598896 = query.getOrDefault("key")
-  valid_598896 = validateParameter(valid_598896, JString, required = false,
+  if valid_580895 != nil:
+    section.add "userIp", valid_580895
+  var valid_580896 = query.getOrDefault("key")
+  valid_580896 = validateParameter(valid_580896, JString, required = false,
                                  default = nil)
-  if valid_598896 != nil:
-    section.add "key", valid_598896
-  var valid_598897 = query.getOrDefault("prettyPrint")
-  valid_598897 = validateParameter(valid_598897, JBool, required = false,
+  if valid_580896 != nil:
+    section.add "key", valid_580896
+  var valid_580897 = query.getOrDefault("prettyPrint")
+  valid_580897 = validateParameter(valid_580897, JBool, required = false,
                                  default = newJBool(true))
-  if valid_598897 != nil:
-    section.add "prettyPrint", valid_598897
+  if valid_580897 != nil:
+    section.add "prettyPrint", valid_580897
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -9670,20 +9672,20 @@ proc validate_AndroidenterpriseInstallsGet_598885(path: JsonNode; query: JsonNod
   if body != nil:
     result.add "body", body
 
-proc call*(call_598898: Call_AndroidenterpriseInstallsGet_598884; path: JsonNode;
+proc call*(call_580898: Call_AndroidenterpriseInstallsGet_580884; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Retrieves details of an installation of an app on a device.
   ## 
-  let valid = call_598898.validator(path, query, header, formData, body)
-  let scheme = call_598898.pickScheme
+  let valid = call_580898.validator(path, query, header, formData, body)
+  let scheme = call_580898.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_598898.url(scheme.get, call_598898.host, call_598898.base,
-                         call_598898.route, valid.getOrDefault("path"),
+  let url = call_580898.url(scheme.get, call_580898.host, call_580898.base,
+                         call_580898.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_598898, url, valid)
+  result = hook(call_580898, url, valid)
 
-proc call*(call_598899: Call_AndroidenterpriseInstallsGet_598884;
+proc call*(call_580899: Call_AndroidenterpriseInstallsGet_580884;
           installId: string; deviceId: string; enterpriseId: string; userId: string;
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           oauthToken: string = ""; userIp: string = ""; key: string = "";
@@ -9712,34 +9714,34 @@ proc call*(call_598899: Call_AndroidenterpriseInstallsGet_598884;
   ##              : Returns response with indentations and line breaks.
   ##   userId: string (required)
   ##         : The ID of the user.
-  var path_598900 = newJObject()
-  var query_598901 = newJObject()
-  add(query_598901, "fields", newJString(fields))
-  add(query_598901, "quotaUser", newJString(quotaUser))
-  add(path_598900, "installId", newJString(installId))
-  add(query_598901, "alt", newJString(alt))
-  add(path_598900, "deviceId", newJString(deviceId))
-  add(query_598901, "oauth_token", newJString(oauthToken))
-  add(query_598901, "userIp", newJString(userIp))
-  add(query_598901, "key", newJString(key))
-  add(path_598900, "enterpriseId", newJString(enterpriseId))
-  add(query_598901, "prettyPrint", newJBool(prettyPrint))
-  add(path_598900, "userId", newJString(userId))
-  result = call_598899.call(path_598900, query_598901, nil, nil, nil)
+  var path_580900 = newJObject()
+  var query_580901 = newJObject()
+  add(query_580901, "fields", newJString(fields))
+  add(query_580901, "quotaUser", newJString(quotaUser))
+  add(path_580900, "installId", newJString(installId))
+  add(query_580901, "alt", newJString(alt))
+  add(path_580900, "deviceId", newJString(deviceId))
+  add(query_580901, "oauth_token", newJString(oauthToken))
+  add(query_580901, "userIp", newJString(userIp))
+  add(query_580901, "key", newJString(key))
+  add(path_580900, "enterpriseId", newJString(enterpriseId))
+  add(query_580901, "prettyPrint", newJBool(prettyPrint))
+  add(path_580900, "userId", newJString(userId))
+  result = call_580899.call(path_580900, query_580901, nil, nil, nil)
 
-var androidenterpriseInstallsGet* = Call_AndroidenterpriseInstallsGet_598884(
+var androidenterpriseInstallsGet* = Call_AndroidenterpriseInstallsGet_580884(
     name: "androidenterpriseInstallsGet", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/enterprises/{enterpriseId}/users/{userId}/devices/{deviceId}/installs/{installId}",
-    validator: validate_AndroidenterpriseInstallsGet_598885,
-    base: "/androidenterprise/v1", url: url_AndroidenterpriseInstallsGet_598886,
+    validator: validate_AndroidenterpriseInstallsGet_580885,
+    base: "/androidenterprise/v1", url: url_AndroidenterpriseInstallsGet_580886,
     schemes: {Scheme.Https})
 type
-  Call_AndroidenterpriseInstallsPatch_598940 = ref object of OpenApiRestCall_597421
-proc url_AndroidenterpriseInstallsPatch_598942(protocol: Scheme; host: string;
+  Call_AndroidenterpriseInstallsPatch_580940 = ref object of OpenApiRestCall_579421
+proc url_AndroidenterpriseInstallsPatch_580942(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "enterpriseId" in path, "`enterpriseId` is a required path parameter"
   assert "userId" in path, "`userId` is a required path parameter"
@@ -9759,7 +9761,7 @@ proc url_AndroidenterpriseInstallsPatch_598942(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_AndroidenterpriseInstallsPatch_598941(path: JsonNode;
+proc validate_AndroidenterpriseInstallsPatch_580941(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Requests to install the latest version of an app to a device. If the app is already installed, then it is updated to the latest version if necessary. This method supports patch semantics.
   ## 
@@ -9776,26 +9778,26 @@ proc validate_AndroidenterpriseInstallsPatch_598941(path: JsonNode;
   ##         : The ID of the user.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `installId` field"
-  var valid_598943 = path.getOrDefault("installId")
-  valid_598943 = validateParameter(valid_598943, JString, required = true,
+  var valid_580943 = path.getOrDefault("installId")
+  valid_580943 = validateParameter(valid_580943, JString, required = true,
                                  default = nil)
-  if valid_598943 != nil:
-    section.add "installId", valid_598943
-  var valid_598944 = path.getOrDefault("deviceId")
-  valid_598944 = validateParameter(valid_598944, JString, required = true,
+  if valid_580943 != nil:
+    section.add "installId", valid_580943
+  var valid_580944 = path.getOrDefault("deviceId")
+  valid_580944 = validateParameter(valid_580944, JString, required = true,
                                  default = nil)
-  if valid_598944 != nil:
-    section.add "deviceId", valid_598944
-  var valid_598945 = path.getOrDefault("enterpriseId")
-  valid_598945 = validateParameter(valid_598945, JString, required = true,
+  if valid_580944 != nil:
+    section.add "deviceId", valid_580944
+  var valid_580945 = path.getOrDefault("enterpriseId")
+  valid_580945 = validateParameter(valid_580945, JString, required = true,
                                  default = nil)
-  if valid_598945 != nil:
-    section.add "enterpriseId", valid_598945
-  var valid_598946 = path.getOrDefault("userId")
-  valid_598946 = validateParameter(valid_598946, JString, required = true,
+  if valid_580945 != nil:
+    section.add "enterpriseId", valid_580945
+  var valid_580946 = path.getOrDefault("userId")
+  valid_580946 = validateParameter(valid_580946, JString, required = true,
                                  default = nil)
-  if valid_598946 != nil:
-    section.add "userId", valid_598946
+  if valid_580946 != nil:
+    section.add "userId", valid_580946
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -9813,41 +9815,41 @@ proc validate_AndroidenterpriseInstallsPatch_598941(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_598947 = query.getOrDefault("fields")
-  valid_598947 = validateParameter(valid_598947, JString, required = false,
+  var valid_580947 = query.getOrDefault("fields")
+  valid_580947 = validateParameter(valid_580947, JString, required = false,
                                  default = nil)
-  if valid_598947 != nil:
-    section.add "fields", valid_598947
-  var valid_598948 = query.getOrDefault("quotaUser")
-  valid_598948 = validateParameter(valid_598948, JString, required = false,
+  if valid_580947 != nil:
+    section.add "fields", valid_580947
+  var valid_580948 = query.getOrDefault("quotaUser")
+  valid_580948 = validateParameter(valid_580948, JString, required = false,
                                  default = nil)
-  if valid_598948 != nil:
-    section.add "quotaUser", valid_598948
-  var valid_598949 = query.getOrDefault("alt")
-  valid_598949 = validateParameter(valid_598949, JString, required = false,
+  if valid_580948 != nil:
+    section.add "quotaUser", valid_580948
+  var valid_580949 = query.getOrDefault("alt")
+  valid_580949 = validateParameter(valid_580949, JString, required = false,
                                  default = newJString("json"))
-  if valid_598949 != nil:
-    section.add "alt", valid_598949
-  var valid_598950 = query.getOrDefault("oauth_token")
-  valid_598950 = validateParameter(valid_598950, JString, required = false,
+  if valid_580949 != nil:
+    section.add "alt", valid_580949
+  var valid_580950 = query.getOrDefault("oauth_token")
+  valid_580950 = validateParameter(valid_580950, JString, required = false,
                                  default = nil)
-  if valid_598950 != nil:
-    section.add "oauth_token", valid_598950
-  var valid_598951 = query.getOrDefault("userIp")
-  valid_598951 = validateParameter(valid_598951, JString, required = false,
+  if valid_580950 != nil:
+    section.add "oauth_token", valid_580950
+  var valid_580951 = query.getOrDefault("userIp")
+  valid_580951 = validateParameter(valid_580951, JString, required = false,
                                  default = nil)
-  if valid_598951 != nil:
-    section.add "userIp", valid_598951
-  var valid_598952 = query.getOrDefault("key")
-  valid_598952 = validateParameter(valid_598952, JString, required = false,
+  if valid_580951 != nil:
+    section.add "userIp", valid_580951
+  var valid_580952 = query.getOrDefault("key")
+  valid_580952 = validateParameter(valid_580952, JString, required = false,
                                  default = nil)
-  if valid_598952 != nil:
-    section.add "key", valid_598952
-  var valid_598953 = query.getOrDefault("prettyPrint")
-  valid_598953 = validateParameter(valid_598953, JBool, required = false,
+  if valid_580952 != nil:
+    section.add "key", valid_580952
+  var valid_580953 = query.getOrDefault("prettyPrint")
+  valid_580953 = validateParameter(valid_580953, JBool, required = false,
                                  default = newJBool(true))
-  if valid_598953 != nil:
-    section.add "prettyPrint", valid_598953
+  if valid_580953 != nil:
+    section.add "prettyPrint", valid_580953
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -9859,20 +9861,20 @@ proc validate_AndroidenterpriseInstallsPatch_598941(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_598955: Call_AndroidenterpriseInstallsPatch_598940; path: JsonNode;
+proc call*(call_580955: Call_AndroidenterpriseInstallsPatch_580940; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Requests to install the latest version of an app to a device. If the app is already installed, then it is updated to the latest version if necessary. This method supports patch semantics.
   ## 
-  let valid = call_598955.validator(path, query, header, formData, body)
-  let scheme = call_598955.pickScheme
+  let valid = call_580955.validator(path, query, header, formData, body)
+  let scheme = call_580955.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_598955.url(scheme.get, call_598955.host, call_598955.base,
-                         call_598955.route, valid.getOrDefault("path"),
+  let url = call_580955.url(scheme.get, call_580955.host, call_580955.base,
+                         call_580955.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_598955, url, valid)
+  result = hook(call_580955, url, valid)
 
-proc call*(call_598956: Call_AndroidenterpriseInstallsPatch_598940;
+proc call*(call_580956: Call_AndroidenterpriseInstallsPatch_580940;
           installId: string; deviceId: string; enterpriseId: string; userId: string;
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           oauthToken: string = ""; userIp: string = ""; key: string = "";
@@ -9902,37 +9904,37 @@ proc call*(call_598956: Call_AndroidenterpriseInstallsPatch_598940;
   ##              : Returns response with indentations and line breaks.
   ##   userId: string (required)
   ##         : The ID of the user.
-  var path_598957 = newJObject()
-  var query_598958 = newJObject()
-  var body_598959 = newJObject()
-  add(query_598958, "fields", newJString(fields))
-  add(query_598958, "quotaUser", newJString(quotaUser))
-  add(path_598957, "installId", newJString(installId))
-  add(query_598958, "alt", newJString(alt))
-  add(path_598957, "deviceId", newJString(deviceId))
-  add(query_598958, "oauth_token", newJString(oauthToken))
-  add(query_598958, "userIp", newJString(userIp))
-  add(query_598958, "key", newJString(key))
-  add(path_598957, "enterpriseId", newJString(enterpriseId))
+  var path_580957 = newJObject()
+  var query_580958 = newJObject()
+  var body_580959 = newJObject()
+  add(query_580958, "fields", newJString(fields))
+  add(query_580958, "quotaUser", newJString(quotaUser))
+  add(path_580957, "installId", newJString(installId))
+  add(query_580958, "alt", newJString(alt))
+  add(path_580957, "deviceId", newJString(deviceId))
+  add(query_580958, "oauth_token", newJString(oauthToken))
+  add(query_580958, "userIp", newJString(userIp))
+  add(query_580958, "key", newJString(key))
+  add(path_580957, "enterpriseId", newJString(enterpriseId))
   if body != nil:
-    body_598959 = body
-  add(query_598958, "prettyPrint", newJBool(prettyPrint))
-  add(path_598957, "userId", newJString(userId))
-  result = call_598956.call(path_598957, query_598958, nil, nil, body_598959)
+    body_580959 = body
+  add(query_580958, "prettyPrint", newJBool(prettyPrint))
+  add(path_580957, "userId", newJString(userId))
+  result = call_580956.call(path_580957, query_580958, nil, nil, body_580959)
 
-var androidenterpriseInstallsPatch* = Call_AndroidenterpriseInstallsPatch_598940(
+var androidenterpriseInstallsPatch* = Call_AndroidenterpriseInstallsPatch_580940(
     name: "androidenterpriseInstallsPatch", meth: HttpMethod.HttpPatch,
     host: "www.googleapis.com", route: "/enterprises/{enterpriseId}/users/{userId}/devices/{deviceId}/installs/{installId}",
-    validator: validate_AndroidenterpriseInstallsPatch_598941,
-    base: "/androidenterprise/v1", url: url_AndroidenterpriseInstallsPatch_598942,
+    validator: validate_AndroidenterpriseInstallsPatch_580941,
+    base: "/androidenterprise/v1", url: url_AndroidenterpriseInstallsPatch_580942,
     schemes: {Scheme.Https})
 type
-  Call_AndroidenterpriseInstallsDelete_598922 = ref object of OpenApiRestCall_597421
-proc url_AndroidenterpriseInstallsDelete_598924(protocol: Scheme; host: string;
+  Call_AndroidenterpriseInstallsDelete_580922 = ref object of OpenApiRestCall_579421
+proc url_AndroidenterpriseInstallsDelete_580924(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "enterpriseId" in path, "`enterpriseId` is a required path parameter"
   assert "userId" in path, "`userId` is a required path parameter"
@@ -9952,7 +9954,7 @@ proc url_AndroidenterpriseInstallsDelete_598924(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_AndroidenterpriseInstallsDelete_598923(path: JsonNode;
+proc validate_AndroidenterpriseInstallsDelete_580923(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Requests to remove an app from a device. A call to get or list will still show the app as installed on the device until it is actually removed.
   ## 
@@ -9969,26 +9971,26 @@ proc validate_AndroidenterpriseInstallsDelete_598923(path: JsonNode;
   ##         : The ID of the user.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `installId` field"
-  var valid_598925 = path.getOrDefault("installId")
-  valid_598925 = validateParameter(valid_598925, JString, required = true,
+  var valid_580925 = path.getOrDefault("installId")
+  valid_580925 = validateParameter(valid_580925, JString, required = true,
                                  default = nil)
-  if valid_598925 != nil:
-    section.add "installId", valid_598925
-  var valid_598926 = path.getOrDefault("deviceId")
-  valid_598926 = validateParameter(valid_598926, JString, required = true,
+  if valid_580925 != nil:
+    section.add "installId", valid_580925
+  var valid_580926 = path.getOrDefault("deviceId")
+  valid_580926 = validateParameter(valid_580926, JString, required = true,
                                  default = nil)
-  if valid_598926 != nil:
-    section.add "deviceId", valid_598926
-  var valid_598927 = path.getOrDefault("enterpriseId")
-  valid_598927 = validateParameter(valid_598927, JString, required = true,
+  if valid_580926 != nil:
+    section.add "deviceId", valid_580926
+  var valid_580927 = path.getOrDefault("enterpriseId")
+  valid_580927 = validateParameter(valid_580927, JString, required = true,
                                  default = nil)
-  if valid_598927 != nil:
-    section.add "enterpriseId", valid_598927
-  var valid_598928 = path.getOrDefault("userId")
-  valid_598928 = validateParameter(valid_598928, JString, required = true,
+  if valid_580927 != nil:
+    section.add "enterpriseId", valid_580927
+  var valid_580928 = path.getOrDefault("userId")
+  valid_580928 = validateParameter(valid_580928, JString, required = true,
                                  default = nil)
-  if valid_598928 != nil:
-    section.add "userId", valid_598928
+  if valid_580928 != nil:
+    section.add "userId", valid_580928
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -10006,41 +10008,41 @@ proc validate_AndroidenterpriseInstallsDelete_598923(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_598929 = query.getOrDefault("fields")
-  valid_598929 = validateParameter(valid_598929, JString, required = false,
+  var valid_580929 = query.getOrDefault("fields")
+  valid_580929 = validateParameter(valid_580929, JString, required = false,
                                  default = nil)
-  if valid_598929 != nil:
-    section.add "fields", valid_598929
-  var valid_598930 = query.getOrDefault("quotaUser")
-  valid_598930 = validateParameter(valid_598930, JString, required = false,
+  if valid_580929 != nil:
+    section.add "fields", valid_580929
+  var valid_580930 = query.getOrDefault("quotaUser")
+  valid_580930 = validateParameter(valid_580930, JString, required = false,
                                  default = nil)
-  if valid_598930 != nil:
-    section.add "quotaUser", valid_598930
-  var valid_598931 = query.getOrDefault("alt")
-  valid_598931 = validateParameter(valid_598931, JString, required = false,
+  if valid_580930 != nil:
+    section.add "quotaUser", valid_580930
+  var valid_580931 = query.getOrDefault("alt")
+  valid_580931 = validateParameter(valid_580931, JString, required = false,
                                  default = newJString("json"))
-  if valid_598931 != nil:
-    section.add "alt", valid_598931
-  var valid_598932 = query.getOrDefault("oauth_token")
-  valid_598932 = validateParameter(valid_598932, JString, required = false,
+  if valid_580931 != nil:
+    section.add "alt", valid_580931
+  var valid_580932 = query.getOrDefault("oauth_token")
+  valid_580932 = validateParameter(valid_580932, JString, required = false,
                                  default = nil)
-  if valid_598932 != nil:
-    section.add "oauth_token", valid_598932
-  var valid_598933 = query.getOrDefault("userIp")
-  valid_598933 = validateParameter(valid_598933, JString, required = false,
+  if valid_580932 != nil:
+    section.add "oauth_token", valid_580932
+  var valid_580933 = query.getOrDefault("userIp")
+  valid_580933 = validateParameter(valid_580933, JString, required = false,
                                  default = nil)
-  if valid_598933 != nil:
-    section.add "userIp", valid_598933
-  var valid_598934 = query.getOrDefault("key")
-  valid_598934 = validateParameter(valid_598934, JString, required = false,
+  if valid_580933 != nil:
+    section.add "userIp", valid_580933
+  var valid_580934 = query.getOrDefault("key")
+  valid_580934 = validateParameter(valid_580934, JString, required = false,
                                  default = nil)
-  if valid_598934 != nil:
-    section.add "key", valid_598934
-  var valid_598935 = query.getOrDefault("prettyPrint")
-  valid_598935 = validateParameter(valid_598935, JBool, required = false,
+  if valid_580934 != nil:
+    section.add "key", valid_580934
+  var valid_580935 = query.getOrDefault("prettyPrint")
+  valid_580935 = validateParameter(valid_580935, JBool, required = false,
                                  default = newJBool(true))
-  if valid_598935 != nil:
-    section.add "prettyPrint", valid_598935
+  if valid_580935 != nil:
+    section.add "prettyPrint", valid_580935
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -10049,21 +10051,21 @@ proc validate_AndroidenterpriseInstallsDelete_598923(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_598936: Call_AndroidenterpriseInstallsDelete_598922;
+proc call*(call_580936: Call_AndroidenterpriseInstallsDelete_580922;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Requests to remove an app from a device. A call to get or list will still show the app as installed on the device until it is actually removed.
   ## 
-  let valid = call_598936.validator(path, query, header, formData, body)
-  let scheme = call_598936.pickScheme
+  let valid = call_580936.validator(path, query, header, formData, body)
+  let scheme = call_580936.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_598936.url(scheme.get, call_598936.host, call_598936.base,
-                         call_598936.route, valid.getOrDefault("path"),
+  let url = call_580936.url(scheme.get, call_580936.host, call_580936.base,
+                         call_580936.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_598936, url, valid)
+  result = hook(call_580936, url, valid)
 
-proc call*(call_598937: Call_AndroidenterpriseInstallsDelete_598922;
+proc call*(call_580937: Call_AndroidenterpriseInstallsDelete_580922;
           installId: string; deviceId: string; enterpriseId: string; userId: string;
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           oauthToken: string = ""; userIp: string = ""; key: string = "";
@@ -10092,35 +10094,35 @@ proc call*(call_598937: Call_AndroidenterpriseInstallsDelete_598922;
   ##              : Returns response with indentations and line breaks.
   ##   userId: string (required)
   ##         : The ID of the user.
-  var path_598938 = newJObject()
-  var query_598939 = newJObject()
-  add(query_598939, "fields", newJString(fields))
-  add(query_598939, "quotaUser", newJString(quotaUser))
-  add(path_598938, "installId", newJString(installId))
-  add(query_598939, "alt", newJString(alt))
-  add(path_598938, "deviceId", newJString(deviceId))
-  add(query_598939, "oauth_token", newJString(oauthToken))
-  add(query_598939, "userIp", newJString(userIp))
-  add(query_598939, "key", newJString(key))
-  add(path_598938, "enterpriseId", newJString(enterpriseId))
-  add(query_598939, "prettyPrint", newJBool(prettyPrint))
-  add(path_598938, "userId", newJString(userId))
-  result = call_598937.call(path_598938, query_598939, nil, nil, nil)
+  var path_580938 = newJObject()
+  var query_580939 = newJObject()
+  add(query_580939, "fields", newJString(fields))
+  add(query_580939, "quotaUser", newJString(quotaUser))
+  add(path_580938, "installId", newJString(installId))
+  add(query_580939, "alt", newJString(alt))
+  add(path_580938, "deviceId", newJString(deviceId))
+  add(query_580939, "oauth_token", newJString(oauthToken))
+  add(query_580939, "userIp", newJString(userIp))
+  add(query_580939, "key", newJString(key))
+  add(path_580938, "enterpriseId", newJString(enterpriseId))
+  add(query_580939, "prettyPrint", newJBool(prettyPrint))
+  add(path_580938, "userId", newJString(userId))
+  result = call_580937.call(path_580938, query_580939, nil, nil, nil)
 
-var androidenterpriseInstallsDelete* = Call_AndroidenterpriseInstallsDelete_598922(
+var androidenterpriseInstallsDelete* = Call_AndroidenterpriseInstallsDelete_580922(
     name: "androidenterpriseInstallsDelete", meth: HttpMethod.HttpDelete,
     host: "www.googleapis.com", route: "/enterprises/{enterpriseId}/users/{userId}/devices/{deviceId}/installs/{installId}",
-    validator: validate_AndroidenterpriseInstallsDelete_598923,
-    base: "/androidenterprise/v1", url: url_AndroidenterpriseInstallsDelete_598924,
+    validator: validate_AndroidenterpriseInstallsDelete_580923,
+    base: "/androidenterprise/v1", url: url_AndroidenterpriseInstallsDelete_580924,
     schemes: {Scheme.Https})
 type
-  Call_AndroidenterpriseManagedconfigurationsfordeviceList_598960 = ref object of OpenApiRestCall_597421
-proc url_AndroidenterpriseManagedconfigurationsfordeviceList_598962(
+  Call_AndroidenterpriseManagedconfigurationsfordeviceList_580960 = ref object of OpenApiRestCall_579421
+proc url_AndroidenterpriseManagedconfigurationsfordeviceList_580962(
     protocol: Scheme; host: string; base: string; route: string; path: JsonNode;
     query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "enterpriseId" in path, "`enterpriseId` is a required path parameter"
   assert "userId" in path, "`userId` is a required path parameter"
@@ -10138,7 +10140,7 @@ proc url_AndroidenterpriseManagedconfigurationsfordeviceList_598962(
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_AndroidenterpriseManagedconfigurationsfordeviceList_598961(
+proc validate_AndroidenterpriseManagedconfigurationsfordeviceList_580961(
     path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
     body: JsonNode): JsonNode =
   ## Lists all the per-device managed configurations for the specified device. Only the ID is set.
@@ -10154,21 +10156,21 @@ proc validate_AndroidenterpriseManagedconfigurationsfordeviceList_598961(
   ##         : The ID of the user.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `deviceId` field"
-  var valid_598963 = path.getOrDefault("deviceId")
-  valid_598963 = validateParameter(valid_598963, JString, required = true,
+  var valid_580963 = path.getOrDefault("deviceId")
+  valid_580963 = validateParameter(valid_580963, JString, required = true,
                                  default = nil)
-  if valid_598963 != nil:
-    section.add "deviceId", valid_598963
-  var valid_598964 = path.getOrDefault("enterpriseId")
-  valid_598964 = validateParameter(valid_598964, JString, required = true,
+  if valid_580963 != nil:
+    section.add "deviceId", valid_580963
+  var valid_580964 = path.getOrDefault("enterpriseId")
+  valid_580964 = validateParameter(valid_580964, JString, required = true,
                                  default = nil)
-  if valid_598964 != nil:
-    section.add "enterpriseId", valid_598964
-  var valid_598965 = path.getOrDefault("userId")
-  valid_598965 = validateParameter(valid_598965, JString, required = true,
+  if valid_580964 != nil:
+    section.add "enterpriseId", valid_580964
+  var valid_580965 = path.getOrDefault("userId")
+  valid_580965 = validateParameter(valid_580965, JString, required = true,
                                  default = nil)
-  if valid_598965 != nil:
-    section.add "userId", valid_598965
+  if valid_580965 != nil:
+    section.add "userId", valid_580965
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -10186,41 +10188,41 @@ proc validate_AndroidenterpriseManagedconfigurationsfordeviceList_598961(
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_598966 = query.getOrDefault("fields")
-  valid_598966 = validateParameter(valid_598966, JString, required = false,
+  var valid_580966 = query.getOrDefault("fields")
+  valid_580966 = validateParameter(valid_580966, JString, required = false,
                                  default = nil)
-  if valid_598966 != nil:
-    section.add "fields", valid_598966
-  var valid_598967 = query.getOrDefault("quotaUser")
-  valid_598967 = validateParameter(valid_598967, JString, required = false,
+  if valid_580966 != nil:
+    section.add "fields", valid_580966
+  var valid_580967 = query.getOrDefault("quotaUser")
+  valid_580967 = validateParameter(valid_580967, JString, required = false,
                                  default = nil)
-  if valid_598967 != nil:
-    section.add "quotaUser", valid_598967
-  var valid_598968 = query.getOrDefault("alt")
-  valid_598968 = validateParameter(valid_598968, JString, required = false,
+  if valid_580967 != nil:
+    section.add "quotaUser", valid_580967
+  var valid_580968 = query.getOrDefault("alt")
+  valid_580968 = validateParameter(valid_580968, JString, required = false,
                                  default = newJString("json"))
-  if valid_598968 != nil:
-    section.add "alt", valid_598968
-  var valid_598969 = query.getOrDefault("oauth_token")
-  valid_598969 = validateParameter(valid_598969, JString, required = false,
+  if valid_580968 != nil:
+    section.add "alt", valid_580968
+  var valid_580969 = query.getOrDefault("oauth_token")
+  valid_580969 = validateParameter(valid_580969, JString, required = false,
                                  default = nil)
-  if valid_598969 != nil:
-    section.add "oauth_token", valid_598969
-  var valid_598970 = query.getOrDefault("userIp")
-  valid_598970 = validateParameter(valid_598970, JString, required = false,
+  if valid_580969 != nil:
+    section.add "oauth_token", valid_580969
+  var valid_580970 = query.getOrDefault("userIp")
+  valid_580970 = validateParameter(valid_580970, JString, required = false,
                                  default = nil)
-  if valid_598970 != nil:
-    section.add "userIp", valid_598970
-  var valid_598971 = query.getOrDefault("key")
-  valid_598971 = validateParameter(valid_598971, JString, required = false,
+  if valid_580970 != nil:
+    section.add "userIp", valid_580970
+  var valid_580971 = query.getOrDefault("key")
+  valid_580971 = validateParameter(valid_580971, JString, required = false,
                                  default = nil)
-  if valid_598971 != nil:
-    section.add "key", valid_598971
-  var valid_598972 = query.getOrDefault("prettyPrint")
-  valid_598972 = validateParameter(valid_598972, JBool, required = false,
+  if valid_580971 != nil:
+    section.add "key", valid_580971
+  var valid_580972 = query.getOrDefault("prettyPrint")
+  valid_580972 = validateParameter(valid_580972, JBool, required = false,
                                  default = newJBool(true))
-  if valid_598972 != nil:
-    section.add "prettyPrint", valid_598972
+  if valid_580972 != nil:
+    section.add "prettyPrint", valid_580972
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -10229,21 +10231,21 @@ proc validate_AndroidenterpriseManagedconfigurationsfordeviceList_598961(
   if body != nil:
     result.add "body", body
 
-proc call*(call_598973: Call_AndroidenterpriseManagedconfigurationsfordeviceList_598960;
+proc call*(call_580973: Call_AndroidenterpriseManagedconfigurationsfordeviceList_580960;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Lists all the per-device managed configurations for the specified device. Only the ID is set.
   ## 
-  let valid = call_598973.validator(path, query, header, formData, body)
-  let scheme = call_598973.pickScheme
+  let valid = call_580973.validator(path, query, header, formData, body)
+  let scheme = call_580973.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_598973.url(scheme.get, call_598973.host, call_598973.base,
-                         call_598973.route, valid.getOrDefault("path"),
+  let url = call_580973.url(scheme.get, call_580973.host, call_580973.base,
+                         call_580973.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_598973, url, valid)
+  result = hook(call_580973, url, valid)
 
-proc call*(call_598974: Call_AndroidenterpriseManagedconfigurationsfordeviceList_598960;
+proc call*(call_580974: Call_AndroidenterpriseManagedconfigurationsfordeviceList_580960;
           deviceId: string; enterpriseId: string; userId: string; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; key: string = ""; prettyPrint: bool = true): Recallable =
@@ -10269,35 +10271,35 @@ proc call*(call_598974: Call_AndroidenterpriseManagedconfigurationsfordeviceList
   ##              : Returns response with indentations and line breaks.
   ##   userId: string (required)
   ##         : The ID of the user.
-  var path_598975 = newJObject()
-  var query_598976 = newJObject()
-  add(query_598976, "fields", newJString(fields))
-  add(query_598976, "quotaUser", newJString(quotaUser))
-  add(query_598976, "alt", newJString(alt))
-  add(path_598975, "deviceId", newJString(deviceId))
-  add(query_598976, "oauth_token", newJString(oauthToken))
-  add(query_598976, "userIp", newJString(userIp))
-  add(query_598976, "key", newJString(key))
-  add(path_598975, "enterpriseId", newJString(enterpriseId))
-  add(query_598976, "prettyPrint", newJBool(prettyPrint))
-  add(path_598975, "userId", newJString(userId))
-  result = call_598974.call(path_598975, query_598976, nil, nil, nil)
+  var path_580975 = newJObject()
+  var query_580976 = newJObject()
+  add(query_580976, "fields", newJString(fields))
+  add(query_580976, "quotaUser", newJString(quotaUser))
+  add(query_580976, "alt", newJString(alt))
+  add(path_580975, "deviceId", newJString(deviceId))
+  add(query_580976, "oauth_token", newJString(oauthToken))
+  add(query_580976, "userIp", newJString(userIp))
+  add(query_580976, "key", newJString(key))
+  add(path_580975, "enterpriseId", newJString(enterpriseId))
+  add(query_580976, "prettyPrint", newJBool(prettyPrint))
+  add(path_580975, "userId", newJString(userId))
+  result = call_580974.call(path_580975, query_580976, nil, nil, nil)
 
-var androidenterpriseManagedconfigurationsfordeviceList* = Call_AndroidenterpriseManagedconfigurationsfordeviceList_598960(
+var androidenterpriseManagedconfigurationsfordeviceList* = Call_AndroidenterpriseManagedconfigurationsfordeviceList_580960(
     name: "androidenterpriseManagedconfigurationsfordeviceList",
     meth: HttpMethod.HttpGet, host: "www.googleapis.com", route: "/enterprises/{enterpriseId}/users/{userId}/devices/{deviceId}/managedConfigurationsForDevice",
-    validator: validate_AndroidenterpriseManagedconfigurationsfordeviceList_598961,
+    validator: validate_AndroidenterpriseManagedconfigurationsfordeviceList_580961,
     base: "/androidenterprise/v1",
-    url: url_AndroidenterpriseManagedconfigurationsfordeviceList_598962,
+    url: url_AndroidenterpriseManagedconfigurationsfordeviceList_580962,
     schemes: {Scheme.Https})
 type
-  Call_AndroidenterpriseManagedconfigurationsfordeviceUpdate_598995 = ref object of OpenApiRestCall_597421
-proc url_AndroidenterpriseManagedconfigurationsfordeviceUpdate_598997(
+  Call_AndroidenterpriseManagedconfigurationsfordeviceUpdate_580995 = ref object of OpenApiRestCall_579421
+proc url_AndroidenterpriseManagedconfigurationsfordeviceUpdate_580997(
     protocol: Scheme; host: string; base: string; route: string; path: JsonNode;
     query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "enterpriseId" in path, "`enterpriseId` is a required path parameter"
   assert "userId" in path, "`userId` is a required path parameter"
@@ -10318,7 +10320,7 @@ proc url_AndroidenterpriseManagedconfigurationsfordeviceUpdate_598997(
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_AndroidenterpriseManagedconfigurationsfordeviceUpdate_598996(
+proc validate_AndroidenterpriseManagedconfigurationsfordeviceUpdate_580996(
     path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
     body: JsonNode): JsonNode =
   ## Adds or updates a per-device managed configuration for an app for the specified device.
@@ -10336,26 +10338,26 @@ proc validate_AndroidenterpriseManagedconfigurationsfordeviceUpdate_598996(
   ##         : The ID of the user.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `managedConfigurationForDeviceId` field"
-  var valid_598998 = path.getOrDefault("managedConfigurationForDeviceId")
-  valid_598998 = validateParameter(valid_598998, JString, required = true,
+  var valid_580998 = path.getOrDefault("managedConfigurationForDeviceId")
+  valid_580998 = validateParameter(valid_580998, JString, required = true,
                                  default = nil)
-  if valid_598998 != nil:
-    section.add "managedConfigurationForDeviceId", valid_598998
-  var valid_598999 = path.getOrDefault("deviceId")
-  valid_598999 = validateParameter(valid_598999, JString, required = true,
+  if valid_580998 != nil:
+    section.add "managedConfigurationForDeviceId", valid_580998
+  var valid_580999 = path.getOrDefault("deviceId")
+  valid_580999 = validateParameter(valid_580999, JString, required = true,
                                  default = nil)
-  if valid_598999 != nil:
-    section.add "deviceId", valid_598999
-  var valid_599000 = path.getOrDefault("enterpriseId")
-  valid_599000 = validateParameter(valid_599000, JString, required = true,
+  if valid_580999 != nil:
+    section.add "deviceId", valid_580999
+  var valid_581000 = path.getOrDefault("enterpriseId")
+  valid_581000 = validateParameter(valid_581000, JString, required = true,
                                  default = nil)
-  if valid_599000 != nil:
-    section.add "enterpriseId", valid_599000
-  var valid_599001 = path.getOrDefault("userId")
-  valid_599001 = validateParameter(valid_599001, JString, required = true,
+  if valid_581000 != nil:
+    section.add "enterpriseId", valid_581000
+  var valid_581001 = path.getOrDefault("userId")
+  valid_581001 = validateParameter(valid_581001, JString, required = true,
                                  default = nil)
-  if valid_599001 != nil:
-    section.add "userId", valid_599001
+  if valid_581001 != nil:
+    section.add "userId", valid_581001
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -10373,41 +10375,41 @@ proc validate_AndroidenterpriseManagedconfigurationsfordeviceUpdate_598996(
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_599002 = query.getOrDefault("fields")
-  valid_599002 = validateParameter(valid_599002, JString, required = false,
+  var valid_581002 = query.getOrDefault("fields")
+  valid_581002 = validateParameter(valid_581002, JString, required = false,
                                  default = nil)
-  if valid_599002 != nil:
-    section.add "fields", valid_599002
-  var valid_599003 = query.getOrDefault("quotaUser")
-  valid_599003 = validateParameter(valid_599003, JString, required = false,
+  if valid_581002 != nil:
+    section.add "fields", valid_581002
+  var valid_581003 = query.getOrDefault("quotaUser")
+  valid_581003 = validateParameter(valid_581003, JString, required = false,
                                  default = nil)
-  if valid_599003 != nil:
-    section.add "quotaUser", valid_599003
-  var valid_599004 = query.getOrDefault("alt")
-  valid_599004 = validateParameter(valid_599004, JString, required = false,
+  if valid_581003 != nil:
+    section.add "quotaUser", valid_581003
+  var valid_581004 = query.getOrDefault("alt")
+  valid_581004 = validateParameter(valid_581004, JString, required = false,
                                  default = newJString("json"))
-  if valid_599004 != nil:
-    section.add "alt", valid_599004
-  var valid_599005 = query.getOrDefault("oauth_token")
-  valid_599005 = validateParameter(valid_599005, JString, required = false,
+  if valid_581004 != nil:
+    section.add "alt", valid_581004
+  var valid_581005 = query.getOrDefault("oauth_token")
+  valid_581005 = validateParameter(valid_581005, JString, required = false,
                                  default = nil)
-  if valid_599005 != nil:
-    section.add "oauth_token", valid_599005
-  var valid_599006 = query.getOrDefault("userIp")
-  valid_599006 = validateParameter(valid_599006, JString, required = false,
+  if valid_581005 != nil:
+    section.add "oauth_token", valid_581005
+  var valid_581006 = query.getOrDefault("userIp")
+  valid_581006 = validateParameter(valid_581006, JString, required = false,
                                  default = nil)
-  if valid_599006 != nil:
-    section.add "userIp", valid_599006
-  var valid_599007 = query.getOrDefault("key")
-  valid_599007 = validateParameter(valid_599007, JString, required = false,
+  if valid_581006 != nil:
+    section.add "userIp", valid_581006
+  var valid_581007 = query.getOrDefault("key")
+  valid_581007 = validateParameter(valid_581007, JString, required = false,
                                  default = nil)
-  if valid_599007 != nil:
-    section.add "key", valid_599007
-  var valid_599008 = query.getOrDefault("prettyPrint")
-  valid_599008 = validateParameter(valid_599008, JBool, required = false,
+  if valid_581007 != nil:
+    section.add "key", valid_581007
+  var valid_581008 = query.getOrDefault("prettyPrint")
+  valid_581008 = validateParameter(valid_581008, JBool, required = false,
                                  default = newJBool(true))
-  if valid_599008 != nil:
-    section.add "prettyPrint", valid_599008
+  if valid_581008 != nil:
+    section.add "prettyPrint", valid_581008
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -10419,21 +10421,21 @@ proc validate_AndroidenterpriseManagedconfigurationsfordeviceUpdate_598996(
   if body != nil:
     result.add "body", body
 
-proc call*(call_599010: Call_AndroidenterpriseManagedconfigurationsfordeviceUpdate_598995;
+proc call*(call_581010: Call_AndroidenterpriseManagedconfigurationsfordeviceUpdate_580995;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Adds or updates a per-device managed configuration for an app for the specified device.
   ## 
-  let valid = call_599010.validator(path, query, header, formData, body)
-  let scheme = call_599010.pickScheme
+  let valid = call_581010.validator(path, query, header, formData, body)
+  let scheme = call_581010.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_599010.url(scheme.get, call_599010.host, call_599010.base,
-                         call_599010.route, valid.getOrDefault("path"),
+  let url = call_581010.url(scheme.get, call_581010.host, call_581010.base,
+                         call_581010.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_599010, url, valid)
+  result = hook(call_581010, url, valid)
 
-proc call*(call_599011: Call_AndroidenterpriseManagedconfigurationsfordeviceUpdate_598995;
+proc call*(call_581011: Call_AndroidenterpriseManagedconfigurationsfordeviceUpdate_580995;
           managedConfigurationForDeviceId: string; deviceId: string;
           enterpriseId: string; userId: string; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
@@ -10464,40 +10466,40 @@ proc call*(call_599011: Call_AndroidenterpriseManagedconfigurationsfordeviceUpda
   ##              : Returns response with indentations and line breaks.
   ##   userId: string (required)
   ##         : The ID of the user.
-  var path_599012 = newJObject()
-  var query_599013 = newJObject()
-  var body_599014 = newJObject()
-  add(query_599013, "fields", newJString(fields))
-  add(query_599013, "quotaUser", newJString(quotaUser))
-  add(path_599012, "managedConfigurationForDeviceId",
+  var path_581012 = newJObject()
+  var query_581013 = newJObject()
+  var body_581014 = newJObject()
+  add(query_581013, "fields", newJString(fields))
+  add(query_581013, "quotaUser", newJString(quotaUser))
+  add(path_581012, "managedConfigurationForDeviceId",
       newJString(managedConfigurationForDeviceId))
-  add(query_599013, "alt", newJString(alt))
-  add(path_599012, "deviceId", newJString(deviceId))
-  add(query_599013, "oauth_token", newJString(oauthToken))
-  add(query_599013, "userIp", newJString(userIp))
-  add(query_599013, "key", newJString(key))
-  add(path_599012, "enterpriseId", newJString(enterpriseId))
+  add(query_581013, "alt", newJString(alt))
+  add(path_581012, "deviceId", newJString(deviceId))
+  add(query_581013, "oauth_token", newJString(oauthToken))
+  add(query_581013, "userIp", newJString(userIp))
+  add(query_581013, "key", newJString(key))
+  add(path_581012, "enterpriseId", newJString(enterpriseId))
   if body != nil:
-    body_599014 = body
-  add(query_599013, "prettyPrint", newJBool(prettyPrint))
-  add(path_599012, "userId", newJString(userId))
-  result = call_599011.call(path_599012, query_599013, nil, nil, body_599014)
+    body_581014 = body
+  add(query_581013, "prettyPrint", newJBool(prettyPrint))
+  add(path_581012, "userId", newJString(userId))
+  result = call_581011.call(path_581012, query_581013, nil, nil, body_581014)
 
-var androidenterpriseManagedconfigurationsfordeviceUpdate* = Call_AndroidenterpriseManagedconfigurationsfordeviceUpdate_598995(
+var androidenterpriseManagedconfigurationsfordeviceUpdate* = Call_AndroidenterpriseManagedconfigurationsfordeviceUpdate_580995(
     name: "androidenterpriseManagedconfigurationsfordeviceUpdate",
     meth: HttpMethod.HttpPut, host: "www.googleapis.com", route: "/enterprises/{enterpriseId}/users/{userId}/devices/{deviceId}/managedConfigurationsForDevice/{managedConfigurationForDeviceId}",
-    validator: validate_AndroidenterpriseManagedconfigurationsfordeviceUpdate_598996,
+    validator: validate_AndroidenterpriseManagedconfigurationsfordeviceUpdate_580996,
     base: "/androidenterprise/v1",
-    url: url_AndroidenterpriseManagedconfigurationsfordeviceUpdate_598997,
+    url: url_AndroidenterpriseManagedconfigurationsfordeviceUpdate_580997,
     schemes: {Scheme.Https})
 type
-  Call_AndroidenterpriseManagedconfigurationsfordeviceGet_598977 = ref object of OpenApiRestCall_597421
-proc url_AndroidenterpriseManagedconfigurationsfordeviceGet_598979(
+  Call_AndroidenterpriseManagedconfigurationsfordeviceGet_580977 = ref object of OpenApiRestCall_579421
+proc url_AndroidenterpriseManagedconfigurationsfordeviceGet_580979(
     protocol: Scheme; host: string; base: string; route: string; path: JsonNode;
     query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "enterpriseId" in path, "`enterpriseId` is a required path parameter"
   assert "userId" in path, "`userId` is a required path parameter"
@@ -10518,7 +10520,7 @@ proc url_AndroidenterpriseManagedconfigurationsfordeviceGet_598979(
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_AndroidenterpriseManagedconfigurationsfordeviceGet_598978(
+proc validate_AndroidenterpriseManagedconfigurationsfordeviceGet_580978(
     path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
     body: JsonNode): JsonNode =
   ## Retrieves details of a per-device managed configuration.
@@ -10536,26 +10538,26 @@ proc validate_AndroidenterpriseManagedconfigurationsfordeviceGet_598978(
   ##         : The ID of the user.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `managedConfigurationForDeviceId` field"
-  var valid_598980 = path.getOrDefault("managedConfigurationForDeviceId")
-  valid_598980 = validateParameter(valid_598980, JString, required = true,
+  var valid_580980 = path.getOrDefault("managedConfigurationForDeviceId")
+  valid_580980 = validateParameter(valid_580980, JString, required = true,
                                  default = nil)
-  if valid_598980 != nil:
-    section.add "managedConfigurationForDeviceId", valid_598980
-  var valid_598981 = path.getOrDefault("deviceId")
-  valid_598981 = validateParameter(valid_598981, JString, required = true,
+  if valid_580980 != nil:
+    section.add "managedConfigurationForDeviceId", valid_580980
+  var valid_580981 = path.getOrDefault("deviceId")
+  valid_580981 = validateParameter(valid_580981, JString, required = true,
                                  default = nil)
-  if valid_598981 != nil:
-    section.add "deviceId", valid_598981
-  var valid_598982 = path.getOrDefault("enterpriseId")
-  valid_598982 = validateParameter(valid_598982, JString, required = true,
+  if valid_580981 != nil:
+    section.add "deviceId", valid_580981
+  var valid_580982 = path.getOrDefault("enterpriseId")
+  valid_580982 = validateParameter(valid_580982, JString, required = true,
                                  default = nil)
-  if valid_598982 != nil:
-    section.add "enterpriseId", valid_598982
-  var valid_598983 = path.getOrDefault("userId")
-  valid_598983 = validateParameter(valid_598983, JString, required = true,
+  if valid_580982 != nil:
+    section.add "enterpriseId", valid_580982
+  var valid_580983 = path.getOrDefault("userId")
+  valid_580983 = validateParameter(valid_580983, JString, required = true,
                                  default = nil)
-  if valid_598983 != nil:
-    section.add "userId", valid_598983
+  if valid_580983 != nil:
+    section.add "userId", valid_580983
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -10573,41 +10575,41 @@ proc validate_AndroidenterpriseManagedconfigurationsfordeviceGet_598978(
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_598984 = query.getOrDefault("fields")
-  valid_598984 = validateParameter(valid_598984, JString, required = false,
+  var valid_580984 = query.getOrDefault("fields")
+  valid_580984 = validateParameter(valid_580984, JString, required = false,
                                  default = nil)
-  if valid_598984 != nil:
-    section.add "fields", valid_598984
-  var valid_598985 = query.getOrDefault("quotaUser")
-  valid_598985 = validateParameter(valid_598985, JString, required = false,
+  if valid_580984 != nil:
+    section.add "fields", valid_580984
+  var valid_580985 = query.getOrDefault("quotaUser")
+  valid_580985 = validateParameter(valid_580985, JString, required = false,
                                  default = nil)
-  if valid_598985 != nil:
-    section.add "quotaUser", valid_598985
-  var valid_598986 = query.getOrDefault("alt")
-  valid_598986 = validateParameter(valid_598986, JString, required = false,
+  if valid_580985 != nil:
+    section.add "quotaUser", valid_580985
+  var valid_580986 = query.getOrDefault("alt")
+  valid_580986 = validateParameter(valid_580986, JString, required = false,
                                  default = newJString("json"))
-  if valid_598986 != nil:
-    section.add "alt", valid_598986
-  var valid_598987 = query.getOrDefault("oauth_token")
-  valid_598987 = validateParameter(valid_598987, JString, required = false,
+  if valid_580986 != nil:
+    section.add "alt", valid_580986
+  var valid_580987 = query.getOrDefault("oauth_token")
+  valid_580987 = validateParameter(valid_580987, JString, required = false,
                                  default = nil)
-  if valid_598987 != nil:
-    section.add "oauth_token", valid_598987
-  var valid_598988 = query.getOrDefault("userIp")
-  valid_598988 = validateParameter(valid_598988, JString, required = false,
+  if valid_580987 != nil:
+    section.add "oauth_token", valid_580987
+  var valid_580988 = query.getOrDefault("userIp")
+  valid_580988 = validateParameter(valid_580988, JString, required = false,
                                  default = nil)
-  if valid_598988 != nil:
-    section.add "userIp", valid_598988
-  var valid_598989 = query.getOrDefault("key")
-  valid_598989 = validateParameter(valid_598989, JString, required = false,
+  if valid_580988 != nil:
+    section.add "userIp", valid_580988
+  var valid_580989 = query.getOrDefault("key")
+  valid_580989 = validateParameter(valid_580989, JString, required = false,
                                  default = nil)
-  if valid_598989 != nil:
-    section.add "key", valid_598989
-  var valid_598990 = query.getOrDefault("prettyPrint")
-  valid_598990 = validateParameter(valid_598990, JBool, required = false,
+  if valid_580989 != nil:
+    section.add "key", valid_580989
+  var valid_580990 = query.getOrDefault("prettyPrint")
+  valid_580990 = validateParameter(valid_580990, JBool, required = false,
                                  default = newJBool(true))
-  if valid_598990 != nil:
-    section.add "prettyPrint", valid_598990
+  if valid_580990 != nil:
+    section.add "prettyPrint", valid_580990
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -10616,21 +10618,21 @@ proc validate_AndroidenterpriseManagedconfigurationsfordeviceGet_598978(
   if body != nil:
     result.add "body", body
 
-proc call*(call_598991: Call_AndroidenterpriseManagedconfigurationsfordeviceGet_598977;
+proc call*(call_580991: Call_AndroidenterpriseManagedconfigurationsfordeviceGet_580977;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Retrieves details of a per-device managed configuration.
   ## 
-  let valid = call_598991.validator(path, query, header, formData, body)
-  let scheme = call_598991.pickScheme
+  let valid = call_580991.validator(path, query, header, formData, body)
+  let scheme = call_580991.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_598991.url(scheme.get, call_598991.host, call_598991.base,
-                         call_598991.route, valid.getOrDefault("path"),
+  let url = call_580991.url(scheme.get, call_580991.host, call_580991.base,
+                         call_580991.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_598991, url, valid)
+  result = hook(call_580991, url, valid)
 
-proc call*(call_598992: Call_AndroidenterpriseManagedconfigurationsfordeviceGet_598977;
+proc call*(call_580992: Call_AndroidenterpriseManagedconfigurationsfordeviceGet_580977;
           managedConfigurationForDeviceId: string; deviceId: string;
           enterpriseId: string; userId: string; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
@@ -10659,37 +10661,37 @@ proc call*(call_598992: Call_AndroidenterpriseManagedconfigurationsfordeviceGet_
   ##              : Returns response with indentations and line breaks.
   ##   userId: string (required)
   ##         : The ID of the user.
-  var path_598993 = newJObject()
-  var query_598994 = newJObject()
-  add(query_598994, "fields", newJString(fields))
-  add(query_598994, "quotaUser", newJString(quotaUser))
-  add(path_598993, "managedConfigurationForDeviceId",
+  var path_580993 = newJObject()
+  var query_580994 = newJObject()
+  add(query_580994, "fields", newJString(fields))
+  add(query_580994, "quotaUser", newJString(quotaUser))
+  add(path_580993, "managedConfigurationForDeviceId",
       newJString(managedConfigurationForDeviceId))
-  add(query_598994, "alt", newJString(alt))
-  add(path_598993, "deviceId", newJString(deviceId))
-  add(query_598994, "oauth_token", newJString(oauthToken))
-  add(query_598994, "userIp", newJString(userIp))
-  add(query_598994, "key", newJString(key))
-  add(path_598993, "enterpriseId", newJString(enterpriseId))
-  add(query_598994, "prettyPrint", newJBool(prettyPrint))
-  add(path_598993, "userId", newJString(userId))
-  result = call_598992.call(path_598993, query_598994, nil, nil, nil)
+  add(query_580994, "alt", newJString(alt))
+  add(path_580993, "deviceId", newJString(deviceId))
+  add(query_580994, "oauth_token", newJString(oauthToken))
+  add(query_580994, "userIp", newJString(userIp))
+  add(query_580994, "key", newJString(key))
+  add(path_580993, "enterpriseId", newJString(enterpriseId))
+  add(query_580994, "prettyPrint", newJBool(prettyPrint))
+  add(path_580993, "userId", newJString(userId))
+  result = call_580992.call(path_580993, query_580994, nil, nil, nil)
 
-var androidenterpriseManagedconfigurationsfordeviceGet* = Call_AndroidenterpriseManagedconfigurationsfordeviceGet_598977(
+var androidenterpriseManagedconfigurationsfordeviceGet* = Call_AndroidenterpriseManagedconfigurationsfordeviceGet_580977(
     name: "androidenterpriseManagedconfigurationsfordeviceGet",
     meth: HttpMethod.HttpGet, host: "www.googleapis.com", route: "/enterprises/{enterpriseId}/users/{userId}/devices/{deviceId}/managedConfigurationsForDevice/{managedConfigurationForDeviceId}",
-    validator: validate_AndroidenterpriseManagedconfigurationsfordeviceGet_598978,
+    validator: validate_AndroidenterpriseManagedconfigurationsfordeviceGet_580978,
     base: "/androidenterprise/v1",
-    url: url_AndroidenterpriseManagedconfigurationsfordeviceGet_598979,
+    url: url_AndroidenterpriseManagedconfigurationsfordeviceGet_580979,
     schemes: {Scheme.Https})
 type
-  Call_AndroidenterpriseManagedconfigurationsfordevicePatch_599033 = ref object of OpenApiRestCall_597421
-proc url_AndroidenterpriseManagedconfigurationsfordevicePatch_599035(
+  Call_AndroidenterpriseManagedconfigurationsfordevicePatch_581033 = ref object of OpenApiRestCall_579421
+proc url_AndroidenterpriseManagedconfigurationsfordevicePatch_581035(
     protocol: Scheme; host: string; base: string; route: string; path: JsonNode;
     query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "enterpriseId" in path, "`enterpriseId` is a required path parameter"
   assert "userId" in path, "`userId` is a required path parameter"
@@ -10710,7 +10712,7 @@ proc url_AndroidenterpriseManagedconfigurationsfordevicePatch_599035(
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_AndroidenterpriseManagedconfigurationsfordevicePatch_599034(
+proc validate_AndroidenterpriseManagedconfigurationsfordevicePatch_581034(
     path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
     body: JsonNode): JsonNode =
   ## Adds or updates a per-device managed configuration for an app for the specified device. This method supports patch semantics.
@@ -10728,26 +10730,26 @@ proc validate_AndroidenterpriseManagedconfigurationsfordevicePatch_599034(
   ##         : The ID of the user.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `managedConfigurationForDeviceId` field"
-  var valid_599036 = path.getOrDefault("managedConfigurationForDeviceId")
-  valid_599036 = validateParameter(valid_599036, JString, required = true,
+  var valid_581036 = path.getOrDefault("managedConfigurationForDeviceId")
+  valid_581036 = validateParameter(valid_581036, JString, required = true,
                                  default = nil)
-  if valid_599036 != nil:
-    section.add "managedConfigurationForDeviceId", valid_599036
-  var valid_599037 = path.getOrDefault("deviceId")
-  valid_599037 = validateParameter(valid_599037, JString, required = true,
+  if valid_581036 != nil:
+    section.add "managedConfigurationForDeviceId", valid_581036
+  var valid_581037 = path.getOrDefault("deviceId")
+  valid_581037 = validateParameter(valid_581037, JString, required = true,
                                  default = nil)
-  if valid_599037 != nil:
-    section.add "deviceId", valid_599037
-  var valid_599038 = path.getOrDefault("enterpriseId")
-  valid_599038 = validateParameter(valid_599038, JString, required = true,
+  if valid_581037 != nil:
+    section.add "deviceId", valid_581037
+  var valid_581038 = path.getOrDefault("enterpriseId")
+  valid_581038 = validateParameter(valid_581038, JString, required = true,
                                  default = nil)
-  if valid_599038 != nil:
-    section.add "enterpriseId", valid_599038
-  var valid_599039 = path.getOrDefault("userId")
-  valid_599039 = validateParameter(valid_599039, JString, required = true,
+  if valid_581038 != nil:
+    section.add "enterpriseId", valid_581038
+  var valid_581039 = path.getOrDefault("userId")
+  valid_581039 = validateParameter(valid_581039, JString, required = true,
                                  default = nil)
-  if valid_599039 != nil:
-    section.add "userId", valid_599039
+  if valid_581039 != nil:
+    section.add "userId", valid_581039
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -10765,41 +10767,41 @@ proc validate_AndroidenterpriseManagedconfigurationsfordevicePatch_599034(
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_599040 = query.getOrDefault("fields")
-  valid_599040 = validateParameter(valid_599040, JString, required = false,
+  var valid_581040 = query.getOrDefault("fields")
+  valid_581040 = validateParameter(valid_581040, JString, required = false,
                                  default = nil)
-  if valid_599040 != nil:
-    section.add "fields", valid_599040
-  var valid_599041 = query.getOrDefault("quotaUser")
-  valid_599041 = validateParameter(valid_599041, JString, required = false,
+  if valid_581040 != nil:
+    section.add "fields", valid_581040
+  var valid_581041 = query.getOrDefault("quotaUser")
+  valid_581041 = validateParameter(valid_581041, JString, required = false,
                                  default = nil)
-  if valid_599041 != nil:
-    section.add "quotaUser", valid_599041
-  var valid_599042 = query.getOrDefault("alt")
-  valid_599042 = validateParameter(valid_599042, JString, required = false,
+  if valid_581041 != nil:
+    section.add "quotaUser", valid_581041
+  var valid_581042 = query.getOrDefault("alt")
+  valid_581042 = validateParameter(valid_581042, JString, required = false,
                                  default = newJString("json"))
-  if valid_599042 != nil:
-    section.add "alt", valid_599042
-  var valid_599043 = query.getOrDefault("oauth_token")
-  valid_599043 = validateParameter(valid_599043, JString, required = false,
+  if valid_581042 != nil:
+    section.add "alt", valid_581042
+  var valid_581043 = query.getOrDefault("oauth_token")
+  valid_581043 = validateParameter(valid_581043, JString, required = false,
                                  default = nil)
-  if valid_599043 != nil:
-    section.add "oauth_token", valid_599043
-  var valid_599044 = query.getOrDefault("userIp")
-  valid_599044 = validateParameter(valid_599044, JString, required = false,
+  if valid_581043 != nil:
+    section.add "oauth_token", valid_581043
+  var valid_581044 = query.getOrDefault("userIp")
+  valid_581044 = validateParameter(valid_581044, JString, required = false,
                                  default = nil)
-  if valid_599044 != nil:
-    section.add "userIp", valid_599044
-  var valid_599045 = query.getOrDefault("key")
-  valid_599045 = validateParameter(valid_599045, JString, required = false,
+  if valid_581044 != nil:
+    section.add "userIp", valid_581044
+  var valid_581045 = query.getOrDefault("key")
+  valid_581045 = validateParameter(valid_581045, JString, required = false,
                                  default = nil)
-  if valid_599045 != nil:
-    section.add "key", valid_599045
-  var valid_599046 = query.getOrDefault("prettyPrint")
-  valid_599046 = validateParameter(valid_599046, JBool, required = false,
+  if valid_581045 != nil:
+    section.add "key", valid_581045
+  var valid_581046 = query.getOrDefault("prettyPrint")
+  valid_581046 = validateParameter(valid_581046, JBool, required = false,
                                  default = newJBool(true))
-  if valid_599046 != nil:
-    section.add "prettyPrint", valid_599046
+  if valid_581046 != nil:
+    section.add "prettyPrint", valid_581046
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -10811,21 +10813,21 @@ proc validate_AndroidenterpriseManagedconfigurationsfordevicePatch_599034(
   if body != nil:
     result.add "body", body
 
-proc call*(call_599048: Call_AndroidenterpriseManagedconfigurationsfordevicePatch_599033;
+proc call*(call_581048: Call_AndroidenterpriseManagedconfigurationsfordevicePatch_581033;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Adds or updates a per-device managed configuration for an app for the specified device. This method supports patch semantics.
   ## 
-  let valid = call_599048.validator(path, query, header, formData, body)
-  let scheme = call_599048.pickScheme
+  let valid = call_581048.validator(path, query, header, formData, body)
+  let scheme = call_581048.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_599048.url(scheme.get, call_599048.host, call_599048.base,
-                         call_599048.route, valid.getOrDefault("path"),
+  let url = call_581048.url(scheme.get, call_581048.host, call_581048.base,
+                         call_581048.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_599048, url, valid)
+  result = hook(call_581048, url, valid)
 
-proc call*(call_599049: Call_AndroidenterpriseManagedconfigurationsfordevicePatch_599033;
+proc call*(call_581049: Call_AndroidenterpriseManagedconfigurationsfordevicePatch_581033;
           managedConfigurationForDeviceId: string; deviceId: string;
           enterpriseId: string; userId: string; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
@@ -10856,40 +10858,40 @@ proc call*(call_599049: Call_AndroidenterpriseManagedconfigurationsfordevicePatc
   ##              : Returns response with indentations and line breaks.
   ##   userId: string (required)
   ##         : The ID of the user.
-  var path_599050 = newJObject()
-  var query_599051 = newJObject()
-  var body_599052 = newJObject()
-  add(query_599051, "fields", newJString(fields))
-  add(query_599051, "quotaUser", newJString(quotaUser))
-  add(path_599050, "managedConfigurationForDeviceId",
+  var path_581050 = newJObject()
+  var query_581051 = newJObject()
+  var body_581052 = newJObject()
+  add(query_581051, "fields", newJString(fields))
+  add(query_581051, "quotaUser", newJString(quotaUser))
+  add(path_581050, "managedConfigurationForDeviceId",
       newJString(managedConfigurationForDeviceId))
-  add(query_599051, "alt", newJString(alt))
-  add(path_599050, "deviceId", newJString(deviceId))
-  add(query_599051, "oauth_token", newJString(oauthToken))
-  add(query_599051, "userIp", newJString(userIp))
-  add(query_599051, "key", newJString(key))
-  add(path_599050, "enterpriseId", newJString(enterpriseId))
+  add(query_581051, "alt", newJString(alt))
+  add(path_581050, "deviceId", newJString(deviceId))
+  add(query_581051, "oauth_token", newJString(oauthToken))
+  add(query_581051, "userIp", newJString(userIp))
+  add(query_581051, "key", newJString(key))
+  add(path_581050, "enterpriseId", newJString(enterpriseId))
   if body != nil:
-    body_599052 = body
-  add(query_599051, "prettyPrint", newJBool(prettyPrint))
-  add(path_599050, "userId", newJString(userId))
-  result = call_599049.call(path_599050, query_599051, nil, nil, body_599052)
+    body_581052 = body
+  add(query_581051, "prettyPrint", newJBool(prettyPrint))
+  add(path_581050, "userId", newJString(userId))
+  result = call_581049.call(path_581050, query_581051, nil, nil, body_581052)
 
-var androidenterpriseManagedconfigurationsfordevicePatch* = Call_AndroidenterpriseManagedconfigurationsfordevicePatch_599033(
+var androidenterpriseManagedconfigurationsfordevicePatch* = Call_AndroidenterpriseManagedconfigurationsfordevicePatch_581033(
     name: "androidenterpriseManagedconfigurationsfordevicePatch",
     meth: HttpMethod.HttpPatch, host: "www.googleapis.com", route: "/enterprises/{enterpriseId}/users/{userId}/devices/{deviceId}/managedConfigurationsForDevice/{managedConfigurationForDeviceId}",
-    validator: validate_AndroidenterpriseManagedconfigurationsfordevicePatch_599034,
+    validator: validate_AndroidenterpriseManagedconfigurationsfordevicePatch_581034,
     base: "/androidenterprise/v1",
-    url: url_AndroidenterpriseManagedconfigurationsfordevicePatch_599035,
+    url: url_AndroidenterpriseManagedconfigurationsfordevicePatch_581035,
     schemes: {Scheme.Https})
 type
-  Call_AndroidenterpriseManagedconfigurationsfordeviceDelete_599015 = ref object of OpenApiRestCall_597421
-proc url_AndroidenterpriseManagedconfigurationsfordeviceDelete_599017(
+  Call_AndroidenterpriseManagedconfigurationsfordeviceDelete_581015 = ref object of OpenApiRestCall_579421
+proc url_AndroidenterpriseManagedconfigurationsfordeviceDelete_581017(
     protocol: Scheme; host: string; base: string; route: string; path: JsonNode;
     query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "enterpriseId" in path, "`enterpriseId` is a required path parameter"
   assert "userId" in path, "`userId` is a required path parameter"
@@ -10910,7 +10912,7 @@ proc url_AndroidenterpriseManagedconfigurationsfordeviceDelete_599017(
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_AndroidenterpriseManagedconfigurationsfordeviceDelete_599016(
+proc validate_AndroidenterpriseManagedconfigurationsfordeviceDelete_581016(
     path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
     body: JsonNode): JsonNode =
   ## Removes a per-device managed configuration for an app for the specified device.
@@ -10928,26 +10930,26 @@ proc validate_AndroidenterpriseManagedconfigurationsfordeviceDelete_599016(
   ##         : The ID of the user.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `managedConfigurationForDeviceId` field"
-  var valid_599018 = path.getOrDefault("managedConfigurationForDeviceId")
-  valid_599018 = validateParameter(valid_599018, JString, required = true,
+  var valid_581018 = path.getOrDefault("managedConfigurationForDeviceId")
+  valid_581018 = validateParameter(valid_581018, JString, required = true,
                                  default = nil)
-  if valid_599018 != nil:
-    section.add "managedConfigurationForDeviceId", valid_599018
-  var valid_599019 = path.getOrDefault("deviceId")
-  valid_599019 = validateParameter(valid_599019, JString, required = true,
+  if valid_581018 != nil:
+    section.add "managedConfigurationForDeviceId", valid_581018
+  var valid_581019 = path.getOrDefault("deviceId")
+  valid_581019 = validateParameter(valid_581019, JString, required = true,
                                  default = nil)
-  if valid_599019 != nil:
-    section.add "deviceId", valid_599019
-  var valid_599020 = path.getOrDefault("enterpriseId")
-  valid_599020 = validateParameter(valid_599020, JString, required = true,
+  if valid_581019 != nil:
+    section.add "deviceId", valid_581019
+  var valid_581020 = path.getOrDefault("enterpriseId")
+  valid_581020 = validateParameter(valid_581020, JString, required = true,
                                  default = nil)
-  if valid_599020 != nil:
-    section.add "enterpriseId", valid_599020
-  var valid_599021 = path.getOrDefault("userId")
-  valid_599021 = validateParameter(valid_599021, JString, required = true,
+  if valid_581020 != nil:
+    section.add "enterpriseId", valid_581020
+  var valid_581021 = path.getOrDefault("userId")
+  valid_581021 = validateParameter(valid_581021, JString, required = true,
                                  default = nil)
-  if valid_599021 != nil:
-    section.add "userId", valid_599021
+  if valid_581021 != nil:
+    section.add "userId", valid_581021
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -10965,41 +10967,41 @@ proc validate_AndroidenterpriseManagedconfigurationsfordeviceDelete_599016(
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_599022 = query.getOrDefault("fields")
-  valid_599022 = validateParameter(valid_599022, JString, required = false,
+  var valid_581022 = query.getOrDefault("fields")
+  valid_581022 = validateParameter(valid_581022, JString, required = false,
                                  default = nil)
-  if valid_599022 != nil:
-    section.add "fields", valid_599022
-  var valid_599023 = query.getOrDefault("quotaUser")
-  valid_599023 = validateParameter(valid_599023, JString, required = false,
+  if valid_581022 != nil:
+    section.add "fields", valid_581022
+  var valid_581023 = query.getOrDefault("quotaUser")
+  valid_581023 = validateParameter(valid_581023, JString, required = false,
                                  default = nil)
-  if valid_599023 != nil:
-    section.add "quotaUser", valid_599023
-  var valid_599024 = query.getOrDefault("alt")
-  valid_599024 = validateParameter(valid_599024, JString, required = false,
+  if valid_581023 != nil:
+    section.add "quotaUser", valid_581023
+  var valid_581024 = query.getOrDefault("alt")
+  valid_581024 = validateParameter(valid_581024, JString, required = false,
                                  default = newJString("json"))
-  if valid_599024 != nil:
-    section.add "alt", valid_599024
-  var valid_599025 = query.getOrDefault("oauth_token")
-  valid_599025 = validateParameter(valid_599025, JString, required = false,
+  if valid_581024 != nil:
+    section.add "alt", valid_581024
+  var valid_581025 = query.getOrDefault("oauth_token")
+  valid_581025 = validateParameter(valid_581025, JString, required = false,
                                  default = nil)
-  if valid_599025 != nil:
-    section.add "oauth_token", valid_599025
-  var valid_599026 = query.getOrDefault("userIp")
-  valid_599026 = validateParameter(valid_599026, JString, required = false,
+  if valid_581025 != nil:
+    section.add "oauth_token", valid_581025
+  var valid_581026 = query.getOrDefault("userIp")
+  valid_581026 = validateParameter(valid_581026, JString, required = false,
                                  default = nil)
-  if valid_599026 != nil:
-    section.add "userIp", valid_599026
-  var valid_599027 = query.getOrDefault("key")
-  valid_599027 = validateParameter(valid_599027, JString, required = false,
+  if valid_581026 != nil:
+    section.add "userIp", valid_581026
+  var valid_581027 = query.getOrDefault("key")
+  valid_581027 = validateParameter(valid_581027, JString, required = false,
                                  default = nil)
-  if valid_599027 != nil:
-    section.add "key", valid_599027
-  var valid_599028 = query.getOrDefault("prettyPrint")
-  valid_599028 = validateParameter(valid_599028, JBool, required = false,
+  if valid_581027 != nil:
+    section.add "key", valid_581027
+  var valid_581028 = query.getOrDefault("prettyPrint")
+  valid_581028 = validateParameter(valid_581028, JBool, required = false,
                                  default = newJBool(true))
-  if valid_599028 != nil:
-    section.add "prettyPrint", valid_599028
+  if valid_581028 != nil:
+    section.add "prettyPrint", valid_581028
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -11008,21 +11010,21 @@ proc validate_AndroidenterpriseManagedconfigurationsfordeviceDelete_599016(
   if body != nil:
     result.add "body", body
 
-proc call*(call_599029: Call_AndroidenterpriseManagedconfigurationsfordeviceDelete_599015;
+proc call*(call_581029: Call_AndroidenterpriseManagedconfigurationsfordeviceDelete_581015;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Removes a per-device managed configuration for an app for the specified device.
   ## 
-  let valid = call_599029.validator(path, query, header, formData, body)
-  let scheme = call_599029.pickScheme
+  let valid = call_581029.validator(path, query, header, formData, body)
+  let scheme = call_581029.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_599029.url(scheme.get, call_599029.host, call_599029.base,
-                         call_599029.route, valid.getOrDefault("path"),
+  let url = call_581029.url(scheme.get, call_581029.host, call_581029.base,
+                         call_581029.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_599029, url, valid)
+  result = hook(call_581029, url, valid)
 
-proc call*(call_599030: Call_AndroidenterpriseManagedconfigurationsfordeviceDelete_599015;
+proc call*(call_581030: Call_AndroidenterpriseManagedconfigurationsfordeviceDelete_581015;
           managedConfigurationForDeviceId: string; deviceId: string;
           enterpriseId: string; userId: string; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
@@ -11051,36 +11053,36 @@ proc call*(call_599030: Call_AndroidenterpriseManagedconfigurationsfordeviceDele
   ##              : Returns response with indentations and line breaks.
   ##   userId: string (required)
   ##         : The ID of the user.
-  var path_599031 = newJObject()
-  var query_599032 = newJObject()
-  add(query_599032, "fields", newJString(fields))
-  add(query_599032, "quotaUser", newJString(quotaUser))
-  add(path_599031, "managedConfigurationForDeviceId",
+  var path_581031 = newJObject()
+  var query_581032 = newJObject()
+  add(query_581032, "fields", newJString(fields))
+  add(query_581032, "quotaUser", newJString(quotaUser))
+  add(path_581031, "managedConfigurationForDeviceId",
       newJString(managedConfigurationForDeviceId))
-  add(query_599032, "alt", newJString(alt))
-  add(path_599031, "deviceId", newJString(deviceId))
-  add(query_599032, "oauth_token", newJString(oauthToken))
-  add(query_599032, "userIp", newJString(userIp))
-  add(query_599032, "key", newJString(key))
-  add(path_599031, "enterpriseId", newJString(enterpriseId))
-  add(query_599032, "prettyPrint", newJBool(prettyPrint))
-  add(path_599031, "userId", newJString(userId))
-  result = call_599030.call(path_599031, query_599032, nil, nil, nil)
+  add(query_581032, "alt", newJString(alt))
+  add(path_581031, "deviceId", newJString(deviceId))
+  add(query_581032, "oauth_token", newJString(oauthToken))
+  add(query_581032, "userIp", newJString(userIp))
+  add(query_581032, "key", newJString(key))
+  add(path_581031, "enterpriseId", newJString(enterpriseId))
+  add(query_581032, "prettyPrint", newJBool(prettyPrint))
+  add(path_581031, "userId", newJString(userId))
+  result = call_581030.call(path_581031, query_581032, nil, nil, nil)
 
-var androidenterpriseManagedconfigurationsfordeviceDelete* = Call_AndroidenterpriseManagedconfigurationsfordeviceDelete_599015(
+var androidenterpriseManagedconfigurationsfordeviceDelete* = Call_AndroidenterpriseManagedconfigurationsfordeviceDelete_581015(
     name: "androidenterpriseManagedconfigurationsfordeviceDelete",
     meth: HttpMethod.HttpDelete, host: "www.googleapis.com", route: "/enterprises/{enterpriseId}/users/{userId}/devices/{deviceId}/managedConfigurationsForDevice/{managedConfigurationForDeviceId}",
-    validator: validate_AndroidenterpriseManagedconfigurationsfordeviceDelete_599016,
+    validator: validate_AndroidenterpriseManagedconfigurationsfordeviceDelete_581016,
     base: "/androidenterprise/v1",
-    url: url_AndroidenterpriseManagedconfigurationsfordeviceDelete_599017,
+    url: url_AndroidenterpriseManagedconfigurationsfordeviceDelete_581017,
     schemes: {Scheme.Https})
 type
-  Call_AndroidenterpriseDevicesSetState_599070 = ref object of OpenApiRestCall_597421
-proc url_AndroidenterpriseDevicesSetState_599072(protocol: Scheme; host: string;
+  Call_AndroidenterpriseDevicesSetState_581070 = ref object of OpenApiRestCall_579421
+proc url_AndroidenterpriseDevicesSetState_581072(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "enterpriseId" in path, "`enterpriseId` is a required path parameter"
   assert "userId" in path, "`userId` is a required path parameter"
@@ -11098,7 +11100,7 @@ proc url_AndroidenterpriseDevicesSetState_599072(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_AndroidenterpriseDevicesSetState_599071(path: JsonNode;
+proc validate_AndroidenterpriseDevicesSetState_581071(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Sets whether a device's access to Google services is enabled or disabled. The device state takes effect only if enforcing EMM policies on Android devices is enabled in the Google Admin Console. Otherwise, the device state is ignored and all devices are allowed access to Google services. This is only supported for Google-managed users.
   ## 
@@ -11113,21 +11115,21 @@ proc validate_AndroidenterpriseDevicesSetState_599071(path: JsonNode;
   ##         : The ID of the user.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `deviceId` field"
-  var valid_599073 = path.getOrDefault("deviceId")
-  valid_599073 = validateParameter(valid_599073, JString, required = true,
+  var valid_581073 = path.getOrDefault("deviceId")
+  valid_581073 = validateParameter(valid_581073, JString, required = true,
                                  default = nil)
-  if valid_599073 != nil:
-    section.add "deviceId", valid_599073
-  var valid_599074 = path.getOrDefault("enterpriseId")
-  valid_599074 = validateParameter(valid_599074, JString, required = true,
+  if valid_581073 != nil:
+    section.add "deviceId", valid_581073
+  var valid_581074 = path.getOrDefault("enterpriseId")
+  valid_581074 = validateParameter(valid_581074, JString, required = true,
                                  default = nil)
-  if valid_599074 != nil:
-    section.add "enterpriseId", valid_599074
-  var valid_599075 = path.getOrDefault("userId")
-  valid_599075 = validateParameter(valid_599075, JString, required = true,
+  if valid_581074 != nil:
+    section.add "enterpriseId", valid_581074
+  var valid_581075 = path.getOrDefault("userId")
+  valid_581075 = validateParameter(valid_581075, JString, required = true,
                                  default = nil)
-  if valid_599075 != nil:
-    section.add "userId", valid_599075
+  if valid_581075 != nil:
+    section.add "userId", valid_581075
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -11145,41 +11147,41 @@ proc validate_AndroidenterpriseDevicesSetState_599071(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_599076 = query.getOrDefault("fields")
-  valid_599076 = validateParameter(valid_599076, JString, required = false,
+  var valid_581076 = query.getOrDefault("fields")
+  valid_581076 = validateParameter(valid_581076, JString, required = false,
                                  default = nil)
-  if valid_599076 != nil:
-    section.add "fields", valid_599076
-  var valid_599077 = query.getOrDefault("quotaUser")
-  valid_599077 = validateParameter(valid_599077, JString, required = false,
+  if valid_581076 != nil:
+    section.add "fields", valid_581076
+  var valid_581077 = query.getOrDefault("quotaUser")
+  valid_581077 = validateParameter(valid_581077, JString, required = false,
                                  default = nil)
-  if valid_599077 != nil:
-    section.add "quotaUser", valid_599077
-  var valid_599078 = query.getOrDefault("alt")
-  valid_599078 = validateParameter(valid_599078, JString, required = false,
+  if valid_581077 != nil:
+    section.add "quotaUser", valid_581077
+  var valid_581078 = query.getOrDefault("alt")
+  valid_581078 = validateParameter(valid_581078, JString, required = false,
                                  default = newJString("json"))
-  if valid_599078 != nil:
-    section.add "alt", valid_599078
-  var valid_599079 = query.getOrDefault("oauth_token")
-  valid_599079 = validateParameter(valid_599079, JString, required = false,
+  if valid_581078 != nil:
+    section.add "alt", valid_581078
+  var valid_581079 = query.getOrDefault("oauth_token")
+  valid_581079 = validateParameter(valid_581079, JString, required = false,
                                  default = nil)
-  if valid_599079 != nil:
-    section.add "oauth_token", valid_599079
-  var valid_599080 = query.getOrDefault("userIp")
-  valid_599080 = validateParameter(valid_599080, JString, required = false,
+  if valid_581079 != nil:
+    section.add "oauth_token", valid_581079
+  var valid_581080 = query.getOrDefault("userIp")
+  valid_581080 = validateParameter(valid_581080, JString, required = false,
                                  default = nil)
-  if valid_599080 != nil:
-    section.add "userIp", valid_599080
-  var valid_599081 = query.getOrDefault("key")
-  valid_599081 = validateParameter(valid_599081, JString, required = false,
+  if valid_581080 != nil:
+    section.add "userIp", valid_581080
+  var valid_581081 = query.getOrDefault("key")
+  valid_581081 = validateParameter(valid_581081, JString, required = false,
                                  default = nil)
-  if valid_599081 != nil:
-    section.add "key", valid_599081
-  var valid_599082 = query.getOrDefault("prettyPrint")
-  valid_599082 = validateParameter(valid_599082, JBool, required = false,
+  if valid_581081 != nil:
+    section.add "key", valid_581081
+  var valid_581082 = query.getOrDefault("prettyPrint")
+  valid_581082 = validateParameter(valid_581082, JBool, required = false,
                                  default = newJBool(true))
-  if valid_599082 != nil:
-    section.add "prettyPrint", valid_599082
+  if valid_581082 != nil:
+    section.add "prettyPrint", valid_581082
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -11191,21 +11193,21 @@ proc validate_AndroidenterpriseDevicesSetState_599071(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_599084: Call_AndroidenterpriseDevicesSetState_599070;
+proc call*(call_581084: Call_AndroidenterpriseDevicesSetState_581070;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Sets whether a device's access to Google services is enabled or disabled. The device state takes effect only if enforcing EMM policies on Android devices is enabled in the Google Admin Console. Otherwise, the device state is ignored and all devices are allowed access to Google services. This is only supported for Google-managed users.
   ## 
-  let valid = call_599084.validator(path, query, header, formData, body)
-  let scheme = call_599084.pickScheme
+  let valid = call_581084.validator(path, query, header, formData, body)
+  let scheme = call_581084.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_599084.url(scheme.get, call_599084.host, call_599084.base,
-                         call_599084.route, valid.getOrDefault("path"),
+  let url = call_581084.url(scheme.get, call_581084.host, call_581084.base,
+                         call_581084.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_599084, url, valid)
+  result = hook(call_581084, url, valid)
 
-proc call*(call_599085: Call_AndroidenterpriseDevicesSetState_599070;
+proc call*(call_581085: Call_AndroidenterpriseDevicesSetState_581070;
           deviceId: string; enterpriseId: string; userId: string; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; key: string = ""; body: JsonNode = nil;
@@ -11233,36 +11235,36 @@ proc call*(call_599085: Call_AndroidenterpriseDevicesSetState_599070;
   ##              : Returns response with indentations and line breaks.
   ##   userId: string (required)
   ##         : The ID of the user.
-  var path_599086 = newJObject()
-  var query_599087 = newJObject()
-  var body_599088 = newJObject()
-  add(query_599087, "fields", newJString(fields))
-  add(query_599087, "quotaUser", newJString(quotaUser))
-  add(query_599087, "alt", newJString(alt))
-  add(path_599086, "deviceId", newJString(deviceId))
-  add(query_599087, "oauth_token", newJString(oauthToken))
-  add(query_599087, "userIp", newJString(userIp))
-  add(query_599087, "key", newJString(key))
-  add(path_599086, "enterpriseId", newJString(enterpriseId))
+  var path_581086 = newJObject()
+  var query_581087 = newJObject()
+  var body_581088 = newJObject()
+  add(query_581087, "fields", newJString(fields))
+  add(query_581087, "quotaUser", newJString(quotaUser))
+  add(query_581087, "alt", newJString(alt))
+  add(path_581086, "deviceId", newJString(deviceId))
+  add(query_581087, "oauth_token", newJString(oauthToken))
+  add(query_581087, "userIp", newJString(userIp))
+  add(query_581087, "key", newJString(key))
+  add(path_581086, "enterpriseId", newJString(enterpriseId))
   if body != nil:
-    body_599088 = body
-  add(query_599087, "prettyPrint", newJBool(prettyPrint))
-  add(path_599086, "userId", newJString(userId))
-  result = call_599085.call(path_599086, query_599087, nil, nil, body_599088)
+    body_581088 = body
+  add(query_581087, "prettyPrint", newJBool(prettyPrint))
+  add(path_581086, "userId", newJString(userId))
+  result = call_581085.call(path_581086, query_581087, nil, nil, body_581088)
 
-var androidenterpriseDevicesSetState* = Call_AndroidenterpriseDevicesSetState_599070(
+var androidenterpriseDevicesSetState* = Call_AndroidenterpriseDevicesSetState_581070(
     name: "androidenterpriseDevicesSetState", meth: HttpMethod.HttpPut,
     host: "www.googleapis.com", route: "/enterprises/{enterpriseId}/users/{userId}/devices/{deviceId}/state",
-    validator: validate_AndroidenterpriseDevicesSetState_599071,
-    base: "/androidenterprise/v1", url: url_AndroidenterpriseDevicesSetState_599072,
+    validator: validate_AndroidenterpriseDevicesSetState_581071,
+    base: "/androidenterprise/v1", url: url_AndroidenterpriseDevicesSetState_581072,
     schemes: {Scheme.Https})
 type
-  Call_AndroidenterpriseDevicesGetState_599053 = ref object of OpenApiRestCall_597421
-proc url_AndroidenterpriseDevicesGetState_599055(protocol: Scheme; host: string;
+  Call_AndroidenterpriseDevicesGetState_581053 = ref object of OpenApiRestCall_579421
+proc url_AndroidenterpriseDevicesGetState_581055(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "enterpriseId" in path, "`enterpriseId` is a required path parameter"
   assert "userId" in path, "`userId` is a required path parameter"
@@ -11280,7 +11282,7 @@ proc url_AndroidenterpriseDevicesGetState_599055(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_AndroidenterpriseDevicesGetState_599054(path: JsonNode;
+proc validate_AndroidenterpriseDevicesGetState_581054(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Retrieves whether a device's access to Google services is enabled or disabled. The device state takes effect only if enforcing EMM policies on Android devices is enabled in the Google Admin Console. Otherwise, the device state is ignored and all devices are allowed access to Google services. This is only supported for Google-managed users.
   ## 
@@ -11295,21 +11297,21 @@ proc validate_AndroidenterpriseDevicesGetState_599054(path: JsonNode;
   ##         : The ID of the user.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `deviceId` field"
-  var valid_599056 = path.getOrDefault("deviceId")
-  valid_599056 = validateParameter(valid_599056, JString, required = true,
+  var valid_581056 = path.getOrDefault("deviceId")
+  valid_581056 = validateParameter(valid_581056, JString, required = true,
                                  default = nil)
-  if valid_599056 != nil:
-    section.add "deviceId", valid_599056
-  var valid_599057 = path.getOrDefault("enterpriseId")
-  valid_599057 = validateParameter(valid_599057, JString, required = true,
+  if valid_581056 != nil:
+    section.add "deviceId", valid_581056
+  var valid_581057 = path.getOrDefault("enterpriseId")
+  valid_581057 = validateParameter(valid_581057, JString, required = true,
                                  default = nil)
-  if valid_599057 != nil:
-    section.add "enterpriseId", valid_599057
-  var valid_599058 = path.getOrDefault("userId")
-  valid_599058 = validateParameter(valid_599058, JString, required = true,
+  if valid_581057 != nil:
+    section.add "enterpriseId", valid_581057
+  var valid_581058 = path.getOrDefault("userId")
+  valid_581058 = validateParameter(valid_581058, JString, required = true,
                                  default = nil)
-  if valid_599058 != nil:
-    section.add "userId", valid_599058
+  if valid_581058 != nil:
+    section.add "userId", valid_581058
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -11327,41 +11329,41 @@ proc validate_AndroidenterpriseDevicesGetState_599054(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_599059 = query.getOrDefault("fields")
-  valid_599059 = validateParameter(valid_599059, JString, required = false,
+  var valid_581059 = query.getOrDefault("fields")
+  valid_581059 = validateParameter(valid_581059, JString, required = false,
                                  default = nil)
-  if valid_599059 != nil:
-    section.add "fields", valid_599059
-  var valid_599060 = query.getOrDefault("quotaUser")
-  valid_599060 = validateParameter(valid_599060, JString, required = false,
+  if valid_581059 != nil:
+    section.add "fields", valid_581059
+  var valid_581060 = query.getOrDefault("quotaUser")
+  valid_581060 = validateParameter(valid_581060, JString, required = false,
                                  default = nil)
-  if valid_599060 != nil:
-    section.add "quotaUser", valid_599060
-  var valid_599061 = query.getOrDefault("alt")
-  valid_599061 = validateParameter(valid_599061, JString, required = false,
+  if valid_581060 != nil:
+    section.add "quotaUser", valid_581060
+  var valid_581061 = query.getOrDefault("alt")
+  valid_581061 = validateParameter(valid_581061, JString, required = false,
                                  default = newJString("json"))
-  if valid_599061 != nil:
-    section.add "alt", valid_599061
-  var valid_599062 = query.getOrDefault("oauth_token")
-  valid_599062 = validateParameter(valid_599062, JString, required = false,
+  if valid_581061 != nil:
+    section.add "alt", valid_581061
+  var valid_581062 = query.getOrDefault("oauth_token")
+  valid_581062 = validateParameter(valid_581062, JString, required = false,
                                  default = nil)
-  if valid_599062 != nil:
-    section.add "oauth_token", valid_599062
-  var valid_599063 = query.getOrDefault("userIp")
-  valid_599063 = validateParameter(valid_599063, JString, required = false,
+  if valid_581062 != nil:
+    section.add "oauth_token", valid_581062
+  var valid_581063 = query.getOrDefault("userIp")
+  valid_581063 = validateParameter(valid_581063, JString, required = false,
                                  default = nil)
-  if valid_599063 != nil:
-    section.add "userIp", valid_599063
-  var valid_599064 = query.getOrDefault("key")
-  valid_599064 = validateParameter(valid_599064, JString, required = false,
+  if valid_581063 != nil:
+    section.add "userIp", valid_581063
+  var valid_581064 = query.getOrDefault("key")
+  valid_581064 = validateParameter(valid_581064, JString, required = false,
                                  default = nil)
-  if valid_599064 != nil:
-    section.add "key", valid_599064
-  var valid_599065 = query.getOrDefault("prettyPrint")
-  valid_599065 = validateParameter(valid_599065, JBool, required = false,
+  if valid_581064 != nil:
+    section.add "key", valid_581064
+  var valid_581065 = query.getOrDefault("prettyPrint")
+  valid_581065 = validateParameter(valid_581065, JBool, required = false,
                                  default = newJBool(true))
-  if valid_599065 != nil:
-    section.add "prettyPrint", valid_599065
+  if valid_581065 != nil:
+    section.add "prettyPrint", valid_581065
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -11370,21 +11372,21 @@ proc validate_AndroidenterpriseDevicesGetState_599054(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_599066: Call_AndroidenterpriseDevicesGetState_599053;
+proc call*(call_581066: Call_AndroidenterpriseDevicesGetState_581053;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Retrieves whether a device's access to Google services is enabled or disabled. The device state takes effect only if enforcing EMM policies on Android devices is enabled in the Google Admin Console. Otherwise, the device state is ignored and all devices are allowed access to Google services. This is only supported for Google-managed users.
   ## 
-  let valid = call_599066.validator(path, query, header, formData, body)
-  let scheme = call_599066.pickScheme
+  let valid = call_581066.validator(path, query, header, formData, body)
+  let scheme = call_581066.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_599066.url(scheme.get, call_599066.host, call_599066.base,
-                         call_599066.route, valid.getOrDefault("path"),
+  let url = call_581066.url(scheme.get, call_581066.host, call_581066.base,
+                         call_581066.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_599066, url, valid)
+  result = hook(call_581066, url, valid)
 
-proc call*(call_599067: Call_AndroidenterpriseDevicesGetState_599053;
+proc call*(call_581067: Call_AndroidenterpriseDevicesGetState_581053;
           deviceId: string; enterpriseId: string; userId: string; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; key: string = ""; prettyPrint: bool = true): Recallable =
@@ -11410,33 +11412,33 @@ proc call*(call_599067: Call_AndroidenterpriseDevicesGetState_599053;
   ##              : Returns response with indentations and line breaks.
   ##   userId: string (required)
   ##         : The ID of the user.
-  var path_599068 = newJObject()
-  var query_599069 = newJObject()
-  add(query_599069, "fields", newJString(fields))
-  add(query_599069, "quotaUser", newJString(quotaUser))
-  add(query_599069, "alt", newJString(alt))
-  add(path_599068, "deviceId", newJString(deviceId))
-  add(query_599069, "oauth_token", newJString(oauthToken))
-  add(query_599069, "userIp", newJString(userIp))
-  add(query_599069, "key", newJString(key))
-  add(path_599068, "enterpriseId", newJString(enterpriseId))
-  add(query_599069, "prettyPrint", newJBool(prettyPrint))
-  add(path_599068, "userId", newJString(userId))
-  result = call_599067.call(path_599068, query_599069, nil, nil, nil)
+  var path_581068 = newJObject()
+  var query_581069 = newJObject()
+  add(query_581069, "fields", newJString(fields))
+  add(query_581069, "quotaUser", newJString(quotaUser))
+  add(query_581069, "alt", newJString(alt))
+  add(path_581068, "deviceId", newJString(deviceId))
+  add(query_581069, "oauth_token", newJString(oauthToken))
+  add(query_581069, "userIp", newJString(userIp))
+  add(query_581069, "key", newJString(key))
+  add(path_581068, "enterpriseId", newJString(enterpriseId))
+  add(query_581069, "prettyPrint", newJBool(prettyPrint))
+  add(path_581068, "userId", newJString(userId))
+  result = call_581067.call(path_581068, query_581069, nil, nil, nil)
 
-var androidenterpriseDevicesGetState* = Call_AndroidenterpriseDevicesGetState_599053(
+var androidenterpriseDevicesGetState* = Call_AndroidenterpriseDevicesGetState_581053(
     name: "androidenterpriseDevicesGetState", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/enterprises/{enterpriseId}/users/{userId}/devices/{deviceId}/state",
-    validator: validate_AndroidenterpriseDevicesGetState_599054,
-    base: "/androidenterprise/v1", url: url_AndroidenterpriseDevicesGetState_599055,
+    validator: validate_AndroidenterpriseDevicesGetState_581054,
+    base: "/androidenterprise/v1", url: url_AndroidenterpriseDevicesGetState_581055,
     schemes: {Scheme.Https})
 type
-  Call_AndroidenterpriseEntitlementsList_599089 = ref object of OpenApiRestCall_597421
-proc url_AndroidenterpriseEntitlementsList_599091(protocol: Scheme; host: string;
+  Call_AndroidenterpriseEntitlementsList_581089 = ref object of OpenApiRestCall_579421
+proc url_AndroidenterpriseEntitlementsList_581091(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "enterpriseId" in path, "`enterpriseId` is a required path parameter"
   assert "userId" in path, "`userId` is a required path parameter"
@@ -11451,7 +11453,7 @@ proc url_AndroidenterpriseEntitlementsList_599091(protocol: Scheme; host: string
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_AndroidenterpriseEntitlementsList_599090(path: JsonNode;
+proc validate_AndroidenterpriseEntitlementsList_581090(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Lists all entitlements for the specified user. Only the ID is set.
   ## 
@@ -11465,16 +11467,16 @@ proc validate_AndroidenterpriseEntitlementsList_599090(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `enterpriseId` field"
-  var valid_599092 = path.getOrDefault("enterpriseId")
-  valid_599092 = validateParameter(valid_599092, JString, required = true,
+  var valid_581092 = path.getOrDefault("enterpriseId")
+  valid_581092 = validateParameter(valid_581092, JString, required = true,
                                  default = nil)
-  if valid_599092 != nil:
-    section.add "enterpriseId", valid_599092
-  var valid_599093 = path.getOrDefault("userId")
-  valid_599093 = validateParameter(valid_599093, JString, required = true,
+  if valid_581092 != nil:
+    section.add "enterpriseId", valid_581092
+  var valid_581093 = path.getOrDefault("userId")
+  valid_581093 = validateParameter(valid_581093, JString, required = true,
                                  default = nil)
-  if valid_599093 != nil:
-    section.add "userId", valid_599093
+  if valid_581093 != nil:
+    section.add "userId", valid_581093
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -11492,41 +11494,41 @@ proc validate_AndroidenterpriseEntitlementsList_599090(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_599094 = query.getOrDefault("fields")
-  valid_599094 = validateParameter(valid_599094, JString, required = false,
+  var valid_581094 = query.getOrDefault("fields")
+  valid_581094 = validateParameter(valid_581094, JString, required = false,
                                  default = nil)
-  if valid_599094 != nil:
-    section.add "fields", valid_599094
-  var valid_599095 = query.getOrDefault("quotaUser")
-  valid_599095 = validateParameter(valid_599095, JString, required = false,
+  if valid_581094 != nil:
+    section.add "fields", valid_581094
+  var valid_581095 = query.getOrDefault("quotaUser")
+  valid_581095 = validateParameter(valid_581095, JString, required = false,
                                  default = nil)
-  if valid_599095 != nil:
-    section.add "quotaUser", valid_599095
-  var valid_599096 = query.getOrDefault("alt")
-  valid_599096 = validateParameter(valid_599096, JString, required = false,
+  if valid_581095 != nil:
+    section.add "quotaUser", valid_581095
+  var valid_581096 = query.getOrDefault("alt")
+  valid_581096 = validateParameter(valid_581096, JString, required = false,
                                  default = newJString("json"))
-  if valid_599096 != nil:
-    section.add "alt", valid_599096
-  var valid_599097 = query.getOrDefault("oauth_token")
-  valid_599097 = validateParameter(valid_599097, JString, required = false,
+  if valid_581096 != nil:
+    section.add "alt", valid_581096
+  var valid_581097 = query.getOrDefault("oauth_token")
+  valid_581097 = validateParameter(valid_581097, JString, required = false,
                                  default = nil)
-  if valid_599097 != nil:
-    section.add "oauth_token", valid_599097
-  var valid_599098 = query.getOrDefault("userIp")
-  valid_599098 = validateParameter(valid_599098, JString, required = false,
+  if valid_581097 != nil:
+    section.add "oauth_token", valid_581097
+  var valid_581098 = query.getOrDefault("userIp")
+  valid_581098 = validateParameter(valid_581098, JString, required = false,
                                  default = nil)
-  if valid_599098 != nil:
-    section.add "userIp", valid_599098
-  var valid_599099 = query.getOrDefault("key")
-  valid_599099 = validateParameter(valid_599099, JString, required = false,
+  if valid_581098 != nil:
+    section.add "userIp", valid_581098
+  var valid_581099 = query.getOrDefault("key")
+  valid_581099 = validateParameter(valid_581099, JString, required = false,
                                  default = nil)
-  if valid_599099 != nil:
-    section.add "key", valid_599099
-  var valid_599100 = query.getOrDefault("prettyPrint")
-  valid_599100 = validateParameter(valid_599100, JBool, required = false,
+  if valid_581099 != nil:
+    section.add "key", valid_581099
+  var valid_581100 = query.getOrDefault("prettyPrint")
+  valid_581100 = validateParameter(valid_581100, JBool, required = false,
                                  default = newJBool(true))
-  if valid_599100 != nil:
-    section.add "prettyPrint", valid_599100
+  if valid_581100 != nil:
+    section.add "prettyPrint", valid_581100
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -11535,21 +11537,21 @@ proc validate_AndroidenterpriseEntitlementsList_599090(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_599101: Call_AndroidenterpriseEntitlementsList_599089;
+proc call*(call_581101: Call_AndroidenterpriseEntitlementsList_581089;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Lists all entitlements for the specified user. Only the ID is set.
   ## 
-  let valid = call_599101.validator(path, query, header, formData, body)
-  let scheme = call_599101.pickScheme
+  let valid = call_581101.validator(path, query, header, formData, body)
+  let scheme = call_581101.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_599101.url(scheme.get, call_599101.host, call_599101.base,
-                         call_599101.route, valid.getOrDefault("path"),
+  let url = call_581101.url(scheme.get, call_581101.host, call_581101.base,
+                         call_581101.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_599101, url, valid)
+  result = hook(call_581101, url, valid)
 
-proc call*(call_599102: Call_AndroidenterpriseEntitlementsList_599089;
+proc call*(call_581102: Call_AndroidenterpriseEntitlementsList_581089;
           enterpriseId: string; userId: string; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; key: string = ""; prettyPrint: bool = true): Recallable =
@@ -11573,33 +11575,33 @@ proc call*(call_599102: Call_AndroidenterpriseEntitlementsList_599089;
   ##              : Returns response with indentations and line breaks.
   ##   userId: string (required)
   ##         : The ID of the user.
-  var path_599103 = newJObject()
-  var query_599104 = newJObject()
-  add(query_599104, "fields", newJString(fields))
-  add(query_599104, "quotaUser", newJString(quotaUser))
-  add(query_599104, "alt", newJString(alt))
-  add(query_599104, "oauth_token", newJString(oauthToken))
-  add(query_599104, "userIp", newJString(userIp))
-  add(query_599104, "key", newJString(key))
-  add(path_599103, "enterpriseId", newJString(enterpriseId))
-  add(query_599104, "prettyPrint", newJBool(prettyPrint))
-  add(path_599103, "userId", newJString(userId))
-  result = call_599102.call(path_599103, query_599104, nil, nil, nil)
+  var path_581103 = newJObject()
+  var query_581104 = newJObject()
+  add(query_581104, "fields", newJString(fields))
+  add(query_581104, "quotaUser", newJString(quotaUser))
+  add(query_581104, "alt", newJString(alt))
+  add(query_581104, "oauth_token", newJString(oauthToken))
+  add(query_581104, "userIp", newJString(userIp))
+  add(query_581104, "key", newJString(key))
+  add(path_581103, "enterpriseId", newJString(enterpriseId))
+  add(query_581104, "prettyPrint", newJBool(prettyPrint))
+  add(path_581103, "userId", newJString(userId))
+  result = call_581102.call(path_581103, query_581104, nil, nil, nil)
 
-var androidenterpriseEntitlementsList* = Call_AndroidenterpriseEntitlementsList_599089(
+var androidenterpriseEntitlementsList* = Call_AndroidenterpriseEntitlementsList_581089(
     name: "androidenterpriseEntitlementsList", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com",
     route: "/enterprises/{enterpriseId}/users/{userId}/entitlements",
-    validator: validate_AndroidenterpriseEntitlementsList_599090,
-    base: "/androidenterprise/v1", url: url_AndroidenterpriseEntitlementsList_599091,
+    validator: validate_AndroidenterpriseEntitlementsList_581090,
+    base: "/androidenterprise/v1", url: url_AndroidenterpriseEntitlementsList_581091,
     schemes: {Scheme.Https})
 type
-  Call_AndroidenterpriseEntitlementsUpdate_599122 = ref object of OpenApiRestCall_597421
-proc url_AndroidenterpriseEntitlementsUpdate_599124(protocol: Scheme; host: string;
+  Call_AndroidenterpriseEntitlementsUpdate_581122 = ref object of OpenApiRestCall_579421
+proc url_AndroidenterpriseEntitlementsUpdate_581124(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "enterpriseId" in path, "`enterpriseId` is a required path parameter"
   assert "userId" in path, "`userId` is a required path parameter"
@@ -11616,7 +11618,7 @@ proc url_AndroidenterpriseEntitlementsUpdate_599124(protocol: Scheme; host: stri
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_AndroidenterpriseEntitlementsUpdate_599123(path: JsonNode;
+proc validate_AndroidenterpriseEntitlementsUpdate_581123(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Adds or updates an entitlement to an app for a user.
   ## 
@@ -11632,21 +11634,21 @@ proc validate_AndroidenterpriseEntitlementsUpdate_599123(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `enterpriseId` field"
-  var valid_599125 = path.getOrDefault("enterpriseId")
-  valid_599125 = validateParameter(valid_599125, JString, required = true,
+  var valid_581125 = path.getOrDefault("enterpriseId")
+  valid_581125 = validateParameter(valid_581125, JString, required = true,
                                  default = nil)
-  if valid_599125 != nil:
-    section.add "enterpriseId", valid_599125
-  var valid_599126 = path.getOrDefault("entitlementId")
-  valid_599126 = validateParameter(valid_599126, JString, required = true,
+  if valid_581125 != nil:
+    section.add "enterpriseId", valid_581125
+  var valid_581126 = path.getOrDefault("entitlementId")
+  valid_581126 = validateParameter(valid_581126, JString, required = true,
                                  default = nil)
-  if valid_599126 != nil:
-    section.add "entitlementId", valid_599126
-  var valid_599127 = path.getOrDefault("userId")
-  valid_599127 = validateParameter(valid_599127, JString, required = true,
+  if valid_581126 != nil:
+    section.add "entitlementId", valid_581126
+  var valid_581127 = path.getOrDefault("userId")
+  valid_581127 = validateParameter(valid_581127, JString, required = true,
                                  default = nil)
-  if valid_599127 != nil:
-    section.add "userId", valid_599127
+  if valid_581127 != nil:
+    section.add "userId", valid_581127
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -11666,45 +11668,45 @@ proc validate_AndroidenterpriseEntitlementsUpdate_599123(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_599128 = query.getOrDefault("fields")
-  valid_599128 = validateParameter(valid_599128, JString, required = false,
+  var valid_581128 = query.getOrDefault("fields")
+  valid_581128 = validateParameter(valid_581128, JString, required = false,
                                  default = nil)
-  if valid_599128 != nil:
-    section.add "fields", valid_599128
-  var valid_599129 = query.getOrDefault("quotaUser")
-  valid_599129 = validateParameter(valid_599129, JString, required = false,
+  if valid_581128 != nil:
+    section.add "fields", valid_581128
+  var valid_581129 = query.getOrDefault("quotaUser")
+  valid_581129 = validateParameter(valid_581129, JString, required = false,
                                  default = nil)
-  if valid_599129 != nil:
-    section.add "quotaUser", valid_599129
-  var valid_599130 = query.getOrDefault("alt")
-  valid_599130 = validateParameter(valid_599130, JString, required = false,
+  if valid_581129 != nil:
+    section.add "quotaUser", valid_581129
+  var valid_581130 = query.getOrDefault("alt")
+  valid_581130 = validateParameter(valid_581130, JString, required = false,
                                  default = newJString("json"))
-  if valid_599130 != nil:
-    section.add "alt", valid_599130
-  var valid_599131 = query.getOrDefault("install")
-  valid_599131 = validateParameter(valid_599131, JBool, required = false, default = nil)
-  if valid_599131 != nil:
-    section.add "install", valid_599131
-  var valid_599132 = query.getOrDefault("oauth_token")
-  valid_599132 = validateParameter(valid_599132, JString, required = false,
+  if valid_581130 != nil:
+    section.add "alt", valid_581130
+  var valid_581131 = query.getOrDefault("install")
+  valid_581131 = validateParameter(valid_581131, JBool, required = false, default = nil)
+  if valid_581131 != nil:
+    section.add "install", valid_581131
+  var valid_581132 = query.getOrDefault("oauth_token")
+  valid_581132 = validateParameter(valid_581132, JString, required = false,
                                  default = nil)
-  if valid_599132 != nil:
-    section.add "oauth_token", valid_599132
-  var valid_599133 = query.getOrDefault("userIp")
-  valid_599133 = validateParameter(valid_599133, JString, required = false,
+  if valid_581132 != nil:
+    section.add "oauth_token", valid_581132
+  var valid_581133 = query.getOrDefault("userIp")
+  valid_581133 = validateParameter(valid_581133, JString, required = false,
                                  default = nil)
-  if valid_599133 != nil:
-    section.add "userIp", valid_599133
-  var valid_599134 = query.getOrDefault("key")
-  valid_599134 = validateParameter(valid_599134, JString, required = false,
+  if valid_581133 != nil:
+    section.add "userIp", valid_581133
+  var valid_581134 = query.getOrDefault("key")
+  valid_581134 = validateParameter(valid_581134, JString, required = false,
                                  default = nil)
-  if valid_599134 != nil:
-    section.add "key", valid_599134
-  var valid_599135 = query.getOrDefault("prettyPrint")
-  valid_599135 = validateParameter(valid_599135, JBool, required = false,
+  if valid_581134 != nil:
+    section.add "key", valid_581134
+  var valid_581135 = query.getOrDefault("prettyPrint")
+  valid_581135 = validateParameter(valid_581135, JBool, required = false,
                                  default = newJBool(true))
-  if valid_599135 != nil:
-    section.add "prettyPrint", valid_599135
+  if valid_581135 != nil:
+    section.add "prettyPrint", valid_581135
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -11716,21 +11718,21 @@ proc validate_AndroidenterpriseEntitlementsUpdate_599123(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_599137: Call_AndroidenterpriseEntitlementsUpdate_599122;
+proc call*(call_581137: Call_AndroidenterpriseEntitlementsUpdate_581122;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Adds or updates an entitlement to an app for a user.
   ## 
-  let valid = call_599137.validator(path, query, header, formData, body)
-  let scheme = call_599137.pickScheme
+  let valid = call_581137.validator(path, query, header, formData, body)
+  let scheme = call_581137.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_599137.url(scheme.get, call_599137.host, call_599137.base,
-                         call_599137.route, valid.getOrDefault("path"),
+  let url = call_581137.url(scheme.get, call_581137.host, call_581137.base,
+                         call_581137.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_599137, url, valid)
+  result = hook(call_581137, url, valid)
 
-proc call*(call_599138: Call_AndroidenterpriseEntitlementsUpdate_599122;
+proc call*(call_581138: Call_AndroidenterpriseEntitlementsUpdate_581122;
           enterpriseId: string; entitlementId: string; userId: string;
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           install: bool = false; oauthToken: string = ""; userIp: string = "";
@@ -11760,37 +11762,37 @@ proc call*(call_599138: Call_AndroidenterpriseEntitlementsUpdate_599122;
   ##                : The ID of the entitlement (a product ID), e.g. "app:com.google.android.gm".
   ##   userId: string (required)
   ##         : The ID of the user.
-  var path_599139 = newJObject()
-  var query_599140 = newJObject()
-  var body_599141 = newJObject()
-  add(query_599140, "fields", newJString(fields))
-  add(query_599140, "quotaUser", newJString(quotaUser))
-  add(query_599140, "alt", newJString(alt))
-  add(query_599140, "install", newJBool(install))
-  add(query_599140, "oauth_token", newJString(oauthToken))
-  add(query_599140, "userIp", newJString(userIp))
-  add(query_599140, "key", newJString(key))
-  add(path_599139, "enterpriseId", newJString(enterpriseId))
+  var path_581139 = newJObject()
+  var query_581140 = newJObject()
+  var body_581141 = newJObject()
+  add(query_581140, "fields", newJString(fields))
+  add(query_581140, "quotaUser", newJString(quotaUser))
+  add(query_581140, "alt", newJString(alt))
+  add(query_581140, "install", newJBool(install))
+  add(query_581140, "oauth_token", newJString(oauthToken))
+  add(query_581140, "userIp", newJString(userIp))
+  add(query_581140, "key", newJString(key))
+  add(path_581139, "enterpriseId", newJString(enterpriseId))
   if body != nil:
-    body_599141 = body
-  add(query_599140, "prettyPrint", newJBool(prettyPrint))
-  add(path_599139, "entitlementId", newJString(entitlementId))
-  add(path_599139, "userId", newJString(userId))
-  result = call_599138.call(path_599139, query_599140, nil, nil, body_599141)
+    body_581141 = body
+  add(query_581140, "prettyPrint", newJBool(prettyPrint))
+  add(path_581139, "entitlementId", newJString(entitlementId))
+  add(path_581139, "userId", newJString(userId))
+  result = call_581138.call(path_581139, query_581140, nil, nil, body_581141)
 
-var androidenterpriseEntitlementsUpdate* = Call_AndroidenterpriseEntitlementsUpdate_599122(
+var androidenterpriseEntitlementsUpdate* = Call_AndroidenterpriseEntitlementsUpdate_581122(
     name: "androidenterpriseEntitlementsUpdate", meth: HttpMethod.HttpPut,
     host: "www.googleapis.com", route: "/enterprises/{enterpriseId}/users/{userId}/entitlements/{entitlementId}",
-    validator: validate_AndroidenterpriseEntitlementsUpdate_599123,
-    base: "/androidenterprise/v1", url: url_AndroidenterpriseEntitlementsUpdate_599124,
+    validator: validate_AndroidenterpriseEntitlementsUpdate_581123,
+    base: "/androidenterprise/v1", url: url_AndroidenterpriseEntitlementsUpdate_581124,
     schemes: {Scheme.Https})
 type
-  Call_AndroidenterpriseEntitlementsGet_599105 = ref object of OpenApiRestCall_597421
-proc url_AndroidenterpriseEntitlementsGet_599107(protocol: Scheme; host: string;
+  Call_AndroidenterpriseEntitlementsGet_581105 = ref object of OpenApiRestCall_579421
+proc url_AndroidenterpriseEntitlementsGet_581107(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "enterpriseId" in path, "`enterpriseId` is a required path parameter"
   assert "userId" in path, "`userId` is a required path parameter"
@@ -11807,7 +11809,7 @@ proc url_AndroidenterpriseEntitlementsGet_599107(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_AndroidenterpriseEntitlementsGet_599106(path: JsonNode;
+proc validate_AndroidenterpriseEntitlementsGet_581106(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Retrieves details of an entitlement.
   ## 
@@ -11823,21 +11825,21 @@ proc validate_AndroidenterpriseEntitlementsGet_599106(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `enterpriseId` field"
-  var valid_599108 = path.getOrDefault("enterpriseId")
-  valid_599108 = validateParameter(valid_599108, JString, required = true,
+  var valid_581108 = path.getOrDefault("enterpriseId")
+  valid_581108 = validateParameter(valid_581108, JString, required = true,
                                  default = nil)
-  if valid_599108 != nil:
-    section.add "enterpriseId", valid_599108
-  var valid_599109 = path.getOrDefault("entitlementId")
-  valid_599109 = validateParameter(valid_599109, JString, required = true,
+  if valid_581108 != nil:
+    section.add "enterpriseId", valid_581108
+  var valid_581109 = path.getOrDefault("entitlementId")
+  valid_581109 = validateParameter(valid_581109, JString, required = true,
                                  default = nil)
-  if valid_599109 != nil:
-    section.add "entitlementId", valid_599109
-  var valid_599110 = path.getOrDefault("userId")
-  valid_599110 = validateParameter(valid_599110, JString, required = true,
+  if valid_581109 != nil:
+    section.add "entitlementId", valid_581109
+  var valid_581110 = path.getOrDefault("userId")
+  valid_581110 = validateParameter(valid_581110, JString, required = true,
                                  default = nil)
-  if valid_599110 != nil:
-    section.add "userId", valid_599110
+  if valid_581110 != nil:
+    section.add "userId", valid_581110
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -11855,41 +11857,41 @@ proc validate_AndroidenterpriseEntitlementsGet_599106(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_599111 = query.getOrDefault("fields")
-  valid_599111 = validateParameter(valid_599111, JString, required = false,
+  var valid_581111 = query.getOrDefault("fields")
+  valid_581111 = validateParameter(valid_581111, JString, required = false,
                                  default = nil)
-  if valid_599111 != nil:
-    section.add "fields", valid_599111
-  var valid_599112 = query.getOrDefault("quotaUser")
-  valid_599112 = validateParameter(valid_599112, JString, required = false,
+  if valid_581111 != nil:
+    section.add "fields", valid_581111
+  var valid_581112 = query.getOrDefault("quotaUser")
+  valid_581112 = validateParameter(valid_581112, JString, required = false,
                                  default = nil)
-  if valid_599112 != nil:
-    section.add "quotaUser", valid_599112
-  var valid_599113 = query.getOrDefault("alt")
-  valid_599113 = validateParameter(valid_599113, JString, required = false,
+  if valid_581112 != nil:
+    section.add "quotaUser", valid_581112
+  var valid_581113 = query.getOrDefault("alt")
+  valid_581113 = validateParameter(valid_581113, JString, required = false,
                                  default = newJString("json"))
-  if valid_599113 != nil:
-    section.add "alt", valid_599113
-  var valid_599114 = query.getOrDefault("oauth_token")
-  valid_599114 = validateParameter(valid_599114, JString, required = false,
+  if valid_581113 != nil:
+    section.add "alt", valid_581113
+  var valid_581114 = query.getOrDefault("oauth_token")
+  valid_581114 = validateParameter(valid_581114, JString, required = false,
                                  default = nil)
-  if valid_599114 != nil:
-    section.add "oauth_token", valid_599114
-  var valid_599115 = query.getOrDefault("userIp")
-  valid_599115 = validateParameter(valid_599115, JString, required = false,
+  if valid_581114 != nil:
+    section.add "oauth_token", valid_581114
+  var valid_581115 = query.getOrDefault("userIp")
+  valid_581115 = validateParameter(valid_581115, JString, required = false,
                                  default = nil)
-  if valid_599115 != nil:
-    section.add "userIp", valid_599115
-  var valid_599116 = query.getOrDefault("key")
-  valid_599116 = validateParameter(valid_599116, JString, required = false,
+  if valid_581115 != nil:
+    section.add "userIp", valid_581115
+  var valid_581116 = query.getOrDefault("key")
+  valid_581116 = validateParameter(valid_581116, JString, required = false,
                                  default = nil)
-  if valid_599116 != nil:
-    section.add "key", valid_599116
-  var valid_599117 = query.getOrDefault("prettyPrint")
-  valid_599117 = validateParameter(valid_599117, JBool, required = false,
+  if valid_581116 != nil:
+    section.add "key", valid_581116
+  var valid_581117 = query.getOrDefault("prettyPrint")
+  valid_581117 = validateParameter(valid_581117, JBool, required = false,
                                  default = newJBool(true))
-  if valid_599117 != nil:
-    section.add "prettyPrint", valid_599117
+  if valid_581117 != nil:
+    section.add "prettyPrint", valid_581117
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -11898,21 +11900,21 @@ proc validate_AndroidenterpriseEntitlementsGet_599106(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_599118: Call_AndroidenterpriseEntitlementsGet_599105;
+proc call*(call_581118: Call_AndroidenterpriseEntitlementsGet_581105;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Retrieves details of an entitlement.
   ## 
-  let valid = call_599118.validator(path, query, header, formData, body)
-  let scheme = call_599118.pickScheme
+  let valid = call_581118.validator(path, query, header, formData, body)
+  let scheme = call_581118.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_599118.url(scheme.get, call_599118.host, call_599118.base,
-                         call_599118.route, valid.getOrDefault("path"),
+  let url = call_581118.url(scheme.get, call_581118.host, call_581118.base,
+                         call_581118.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_599118, url, valid)
+  result = hook(call_581118, url, valid)
 
-proc call*(call_599119: Call_AndroidenterpriseEntitlementsGet_599105;
+proc call*(call_581119: Call_AndroidenterpriseEntitlementsGet_581105;
           enterpriseId: string; entitlementId: string; userId: string;
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           oauthToken: string = ""; userIp: string = ""; key: string = "";
@@ -11939,33 +11941,33 @@ proc call*(call_599119: Call_AndroidenterpriseEntitlementsGet_599105;
   ##                : The ID of the entitlement (a product ID), e.g. "app:com.google.android.gm".
   ##   userId: string (required)
   ##         : The ID of the user.
-  var path_599120 = newJObject()
-  var query_599121 = newJObject()
-  add(query_599121, "fields", newJString(fields))
-  add(query_599121, "quotaUser", newJString(quotaUser))
-  add(query_599121, "alt", newJString(alt))
-  add(query_599121, "oauth_token", newJString(oauthToken))
-  add(query_599121, "userIp", newJString(userIp))
-  add(query_599121, "key", newJString(key))
-  add(path_599120, "enterpriseId", newJString(enterpriseId))
-  add(query_599121, "prettyPrint", newJBool(prettyPrint))
-  add(path_599120, "entitlementId", newJString(entitlementId))
-  add(path_599120, "userId", newJString(userId))
-  result = call_599119.call(path_599120, query_599121, nil, nil, nil)
+  var path_581120 = newJObject()
+  var query_581121 = newJObject()
+  add(query_581121, "fields", newJString(fields))
+  add(query_581121, "quotaUser", newJString(quotaUser))
+  add(query_581121, "alt", newJString(alt))
+  add(query_581121, "oauth_token", newJString(oauthToken))
+  add(query_581121, "userIp", newJString(userIp))
+  add(query_581121, "key", newJString(key))
+  add(path_581120, "enterpriseId", newJString(enterpriseId))
+  add(query_581121, "prettyPrint", newJBool(prettyPrint))
+  add(path_581120, "entitlementId", newJString(entitlementId))
+  add(path_581120, "userId", newJString(userId))
+  result = call_581119.call(path_581120, query_581121, nil, nil, nil)
 
-var androidenterpriseEntitlementsGet* = Call_AndroidenterpriseEntitlementsGet_599105(
+var androidenterpriseEntitlementsGet* = Call_AndroidenterpriseEntitlementsGet_581105(
     name: "androidenterpriseEntitlementsGet", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/enterprises/{enterpriseId}/users/{userId}/entitlements/{entitlementId}",
-    validator: validate_AndroidenterpriseEntitlementsGet_599106,
-    base: "/androidenterprise/v1", url: url_AndroidenterpriseEntitlementsGet_599107,
+    validator: validate_AndroidenterpriseEntitlementsGet_581106,
+    base: "/androidenterprise/v1", url: url_AndroidenterpriseEntitlementsGet_581107,
     schemes: {Scheme.Https})
 type
-  Call_AndroidenterpriseEntitlementsPatch_599159 = ref object of OpenApiRestCall_597421
-proc url_AndroidenterpriseEntitlementsPatch_599161(protocol: Scheme; host: string;
+  Call_AndroidenterpriseEntitlementsPatch_581159 = ref object of OpenApiRestCall_579421
+proc url_AndroidenterpriseEntitlementsPatch_581161(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "enterpriseId" in path, "`enterpriseId` is a required path parameter"
   assert "userId" in path, "`userId` is a required path parameter"
@@ -11982,7 +11984,7 @@ proc url_AndroidenterpriseEntitlementsPatch_599161(protocol: Scheme; host: strin
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_AndroidenterpriseEntitlementsPatch_599160(path: JsonNode;
+proc validate_AndroidenterpriseEntitlementsPatch_581160(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Adds or updates an entitlement to an app for a user. This method supports patch semantics.
   ## 
@@ -11998,21 +12000,21 @@ proc validate_AndroidenterpriseEntitlementsPatch_599160(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `enterpriseId` field"
-  var valid_599162 = path.getOrDefault("enterpriseId")
-  valid_599162 = validateParameter(valid_599162, JString, required = true,
+  var valid_581162 = path.getOrDefault("enterpriseId")
+  valid_581162 = validateParameter(valid_581162, JString, required = true,
                                  default = nil)
-  if valid_599162 != nil:
-    section.add "enterpriseId", valid_599162
-  var valid_599163 = path.getOrDefault("entitlementId")
-  valid_599163 = validateParameter(valid_599163, JString, required = true,
+  if valid_581162 != nil:
+    section.add "enterpriseId", valid_581162
+  var valid_581163 = path.getOrDefault("entitlementId")
+  valid_581163 = validateParameter(valid_581163, JString, required = true,
                                  default = nil)
-  if valid_599163 != nil:
-    section.add "entitlementId", valid_599163
-  var valid_599164 = path.getOrDefault("userId")
-  valid_599164 = validateParameter(valid_599164, JString, required = true,
+  if valid_581163 != nil:
+    section.add "entitlementId", valid_581163
+  var valid_581164 = path.getOrDefault("userId")
+  valid_581164 = validateParameter(valid_581164, JString, required = true,
                                  default = nil)
-  if valid_599164 != nil:
-    section.add "userId", valid_599164
+  if valid_581164 != nil:
+    section.add "userId", valid_581164
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -12032,45 +12034,45 @@ proc validate_AndroidenterpriseEntitlementsPatch_599160(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_599165 = query.getOrDefault("fields")
-  valid_599165 = validateParameter(valid_599165, JString, required = false,
+  var valid_581165 = query.getOrDefault("fields")
+  valid_581165 = validateParameter(valid_581165, JString, required = false,
                                  default = nil)
-  if valid_599165 != nil:
-    section.add "fields", valid_599165
-  var valid_599166 = query.getOrDefault("quotaUser")
-  valid_599166 = validateParameter(valid_599166, JString, required = false,
+  if valid_581165 != nil:
+    section.add "fields", valid_581165
+  var valid_581166 = query.getOrDefault("quotaUser")
+  valid_581166 = validateParameter(valid_581166, JString, required = false,
                                  default = nil)
-  if valid_599166 != nil:
-    section.add "quotaUser", valid_599166
-  var valid_599167 = query.getOrDefault("alt")
-  valid_599167 = validateParameter(valid_599167, JString, required = false,
+  if valid_581166 != nil:
+    section.add "quotaUser", valid_581166
+  var valid_581167 = query.getOrDefault("alt")
+  valid_581167 = validateParameter(valid_581167, JString, required = false,
                                  default = newJString("json"))
-  if valid_599167 != nil:
-    section.add "alt", valid_599167
-  var valid_599168 = query.getOrDefault("install")
-  valid_599168 = validateParameter(valid_599168, JBool, required = false, default = nil)
-  if valid_599168 != nil:
-    section.add "install", valid_599168
-  var valid_599169 = query.getOrDefault("oauth_token")
-  valid_599169 = validateParameter(valid_599169, JString, required = false,
+  if valid_581167 != nil:
+    section.add "alt", valid_581167
+  var valid_581168 = query.getOrDefault("install")
+  valid_581168 = validateParameter(valid_581168, JBool, required = false, default = nil)
+  if valid_581168 != nil:
+    section.add "install", valid_581168
+  var valid_581169 = query.getOrDefault("oauth_token")
+  valid_581169 = validateParameter(valid_581169, JString, required = false,
                                  default = nil)
-  if valid_599169 != nil:
-    section.add "oauth_token", valid_599169
-  var valid_599170 = query.getOrDefault("userIp")
-  valid_599170 = validateParameter(valid_599170, JString, required = false,
+  if valid_581169 != nil:
+    section.add "oauth_token", valid_581169
+  var valid_581170 = query.getOrDefault("userIp")
+  valid_581170 = validateParameter(valid_581170, JString, required = false,
                                  default = nil)
-  if valid_599170 != nil:
-    section.add "userIp", valid_599170
-  var valid_599171 = query.getOrDefault("key")
-  valid_599171 = validateParameter(valid_599171, JString, required = false,
+  if valid_581170 != nil:
+    section.add "userIp", valid_581170
+  var valid_581171 = query.getOrDefault("key")
+  valid_581171 = validateParameter(valid_581171, JString, required = false,
                                  default = nil)
-  if valid_599171 != nil:
-    section.add "key", valid_599171
-  var valid_599172 = query.getOrDefault("prettyPrint")
-  valid_599172 = validateParameter(valid_599172, JBool, required = false,
+  if valid_581171 != nil:
+    section.add "key", valid_581171
+  var valid_581172 = query.getOrDefault("prettyPrint")
+  valid_581172 = validateParameter(valid_581172, JBool, required = false,
                                  default = newJBool(true))
-  if valid_599172 != nil:
-    section.add "prettyPrint", valid_599172
+  if valid_581172 != nil:
+    section.add "prettyPrint", valid_581172
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -12082,21 +12084,21 @@ proc validate_AndroidenterpriseEntitlementsPatch_599160(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_599174: Call_AndroidenterpriseEntitlementsPatch_599159;
+proc call*(call_581174: Call_AndroidenterpriseEntitlementsPatch_581159;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Adds or updates an entitlement to an app for a user. This method supports patch semantics.
   ## 
-  let valid = call_599174.validator(path, query, header, formData, body)
-  let scheme = call_599174.pickScheme
+  let valid = call_581174.validator(path, query, header, formData, body)
+  let scheme = call_581174.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_599174.url(scheme.get, call_599174.host, call_599174.base,
-                         call_599174.route, valid.getOrDefault("path"),
+  let url = call_581174.url(scheme.get, call_581174.host, call_581174.base,
+                         call_581174.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_599174, url, valid)
+  result = hook(call_581174, url, valid)
 
-proc call*(call_599175: Call_AndroidenterpriseEntitlementsPatch_599159;
+proc call*(call_581175: Call_AndroidenterpriseEntitlementsPatch_581159;
           enterpriseId: string; entitlementId: string; userId: string;
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           install: bool = false; oauthToken: string = ""; userIp: string = "";
@@ -12126,37 +12128,37 @@ proc call*(call_599175: Call_AndroidenterpriseEntitlementsPatch_599159;
   ##                : The ID of the entitlement (a product ID), e.g. "app:com.google.android.gm".
   ##   userId: string (required)
   ##         : The ID of the user.
-  var path_599176 = newJObject()
-  var query_599177 = newJObject()
-  var body_599178 = newJObject()
-  add(query_599177, "fields", newJString(fields))
-  add(query_599177, "quotaUser", newJString(quotaUser))
-  add(query_599177, "alt", newJString(alt))
-  add(query_599177, "install", newJBool(install))
-  add(query_599177, "oauth_token", newJString(oauthToken))
-  add(query_599177, "userIp", newJString(userIp))
-  add(query_599177, "key", newJString(key))
-  add(path_599176, "enterpriseId", newJString(enterpriseId))
+  var path_581176 = newJObject()
+  var query_581177 = newJObject()
+  var body_581178 = newJObject()
+  add(query_581177, "fields", newJString(fields))
+  add(query_581177, "quotaUser", newJString(quotaUser))
+  add(query_581177, "alt", newJString(alt))
+  add(query_581177, "install", newJBool(install))
+  add(query_581177, "oauth_token", newJString(oauthToken))
+  add(query_581177, "userIp", newJString(userIp))
+  add(query_581177, "key", newJString(key))
+  add(path_581176, "enterpriseId", newJString(enterpriseId))
   if body != nil:
-    body_599178 = body
-  add(query_599177, "prettyPrint", newJBool(prettyPrint))
-  add(path_599176, "entitlementId", newJString(entitlementId))
-  add(path_599176, "userId", newJString(userId))
-  result = call_599175.call(path_599176, query_599177, nil, nil, body_599178)
+    body_581178 = body
+  add(query_581177, "prettyPrint", newJBool(prettyPrint))
+  add(path_581176, "entitlementId", newJString(entitlementId))
+  add(path_581176, "userId", newJString(userId))
+  result = call_581175.call(path_581176, query_581177, nil, nil, body_581178)
 
-var androidenterpriseEntitlementsPatch* = Call_AndroidenterpriseEntitlementsPatch_599159(
+var androidenterpriseEntitlementsPatch* = Call_AndroidenterpriseEntitlementsPatch_581159(
     name: "androidenterpriseEntitlementsPatch", meth: HttpMethod.HttpPatch,
     host: "www.googleapis.com", route: "/enterprises/{enterpriseId}/users/{userId}/entitlements/{entitlementId}",
-    validator: validate_AndroidenterpriseEntitlementsPatch_599160,
-    base: "/androidenterprise/v1", url: url_AndroidenterpriseEntitlementsPatch_599161,
+    validator: validate_AndroidenterpriseEntitlementsPatch_581160,
+    base: "/androidenterprise/v1", url: url_AndroidenterpriseEntitlementsPatch_581161,
     schemes: {Scheme.Https})
 type
-  Call_AndroidenterpriseEntitlementsDelete_599142 = ref object of OpenApiRestCall_597421
-proc url_AndroidenterpriseEntitlementsDelete_599144(protocol: Scheme; host: string;
+  Call_AndroidenterpriseEntitlementsDelete_581142 = ref object of OpenApiRestCall_579421
+proc url_AndroidenterpriseEntitlementsDelete_581144(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "enterpriseId" in path, "`enterpriseId` is a required path parameter"
   assert "userId" in path, "`userId` is a required path parameter"
@@ -12173,7 +12175,7 @@ proc url_AndroidenterpriseEntitlementsDelete_599144(protocol: Scheme; host: stri
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_AndroidenterpriseEntitlementsDelete_599143(path: JsonNode;
+proc validate_AndroidenterpriseEntitlementsDelete_581143(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Removes an entitlement to an app for a user.
   ## 
@@ -12189,21 +12191,21 @@ proc validate_AndroidenterpriseEntitlementsDelete_599143(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `enterpriseId` field"
-  var valid_599145 = path.getOrDefault("enterpriseId")
-  valid_599145 = validateParameter(valid_599145, JString, required = true,
+  var valid_581145 = path.getOrDefault("enterpriseId")
+  valid_581145 = validateParameter(valid_581145, JString, required = true,
                                  default = nil)
-  if valid_599145 != nil:
-    section.add "enterpriseId", valid_599145
-  var valid_599146 = path.getOrDefault("entitlementId")
-  valid_599146 = validateParameter(valid_599146, JString, required = true,
+  if valid_581145 != nil:
+    section.add "enterpriseId", valid_581145
+  var valid_581146 = path.getOrDefault("entitlementId")
+  valid_581146 = validateParameter(valid_581146, JString, required = true,
                                  default = nil)
-  if valid_599146 != nil:
-    section.add "entitlementId", valid_599146
-  var valid_599147 = path.getOrDefault("userId")
-  valid_599147 = validateParameter(valid_599147, JString, required = true,
+  if valid_581146 != nil:
+    section.add "entitlementId", valid_581146
+  var valid_581147 = path.getOrDefault("userId")
+  valid_581147 = validateParameter(valid_581147, JString, required = true,
                                  default = nil)
-  if valid_599147 != nil:
-    section.add "userId", valid_599147
+  if valid_581147 != nil:
+    section.add "userId", valid_581147
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -12221,41 +12223,41 @@ proc validate_AndroidenterpriseEntitlementsDelete_599143(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_599148 = query.getOrDefault("fields")
-  valid_599148 = validateParameter(valid_599148, JString, required = false,
+  var valid_581148 = query.getOrDefault("fields")
+  valid_581148 = validateParameter(valid_581148, JString, required = false,
                                  default = nil)
-  if valid_599148 != nil:
-    section.add "fields", valid_599148
-  var valid_599149 = query.getOrDefault("quotaUser")
-  valid_599149 = validateParameter(valid_599149, JString, required = false,
+  if valid_581148 != nil:
+    section.add "fields", valid_581148
+  var valid_581149 = query.getOrDefault("quotaUser")
+  valid_581149 = validateParameter(valid_581149, JString, required = false,
                                  default = nil)
-  if valid_599149 != nil:
-    section.add "quotaUser", valid_599149
-  var valid_599150 = query.getOrDefault("alt")
-  valid_599150 = validateParameter(valid_599150, JString, required = false,
+  if valid_581149 != nil:
+    section.add "quotaUser", valid_581149
+  var valid_581150 = query.getOrDefault("alt")
+  valid_581150 = validateParameter(valid_581150, JString, required = false,
                                  default = newJString("json"))
-  if valid_599150 != nil:
-    section.add "alt", valid_599150
-  var valid_599151 = query.getOrDefault("oauth_token")
-  valid_599151 = validateParameter(valid_599151, JString, required = false,
+  if valid_581150 != nil:
+    section.add "alt", valid_581150
+  var valid_581151 = query.getOrDefault("oauth_token")
+  valid_581151 = validateParameter(valid_581151, JString, required = false,
                                  default = nil)
-  if valid_599151 != nil:
-    section.add "oauth_token", valid_599151
-  var valid_599152 = query.getOrDefault("userIp")
-  valid_599152 = validateParameter(valid_599152, JString, required = false,
+  if valid_581151 != nil:
+    section.add "oauth_token", valid_581151
+  var valid_581152 = query.getOrDefault("userIp")
+  valid_581152 = validateParameter(valid_581152, JString, required = false,
                                  default = nil)
-  if valid_599152 != nil:
-    section.add "userIp", valid_599152
-  var valid_599153 = query.getOrDefault("key")
-  valid_599153 = validateParameter(valid_599153, JString, required = false,
+  if valid_581152 != nil:
+    section.add "userIp", valid_581152
+  var valid_581153 = query.getOrDefault("key")
+  valid_581153 = validateParameter(valid_581153, JString, required = false,
                                  default = nil)
-  if valid_599153 != nil:
-    section.add "key", valid_599153
-  var valid_599154 = query.getOrDefault("prettyPrint")
-  valid_599154 = validateParameter(valid_599154, JBool, required = false,
+  if valid_581153 != nil:
+    section.add "key", valid_581153
+  var valid_581154 = query.getOrDefault("prettyPrint")
+  valid_581154 = validateParameter(valid_581154, JBool, required = false,
                                  default = newJBool(true))
-  if valid_599154 != nil:
-    section.add "prettyPrint", valid_599154
+  if valid_581154 != nil:
+    section.add "prettyPrint", valid_581154
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -12264,21 +12266,21 @@ proc validate_AndroidenterpriseEntitlementsDelete_599143(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_599155: Call_AndroidenterpriseEntitlementsDelete_599142;
+proc call*(call_581155: Call_AndroidenterpriseEntitlementsDelete_581142;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Removes an entitlement to an app for a user.
   ## 
-  let valid = call_599155.validator(path, query, header, formData, body)
-  let scheme = call_599155.pickScheme
+  let valid = call_581155.validator(path, query, header, formData, body)
+  let scheme = call_581155.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_599155.url(scheme.get, call_599155.host, call_599155.base,
-                         call_599155.route, valid.getOrDefault("path"),
+  let url = call_581155.url(scheme.get, call_581155.host, call_581155.base,
+                         call_581155.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_599155, url, valid)
+  result = hook(call_581155, url, valid)
 
-proc call*(call_599156: Call_AndroidenterpriseEntitlementsDelete_599142;
+proc call*(call_581156: Call_AndroidenterpriseEntitlementsDelete_581142;
           enterpriseId: string; entitlementId: string; userId: string;
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           oauthToken: string = ""; userIp: string = ""; key: string = "";
@@ -12305,34 +12307,34 @@ proc call*(call_599156: Call_AndroidenterpriseEntitlementsDelete_599142;
   ##                : The ID of the entitlement (a product ID), e.g. "app:com.google.android.gm".
   ##   userId: string (required)
   ##         : The ID of the user.
-  var path_599157 = newJObject()
-  var query_599158 = newJObject()
-  add(query_599158, "fields", newJString(fields))
-  add(query_599158, "quotaUser", newJString(quotaUser))
-  add(query_599158, "alt", newJString(alt))
-  add(query_599158, "oauth_token", newJString(oauthToken))
-  add(query_599158, "userIp", newJString(userIp))
-  add(query_599158, "key", newJString(key))
-  add(path_599157, "enterpriseId", newJString(enterpriseId))
-  add(query_599158, "prettyPrint", newJBool(prettyPrint))
-  add(path_599157, "entitlementId", newJString(entitlementId))
-  add(path_599157, "userId", newJString(userId))
-  result = call_599156.call(path_599157, query_599158, nil, nil, nil)
+  var path_581157 = newJObject()
+  var query_581158 = newJObject()
+  add(query_581158, "fields", newJString(fields))
+  add(query_581158, "quotaUser", newJString(quotaUser))
+  add(query_581158, "alt", newJString(alt))
+  add(query_581158, "oauth_token", newJString(oauthToken))
+  add(query_581158, "userIp", newJString(userIp))
+  add(query_581158, "key", newJString(key))
+  add(path_581157, "enterpriseId", newJString(enterpriseId))
+  add(query_581158, "prettyPrint", newJBool(prettyPrint))
+  add(path_581157, "entitlementId", newJString(entitlementId))
+  add(path_581157, "userId", newJString(userId))
+  result = call_581156.call(path_581157, query_581158, nil, nil, nil)
 
-var androidenterpriseEntitlementsDelete* = Call_AndroidenterpriseEntitlementsDelete_599142(
+var androidenterpriseEntitlementsDelete* = Call_AndroidenterpriseEntitlementsDelete_581142(
     name: "androidenterpriseEntitlementsDelete", meth: HttpMethod.HttpDelete,
     host: "www.googleapis.com", route: "/enterprises/{enterpriseId}/users/{userId}/entitlements/{entitlementId}",
-    validator: validate_AndroidenterpriseEntitlementsDelete_599143,
-    base: "/androidenterprise/v1", url: url_AndroidenterpriseEntitlementsDelete_599144,
+    validator: validate_AndroidenterpriseEntitlementsDelete_581143,
+    base: "/androidenterprise/v1", url: url_AndroidenterpriseEntitlementsDelete_581144,
     schemes: {Scheme.Https})
 type
-  Call_AndroidenterpriseManagedconfigurationsforuserList_599179 = ref object of OpenApiRestCall_597421
-proc url_AndroidenterpriseManagedconfigurationsforuserList_599181(
+  Call_AndroidenterpriseManagedconfigurationsforuserList_581179 = ref object of OpenApiRestCall_579421
+proc url_AndroidenterpriseManagedconfigurationsforuserList_581181(
     protocol: Scheme; host: string; base: string; route: string; path: JsonNode;
     query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "enterpriseId" in path, "`enterpriseId` is a required path parameter"
   assert "userId" in path, "`userId` is a required path parameter"
@@ -12347,7 +12349,7 @@ proc url_AndroidenterpriseManagedconfigurationsforuserList_599181(
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_AndroidenterpriseManagedconfigurationsforuserList_599180(
+proc validate_AndroidenterpriseManagedconfigurationsforuserList_581180(
     path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
     body: JsonNode): JsonNode =
   ## Lists all the per-user managed configurations for the specified user. Only the ID is set.
@@ -12362,16 +12364,16 @@ proc validate_AndroidenterpriseManagedconfigurationsforuserList_599180(
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `enterpriseId` field"
-  var valid_599182 = path.getOrDefault("enterpriseId")
-  valid_599182 = validateParameter(valid_599182, JString, required = true,
+  var valid_581182 = path.getOrDefault("enterpriseId")
+  valid_581182 = validateParameter(valid_581182, JString, required = true,
                                  default = nil)
-  if valid_599182 != nil:
-    section.add "enterpriseId", valid_599182
-  var valid_599183 = path.getOrDefault("userId")
-  valid_599183 = validateParameter(valid_599183, JString, required = true,
+  if valid_581182 != nil:
+    section.add "enterpriseId", valid_581182
+  var valid_581183 = path.getOrDefault("userId")
+  valid_581183 = validateParameter(valid_581183, JString, required = true,
                                  default = nil)
-  if valid_599183 != nil:
-    section.add "userId", valid_599183
+  if valid_581183 != nil:
+    section.add "userId", valid_581183
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -12389,41 +12391,41 @@ proc validate_AndroidenterpriseManagedconfigurationsforuserList_599180(
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_599184 = query.getOrDefault("fields")
-  valid_599184 = validateParameter(valid_599184, JString, required = false,
+  var valid_581184 = query.getOrDefault("fields")
+  valid_581184 = validateParameter(valid_581184, JString, required = false,
                                  default = nil)
-  if valid_599184 != nil:
-    section.add "fields", valid_599184
-  var valid_599185 = query.getOrDefault("quotaUser")
-  valid_599185 = validateParameter(valid_599185, JString, required = false,
+  if valid_581184 != nil:
+    section.add "fields", valid_581184
+  var valid_581185 = query.getOrDefault("quotaUser")
+  valid_581185 = validateParameter(valid_581185, JString, required = false,
                                  default = nil)
-  if valid_599185 != nil:
-    section.add "quotaUser", valid_599185
-  var valid_599186 = query.getOrDefault("alt")
-  valid_599186 = validateParameter(valid_599186, JString, required = false,
+  if valid_581185 != nil:
+    section.add "quotaUser", valid_581185
+  var valid_581186 = query.getOrDefault("alt")
+  valid_581186 = validateParameter(valid_581186, JString, required = false,
                                  default = newJString("json"))
-  if valid_599186 != nil:
-    section.add "alt", valid_599186
-  var valid_599187 = query.getOrDefault("oauth_token")
-  valid_599187 = validateParameter(valid_599187, JString, required = false,
+  if valid_581186 != nil:
+    section.add "alt", valid_581186
+  var valid_581187 = query.getOrDefault("oauth_token")
+  valid_581187 = validateParameter(valid_581187, JString, required = false,
                                  default = nil)
-  if valid_599187 != nil:
-    section.add "oauth_token", valid_599187
-  var valid_599188 = query.getOrDefault("userIp")
-  valid_599188 = validateParameter(valid_599188, JString, required = false,
+  if valid_581187 != nil:
+    section.add "oauth_token", valid_581187
+  var valid_581188 = query.getOrDefault("userIp")
+  valid_581188 = validateParameter(valid_581188, JString, required = false,
                                  default = nil)
-  if valid_599188 != nil:
-    section.add "userIp", valid_599188
-  var valid_599189 = query.getOrDefault("key")
-  valid_599189 = validateParameter(valid_599189, JString, required = false,
+  if valid_581188 != nil:
+    section.add "userIp", valid_581188
+  var valid_581189 = query.getOrDefault("key")
+  valid_581189 = validateParameter(valid_581189, JString, required = false,
                                  default = nil)
-  if valid_599189 != nil:
-    section.add "key", valid_599189
-  var valid_599190 = query.getOrDefault("prettyPrint")
-  valid_599190 = validateParameter(valid_599190, JBool, required = false,
+  if valid_581189 != nil:
+    section.add "key", valid_581189
+  var valid_581190 = query.getOrDefault("prettyPrint")
+  valid_581190 = validateParameter(valid_581190, JBool, required = false,
                                  default = newJBool(true))
-  if valid_599190 != nil:
-    section.add "prettyPrint", valid_599190
+  if valid_581190 != nil:
+    section.add "prettyPrint", valid_581190
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -12432,21 +12434,21 @@ proc validate_AndroidenterpriseManagedconfigurationsforuserList_599180(
   if body != nil:
     result.add "body", body
 
-proc call*(call_599191: Call_AndroidenterpriseManagedconfigurationsforuserList_599179;
+proc call*(call_581191: Call_AndroidenterpriseManagedconfigurationsforuserList_581179;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Lists all the per-user managed configurations for the specified user. Only the ID is set.
   ## 
-  let valid = call_599191.validator(path, query, header, formData, body)
-  let scheme = call_599191.pickScheme
+  let valid = call_581191.validator(path, query, header, formData, body)
+  let scheme = call_581191.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_599191.url(scheme.get, call_599191.host, call_599191.base,
-                         call_599191.route, valid.getOrDefault("path"),
+  let url = call_581191.url(scheme.get, call_581191.host, call_581191.base,
+                         call_581191.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_599191, url, valid)
+  result = hook(call_581191, url, valid)
 
-proc call*(call_599192: Call_AndroidenterpriseManagedconfigurationsforuserList_599179;
+proc call*(call_581192: Call_AndroidenterpriseManagedconfigurationsforuserList_581179;
           enterpriseId: string; userId: string; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; key: string = ""; prettyPrint: bool = true): Recallable =
@@ -12470,34 +12472,34 @@ proc call*(call_599192: Call_AndroidenterpriseManagedconfigurationsforuserList_5
   ##              : Returns response with indentations and line breaks.
   ##   userId: string (required)
   ##         : The ID of the user.
-  var path_599193 = newJObject()
-  var query_599194 = newJObject()
-  add(query_599194, "fields", newJString(fields))
-  add(query_599194, "quotaUser", newJString(quotaUser))
-  add(query_599194, "alt", newJString(alt))
-  add(query_599194, "oauth_token", newJString(oauthToken))
-  add(query_599194, "userIp", newJString(userIp))
-  add(query_599194, "key", newJString(key))
-  add(path_599193, "enterpriseId", newJString(enterpriseId))
-  add(query_599194, "prettyPrint", newJBool(prettyPrint))
-  add(path_599193, "userId", newJString(userId))
-  result = call_599192.call(path_599193, query_599194, nil, nil, nil)
+  var path_581193 = newJObject()
+  var query_581194 = newJObject()
+  add(query_581194, "fields", newJString(fields))
+  add(query_581194, "quotaUser", newJString(quotaUser))
+  add(query_581194, "alt", newJString(alt))
+  add(query_581194, "oauth_token", newJString(oauthToken))
+  add(query_581194, "userIp", newJString(userIp))
+  add(query_581194, "key", newJString(key))
+  add(path_581193, "enterpriseId", newJString(enterpriseId))
+  add(query_581194, "prettyPrint", newJBool(prettyPrint))
+  add(path_581193, "userId", newJString(userId))
+  result = call_581192.call(path_581193, query_581194, nil, nil, nil)
 
-var androidenterpriseManagedconfigurationsforuserList* = Call_AndroidenterpriseManagedconfigurationsforuserList_599179(
+var androidenterpriseManagedconfigurationsforuserList* = Call_AndroidenterpriseManagedconfigurationsforuserList_581179(
     name: "androidenterpriseManagedconfigurationsforuserList",
     meth: HttpMethod.HttpGet, host: "www.googleapis.com", route: "/enterprises/{enterpriseId}/users/{userId}/managedConfigurationsForUser",
-    validator: validate_AndroidenterpriseManagedconfigurationsforuserList_599180,
+    validator: validate_AndroidenterpriseManagedconfigurationsforuserList_581180,
     base: "/androidenterprise/v1",
-    url: url_AndroidenterpriseManagedconfigurationsforuserList_599181,
+    url: url_AndroidenterpriseManagedconfigurationsforuserList_581181,
     schemes: {Scheme.Https})
 type
-  Call_AndroidenterpriseManagedconfigurationsforuserUpdate_599212 = ref object of OpenApiRestCall_597421
-proc url_AndroidenterpriseManagedconfigurationsforuserUpdate_599214(
+  Call_AndroidenterpriseManagedconfigurationsforuserUpdate_581212 = ref object of OpenApiRestCall_579421
+proc url_AndroidenterpriseManagedconfigurationsforuserUpdate_581214(
     protocol: Scheme; host: string; base: string; route: string; path: JsonNode;
     query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "enterpriseId" in path, "`enterpriseId` is a required path parameter"
   assert "userId" in path, "`userId` is a required path parameter"
@@ -12515,7 +12517,7 @@ proc url_AndroidenterpriseManagedconfigurationsforuserUpdate_599214(
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_AndroidenterpriseManagedconfigurationsforuserUpdate_599213(
+proc validate_AndroidenterpriseManagedconfigurationsforuserUpdate_581213(
     path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
     body: JsonNode): JsonNode =
   ## Adds or updates the managed configuration settings for an app for the specified user. If you support the Managed configurations iframe, you can apply managed configurations to a user by specifying an mcmId and its associated configuration variables (if any) in the request. Alternatively, all EMMs can apply managed configurations by passing a list of managed properties.
@@ -12532,21 +12534,21 @@ proc validate_AndroidenterpriseManagedconfigurationsforuserUpdate_599213(
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `enterpriseId` field"
-  var valid_599215 = path.getOrDefault("enterpriseId")
-  valid_599215 = validateParameter(valid_599215, JString, required = true,
+  var valid_581215 = path.getOrDefault("enterpriseId")
+  valid_581215 = validateParameter(valid_581215, JString, required = true,
                                  default = nil)
-  if valid_599215 != nil:
-    section.add "enterpriseId", valid_599215
-  var valid_599216 = path.getOrDefault("managedConfigurationForUserId")
-  valid_599216 = validateParameter(valid_599216, JString, required = true,
+  if valid_581215 != nil:
+    section.add "enterpriseId", valid_581215
+  var valid_581216 = path.getOrDefault("managedConfigurationForUserId")
+  valid_581216 = validateParameter(valid_581216, JString, required = true,
                                  default = nil)
-  if valid_599216 != nil:
-    section.add "managedConfigurationForUserId", valid_599216
-  var valid_599217 = path.getOrDefault("userId")
-  valid_599217 = validateParameter(valid_599217, JString, required = true,
+  if valid_581216 != nil:
+    section.add "managedConfigurationForUserId", valid_581216
+  var valid_581217 = path.getOrDefault("userId")
+  valid_581217 = validateParameter(valid_581217, JString, required = true,
                                  default = nil)
-  if valid_599217 != nil:
-    section.add "userId", valid_599217
+  if valid_581217 != nil:
+    section.add "userId", valid_581217
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -12564,41 +12566,41 @@ proc validate_AndroidenterpriseManagedconfigurationsforuserUpdate_599213(
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_599218 = query.getOrDefault("fields")
-  valid_599218 = validateParameter(valid_599218, JString, required = false,
+  var valid_581218 = query.getOrDefault("fields")
+  valid_581218 = validateParameter(valid_581218, JString, required = false,
                                  default = nil)
-  if valid_599218 != nil:
-    section.add "fields", valid_599218
-  var valid_599219 = query.getOrDefault("quotaUser")
-  valid_599219 = validateParameter(valid_599219, JString, required = false,
+  if valid_581218 != nil:
+    section.add "fields", valid_581218
+  var valid_581219 = query.getOrDefault("quotaUser")
+  valid_581219 = validateParameter(valid_581219, JString, required = false,
                                  default = nil)
-  if valid_599219 != nil:
-    section.add "quotaUser", valid_599219
-  var valid_599220 = query.getOrDefault("alt")
-  valid_599220 = validateParameter(valid_599220, JString, required = false,
+  if valid_581219 != nil:
+    section.add "quotaUser", valid_581219
+  var valid_581220 = query.getOrDefault("alt")
+  valid_581220 = validateParameter(valid_581220, JString, required = false,
                                  default = newJString("json"))
-  if valid_599220 != nil:
-    section.add "alt", valid_599220
-  var valid_599221 = query.getOrDefault("oauth_token")
-  valid_599221 = validateParameter(valid_599221, JString, required = false,
+  if valid_581220 != nil:
+    section.add "alt", valid_581220
+  var valid_581221 = query.getOrDefault("oauth_token")
+  valid_581221 = validateParameter(valid_581221, JString, required = false,
                                  default = nil)
-  if valid_599221 != nil:
-    section.add "oauth_token", valid_599221
-  var valid_599222 = query.getOrDefault("userIp")
-  valid_599222 = validateParameter(valid_599222, JString, required = false,
+  if valid_581221 != nil:
+    section.add "oauth_token", valid_581221
+  var valid_581222 = query.getOrDefault("userIp")
+  valid_581222 = validateParameter(valid_581222, JString, required = false,
                                  default = nil)
-  if valid_599222 != nil:
-    section.add "userIp", valid_599222
-  var valid_599223 = query.getOrDefault("key")
-  valid_599223 = validateParameter(valid_599223, JString, required = false,
+  if valid_581222 != nil:
+    section.add "userIp", valid_581222
+  var valid_581223 = query.getOrDefault("key")
+  valid_581223 = validateParameter(valid_581223, JString, required = false,
                                  default = nil)
-  if valid_599223 != nil:
-    section.add "key", valid_599223
-  var valid_599224 = query.getOrDefault("prettyPrint")
-  valid_599224 = validateParameter(valid_599224, JBool, required = false,
+  if valid_581223 != nil:
+    section.add "key", valid_581223
+  var valid_581224 = query.getOrDefault("prettyPrint")
+  valid_581224 = validateParameter(valid_581224, JBool, required = false,
                                  default = newJBool(true))
-  if valid_599224 != nil:
-    section.add "prettyPrint", valid_599224
+  if valid_581224 != nil:
+    section.add "prettyPrint", valid_581224
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -12610,21 +12612,21 @@ proc validate_AndroidenterpriseManagedconfigurationsforuserUpdate_599213(
   if body != nil:
     result.add "body", body
 
-proc call*(call_599226: Call_AndroidenterpriseManagedconfigurationsforuserUpdate_599212;
+proc call*(call_581226: Call_AndroidenterpriseManagedconfigurationsforuserUpdate_581212;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Adds or updates the managed configuration settings for an app for the specified user. If you support the Managed configurations iframe, you can apply managed configurations to a user by specifying an mcmId and its associated configuration variables (if any) in the request. Alternatively, all EMMs can apply managed configurations by passing a list of managed properties.
   ## 
-  let valid = call_599226.validator(path, query, header, formData, body)
-  let scheme = call_599226.pickScheme
+  let valid = call_581226.validator(path, query, header, formData, body)
+  let scheme = call_581226.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_599226.url(scheme.get, call_599226.host, call_599226.base,
-                         call_599226.route, valid.getOrDefault("path"),
+  let url = call_581226.url(scheme.get, call_581226.host, call_581226.base,
+                         call_581226.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_599226, url, valid)
+  result = hook(call_581226, url, valid)
 
-proc call*(call_599227: Call_AndroidenterpriseManagedconfigurationsforuserUpdate_599212;
+proc call*(call_581227: Call_AndroidenterpriseManagedconfigurationsforuserUpdate_581212;
           enterpriseId: string; managedConfigurationForUserId: string;
           userId: string; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; userIp: string = "";
@@ -12652,39 +12654,39 @@ proc call*(call_599227: Call_AndroidenterpriseManagedconfigurationsforuserUpdate
   ##              : Returns response with indentations and line breaks.
   ##   userId: string (required)
   ##         : The ID of the user.
-  var path_599228 = newJObject()
-  var query_599229 = newJObject()
-  var body_599230 = newJObject()
-  add(query_599229, "fields", newJString(fields))
-  add(query_599229, "quotaUser", newJString(quotaUser))
-  add(query_599229, "alt", newJString(alt))
-  add(query_599229, "oauth_token", newJString(oauthToken))
-  add(query_599229, "userIp", newJString(userIp))
-  add(query_599229, "key", newJString(key))
-  add(path_599228, "enterpriseId", newJString(enterpriseId))
-  add(path_599228, "managedConfigurationForUserId",
+  var path_581228 = newJObject()
+  var query_581229 = newJObject()
+  var body_581230 = newJObject()
+  add(query_581229, "fields", newJString(fields))
+  add(query_581229, "quotaUser", newJString(quotaUser))
+  add(query_581229, "alt", newJString(alt))
+  add(query_581229, "oauth_token", newJString(oauthToken))
+  add(query_581229, "userIp", newJString(userIp))
+  add(query_581229, "key", newJString(key))
+  add(path_581228, "enterpriseId", newJString(enterpriseId))
+  add(path_581228, "managedConfigurationForUserId",
       newJString(managedConfigurationForUserId))
   if body != nil:
-    body_599230 = body
-  add(query_599229, "prettyPrint", newJBool(prettyPrint))
-  add(path_599228, "userId", newJString(userId))
-  result = call_599227.call(path_599228, query_599229, nil, nil, body_599230)
+    body_581230 = body
+  add(query_581229, "prettyPrint", newJBool(prettyPrint))
+  add(path_581228, "userId", newJString(userId))
+  result = call_581227.call(path_581228, query_581229, nil, nil, body_581230)
 
-var androidenterpriseManagedconfigurationsforuserUpdate* = Call_AndroidenterpriseManagedconfigurationsforuserUpdate_599212(
+var androidenterpriseManagedconfigurationsforuserUpdate* = Call_AndroidenterpriseManagedconfigurationsforuserUpdate_581212(
     name: "androidenterpriseManagedconfigurationsforuserUpdate",
     meth: HttpMethod.HttpPut, host: "www.googleapis.com", route: "/enterprises/{enterpriseId}/users/{userId}/managedConfigurationsForUser/{managedConfigurationForUserId}",
-    validator: validate_AndroidenterpriseManagedconfigurationsforuserUpdate_599213,
+    validator: validate_AndroidenterpriseManagedconfigurationsforuserUpdate_581213,
     base: "/androidenterprise/v1",
-    url: url_AndroidenterpriseManagedconfigurationsforuserUpdate_599214,
+    url: url_AndroidenterpriseManagedconfigurationsforuserUpdate_581214,
     schemes: {Scheme.Https})
 type
-  Call_AndroidenterpriseManagedconfigurationsforuserGet_599195 = ref object of OpenApiRestCall_597421
-proc url_AndroidenterpriseManagedconfigurationsforuserGet_599197(
+  Call_AndroidenterpriseManagedconfigurationsforuserGet_581195 = ref object of OpenApiRestCall_579421
+proc url_AndroidenterpriseManagedconfigurationsforuserGet_581197(
     protocol: Scheme; host: string; base: string; route: string; path: JsonNode;
     query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "enterpriseId" in path, "`enterpriseId` is a required path parameter"
   assert "userId" in path, "`userId` is a required path parameter"
@@ -12702,7 +12704,7 @@ proc url_AndroidenterpriseManagedconfigurationsforuserGet_599197(
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_AndroidenterpriseManagedconfigurationsforuserGet_599196(
+proc validate_AndroidenterpriseManagedconfigurationsforuserGet_581196(
     path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
     body: JsonNode): JsonNode =
   ## Retrieves details of a per-user managed configuration for an app for the specified user.
@@ -12719,21 +12721,21 @@ proc validate_AndroidenterpriseManagedconfigurationsforuserGet_599196(
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `enterpriseId` field"
-  var valid_599198 = path.getOrDefault("enterpriseId")
-  valid_599198 = validateParameter(valid_599198, JString, required = true,
+  var valid_581198 = path.getOrDefault("enterpriseId")
+  valid_581198 = validateParameter(valid_581198, JString, required = true,
                                  default = nil)
-  if valid_599198 != nil:
-    section.add "enterpriseId", valid_599198
-  var valid_599199 = path.getOrDefault("managedConfigurationForUserId")
-  valid_599199 = validateParameter(valid_599199, JString, required = true,
+  if valid_581198 != nil:
+    section.add "enterpriseId", valid_581198
+  var valid_581199 = path.getOrDefault("managedConfigurationForUserId")
+  valid_581199 = validateParameter(valid_581199, JString, required = true,
                                  default = nil)
-  if valid_599199 != nil:
-    section.add "managedConfigurationForUserId", valid_599199
-  var valid_599200 = path.getOrDefault("userId")
-  valid_599200 = validateParameter(valid_599200, JString, required = true,
+  if valid_581199 != nil:
+    section.add "managedConfigurationForUserId", valid_581199
+  var valid_581200 = path.getOrDefault("userId")
+  valid_581200 = validateParameter(valid_581200, JString, required = true,
                                  default = nil)
-  if valid_599200 != nil:
-    section.add "userId", valid_599200
+  if valid_581200 != nil:
+    section.add "userId", valid_581200
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -12751,41 +12753,41 @@ proc validate_AndroidenterpriseManagedconfigurationsforuserGet_599196(
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_599201 = query.getOrDefault("fields")
-  valid_599201 = validateParameter(valid_599201, JString, required = false,
+  var valid_581201 = query.getOrDefault("fields")
+  valid_581201 = validateParameter(valid_581201, JString, required = false,
                                  default = nil)
-  if valid_599201 != nil:
-    section.add "fields", valid_599201
-  var valid_599202 = query.getOrDefault("quotaUser")
-  valid_599202 = validateParameter(valid_599202, JString, required = false,
+  if valid_581201 != nil:
+    section.add "fields", valid_581201
+  var valid_581202 = query.getOrDefault("quotaUser")
+  valid_581202 = validateParameter(valid_581202, JString, required = false,
                                  default = nil)
-  if valid_599202 != nil:
-    section.add "quotaUser", valid_599202
-  var valid_599203 = query.getOrDefault("alt")
-  valid_599203 = validateParameter(valid_599203, JString, required = false,
+  if valid_581202 != nil:
+    section.add "quotaUser", valid_581202
+  var valid_581203 = query.getOrDefault("alt")
+  valid_581203 = validateParameter(valid_581203, JString, required = false,
                                  default = newJString("json"))
-  if valid_599203 != nil:
-    section.add "alt", valid_599203
-  var valid_599204 = query.getOrDefault("oauth_token")
-  valid_599204 = validateParameter(valid_599204, JString, required = false,
+  if valid_581203 != nil:
+    section.add "alt", valid_581203
+  var valid_581204 = query.getOrDefault("oauth_token")
+  valid_581204 = validateParameter(valid_581204, JString, required = false,
                                  default = nil)
-  if valid_599204 != nil:
-    section.add "oauth_token", valid_599204
-  var valid_599205 = query.getOrDefault("userIp")
-  valid_599205 = validateParameter(valid_599205, JString, required = false,
+  if valid_581204 != nil:
+    section.add "oauth_token", valid_581204
+  var valid_581205 = query.getOrDefault("userIp")
+  valid_581205 = validateParameter(valid_581205, JString, required = false,
                                  default = nil)
-  if valid_599205 != nil:
-    section.add "userIp", valid_599205
-  var valid_599206 = query.getOrDefault("key")
-  valid_599206 = validateParameter(valid_599206, JString, required = false,
+  if valid_581205 != nil:
+    section.add "userIp", valid_581205
+  var valid_581206 = query.getOrDefault("key")
+  valid_581206 = validateParameter(valid_581206, JString, required = false,
                                  default = nil)
-  if valid_599206 != nil:
-    section.add "key", valid_599206
-  var valid_599207 = query.getOrDefault("prettyPrint")
-  valid_599207 = validateParameter(valid_599207, JBool, required = false,
+  if valid_581206 != nil:
+    section.add "key", valid_581206
+  var valid_581207 = query.getOrDefault("prettyPrint")
+  valid_581207 = validateParameter(valid_581207, JBool, required = false,
                                  default = newJBool(true))
-  if valid_599207 != nil:
-    section.add "prettyPrint", valid_599207
+  if valid_581207 != nil:
+    section.add "prettyPrint", valid_581207
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -12794,21 +12796,21 @@ proc validate_AndroidenterpriseManagedconfigurationsforuserGet_599196(
   if body != nil:
     result.add "body", body
 
-proc call*(call_599208: Call_AndroidenterpriseManagedconfigurationsforuserGet_599195;
+proc call*(call_581208: Call_AndroidenterpriseManagedconfigurationsforuserGet_581195;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Retrieves details of a per-user managed configuration for an app for the specified user.
   ## 
-  let valid = call_599208.validator(path, query, header, formData, body)
-  let scheme = call_599208.pickScheme
+  let valid = call_581208.validator(path, query, header, formData, body)
+  let scheme = call_581208.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_599208.url(scheme.get, call_599208.host, call_599208.base,
-                         call_599208.route, valid.getOrDefault("path"),
+  let url = call_581208.url(scheme.get, call_581208.host, call_581208.base,
+                         call_581208.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_599208, url, valid)
+  result = hook(call_581208, url, valid)
 
-proc call*(call_599209: Call_AndroidenterpriseManagedconfigurationsforuserGet_599195;
+proc call*(call_581209: Call_AndroidenterpriseManagedconfigurationsforuserGet_581195;
           enterpriseId: string; managedConfigurationForUserId: string;
           userId: string; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; userIp: string = "";
@@ -12835,36 +12837,36 @@ proc call*(call_599209: Call_AndroidenterpriseManagedconfigurationsforuserGet_59
   ##              : Returns response with indentations and line breaks.
   ##   userId: string (required)
   ##         : The ID of the user.
-  var path_599210 = newJObject()
-  var query_599211 = newJObject()
-  add(query_599211, "fields", newJString(fields))
-  add(query_599211, "quotaUser", newJString(quotaUser))
-  add(query_599211, "alt", newJString(alt))
-  add(query_599211, "oauth_token", newJString(oauthToken))
-  add(query_599211, "userIp", newJString(userIp))
-  add(query_599211, "key", newJString(key))
-  add(path_599210, "enterpriseId", newJString(enterpriseId))
-  add(path_599210, "managedConfigurationForUserId",
+  var path_581210 = newJObject()
+  var query_581211 = newJObject()
+  add(query_581211, "fields", newJString(fields))
+  add(query_581211, "quotaUser", newJString(quotaUser))
+  add(query_581211, "alt", newJString(alt))
+  add(query_581211, "oauth_token", newJString(oauthToken))
+  add(query_581211, "userIp", newJString(userIp))
+  add(query_581211, "key", newJString(key))
+  add(path_581210, "enterpriseId", newJString(enterpriseId))
+  add(path_581210, "managedConfigurationForUserId",
       newJString(managedConfigurationForUserId))
-  add(query_599211, "prettyPrint", newJBool(prettyPrint))
-  add(path_599210, "userId", newJString(userId))
-  result = call_599209.call(path_599210, query_599211, nil, nil, nil)
+  add(query_581211, "prettyPrint", newJBool(prettyPrint))
+  add(path_581210, "userId", newJString(userId))
+  result = call_581209.call(path_581210, query_581211, nil, nil, nil)
 
-var androidenterpriseManagedconfigurationsforuserGet* = Call_AndroidenterpriseManagedconfigurationsforuserGet_599195(
+var androidenterpriseManagedconfigurationsforuserGet* = Call_AndroidenterpriseManagedconfigurationsforuserGet_581195(
     name: "androidenterpriseManagedconfigurationsforuserGet",
     meth: HttpMethod.HttpGet, host: "www.googleapis.com", route: "/enterprises/{enterpriseId}/users/{userId}/managedConfigurationsForUser/{managedConfigurationForUserId}",
-    validator: validate_AndroidenterpriseManagedconfigurationsforuserGet_599196,
+    validator: validate_AndroidenterpriseManagedconfigurationsforuserGet_581196,
     base: "/androidenterprise/v1",
-    url: url_AndroidenterpriseManagedconfigurationsforuserGet_599197,
+    url: url_AndroidenterpriseManagedconfigurationsforuserGet_581197,
     schemes: {Scheme.Https})
 type
-  Call_AndroidenterpriseManagedconfigurationsforuserPatch_599248 = ref object of OpenApiRestCall_597421
-proc url_AndroidenterpriseManagedconfigurationsforuserPatch_599250(
+  Call_AndroidenterpriseManagedconfigurationsforuserPatch_581248 = ref object of OpenApiRestCall_579421
+proc url_AndroidenterpriseManagedconfigurationsforuserPatch_581250(
     protocol: Scheme; host: string; base: string; route: string; path: JsonNode;
     query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "enterpriseId" in path, "`enterpriseId` is a required path parameter"
   assert "userId" in path, "`userId` is a required path parameter"
@@ -12882,7 +12884,7 @@ proc url_AndroidenterpriseManagedconfigurationsforuserPatch_599250(
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_AndroidenterpriseManagedconfigurationsforuserPatch_599249(
+proc validate_AndroidenterpriseManagedconfigurationsforuserPatch_581249(
     path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
     body: JsonNode): JsonNode =
   ## Adds or updates the managed configuration settings for an app for the specified user. If you support the Managed configurations iframe, you can apply managed configurations to a user by specifying an mcmId and its associated configuration variables (if any) in the request. Alternatively, all EMMs can apply managed configurations by passing a list of managed properties. This method supports patch semantics.
@@ -12899,21 +12901,21 @@ proc validate_AndroidenterpriseManagedconfigurationsforuserPatch_599249(
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `enterpriseId` field"
-  var valid_599251 = path.getOrDefault("enterpriseId")
-  valid_599251 = validateParameter(valid_599251, JString, required = true,
+  var valid_581251 = path.getOrDefault("enterpriseId")
+  valid_581251 = validateParameter(valid_581251, JString, required = true,
                                  default = nil)
-  if valid_599251 != nil:
-    section.add "enterpriseId", valid_599251
-  var valid_599252 = path.getOrDefault("managedConfigurationForUserId")
-  valid_599252 = validateParameter(valid_599252, JString, required = true,
+  if valid_581251 != nil:
+    section.add "enterpriseId", valid_581251
+  var valid_581252 = path.getOrDefault("managedConfigurationForUserId")
+  valid_581252 = validateParameter(valid_581252, JString, required = true,
                                  default = nil)
-  if valid_599252 != nil:
-    section.add "managedConfigurationForUserId", valid_599252
-  var valid_599253 = path.getOrDefault("userId")
-  valid_599253 = validateParameter(valid_599253, JString, required = true,
+  if valid_581252 != nil:
+    section.add "managedConfigurationForUserId", valid_581252
+  var valid_581253 = path.getOrDefault("userId")
+  valid_581253 = validateParameter(valid_581253, JString, required = true,
                                  default = nil)
-  if valid_599253 != nil:
-    section.add "userId", valid_599253
+  if valid_581253 != nil:
+    section.add "userId", valid_581253
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -12931,41 +12933,41 @@ proc validate_AndroidenterpriseManagedconfigurationsforuserPatch_599249(
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_599254 = query.getOrDefault("fields")
-  valid_599254 = validateParameter(valid_599254, JString, required = false,
+  var valid_581254 = query.getOrDefault("fields")
+  valid_581254 = validateParameter(valid_581254, JString, required = false,
                                  default = nil)
-  if valid_599254 != nil:
-    section.add "fields", valid_599254
-  var valid_599255 = query.getOrDefault("quotaUser")
-  valid_599255 = validateParameter(valid_599255, JString, required = false,
+  if valid_581254 != nil:
+    section.add "fields", valid_581254
+  var valid_581255 = query.getOrDefault("quotaUser")
+  valid_581255 = validateParameter(valid_581255, JString, required = false,
                                  default = nil)
-  if valid_599255 != nil:
-    section.add "quotaUser", valid_599255
-  var valid_599256 = query.getOrDefault("alt")
-  valid_599256 = validateParameter(valid_599256, JString, required = false,
+  if valid_581255 != nil:
+    section.add "quotaUser", valid_581255
+  var valid_581256 = query.getOrDefault("alt")
+  valid_581256 = validateParameter(valid_581256, JString, required = false,
                                  default = newJString("json"))
-  if valid_599256 != nil:
-    section.add "alt", valid_599256
-  var valid_599257 = query.getOrDefault("oauth_token")
-  valid_599257 = validateParameter(valid_599257, JString, required = false,
+  if valid_581256 != nil:
+    section.add "alt", valid_581256
+  var valid_581257 = query.getOrDefault("oauth_token")
+  valid_581257 = validateParameter(valid_581257, JString, required = false,
                                  default = nil)
-  if valid_599257 != nil:
-    section.add "oauth_token", valid_599257
-  var valid_599258 = query.getOrDefault("userIp")
-  valid_599258 = validateParameter(valid_599258, JString, required = false,
+  if valid_581257 != nil:
+    section.add "oauth_token", valid_581257
+  var valid_581258 = query.getOrDefault("userIp")
+  valid_581258 = validateParameter(valid_581258, JString, required = false,
                                  default = nil)
-  if valid_599258 != nil:
-    section.add "userIp", valid_599258
-  var valid_599259 = query.getOrDefault("key")
-  valid_599259 = validateParameter(valid_599259, JString, required = false,
+  if valid_581258 != nil:
+    section.add "userIp", valid_581258
+  var valid_581259 = query.getOrDefault("key")
+  valid_581259 = validateParameter(valid_581259, JString, required = false,
                                  default = nil)
-  if valid_599259 != nil:
-    section.add "key", valid_599259
-  var valid_599260 = query.getOrDefault("prettyPrint")
-  valid_599260 = validateParameter(valid_599260, JBool, required = false,
+  if valid_581259 != nil:
+    section.add "key", valid_581259
+  var valid_581260 = query.getOrDefault("prettyPrint")
+  valid_581260 = validateParameter(valid_581260, JBool, required = false,
                                  default = newJBool(true))
-  if valid_599260 != nil:
-    section.add "prettyPrint", valid_599260
+  if valid_581260 != nil:
+    section.add "prettyPrint", valid_581260
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -12977,21 +12979,21 @@ proc validate_AndroidenterpriseManagedconfigurationsforuserPatch_599249(
   if body != nil:
     result.add "body", body
 
-proc call*(call_599262: Call_AndroidenterpriseManagedconfigurationsforuserPatch_599248;
+proc call*(call_581262: Call_AndroidenterpriseManagedconfigurationsforuserPatch_581248;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Adds or updates the managed configuration settings for an app for the specified user. If you support the Managed configurations iframe, you can apply managed configurations to a user by specifying an mcmId and its associated configuration variables (if any) in the request. Alternatively, all EMMs can apply managed configurations by passing a list of managed properties. This method supports patch semantics.
   ## 
-  let valid = call_599262.validator(path, query, header, formData, body)
-  let scheme = call_599262.pickScheme
+  let valid = call_581262.validator(path, query, header, formData, body)
+  let scheme = call_581262.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_599262.url(scheme.get, call_599262.host, call_599262.base,
-                         call_599262.route, valid.getOrDefault("path"),
+  let url = call_581262.url(scheme.get, call_581262.host, call_581262.base,
+                         call_581262.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_599262, url, valid)
+  result = hook(call_581262, url, valid)
 
-proc call*(call_599263: Call_AndroidenterpriseManagedconfigurationsforuserPatch_599248;
+proc call*(call_581263: Call_AndroidenterpriseManagedconfigurationsforuserPatch_581248;
           enterpriseId: string; managedConfigurationForUserId: string;
           userId: string; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; userIp: string = "";
@@ -13019,39 +13021,39 @@ proc call*(call_599263: Call_AndroidenterpriseManagedconfigurationsforuserPatch_
   ##              : Returns response with indentations and line breaks.
   ##   userId: string (required)
   ##         : The ID of the user.
-  var path_599264 = newJObject()
-  var query_599265 = newJObject()
-  var body_599266 = newJObject()
-  add(query_599265, "fields", newJString(fields))
-  add(query_599265, "quotaUser", newJString(quotaUser))
-  add(query_599265, "alt", newJString(alt))
-  add(query_599265, "oauth_token", newJString(oauthToken))
-  add(query_599265, "userIp", newJString(userIp))
-  add(query_599265, "key", newJString(key))
-  add(path_599264, "enterpriseId", newJString(enterpriseId))
-  add(path_599264, "managedConfigurationForUserId",
+  var path_581264 = newJObject()
+  var query_581265 = newJObject()
+  var body_581266 = newJObject()
+  add(query_581265, "fields", newJString(fields))
+  add(query_581265, "quotaUser", newJString(quotaUser))
+  add(query_581265, "alt", newJString(alt))
+  add(query_581265, "oauth_token", newJString(oauthToken))
+  add(query_581265, "userIp", newJString(userIp))
+  add(query_581265, "key", newJString(key))
+  add(path_581264, "enterpriseId", newJString(enterpriseId))
+  add(path_581264, "managedConfigurationForUserId",
       newJString(managedConfigurationForUserId))
   if body != nil:
-    body_599266 = body
-  add(query_599265, "prettyPrint", newJBool(prettyPrint))
-  add(path_599264, "userId", newJString(userId))
-  result = call_599263.call(path_599264, query_599265, nil, nil, body_599266)
+    body_581266 = body
+  add(query_581265, "prettyPrint", newJBool(prettyPrint))
+  add(path_581264, "userId", newJString(userId))
+  result = call_581263.call(path_581264, query_581265, nil, nil, body_581266)
 
-var androidenterpriseManagedconfigurationsforuserPatch* = Call_AndroidenterpriseManagedconfigurationsforuserPatch_599248(
+var androidenterpriseManagedconfigurationsforuserPatch* = Call_AndroidenterpriseManagedconfigurationsforuserPatch_581248(
     name: "androidenterpriseManagedconfigurationsforuserPatch",
     meth: HttpMethod.HttpPatch, host: "www.googleapis.com", route: "/enterprises/{enterpriseId}/users/{userId}/managedConfigurationsForUser/{managedConfigurationForUserId}",
-    validator: validate_AndroidenterpriseManagedconfigurationsforuserPatch_599249,
+    validator: validate_AndroidenterpriseManagedconfigurationsforuserPatch_581249,
     base: "/androidenterprise/v1",
-    url: url_AndroidenterpriseManagedconfigurationsforuserPatch_599250,
+    url: url_AndroidenterpriseManagedconfigurationsforuserPatch_581250,
     schemes: {Scheme.Https})
 type
-  Call_AndroidenterpriseManagedconfigurationsforuserDelete_599231 = ref object of OpenApiRestCall_597421
-proc url_AndroidenterpriseManagedconfigurationsforuserDelete_599233(
+  Call_AndroidenterpriseManagedconfigurationsforuserDelete_581231 = ref object of OpenApiRestCall_579421
+proc url_AndroidenterpriseManagedconfigurationsforuserDelete_581233(
     protocol: Scheme; host: string; base: string; route: string; path: JsonNode;
     query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "enterpriseId" in path, "`enterpriseId` is a required path parameter"
   assert "userId" in path, "`userId` is a required path parameter"
@@ -13069,7 +13071,7 @@ proc url_AndroidenterpriseManagedconfigurationsforuserDelete_599233(
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_AndroidenterpriseManagedconfigurationsforuserDelete_599232(
+proc validate_AndroidenterpriseManagedconfigurationsforuserDelete_581232(
     path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
     body: JsonNode): JsonNode =
   ## Removes a per-user managed configuration for an app for the specified user.
@@ -13086,21 +13088,21 @@ proc validate_AndroidenterpriseManagedconfigurationsforuserDelete_599232(
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `enterpriseId` field"
-  var valid_599234 = path.getOrDefault("enterpriseId")
-  valid_599234 = validateParameter(valid_599234, JString, required = true,
+  var valid_581234 = path.getOrDefault("enterpriseId")
+  valid_581234 = validateParameter(valid_581234, JString, required = true,
                                  default = nil)
-  if valid_599234 != nil:
-    section.add "enterpriseId", valid_599234
-  var valid_599235 = path.getOrDefault("managedConfigurationForUserId")
-  valid_599235 = validateParameter(valid_599235, JString, required = true,
+  if valid_581234 != nil:
+    section.add "enterpriseId", valid_581234
+  var valid_581235 = path.getOrDefault("managedConfigurationForUserId")
+  valid_581235 = validateParameter(valid_581235, JString, required = true,
                                  default = nil)
-  if valid_599235 != nil:
-    section.add "managedConfigurationForUserId", valid_599235
-  var valid_599236 = path.getOrDefault("userId")
-  valid_599236 = validateParameter(valid_599236, JString, required = true,
+  if valid_581235 != nil:
+    section.add "managedConfigurationForUserId", valid_581235
+  var valid_581236 = path.getOrDefault("userId")
+  valid_581236 = validateParameter(valid_581236, JString, required = true,
                                  default = nil)
-  if valid_599236 != nil:
-    section.add "userId", valid_599236
+  if valid_581236 != nil:
+    section.add "userId", valid_581236
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -13118,41 +13120,41 @@ proc validate_AndroidenterpriseManagedconfigurationsforuserDelete_599232(
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_599237 = query.getOrDefault("fields")
-  valid_599237 = validateParameter(valid_599237, JString, required = false,
+  var valid_581237 = query.getOrDefault("fields")
+  valid_581237 = validateParameter(valid_581237, JString, required = false,
                                  default = nil)
-  if valid_599237 != nil:
-    section.add "fields", valid_599237
-  var valid_599238 = query.getOrDefault("quotaUser")
-  valid_599238 = validateParameter(valid_599238, JString, required = false,
+  if valid_581237 != nil:
+    section.add "fields", valid_581237
+  var valid_581238 = query.getOrDefault("quotaUser")
+  valid_581238 = validateParameter(valid_581238, JString, required = false,
                                  default = nil)
-  if valid_599238 != nil:
-    section.add "quotaUser", valid_599238
-  var valid_599239 = query.getOrDefault("alt")
-  valid_599239 = validateParameter(valid_599239, JString, required = false,
+  if valid_581238 != nil:
+    section.add "quotaUser", valid_581238
+  var valid_581239 = query.getOrDefault("alt")
+  valid_581239 = validateParameter(valid_581239, JString, required = false,
                                  default = newJString("json"))
-  if valid_599239 != nil:
-    section.add "alt", valid_599239
-  var valid_599240 = query.getOrDefault("oauth_token")
-  valid_599240 = validateParameter(valid_599240, JString, required = false,
+  if valid_581239 != nil:
+    section.add "alt", valid_581239
+  var valid_581240 = query.getOrDefault("oauth_token")
+  valid_581240 = validateParameter(valid_581240, JString, required = false,
                                  default = nil)
-  if valid_599240 != nil:
-    section.add "oauth_token", valid_599240
-  var valid_599241 = query.getOrDefault("userIp")
-  valid_599241 = validateParameter(valid_599241, JString, required = false,
+  if valid_581240 != nil:
+    section.add "oauth_token", valid_581240
+  var valid_581241 = query.getOrDefault("userIp")
+  valid_581241 = validateParameter(valid_581241, JString, required = false,
                                  default = nil)
-  if valid_599241 != nil:
-    section.add "userIp", valid_599241
-  var valid_599242 = query.getOrDefault("key")
-  valid_599242 = validateParameter(valid_599242, JString, required = false,
+  if valid_581241 != nil:
+    section.add "userIp", valid_581241
+  var valid_581242 = query.getOrDefault("key")
+  valid_581242 = validateParameter(valid_581242, JString, required = false,
                                  default = nil)
-  if valid_599242 != nil:
-    section.add "key", valid_599242
-  var valid_599243 = query.getOrDefault("prettyPrint")
-  valid_599243 = validateParameter(valid_599243, JBool, required = false,
+  if valid_581242 != nil:
+    section.add "key", valid_581242
+  var valid_581243 = query.getOrDefault("prettyPrint")
+  valid_581243 = validateParameter(valid_581243, JBool, required = false,
                                  default = newJBool(true))
-  if valid_599243 != nil:
-    section.add "prettyPrint", valid_599243
+  if valid_581243 != nil:
+    section.add "prettyPrint", valid_581243
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -13161,21 +13163,21 @@ proc validate_AndroidenterpriseManagedconfigurationsforuserDelete_599232(
   if body != nil:
     result.add "body", body
 
-proc call*(call_599244: Call_AndroidenterpriseManagedconfigurationsforuserDelete_599231;
+proc call*(call_581244: Call_AndroidenterpriseManagedconfigurationsforuserDelete_581231;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Removes a per-user managed configuration for an app for the specified user.
   ## 
-  let valid = call_599244.validator(path, query, header, formData, body)
-  let scheme = call_599244.pickScheme
+  let valid = call_581244.validator(path, query, header, formData, body)
+  let scheme = call_581244.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_599244.url(scheme.get, call_599244.host, call_599244.base,
-                         call_599244.route, valid.getOrDefault("path"),
+  let url = call_581244.url(scheme.get, call_581244.host, call_581244.base,
+                         call_581244.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_599244, url, valid)
+  result = hook(call_581244, url, valid)
 
-proc call*(call_599245: Call_AndroidenterpriseManagedconfigurationsforuserDelete_599231;
+proc call*(call_581245: Call_AndroidenterpriseManagedconfigurationsforuserDelete_581231;
           enterpriseId: string; managedConfigurationForUserId: string;
           userId: string; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; userIp: string = "";
@@ -13202,35 +13204,35 @@ proc call*(call_599245: Call_AndroidenterpriseManagedconfigurationsforuserDelete
   ##              : Returns response with indentations and line breaks.
   ##   userId: string (required)
   ##         : The ID of the user.
-  var path_599246 = newJObject()
-  var query_599247 = newJObject()
-  add(query_599247, "fields", newJString(fields))
-  add(query_599247, "quotaUser", newJString(quotaUser))
-  add(query_599247, "alt", newJString(alt))
-  add(query_599247, "oauth_token", newJString(oauthToken))
-  add(query_599247, "userIp", newJString(userIp))
-  add(query_599247, "key", newJString(key))
-  add(path_599246, "enterpriseId", newJString(enterpriseId))
-  add(path_599246, "managedConfigurationForUserId",
+  var path_581246 = newJObject()
+  var query_581247 = newJObject()
+  add(query_581247, "fields", newJString(fields))
+  add(query_581247, "quotaUser", newJString(quotaUser))
+  add(query_581247, "alt", newJString(alt))
+  add(query_581247, "oauth_token", newJString(oauthToken))
+  add(query_581247, "userIp", newJString(userIp))
+  add(query_581247, "key", newJString(key))
+  add(path_581246, "enterpriseId", newJString(enterpriseId))
+  add(path_581246, "managedConfigurationForUserId",
       newJString(managedConfigurationForUserId))
-  add(query_599247, "prettyPrint", newJBool(prettyPrint))
-  add(path_599246, "userId", newJString(userId))
-  result = call_599245.call(path_599246, query_599247, nil, nil, nil)
+  add(query_581247, "prettyPrint", newJBool(prettyPrint))
+  add(path_581246, "userId", newJString(userId))
+  result = call_581245.call(path_581246, query_581247, nil, nil, nil)
 
-var androidenterpriseManagedconfigurationsforuserDelete* = Call_AndroidenterpriseManagedconfigurationsforuserDelete_599231(
+var androidenterpriseManagedconfigurationsforuserDelete* = Call_AndroidenterpriseManagedconfigurationsforuserDelete_581231(
     name: "androidenterpriseManagedconfigurationsforuserDelete",
     meth: HttpMethod.HttpDelete, host: "www.googleapis.com", route: "/enterprises/{enterpriseId}/users/{userId}/managedConfigurationsForUser/{managedConfigurationForUserId}",
-    validator: validate_AndroidenterpriseManagedconfigurationsforuserDelete_599232,
+    validator: validate_AndroidenterpriseManagedconfigurationsforuserDelete_581232,
     base: "/androidenterprise/v1",
-    url: url_AndroidenterpriseManagedconfigurationsforuserDelete_599233,
+    url: url_AndroidenterpriseManagedconfigurationsforuserDelete_581233,
     schemes: {Scheme.Https})
 type
-  Call_AndroidenterpriseUsersGenerateToken_599267 = ref object of OpenApiRestCall_597421
-proc url_AndroidenterpriseUsersGenerateToken_599269(protocol: Scheme; host: string;
+  Call_AndroidenterpriseUsersGenerateToken_581267 = ref object of OpenApiRestCall_579421
+proc url_AndroidenterpriseUsersGenerateToken_581269(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "enterpriseId" in path, "`enterpriseId` is a required path parameter"
   assert "userId" in path, "`userId` is a required path parameter"
@@ -13245,7 +13247,7 @@ proc url_AndroidenterpriseUsersGenerateToken_599269(protocol: Scheme; host: stri
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_AndroidenterpriseUsersGenerateToken_599268(path: JsonNode;
+proc validate_AndroidenterpriseUsersGenerateToken_581268(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Generates a token (activation code) to allow this user to configure their managed account in the Android Setup Wizard. Revokes any previously generated token.
   ## 
@@ -13261,16 +13263,16 @@ proc validate_AndroidenterpriseUsersGenerateToken_599268(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `enterpriseId` field"
-  var valid_599270 = path.getOrDefault("enterpriseId")
-  valid_599270 = validateParameter(valid_599270, JString, required = true,
+  var valid_581270 = path.getOrDefault("enterpriseId")
+  valid_581270 = validateParameter(valid_581270, JString, required = true,
                                  default = nil)
-  if valid_599270 != nil:
-    section.add "enterpriseId", valid_599270
-  var valid_599271 = path.getOrDefault("userId")
-  valid_599271 = validateParameter(valid_599271, JString, required = true,
+  if valid_581270 != nil:
+    section.add "enterpriseId", valid_581270
+  var valid_581271 = path.getOrDefault("userId")
+  valid_581271 = validateParameter(valid_581271, JString, required = true,
                                  default = nil)
-  if valid_599271 != nil:
-    section.add "userId", valid_599271
+  if valid_581271 != nil:
+    section.add "userId", valid_581271
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -13288,41 +13290,41 @@ proc validate_AndroidenterpriseUsersGenerateToken_599268(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_599272 = query.getOrDefault("fields")
-  valid_599272 = validateParameter(valid_599272, JString, required = false,
+  var valid_581272 = query.getOrDefault("fields")
+  valid_581272 = validateParameter(valid_581272, JString, required = false,
                                  default = nil)
-  if valid_599272 != nil:
-    section.add "fields", valid_599272
-  var valid_599273 = query.getOrDefault("quotaUser")
-  valid_599273 = validateParameter(valid_599273, JString, required = false,
+  if valid_581272 != nil:
+    section.add "fields", valid_581272
+  var valid_581273 = query.getOrDefault("quotaUser")
+  valid_581273 = validateParameter(valid_581273, JString, required = false,
                                  default = nil)
-  if valid_599273 != nil:
-    section.add "quotaUser", valid_599273
-  var valid_599274 = query.getOrDefault("alt")
-  valid_599274 = validateParameter(valid_599274, JString, required = false,
+  if valid_581273 != nil:
+    section.add "quotaUser", valid_581273
+  var valid_581274 = query.getOrDefault("alt")
+  valid_581274 = validateParameter(valid_581274, JString, required = false,
                                  default = newJString("json"))
-  if valid_599274 != nil:
-    section.add "alt", valid_599274
-  var valid_599275 = query.getOrDefault("oauth_token")
-  valid_599275 = validateParameter(valid_599275, JString, required = false,
+  if valid_581274 != nil:
+    section.add "alt", valid_581274
+  var valid_581275 = query.getOrDefault("oauth_token")
+  valid_581275 = validateParameter(valid_581275, JString, required = false,
                                  default = nil)
-  if valid_599275 != nil:
-    section.add "oauth_token", valid_599275
-  var valid_599276 = query.getOrDefault("userIp")
-  valid_599276 = validateParameter(valid_599276, JString, required = false,
+  if valid_581275 != nil:
+    section.add "oauth_token", valid_581275
+  var valid_581276 = query.getOrDefault("userIp")
+  valid_581276 = validateParameter(valid_581276, JString, required = false,
                                  default = nil)
-  if valid_599276 != nil:
-    section.add "userIp", valid_599276
-  var valid_599277 = query.getOrDefault("key")
-  valid_599277 = validateParameter(valid_599277, JString, required = false,
+  if valid_581276 != nil:
+    section.add "userIp", valid_581276
+  var valid_581277 = query.getOrDefault("key")
+  valid_581277 = validateParameter(valid_581277, JString, required = false,
                                  default = nil)
-  if valid_599277 != nil:
-    section.add "key", valid_599277
-  var valid_599278 = query.getOrDefault("prettyPrint")
-  valid_599278 = validateParameter(valid_599278, JBool, required = false,
+  if valid_581277 != nil:
+    section.add "key", valid_581277
+  var valid_581278 = query.getOrDefault("prettyPrint")
+  valid_581278 = validateParameter(valid_581278, JBool, required = false,
                                  default = newJBool(true))
-  if valid_599278 != nil:
-    section.add "prettyPrint", valid_599278
+  if valid_581278 != nil:
+    section.add "prettyPrint", valid_581278
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -13331,23 +13333,23 @@ proc validate_AndroidenterpriseUsersGenerateToken_599268(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_599279: Call_AndroidenterpriseUsersGenerateToken_599267;
+proc call*(call_581279: Call_AndroidenterpriseUsersGenerateToken_581267;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Generates a token (activation code) to allow this user to configure their managed account in the Android Setup Wizard. Revokes any previously generated token.
   ## 
   ## This call only works with Google managed accounts.
   ## 
-  let valid = call_599279.validator(path, query, header, formData, body)
-  let scheme = call_599279.pickScheme
+  let valid = call_581279.validator(path, query, header, formData, body)
+  let scheme = call_581279.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_599279.url(scheme.get, call_599279.host, call_599279.base,
-                         call_599279.route, valid.getOrDefault("path"),
+  let url = call_581279.url(scheme.get, call_581279.host, call_581279.base,
+                         call_581279.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_599279, url, valid)
+  result = hook(call_581279, url, valid)
 
-proc call*(call_599280: Call_AndroidenterpriseUsersGenerateToken_599267;
+proc call*(call_581280: Call_AndroidenterpriseUsersGenerateToken_581267;
           enterpriseId: string; userId: string; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; key: string = ""; prettyPrint: bool = true): Recallable =
@@ -13373,33 +13375,33 @@ proc call*(call_599280: Call_AndroidenterpriseUsersGenerateToken_599267;
   ##              : Returns response with indentations and line breaks.
   ##   userId: string (required)
   ##         : The ID of the user.
-  var path_599281 = newJObject()
-  var query_599282 = newJObject()
-  add(query_599282, "fields", newJString(fields))
-  add(query_599282, "quotaUser", newJString(quotaUser))
-  add(query_599282, "alt", newJString(alt))
-  add(query_599282, "oauth_token", newJString(oauthToken))
-  add(query_599282, "userIp", newJString(userIp))
-  add(query_599282, "key", newJString(key))
-  add(path_599281, "enterpriseId", newJString(enterpriseId))
-  add(query_599282, "prettyPrint", newJBool(prettyPrint))
-  add(path_599281, "userId", newJString(userId))
-  result = call_599280.call(path_599281, query_599282, nil, nil, nil)
+  var path_581281 = newJObject()
+  var query_581282 = newJObject()
+  add(query_581282, "fields", newJString(fields))
+  add(query_581282, "quotaUser", newJString(quotaUser))
+  add(query_581282, "alt", newJString(alt))
+  add(query_581282, "oauth_token", newJString(oauthToken))
+  add(query_581282, "userIp", newJString(userIp))
+  add(query_581282, "key", newJString(key))
+  add(path_581281, "enterpriseId", newJString(enterpriseId))
+  add(query_581282, "prettyPrint", newJBool(prettyPrint))
+  add(path_581281, "userId", newJString(userId))
+  result = call_581280.call(path_581281, query_581282, nil, nil, nil)
 
-var androidenterpriseUsersGenerateToken* = Call_AndroidenterpriseUsersGenerateToken_599267(
+var androidenterpriseUsersGenerateToken* = Call_AndroidenterpriseUsersGenerateToken_581267(
     name: "androidenterpriseUsersGenerateToken", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com",
     route: "/enterprises/{enterpriseId}/users/{userId}/token",
-    validator: validate_AndroidenterpriseUsersGenerateToken_599268,
-    base: "/androidenterprise/v1", url: url_AndroidenterpriseUsersGenerateToken_599269,
+    validator: validate_AndroidenterpriseUsersGenerateToken_581268,
+    base: "/androidenterprise/v1", url: url_AndroidenterpriseUsersGenerateToken_581269,
     schemes: {Scheme.Https})
 type
-  Call_AndroidenterpriseUsersRevokeToken_599283 = ref object of OpenApiRestCall_597421
-proc url_AndroidenterpriseUsersRevokeToken_599285(protocol: Scheme; host: string;
+  Call_AndroidenterpriseUsersRevokeToken_581283 = ref object of OpenApiRestCall_579421
+proc url_AndroidenterpriseUsersRevokeToken_581285(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "enterpriseId" in path, "`enterpriseId` is a required path parameter"
   assert "userId" in path, "`userId` is a required path parameter"
@@ -13414,7 +13416,7 @@ proc url_AndroidenterpriseUsersRevokeToken_599285(protocol: Scheme; host: string
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_AndroidenterpriseUsersRevokeToken_599284(path: JsonNode;
+proc validate_AndroidenterpriseUsersRevokeToken_581284(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Revokes a previously generated token (activation code) for the user.
   ## 
@@ -13428,16 +13430,16 @@ proc validate_AndroidenterpriseUsersRevokeToken_599284(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `enterpriseId` field"
-  var valid_599286 = path.getOrDefault("enterpriseId")
-  valid_599286 = validateParameter(valid_599286, JString, required = true,
+  var valid_581286 = path.getOrDefault("enterpriseId")
+  valid_581286 = validateParameter(valid_581286, JString, required = true,
                                  default = nil)
-  if valid_599286 != nil:
-    section.add "enterpriseId", valid_599286
-  var valid_599287 = path.getOrDefault("userId")
-  valid_599287 = validateParameter(valid_599287, JString, required = true,
+  if valid_581286 != nil:
+    section.add "enterpriseId", valid_581286
+  var valid_581287 = path.getOrDefault("userId")
+  valid_581287 = validateParameter(valid_581287, JString, required = true,
                                  default = nil)
-  if valid_599287 != nil:
-    section.add "userId", valid_599287
+  if valid_581287 != nil:
+    section.add "userId", valid_581287
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -13455,41 +13457,41 @@ proc validate_AndroidenterpriseUsersRevokeToken_599284(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_599288 = query.getOrDefault("fields")
-  valid_599288 = validateParameter(valid_599288, JString, required = false,
+  var valid_581288 = query.getOrDefault("fields")
+  valid_581288 = validateParameter(valid_581288, JString, required = false,
                                  default = nil)
-  if valid_599288 != nil:
-    section.add "fields", valid_599288
-  var valid_599289 = query.getOrDefault("quotaUser")
-  valid_599289 = validateParameter(valid_599289, JString, required = false,
+  if valid_581288 != nil:
+    section.add "fields", valid_581288
+  var valid_581289 = query.getOrDefault("quotaUser")
+  valid_581289 = validateParameter(valid_581289, JString, required = false,
                                  default = nil)
-  if valid_599289 != nil:
-    section.add "quotaUser", valid_599289
-  var valid_599290 = query.getOrDefault("alt")
-  valid_599290 = validateParameter(valid_599290, JString, required = false,
+  if valid_581289 != nil:
+    section.add "quotaUser", valid_581289
+  var valid_581290 = query.getOrDefault("alt")
+  valid_581290 = validateParameter(valid_581290, JString, required = false,
                                  default = newJString("json"))
-  if valid_599290 != nil:
-    section.add "alt", valid_599290
-  var valid_599291 = query.getOrDefault("oauth_token")
-  valid_599291 = validateParameter(valid_599291, JString, required = false,
+  if valid_581290 != nil:
+    section.add "alt", valid_581290
+  var valid_581291 = query.getOrDefault("oauth_token")
+  valid_581291 = validateParameter(valid_581291, JString, required = false,
                                  default = nil)
-  if valid_599291 != nil:
-    section.add "oauth_token", valid_599291
-  var valid_599292 = query.getOrDefault("userIp")
-  valid_599292 = validateParameter(valid_599292, JString, required = false,
+  if valid_581291 != nil:
+    section.add "oauth_token", valid_581291
+  var valid_581292 = query.getOrDefault("userIp")
+  valid_581292 = validateParameter(valid_581292, JString, required = false,
                                  default = nil)
-  if valid_599292 != nil:
-    section.add "userIp", valid_599292
-  var valid_599293 = query.getOrDefault("key")
-  valid_599293 = validateParameter(valid_599293, JString, required = false,
+  if valid_581292 != nil:
+    section.add "userIp", valid_581292
+  var valid_581293 = query.getOrDefault("key")
+  valid_581293 = validateParameter(valid_581293, JString, required = false,
                                  default = nil)
-  if valid_599293 != nil:
-    section.add "key", valid_599293
-  var valid_599294 = query.getOrDefault("prettyPrint")
-  valid_599294 = validateParameter(valid_599294, JBool, required = false,
+  if valid_581293 != nil:
+    section.add "key", valid_581293
+  var valid_581294 = query.getOrDefault("prettyPrint")
+  valid_581294 = validateParameter(valid_581294, JBool, required = false,
                                  default = newJBool(true))
-  if valid_599294 != nil:
-    section.add "prettyPrint", valid_599294
+  if valid_581294 != nil:
+    section.add "prettyPrint", valid_581294
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -13498,21 +13500,21 @@ proc validate_AndroidenterpriseUsersRevokeToken_599284(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_599295: Call_AndroidenterpriseUsersRevokeToken_599283;
+proc call*(call_581295: Call_AndroidenterpriseUsersRevokeToken_581283;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Revokes a previously generated token (activation code) for the user.
   ## 
-  let valid = call_599295.validator(path, query, header, formData, body)
-  let scheme = call_599295.pickScheme
+  let valid = call_581295.validator(path, query, header, formData, body)
+  let scheme = call_581295.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_599295.url(scheme.get, call_599295.host, call_599295.base,
-                         call_599295.route, valid.getOrDefault("path"),
+  let url = call_581295.url(scheme.get, call_581295.host, call_581295.base,
+                         call_581295.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_599295, url, valid)
+  result = hook(call_581295, url, valid)
 
-proc call*(call_599296: Call_AndroidenterpriseUsersRevokeToken_599283;
+proc call*(call_581296: Call_AndroidenterpriseUsersRevokeToken_581283;
           enterpriseId: string; userId: string; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; key: string = ""; prettyPrint: bool = true): Recallable =
@@ -13536,33 +13538,33 @@ proc call*(call_599296: Call_AndroidenterpriseUsersRevokeToken_599283;
   ##              : Returns response with indentations and line breaks.
   ##   userId: string (required)
   ##         : The ID of the user.
-  var path_599297 = newJObject()
-  var query_599298 = newJObject()
-  add(query_599298, "fields", newJString(fields))
-  add(query_599298, "quotaUser", newJString(quotaUser))
-  add(query_599298, "alt", newJString(alt))
-  add(query_599298, "oauth_token", newJString(oauthToken))
-  add(query_599298, "userIp", newJString(userIp))
-  add(query_599298, "key", newJString(key))
-  add(path_599297, "enterpriseId", newJString(enterpriseId))
-  add(query_599298, "prettyPrint", newJBool(prettyPrint))
-  add(path_599297, "userId", newJString(userId))
-  result = call_599296.call(path_599297, query_599298, nil, nil, nil)
+  var path_581297 = newJObject()
+  var query_581298 = newJObject()
+  add(query_581298, "fields", newJString(fields))
+  add(query_581298, "quotaUser", newJString(quotaUser))
+  add(query_581298, "alt", newJString(alt))
+  add(query_581298, "oauth_token", newJString(oauthToken))
+  add(query_581298, "userIp", newJString(userIp))
+  add(query_581298, "key", newJString(key))
+  add(path_581297, "enterpriseId", newJString(enterpriseId))
+  add(query_581298, "prettyPrint", newJBool(prettyPrint))
+  add(path_581297, "userId", newJString(userId))
+  result = call_581296.call(path_581297, query_581298, nil, nil, nil)
 
-var androidenterpriseUsersRevokeToken* = Call_AndroidenterpriseUsersRevokeToken_599283(
+var androidenterpriseUsersRevokeToken* = Call_AndroidenterpriseUsersRevokeToken_581283(
     name: "androidenterpriseUsersRevokeToken", meth: HttpMethod.HttpDelete,
     host: "www.googleapis.com",
     route: "/enterprises/{enterpriseId}/users/{userId}/token",
-    validator: validate_AndroidenterpriseUsersRevokeToken_599284,
-    base: "/androidenterprise/v1", url: url_AndroidenterpriseUsersRevokeToken_599285,
+    validator: validate_AndroidenterpriseUsersRevokeToken_581284,
+    base: "/androidenterprise/v1", url: url_AndroidenterpriseUsersRevokeToken_581285,
     schemes: {Scheme.Https})
 type
-  Call_AndroidenterpriseWebappsInsert_599314 = ref object of OpenApiRestCall_597421
-proc url_AndroidenterpriseWebappsInsert_599316(protocol: Scheme; host: string;
+  Call_AndroidenterpriseWebappsInsert_581314 = ref object of OpenApiRestCall_579421
+proc url_AndroidenterpriseWebappsInsert_581316(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "enterpriseId" in path, "`enterpriseId` is a required path parameter"
   const
@@ -13574,7 +13576,7 @@ proc url_AndroidenterpriseWebappsInsert_599316(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_AndroidenterpriseWebappsInsert_599315(path: JsonNode;
+proc validate_AndroidenterpriseWebappsInsert_581315(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Creates a new web app for the enterprise.
   ## 
@@ -13586,11 +13588,11 @@ proc validate_AndroidenterpriseWebappsInsert_599315(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `enterpriseId` field"
-  var valid_599317 = path.getOrDefault("enterpriseId")
-  valid_599317 = validateParameter(valid_599317, JString, required = true,
+  var valid_581317 = path.getOrDefault("enterpriseId")
+  valid_581317 = validateParameter(valid_581317, JString, required = true,
                                  default = nil)
-  if valid_599317 != nil:
-    section.add "enterpriseId", valid_599317
+  if valid_581317 != nil:
+    section.add "enterpriseId", valid_581317
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -13608,41 +13610,41 @@ proc validate_AndroidenterpriseWebappsInsert_599315(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_599318 = query.getOrDefault("fields")
-  valid_599318 = validateParameter(valid_599318, JString, required = false,
+  var valid_581318 = query.getOrDefault("fields")
+  valid_581318 = validateParameter(valid_581318, JString, required = false,
                                  default = nil)
-  if valid_599318 != nil:
-    section.add "fields", valid_599318
-  var valid_599319 = query.getOrDefault("quotaUser")
-  valid_599319 = validateParameter(valid_599319, JString, required = false,
+  if valid_581318 != nil:
+    section.add "fields", valid_581318
+  var valid_581319 = query.getOrDefault("quotaUser")
+  valid_581319 = validateParameter(valid_581319, JString, required = false,
                                  default = nil)
-  if valid_599319 != nil:
-    section.add "quotaUser", valid_599319
-  var valid_599320 = query.getOrDefault("alt")
-  valid_599320 = validateParameter(valid_599320, JString, required = false,
+  if valid_581319 != nil:
+    section.add "quotaUser", valid_581319
+  var valid_581320 = query.getOrDefault("alt")
+  valid_581320 = validateParameter(valid_581320, JString, required = false,
                                  default = newJString("json"))
-  if valid_599320 != nil:
-    section.add "alt", valid_599320
-  var valid_599321 = query.getOrDefault("oauth_token")
-  valid_599321 = validateParameter(valid_599321, JString, required = false,
+  if valid_581320 != nil:
+    section.add "alt", valid_581320
+  var valid_581321 = query.getOrDefault("oauth_token")
+  valid_581321 = validateParameter(valid_581321, JString, required = false,
                                  default = nil)
-  if valid_599321 != nil:
-    section.add "oauth_token", valid_599321
-  var valid_599322 = query.getOrDefault("userIp")
-  valid_599322 = validateParameter(valid_599322, JString, required = false,
+  if valid_581321 != nil:
+    section.add "oauth_token", valid_581321
+  var valid_581322 = query.getOrDefault("userIp")
+  valid_581322 = validateParameter(valid_581322, JString, required = false,
                                  default = nil)
-  if valid_599322 != nil:
-    section.add "userIp", valid_599322
-  var valid_599323 = query.getOrDefault("key")
-  valid_599323 = validateParameter(valid_599323, JString, required = false,
+  if valid_581322 != nil:
+    section.add "userIp", valid_581322
+  var valid_581323 = query.getOrDefault("key")
+  valid_581323 = validateParameter(valid_581323, JString, required = false,
                                  default = nil)
-  if valid_599323 != nil:
-    section.add "key", valid_599323
-  var valid_599324 = query.getOrDefault("prettyPrint")
-  valid_599324 = validateParameter(valid_599324, JBool, required = false,
+  if valid_581323 != nil:
+    section.add "key", valid_581323
+  var valid_581324 = query.getOrDefault("prettyPrint")
+  valid_581324 = validateParameter(valid_581324, JBool, required = false,
                                  default = newJBool(true))
-  if valid_599324 != nil:
-    section.add "prettyPrint", valid_599324
+  if valid_581324 != nil:
+    section.add "prettyPrint", valid_581324
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -13654,20 +13656,20 @@ proc validate_AndroidenterpriseWebappsInsert_599315(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_599326: Call_AndroidenterpriseWebappsInsert_599314; path: JsonNode;
+proc call*(call_581326: Call_AndroidenterpriseWebappsInsert_581314; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Creates a new web app for the enterprise.
   ## 
-  let valid = call_599326.validator(path, query, header, formData, body)
-  let scheme = call_599326.pickScheme
+  let valid = call_581326.validator(path, query, header, formData, body)
+  let scheme = call_581326.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_599326.url(scheme.get, call_599326.host, call_599326.base,
-                         call_599326.route, valid.getOrDefault("path"),
+  let url = call_581326.url(scheme.get, call_581326.host, call_581326.base,
+                         call_581326.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_599326, url, valid)
+  result = hook(call_581326, url, valid)
 
-proc call*(call_599327: Call_AndroidenterpriseWebappsInsert_599314;
+proc call*(call_581327: Call_AndroidenterpriseWebappsInsert_581314;
           enterpriseId: string; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; userIp: string = "";
           key: string = ""; body: JsonNode = nil; prettyPrint: bool = true): Recallable =
@@ -13690,34 +13692,34 @@ proc call*(call_599327: Call_AndroidenterpriseWebappsInsert_599314;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_599328 = newJObject()
-  var query_599329 = newJObject()
-  var body_599330 = newJObject()
-  add(query_599329, "fields", newJString(fields))
-  add(query_599329, "quotaUser", newJString(quotaUser))
-  add(query_599329, "alt", newJString(alt))
-  add(query_599329, "oauth_token", newJString(oauthToken))
-  add(query_599329, "userIp", newJString(userIp))
-  add(query_599329, "key", newJString(key))
-  add(path_599328, "enterpriseId", newJString(enterpriseId))
+  var path_581328 = newJObject()
+  var query_581329 = newJObject()
+  var body_581330 = newJObject()
+  add(query_581329, "fields", newJString(fields))
+  add(query_581329, "quotaUser", newJString(quotaUser))
+  add(query_581329, "alt", newJString(alt))
+  add(query_581329, "oauth_token", newJString(oauthToken))
+  add(query_581329, "userIp", newJString(userIp))
+  add(query_581329, "key", newJString(key))
+  add(path_581328, "enterpriseId", newJString(enterpriseId))
   if body != nil:
-    body_599330 = body
-  add(query_599329, "prettyPrint", newJBool(prettyPrint))
-  result = call_599327.call(path_599328, query_599329, nil, nil, body_599330)
+    body_581330 = body
+  add(query_581329, "prettyPrint", newJBool(prettyPrint))
+  result = call_581327.call(path_581328, query_581329, nil, nil, body_581330)
 
-var androidenterpriseWebappsInsert* = Call_AndroidenterpriseWebappsInsert_599314(
+var androidenterpriseWebappsInsert* = Call_AndroidenterpriseWebappsInsert_581314(
     name: "androidenterpriseWebappsInsert", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com", route: "/enterprises/{enterpriseId}/webApps",
-    validator: validate_AndroidenterpriseWebappsInsert_599315,
-    base: "/androidenterprise/v1", url: url_AndroidenterpriseWebappsInsert_599316,
+    validator: validate_AndroidenterpriseWebappsInsert_581315,
+    base: "/androidenterprise/v1", url: url_AndroidenterpriseWebappsInsert_581316,
     schemes: {Scheme.Https})
 type
-  Call_AndroidenterpriseWebappsList_599299 = ref object of OpenApiRestCall_597421
-proc url_AndroidenterpriseWebappsList_599301(protocol: Scheme; host: string;
+  Call_AndroidenterpriseWebappsList_581299 = ref object of OpenApiRestCall_579421
+proc url_AndroidenterpriseWebappsList_581301(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "enterpriseId" in path, "`enterpriseId` is a required path parameter"
   const
@@ -13729,7 +13731,7 @@ proc url_AndroidenterpriseWebappsList_599301(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_AndroidenterpriseWebappsList_599300(path: JsonNode; query: JsonNode;
+proc validate_AndroidenterpriseWebappsList_581300(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Retrieves the details of all web apps for a given enterprise.
   ## 
@@ -13741,11 +13743,11 @@ proc validate_AndroidenterpriseWebappsList_599300(path: JsonNode; query: JsonNod
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `enterpriseId` field"
-  var valid_599302 = path.getOrDefault("enterpriseId")
-  valid_599302 = validateParameter(valid_599302, JString, required = true,
+  var valid_581302 = path.getOrDefault("enterpriseId")
+  valid_581302 = validateParameter(valid_581302, JString, required = true,
                                  default = nil)
-  if valid_599302 != nil:
-    section.add "enterpriseId", valid_599302
+  if valid_581302 != nil:
+    section.add "enterpriseId", valid_581302
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -13763,41 +13765,41 @@ proc validate_AndroidenterpriseWebappsList_599300(path: JsonNode; query: JsonNod
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_599303 = query.getOrDefault("fields")
-  valid_599303 = validateParameter(valid_599303, JString, required = false,
+  var valid_581303 = query.getOrDefault("fields")
+  valid_581303 = validateParameter(valid_581303, JString, required = false,
                                  default = nil)
-  if valid_599303 != nil:
-    section.add "fields", valid_599303
-  var valid_599304 = query.getOrDefault("quotaUser")
-  valid_599304 = validateParameter(valid_599304, JString, required = false,
+  if valid_581303 != nil:
+    section.add "fields", valid_581303
+  var valid_581304 = query.getOrDefault("quotaUser")
+  valid_581304 = validateParameter(valid_581304, JString, required = false,
                                  default = nil)
-  if valid_599304 != nil:
-    section.add "quotaUser", valid_599304
-  var valid_599305 = query.getOrDefault("alt")
-  valid_599305 = validateParameter(valid_599305, JString, required = false,
+  if valid_581304 != nil:
+    section.add "quotaUser", valid_581304
+  var valid_581305 = query.getOrDefault("alt")
+  valid_581305 = validateParameter(valid_581305, JString, required = false,
                                  default = newJString("json"))
-  if valid_599305 != nil:
-    section.add "alt", valid_599305
-  var valid_599306 = query.getOrDefault("oauth_token")
-  valid_599306 = validateParameter(valid_599306, JString, required = false,
+  if valid_581305 != nil:
+    section.add "alt", valid_581305
+  var valid_581306 = query.getOrDefault("oauth_token")
+  valid_581306 = validateParameter(valid_581306, JString, required = false,
                                  default = nil)
-  if valid_599306 != nil:
-    section.add "oauth_token", valid_599306
-  var valid_599307 = query.getOrDefault("userIp")
-  valid_599307 = validateParameter(valid_599307, JString, required = false,
+  if valid_581306 != nil:
+    section.add "oauth_token", valid_581306
+  var valid_581307 = query.getOrDefault("userIp")
+  valid_581307 = validateParameter(valid_581307, JString, required = false,
                                  default = nil)
-  if valid_599307 != nil:
-    section.add "userIp", valid_599307
-  var valid_599308 = query.getOrDefault("key")
-  valid_599308 = validateParameter(valid_599308, JString, required = false,
+  if valid_581307 != nil:
+    section.add "userIp", valid_581307
+  var valid_581308 = query.getOrDefault("key")
+  valid_581308 = validateParameter(valid_581308, JString, required = false,
                                  default = nil)
-  if valid_599308 != nil:
-    section.add "key", valid_599308
-  var valid_599309 = query.getOrDefault("prettyPrint")
-  valid_599309 = validateParameter(valid_599309, JBool, required = false,
+  if valid_581308 != nil:
+    section.add "key", valid_581308
+  var valid_581309 = query.getOrDefault("prettyPrint")
+  valid_581309 = validateParameter(valid_581309, JBool, required = false,
                                  default = newJBool(true))
-  if valid_599309 != nil:
-    section.add "prettyPrint", valid_599309
+  if valid_581309 != nil:
+    section.add "prettyPrint", valid_581309
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -13806,20 +13808,20 @@ proc validate_AndroidenterpriseWebappsList_599300(path: JsonNode; query: JsonNod
   if body != nil:
     result.add "body", body
 
-proc call*(call_599310: Call_AndroidenterpriseWebappsList_599299; path: JsonNode;
+proc call*(call_581310: Call_AndroidenterpriseWebappsList_581299; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Retrieves the details of all web apps for a given enterprise.
   ## 
-  let valid = call_599310.validator(path, query, header, formData, body)
-  let scheme = call_599310.pickScheme
+  let valid = call_581310.validator(path, query, header, formData, body)
+  let scheme = call_581310.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_599310.url(scheme.get, call_599310.host, call_599310.base,
-                         call_599310.route, valid.getOrDefault("path"),
+  let url = call_581310.url(scheme.get, call_581310.host, call_581310.base,
+                         call_581310.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_599310, url, valid)
+  result = hook(call_581310, url, valid)
 
-proc call*(call_599311: Call_AndroidenterpriseWebappsList_599299;
+proc call*(call_581311: Call_AndroidenterpriseWebappsList_581299;
           enterpriseId: string; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; userIp: string = "";
           key: string = ""; prettyPrint: bool = true): Recallable =
@@ -13841,31 +13843,31 @@ proc call*(call_599311: Call_AndroidenterpriseWebappsList_599299;
   ##               : The ID of the enterprise.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_599312 = newJObject()
-  var query_599313 = newJObject()
-  add(query_599313, "fields", newJString(fields))
-  add(query_599313, "quotaUser", newJString(quotaUser))
-  add(query_599313, "alt", newJString(alt))
-  add(query_599313, "oauth_token", newJString(oauthToken))
-  add(query_599313, "userIp", newJString(userIp))
-  add(query_599313, "key", newJString(key))
-  add(path_599312, "enterpriseId", newJString(enterpriseId))
-  add(query_599313, "prettyPrint", newJBool(prettyPrint))
-  result = call_599311.call(path_599312, query_599313, nil, nil, nil)
+  var path_581312 = newJObject()
+  var query_581313 = newJObject()
+  add(query_581313, "fields", newJString(fields))
+  add(query_581313, "quotaUser", newJString(quotaUser))
+  add(query_581313, "alt", newJString(alt))
+  add(query_581313, "oauth_token", newJString(oauthToken))
+  add(query_581313, "userIp", newJString(userIp))
+  add(query_581313, "key", newJString(key))
+  add(path_581312, "enterpriseId", newJString(enterpriseId))
+  add(query_581313, "prettyPrint", newJBool(prettyPrint))
+  result = call_581311.call(path_581312, query_581313, nil, nil, nil)
 
-var androidenterpriseWebappsList* = Call_AndroidenterpriseWebappsList_599299(
+var androidenterpriseWebappsList* = Call_AndroidenterpriseWebappsList_581299(
     name: "androidenterpriseWebappsList", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/enterprises/{enterpriseId}/webApps",
-    validator: validate_AndroidenterpriseWebappsList_599300,
-    base: "/androidenterprise/v1", url: url_AndroidenterpriseWebappsList_599301,
+    validator: validate_AndroidenterpriseWebappsList_581300,
+    base: "/androidenterprise/v1", url: url_AndroidenterpriseWebappsList_581301,
     schemes: {Scheme.Https})
 type
-  Call_AndroidenterpriseWebappsUpdate_599347 = ref object of OpenApiRestCall_597421
-proc url_AndroidenterpriseWebappsUpdate_599349(protocol: Scheme; host: string;
+  Call_AndroidenterpriseWebappsUpdate_581347 = ref object of OpenApiRestCall_579421
+proc url_AndroidenterpriseWebappsUpdate_581349(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "enterpriseId" in path, "`enterpriseId` is a required path parameter"
   assert "webAppId" in path, "`webAppId` is a required path parameter"
@@ -13879,7 +13881,7 @@ proc url_AndroidenterpriseWebappsUpdate_599349(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_AndroidenterpriseWebappsUpdate_599348(path: JsonNode;
+proc validate_AndroidenterpriseWebappsUpdate_581348(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Updates an existing web app.
   ## 
@@ -13892,16 +13894,16 @@ proc validate_AndroidenterpriseWebappsUpdate_599348(path: JsonNode;
   ##               : The ID of the enterprise.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `webAppId` field"
-  var valid_599350 = path.getOrDefault("webAppId")
-  valid_599350 = validateParameter(valid_599350, JString, required = true,
+  var valid_581350 = path.getOrDefault("webAppId")
+  valid_581350 = validateParameter(valid_581350, JString, required = true,
                                  default = nil)
-  if valid_599350 != nil:
-    section.add "webAppId", valid_599350
-  var valid_599351 = path.getOrDefault("enterpriseId")
-  valid_599351 = validateParameter(valid_599351, JString, required = true,
+  if valid_581350 != nil:
+    section.add "webAppId", valid_581350
+  var valid_581351 = path.getOrDefault("enterpriseId")
+  valid_581351 = validateParameter(valid_581351, JString, required = true,
                                  default = nil)
-  if valid_599351 != nil:
-    section.add "enterpriseId", valid_599351
+  if valid_581351 != nil:
+    section.add "enterpriseId", valid_581351
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -13919,41 +13921,41 @@ proc validate_AndroidenterpriseWebappsUpdate_599348(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_599352 = query.getOrDefault("fields")
-  valid_599352 = validateParameter(valid_599352, JString, required = false,
+  var valid_581352 = query.getOrDefault("fields")
+  valid_581352 = validateParameter(valid_581352, JString, required = false,
                                  default = nil)
-  if valid_599352 != nil:
-    section.add "fields", valid_599352
-  var valid_599353 = query.getOrDefault("quotaUser")
-  valid_599353 = validateParameter(valid_599353, JString, required = false,
+  if valid_581352 != nil:
+    section.add "fields", valid_581352
+  var valid_581353 = query.getOrDefault("quotaUser")
+  valid_581353 = validateParameter(valid_581353, JString, required = false,
                                  default = nil)
-  if valid_599353 != nil:
-    section.add "quotaUser", valid_599353
-  var valid_599354 = query.getOrDefault("alt")
-  valid_599354 = validateParameter(valid_599354, JString, required = false,
+  if valid_581353 != nil:
+    section.add "quotaUser", valid_581353
+  var valid_581354 = query.getOrDefault("alt")
+  valid_581354 = validateParameter(valid_581354, JString, required = false,
                                  default = newJString("json"))
-  if valid_599354 != nil:
-    section.add "alt", valid_599354
-  var valid_599355 = query.getOrDefault("oauth_token")
-  valid_599355 = validateParameter(valid_599355, JString, required = false,
+  if valid_581354 != nil:
+    section.add "alt", valid_581354
+  var valid_581355 = query.getOrDefault("oauth_token")
+  valid_581355 = validateParameter(valid_581355, JString, required = false,
                                  default = nil)
-  if valid_599355 != nil:
-    section.add "oauth_token", valid_599355
-  var valid_599356 = query.getOrDefault("userIp")
-  valid_599356 = validateParameter(valid_599356, JString, required = false,
+  if valid_581355 != nil:
+    section.add "oauth_token", valid_581355
+  var valid_581356 = query.getOrDefault("userIp")
+  valid_581356 = validateParameter(valid_581356, JString, required = false,
                                  default = nil)
-  if valid_599356 != nil:
-    section.add "userIp", valid_599356
-  var valid_599357 = query.getOrDefault("key")
-  valid_599357 = validateParameter(valid_599357, JString, required = false,
+  if valid_581356 != nil:
+    section.add "userIp", valid_581356
+  var valid_581357 = query.getOrDefault("key")
+  valid_581357 = validateParameter(valid_581357, JString, required = false,
                                  default = nil)
-  if valid_599357 != nil:
-    section.add "key", valid_599357
-  var valid_599358 = query.getOrDefault("prettyPrint")
-  valid_599358 = validateParameter(valid_599358, JBool, required = false,
+  if valid_581357 != nil:
+    section.add "key", valid_581357
+  var valid_581358 = query.getOrDefault("prettyPrint")
+  valid_581358 = validateParameter(valid_581358, JBool, required = false,
                                  default = newJBool(true))
-  if valid_599358 != nil:
-    section.add "prettyPrint", valid_599358
+  if valid_581358 != nil:
+    section.add "prettyPrint", valid_581358
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -13965,20 +13967,20 @@ proc validate_AndroidenterpriseWebappsUpdate_599348(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_599360: Call_AndroidenterpriseWebappsUpdate_599347; path: JsonNode;
+proc call*(call_581360: Call_AndroidenterpriseWebappsUpdate_581347; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Updates an existing web app.
   ## 
-  let valid = call_599360.validator(path, query, header, formData, body)
-  let scheme = call_599360.pickScheme
+  let valid = call_581360.validator(path, query, header, formData, body)
+  let scheme = call_581360.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_599360.url(scheme.get, call_599360.host, call_599360.base,
-                         call_599360.route, valid.getOrDefault("path"),
+  let url = call_581360.url(scheme.get, call_581360.host, call_581360.base,
+                         call_581360.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_599360, url, valid)
+  result = hook(call_581360, url, valid)
 
-proc call*(call_599361: Call_AndroidenterpriseWebappsUpdate_599347;
+proc call*(call_581361: Call_AndroidenterpriseWebappsUpdate_581347;
           webAppId: string; enterpriseId: string; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; key: string = ""; body: JsonNode = nil;
@@ -14004,36 +14006,36 @@ proc call*(call_599361: Call_AndroidenterpriseWebappsUpdate_599347;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_599362 = newJObject()
-  var query_599363 = newJObject()
-  var body_599364 = newJObject()
-  add(query_599363, "fields", newJString(fields))
-  add(query_599363, "quotaUser", newJString(quotaUser))
-  add(query_599363, "alt", newJString(alt))
-  add(path_599362, "webAppId", newJString(webAppId))
-  add(query_599363, "oauth_token", newJString(oauthToken))
-  add(query_599363, "userIp", newJString(userIp))
-  add(query_599363, "key", newJString(key))
-  add(path_599362, "enterpriseId", newJString(enterpriseId))
+  var path_581362 = newJObject()
+  var query_581363 = newJObject()
+  var body_581364 = newJObject()
+  add(query_581363, "fields", newJString(fields))
+  add(query_581363, "quotaUser", newJString(quotaUser))
+  add(query_581363, "alt", newJString(alt))
+  add(path_581362, "webAppId", newJString(webAppId))
+  add(query_581363, "oauth_token", newJString(oauthToken))
+  add(query_581363, "userIp", newJString(userIp))
+  add(query_581363, "key", newJString(key))
+  add(path_581362, "enterpriseId", newJString(enterpriseId))
   if body != nil:
-    body_599364 = body
-  add(query_599363, "prettyPrint", newJBool(prettyPrint))
-  result = call_599361.call(path_599362, query_599363, nil, nil, body_599364)
+    body_581364 = body
+  add(query_581363, "prettyPrint", newJBool(prettyPrint))
+  result = call_581361.call(path_581362, query_581363, nil, nil, body_581364)
 
-var androidenterpriseWebappsUpdate* = Call_AndroidenterpriseWebappsUpdate_599347(
+var androidenterpriseWebappsUpdate* = Call_AndroidenterpriseWebappsUpdate_581347(
     name: "androidenterpriseWebappsUpdate", meth: HttpMethod.HttpPut,
     host: "www.googleapis.com",
     route: "/enterprises/{enterpriseId}/webApps/{webAppId}",
-    validator: validate_AndroidenterpriseWebappsUpdate_599348,
-    base: "/androidenterprise/v1", url: url_AndroidenterpriseWebappsUpdate_599349,
+    validator: validate_AndroidenterpriseWebappsUpdate_581348,
+    base: "/androidenterprise/v1", url: url_AndroidenterpriseWebappsUpdate_581349,
     schemes: {Scheme.Https})
 type
-  Call_AndroidenterpriseWebappsGet_599331 = ref object of OpenApiRestCall_597421
-proc url_AndroidenterpriseWebappsGet_599333(protocol: Scheme; host: string;
+  Call_AndroidenterpriseWebappsGet_581331 = ref object of OpenApiRestCall_579421
+proc url_AndroidenterpriseWebappsGet_581333(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "enterpriseId" in path, "`enterpriseId` is a required path parameter"
   assert "webAppId" in path, "`webAppId` is a required path parameter"
@@ -14047,7 +14049,7 @@ proc url_AndroidenterpriseWebappsGet_599333(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_AndroidenterpriseWebappsGet_599332(path: JsonNode; query: JsonNode;
+proc validate_AndroidenterpriseWebappsGet_581332(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Gets an existing web app.
   ## 
@@ -14060,16 +14062,16 @@ proc validate_AndroidenterpriseWebappsGet_599332(path: JsonNode; query: JsonNode
   ##               : The ID of the enterprise.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `webAppId` field"
-  var valid_599334 = path.getOrDefault("webAppId")
-  valid_599334 = validateParameter(valid_599334, JString, required = true,
+  var valid_581334 = path.getOrDefault("webAppId")
+  valid_581334 = validateParameter(valid_581334, JString, required = true,
                                  default = nil)
-  if valid_599334 != nil:
-    section.add "webAppId", valid_599334
-  var valid_599335 = path.getOrDefault("enterpriseId")
-  valid_599335 = validateParameter(valid_599335, JString, required = true,
+  if valid_581334 != nil:
+    section.add "webAppId", valid_581334
+  var valid_581335 = path.getOrDefault("enterpriseId")
+  valid_581335 = validateParameter(valid_581335, JString, required = true,
                                  default = nil)
-  if valid_599335 != nil:
-    section.add "enterpriseId", valid_599335
+  if valid_581335 != nil:
+    section.add "enterpriseId", valid_581335
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -14087,41 +14089,41 @@ proc validate_AndroidenterpriseWebappsGet_599332(path: JsonNode; query: JsonNode
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_599336 = query.getOrDefault("fields")
-  valid_599336 = validateParameter(valid_599336, JString, required = false,
+  var valid_581336 = query.getOrDefault("fields")
+  valid_581336 = validateParameter(valid_581336, JString, required = false,
                                  default = nil)
-  if valid_599336 != nil:
-    section.add "fields", valid_599336
-  var valid_599337 = query.getOrDefault("quotaUser")
-  valid_599337 = validateParameter(valid_599337, JString, required = false,
+  if valid_581336 != nil:
+    section.add "fields", valid_581336
+  var valid_581337 = query.getOrDefault("quotaUser")
+  valid_581337 = validateParameter(valid_581337, JString, required = false,
                                  default = nil)
-  if valid_599337 != nil:
-    section.add "quotaUser", valid_599337
-  var valid_599338 = query.getOrDefault("alt")
-  valid_599338 = validateParameter(valid_599338, JString, required = false,
+  if valid_581337 != nil:
+    section.add "quotaUser", valid_581337
+  var valid_581338 = query.getOrDefault("alt")
+  valid_581338 = validateParameter(valid_581338, JString, required = false,
                                  default = newJString("json"))
-  if valid_599338 != nil:
-    section.add "alt", valid_599338
-  var valid_599339 = query.getOrDefault("oauth_token")
-  valid_599339 = validateParameter(valid_599339, JString, required = false,
+  if valid_581338 != nil:
+    section.add "alt", valid_581338
+  var valid_581339 = query.getOrDefault("oauth_token")
+  valid_581339 = validateParameter(valid_581339, JString, required = false,
                                  default = nil)
-  if valid_599339 != nil:
-    section.add "oauth_token", valid_599339
-  var valid_599340 = query.getOrDefault("userIp")
-  valid_599340 = validateParameter(valid_599340, JString, required = false,
+  if valid_581339 != nil:
+    section.add "oauth_token", valid_581339
+  var valid_581340 = query.getOrDefault("userIp")
+  valid_581340 = validateParameter(valid_581340, JString, required = false,
                                  default = nil)
-  if valid_599340 != nil:
-    section.add "userIp", valid_599340
-  var valid_599341 = query.getOrDefault("key")
-  valid_599341 = validateParameter(valid_599341, JString, required = false,
+  if valid_581340 != nil:
+    section.add "userIp", valid_581340
+  var valid_581341 = query.getOrDefault("key")
+  valid_581341 = validateParameter(valid_581341, JString, required = false,
                                  default = nil)
-  if valid_599341 != nil:
-    section.add "key", valid_599341
-  var valid_599342 = query.getOrDefault("prettyPrint")
-  valid_599342 = validateParameter(valid_599342, JBool, required = false,
+  if valid_581341 != nil:
+    section.add "key", valid_581341
+  var valid_581342 = query.getOrDefault("prettyPrint")
+  valid_581342 = validateParameter(valid_581342, JBool, required = false,
                                  default = newJBool(true))
-  if valid_599342 != nil:
-    section.add "prettyPrint", valid_599342
+  if valid_581342 != nil:
+    section.add "prettyPrint", valid_581342
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -14130,20 +14132,20 @@ proc validate_AndroidenterpriseWebappsGet_599332(path: JsonNode; query: JsonNode
   if body != nil:
     result.add "body", body
 
-proc call*(call_599343: Call_AndroidenterpriseWebappsGet_599331; path: JsonNode;
+proc call*(call_581343: Call_AndroidenterpriseWebappsGet_581331; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Gets an existing web app.
   ## 
-  let valid = call_599343.validator(path, query, header, formData, body)
-  let scheme = call_599343.pickScheme
+  let valid = call_581343.validator(path, query, header, formData, body)
+  let scheme = call_581343.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_599343.url(scheme.get, call_599343.host, call_599343.base,
-                         call_599343.route, valid.getOrDefault("path"),
+  let url = call_581343.url(scheme.get, call_581343.host, call_581343.base,
+                         call_581343.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_599343, url, valid)
+  result = hook(call_581343, url, valid)
 
-proc call*(call_599344: Call_AndroidenterpriseWebappsGet_599331; webAppId: string;
+proc call*(call_581344: Call_AndroidenterpriseWebappsGet_581331; webAppId: string;
           enterpriseId: string; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; userIp: string = "";
           key: string = ""; prettyPrint: bool = true): Recallable =
@@ -14167,33 +14169,33 @@ proc call*(call_599344: Call_AndroidenterpriseWebappsGet_599331; webAppId: strin
   ##               : The ID of the enterprise.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_599345 = newJObject()
-  var query_599346 = newJObject()
-  add(query_599346, "fields", newJString(fields))
-  add(query_599346, "quotaUser", newJString(quotaUser))
-  add(query_599346, "alt", newJString(alt))
-  add(path_599345, "webAppId", newJString(webAppId))
-  add(query_599346, "oauth_token", newJString(oauthToken))
-  add(query_599346, "userIp", newJString(userIp))
-  add(query_599346, "key", newJString(key))
-  add(path_599345, "enterpriseId", newJString(enterpriseId))
-  add(query_599346, "prettyPrint", newJBool(prettyPrint))
-  result = call_599344.call(path_599345, query_599346, nil, nil, nil)
+  var path_581345 = newJObject()
+  var query_581346 = newJObject()
+  add(query_581346, "fields", newJString(fields))
+  add(query_581346, "quotaUser", newJString(quotaUser))
+  add(query_581346, "alt", newJString(alt))
+  add(path_581345, "webAppId", newJString(webAppId))
+  add(query_581346, "oauth_token", newJString(oauthToken))
+  add(query_581346, "userIp", newJString(userIp))
+  add(query_581346, "key", newJString(key))
+  add(path_581345, "enterpriseId", newJString(enterpriseId))
+  add(query_581346, "prettyPrint", newJBool(prettyPrint))
+  result = call_581344.call(path_581345, query_581346, nil, nil, nil)
 
-var androidenterpriseWebappsGet* = Call_AndroidenterpriseWebappsGet_599331(
+var androidenterpriseWebappsGet* = Call_AndroidenterpriseWebappsGet_581331(
     name: "androidenterpriseWebappsGet", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com",
     route: "/enterprises/{enterpriseId}/webApps/{webAppId}",
-    validator: validate_AndroidenterpriseWebappsGet_599332,
-    base: "/androidenterprise/v1", url: url_AndroidenterpriseWebappsGet_599333,
+    validator: validate_AndroidenterpriseWebappsGet_581332,
+    base: "/androidenterprise/v1", url: url_AndroidenterpriseWebappsGet_581333,
     schemes: {Scheme.Https})
 type
-  Call_AndroidenterpriseWebappsPatch_599381 = ref object of OpenApiRestCall_597421
-proc url_AndroidenterpriseWebappsPatch_599383(protocol: Scheme; host: string;
+  Call_AndroidenterpriseWebappsPatch_581381 = ref object of OpenApiRestCall_579421
+proc url_AndroidenterpriseWebappsPatch_581383(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "enterpriseId" in path, "`enterpriseId` is a required path parameter"
   assert "webAppId" in path, "`webAppId` is a required path parameter"
@@ -14207,7 +14209,7 @@ proc url_AndroidenterpriseWebappsPatch_599383(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_AndroidenterpriseWebappsPatch_599382(path: JsonNode; query: JsonNode;
+proc validate_AndroidenterpriseWebappsPatch_581382(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Updates an existing web app. This method supports patch semantics.
   ## 
@@ -14220,16 +14222,16 @@ proc validate_AndroidenterpriseWebappsPatch_599382(path: JsonNode; query: JsonNo
   ##               : The ID of the enterprise.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `webAppId` field"
-  var valid_599384 = path.getOrDefault("webAppId")
-  valid_599384 = validateParameter(valid_599384, JString, required = true,
+  var valid_581384 = path.getOrDefault("webAppId")
+  valid_581384 = validateParameter(valid_581384, JString, required = true,
                                  default = nil)
-  if valid_599384 != nil:
-    section.add "webAppId", valid_599384
-  var valid_599385 = path.getOrDefault("enterpriseId")
-  valid_599385 = validateParameter(valid_599385, JString, required = true,
+  if valid_581384 != nil:
+    section.add "webAppId", valid_581384
+  var valid_581385 = path.getOrDefault("enterpriseId")
+  valid_581385 = validateParameter(valid_581385, JString, required = true,
                                  default = nil)
-  if valid_599385 != nil:
-    section.add "enterpriseId", valid_599385
+  if valid_581385 != nil:
+    section.add "enterpriseId", valid_581385
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -14247,41 +14249,41 @@ proc validate_AndroidenterpriseWebappsPatch_599382(path: JsonNode; query: JsonNo
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_599386 = query.getOrDefault("fields")
-  valid_599386 = validateParameter(valid_599386, JString, required = false,
+  var valid_581386 = query.getOrDefault("fields")
+  valid_581386 = validateParameter(valid_581386, JString, required = false,
                                  default = nil)
-  if valid_599386 != nil:
-    section.add "fields", valid_599386
-  var valid_599387 = query.getOrDefault("quotaUser")
-  valid_599387 = validateParameter(valid_599387, JString, required = false,
+  if valid_581386 != nil:
+    section.add "fields", valid_581386
+  var valid_581387 = query.getOrDefault("quotaUser")
+  valid_581387 = validateParameter(valid_581387, JString, required = false,
                                  default = nil)
-  if valid_599387 != nil:
-    section.add "quotaUser", valid_599387
-  var valid_599388 = query.getOrDefault("alt")
-  valid_599388 = validateParameter(valid_599388, JString, required = false,
+  if valid_581387 != nil:
+    section.add "quotaUser", valid_581387
+  var valid_581388 = query.getOrDefault("alt")
+  valid_581388 = validateParameter(valid_581388, JString, required = false,
                                  default = newJString("json"))
-  if valid_599388 != nil:
-    section.add "alt", valid_599388
-  var valid_599389 = query.getOrDefault("oauth_token")
-  valid_599389 = validateParameter(valid_599389, JString, required = false,
+  if valid_581388 != nil:
+    section.add "alt", valid_581388
+  var valid_581389 = query.getOrDefault("oauth_token")
+  valid_581389 = validateParameter(valid_581389, JString, required = false,
                                  default = nil)
-  if valid_599389 != nil:
-    section.add "oauth_token", valid_599389
-  var valid_599390 = query.getOrDefault("userIp")
-  valid_599390 = validateParameter(valid_599390, JString, required = false,
+  if valid_581389 != nil:
+    section.add "oauth_token", valid_581389
+  var valid_581390 = query.getOrDefault("userIp")
+  valid_581390 = validateParameter(valid_581390, JString, required = false,
                                  default = nil)
-  if valid_599390 != nil:
-    section.add "userIp", valid_599390
-  var valid_599391 = query.getOrDefault("key")
-  valid_599391 = validateParameter(valid_599391, JString, required = false,
+  if valid_581390 != nil:
+    section.add "userIp", valid_581390
+  var valid_581391 = query.getOrDefault("key")
+  valid_581391 = validateParameter(valid_581391, JString, required = false,
                                  default = nil)
-  if valid_599391 != nil:
-    section.add "key", valid_599391
-  var valid_599392 = query.getOrDefault("prettyPrint")
-  valid_599392 = validateParameter(valid_599392, JBool, required = false,
+  if valid_581391 != nil:
+    section.add "key", valid_581391
+  var valid_581392 = query.getOrDefault("prettyPrint")
+  valid_581392 = validateParameter(valid_581392, JBool, required = false,
                                  default = newJBool(true))
-  if valid_599392 != nil:
-    section.add "prettyPrint", valid_599392
+  if valid_581392 != nil:
+    section.add "prettyPrint", valid_581392
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -14293,20 +14295,20 @@ proc validate_AndroidenterpriseWebappsPatch_599382(path: JsonNode; query: JsonNo
   if body != nil:
     result.add "body", body
 
-proc call*(call_599394: Call_AndroidenterpriseWebappsPatch_599381; path: JsonNode;
+proc call*(call_581394: Call_AndroidenterpriseWebappsPatch_581381; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Updates an existing web app. This method supports patch semantics.
   ## 
-  let valid = call_599394.validator(path, query, header, formData, body)
-  let scheme = call_599394.pickScheme
+  let valid = call_581394.validator(path, query, header, formData, body)
+  let scheme = call_581394.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_599394.url(scheme.get, call_599394.host, call_599394.base,
-                         call_599394.route, valid.getOrDefault("path"),
+  let url = call_581394.url(scheme.get, call_581394.host, call_581394.base,
+                         call_581394.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_599394, url, valid)
+  result = hook(call_581394, url, valid)
 
-proc call*(call_599395: Call_AndroidenterpriseWebappsPatch_599381;
+proc call*(call_581395: Call_AndroidenterpriseWebappsPatch_581381;
           webAppId: string; enterpriseId: string; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; key: string = ""; body: JsonNode = nil;
@@ -14332,36 +14334,36 @@ proc call*(call_599395: Call_AndroidenterpriseWebappsPatch_599381;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_599396 = newJObject()
-  var query_599397 = newJObject()
-  var body_599398 = newJObject()
-  add(query_599397, "fields", newJString(fields))
-  add(query_599397, "quotaUser", newJString(quotaUser))
-  add(query_599397, "alt", newJString(alt))
-  add(path_599396, "webAppId", newJString(webAppId))
-  add(query_599397, "oauth_token", newJString(oauthToken))
-  add(query_599397, "userIp", newJString(userIp))
-  add(query_599397, "key", newJString(key))
-  add(path_599396, "enterpriseId", newJString(enterpriseId))
+  var path_581396 = newJObject()
+  var query_581397 = newJObject()
+  var body_581398 = newJObject()
+  add(query_581397, "fields", newJString(fields))
+  add(query_581397, "quotaUser", newJString(quotaUser))
+  add(query_581397, "alt", newJString(alt))
+  add(path_581396, "webAppId", newJString(webAppId))
+  add(query_581397, "oauth_token", newJString(oauthToken))
+  add(query_581397, "userIp", newJString(userIp))
+  add(query_581397, "key", newJString(key))
+  add(path_581396, "enterpriseId", newJString(enterpriseId))
   if body != nil:
-    body_599398 = body
-  add(query_599397, "prettyPrint", newJBool(prettyPrint))
-  result = call_599395.call(path_599396, query_599397, nil, nil, body_599398)
+    body_581398 = body
+  add(query_581397, "prettyPrint", newJBool(prettyPrint))
+  result = call_581395.call(path_581396, query_581397, nil, nil, body_581398)
 
-var androidenterpriseWebappsPatch* = Call_AndroidenterpriseWebappsPatch_599381(
+var androidenterpriseWebappsPatch* = Call_AndroidenterpriseWebappsPatch_581381(
     name: "androidenterpriseWebappsPatch", meth: HttpMethod.HttpPatch,
     host: "www.googleapis.com",
     route: "/enterprises/{enterpriseId}/webApps/{webAppId}",
-    validator: validate_AndroidenterpriseWebappsPatch_599382,
-    base: "/androidenterprise/v1", url: url_AndroidenterpriseWebappsPatch_599383,
+    validator: validate_AndroidenterpriseWebappsPatch_581382,
+    base: "/androidenterprise/v1", url: url_AndroidenterpriseWebappsPatch_581383,
     schemes: {Scheme.Https})
 type
-  Call_AndroidenterpriseWebappsDelete_599365 = ref object of OpenApiRestCall_597421
-proc url_AndroidenterpriseWebappsDelete_599367(protocol: Scheme; host: string;
+  Call_AndroidenterpriseWebappsDelete_581365 = ref object of OpenApiRestCall_579421
+proc url_AndroidenterpriseWebappsDelete_581367(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "enterpriseId" in path, "`enterpriseId` is a required path parameter"
   assert "webAppId" in path, "`webAppId` is a required path parameter"
@@ -14375,7 +14377,7 @@ proc url_AndroidenterpriseWebappsDelete_599367(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_AndroidenterpriseWebappsDelete_599366(path: JsonNode;
+proc validate_AndroidenterpriseWebappsDelete_581366(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Deletes an existing web app.
   ## 
@@ -14388,16 +14390,16 @@ proc validate_AndroidenterpriseWebappsDelete_599366(path: JsonNode;
   ##               : The ID of the enterprise.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `webAppId` field"
-  var valid_599368 = path.getOrDefault("webAppId")
-  valid_599368 = validateParameter(valid_599368, JString, required = true,
+  var valid_581368 = path.getOrDefault("webAppId")
+  valid_581368 = validateParameter(valid_581368, JString, required = true,
                                  default = nil)
-  if valid_599368 != nil:
-    section.add "webAppId", valid_599368
-  var valid_599369 = path.getOrDefault("enterpriseId")
-  valid_599369 = validateParameter(valid_599369, JString, required = true,
+  if valid_581368 != nil:
+    section.add "webAppId", valid_581368
+  var valid_581369 = path.getOrDefault("enterpriseId")
+  valid_581369 = validateParameter(valid_581369, JString, required = true,
                                  default = nil)
-  if valid_599369 != nil:
-    section.add "enterpriseId", valid_599369
+  if valid_581369 != nil:
+    section.add "enterpriseId", valid_581369
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -14415,41 +14417,41 @@ proc validate_AndroidenterpriseWebappsDelete_599366(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_599370 = query.getOrDefault("fields")
-  valid_599370 = validateParameter(valid_599370, JString, required = false,
+  var valid_581370 = query.getOrDefault("fields")
+  valid_581370 = validateParameter(valid_581370, JString, required = false,
                                  default = nil)
-  if valid_599370 != nil:
-    section.add "fields", valid_599370
-  var valid_599371 = query.getOrDefault("quotaUser")
-  valid_599371 = validateParameter(valid_599371, JString, required = false,
+  if valid_581370 != nil:
+    section.add "fields", valid_581370
+  var valid_581371 = query.getOrDefault("quotaUser")
+  valid_581371 = validateParameter(valid_581371, JString, required = false,
                                  default = nil)
-  if valid_599371 != nil:
-    section.add "quotaUser", valid_599371
-  var valid_599372 = query.getOrDefault("alt")
-  valid_599372 = validateParameter(valid_599372, JString, required = false,
+  if valid_581371 != nil:
+    section.add "quotaUser", valid_581371
+  var valid_581372 = query.getOrDefault("alt")
+  valid_581372 = validateParameter(valid_581372, JString, required = false,
                                  default = newJString("json"))
-  if valid_599372 != nil:
-    section.add "alt", valid_599372
-  var valid_599373 = query.getOrDefault("oauth_token")
-  valid_599373 = validateParameter(valid_599373, JString, required = false,
+  if valid_581372 != nil:
+    section.add "alt", valid_581372
+  var valid_581373 = query.getOrDefault("oauth_token")
+  valid_581373 = validateParameter(valid_581373, JString, required = false,
                                  default = nil)
-  if valid_599373 != nil:
-    section.add "oauth_token", valid_599373
-  var valid_599374 = query.getOrDefault("userIp")
-  valid_599374 = validateParameter(valid_599374, JString, required = false,
+  if valid_581373 != nil:
+    section.add "oauth_token", valid_581373
+  var valid_581374 = query.getOrDefault("userIp")
+  valid_581374 = validateParameter(valid_581374, JString, required = false,
                                  default = nil)
-  if valid_599374 != nil:
-    section.add "userIp", valid_599374
-  var valid_599375 = query.getOrDefault("key")
-  valid_599375 = validateParameter(valid_599375, JString, required = false,
+  if valid_581374 != nil:
+    section.add "userIp", valid_581374
+  var valid_581375 = query.getOrDefault("key")
+  valid_581375 = validateParameter(valid_581375, JString, required = false,
                                  default = nil)
-  if valid_599375 != nil:
-    section.add "key", valid_599375
-  var valid_599376 = query.getOrDefault("prettyPrint")
-  valid_599376 = validateParameter(valid_599376, JBool, required = false,
+  if valid_581375 != nil:
+    section.add "key", valid_581375
+  var valid_581376 = query.getOrDefault("prettyPrint")
+  valid_581376 = validateParameter(valid_581376, JBool, required = false,
                                  default = newJBool(true))
-  if valid_599376 != nil:
-    section.add "prettyPrint", valid_599376
+  if valid_581376 != nil:
+    section.add "prettyPrint", valid_581376
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -14458,20 +14460,20 @@ proc validate_AndroidenterpriseWebappsDelete_599366(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_599377: Call_AndroidenterpriseWebappsDelete_599365; path: JsonNode;
+proc call*(call_581377: Call_AndroidenterpriseWebappsDelete_581365; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Deletes an existing web app.
   ## 
-  let valid = call_599377.validator(path, query, header, formData, body)
-  let scheme = call_599377.pickScheme
+  let valid = call_581377.validator(path, query, header, formData, body)
+  let scheme = call_581377.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_599377.url(scheme.get, call_599377.host, call_599377.base,
-                         call_599377.route, valid.getOrDefault("path"),
+  let url = call_581377.url(scheme.get, call_581377.host, call_581377.base,
+                         call_581377.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_599377, url, valid)
+  result = hook(call_581377, url, valid)
 
-proc call*(call_599378: Call_AndroidenterpriseWebappsDelete_599365;
+proc call*(call_581378: Call_AndroidenterpriseWebappsDelete_581365;
           webAppId: string; enterpriseId: string; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; key: string = ""; prettyPrint: bool = true): Recallable =
@@ -14495,33 +14497,33 @@ proc call*(call_599378: Call_AndroidenterpriseWebappsDelete_599365;
   ##               : The ID of the enterprise.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_599379 = newJObject()
-  var query_599380 = newJObject()
-  add(query_599380, "fields", newJString(fields))
-  add(query_599380, "quotaUser", newJString(quotaUser))
-  add(query_599380, "alt", newJString(alt))
-  add(path_599379, "webAppId", newJString(webAppId))
-  add(query_599380, "oauth_token", newJString(oauthToken))
-  add(query_599380, "userIp", newJString(userIp))
-  add(query_599380, "key", newJString(key))
-  add(path_599379, "enterpriseId", newJString(enterpriseId))
-  add(query_599380, "prettyPrint", newJBool(prettyPrint))
-  result = call_599378.call(path_599379, query_599380, nil, nil, nil)
+  var path_581379 = newJObject()
+  var query_581380 = newJObject()
+  add(query_581380, "fields", newJString(fields))
+  add(query_581380, "quotaUser", newJString(quotaUser))
+  add(query_581380, "alt", newJString(alt))
+  add(path_581379, "webAppId", newJString(webAppId))
+  add(query_581380, "oauth_token", newJString(oauthToken))
+  add(query_581380, "userIp", newJString(userIp))
+  add(query_581380, "key", newJString(key))
+  add(path_581379, "enterpriseId", newJString(enterpriseId))
+  add(query_581380, "prettyPrint", newJBool(prettyPrint))
+  result = call_581378.call(path_581379, query_581380, nil, nil, nil)
 
-var androidenterpriseWebappsDelete* = Call_AndroidenterpriseWebappsDelete_599365(
+var androidenterpriseWebappsDelete* = Call_AndroidenterpriseWebappsDelete_581365(
     name: "androidenterpriseWebappsDelete", meth: HttpMethod.HttpDelete,
     host: "www.googleapis.com",
     route: "/enterprises/{enterpriseId}/webApps/{webAppId}",
-    validator: validate_AndroidenterpriseWebappsDelete_599366,
-    base: "/androidenterprise/v1", url: url_AndroidenterpriseWebappsDelete_599367,
+    validator: validate_AndroidenterpriseWebappsDelete_581366,
+    base: "/androidenterprise/v1", url: url_AndroidenterpriseWebappsDelete_581367,
     schemes: {Scheme.Https})
 type
-  Call_AndroidenterprisePermissionsGet_599399 = ref object of OpenApiRestCall_597421
-proc url_AndroidenterprisePermissionsGet_599401(protocol: Scheme; host: string;
+  Call_AndroidenterprisePermissionsGet_581399 = ref object of OpenApiRestCall_579421
+proc url_AndroidenterprisePermissionsGet_581401(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "permissionId" in path, "`permissionId` is a required path parameter"
   const
@@ -14532,7 +14534,7 @@ proc url_AndroidenterprisePermissionsGet_599401(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_AndroidenterprisePermissionsGet_599400(path: JsonNode;
+proc validate_AndroidenterprisePermissionsGet_581400(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Retrieves details of an Android app permission for display to an enterprise admin.
   ## 
@@ -14544,11 +14546,11 @@ proc validate_AndroidenterprisePermissionsGet_599400(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `permissionId` field"
-  var valid_599402 = path.getOrDefault("permissionId")
-  valid_599402 = validateParameter(valid_599402, JString, required = true,
+  var valid_581402 = path.getOrDefault("permissionId")
+  valid_581402 = validateParameter(valid_581402, JString, required = true,
                                  default = nil)
-  if valid_599402 != nil:
-    section.add "permissionId", valid_599402
+  if valid_581402 != nil:
+    section.add "permissionId", valid_581402
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -14568,46 +14570,46 @@ proc validate_AndroidenterprisePermissionsGet_599400(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_599403 = query.getOrDefault("fields")
-  valid_599403 = validateParameter(valid_599403, JString, required = false,
+  var valid_581403 = query.getOrDefault("fields")
+  valid_581403 = validateParameter(valid_581403, JString, required = false,
                                  default = nil)
-  if valid_599403 != nil:
-    section.add "fields", valid_599403
-  var valid_599404 = query.getOrDefault("quotaUser")
-  valid_599404 = validateParameter(valid_599404, JString, required = false,
+  if valid_581403 != nil:
+    section.add "fields", valid_581403
+  var valid_581404 = query.getOrDefault("quotaUser")
+  valid_581404 = validateParameter(valid_581404, JString, required = false,
                                  default = nil)
-  if valid_599404 != nil:
-    section.add "quotaUser", valid_599404
-  var valid_599405 = query.getOrDefault("alt")
-  valid_599405 = validateParameter(valid_599405, JString, required = false,
+  if valid_581404 != nil:
+    section.add "quotaUser", valid_581404
+  var valid_581405 = query.getOrDefault("alt")
+  valid_581405 = validateParameter(valid_581405, JString, required = false,
                                  default = newJString("json"))
-  if valid_599405 != nil:
-    section.add "alt", valid_599405
-  var valid_599406 = query.getOrDefault("language")
-  valid_599406 = validateParameter(valid_599406, JString, required = false,
+  if valid_581405 != nil:
+    section.add "alt", valid_581405
+  var valid_581406 = query.getOrDefault("language")
+  valid_581406 = validateParameter(valid_581406, JString, required = false,
                                  default = nil)
-  if valid_599406 != nil:
-    section.add "language", valid_599406
-  var valid_599407 = query.getOrDefault("oauth_token")
-  valid_599407 = validateParameter(valid_599407, JString, required = false,
+  if valid_581406 != nil:
+    section.add "language", valid_581406
+  var valid_581407 = query.getOrDefault("oauth_token")
+  valid_581407 = validateParameter(valid_581407, JString, required = false,
                                  default = nil)
-  if valid_599407 != nil:
-    section.add "oauth_token", valid_599407
-  var valid_599408 = query.getOrDefault("userIp")
-  valid_599408 = validateParameter(valid_599408, JString, required = false,
+  if valid_581407 != nil:
+    section.add "oauth_token", valid_581407
+  var valid_581408 = query.getOrDefault("userIp")
+  valid_581408 = validateParameter(valid_581408, JString, required = false,
                                  default = nil)
-  if valid_599408 != nil:
-    section.add "userIp", valid_599408
-  var valid_599409 = query.getOrDefault("key")
-  valid_599409 = validateParameter(valid_599409, JString, required = false,
+  if valid_581408 != nil:
+    section.add "userIp", valid_581408
+  var valid_581409 = query.getOrDefault("key")
+  valid_581409 = validateParameter(valid_581409, JString, required = false,
                                  default = nil)
-  if valid_599409 != nil:
-    section.add "key", valid_599409
-  var valid_599410 = query.getOrDefault("prettyPrint")
-  valid_599410 = validateParameter(valid_599410, JBool, required = false,
+  if valid_581409 != nil:
+    section.add "key", valid_581409
+  var valid_581410 = query.getOrDefault("prettyPrint")
+  valid_581410 = validateParameter(valid_581410, JBool, required = false,
                                  default = newJBool(true))
-  if valid_599410 != nil:
-    section.add "prettyPrint", valid_599410
+  if valid_581410 != nil:
+    section.add "prettyPrint", valid_581410
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -14616,21 +14618,21 @@ proc validate_AndroidenterprisePermissionsGet_599400(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_599411: Call_AndroidenterprisePermissionsGet_599399;
+proc call*(call_581411: Call_AndroidenterprisePermissionsGet_581399;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Retrieves details of an Android app permission for display to an enterprise admin.
   ## 
-  let valid = call_599411.validator(path, query, header, formData, body)
-  let scheme = call_599411.pickScheme
+  let valid = call_581411.validator(path, query, header, formData, body)
+  let scheme = call_581411.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_599411.url(scheme.get, call_599411.host, call_599411.base,
-                         call_599411.route, valid.getOrDefault("path"),
+  let url = call_581411.url(scheme.get, call_581411.host, call_581411.base,
+                         call_581411.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_599411, url, valid)
+  result = hook(call_581411, url, valid)
 
-proc call*(call_599412: Call_AndroidenterprisePermissionsGet_599399;
+proc call*(call_581412: Call_AndroidenterprisePermissionsGet_581399;
           permissionId: string; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; language: string = ""; oauthToken: string = "";
           userIp: string = ""; key: string = ""; prettyPrint: bool = true): Recallable =
@@ -14654,28 +14656,118 @@ proc call*(call_599412: Call_AndroidenterprisePermissionsGet_599399;
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_599413 = newJObject()
-  var query_599414 = newJObject()
-  add(query_599414, "fields", newJString(fields))
-  add(query_599414, "quotaUser", newJString(quotaUser))
-  add(query_599414, "alt", newJString(alt))
-  add(query_599414, "language", newJString(language))
-  add(query_599414, "oauth_token", newJString(oauthToken))
-  add(path_599413, "permissionId", newJString(permissionId))
-  add(query_599414, "userIp", newJString(userIp))
-  add(query_599414, "key", newJString(key))
-  add(query_599414, "prettyPrint", newJBool(prettyPrint))
-  result = call_599412.call(path_599413, query_599414, nil, nil, nil)
+  var path_581413 = newJObject()
+  var query_581414 = newJObject()
+  add(query_581414, "fields", newJString(fields))
+  add(query_581414, "quotaUser", newJString(quotaUser))
+  add(query_581414, "alt", newJString(alt))
+  add(query_581414, "language", newJString(language))
+  add(query_581414, "oauth_token", newJString(oauthToken))
+  add(path_581413, "permissionId", newJString(permissionId))
+  add(query_581414, "userIp", newJString(userIp))
+  add(query_581414, "key", newJString(key))
+  add(query_581414, "prettyPrint", newJBool(prettyPrint))
+  result = call_581412.call(path_581413, query_581414, nil, nil, nil)
 
-var androidenterprisePermissionsGet* = Call_AndroidenterprisePermissionsGet_599399(
+var androidenterprisePermissionsGet* = Call_AndroidenterprisePermissionsGet_581399(
     name: "androidenterprisePermissionsGet", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/permissions/{permissionId}",
-    validator: validate_AndroidenterprisePermissionsGet_599400,
-    base: "/androidenterprise/v1", url: url_AndroidenterprisePermissionsGet_599401,
+    validator: validate_AndroidenterprisePermissionsGet_581400,
+    base: "/androidenterprise/v1", url: url_AndroidenterprisePermissionsGet_581401,
     schemes: {Scheme.Https})
 export
   rest
 
+type
+  GoogleAuth = ref object
+    endpoint*: Uri
+    token: string
+    expiry*: float64
+    issued*: float64
+    email: string
+    key: string
+    scope*: seq[string]
+    form: string
+    digest: Hash
+
+const
+  endpoint = "https://www.googleapis.com/oauth2/v4/token".parseUri
+var auth = GoogleAuth(endpoint: endpoint)
+proc hash(auth: GoogleAuth): Hash =
+  ## yield differing values for effectively different auth payloads
+  result = hash($auth.endpoint)
+  result = result !& hash(auth.email)
+  result = result !& hash(auth.key)
+  result = result !& hash(auth.scope.join(" "))
+  result = !$result
+
+proc newAuthenticator*(path: string): GoogleAuth =
+  let
+    input = readFile(path)
+    js = parseJson(input)
+  auth.email = js["client_email"].getStr
+  auth.key = js["private_key"].getStr
+  result = auth
+
+proc store(auth: var GoogleAuth; token: string; expiry: int; form: string) =
+  auth.token = token
+  auth.issued = epochTime()
+  auth.expiry = auth.issued + expiry.float64
+  auth.form = form
+  auth.digest = auth.hash
+
+proc authenticate*(fresh: float64 = -3600.0; lifetime: int = 3600): Future[bool] {.async.} =
+  ## get or refresh an authentication token; provide `fresh`
+  ## to ensure that the token won't expire in the next N seconds.
+  ## provide `lifetime` to indicate how long the token should last.
+  let clock = epochTime()
+  if auth.expiry > clock + fresh:
+    if auth.hash == auth.digest:
+      return true
+  let
+    expiry = clock.int + lifetime
+    header = JOSEHeader(alg: RS256, typ: "JWT")
+    claims = %*{"iss": auth.email, "scope": auth.scope.join(" "),
+              "aud": "https://www.googleapis.com/oauth2/v4/token", "exp": expiry,
+              "iat": clock.int}
+  var tok = JWT(header: header, claims: toClaims(claims))
+  tok.sign(auth.key)
+  let post = encodeQuery({"grant_type": "urn:ietf:params:oauth:grant-type:jwt-bearer",
+                       "assertion": $tok}, usePlus = false, omitEq = false)
+  var client = newAsyncHttpClient()
+  client.headers = newHttpHeaders({"Content-Type": "application/x-www-form-urlencoded",
+                                 "Content-Length": $post.len})
+  let response = await client.request($auth.endpoint, HttpPost, body = post)
+  if not response.code.is2xx:
+    return false
+  let body = await response.body
+  client.close
+  try:
+    let js = parseJson(body)
+    auth.store(js["access_token"].getStr, js["expires_in"].getInt,
+               js["token_type"].getStr)
+  except KeyError:
+    return false
+  except JsonParsingError:
+    return false
+  return true
+
+proc composeQueryString(query: JsonNode): string =
+  var qs: seq[KeyVal]
+  if query == nil:
+    return ""
+  for k, v in query.pairs:
+    qs.add (key: k, val: v.getStr)
+  result = encodeQuery(qs, usePlus = false, omitEq = false)
+
 method hook(call: OpenApiRestCall; url: Uri; input: JsonNode): Recallable {.base.} =
-  let headers = massageHeaders(input.getOrDefault("header"))
-  result = newRecallable(call, url, headers, input.getOrDefault("body").getStr)
+  var headers = massageHeaders(input.getOrDefault("header"))
+  let body = input.getOrDefault("body").getStr
+  if auth.scope.len == 0:
+    raise newException(ValueError, "specify authentication scopes")
+  if not waitfor authenticate(fresh = 10.0):
+    raise newException(IOError, "unable to refresh authentication token")
+  headers.add ("Authorization", auth.form & " " & auth.token)
+  headers.add ("Content-Type", "application/json")
+  headers.add ("Content-Length", $body.len)
+  result = newRecallable(call, url, headers, body = body)

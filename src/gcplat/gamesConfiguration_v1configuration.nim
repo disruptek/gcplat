@@ -1,6 +1,7 @@
 
 import
-  json, options, hashes, uri, openapi/rest, os, uri, strutils, httpcore
+  json, options, hashes, uri, rest, os, uri, strutils, times, httpcore, httpclient,
+  asyncdispatch, jwt
 
 ## auto-generated via openapi macro
 ## title: Google Play Game Services Publishing
@@ -28,15 +29,15 @@ type
     url*: proc (protocol: Scheme; host: string; base: string; route: string;
               path: JsonNode; query: JsonNode): Uri
 
-  OpenApiRestCall_593424 = ref object of OpenApiRestCall
+  OpenApiRestCall_579424 = ref object of OpenApiRestCall
 proc hash(scheme: Scheme): Hash {.used.} =
   result = hash(ord(scheme))
 
-proc clone[T: OpenApiRestCall_593424](t: T): T {.used.} =
+proc clone[T: OpenApiRestCall_579424](t: T): T {.used.} =
   result = T(name: t.name, meth: t.meth, host: t.host, base: t.base, route: t.route,
            schemes: t.schemes, validator: t.validator, url: t.url)
 
-proc pickScheme(t: OpenApiRestCall_593424): Option[Scheme] {.used.} =
+proc pickScheme(t: OpenApiRestCall_579424): Option[Scheme] {.used.} =
   ## select a supported scheme from a set of candidates
   for scheme in Scheme.low ..
       Scheme.high:
@@ -104,15 +105,16 @@ proc hydratePath(input: JsonNode; segments: seq[PathToken]): Option[string] =
 
 const
   gcpServiceName = "gamesConfiguration"
+proc composeQueryString(query: JsonNode): string
 method hook(call: OpenApiRestCall; url: Uri; input: JsonNode): Recallable {.base.}
 type
-  Call_GamesConfigurationAchievementConfigurationsUpdate_593976 = ref object of OpenApiRestCall_593424
-proc url_GamesConfigurationAchievementConfigurationsUpdate_593978(
+  Call_GamesConfigurationAchievementConfigurationsUpdate_579976 = ref object of OpenApiRestCall_579424
+proc url_GamesConfigurationAchievementConfigurationsUpdate_579978(
     protocol: Scheme; host: string; base: string; route: string; path: JsonNode;
     query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "achievementId" in path, "`achievementId` is a required path parameter"
   const
@@ -123,7 +125,7 @@ proc url_GamesConfigurationAchievementConfigurationsUpdate_593978(
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_GamesConfigurationAchievementConfigurationsUpdate_593977(
+proc validate_GamesConfigurationAchievementConfigurationsUpdate_579977(
     path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
     body: JsonNode): JsonNode =
   ## Update the metadata of the achievement configuration with the given ID.
@@ -136,11 +138,11 @@ proc validate_GamesConfigurationAchievementConfigurationsUpdate_593977(
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `achievementId` field"
-  var valid_593979 = path.getOrDefault("achievementId")
-  valid_593979 = validateParameter(valid_593979, JString, required = true,
+  var valid_579979 = path.getOrDefault("achievementId")
+  valid_579979 = validateParameter(valid_579979, JString, required = true,
                                  default = nil)
-  if valid_593979 != nil:
-    section.add "achievementId", valid_593979
+  if valid_579979 != nil:
+    section.add "achievementId", valid_579979
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -158,41 +160,41 @@ proc validate_GamesConfigurationAchievementConfigurationsUpdate_593977(
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_593980 = query.getOrDefault("fields")
-  valid_593980 = validateParameter(valid_593980, JString, required = false,
+  var valid_579980 = query.getOrDefault("fields")
+  valid_579980 = validateParameter(valid_579980, JString, required = false,
                                  default = nil)
-  if valid_593980 != nil:
-    section.add "fields", valid_593980
-  var valid_593981 = query.getOrDefault("quotaUser")
-  valid_593981 = validateParameter(valid_593981, JString, required = false,
+  if valid_579980 != nil:
+    section.add "fields", valid_579980
+  var valid_579981 = query.getOrDefault("quotaUser")
+  valid_579981 = validateParameter(valid_579981, JString, required = false,
                                  default = nil)
-  if valid_593981 != nil:
-    section.add "quotaUser", valid_593981
-  var valid_593982 = query.getOrDefault("alt")
-  valid_593982 = validateParameter(valid_593982, JString, required = false,
+  if valid_579981 != nil:
+    section.add "quotaUser", valid_579981
+  var valid_579982 = query.getOrDefault("alt")
+  valid_579982 = validateParameter(valid_579982, JString, required = false,
                                  default = newJString("json"))
-  if valid_593982 != nil:
-    section.add "alt", valid_593982
-  var valid_593983 = query.getOrDefault("oauth_token")
-  valid_593983 = validateParameter(valid_593983, JString, required = false,
+  if valid_579982 != nil:
+    section.add "alt", valid_579982
+  var valid_579983 = query.getOrDefault("oauth_token")
+  valid_579983 = validateParameter(valid_579983, JString, required = false,
                                  default = nil)
-  if valid_593983 != nil:
-    section.add "oauth_token", valid_593983
-  var valid_593984 = query.getOrDefault("userIp")
-  valid_593984 = validateParameter(valid_593984, JString, required = false,
+  if valid_579983 != nil:
+    section.add "oauth_token", valid_579983
+  var valid_579984 = query.getOrDefault("userIp")
+  valid_579984 = validateParameter(valid_579984, JString, required = false,
                                  default = nil)
-  if valid_593984 != nil:
-    section.add "userIp", valid_593984
-  var valid_593985 = query.getOrDefault("key")
-  valid_593985 = validateParameter(valid_593985, JString, required = false,
+  if valid_579984 != nil:
+    section.add "userIp", valid_579984
+  var valid_579985 = query.getOrDefault("key")
+  valid_579985 = validateParameter(valid_579985, JString, required = false,
                                  default = nil)
-  if valid_593985 != nil:
-    section.add "key", valid_593985
-  var valid_593986 = query.getOrDefault("prettyPrint")
-  valid_593986 = validateParameter(valid_593986, JBool, required = false,
+  if valid_579985 != nil:
+    section.add "key", valid_579985
+  var valid_579986 = query.getOrDefault("prettyPrint")
+  valid_579986 = validateParameter(valid_579986, JBool, required = false,
                                  default = newJBool(true))
-  if valid_593986 != nil:
-    section.add "prettyPrint", valid_593986
+  if valid_579986 != nil:
+    section.add "prettyPrint", valid_579986
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -204,21 +206,21 @@ proc validate_GamesConfigurationAchievementConfigurationsUpdate_593977(
   if body != nil:
     result.add "body", body
 
-proc call*(call_593988: Call_GamesConfigurationAchievementConfigurationsUpdate_593976;
+proc call*(call_579988: Call_GamesConfigurationAchievementConfigurationsUpdate_579976;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Update the metadata of the achievement configuration with the given ID.
   ## 
-  let valid = call_593988.validator(path, query, header, formData, body)
-  let scheme = call_593988.pickScheme
+  let valid = call_579988.validator(path, query, header, formData, body)
+  let scheme = call_579988.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_593988.url(scheme.get, call_593988.host, call_593988.base,
-                         call_593988.route, valid.getOrDefault("path"),
+  let url = call_579988.url(scheme.get, call_579988.host, call_579988.base,
+                         call_579988.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_593988, url, valid)
+  result = hook(call_579988, url, valid)
 
-proc call*(call_593989: Call_GamesConfigurationAchievementConfigurationsUpdate_593976;
+proc call*(call_579989: Call_GamesConfigurationAchievementConfigurationsUpdate_579976;
           achievementId: string; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; userIp: string = "";
           key: string = ""; body: JsonNode = nil; prettyPrint: bool = true): Recallable =
@@ -241,36 +243,36 @@ proc call*(call_593989: Call_GamesConfigurationAchievementConfigurationsUpdate_5
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_593990 = newJObject()
-  var query_593991 = newJObject()
-  var body_593992 = newJObject()
-  add(query_593991, "fields", newJString(fields))
-  add(query_593991, "quotaUser", newJString(quotaUser))
-  add(query_593991, "alt", newJString(alt))
-  add(query_593991, "oauth_token", newJString(oauthToken))
-  add(query_593991, "userIp", newJString(userIp))
-  add(query_593991, "key", newJString(key))
-  add(path_593990, "achievementId", newJString(achievementId))
+  var path_579990 = newJObject()
+  var query_579991 = newJObject()
+  var body_579992 = newJObject()
+  add(query_579991, "fields", newJString(fields))
+  add(query_579991, "quotaUser", newJString(quotaUser))
+  add(query_579991, "alt", newJString(alt))
+  add(query_579991, "oauth_token", newJString(oauthToken))
+  add(query_579991, "userIp", newJString(userIp))
+  add(query_579991, "key", newJString(key))
+  add(path_579990, "achievementId", newJString(achievementId))
   if body != nil:
-    body_593992 = body
-  add(query_593991, "prettyPrint", newJBool(prettyPrint))
-  result = call_593989.call(path_593990, query_593991, nil, nil, body_593992)
+    body_579992 = body
+  add(query_579991, "prettyPrint", newJBool(prettyPrint))
+  result = call_579989.call(path_579990, query_579991, nil, nil, body_579992)
 
-var gamesConfigurationAchievementConfigurationsUpdate* = Call_GamesConfigurationAchievementConfigurationsUpdate_593976(
+var gamesConfigurationAchievementConfigurationsUpdate* = Call_GamesConfigurationAchievementConfigurationsUpdate_579976(
     name: "gamesConfigurationAchievementConfigurationsUpdate",
     meth: HttpMethod.HttpPut, host: "www.googleapis.com",
     route: "/achievements/{achievementId}",
-    validator: validate_GamesConfigurationAchievementConfigurationsUpdate_593977,
+    validator: validate_GamesConfigurationAchievementConfigurationsUpdate_579977,
     base: "/games/v1configuration",
-    url: url_GamesConfigurationAchievementConfigurationsUpdate_593978,
+    url: url_GamesConfigurationAchievementConfigurationsUpdate_579978,
     schemes: {Scheme.Https})
 type
-  Call_GamesConfigurationAchievementConfigurationsGet_593692 = ref object of OpenApiRestCall_593424
-proc url_GamesConfigurationAchievementConfigurationsGet_593694(protocol: Scheme;
+  Call_GamesConfigurationAchievementConfigurationsGet_579692 = ref object of OpenApiRestCall_579424
+proc url_GamesConfigurationAchievementConfigurationsGet_579694(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "achievementId" in path, "`achievementId` is a required path parameter"
   const
@@ -281,7 +283,7 @@ proc url_GamesConfigurationAchievementConfigurationsGet_593694(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_GamesConfigurationAchievementConfigurationsGet_593693(
+proc validate_GamesConfigurationAchievementConfigurationsGet_579693(
     path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
     body: JsonNode): JsonNode =
   ## Retrieves the metadata of the achievement configuration with the given ID.
@@ -294,11 +296,11 @@ proc validate_GamesConfigurationAchievementConfigurationsGet_593693(
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `achievementId` field"
-  var valid_593820 = path.getOrDefault("achievementId")
-  valid_593820 = validateParameter(valid_593820, JString, required = true,
+  var valid_579820 = path.getOrDefault("achievementId")
+  valid_579820 = validateParameter(valid_579820, JString, required = true,
                                  default = nil)
-  if valid_593820 != nil:
-    section.add "achievementId", valid_593820
+  if valid_579820 != nil:
+    section.add "achievementId", valid_579820
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -316,41 +318,41 @@ proc validate_GamesConfigurationAchievementConfigurationsGet_593693(
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_593821 = query.getOrDefault("fields")
-  valid_593821 = validateParameter(valid_593821, JString, required = false,
+  var valid_579821 = query.getOrDefault("fields")
+  valid_579821 = validateParameter(valid_579821, JString, required = false,
                                  default = nil)
-  if valid_593821 != nil:
-    section.add "fields", valid_593821
-  var valid_593822 = query.getOrDefault("quotaUser")
-  valid_593822 = validateParameter(valid_593822, JString, required = false,
+  if valid_579821 != nil:
+    section.add "fields", valid_579821
+  var valid_579822 = query.getOrDefault("quotaUser")
+  valid_579822 = validateParameter(valid_579822, JString, required = false,
                                  default = nil)
-  if valid_593822 != nil:
-    section.add "quotaUser", valid_593822
-  var valid_593836 = query.getOrDefault("alt")
-  valid_593836 = validateParameter(valid_593836, JString, required = false,
+  if valid_579822 != nil:
+    section.add "quotaUser", valid_579822
+  var valid_579836 = query.getOrDefault("alt")
+  valid_579836 = validateParameter(valid_579836, JString, required = false,
                                  default = newJString("json"))
-  if valid_593836 != nil:
-    section.add "alt", valid_593836
-  var valid_593837 = query.getOrDefault("oauth_token")
-  valid_593837 = validateParameter(valid_593837, JString, required = false,
+  if valid_579836 != nil:
+    section.add "alt", valid_579836
+  var valid_579837 = query.getOrDefault("oauth_token")
+  valid_579837 = validateParameter(valid_579837, JString, required = false,
                                  default = nil)
-  if valid_593837 != nil:
-    section.add "oauth_token", valid_593837
-  var valid_593838 = query.getOrDefault("userIp")
-  valid_593838 = validateParameter(valid_593838, JString, required = false,
+  if valid_579837 != nil:
+    section.add "oauth_token", valid_579837
+  var valid_579838 = query.getOrDefault("userIp")
+  valid_579838 = validateParameter(valid_579838, JString, required = false,
                                  default = nil)
-  if valid_593838 != nil:
-    section.add "userIp", valid_593838
-  var valid_593839 = query.getOrDefault("key")
-  valid_593839 = validateParameter(valid_593839, JString, required = false,
+  if valid_579838 != nil:
+    section.add "userIp", valid_579838
+  var valid_579839 = query.getOrDefault("key")
+  valid_579839 = validateParameter(valid_579839, JString, required = false,
                                  default = nil)
-  if valid_593839 != nil:
-    section.add "key", valid_593839
-  var valid_593840 = query.getOrDefault("prettyPrint")
-  valid_593840 = validateParameter(valid_593840, JBool, required = false,
+  if valid_579839 != nil:
+    section.add "key", valid_579839
+  var valid_579840 = query.getOrDefault("prettyPrint")
+  valid_579840 = validateParameter(valid_579840, JBool, required = false,
                                  default = newJBool(true))
-  if valid_593840 != nil:
-    section.add "prettyPrint", valid_593840
+  if valid_579840 != nil:
+    section.add "prettyPrint", valid_579840
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -359,21 +361,21 @@ proc validate_GamesConfigurationAchievementConfigurationsGet_593693(
   if body != nil:
     result.add "body", body
 
-proc call*(call_593863: Call_GamesConfigurationAchievementConfigurationsGet_593692;
+proc call*(call_579863: Call_GamesConfigurationAchievementConfigurationsGet_579692;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Retrieves the metadata of the achievement configuration with the given ID.
   ## 
-  let valid = call_593863.validator(path, query, header, formData, body)
-  let scheme = call_593863.pickScheme
+  let valid = call_579863.validator(path, query, header, formData, body)
+  let scheme = call_579863.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_593863.url(scheme.get, call_593863.host, call_593863.base,
-                         call_593863.route, valid.getOrDefault("path"),
+  let url = call_579863.url(scheme.get, call_579863.host, call_579863.base,
+                         call_579863.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_593863, url, valid)
+  result = hook(call_579863, url, valid)
 
-proc call*(call_593934: Call_GamesConfigurationAchievementConfigurationsGet_593692;
+proc call*(call_579934: Call_GamesConfigurationAchievementConfigurationsGet_579692;
           achievementId: string; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; userIp: string = "";
           key: string = ""; prettyPrint: bool = true): Recallable =
@@ -395,34 +397,34 @@ proc call*(call_593934: Call_GamesConfigurationAchievementConfigurationsGet_5936
   ##                : The ID of the achievement used by this method.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_593935 = newJObject()
-  var query_593937 = newJObject()
-  add(query_593937, "fields", newJString(fields))
-  add(query_593937, "quotaUser", newJString(quotaUser))
-  add(query_593937, "alt", newJString(alt))
-  add(query_593937, "oauth_token", newJString(oauthToken))
-  add(query_593937, "userIp", newJString(userIp))
-  add(query_593937, "key", newJString(key))
-  add(path_593935, "achievementId", newJString(achievementId))
-  add(query_593937, "prettyPrint", newJBool(prettyPrint))
-  result = call_593934.call(path_593935, query_593937, nil, nil, nil)
+  var path_579935 = newJObject()
+  var query_579937 = newJObject()
+  add(query_579937, "fields", newJString(fields))
+  add(query_579937, "quotaUser", newJString(quotaUser))
+  add(query_579937, "alt", newJString(alt))
+  add(query_579937, "oauth_token", newJString(oauthToken))
+  add(query_579937, "userIp", newJString(userIp))
+  add(query_579937, "key", newJString(key))
+  add(path_579935, "achievementId", newJString(achievementId))
+  add(query_579937, "prettyPrint", newJBool(prettyPrint))
+  result = call_579934.call(path_579935, query_579937, nil, nil, nil)
 
-var gamesConfigurationAchievementConfigurationsGet* = Call_GamesConfigurationAchievementConfigurationsGet_593692(
+var gamesConfigurationAchievementConfigurationsGet* = Call_GamesConfigurationAchievementConfigurationsGet_579692(
     name: "gamesConfigurationAchievementConfigurationsGet",
     meth: HttpMethod.HttpGet, host: "www.googleapis.com",
     route: "/achievements/{achievementId}",
-    validator: validate_GamesConfigurationAchievementConfigurationsGet_593693,
+    validator: validate_GamesConfigurationAchievementConfigurationsGet_579693,
     base: "/games/v1configuration",
-    url: url_GamesConfigurationAchievementConfigurationsGet_593694,
+    url: url_GamesConfigurationAchievementConfigurationsGet_579694,
     schemes: {Scheme.Https})
 type
-  Call_GamesConfigurationAchievementConfigurationsPatch_594008 = ref object of OpenApiRestCall_593424
-proc url_GamesConfigurationAchievementConfigurationsPatch_594010(
+  Call_GamesConfigurationAchievementConfigurationsPatch_580008 = ref object of OpenApiRestCall_579424
+proc url_GamesConfigurationAchievementConfigurationsPatch_580010(
     protocol: Scheme; host: string; base: string; route: string; path: JsonNode;
     query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "achievementId" in path, "`achievementId` is a required path parameter"
   const
@@ -433,7 +435,7 @@ proc url_GamesConfigurationAchievementConfigurationsPatch_594010(
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_GamesConfigurationAchievementConfigurationsPatch_594009(
+proc validate_GamesConfigurationAchievementConfigurationsPatch_580009(
     path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
     body: JsonNode): JsonNode =
   ## Update the metadata of the achievement configuration with the given ID. This method supports patch semantics.
@@ -446,11 +448,11 @@ proc validate_GamesConfigurationAchievementConfigurationsPatch_594009(
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `achievementId` field"
-  var valid_594011 = path.getOrDefault("achievementId")
-  valid_594011 = validateParameter(valid_594011, JString, required = true,
+  var valid_580011 = path.getOrDefault("achievementId")
+  valid_580011 = validateParameter(valid_580011, JString, required = true,
                                  default = nil)
-  if valid_594011 != nil:
-    section.add "achievementId", valid_594011
+  if valid_580011 != nil:
+    section.add "achievementId", valid_580011
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -468,41 +470,41 @@ proc validate_GamesConfigurationAchievementConfigurationsPatch_594009(
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_594012 = query.getOrDefault("fields")
-  valid_594012 = validateParameter(valid_594012, JString, required = false,
+  var valid_580012 = query.getOrDefault("fields")
+  valid_580012 = validateParameter(valid_580012, JString, required = false,
                                  default = nil)
-  if valid_594012 != nil:
-    section.add "fields", valid_594012
-  var valid_594013 = query.getOrDefault("quotaUser")
-  valid_594013 = validateParameter(valid_594013, JString, required = false,
+  if valid_580012 != nil:
+    section.add "fields", valid_580012
+  var valid_580013 = query.getOrDefault("quotaUser")
+  valid_580013 = validateParameter(valid_580013, JString, required = false,
                                  default = nil)
-  if valid_594013 != nil:
-    section.add "quotaUser", valid_594013
-  var valid_594014 = query.getOrDefault("alt")
-  valid_594014 = validateParameter(valid_594014, JString, required = false,
+  if valid_580013 != nil:
+    section.add "quotaUser", valid_580013
+  var valid_580014 = query.getOrDefault("alt")
+  valid_580014 = validateParameter(valid_580014, JString, required = false,
                                  default = newJString("json"))
-  if valid_594014 != nil:
-    section.add "alt", valid_594014
-  var valid_594015 = query.getOrDefault("oauth_token")
-  valid_594015 = validateParameter(valid_594015, JString, required = false,
+  if valid_580014 != nil:
+    section.add "alt", valid_580014
+  var valid_580015 = query.getOrDefault("oauth_token")
+  valid_580015 = validateParameter(valid_580015, JString, required = false,
                                  default = nil)
-  if valid_594015 != nil:
-    section.add "oauth_token", valid_594015
-  var valid_594016 = query.getOrDefault("userIp")
-  valid_594016 = validateParameter(valid_594016, JString, required = false,
+  if valid_580015 != nil:
+    section.add "oauth_token", valid_580015
+  var valid_580016 = query.getOrDefault("userIp")
+  valid_580016 = validateParameter(valid_580016, JString, required = false,
                                  default = nil)
-  if valid_594016 != nil:
-    section.add "userIp", valid_594016
-  var valid_594017 = query.getOrDefault("key")
-  valid_594017 = validateParameter(valid_594017, JString, required = false,
+  if valid_580016 != nil:
+    section.add "userIp", valid_580016
+  var valid_580017 = query.getOrDefault("key")
+  valid_580017 = validateParameter(valid_580017, JString, required = false,
                                  default = nil)
-  if valid_594017 != nil:
-    section.add "key", valid_594017
-  var valid_594018 = query.getOrDefault("prettyPrint")
-  valid_594018 = validateParameter(valid_594018, JBool, required = false,
+  if valid_580017 != nil:
+    section.add "key", valid_580017
+  var valid_580018 = query.getOrDefault("prettyPrint")
+  valid_580018 = validateParameter(valid_580018, JBool, required = false,
                                  default = newJBool(true))
-  if valid_594018 != nil:
-    section.add "prettyPrint", valid_594018
+  if valid_580018 != nil:
+    section.add "prettyPrint", valid_580018
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -514,21 +516,21 @@ proc validate_GamesConfigurationAchievementConfigurationsPatch_594009(
   if body != nil:
     result.add "body", body
 
-proc call*(call_594020: Call_GamesConfigurationAchievementConfigurationsPatch_594008;
+proc call*(call_580020: Call_GamesConfigurationAchievementConfigurationsPatch_580008;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Update the metadata of the achievement configuration with the given ID. This method supports patch semantics.
   ## 
-  let valid = call_594020.validator(path, query, header, formData, body)
-  let scheme = call_594020.pickScheme
+  let valid = call_580020.validator(path, query, header, formData, body)
+  let scheme = call_580020.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_594020.url(scheme.get, call_594020.host, call_594020.base,
-                         call_594020.route, valid.getOrDefault("path"),
+  let url = call_580020.url(scheme.get, call_580020.host, call_580020.base,
+                         call_580020.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_594020, url, valid)
+  result = hook(call_580020, url, valid)
 
-proc call*(call_594021: Call_GamesConfigurationAchievementConfigurationsPatch_594008;
+proc call*(call_580021: Call_GamesConfigurationAchievementConfigurationsPatch_580008;
           achievementId: string; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; userIp: string = "";
           key: string = ""; body: JsonNode = nil; prettyPrint: bool = true): Recallable =
@@ -551,37 +553,37 @@ proc call*(call_594021: Call_GamesConfigurationAchievementConfigurationsPatch_59
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_594022 = newJObject()
-  var query_594023 = newJObject()
-  var body_594024 = newJObject()
-  add(query_594023, "fields", newJString(fields))
-  add(query_594023, "quotaUser", newJString(quotaUser))
-  add(query_594023, "alt", newJString(alt))
-  add(query_594023, "oauth_token", newJString(oauthToken))
-  add(query_594023, "userIp", newJString(userIp))
-  add(query_594023, "key", newJString(key))
-  add(path_594022, "achievementId", newJString(achievementId))
+  var path_580022 = newJObject()
+  var query_580023 = newJObject()
+  var body_580024 = newJObject()
+  add(query_580023, "fields", newJString(fields))
+  add(query_580023, "quotaUser", newJString(quotaUser))
+  add(query_580023, "alt", newJString(alt))
+  add(query_580023, "oauth_token", newJString(oauthToken))
+  add(query_580023, "userIp", newJString(userIp))
+  add(query_580023, "key", newJString(key))
+  add(path_580022, "achievementId", newJString(achievementId))
   if body != nil:
-    body_594024 = body
-  add(query_594023, "prettyPrint", newJBool(prettyPrint))
-  result = call_594021.call(path_594022, query_594023, nil, nil, body_594024)
+    body_580024 = body
+  add(query_580023, "prettyPrint", newJBool(prettyPrint))
+  result = call_580021.call(path_580022, query_580023, nil, nil, body_580024)
 
-var gamesConfigurationAchievementConfigurationsPatch* = Call_GamesConfigurationAchievementConfigurationsPatch_594008(
+var gamesConfigurationAchievementConfigurationsPatch* = Call_GamesConfigurationAchievementConfigurationsPatch_580008(
     name: "gamesConfigurationAchievementConfigurationsPatch",
     meth: HttpMethod.HttpPatch, host: "www.googleapis.com",
     route: "/achievements/{achievementId}",
-    validator: validate_GamesConfigurationAchievementConfigurationsPatch_594009,
+    validator: validate_GamesConfigurationAchievementConfigurationsPatch_580009,
     base: "/games/v1configuration",
-    url: url_GamesConfigurationAchievementConfigurationsPatch_594010,
+    url: url_GamesConfigurationAchievementConfigurationsPatch_580010,
     schemes: {Scheme.Https})
 type
-  Call_GamesConfigurationAchievementConfigurationsDelete_593993 = ref object of OpenApiRestCall_593424
-proc url_GamesConfigurationAchievementConfigurationsDelete_593995(
+  Call_GamesConfigurationAchievementConfigurationsDelete_579993 = ref object of OpenApiRestCall_579424
+proc url_GamesConfigurationAchievementConfigurationsDelete_579995(
     protocol: Scheme; host: string; base: string; route: string; path: JsonNode;
     query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "achievementId" in path, "`achievementId` is a required path parameter"
   const
@@ -592,7 +594,7 @@ proc url_GamesConfigurationAchievementConfigurationsDelete_593995(
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_GamesConfigurationAchievementConfigurationsDelete_593994(
+proc validate_GamesConfigurationAchievementConfigurationsDelete_579994(
     path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
     body: JsonNode): JsonNode =
   ## Delete the achievement configuration with the given ID.
@@ -605,11 +607,11 @@ proc validate_GamesConfigurationAchievementConfigurationsDelete_593994(
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `achievementId` field"
-  var valid_593996 = path.getOrDefault("achievementId")
-  valid_593996 = validateParameter(valid_593996, JString, required = true,
+  var valid_579996 = path.getOrDefault("achievementId")
+  valid_579996 = validateParameter(valid_579996, JString, required = true,
                                  default = nil)
-  if valid_593996 != nil:
-    section.add "achievementId", valid_593996
+  if valid_579996 != nil:
+    section.add "achievementId", valid_579996
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -627,41 +629,41 @@ proc validate_GamesConfigurationAchievementConfigurationsDelete_593994(
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_593997 = query.getOrDefault("fields")
-  valid_593997 = validateParameter(valid_593997, JString, required = false,
+  var valid_579997 = query.getOrDefault("fields")
+  valid_579997 = validateParameter(valid_579997, JString, required = false,
                                  default = nil)
-  if valid_593997 != nil:
-    section.add "fields", valid_593997
-  var valid_593998 = query.getOrDefault("quotaUser")
-  valid_593998 = validateParameter(valid_593998, JString, required = false,
+  if valid_579997 != nil:
+    section.add "fields", valid_579997
+  var valid_579998 = query.getOrDefault("quotaUser")
+  valid_579998 = validateParameter(valid_579998, JString, required = false,
                                  default = nil)
-  if valid_593998 != nil:
-    section.add "quotaUser", valid_593998
-  var valid_593999 = query.getOrDefault("alt")
-  valid_593999 = validateParameter(valid_593999, JString, required = false,
+  if valid_579998 != nil:
+    section.add "quotaUser", valid_579998
+  var valid_579999 = query.getOrDefault("alt")
+  valid_579999 = validateParameter(valid_579999, JString, required = false,
                                  default = newJString("json"))
-  if valid_593999 != nil:
-    section.add "alt", valid_593999
-  var valid_594000 = query.getOrDefault("oauth_token")
-  valid_594000 = validateParameter(valid_594000, JString, required = false,
+  if valid_579999 != nil:
+    section.add "alt", valid_579999
+  var valid_580000 = query.getOrDefault("oauth_token")
+  valid_580000 = validateParameter(valid_580000, JString, required = false,
                                  default = nil)
-  if valid_594000 != nil:
-    section.add "oauth_token", valid_594000
-  var valid_594001 = query.getOrDefault("userIp")
-  valid_594001 = validateParameter(valid_594001, JString, required = false,
+  if valid_580000 != nil:
+    section.add "oauth_token", valid_580000
+  var valid_580001 = query.getOrDefault("userIp")
+  valid_580001 = validateParameter(valid_580001, JString, required = false,
                                  default = nil)
-  if valid_594001 != nil:
-    section.add "userIp", valid_594001
-  var valid_594002 = query.getOrDefault("key")
-  valid_594002 = validateParameter(valid_594002, JString, required = false,
+  if valid_580001 != nil:
+    section.add "userIp", valid_580001
+  var valid_580002 = query.getOrDefault("key")
+  valid_580002 = validateParameter(valid_580002, JString, required = false,
                                  default = nil)
-  if valid_594002 != nil:
-    section.add "key", valid_594002
-  var valid_594003 = query.getOrDefault("prettyPrint")
-  valid_594003 = validateParameter(valid_594003, JBool, required = false,
+  if valid_580002 != nil:
+    section.add "key", valid_580002
+  var valid_580003 = query.getOrDefault("prettyPrint")
+  valid_580003 = validateParameter(valid_580003, JBool, required = false,
                                  default = newJBool(true))
-  if valid_594003 != nil:
-    section.add "prettyPrint", valid_594003
+  if valid_580003 != nil:
+    section.add "prettyPrint", valid_580003
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -670,21 +672,21 @@ proc validate_GamesConfigurationAchievementConfigurationsDelete_593994(
   if body != nil:
     result.add "body", body
 
-proc call*(call_594004: Call_GamesConfigurationAchievementConfigurationsDelete_593993;
+proc call*(call_580004: Call_GamesConfigurationAchievementConfigurationsDelete_579993;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Delete the achievement configuration with the given ID.
   ## 
-  let valid = call_594004.validator(path, query, header, formData, body)
-  let scheme = call_594004.pickScheme
+  let valid = call_580004.validator(path, query, header, formData, body)
+  let scheme = call_580004.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_594004.url(scheme.get, call_594004.host, call_594004.base,
-                         call_594004.route, valid.getOrDefault("path"),
+  let url = call_580004.url(scheme.get, call_580004.host, call_580004.base,
+                         call_580004.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_594004, url, valid)
+  result = hook(call_580004, url, valid)
 
-proc call*(call_594005: Call_GamesConfigurationAchievementConfigurationsDelete_593993;
+proc call*(call_580005: Call_GamesConfigurationAchievementConfigurationsDelete_579993;
           achievementId: string; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; userIp: string = "";
           key: string = ""; prettyPrint: bool = true): Recallable =
@@ -706,34 +708,34 @@ proc call*(call_594005: Call_GamesConfigurationAchievementConfigurationsDelete_5
   ##                : The ID of the achievement used by this method.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_594006 = newJObject()
-  var query_594007 = newJObject()
-  add(query_594007, "fields", newJString(fields))
-  add(query_594007, "quotaUser", newJString(quotaUser))
-  add(query_594007, "alt", newJString(alt))
-  add(query_594007, "oauth_token", newJString(oauthToken))
-  add(query_594007, "userIp", newJString(userIp))
-  add(query_594007, "key", newJString(key))
-  add(path_594006, "achievementId", newJString(achievementId))
-  add(query_594007, "prettyPrint", newJBool(prettyPrint))
-  result = call_594005.call(path_594006, query_594007, nil, nil, nil)
+  var path_580006 = newJObject()
+  var query_580007 = newJObject()
+  add(query_580007, "fields", newJString(fields))
+  add(query_580007, "quotaUser", newJString(quotaUser))
+  add(query_580007, "alt", newJString(alt))
+  add(query_580007, "oauth_token", newJString(oauthToken))
+  add(query_580007, "userIp", newJString(userIp))
+  add(query_580007, "key", newJString(key))
+  add(path_580006, "achievementId", newJString(achievementId))
+  add(query_580007, "prettyPrint", newJBool(prettyPrint))
+  result = call_580005.call(path_580006, query_580007, nil, nil, nil)
 
-var gamesConfigurationAchievementConfigurationsDelete* = Call_GamesConfigurationAchievementConfigurationsDelete_593993(
+var gamesConfigurationAchievementConfigurationsDelete* = Call_GamesConfigurationAchievementConfigurationsDelete_579993(
     name: "gamesConfigurationAchievementConfigurationsDelete",
     meth: HttpMethod.HttpDelete, host: "www.googleapis.com",
     route: "/achievements/{achievementId}",
-    validator: validate_GamesConfigurationAchievementConfigurationsDelete_593994,
+    validator: validate_GamesConfigurationAchievementConfigurationsDelete_579994,
     base: "/games/v1configuration",
-    url: url_GamesConfigurationAchievementConfigurationsDelete_593995,
+    url: url_GamesConfigurationAchievementConfigurationsDelete_579995,
     schemes: {Scheme.Https})
 type
-  Call_GamesConfigurationAchievementConfigurationsInsert_594042 = ref object of OpenApiRestCall_593424
-proc url_GamesConfigurationAchievementConfigurationsInsert_594044(
+  Call_GamesConfigurationAchievementConfigurationsInsert_580042 = ref object of OpenApiRestCall_579424
+proc url_GamesConfigurationAchievementConfigurationsInsert_580044(
     protocol: Scheme; host: string; base: string; route: string; path: JsonNode;
     query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "applicationId" in path, "`applicationId` is a required path parameter"
   const
@@ -745,7 +747,7 @@ proc url_GamesConfigurationAchievementConfigurationsInsert_594044(
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_GamesConfigurationAchievementConfigurationsInsert_594043(
+proc validate_GamesConfigurationAchievementConfigurationsInsert_580043(
     path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
     body: JsonNode): JsonNode =
   ## Insert a new achievement configuration in this application.
@@ -758,11 +760,11 @@ proc validate_GamesConfigurationAchievementConfigurationsInsert_594043(
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `applicationId` field"
-  var valid_594045 = path.getOrDefault("applicationId")
-  valid_594045 = validateParameter(valid_594045, JString, required = true,
+  var valid_580045 = path.getOrDefault("applicationId")
+  valid_580045 = validateParameter(valid_580045, JString, required = true,
                                  default = nil)
-  if valid_594045 != nil:
-    section.add "applicationId", valid_594045
+  if valid_580045 != nil:
+    section.add "applicationId", valid_580045
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -780,41 +782,41 @@ proc validate_GamesConfigurationAchievementConfigurationsInsert_594043(
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_594046 = query.getOrDefault("fields")
-  valid_594046 = validateParameter(valid_594046, JString, required = false,
+  var valid_580046 = query.getOrDefault("fields")
+  valid_580046 = validateParameter(valid_580046, JString, required = false,
                                  default = nil)
-  if valid_594046 != nil:
-    section.add "fields", valid_594046
-  var valid_594047 = query.getOrDefault("quotaUser")
-  valid_594047 = validateParameter(valid_594047, JString, required = false,
+  if valid_580046 != nil:
+    section.add "fields", valid_580046
+  var valid_580047 = query.getOrDefault("quotaUser")
+  valid_580047 = validateParameter(valid_580047, JString, required = false,
                                  default = nil)
-  if valid_594047 != nil:
-    section.add "quotaUser", valid_594047
-  var valid_594048 = query.getOrDefault("alt")
-  valid_594048 = validateParameter(valid_594048, JString, required = false,
+  if valid_580047 != nil:
+    section.add "quotaUser", valid_580047
+  var valid_580048 = query.getOrDefault("alt")
+  valid_580048 = validateParameter(valid_580048, JString, required = false,
                                  default = newJString("json"))
-  if valid_594048 != nil:
-    section.add "alt", valid_594048
-  var valid_594049 = query.getOrDefault("oauth_token")
-  valid_594049 = validateParameter(valid_594049, JString, required = false,
+  if valid_580048 != nil:
+    section.add "alt", valid_580048
+  var valid_580049 = query.getOrDefault("oauth_token")
+  valid_580049 = validateParameter(valid_580049, JString, required = false,
                                  default = nil)
-  if valid_594049 != nil:
-    section.add "oauth_token", valid_594049
-  var valid_594050 = query.getOrDefault("userIp")
-  valid_594050 = validateParameter(valid_594050, JString, required = false,
+  if valid_580049 != nil:
+    section.add "oauth_token", valid_580049
+  var valid_580050 = query.getOrDefault("userIp")
+  valid_580050 = validateParameter(valid_580050, JString, required = false,
                                  default = nil)
-  if valid_594050 != nil:
-    section.add "userIp", valid_594050
-  var valid_594051 = query.getOrDefault("key")
-  valid_594051 = validateParameter(valid_594051, JString, required = false,
+  if valid_580050 != nil:
+    section.add "userIp", valid_580050
+  var valid_580051 = query.getOrDefault("key")
+  valid_580051 = validateParameter(valid_580051, JString, required = false,
                                  default = nil)
-  if valid_594051 != nil:
-    section.add "key", valid_594051
-  var valid_594052 = query.getOrDefault("prettyPrint")
-  valid_594052 = validateParameter(valid_594052, JBool, required = false,
+  if valid_580051 != nil:
+    section.add "key", valid_580051
+  var valid_580052 = query.getOrDefault("prettyPrint")
+  valid_580052 = validateParameter(valid_580052, JBool, required = false,
                                  default = newJBool(true))
-  if valid_594052 != nil:
-    section.add "prettyPrint", valid_594052
+  if valid_580052 != nil:
+    section.add "prettyPrint", valid_580052
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -826,21 +828,21 @@ proc validate_GamesConfigurationAchievementConfigurationsInsert_594043(
   if body != nil:
     result.add "body", body
 
-proc call*(call_594054: Call_GamesConfigurationAchievementConfigurationsInsert_594042;
+proc call*(call_580054: Call_GamesConfigurationAchievementConfigurationsInsert_580042;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Insert a new achievement configuration in this application.
   ## 
-  let valid = call_594054.validator(path, query, header, formData, body)
-  let scheme = call_594054.pickScheme
+  let valid = call_580054.validator(path, query, header, formData, body)
+  let scheme = call_580054.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_594054.url(scheme.get, call_594054.host, call_594054.base,
-                         call_594054.route, valid.getOrDefault("path"),
+  let url = call_580054.url(scheme.get, call_580054.host, call_580054.base,
+                         call_580054.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_594054, url, valid)
+  result = hook(call_580054, url, valid)
 
-proc call*(call_594055: Call_GamesConfigurationAchievementConfigurationsInsert_594042;
+proc call*(call_580055: Call_GamesConfigurationAchievementConfigurationsInsert_580042;
           applicationId: string; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; userIp: string = "";
           key: string = ""; body: JsonNode = nil; prettyPrint: bool = true): Recallable =
@@ -863,36 +865,36 @@ proc call*(call_594055: Call_GamesConfigurationAchievementConfigurationsInsert_5
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_594056 = newJObject()
-  var query_594057 = newJObject()
-  var body_594058 = newJObject()
-  add(query_594057, "fields", newJString(fields))
-  add(query_594057, "quotaUser", newJString(quotaUser))
-  add(query_594057, "alt", newJString(alt))
-  add(query_594057, "oauth_token", newJString(oauthToken))
-  add(query_594057, "userIp", newJString(userIp))
-  add(path_594056, "applicationId", newJString(applicationId))
-  add(query_594057, "key", newJString(key))
+  var path_580056 = newJObject()
+  var query_580057 = newJObject()
+  var body_580058 = newJObject()
+  add(query_580057, "fields", newJString(fields))
+  add(query_580057, "quotaUser", newJString(quotaUser))
+  add(query_580057, "alt", newJString(alt))
+  add(query_580057, "oauth_token", newJString(oauthToken))
+  add(query_580057, "userIp", newJString(userIp))
+  add(path_580056, "applicationId", newJString(applicationId))
+  add(query_580057, "key", newJString(key))
   if body != nil:
-    body_594058 = body
-  add(query_594057, "prettyPrint", newJBool(prettyPrint))
-  result = call_594055.call(path_594056, query_594057, nil, nil, body_594058)
+    body_580058 = body
+  add(query_580057, "prettyPrint", newJBool(prettyPrint))
+  result = call_580055.call(path_580056, query_580057, nil, nil, body_580058)
 
-var gamesConfigurationAchievementConfigurationsInsert* = Call_GamesConfigurationAchievementConfigurationsInsert_594042(
+var gamesConfigurationAchievementConfigurationsInsert* = Call_GamesConfigurationAchievementConfigurationsInsert_580042(
     name: "gamesConfigurationAchievementConfigurationsInsert",
     meth: HttpMethod.HttpPost, host: "www.googleapis.com",
     route: "/applications/{applicationId}/achievements",
-    validator: validate_GamesConfigurationAchievementConfigurationsInsert_594043,
+    validator: validate_GamesConfigurationAchievementConfigurationsInsert_580043,
     base: "/games/v1configuration",
-    url: url_GamesConfigurationAchievementConfigurationsInsert_594044,
+    url: url_GamesConfigurationAchievementConfigurationsInsert_580044,
     schemes: {Scheme.Https})
 type
-  Call_GamesConfigurationAchievementConfigurationsList_594025 = ref object of OpenApiRestCall_593424
-proc url_GamesConfigurationAchievementConfigurationsList_594027(protocol: Scheme;
+  Call_GamesConfigurationAchievementConfigurationsList_580025 = ref object of OpenApiRestCall_579424
+proc url_GamesConfigurationAchievementConfigurationsList_580027(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "applicationId" in path, "`applicationId` is a required path parameter"
   const
@@ -904,7 +906,7 @@ proc url_GamesConfigurationAchievementConfigurationsList_594027(protocol: Scheme
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_GamesConfigurationAchievementConfigurationsList_594026(
+proc validate_GamesConfigurationAchievementConfigurationsList_580026(
     path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
     body: JsonNode): JsonNode =
   ## Returns a list of the achievement configurations in this application.
@@ -917,11 +919,11 @@ proc validate_GamesConfigurationAchievementConfigurationsList_594026(
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `applicationId` field"
-  var valid_594028 = path.getOrDefault("applicationId")
-  valid_594028 = validateParameter(valid_594028, JString, required = true,
+  var valid_580028 = path.getOrDefault("applicationId")
+  valid_580028 = validateParameter(valid_580028, JString, required = true,
                                  default = nil)
-  if valid_594028 != nil:
-    section.add "applicationId", valid_594028
+  if valid_580028 != nil:
+    section.add "applicationId", valid_580028
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -943,50 +945,50 @@ proc validate_GamesConfigurationAchievementConfigurationsList_594026(
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_594029 = query.getOrDefault("fields")
-  valid_594029 = validateParameter(valid_594029, JString, required = false,
+  var valid_580029 = query.getOrDefault("fields")
+  valid_580029 = validateParameter(valid_580029, JString, required = false,
                                  default = nil)
-  if valid_594029 != nil:
-    section.add "fields", valid_594029
-  var valid_594030 = query.getOrDefault("pageToken")
-  valid_594030 = validateParameter(valid_594030, JString, required = false,
+  if valid_580029 != nil:
+    section.add "fields", valid_580029
+  var valid_580030 = query.getOrDefault("pageToken")
+  valid_580030 = validateParameter(valid_580030, JString, required = false,
                                  default = nil)
-  if valid_594030 != nil:
-    section.add "pageToken", valid_594030
-  var valid_594031 = query.getOrDefault("quotaUser")
-  valid_594031 = validateParameter(valid_594031, JString, required = false,
+  if valid_580030 != nil:
+    section.add "pageToken", valid_580030
+  var valid_580031 = query.getOrDefault("quotaUser")
+  valid_580031 = validateParameter(valid_580031, JString, required = false,
                                  default = nil)
-  if valid_594031 != nil:
-    section.add "quotaUser", valid_594031
-  var valid_594032 = query.getOrDefault("alt")
-  valid_594032 = validateParameter(valid_594032, JString, required = false,
+  if valid_580031 != nil:
+    section.add "quotaUser", valid_580031
+  var valid_580032 = query.getOrDefault("alt")
+  valid_580032 = validateParameter(valid_580032, JString, required = false,
                                  default = newJString("json"))
-  if valid_594032 != nil:
-    section.add "alt", valid_594032
-  var valid_594033 = query.getOrDefault("oauth_token")
-  valid_594033 = validateParameter(valid_594033, JString, required = false,
+  if valid_580032 != nil:
+    section.add "alt", valid_580032
+  var valid_580033 = query.getOrDefault("oauth_token")
+  valid_580033 = validateParameter(valid_580033, JString, required = false,
                                  default = nil)
-  if valid_594033 != nil:
-    section.add "oauth_token", valid_594033
-  var valid_594034 = query.getOrDefault("userIp")
-  valid_594034 = validateParameter(valid_594034, JString, required = false,
+  if valid_580033 != nil:
+    section.add "oauth_token", valid_580033
+  var valid_580034 = query.getOrDefault("userIp")
+  valid_580034 = validateParameter(valid_580034, JString, required = false,
                                  default = nil)
-  if valid_594034 != nil:
-    section.add "userIp", valid_594034
-  var valid_594035 = query.getOrDefault("maxResults")
-  valid_594035 = validateParameter(valid_594035, JInt, required = false, default = nil)
-  if valid_594035 != nil:
-    section.add "maxResults", valid_594035
-  var valid_594036 = query.getOrDefault("key")
-  valid_594036 = validateParameter(valid_594036, JString, required = false,
+  if valid_580034 != nil:
+    section.add "userIp", valid_580034
+  var valid_580035 = query.getOrDefault("maxResults")
+  valid_580035 = validateParameter(valid_580035, JInt, required = false, default = nil)
+  if valid_580035 != nil:
+    section.add "maxResults", valid_580035
+  var valid_580036 = query.getOrDefault("key")
+  valid_580036 = validateParameter(valid_580036, JString, required = false,
                                  default = nil)
-  if valid_594036 != nil:
-    section.add "key", valid_594036
-  var valid_594037 = query.getOrDefault("prettyPrint")
-  valid_594037 = validateParameter(valid_594037, JBool, required = false,
+  if valid_580036 != nil:
+    section.add "key", valid_580036
+  var valid_580037 = query.getOrDefault("prettyPrint")
+  valid_580037 = validateParameter(valid_580037, JBool, required = false,
                                  default = newJBool(true))
-  if valid_594037 != nil:
-    section.add "prettyPrint", valid_594037
+  if valid_580037 != nil:
+    section.add "prettyPrint", valid_580037
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -995,21 +997,21 @@ proc validate_GamesConfigurationAchievementConfigurationsList_594026(
   if body != nil:
     result.add "body", body
 
-proc call*(call_594038: Call_GamesConfigurationAchievementConfigurationsList_594025;
+proc call*(call_580038: Call_GamesConfigurationAchievementConfigurationsList_580025;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Returns a list of the achievement configurations in this application.
   ## 
-  let valid = call_594038.validator(path, query, header, formData, body)
-  let scheme = call_594038.pickScheme
+  let valid = call_580038.validator(path, query, header, formData, body)
+  let scheme = call_580038.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_594038.url(scheme.get, call_594038.host, call_594038.base,
-                         call_594038.route, valid.getOrDefault("path"),
+  let url = call_580038.url(scheme.get, call_580038.host, call_580038.base,
+                         call_580038.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_594038, url, valid)
+  result = hook(call_580038, url, valid)
 
-proc call*(call_594039: Call_GamesConfigurationAchievementConfigurationsList_594025;
+proc call*(call_580039: Call_GamesConfigurationAchievementConfigurationsList_580025;
           applicationId: string; fields: string = ""; pageToken: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; maxResults: int = 0; key: string = "";
@@ -1036,36 +1038,36 @@ proc call*(call_594039: Call_GamesConfigurationAchievementConfigurationsList_594
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_594040 = newJObject()
-  var query_594041 = newJObject()
-  add(query_594041, "fields", newJString(fields))
-  add(query_594041, "pageToken", newJString(pageToken))
-  add(query_594041, "quotaUser", newJString(quotaUser))
-  add(query_594041, "alt", newJString(alt))
-  add(query_594041, "oauth_token", newJString(oauthToken))
-  add(query_594041, "userIp", newJString(userIp))
-  add(path_594040, "applicationId", newJString(applicationId))
-  add(query_594041, "maxResults", newJInt(maxResults))
-  add(query_594041, "key", newJString(key))
-  add(query_594041, "prettyPrint", newJBool(prettyPrint))
-  result = call_594039.call(path_594040, query_594041, nil, nil, nil)
+  var path_580040 = newJObject()
+  var query_580041 = newJObject()
+  add(query_580041, "fields", newJString(fields))
+  add(query_580041, "pageToken", newJString(pageToken))
+  add(query_580041, "quotaUser", newJString(quotaUser))
+  add(query_580041, "alt", newJString(alt))
+  add(query_580041, "oauth_token", newJString(oauthToken))
+  add(query_580041, "userIp", newJString(userIp))
+  add(path_580040, "applicationId", newJString(applicationId))
+  add(query_580041, "maxResults", newJInt(maxResults))
+  add(query_580041, "key", newJString(key))
+  add(query_580041, "prettyPrint", newJBool(prettyPrint))
+  result = call_580039.call(path_580040, query_580041, nil, nil, nil)
 
-var gamesConfigurationAchievementConfigurationsList* = Call_GamesConfigurationAchievementConfigurationsList_594025(
+var gamesConfigurationAchievementConfigurationsList* = Call_GamesConfigurationAchievementConfigurationsList_580025(
     name: "gamesConfigurationAchievementConfigurationsList",
     meth: HttpMethod.HttpGet, host: "www.googleapis.com",
     route: "/applications/{applicationId}/achievements",
-    validator: validate_GamesConfigurationAchievementConfigurationsList_594026,
+    validator: validate_GamesConfigurationAchievementConfigurationsList_580026,
     base: "/games/v1configuration",
-    url: url_GamesConfigurationAchievementConfigurationsList_594027,
+    url: url_GamesConfigurationAchievementConfigurationsList_580027,
     schemes: {Scheme.Https})
 type
-  Call_GamesConfigurationLeaderboardConfigurationsInsert_594076 = ref object of OpenApiRestCall_593424
-proc url_GamesConfigurationLeaderboardConfigurationsInsert_594078(
+  Call_GamesConfigurationLeaderboardConfigurationsInsert_580076 = ref object of OpenApiRestCall_579424
+proc url_GamesConfigurationLeaderboardConfigurationsInsert_580078(
     protocol: Scheme; host: string; base: string; route: string; path: JsonNode;
     query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "applicationId" in path, "`applicationId` is a required path parameter"
   const
@@ -1077,7 +1079,7 @@ proc url_GamesConfigurationLeaderboardConfigurationsInsert_594078(
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_GamesConfigurationLeaderboardConfigurationsInsert_594077(
+proc validate_GamesConfigurationLeaderboardConfigurationsInsert_580077(
     path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
     body: JsonNode): JsonNode =
   ## Insert a new leaderboard configuration in this application.
@@ -1090,11 +1092,11 @@ proc validate_GamesConfigurationLeaderboardConfigurationsInsert_594077(
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `applicationId` field"
-  var valid_594079 = path.getOrDefault("applicationId")
-  valid_594079 = validateParameter(valid_594079, JString, required = true,
+  var valid_580079 = path.getOrDefault("applicationId")
+  valid_580079 = validateParameter(valid_580079, JString, required = true,
                                  default = nil)
-  if valid_594079 != nil:
-    section.add "applicationId", valid_594079
+  if valid_580079 != nil:
+    section.add "applicationId", valid_580079
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -1112,41 +1114,41 @@ proc validate_GamesConfigurationLeaderboardConfigurationsInsert_594077(
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_594080 = query.getOrDefault("fields")
-  valid_594080 = validateParameter(valid_594080, JString, required = false,
+  var valid_580080 = query.getOrDefault("fields")
+  valid_580080 = validateParameter(valid_580080, JString, required = false,
                                  default = nil)
-  if valid_594080 != nil:
-    section.add "fields", valid_594080
-  var valid_594081 = query.getOrDefault("quotaUser")
-  valid_594081 = validateParameter(valid_594081, JString, required = false,
+  if valid_580080 != nil:
+    section.add "fields", valid_580080
+  var valid_580081 = query.getOrDefault("quotaUser")
+  valid_580081 = validateParameter(valid_580081, JString, required = false,
                                  default = nil)
-  if valid_594081 != nil:
-    section.add "quotaUser", valid_594081
-  var valid_594082 = query.getOrDefault("alt")
-  valid_594082 = validateParameter(valid_594082, JString, required = false,
+  if valid_580081 != nil:
+    section.add "quotaUser", valid_580081
+  var valid_580082 = query.getOrDefault("alt")
+  valid_580082 = validateParameter(valid_580082, JString, required = false,
                                  default = newJString("json"))
-  if valid_594082 != nil:
-    section.add "alt", valid_594082
-  var valid_594083 = query.getOrDefault("oauth_token")
-  valid_594083 = validateParameter(valid_594083, JString, required = false,
+  if valid_580082 != nil:
+    section.add "alt", valid_580082
+  var valid_580083 = query.getOrDefault("oauth_token")
+  valid_580083 = validateParameter(valid_580083, JString, required = false,
                                  default = nil)
-  if valid_594083 != nil:
-    section.add "oauth_token", valid_594083
-  var valid_594084 = query.getOrDefault("userIp")
-  valid_594084 = validateParameter(valid_594084, JString, required = false,
+  if valid_580083 != nil:
+    section.add "oauth_token", valid_580083
+  var valid_580084 = query.getOrDefault("userIp")
+  valid_580084 = validateParameter(valid_580084, JString, required = false,
                                  default = nil)
-  if valid_594084 != nil:
-    section.add "userIp", valid_594084
-  var valid_594085 = query.getOrDefault("key")
-  valid_594085 = validateParameter(valid_594085, JString, required = false,
+  if valid_580084 != nil:
+    section.add "userIp", valid_580084
+  var valid_580085 = query.getOrDefault("key")
+  valid_580085 = validateParameter(valid_580085, JString, required = false,
                                  default = nil)
-  if valid_594085 != nil:
-    section.add "key", valid_594085
-  var valid_594086 = query.getOrDefault("prettyPrint")
-  valid_594086 = validateParameter(valid_594086, JBool, required = false,
+  if valid_580085 != nil:
+    section.add "key", valid_580085
+  var valid_580086 = query.getOrDefault("prettyPrint")
+  valid_580086 = validateParameter(valid_580086, JBool, required = false,
                                  default = newJBool(true))
-  if valid_594086 != nil:
-    section.add "prettyPrint", valid_594086
+  if valid_580086 != nil:
+    section.add "prettyPrint", valid_580086
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1158,21 +1160,21 @@ proc validate_GamesConfigurationLeaderboardConfigurationsInsert_594077(
   if body != nil:
     result.add "body", body
 
-proc call*(call_594088: Call_GamesConfigurationLeaderboardConfigurationsInsert_594076;
+proc call*(call_580088: Call_GamesConfigurationLeaderboardConfigurationsInsert_580076;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Insert a new leaderboard configuration in this application.
   ## 
-  let valid = call_594088.validator(path, query, header, formData, body)
-  let scheme = call_594088.pickScheme
+  let valid = call_580088.validator(path, query, header, formData, body)
+  let scheme = call_580088.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_594088.url(scheme.get, call_594088.host, call_594088.base,
-                         call_594088.route, valid.getOrDefault("path"),
+  let url = call_580088.url(scheme.get, call_580088.host, call_580088.base,
+                         call_580088.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_594088, url, valid)
+  result = hook(call_580088, url, valid)
 
-proc call*(call_594089: Call_GamesConfigurationLeaderboardConfigurationsInsert_594076;
+proc call*(call_580089: Call_GamesConfigurationLeaderboardConfigurationsInsert_580076;
           applicationId: string; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; userIp: string = "";
           key: string = ""; body: JsonNode = nil; prettyPrint: bool = true): Recallable =
@@ -1195,36 +1197,36 @@ proc call*(call_594089: Call_GamesConfigurationLeaderboardConfigurationsInsert_5
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_594090 = newJObject()
-  var query_594091 = newJObject()
-  var body_594092 = newJObject()
-  add(query_594091, "fields", newJString(fields))
-  add(query_594091, "quotaUser", newJString(quotaUser))
-  add(query_594091, "alt", newJString(alt))
-  add(query_594091, "oauth_token", newJString(oauthToken))
-  add(query_594091, "userIp", newJString(userIp))
-  add(path_594090, "applicationId", newJString(applicationId))
-  add(query_594091, "key", newJString(key))
+  var path_580090 = newJObject()
+  var query_580091 = newJObject()
+  var body_580092 = newJObject()
+  add(query_580091, "fields", newJString(fields))
+  add(query_580091, "quotaUser", newJString(quotaUser))
+  add(query_580091, "alt", newJString(alt))
+  add(query_580091, "oauth_token", newJString(oauthToken))
+  add(query_580091, "userIp", newJString(userIp))
+  add(path_580090, "applicationId", newJString(applicationId))
+  add(query_580091, "key", newJString(key))
   if body != nil:
-    body_594092 = body
-  add(query_594091, "prettyPrint", newJBool(prettyPrint))
-  result = call_594089.call(path_594090, query_594091, nil, nil, body_594092)
+    body_580092 = body
+  add(query_580091, "prettyPrint", newJBool(prettyPrint))
+  result = call_580089.call(path_580090, query_580091, nil, nil, body_580092)
 
-var gamesConfigurationLeaderboardConfigurationsInsert* = Call_GamesConfigurationLeaderboardConfigurationsInsert_594076(
+var gamesConfigurationLeaderboardConfigurationsInsert* = Call_GamesConfigurationLeaderboardConfigurationsInsert_580076(
     name: "gamesConfigurationLeaderboardConfigurationsInsert",
     meth: HttpMethod.HttpPost, host: "www.googleapis.com",
     route: "/applications/{applicationId}/leaderboards",
-    validator: validate_GamesConfigurationLeaderboardConfigurationsInsert_594077,
+    validator: validate_GamesConfigurationLeaderboardConfigurationsInsert_580077,
     base: "/games/v1configuration",
-    url: url_GamesConfigurationLeaderboardConfigurationsInsert_594078,
+    url: url_GamesConfigurationLeaderboardConfigurationsInsert_580078,
     schemes: {Scheme.Https})
 type
-  Call_GamesConfigurationLeaderboardConfigurationsList_594059 = ref object of OpenApiRestCall_593424
-proc url_GamesConfigurationLeaderboardConfigurationsList_594061(protocol: Scheme;
+  Call_GamesConfigurationLeaderboardConfigurationsList_580059 = ref object of OpenApiRestCall_579424
+proc url_GamesConfigurationLeaderboardConfigurationsList_580061(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "applicationId" in path, "`applicationId` is a required path parameter"
   const
@@ -1236,7 +1238,7 @@ proc url_GamesConfigurationLeaderboardConfigurationsList_594061(protocol: Scheme
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_GamesConfigurationLeaderboardConfigurationsList_594060(
+proc validate_GamesConfigurationLeaderboardConfigurationsList_580060(
     path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
     body: JsonNode): JsonNode =
   ## Returns a list of the leaderboard configurations in this application.
@@ -1249,11 +1251,11 @@ proc validate_GamesConfigurationLeaderboardConfigurationsList_594060(
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `applicationId` field"
-  var valid_594062 = path.getOrDefault("applicationId")
-  valid_594062 = validateParameter(valid_594062, JString, required = true,
+  var valid_580062 = path.getOrDefault("applicationId")
+  valid_580062 = validateParameter(valid_580062, JString, required = true,
                                  default = nil)
-  if valid_594062 != nil:
-    section.add "applicationId", valid_594062
+  if valid_580062 != nil:
+    section.add "applicationId", valid_580062
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -1275,50 +1277,50 @@ proc validate_GamesConfigurationLeaderboardConfigurationsList_594060(
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_594063 = query.getOrDefault("fields")
-  valid_594063 = validateParameter(valid_594063, JString, required = false,
+  var valid_580063 = query.getOrDefault("fields")
+  valid_580063 = validateParameter(valid_580063, JString, required = false,
                                  default = nil)
-  if valid_594063 != nil:
-    section.add "fields", valid_594063
-  var valid_594064 = query.getOrDefault("pageToken")
-  valid_594064 = validateParameter(valid_594064, JString, required = false,
+  if valid_580063 != nil:
+    section.add "fields", valid_580063
+  var valid_580064 = query.getOrDefault("pageToken")
+  valid_580064 = validateParameter(valid_580064, JString, required = false,
                                  default = nil)
-  if valid_594064 != nil:
-    section.add "pageToken", valid_594064
-  var valid_594065 = query.getOrDefault("quotaUser")
-  valid_594065 = validateParameter(valid_594065, JString, required = false,
+  if valid_580064 != nil:
+    section.add "pageToken", valid_580064
+  var valid_580065 = query.getOrDefault("quotaUser")
+  valid_580065 = validateParameter(valid_580065, JString, required = false,
                                  default = nil)
-  if valid_594065 != nil:
-    section.add "quotaUser", valid_594065
-  var valid_594066 = query.getOrDefault("alt")
-  valid_594066 = validateParameter(valid_594066, JString, required = false,
+  if valid_580065 != nil:
+    section.add "quotaUser", valid_580065
+  var valid_580066 = query.getOrDefault("alt")
+  valid_580066 = validateParameter(valid_580066, JString, required = false,
                                  default = newJString("json"))
-  if valid_594066 != nil:
-    section.add "alt", valid_594066
-  var valid_594067 = query.getOrDefault("oauth_token")
-  valid_594067 = validateParameter(valid_594067, JString, required = false,
+  if valid_580066 != nil:
+    section.add "alt", valid_580066
+  var valid_580067 = query.getOrDefault("oauth_token")
+  valid_580067 = validateParameter(valid_580067, JString, required = false,
                                  default = nil)
-  if valid_594067 != nil:
-    section.add "oauth_token", valid_594067
-  var valid_594068 = query.getOrDefault("userIp")
-  valid_594068 = validateParameter(valid_594068, JString, required = false,
+  if valid_580067 != nil:
+    section.add "oauth_token", valid_580067
+  var valid_580068 = query.getOrDefault("userIp")
+  valid_580068 = validateParameter(valid_580068, JString, required = false,
                                  default = nil)
-  if valid_594068 != nil:
-    section.add "userIp", valid_594068
-  var valid_594069 = query.getOrDefault("maxResults")
-  valid_594069 = validateParameter(valid_594069, JInt, required = false, default = nil)
-  if valid_594069 != nil:
-    section.add "maxResults", valid_594069
-  var valid_594070 = query.getOrDefault("key")
-  valid_594070 = validateParameter(valid_594070, JString, required = false,
+  if valid_580068 != nil:
+    section.add "userIp", valid_580068
+  var valid_580069 = query.getOrDefault("maxResults")
+  valid_580069 = validateParameter(valid_580069, JInt, required = false, default = nil)
+  if valid_580069 != nil:
+    section.add "maxResults", valid_580069
+  var valid_580070 = query.getOrDefault("key")
+  valid_580070 = validateParameter(valid_580070, JString, required = false,
                                  default = nil)
-  if valid_594070 != nil:
-    section.add "key", valid_594070
-  var valid_594071 = query.getOrDefault("prettyPrint")
-  valid_594071 = validateParameter(valid_594071, JBool, required = false,
+  if valid_580070 != nil:
+    section.add "key", valid_580070
+  var valid_580071 = query.getOrDefault("prettyPrint")
+  valid_580071 = validateParameter(valid_580071, JBool, required = false,
                                  default = newJBool(true))
-  if valid_594071 != nil:
-    section.add "prettyPrint", valid_594071
+  if valid_580071 != nil:
+    section.add "prettyPrint", valid_580071
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1327,21 +1329,21 @@ proc validate_GamesConfigurationLeaderboardConfigurationsList_594060(
   if body != nil:
     result.add "body", body
 
-proc call*(call_594072: Call_GamesConfigurationLeaderboardConfigurationsList_594059;
+proc call*(call_580072: Call_GamesConfigurationLeaderboardConfigurationsList_580059;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Returns a list of the leaderboard configurations in this application.
   ## 
-  let valid = call_594072.validator(path, query, header, formData, body)
-  let scheme = call_594072.pickScheme
+  let valid = call_580072.validator(path, query, header, formData, body)
+  let scheme = call_580072.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_594072.url(scheme.get, call_594072.host, call_594072.base,
-                         call_594072.route, valid.getOrDefault("path"),
+  let url = call_580072.url(scheme.get, call_580072.host, call_580072.base,
+                         call_580072.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_594072, url, valid)
+  result = hook(call_580072, url, valid)
 
-proc call*(call_594073: Call_GamesConfigurationLeaderboardConfigurationsList_594059;
+proc call*(call_580073: Call_GamesConfigurationLeaderboardConfigurationsList_580059;
           applicationId: string; fields: string = ""; pageToken: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; maxResults: int = 0; key: string = "";
@@ -1368,35 +1370,35 @@ proc call*(call_594073: Call_GamesConfigurationLeaderboardConfigurationsList_594
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_594074 = newJObject()
-  var query_594075 = newJObject()
-  add(query_594075, "fields", newJString(fields))
-  add(query_594075, "pageToken", newJString(pageToken))
-  add(query_594075, "quotaUser", newJString(quotaUser))
-  add(query_594075, "alt", newJString(alt))
-  add(query_594075, "oauth_token", newJString(oauthToken))
-  add(query_594075, "userIp", newJString(userIp))
-  add(path_594074, "applicationId", newJString(applicationId))
-  add(query_594075, "maxResults", newJInt(maxResults))
-  add(query_594075, "key", newJString(key))
-  add(query_594075, "prettyPrint", newJBool(prettyPrint))
-  result = call_594073.call(path_594074, query_594075, nil, nil, nil)
+  var path_580074 = newJObject()
+  var query_580075 = newJObject()
+  add(query_580075, "fields", newJString(fields))
+  add(query_580075, "pageToken", newJString(pageToken))
+  add(query_580075, "quotaUser", newJString(quotaUser))
+  add(query_580075, "alt", newJString(alt))
+  add(query_580075, "oauth_token", newJString(oauthToken))
+  add(query_580075, "userIp", newJString(userIp))
+  add(path_580074, "applicationId", newJString(applicationId))
+  add(query_580075, "maxResults", newJInt(maxResults))
+  add(query_580075, "key", newJString(key))
+  add(query_580075, "prettyPrint", newJBool(prettyPrint))
+  result = call_580073.call(path_580074, query_580075, nil, nil, nil)
 
-var gamesConfigurationLeaderboardConfigurationsList* = Call_GamesConfigurationLeaderboardConfigurationsList_594059(
+var gamesConfigurationLeaderboardConfigurationsList* = Call_GamesConfigurationLeaderboardConfigurationsList_580059(
     name: "gamesConfigurationLeaderboardConfigurationsList",
     meth: HttpMethod.HttpGet, host: "www.googleapis.com",
     route: "/applications/{applicationId}/leaderboards",
-    validator: validate_GamesConfigurationLeaderboardConfigurationsList_594060,
+    validator: validate_GamesConfigurationLeaderboardConfigurationsList_580060,
     base: "/games/v1configuration",
-    url: url_GamesConfigurationLeaderboardConfigurationsList_594061,
+    url: url_GamesConfigurationLeaderboardConfigurationsList_580061,
     schemes: {Scheme.Https})
 type
-  Call_GamesConfigurationImageConfigurationsUpload_594093 = ref object of OpenApiRestCall_593424
-proc url_GamesConfigurationImageConfigurationsUpload_594095(protocol: Scheme;
+  Call_GamesConfigurationImageConfigurationsUpload_580093 = ref object of OpenApiRestCall_579424
+proc url_GamesConfigurationImageConfigurationsUpload_580095(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "resourceId" in path, "`resourceId` is a required path parameter"
   assert "imageType" in path, "`imageType` is a required path parameter"
@@ -1410,7 +1412,7 @@ proc url_GamesConfigurationImageConfigurationsUpload_594095(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_GamesConfigurationImageConfigurationsUpload_594094(path: JsonNode;
+proc validate_GamesConfigurationImageConfigurationsUpload_580094(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Uploads an image for a resource with the given ID and image type.
   ## 
@@ -1423,16 +1425,16 @@ proc validate_GamesConfigurationImageConfigurationsUpload_594094(path: JsonNode;
   ##             : The ID of the resource used by this method.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `imageType` field"
-  var valid_594096 = path.getOrDefault("imageType")
-  valid_594096 = validateParameter(valid_594096, JString, required = true,
+  var valid_580096 = path.getOrDefault("imageType")
+  valid_580096 = validateParameter(valid_580096, JString, required = true,
                                  default = newJString("ACHIEVEMENT_ICON"))
-  if valid_594096 != nil:
-    section.add "imageType", valid_594096
-  var valid_594097 = path.getOrDefault("resourceId")
-  valid_594097 = validateParameter(valid_594097, JString, required = true,
+  if valid_580096 != nil:
+    section.add "imageType", valid_580096
+  var valid_580097 = path.getOrDefault("resourceId")
+  valid_580097 = validateParameter(valid_580097, JString, required = true,
                                  default = nil)
-  if valid_594097 != nil:
-    section.add "resourceId", valid_594097
+  if valid_580097 != nil:
+    section.add "resourceId", valid_580097
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -1450,41 +1452,41 @@ proc validate_GamesConfigurationImageConfigurationsUpload_594094(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_594098 = query.getOrDefault("fields")
-  valid_594098 = validateParameter(valid_594098, JString, required = false,
+  var valid_580098 = query.getOrDefault("fields")
+  valid_580098 = validateParameter(valid_580098, JString, required = false,
                                  default = nil)
-  if valid_594098 != nil:
-    section.add "fields", valid_594098
-  var valid_594099 = query.getOrDefault("quotaUser")
-  valid_594099 = validateParameter(valid_594099, JString, required = false,
+  if valid_580098 != nil:
+    section.add "fields", valid_580098
+  var valid_580099 = query.getOrDefault("quotaUser")
+  valid_580099 = validateParameter(valid_580099, JString, required = false,
                                  default = nil)
-  if valid_594099 != nil:
-    section.add "quotaUser", valid_594099
-  var valid_594100 = query.getOrDefault("alt")
-  valid_594100 = validateParameter(valid_594100, JString, required = false,
+  if valid_580099 != nil:
+    section.add "quotaUser", valid_580099
+  var valid_580100 = query.getOrDefault("alt")
+  valid_580100 = validateParameter(valid_580100, JString, required = false,
                                  default = newJString("json"))
-  if valid_594100 != nil:
-    section.add "alt", valid_594100
-  var valid_594101 = query.getOrDefault("oauth_token")
-  valid_594101 = validateParameter(valid_594101, JString, required = false,
+  if valid_580100 != nil:
+    section.add "alt", valid_580100
+  var valid_580101 = query.getOrDefault("oauth_token")
+  valid_580101 = validateParameter(valid_580101, JString, required = false,
                                  default = nil)
-  if valid_594101 != nil:
-    section.add "oauth_token", valid_594101
-  var valid_594102 = query.getOrDefault("userIp")
-  valid_594102 = validateParameter(valid_594102, JString, required = false,
+  if valid_580101 != nil:
+    section.add "oauth_token", valid_580101
+  var valid_580102 = query.getOrDefault("userIp")
+  valid_580102 = validateParameter(valid_580102, JString, required = false,
                                  default = nil)
-  if valid_594102 != nil:
-    section.add "userIp", valid_594102
-  var valid_594103 = query.getOrDefault("key")
-  valid_594103 = validateParameter(valid_594103, JString, required = false,
+  if valid_580102 != nil:
+    section.add "userIp", valid_580102
+  var valid_580103 = query.getOrDefault("key")
+  valid_580103 = validateParameter(valid_580103, JString, required = false,
                                  default = nil)
-  if valid_594103 != nil:
-    section.add "key", valid_594103
-  var valid_594104 = query.getOrDefault("prettyPrint")
-  valid_594104 = validateParameter(valid_594104, JBool, required = false,
+  if valid_580103 != nil:
+    section.add "key", valid_580103
+  var valid_580104 = query.getOrDefault("prettyPrint")
+  valid_580104 = validateParameter(valid_580104, JBool, required = false,
                                  default = newJBool(true))
-  if valid_594104 != nil:
-    section.add "prettyPrint", valid_594104
+  if valid_580104 != nil:
+    section.add "prettyPrint", valid_580104
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1493,21 +1495,21 @@ proc validate_GamesConfigurationImageConfigurationsUpload_594094(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_594105: Call_GamesConfigurationImageConfigurationsUpload_594093;
+proc call*(call_580105: Call_GamesConfigurationImageConfigurationsUpload_580093;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Uploads an image for a resource with the given ID and image type.
   ## 
-  let valid = call_594105.validator(path, query, header, formData, body)
-  let scheme = call_594105.pickScheme
+  let valid = call_580105.validator(path, query, header, formData, body)
+  let scheme = call_580105.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_594105.url(scheme.get, call_594105.host, call_594105.base,
-                         call_594105.route, valid.getOrDefault("path"),
+  let url = call_580105.url(scheme.get, call_580105.host, call_580105.base,
+                         call_580105.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_594105, url, valid)
+  result = hook(call_580105, url, valid)
 
-proc call*(call_594106: Call_GamesConfigurationImageConfigurationsUpload_594093;
+proc call*(call_580106: Call_GamesConfigurationImageConfigurationsUpload_580093;
           resourceId: string; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; userIp: string = "";
           imageType: string = "ACHIEVEMENT_ICON"; key: string = "";
@@ -1532,35 +1534,35 @@ proc call*(call_594106: Call_GamesConfigurationImageConfigurationsUpload_594093;
   ##             : The ID of the resource used by this method.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_594107 = newJObject()
-  var query_594108 = newJObject()
-  add(query_594108, "fields", newJString(fields))
-  add(query_594108, "quotaUser", newJString(quotaUser))
-  add(query_594108, "alt", newJString(alt))
-  add(query_594108, "oauth_token", newJString(oauthToken))
-  add(query_594108, "userIp", newJString(userIp))
-  add(path_594107, "imageType", newJString(imageType))
-  add(query_594108, "key", newJString(key))
-  add(path_594107, "resourceId", newJString(resourceId))
-  add(query_594108, "prettyPrint", newJBool(prettyPrint))
-  result = call_594106.call(path_594107, query_594108, nil, nil, nil)
+  var path_580107 = newJObject()
+  var query_580108 = newJObject()
+  add(query_580108, "fields", newJString(fields))
+  add(query_580108, "quotaUser", newJString(quotaUser))
+  add(query_580108, "alt", newJString(alt))
+  add(query_580108, "oauth_token", newJString(oauthToken))
+  add(query_580108, "userIp", newJString(userIp))
+  add(path_580107, "imageType", newJString(imageType))
+  add(query_580108, "key", newJString(key))
+  add(path_580107, "resourceId", newJString(resourceId))
+  add(query_580108, "prettyPrint", newJBool(prettyPrint))
+  result = call_580106.call(path_580107, query_580108, nil, nil, nil)
 
-var gamesConfigurationImageConfigurationsUpload* = Call_GamesConfigurationImageConfigurationsUpload_594093(
+var gamesConfigurationImageConfigurationsUpload* = Call_GamesConfigurationImageConfigurationsUpload_580093(
     name: "gamesConfigurationImageConfigurationsUpload",
     meth: HttpMethod.HttpPost, host: "www.googleapis.com",
     route: "/images/{resourceId}/imageType/{imageType}",
-    validator: validate_GamesConfigurationImageConfigurationsUpload_594094,
+    validator: validate_GamesConfigurationImageConfigurationsUpload_580094,
     base: "/games/v1configuration",
-    url: url_GamesConfigurationImageConfigurationsUpload_594095,
+    url: url_GamesConfigurationImageConfigurationsUpload_580095,
     schemes: {Scheme.Https})
 type
-  Call_GamesConfigurationLeaderboardConfigurationsUpdate_594124 = ref object of OpenApiRestCall_593424
-proc url_GamesConfigurationLeaderboardConfigurationsUpdate_594126(
+  Call_GamesConfigurationLeaderboardConfigurationsUpdate_580124 = ref object of OpenApiRestCall_579424
+proc url_GamesConfigurationLeaderboardConfigurationsUpdate_580126(
     protocol: Scheme; host: string; base: string; route: string; path: JsonNode;
     query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "leaderboardId" in path, "`leaderboardId` is a required path parameter"
   const
@@ -1571,7 +1573,7 @@ proc url_GamesConfigurationLeaderboardConfigurationsUpdate_594126(
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_GamesConfigurationLeaderboardConfigurationsUpdate_594125(
+proc validate_GamesConfigurationLeaderboardConfigurationsUpdate_580125(
     path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
     body: JsonNode): JsonNode =
   ## Update the metadata of the leaderboard configuration with the given ID.
@@ -1584,11 +1586,11 @@ proc validate_GamesConfigurationLeaderboardConfigurationsUpdate_594125(
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `leaderboardId` field"
-  var valid_594127 = path.getOrDefault("leaderboardId")
-  valid_594127 = validateParameter(valid_594127, JString, required = true,
+  var valid_580127 = path.getOrDefault("leaderboardId")
+  valid_580127 = validateParameter(valid_580127, JString, required = true,
                                  default = nil)
-  if valid_594127 != nil:
-    section.add "leaderboardId", valid_594127
+  if valid_580127 != nil:
+    section.add "leaderboardId", valid_580127
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -1606,41 +1608,41 @@ proc validate_GamesConfigurationLeaderboardConfigurationsUpdate_594125(
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_594128 = query.getOrDefault("fields")
-  valid_594128 = validateParameter(valid_594128, JString, required = false,
+  var valid_580128 = query.getOrDefault("fields")
+  valid_580128 = validateParameter(valid_580128, JString, required = false,
                                  default = nil)
-  if valid_594128 != nil:
-    section.add "fields", valid_594128
-  var valid_594129 = query.getOrDefault("quotaUser")
-  valid_594129 = validateParameter(valid_594129, JString, required = false,
+  if valid_580128 != nil:
+    section.add "fields", valid_580128
+  var valid_580129 = query.getOrDefault("quotaUser")
+  valid_580129 = validateParameter(valid_580129, JString, required = false,
                                  default = nil)
-  if valid_594129 != nil:
-    section.add "quotaUser", valid_594129
-  var valid_594130 = query.getOrDefault("alt")
-  valid_594130 = validateParameter(valid_594130, JString, required = false,
+  if valid_580129 != nil:
+    section.add "quotaUser", valid_580129
+  var valid_580130 = query.getOrDefault("alt")
+  valid_580130 = validateParameter(valid_580130, JString, required = false,
                                  default = newJString("json"))
-  if valid_594130 != nil:
-    section.add "alt", valid_594130
-  var valid_594131 = query.getOrDefault("oauth_token")
-  valid_594131 = validateParameter(valid_594131, JString, required = false,
+  if valid_580130 != nil:
+    section.add "alt", valid_580130
+  var valid_580131 = query.getOrDefault("oauth_token")
+  valid_580131 = validateParameter(valid_580131, JString, required = false,
                                  default = nil)
-  if valid_594131 != nil:
-    section.add "oauth_token", valid_594131
-  var valid_594132 = query.getOrDefault("userIp")
-  valid_594132 = validateParameter(valid_594132, JString, required = false,
+  if valid_580131 != nil:
+    section.add "oauth_token", valid_580131
+  var valid_580132 = query.getOrDefault("userIp")
+  valid_580132 = validateParameter(valid_580132, JString, required = false,
                                  default = nil)
-  if valid_594132 != nil:
-    section.add "userIp", valid_594132
-  var valid_594133 = query.getOrDefault("key")
-  valid_594133 = validateParameter(valid_594133, JString, required = false,
+  if valid_580132 != nil:
+    section.add "userIp", valid_580132
+  var valid_580133 = query.getOrDefault("key")
+  valid_580133 = validateParameter(valid_580133, JString, required = false,
                                  default = nil)
-  if valid_594133 != nil:
-    section.add "key", valid_594133
-  var valid_594134 = query.getOrDefault("prettyPrint")
-  valid_594134 = validateParameter(valid_594134, JBool, required = false,
+  if valid_580133 != nil:
+    section.add "key", valid_580133
+  var valid_580134 = query.getOrDefault("prettyPrint")
+  valid_580134 = validateParameter(valid_580134, JBool, required = false,
                                  default = newJBool(true))
-  if valid_594134 != nil:
-    section.add "prettyPrint", valid_594134
+  if valid_580134 != nil:
+    section.add "prettyPrint", valid_580134
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1652,21 +1654,21 @@ proc validate_GamesConfigurationLeaderboardConfigurationsUpdate_594125(
   if body != nil:
     result.add "body", body
 
-proc call*(call_594136: Call_GamesConfigurationLeaderboardConfigurationsUpdate_594124;
+proc call*(call_580136: Call_GamesConfigurationLeaderboardConfigurationsUpdate_580124;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Update the metadata of the leaderboard configuration with the given ID.
   ## 
-  let valid = call_594136.validator(path, query, header, formData, body)
-  let scheme = call_594136.pickScheme
+  let valid = call_580136.validator(path, query, header, formData, body)
+  let scheme = call_580136.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_594136.url(scheme.get, call_594136.host, call_594136.base,
-                         call_594136.route, valid.getOrDefault("path"),
+  let url = call_580136.url(scheme.get, call_580136.host, call_580136.base,
+                         call_580136.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_594136, url, valid)
+  result = hook(call_580136, url, valid)
 
-proc call*(call_594137: Call_GamesConfigurationLeaderboardConfigurationsUpdate_594124;
+proc call*(call_580137: Call_GamesConfigurationLeaderboardConfigurationsUpdate_580124;
           leaderboardId: string; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; userIp: string = "";
           key: string = ""; body: JsonNode = nil; prettyPrint: bool = true): Recallable =
@@ -1689,36 +1691,36 @@ proc call*(call_594137: Call_GamesConfigurationLeaderboardConfigurationsUpdate_5
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_594138 = newJObject()
-  var query_594139 = newJObject()
-  var body_594140 = newJObject()
-  add(query_594139, "fields", newJString(fields))
-  add(query_594139, "quotaUser", newJString(quotaUser))
-  add(query_594139, "alt", newJString(alt))
-  add(path_594138, "leaderboardId", newJString(leaderboardId))
-  add(query_594139, "oauth_token", newJString(oauthToken))
-  add(query_594139, "userIp", newJString(userIp))
-  add(query_594139, "key", newJString(key))
+  var path_580138 = newJObject()
+  var query_580139 = newJObject()
+  var body_580140 = newJObject()
+  add(query_580139, "fields", newJString(fields))
+  add(query_580139, "quotaUser", newJString(quotaUser))
+  add(query_580139, "alt", newJString(alt))
+  add(path_580138, "leaderboardId", newJString(leaderboardId))
+  add(query_580139, "oauth_token", newJString(oauthToken))
+  add(query_580139, "userIp", newJString(userIp))
+  add(query_580139, "key", newJString(key))
   if body != nil:
-    body_594140 = body
-  add(query_594139, "prettyPrint", newJBool(prettyPrint))
-  result = call_594137.call(path_594138, query_594139, nil, nil, body_594140)
+    body_580140 = body
+  add(query_580139, "prettyPrint", newJBool(prettyPrint))
+  result = call_580137.call(path_580138, query_580139, nil, nil, body_580140)
 
-var gamesConfigurationLeaderboardConfigurationsUpdate* = Call_GamesConfigurationLeaderboardConfigurationsUpdate_594124(
+var gamesConfigurationLeaderboardConfigurationsUpdate* = Call_GamesConfigurationLeaderboardConfigurationsUpdate_580124(
     name: "gamesConfigurationLeaderboardConfigurationsUpdate",
     meth: HttpMethod.HttpPut, host: "www.googleapis.com",
     route: "/leaderboards/{leaderboardId}",
-    validator: validate_GamesConfigurationLeaderboardConfigurationsUpdate_594125,
+    validator: validate_GamesConfigurationLeaderboardConfigurationsUpdate_580125,
     base: "/games/v1configuration",
-    url: url_GamesConfigurationLeaderboardConfigurationsUpdate_594126,
+    url: url_GamesConfigurationLeaderboardConfigurationsUpdate_580126,
     schemes: {Scheme.Https})
 type
-  Call_GamesConfigurationLeaderboardConfigurationsGet_594109 = ref object of OpenApiRestCall_593424
-proc url_GamesConfigurationLeaderboardConfigurationsGet_594111(protocol: Scheme;
+  Call_GamesConfigurationLeaderboardConfigurationsGet_580109 = ref object of OpenApiRestCall_579424
+proc url_GamesConfigurationLeaderboardConfigurationsGet_580111(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "leaderboardId" in path, "`leaderboardId` is a required path parameter"
   const
@@ -1729,7 +1731,7 @@ proc url_GamesConfigurationLeaderboardConfigurationsGet_594111(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_GamesConfigurationLeaderboardConfigurationsGet_594110(
+proc validate_GamesConfigurationLeaderboardConfigurationsGet_580110(
     path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
     body: JsonNode): JsonNode =
   ## Retrieves the metadata of the leaderboard configuration with the given ID.
@@ -1742,11 +1744,11 @@ proc validate_GamesConfigurationLeaderboardConfigurationsGet_594110(
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `leaderboardId` field"
-  var valid_594112 = path.getOrDefault("leaderboardId")
-  valid_594112 = validateParameter(valid_594112, JString, required = true,
+  var valid_580112 = path.getOrDefault("leaderboardId")
+  valid_580112 = validateParameter(valid_580112, JString, required = true,
                                  default = nil)
-  if valid_594112 != nil:
-    section.add "leaderboardId", valid_594112
+  if valid_580112 != nil:
+    section.add "leaderboardId", valid_580112
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -1764,41 +1766,41 @@ proc validate_GamesConfigurationLeaderboardConfigurationsGet_594110(
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_594113 = query.getOrDefault("fields")
-  valid_594113 = validateParameter(valid_594113, JString, required = false,
+  var valid_580113 = query.getOrDefault("fields")
+  valid_580113 = validateParameter(valid_580113, JString, required = false,
                                  default = nil)
-  if valid_594113 != nil:
-    section.add "fields", valid_594113
-  var valid_594114 = query.getOrDefault("quotaUser")
-  valid_594114 = validateParameter(valid_594114, JString, required = false,
+  if valid_580113 != nil:
+    section.add "fields", valid_580113
+  var valid_580114 = query.getOrDefault("quotaUser")
+  valid_580114 = validateParameter(valid_580114, JString, required = false,
                                  default = nil)
-  if valid_594114 != nil:
-    section.add "quotaUser", valid_594114
-  var valid_594115 = query.getOrDefault("alt")
-  valid_594115 = validateParameter(valid_594115, JString, required = false,
+  if valid_580114 != nil:
+    section.add "quotaUser", valid_580114
+  var valid_580115 = query.getOrDefault("alt")
+  valid_580115 = validateParameter(valid_580115, JString, required = false,
                                  default = newJString("json"))
-  if valid_594115 != nil:
-    section.add "alt", valid_594115
-  var valid_594116 = query.getOrDefault("oauth_token")
-  valid_594116 = validateParameter(valid_594116, JString, required = false,
+  if valid_580115 != nil:
+    section.add "alt", valid_580115
+  var valid_580116 = query.getOrDefault("oauth_token")
+  valid_580116 = validateParameter(valid_580116, JString, required = false,
                                  default = nil)
-  if valid_594116 != nil:
-    section.add "oauth_token", valid_594116
-  var valid_594117 = query.getOrDefault("userIp")
-  valid_594117 = validateParameter(valid_594117, JString, required = false,
+  if valid_580116 != nil:
+    section.add "oauth_token", valid_580116
+  var valid_580117 = query.getOrDefault("userIp")
+  valid_580117 = validateParameter(valid_580117, JString, required = false,
                                  default = nil)
-  if valid_594117 != nil:
-    section.add "userIp", valid_594117
-  var valid_594118 = query.getOrDefault("key")
-  valid_594118 = validateParameter(valid_594118, JString, required = false,
+  if valid_580117 != nil:
+    section.add "userIp", valid_580117
+  var valid_580118 = query.getOrDefault("key")
+  valid_580118 = validateParameter(valid_580118, JString, required = false,
                                  default = nil)
-  if valid_594118 != nil:
-    section.add "key", valid_594118
-  var valid_594119 = query.getOrDefault("prettyPrint")
-  valid_594119 = validateParameter(valid_594119, JBool, required = false,
+  if valid_580118 != nil:
+    section.add "key", valid_580118
+  var valid_580119 = query.getOrDefault("prettyPrint")
+  valid_580119 = validateParameter(valid_580119, JBool, required = false,
                                  default = newJBool(true))
-  if valid_594119 != nil:
-    section.add "prettyPrint", valid_594119
+  if valid_580119 != nil:
+    section.add "prettyPrint", valid_580119
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1807,21 +1809,21 @@ proc validate_GamesConfigurationLeaderboardConfigurationsGet_594110(
   if body != nil:
     result.add "body", body
 
-proc call*(call_594120: Call_GamesConfigurationLeaderboardConfigurationsGet_594109;
+proc call*(call_580120: Call_GamesConfigurationLeaderboardConfigurationsGet_580109;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Retrieves the metadata of the leaderboard configuration with the given ID.
   ## 
-  let valid = call_594120.validator(path, query, header, formData, body)
-  let scheme = call_594120.pickScheme
+  let valid = call_580120.validator(path, query, header, formData, body)
+  let scheme = call_580120.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_594120.url(scheme.get, call_594120.host, call_594120.base,
-                         call_594120.route, valid.getOrDefault("path"),
+  let url = call_580120.url(scheme.get, call_580120.host, call_580120.base,
+                         call_580120.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_594120, url, valid)
+  result = hook(call_580120, url, valid)
 
-proc call*(call_594121: Call_GamesConfigurationLeaderboardConfigurationsGet_594109;
+proc call*(call_580121: Call_GamesConfigurationLeaderboardConfigurationsGet_580109;
           leaderboardId: string; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; userIp: string = "";
           key: string = ""; prettyPrint: bool = true): Recallable =
@@ -1843,34 +1845,34 @@ proc call*(call_594121: Call_GamesConfigurationLeaderboardConfigurationsGet_5941
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_594122 = newJObject()
-  var query_594123 = newJObject()
-  add(query_594123, "fields", newJString(fields))
-  add(query_594123, "quotaUser", newJString(quotaUser))
-  add(query_594123, "alt", newJString(alt))
-  add(path_594122, "leaderboardId", newJString(leaderboardId))
-  add(query_594123, "oauth_token", newJString(oauthToken))
-  add(query_594123, "userIp", newJString(userIp))
-  add(query_594123, "key", newJString(key))
-  add(query_594123, "prettyPrint", newJBool(prettyPrint))
-  result = call_594121.call(path_594122, query_594123, nil, nil, nil)
+  var path_580122 = newJObject()
+  var query_580123 = newJObject()
+  add(query_580123, "fields", newJString(fields))
+  add(query_580123, "quotaUser", newJString(quotaUser))
+  add(query_580123, "alt", newJString(alt))
+  add(path_580122, "leaderboardId", newJString(leaderboardId))
+  add(query_580123, "oauth_token", newJString(oauthToken))
+  add(query_580123, "userIp", newJString(userIp))
+  add(query_580123, "key", newJString(key))
+  add(query_580123, "prettyPrint", newJBool(prettyPrint))
+  result = call_580121.call(path_580122, query_580123, nil, nil, nil)
 
-var gamesConfigurationLeaderboardConfigurationsGet* = Call_GamesConfigurationLeaderboardConfigurationsGet_594109(
+var gamesConfigurationLeaderboardConfigurationsGet* = Call_GamesConfigurationLeaderboardConfigurationsGet_580109(
     name: "gamesConfigurationLeaderboardConfigurationsGet",
     meth: HttpMethod.HttpGet, host: "www.googleapis.com",
     route: "/leaderboards/{leaderboardId}",
-    validator: validate_GamesConfigurationLeaderboardConfigurationsGet_594110,
+    validator: validate_GamesConfigurationLeaderboardConfigurationsGet_580110,
     base: "/games/v1configuration",
-    url: url_GamesConfigurationLeaderboardConfigurationsGet_594111,
+    url: url_GamesConfigurationLeaderboardConfigurationsGet_580111,
     schemes: {Scheme.Https})
 type
-  Call_GamesConfigurationLeaderboardConfigurationsPatch_594156 = ref object of OpenApiRestCall_593424
-proc url_GamesConfigurationLeaderboardConfigurationsPatch_594158(
+  Call_GamesConfigurationLeaderboardConfigurationsPatch_580156 = ref object of OpenApiRestCall_579424
+proc url_GamesConfigurationLeaderboardConfigurationsPatch_580158(
     protocol: Scheme; host: string; base: string; route: string; path: JsonNode;
     query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "leaderboardId" in path, "`leaderboardId` is a required path parameter"
   const
@@ -1881,7 +1883,7 @@ proc url_GamesConfigurationLeaderboardConfigurationsPatch_594158(
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_GamesConfigurationLeaderboardConfigurationsPatch_594157(
+proc validate_GamesConfigurationLeaderboardConfigurationsPatch_580157(
     path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
     body: JsonNode): JsonNode =
   ## Update the metadata of the leaderboard configuration with the given ID. This method supports patch semantics.
@@ -1894,11 +1896,11 @@ proc validate_GamesConfigurationLeaderboardConfigurationsPatch_594157(
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `leaderboardId` field"
-  var valid_594159 = path.getOrDefault("leaderboardId")
-  valid_594159 = validateParameter(valid_594159, JString, required = true,
+  var valid_580159 = path.getOrDefault("leaderboardId")
+  valid_580159 = validateParameter(valid_580159, JString, required = true,
                                  default = nil)
-  if valid_594159 != nil:
-    section.add "leaderboardId", valid_594159
+  if valid_580159 != nil:
+    section.add "leaderboardId", valid_580159
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -1916,41 +1918,41 @@ proc validate_GamesConfigurationLeaderboardConfigurationsPatch_594157(
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_594160 = query.getOrDefault("fields")
-  valid_594160 = validateParameter(valid_594160, JString, required = false,
+  var valid_580160 = query.getOrDefault("fields")
+  valid_580160 = validateParameter(valid_580160, JString, required = false,
                                  default = nil)
-  if valid_594160 != nil:
-    section.add "fields", valid_594160
-  var valid_594161 = query.getOrDefault("quotaUser")
-  valid_594161 = validateParameter(valid_594161, JString, required = false,
+  if valid_580160 != nil:
+    section.add "fields", valid_580160
+  var valid_580161 = query.getOrDefault("quotaUser")
+  valid_580161 = validateParameter(valid_580161, JString, required = false,
                                  default = nil)
-  if valid_594161 != nil:
-    section.add "quotaUser", valid_594161
-  var valid_594162 = query.getOrDefault("alt")
-  valid_594162 = validateParameter(valid_594162, JString, required = false,
+  if valid_580161 != nil:
+    section.add "quotaUser", valid_580161
+  var valid_580162 = query.getOrDefault("alt")
+  valid_580162 = validateParameter(valid_580162, JString, required = false,
                                  default = newJString("json"))
-  if valid_594162 != nil:
-    section.add "alt", valid_594162
-  var valid_594163 = query.getOrDefault("oauth_token")
-  valid_594163 = validateParameter(valid_594163, JString, required = false,
+  if valid_580162 != nil:
+    section.add "alt", valid_580162
+  var valid_580163 = query.getOrDefault("oauth_token")
+  valid_580163 = validateParameter(valid_580163, JString, required = false,
                                  default = nil)
-  if valid_594163 != nil:
-    section.add "oauth_token", valid_594163
-  var valid_594164 = query.getOrDefault("userIp")
-  valid_594164 = validateParameter(valid_594164, JString, required = false,
+  if valid_580163 != nil:
+    section.add "oauth_token", valid_580163
+  var valid_580164 = query.getOrDefault("userIp")
+  valid_580164 = validateParameter(valid_580164, JString, required = false,
                                  default = nil)
-  if valid_594164 != nil:
-    section.add "userIp", valid_594164
-  var valid_594165 = query.getOrDefault("key")
-  valid_594165 = validateParameter(valid_594165, JString, required = false,
+  if valid_580164 != nil:
+    section.add "userIp", valid_580164
+  var valid_580165 = query.getOrDefault("key")
+  valid_580165 = validateParameter(valid_580165, JString, required = false,
                                  default = nil)
-  if valid_594165 != nil:
-    section.add "key", valid_594165
-  var valid_594166 = query.getOrDefault("prettyPrint")
-  valid_594166 = validateParameter(valid_594166, JBool, required = false,
+  if valid_580165 != nil:
+    section.add "key", valid_580165
+  var valid_580166 = query.getOrDefault("prettyPrint")
+  valid_580166 = validateParameter(valid_580166, JBool, required = false,
                                  default = newJBool(true))
-  if valid_594166 != nil:
-    section.add "prettyPrint", valid_594166
+  if valid_580166 != nil:
+    section.add "prettyPrint", valid_580166
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1962,21 +1964,21 @@ proc validate_GamesConfigurationLeaderboardConfigurationsPatch_594157(
   if body != nil:
     result.add "body", body
 
-proc call*(call_594168: Call_GamesConfigurationLeaderboardConfigurationsPatch_594156;
+proc call*(call_580168: Call_GamesConfigurationLeaderboardConfigurationsPatch_580156;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Update the metadata of the leaderboard configuration with the given ID. This method supports patch semantics.
   ## 
-  let valid = call_594168.validator(path, query, header, formData, body)
-  let scheme = call_594168.pickScheme
+  let valid = call_580168.validator(path, query, header, formData, body)
+  let scheme = call_580168.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_594168.url(scheme.get, call_594168.host, call_594168.base,
-                         call_594168.route, valid.getOrDefault("path"),
+  let url = call_580168.url(scheme.get, call_580168.host, call_580168.base,
+                         call_580168.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_594168, url, valid)
+  result = hook(call_580168, url, valid)
 
-proc call*(call_594169: Call_GamesConfigurationLeaderboardConfigurationsPatch_594156;
+proc call*(call_580169: Call_GamesConfigurationLeaderboardConfigurationsPatch_580156;
           leaderboardId: string; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; userIp: string = "";
           key: string = ""; body: JsonNode = nil; prettyPrint: bool = true): Recallable =
@@ -1999,37 +2001,37 @@ proc call*(call_594169: Call_GamesConfigurationLeaderboardConfigurationsPatch_59
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_594170 = newJObject()
-  var query_594171 = newJObject()
-  var body_594172 = newJObject()
-  add(query_594171, "fields", newJString(fields))
-  add(query_594171, "quotaUser", newJString(quotaUser))
-  add(query_594171, "alt", newJString(alt))
-  add(path_594170, "leaderboardId", newJString(leaderboardId))
-  add(query_594171, "oauth_token", newJString(oauthToken))
-  add(query_594171, "userIp", newJString(userIp))
-  add(query_594171, "key", newJString(key))
+  var path_580170 = newJObject()
+  var query_580171 = newJObject()
+  var body_580172 = newJObject()
+  add(query_580171, "fields", newJString(fields))
+  add(query_580171, "quotaUser", newJString(quotaUser))
+  add(query_580171, "alt", newJString(alt))
+  add(path_580170, "leaderboardId", newJString(leaderboardId))
+  add(query_580171, "oauth_token", newJString(oauthToken))
+  add(query_580171, "userIp", newJString(userIp))
+  add(query_580171, "key", newJString(key))
   if body != nil:
-    body_594172 = body
-  add(query_594171, "prettyPrint", newJBool(prettyPrint))
-  result = call_594169.call(path_594170, query_594171, nil, nil, body_594172)
+    body_580172 = body
+  add(query_580171, "prettyPrint", newJBool(prettyPrint))
+  result = call_580169.call(path_580170, query_580171, nil, nil, body_580172)
 
-var gamesConfigurationLeaderboardConfigurationsPatch* = Call_GamesConfigurationLeaderboardConfigurationsPatch_594156(
+var gamesConfigurationLeaderboardConfigurationsPatch* = Call_GamesConfigurationLeaderboardConfigurationsPatch_580156(
     name: "gamesConfigurationLeaderboardConfigurationsPatch",
     meth: HttpMethod.HttpPatch, host: "www.googleapis.com",
     route: "/leaderboards/{leaderboardId}",
-    validator: validate_GamesConfigurationLeaderboardConfigurationsPatch_594157,
+    validator: validate_GamesConfigurationLeaderboardConfigurationsPatch_580157,
     base: "/games/v1configuration",
-    url: url_GamesConfigurationLeaderboardConfigurationsPatch_594158,
+    url: url_GamesConfigurationLeaderboardConfigurationsPatch_580158,
     schemes: {Scheme.Https})
 type
-  Call_GamesConfigurationLeaderboardConfigurationsDelete_594141 = ref object of OpenApiRestCall_593424
-proc url_GamesConfigurationLeaderboardConfigurationsDelete_594143(
+  Call_GamesConfigurationLeaderboardConfigurationsDelete_580141 = ref object of OpenApiRestCall_579424
+proc url_GamesConfigurationLeaderboardConfigurationsDelete_580143(
     protocol: Scheme; host: string; base: string; route: string; path: JsonNode;
     query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "leaderboardId" in path, "`leaderboardId` is a required path parameter"
   const
@@ -2040,7 +2042,7 @@ proc url_GamesConfigurationLeaderboardConfigurationsDelete_594143(
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_GamesConfigurationLeaderboardConfigurationsDelete_594142(
+proc validate_GamesConfigurationLeaderboardConfigurationsDelete_580142(
     path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
     body: JsonNode): JsonNode =
   ## Delete the leaderboard configuration with the given ID.
@@ -2053,11 +2055,11 @@ proc validate_GamesConfigurationLeaderboardConfigurationsDelete_594142(
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `leaderboardId` field"
-  var valid_594144 = path.getOrDefault("leaderboardId")
-  valid_594144 = validateParameter(valid_594144, JString, required = true,
+  var valid_580144 = path.getOrDefault("leaderboardId")
+  valid_580144 = validateParameter(valid_580144, JString, required = true,
                                  default = nil)
-  if valid_594144 != nil:
-    section.add "leaderboardId", valid_594144
+  if valid_580144 != nil:
+    section.add "leaderboardId", valid_580144
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -2075,41 +2077,41 @@ proc validate_GamesConfigurationLeaderboardConfigurationsDelete_594142(
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_594145 = query.getOrDefault("fields")
-  valid_594145 = validateParameter(valid_594145, JString, required = false,
+  var valid_580145 = query.getOrDefault("fields")
+  valid_580145 = validateParameter(valid_580145, JString, required = false,
                                  default = nil)
-  if valid_594145 != nil:
-    section.add "fields", valid_594145
-  var valid_594146 = query.getOrDefault("quotaUser")
-  valid_594146 = validateParameter(valid_594146, JString, required = false,
+  if valid_580145 != nil:
+    section.add "fields", valid_580145
+  var valid_580146 = query.getOrDefault("quotaUser")
+  valid_580146 = validateParameter(valid_580146, JString, required = false,
                                  default = nil)
-  if valid_594146 != nil:
-    section.add "quotaUser", valid_594146
-  var valid_594147 = query.getOrDefault("alt")
-  valid_594147 = validateParameter(valid_594147, JString, required = false,
+  if valid_580146 != nil:
+    section.add "quotaUser", valid_580146
+  var valid_580147 = query.getOrDefault("alt")
+  valid_580147 = validateParameter(valid_580147, JString, required = false,
                                  default = newJString("json"))
-  if valid_594147 != nil:
-    section.add "alt", valid_594147
-  var valid_594148 = query.getOrDefault("oauth_token")
-  valid_594148 = validateParameter(valid_594148, JString, required = false,
+  if valid_580147 != nil:
+    section.add "alt", valid_580147
+  var valid_580148 = query.getOrDefault("oauth_token")
+  valid_580148 = validateParameter(valid_580148, JString, required = false,
                                  default = nil)
-  if valid_594148 != nil:
-    section.add "oauth_token", valid_594148
-  var valid_594149 = query.getOrDefault("userIp")
-  valid_594149 = validateParameter(valid_594149, JString, required = false,
+  if valid_580148 != nil:
+    section.add "oauth_token", valid_580148
+  var valid_580149 = query.getOrDefault("userIp")
+  valid_580149 = validateParameter(valid_580149, JString, required = false,
                                  default = nil)
-  if valid_594149 != nil:
-    section.add "userIp", valid_594149
-  var valid_594150 = query.getOrDefault("key")
-  valid_594150 = validateParameter(valid_594150, JString, required = false,
+  if valid_580149 != nil:
+    section.add "userIp", valid_580149
+  var valid_580150 = query.getOrDefault("key")
+  valid_580150 = validateParameter(valid_580150, JString, required = false,
                                  default = nil)
-  if valid_594150 != nil:
-    section.add "key", valid_594150
-  var valid_594151 = query.getOrDefault("prettyPrint")
-  valid_594151 = validateParameter(valid_594151, JBool, required = false,
+  if valid_580150 != nil:
+    section.add "key", valid_580150
+  var valid_580151 = query.getOrDefault("prettyPrint")
+  valid_580151 = validateParameter(valid_580151, JBool, required = false,
                                  default = newJBool(true))
-  if valid_594151 != nil:
-    section.add "prettyPrint", valid_594151
+  if valid_580151 != nil:
+    section.add "prettyPrint", valid_580151
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -2118,21 +2120,21 @@ proc validate_GamesConfigurationLeaderboardConfigurationsDelete_594142(
   if body != nil:
     result.add "body", body
 
-proc call*(call_594152: Call_GamesConfigurationLeaderboardConfigurationsDelete_594141;
+proc call*(call_580152: Call_GamesConfigurationLeaderboardConfigurationsDelete_580141;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Delete the leaderboard configuration with the given ID.
   ## 
-  let valid = call_594152.validator(path, query, header, formData, body)
-  let scheme = call_594152.pickScheme
+  let valid = call_580152.validator(path, query, header, formData, body)
+  let scheme = call_580152.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_594152.url(scheme.get, call_594152.host, call_594152.base,
-                         call_594152.route, valid.getOrDefault("path"),
+  let url = call_580152.url(scheme.get, call_580152.host, call_580152.base,
+                         call_580152.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_594152, url, valid)
+  result = hook(call_580152, url, valid)
 
-proc call*(call_594153: Call_GamesConfigurationLeaderboardConfigurationsDelete_594141;
+proc call*(call_580153: Call_GamesConfigurationLeaderboardConfigurationsDelete_580141;
           leaderboardId: string; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; userIp: string = "";
           key: string = ""; prettyPrint: bool = true): Recallable =
@@ -2154,29 +2156,119 @@ proc call*(call_594153: Call_GamesConfigurationLeaderboardConfigurationsDelete_5
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_594154 = newJObject()
-  var query_594155 = newJObject()
-  add(query_594155, "fields", newJString(fields))
-  add(query_594155, "quotaUser", newJString(quotaUser))
-  add(query_594155, "alt", newJString(alt))
-  add(path_594154, "leaderboardId", newJString(leaderboardId))
-  add(query_594155, "oauth_token", newJString(oauthToken))
-  add(query_594155, "userIp", newJString(userIp))
-  add(query_594155, "key", newJString(key))
-  add(query_594155, "prettyPrint", newJBool(prettyPrint))
-  result = call_594153.call(path_594154, query_594155, nil, nil, nil)
+  var path_580154 = newJObject()
+  var query_580155 = newJObject()
+  add(query_580155, "fields", newJString(fields))
+  add(query_580155, "quotaUser", newJString(quotaUser))
+  add(query_580155, "alt", newJString(alt))
+  add(path_580154, "leaderboardId", newJString(leaderboardId))
+  add(query_580155, "oauth_token", newJString(oauthToken))
+  add(query_580155, "userIp", newJString(userIp))
+  add(query_580155, "key", newJString(key))
+  add(query_580155, "prettyPrint", newJBool(prettyPrint))
+  result = call_580153.call(path_580154, query_580155, nil, nil, nil)
 
-var gamesConfigurationLeaderboardConfigurationsDelete* = Call_GamesConfigurationLeaderboardConfigurationsDelete_594141(
+var gamesConfigurationLeaderboardConfigurationsDelete* = Call_GamesConfigurationLeaderboardConfigurationsDelete_580141(
     name: "gamesConfigurationLeaderboardConfigurationsDelete",
     meth: HttpMethod.HttpDelete, host: "www.googleapis.com",
     route: "/leaderboards/{leaderboardId}",
-    validator: validate_GamesConfigurationLeaderboardConfigurationsDelete_594142,
+    validator: validate_GamesConfigurationLeaderboardConfigurationsDelete_580142,
     base: "/games/v1configuration",
-    url: url_GamesConfigurationLeaderboardConfigurationsDelete_594143,
+    url: url_GamesConfigurationLeaderboardConfigurationsDelete_580143,
     schemes: {Scheme.Https})
 export
   rest
 
+type
+  GoogleAuth = ref object
+    endpoint*: Uri
+    token: string
+    expiry*: float64
+    issued*: float64
+    email: string
+    key: string
+    scope*: seq[string]
+    form: string
+    digest: Hash
+
+const
+  endpoint = "https://www.googleapis.com/oauth2/v4/token".parseUri
+var auth = GoogleAuth(endpoint: endpoint)
+proc hash(auth: GoogleAuth): Hash =
+  ## yield differing values for effectively different auth payloads
+  result = hash($auth.endpoint)
+  result = result !& hash(auth.email)
+  result = result !& hash(auth.key)
+  result = result !& hash(auth.scope.join(" "))
+  result = !$result
+
+proc newAuthenticator*(path: string): GoogleAuth =
+  let
+    input = readFile(path)
+    js = parseJson(input)
+  auth.email = js["client_email"].getStr
+  auth.key = js["private_key"].getStr
+  result = auth
+
+proc store(auth: var GoogleAuth; token: string; expiry: int; form: string) =
+  auth.token = token
+  auth.issued = epochTime()
+  auth.expiry = auth.issued + expiry.float64
+  auth.form = form
+  auth.digest = auth.hash
+
+proc authenticate*(fresh: float64 = -3600.0; lifetime: int = 3600): Future[bool] {.async.} =
+  ## get or refresh an authentication token; provide `fresh`
+  ## to ensure that the token won't expire in the next N seconds.
+  ## provide `lifetime` to indicate how long the token should last.
+  let clock = epochTime()
+  if auth.expiry > clock + fresh:
+    if auth.hash == auth.digest:
+      return true
+  let
+    expiry = clock.int + lifetime
+    header = JOSEHeader(alg: RS256, typ: "JWT")
+    claims = %*{"iss": auth.email, "scope": auth.scope.join(" "),
+              "aud": "https://www.googleapis.com/oauth2/v4/token", "exp": expiry,
+              "iat": clock.int}
+  var tok = JWT(header: header, claims: toClaims(claims))
+  tok.sign(auth.key)
+  let post = encodeQuery({"grant_type": "urn:ietf:params:oauth:grant-type:jwt-bearer",
+                       "assertion": $tok}, usePlus = false, omitEq = false)
+  var client = newAsyncHttpClient()
+  client.headers = newHttpHeaders({"Content-Type": "application/x-www-form-urlencoded",
+                                 "Content-Length": $post.len})
+  let response = await client.request($auth.endpoint, HttpPost, body = post)
+  if not response.code.is2xx:
+    return false
+  let body = await response.body
+  client.close
+  try:
+    let js = parseJson(body)
+    auth.store(js["access_token"].getStr, js["expires_in"].getInt,
+               js["token_type"].getStr)
+  except KeyError:
+    return false
+  except JsonParsingError:
+    return false
+  return true
+
+proc composeQueryString(query: JsonNode): string =
+  var qs: seq[KeyVal]
+  if query == nil:
+    return ""
+  for k, v in query.pairs:
+    qs.add (key: k, val: v.getStr)
+  result = encodeQuery(qs, usePlus = false, omitEq = false)
+
 method hook(call: OpenApiRestCall; url: Uri; input: JsonNode): Recallable {.base.} =
-  let headers = massageHeaders(input.getOrDefault("header"))
-  result = newRecallable(call, url, headers, input.getOrDefault("body").getStr)
+  var headers = massageHeaders(input.getOrDefault("header"))
+  let body = input.getOrDefault("body").getStr
+  if auth.scope.len == 0:
+    raise newException(ValueError, "specify authentication scopes")
+  if not waitfor authenticate(fresh = 10.0):
+    raise newException(IOError, "unable to refresh authentication token")
+  headers.add ("Authorization", auth.form & " " & auth.token)
+  headers.add ("Content-Type", "application/json")
+  headers.add ("Content-Length", $body.len)
+  result = newRecallable(call, url, headers, body = body)

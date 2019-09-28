@@ -1,6 +1,7 @@
 
 import
-  json, options, hashes, uri, openapi/rest, os, uri, strutils, httpcore
+  json, options, hashes, uri, rest, os, uri, strutils, times, httpcore, httpclient,
+  asyncdispatch, jwt
 
 ## auto-generated via openapi macro
 ## title: Stackdriver Profiler
@@ -28,15 +29,15 @@ type
     url*: proc (protocol: Scheme; host: string; base: string; route: string;
               path: JsonNode; query: JsonNode): Uri
 
-  OpenApiRestCall_597408 = ref object of OpenApiRestCall
+  OpenApiRestCall_579408 = ref object of OpenApiRestCall
 proc hash(scheme: Scheme): Hash {.used.} =
   result = hash(ord(scheme))
 
-proc clone[T: OpenApiRestCall_597408](t: T): T {.used.} =
+proc clone[T: OpenApiRestCall_579408](t: T): T {.used.} =
   result = T(name: t.name, meth: t.meth, host: t.host, base: t.base, route: t.route,
            schemes: t.schemes, validator: t.validator, url: t.url)
 
-proc pickScheme(t: OpenApiRestCall_597408): Option[Scheme] {.used.} =
+proc pickScheme(t: OpenApiRestCall_579408): Option[Scheme] {.used.} =
   ## select a supported scheme from a set of candidates
   for scheme in Scheme.low ..
       Scheme.high:
@@ -104,14 +105,15 @@ proc hydratePath(input: JsonNode; segments: seq[PathToken]): Option[string] =
 
 const
   gcpServiceName = "cloudprofiler"
+proc composeQueryString(query: JsonNode): string
 method hook(call: OpenApiRestCall; url: Uri; input: JsonNode): Recallable {.base.}
 type
-  Call_CloudprofilerProjectsProfilesPatch_597677 = ref object of OpenApiRestCall_597408
-proc url_CloudprofilerProjectsProfilesPatch_597679(protocol: Scheme; host: string;
+  Call_CloudprofilerProjectsProfilesPatch_579677 = ref object of OpenApiRestCall_579408
+proc url_CloudprofilerProjectsProfilesPatch_579679(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "name" in path, "`name` is a required path parameter"
   const
@@ -122,7 +124,7 @@ proc url_CloudprofilerProjectsProfilesPatch_597679(protocol: Scheme; host: strin
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_CloudprofilerProjectsProfilesPatch_597678(path: JsonNode;
+proc validate_CloudprofilerProjectsProfilesPatch_579678(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## UpdateProfile updates the profile bytes and labels on the profile resource
   ## created in the online mode. Updating the bytes for profiles created in the
@@ -136,11 +138,11 @@ proc validate_CloudprofilerProjectsProfilesPatch_597678(path: JsonNode;
   ##       : Output only. Opaque, server-assigned, unique ID for this profile.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `name` field"
-  var valid_597805 = path.getOrDefault("name")
-  valid_597805 = validateParameter(valid_597805, JString, required = true,
+  var valid_579805 = path.getOrDefault("name")
+  valid_579805 = validateParameter(valid_579805, JString, required = true,
                                  default = nil)
-  if valid_597805 != nil:
-    section.add "name", valid_597805
+  if valid_579805 != nil:
+    section.add "name", valid_579805
   result.add "path", section
   ## parameters in `query` object:
   ##   upload_protocol: JString
@@ -171,66 +173,66 @@ proc validate_CloudprofilerProjectsProfilesPatch_597678(path: JsonNode;
   ## those fields can be specified in the mask. When no mask is provided, all
   ## fields are overwritten.
   section = newJObject()
-  var valid_597806 = query.getOrDefault("upload_protocol")
-  valid_597806 = validateParameter(valid_597806, JString, required = false,
+  var valid_579806 = query.getOrDefault("upload_protocol")
+  valid_579806 = validateParameter(valid_579806, JString, required = false,
                                  default = nil)
-  if valid_597806 != nil:
-    section.add "upload_protocol", valid_597806
-  var valid_597807 = query.getOrDefault("fields")
-  valid_597807 = validateParameter(valid_597807, JString, required = false,
+  if valid_579806 != nil:
+    section.add "upload_protocol", valid_579806
+  var valid_579807 = query.getOrDefault("fields")
+  valid_579807 = validateParameter(valid_579807, JString, required = false,
                                  default = nil)
-  if valid_597807 != nil:
-    section.add "fields", valid_597807
-  var valid_597808 = query.getOrDefault("quotaUser")
-  valid_597808 = validateParameter(valid_597808, JString, required = false,
+  if valid_579807 != nil:
+    section.add "fields", valid_579807
+  var valid_579808 = query.getOrDefault("quotaUser")
+  valid_579808 = validateParameter(valid_579808, JString, required = false,
                                  default = nil)
-  if valid_597808 != nil:
-    section.add "quotaUser", valid_597808
-  var valid_597822 = query.getOrDefault("alt")
-  valid_597822 = validateParameter(valid_597822, JString, required = false,
+  if valid_579808 != nil:
+    section.add "quotaUser", valid_579808
+  var valid_579822 = query.getOrDefault("alt")
+  valid_579822 = validateParameter(valid_579822, JString, required = false,
                                  default = newJString("json"))
-  if valid_597822 != nil:
-    section.add "alt", valid_597822
-  var valid_597823 = query.getOrDefault("oauth_token")
-  valid_597823 = validateParameter(valid_597823, JString, required = false,
+  if valid_579822 != nil:
+    section.add "alt", valid_579822
+  var valid_579823 = query.getOrDefault("oauth_token")
+  valid_579823 = validateParameter(valid_579823, JString, required = false,
                                  default = nil)
-  if valid_597823 != nil:
-    section.add "oauth_token", valid_597823
-  var valid_597824 = query.getOrDefault("callback")
-  valid_597824 = validateParameter(valid_597824, JString, required = false,
+  if valid_579823 != nil:
+    section.add "oauth_token", valid_579823
+  var valid_579824 = query.getOrDefault("callback")
+  valid_579824 = validateParameter(valid_579824, JString, required = false,
                                  default = nil)
-  if valid_597824 != nil:
-    section.add "callback", valid_597824
-  var valid_597825 = query.getOrDefault("access_token")
-  valid_597825 = validateParameter(valid_597825, JString, required = false,
+  if valid_579824 != nil:
+    section.add "callback", valid_579824
+  var valid_579825 = query.getOrDefault("access_token")
+  valid_579825 = validateParameter(valid_579825, JString, required = false,
                                  default = nil)
-  if valid_597825 != nil:
-    section.add "access_token", valid_597825
-  var valid_597826 = query.getOrDefault("uploadType")
-  valid_597826 = validateParameter(valid_597826, JString, required = false,
+  if valid_579825 != nil:
+    section.add "access_token", valid_579825
+  var valid_579826 = query.getOrDefault("uploadType")
+  valid_579826 = validateParameter(valid_579826, JString, required = false,
                                  default = nil)
-  if valid_597826 != nil:
-    section.add "uploadType", valid_597826
-  var valid_597827 = query.getOrDefault("key")
-  valid_597827 = validateParameter(valid_597827, JString, required = false,
+  if valid_579826 != nil:
+    section.add "uploadType", valid_579826
+  var valid_579827 = query.getOrDefault("key")
+  valid_579827 = validateParameter(valid_579827, JString, required = false,
                                  default = nil)
-  if valid_597827 != nil:
-    section.add "key", valid_597827
-  var valid_597828 = query.getOrDefault("$.xgafv")
-  valid_597828 = validateParameter(valid_597828, JString, required = false,
+  if valid_579827 != nil:
+    section.add "key", valid_579827
+  var valid_579828 = query.getOrDefault("$.xgafv")
+  valid_579828 = validateParameter(valid_579828, JString, required = false,
                                  default = newJString("1"))
-  if valid_597828 != nil:
-    section.add "$.xgafv", valid_597828
-  var valid_597829 = query.getOrDefault("prettyPrint")
-  valid_597829 = validateParameter(valid_597829, JBool, required = false,
+  if valid_579828 != nil:
+    section.add "$.xgafv", valid_579828
+  var valid_579829 = query.getOrDefault("prettyPrint")
+  valid_579829 = validateParameter(valid_579829, JBool, required = false,
                                  default = newJBool(true))
-  if valid_597829 != nil:
-    section.add "prettyPrint", valid_597829
-  var valid_597830 = query.getOrDefault("updateMask")
-  valid_597830 = validateParameter(valid_597830, JString, required = false,
+  if valid_579829 != nil:
+    section.add "prettyPrint", valid_579829
+  var valid_579830 = query.getOrDefault("updateMask")
+  valid_579830 = validateParameter(valid_579830, JString, required = false,
                                  default = nil)
-  if valid_597830 != nil:
-    section.add "updateMask", valid_597830
+  if valid_579830 != nil:
+    section.add "updateMask", valid_579830
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -242,7 +244,7 @@ proc validate_CloudprofilerProjectsProfilesPatch_597678(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_597854: Call_CloudprofilerProjectsProfilesPatch_597677;
+proc call*(call_579854: Call_CloudprofilerProjectsProfilesPatch_579677;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## UpdateProfile updates the profile bytes and labels on the profile resource
@@ -250,16 +252,16 @@ proc call*(call_597854: Call_CloudprofilerProjectsProfilesPatch_597677;
   ## offline mode is currently not supported: the profile content must be
   ## provided at the time of the profile creation.
   ## 
-  let valid = call_597854.validator(path, query, header, formData, body)
-  let scheme = call_597854.pickScheme
+  let valid = call_579854.validator(path, query, header, formData, body)
+  let scheme = call_579854.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_597854.url(scheme.get, call_597854.host, call_597854.base,
-                         call_597854.route, valid.getOrDefault("path"),
+  let url = call_579854.url(scheme.get, call_579854.host, call_579854.base,
+                         call_579854.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_597854, url, valid)
+  result = hook(call_579854, url, valid)
 
-proc call*(call_597925: Call_CloudprofilerProjectsProfilesPatch_597677;
+proc call*(call_579925: Call_CloudprofilerProjectsProfilesPatch_579677;
           name: string; uploadProtocol: string = ""; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           callback: string = ""; accessToken: string = ""; uploadType: string = "";
@@ -300,38 +302,38 @@ proc call*(call_597925: Call_CloudprofilerProjectsProfilesPatch_597677;
   ## profile_bytes and labels fields are supported by UpdateProfile, so only
   ## those fields can be specified in the mask. When no mask is provided, all
   ## fields are overwritten.
-  var path_597926 = newJObject()
-  var query_597928 = newJObject()
-  var body_597929 = newJObject()
-  add(query_597928, "upload_protocol", newJString(uploadProtocol))
-  add(query_597928, "fields", newJString(fields))
-  add(query_597928, "quotaUser", newJString(quotaUser))
-  add(path_597926, "name", newJString(name))
-  add(query_597928, "alt", newJString(alt))
-  add(query_597928, "oauth_token", newJString(oauthToken))
-  add(query_597928, "callback", newJString(callback))
-  add(query_597928, "access_token", newJString(accessToken))
-  add(query_597928, "uploadType", newJString(uploadType))
-  add(query_597928, "key", newJString(key))
-  add(query_597928, "$.xgafv", newJString(Xgafv))
+  var path_579926 = newJObject()
+  var query_579928 = newJObject()
+  var body_579929 = newJObject()
+  add(query_579928, "upload_protocol", newJString(uploadProtocol))
+  add(query_579928, "fields", newJString(fields))
+  add(query_579928, "quotaUser", newJString(quotaUser))
+  add(path_579926, "name", newJString(name))
+  add(query_579928, "alt", newJString(alt))
+  add(query_579928, "oauth_token", newJString(oauthToken))
+  add(query_579928, "callback", newJString(callback))
+  add(query_579928, "access_token", newJString(accessToken))
+  add(query_579928, "uploadType", newJString(uploadType))
+  add(query_579928, "key", newJString(key))
+  add(query_579928, "$.xgafv", newJString(Xgafv))
   if body != nil:
-    body_597929 = body
-  add(query_597928, "prettyPrint", newJBool(prettyPrint))
-  add(query_597928, "updateMask", newJString(updateMask))
-  result = call_597925.call(path_597926, query_597928, nil, nil, body_597929)
+    body_579929 = body
+  add(query_579928, "prettyPrint", newJBool(prettyPrint))
+  add(query_579928, "updateMask", newJString(updateMask))
+  result = call_579925.call(path_579926, query_579928, nil, nil, body_579929)
 
-var cloudprofilerProjectsProfilesPatch* = Call_CloudprofilerProjectsProfilesPatch_597677(
+var cloudprofilerProjectsProfilesPatch* = Call_CloudprofilerProjectsProfilesPatch_579677(
     name: "cloudprofilerProjectsProfilesPatch", meth: HttpMethod.HttpPatch,
     host: "cloudprofiler.googleapis.com", route: "/v2/{name}",
-    validator: validate_CloudprofilerProjectsProfilesPatch_597678, base: "/",
-    url: url_CloudprofilerProjectsProfilesPatch_597679, schemes: {Scheme.Https})
+    validator: validate_CloudprofilerProjectsProfilesPatch_579678, base: "/",
+    url: url_CloudprofilerProjectsProfilesPatch_579679, schemes: {Scheme.Https})
 type
-  Call_CloudprofilerProjectsProfilesCreate_597968 = ref object of OpenApiRestCall_597408
-proc url_CloudprofilerProjectsProfilesCreate_597970(protocol: Scheme; host: string;
+  Call_CloudprofilerProjectsProfilesCreate_579968 = ref object of OpenApiRestCall_579408
+proc url_CloudprofilerProjectsProfilesCreate_579970(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "parent" in path, "`parent` is a required path parameter"
   const
@@ -343,7 +345,7 @@ proc url_CloudprofilerProjectsProfilesCreate_597970(protocol: Scheme; host: stri
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_CloudprofilerProjectsProfilesCreate_597969(path: JsonNode;
+proc validate_CloudprofilerProjectsProfilesCreate_579969(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## CreateProfile creates a new profile resource in the online mode.
   ## 
@@ -366,11 +368,11 @@ proc validate_CloudprofilerProjectsProfilesCreate_597969(path: JsonNode;
   ##         : Parent project to create the profile in.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `parent` field"
-  var valid_597971 = path.getOrDefault("parent")
-  valid_597971 = validateParameter(valid_597971, JString, required = true,
+  var valid_579971 = path.getOrDefault("parent")
+  valid_579971 = validateParameter(valid_579971, JString, required = true,
                                  default = nil)
-  if valid_597971 != nil:
-    section.add "parent", valid_597971
+  if valid_579971 != nil:
+    section.add "parent", valid_579971
   result.add "path", section
   ## parameters in `query` object:
   ##   upload_protocol: JString
@@ -396,61 +398,61 @@ proc validate_CloudprofilerProjectsProfilesCreate_597969(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_597972 = query.getOrDefault("upload_protocol")
-  valid_597972 = validateParameter(valid_597972, JString, required = false,
+  var valid_579972 = query.getOrDefault("upload_protocol")
+  valid_579972 = validateParameter(valid_579972, JString, required = false,
                                  default = nil)
-  if valid_597972 != nil:
-    section.add "upload_protocol", valid_597972
-  var valid_597973 = query.getOrDefault("fields")
-  valid_597973 = validateParameter(valid_597973, JString, required = false,
+  if valid_579972 != nil:
+    section.add "upload_protocol", valid_579972
+  var valid_579973 = query.getOrDefault("fields")
+  valid_579973 = validateParameter(valid_579973, JString, required = false,
                                  default = nil)
-  if valid_597973 != nil:
-    section.add "fields", valid_597973
-  var valid_597974 = query.getOrDefault("quotaUser")
-  valid_597974 = validateParameter(valid_597974, JString, required = false,
+  if valid_579973 != nil:
+    section.add "fields", valid_579973
+  var valid_579974 = query.getOrDefault("quotaUser")
+  valid_579974 = validateParameter(valid_579974, JString, required = false,
                                  default = nil)
-  if valid_597974 != nil:
-    section.add "quotaUser", valid_597974
-  var valid_597975 = query.getOrDefault("alt")
-  valid_597975 = validateParameter(valid_597975, JString, required = false,
+  if valid_579974 != nil:
+    section.add "quotaUser", valid_579974
+  var valid_579975 = query.getOrDefault("alt")
+  valid_579975 = validateParameter(valid_579975, JString, required = false,
                                  default = newJString("json"))
-  if valid_597975 != nil:
-    section.add "alt", valid_597975
-  var valid_597976 = query.getOrDefault("oauth_token")
-  valid_597976 = validateParameter(valid_597976, JString, required = false,
+  if valid_579975 != nil:
+    section.add "alt", valid_579975
+  var valid_579976 = query.getOrDefault("oauth_token")
+  valid_579976 = validateParameter(valid_579976, JString, required = false,
                                  default = nil)
-  if valid_597976 != nil:
-    section.add "oauth_token", valid_597976
-  var valid_597977 = query.getOrDefault("callback")
-  valid_597977 = validateParameter(valid_597977, JString, required = false,
+  if valid_579976 != nil:
+    section.add "oauth_token", valid_579976
+  var valid_579977 = query.getOrDefault("callback")
+  valid_579977 = validateParameter(valid_579977, JString, required = false,
                                  default = nil)
-  if valid_597977 != nil:
-    section.add "callback", valid_597977
-  var valid_597978 = query.getOrDefault("access_token")
-  valid_597978 = validateParameter(valid_597978, JString, required = false,
+  if valid_579977 != nil:
+    section.add "callback", valid_579977
+  var valid_579978 = query.getOrDefault("access_token")
+  valid_579978 = validateParameter(valid_579978, JString, required = false,
                                  default = nil)
-  if valid_597978 != nil:
-    section.add "access_token", valid_597978
-  var valid_597979 = query.getOrDefault("uploadType")
-  valid_597979 = validateParameter(valid_597979, JString, required = false,
+  if valid_579978 != nil:
+    section.add "access_token", valid_579978
+  var valid_579979 = query.getOrDefault("uploadType")
+  valid_579979 = validateParameter(valid_579979, JString, required = false,
                                  default = nil)
-  if valid_597979 != nil:
-    section.add "uploadType", valid_597979
-  var valid_597980 = query.getOrDefault("key")
-  valid_597980 = validateParameter(valid_597980, JString, required = false,
+  if valid_579979 != nil:
+    section.add "uploadType", valid_579979
+  var valid_579980 = query.getOrDefault("key")
+  valid_579980 = validateParameter(valid_579980, JString, required = false,
                                  default = nil)
-  if valid_597980 != nil:
-    section.add "key", valid_597980
-  var valid_597981 = query.getOrDefault("$.xgafv")
-  valid_597981 = validateParameter(valid_597981, JString, required = false,
+  if valid_579980 != nil:
+    section.add "key", valid_579980
+  var valid_579981 = query.getOrDefault("$.xgafv")
+  valid_579981 = validateParameter(valid_579981, JString, required = false,
                                  default = newJString("1"))
-  if valid_597981 != nil:
-    section.add "$.xgafv", valid_597981
-  var valid_597982 = query.getOrDefault("prettyPrint")
-  valid_597982 = validateParameter(valid_597982, JBool, required = false,
+  if valid_579981 != nil:
+    section.add "$.xgafv", valid_579981
+  var valid_579982 = query.getOrDefault("prettyPrint")
+  valid_579982 = validateParameter(valid_579982, JBool, required = false,
                                  default = newJBool(true))
-  if valid_597982 != nil:
-    section.add "prettyPrint", valid_597982
+  if valid_579982 != nil:
+    section.add "prettyPrint", valid_579982
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -462,7 +464,7 @@ proc validate_CloudprofilerProjectsProfilesCreate_597969(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_597984: Call_CloudprofilerProjectsProfilesCreate_597968;
+proc call*(call_579984: Call_CloudprofilerProjectsProfilesCreate_579968;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## CreateProfile creates a new profile resource in the online mode.
@@ -479,16 +481,16 @@ proc call*(call_597984: Call_CloudprofilerProjectsProfilesCreate_597968;
   ## binary-serialized proto in the trailing metadata item named
   ## "google.rpc.retryinfo-bin".
   ## 
-  let valid = call_597984.validator(path, query, header, formData, body)
-  let scheme = call_597984.pickScheme
+  let valid = call_579984.validator(path, query, header, formData, body)
+  let scheme = call_579984.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_597984.url(scheme.get, call_597984.host, call_597984.base,
-                         call_597984.route, valid.getOrDefault("path"),
+  let url = call_579984.url(scheme.get, call_579984.host, call_579984.base,
+                         call_579984.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_597984, url, valid)
+  result = hook(call_579984, url, valid)
 
-proc call*(call_597985: Call_CloudprofilerProjectsProfilesCreate_597968;
+proc call*(call_579985: Call_CloudprofilerProjectsProfilesCreate_579968;
           parent: string; uploadProtocol: string = ""; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           callback: string = ""; accessToken: string = ""; uploadType: string = "";
@@ -533,37 +535,37 @@ proc call*(call_597985: Call_CloudprofilerProjectsProfilesCreate_597968;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_597986 = newJObject()
-  var query_597987 = newJObject()
-  var body_597988 = newJObject()
-  add(query_597987, "upload_protocol", newJString(uploadProtocol))
-  add(query_597987, "fields", newJString(fields))
-  add(query_597987, "quotaUser", newJString(quotaUser))
-  add(query_597987, "alt", newJString(alt))
-  add(query_597987, "oauth_token", newJString(oauthToken))
-  add(query_597987, "callback", newJString(callback))
-  add(query_597987, "access_token", newJString(accessToken))
-  add(query_597987, "uploadType", newJString(uploadType))
-  add(path_597986, "parent", newJString(parent))
-  add(query_597987, "key", newJString(key))
-  add(query_597987, "$.xgafv", newJString(Xgafv))
+  var path_579986 = newJObject()
+  var query_579987 = newJObject()
+  var body_579988 = newJObject()
+  add(query_579987, "upload_protocol", newJString(uploadProtocol))
+  add(query_579987, "fields", newJString(fields))
+  add(query_579987, "quotaUser", newJString(quotaUser))
+  add(query_579987, "alt", newJString(alt))
+  add(query_579987, "oauth_token", newJString(oauthToken))
+  add(query_579987, "callback", newJString(callback))
+  add(query_579987, "access_token", newJString(accessToken))
+  add(query_579987, "uploadType", newJString(uploadType))
+  add(path_579986, "parent", newJString(parent))
+  add(query_579987, "key", newJString(key))
+  add(query_579987, "$.xgafv", newJString(Xgafv))
   if body != nil:
-    body_597988 = body
-  add(query_597987, "prettyPrint", newJBool(prettyPrint))
-  result = call_597985.call(path_597986, query_597987, nil, nil, body_597988)
+    body_579988 = body
+  add(query_579987, "prettyPrint", newJBool(prettyPrint))
+  result = call_579985.call(path_579986, query_579987, nil, nil, body_579988)
 
-var cloudprofilerProjectsProfilesCreate* = Call_CloudprofilerProjectsProfilesCreate_597968(
+var cloudprofilerProjectsProfilesCreate* = Call_CloudprofilerProjectsProfilesCreate_579968(
     name: "cloudprofilerProjectsProfilesCreate", meth: HttpMethod.HttpPost,
     host: "cloudprofiler.googleapis.com", route: "/v2/{parent}/profiles",
-    validator: validate_CloudprofilerProjectsProfilesCreate_597969, base: "/",
-    url: url_CloudprofilerProjectsProfilesCreate_597970, schemes: {Scheme.Https})
+    validator: validate_CloudprofilerProjectsProfilesCreate_579969, base: "/",
+    url: url_CloudprofilerProjectsProfilesCreate_579970, schemes: {Scheme.Https})
 type
-  Call_CloudprofilerProjectsProfilesCreateOffline_597989 = ref object of OpenApiRestCall_597408
-proc url_CloudprofilerProjectsProfilesCreateOffline_597991(protocol: Scheme;
+  Call_CloudprofilerProjectsProfilesCreateOffline_579989 = ref object of OpenApiRestCall_579408
+proc url_CloudprofilerProjectsProfilesCreateOffline_579991(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "parent" in path, "`parent` is a required path parameter"
   const
@@ -575,7 +577,7 @@ proc url_CloudprofilerProjectsProfilesCreateOffline_597991(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_CloudprofilerProjectsProfilesCreateOffline_597990(path: JsonNode;
+proc validate_CloudprofilerProjectsProfilesCreateOffline_579990(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## CreateOfflineProfile creates a new profile resource in the offline mode.
   ## The client provides the profile to create along with the profile bytes, the
@@ -588,11 +590,11 @@ proc validate_CloudprofilerProjectsProfilesCreateOffline_597990(path: JsonNode;
   ##         : Parent project to create the profile in.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `parent` field"
-  var valid_597992 = path.getOrDefault("parent")
-  valid_597992 = validateParameter(valid_597992, JString, required = true,
+  var valid_579992 = path.getOrDefault("parent")
+  valid_579992 = validateParameter(valid_579992, JString, required = true,
                                  default = nil)
-  if valid_597992 != nil:
-    section.add "parent", valid_597992
+  if valid_579992 != nil:
+    section.add "parent", valid_579992
   result.add "path", section
   ## parameters in `query` object:
   ##   upload_protocol: JString
@@ -618,61 +620,61 @@ proc validate_CloudprofilerProjectsProfilesCreateOffline_597990(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_597993 = query.getOrDefault("upload_protocol")
-  valid_597993 = validateParameter(valid_597993, JString, required = false,
+  var valid_579993 = query.getOrDefault("upload_protocol")
+  valid_579993 = validateParameter(valid_579993, JString, required = false,
                                  default = nil)
-  if valid_597993 != nil:
-    section.add "upload_protocol", valid_597993
-  var valid_597994 = query.getOrDefault("fields")
-  valid_597994 = validateParameter(valid_597994, JString, required = false,
+  if valid_579993 != nil:
+    section.add "upload_protocol", valid_579993
+  var valid_579994 = query.getOrDefault("fields")
+  valid_579994 = validateParameter(valid_579994, JString, required = false,
                                  default = nil)
-  if valid_597994 != nil:
-    section.add "fields", valid_597994
-  var valid_597995 = query.getOrDefault("quotaUser")
-  valid_597995 = validateParameter(valid_597995, JString, required = false,
+  if valid_579994 != nil:
+    section.add "fields", valid_579994
+  var valid_579995 = query.getOrDefault("quotaUser")
+  valid_579995 = validateParameter(valid_579995, JString, required = false,
                                  default = nil)
-  if valid_597995 != nil:
-    section.add "quotaUser", valid_597995
-  var valid_597996 = query.getOrDefault("alt")
-  valid_597996 = validateParameter(valid_597996, JString, required = false,
+  if valid_579995 != nil:
+    section.add "quotaUser", valid_579995
+  var valid_579996 = query.getOrDefault("alt")
+  valid_579996 = validateParameter(valid_579996, JString, required = false,
                                  default = newJString("json"))
-  if valid_597996 != nil:
-    section.add "alt", valid_597996
-  var valid_597997 = query.getOrDefault("oauth_token")
-  valid_597997 = validateParameter(valid_597997, JString, required = false,
+  if valid_579996 != nil:
+    section.add "alt", valid_579996
+  var valid_579997 = query.getOrDefault("oauth_token")
+  valid_579997 = validateParameter(valid_579997, JString, required = false,
                                  default = nil)
-  if valid_597997 != nil:
-    section.add "oauth_token", valid_597997
-  var valid_597998 = query.getOrDefault("callback")
-  valid_597998 = validateParameter(valid_597998, JString, required = false,
+  if valid_579997 != nil:
+    section.add "oauth_token", valid_579997
+  var valid_579998 = query.getOrDefault("callback")
+  valid_579998 = validateParameter(valid_579998, JString, required = false,
                                  default = nil)
-  if valid_597998 != nil:
-    section.add "callback", valid_597998
-  var valid_597999 = query.getOrDefault("access_token")
-  valid_597999 = validateParameter(valid_597999, JString, required = false,
+  if valid_579998 != nil:
+    section.add "callback", valid_579998
+  var valid_579999 = query.getOrDefault("access_token")
+  valid_579999 = validateParameter(valid_579999, JString, required = false,
                                  default = nil)
-  if valid_597999 != nil:
-    section.add "access_token", valid_597999
-  var valid_598000 = query.getOrDefault("uploadType")
-  valid_598000 = validateParameter(valid_598000, JString, required = false,
+  if valid_579999 != nil:
+    section.add "access_token", valid_579999
+  var valid_580000 = query.getOrDefault("uploadType")
+  valid_580000 = validateParameter(valid_580000, JString, required = false,
                                  default = nil)
-  if valid_598000 != nil:
-    section.add "uploadType", valid_598000
-  var valid_598001 = query.getOrDefault("key")
-  valid_598001 = validateParameter(valid_598001, JString, required = false,
+  if valid_580000 != nil:
+    section.add "uploadType", valid_580000
+  var valid_580001 = query.getOrDefault("key")
+  valid_580001 = validateParameter(valid_580001, JString, required = false,
                                  default = nil)
-  if valid_598001 != nil:
-    section.add "key", valid_598001
-  var valid_598002 = query.getOrDefault("$.xgafv")
-  valid_598002 = validateParameter(valid_598002, JString, required = false,
+  if valid_580001 != nil:
+    section.add "key", valid_580001
+  var valid_580002 = query.getOrDefault("$.xgafv")
+  valid_580002 = validateParameter(valid_580002, JString, required = false,
                                  default = newJString("1"))
-  if valid_598002 != nil:
-    section.add "$.xgafv", valid_598002
-  var valid_598003 = query.getOrDefault("prettyPrint")
-  valid_598003 = validateParameter(valid_598003, JBool, required = false,
+  if valid_580002 != nil:
+    section.add "$.xgafv", valid_580002
+  var valid_580003 = query.getOrDefault("prettyPrint")
+  valid_580003 = validateParameter(valid_580003, JBool, required = false,
                                  default = newJBool(true))
-  if valid_598003 != nil:
-    section.add "prettyPrint", valid_598003
+  if valid_580003 != nil:
+    section.add "prettyPrint", valid_580003
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -684,23 +686,23 @@ proc validate_CloudprofilerProjectsProfilesCreateOffline_597990(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_598005: Call_CloudprofilerProjectsProfilesCreateOffline_597989;
+proc call*(call_580005: Call_CloudprofilerProjectsProfilesCreateOffline_579989;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## CreateOfflineProfile creates a new profile resource in the offline mode.
   ## The client provides the profile to create along with the profile bytes, the
   ## server records it.
   ## 
-  let valid = call_598005.validator(path, query, header, formData, body)
-  let scheme = call_598005.pickScheme
+  let valid = call_580005.validator(path, query, header, formData, body)
+  let scheme = call_580005.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_598005.url(scheme.get, call_598005.host, call_598005.base,
-                         call_598005.route, valid.getOrDefault("path"),
+  let url = call_580005.url(scheme.get, call_580005.host, call_580005.base,
+                         call_580005.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_598005, url, valid)
+  result = hook(call_580005, url, valid)
 
-proc call*(call_598006: Call_CloudprofilerProjectsProfilesCreateOffline_597989;
+proc call*(call_580006: Call_CloudprofilerProjectsProfilesCreateOffline_579989;
           parent: string; uploadProtocol: string = ""; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           callback: string = ""; accessToken: string = ""; uploadType: string = "";
@@ -735,35 +737,125 @@ proc call*(call_598006: Call_CloudprofilerProjectsProfilesCreateOffline_597989;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_598007 = newJObject()
-  var query_598008 = newJObject()
-  var body_598009 = newJObject()
-  add(query_598008, "upload_protocol", newJString(uploadProtocol))
-  add(query_598008, "fields", newJString(fields))
-  add(query_598008, "quotaUser", newJString(quotaUser))
-  add(query_598008, "alt", newJString(alt))
-  add(query_598008, "oauth_token", newJString(oauthToken))
-  add(query_598008, "callback", newJString(callback))
-  add(query_598008, "access_token", newJString(accessToken))
-  add(query_598008, "uploadType", newJString(uploadType))
-  add(path_598007, "parent", newJString(parent))
-  add(query_598008, "key", newJString(key))
-  add(query_598008, "$.xgafv", newJString(Xgafv))
+  var path_580007 = newJObject()
+  var query_580008 = newJObject()
+  var body_580009 = newJObject()
+  add(query_580008, "upload_protocol", newJString(uploadProtocol))
+  add(query_580008, "fields", newJString(fields))
+  add(query_580008, "quotaUser", newJString(quotaUser))
+  add(query_580008, "alt", newJString(alt))
+  add(query_580008, "oauth_token", newJString(oauthToken))
+  add(query_580008, "callback", newJString(callback))
+  add(query_580008, "access_token", newJString(accessToken))
+  add(query_580008, "uploadType", newJString(uploadType))
+  add(path_580007, "parent", newJString(parent))
+  add(query_580008, "key", newJString(key))
+  add(query_580008, "$.xgafv", newJString(Xgafv))
   if body != nil:
-    body_598009 = body
-  add(query_598008, "prettyPrint", newJBool(prettyPrint))
-  result = call_598006.call(path_598007, query_598008, nil, nil, body_598009)
+    body_580009 = body
+  add(query_580008, "prettyPrint", newJBool(prettyPrint))
+  result = call_580006.call(path_580007, query_580008, nil, nil, body_580009)
 
-var cloudprofilerProjectsProfilesCreateOffline* = Call_CloudprofilerProjectsProfilesCreateOffline_597989(
+var cloudprofilerProjectsProfilesCreateOffline* = Call_CloudprofilerProjectsProfilesCreateOffline_579989(
     name: "cloudprofilerProjectsProfilesCreateOffline", meth: HttpMethod.HttpPost,
     host: "cloudprofiler.googleapis.com",
     route: "/v2/{parent}/profiles:createOffline",
-    validator: validate_CloudprofilerProjectsProfilesCreateOffline_597990,
-    base: "/", url: url_CloudprofilerProjectsProfilesCreateOffline_597991,
+    validator: validate_CloudprofilerProjectsProfilesCreateOffline_579990,
+    base: "/", url: url_CloudprofilerProjectsProfilesCreateOffline_579991,
     schemes: {Scheme.Https})
 export
   rest
 
+type
+  GoogleAuth = ref object
+    endpoint*: Uri
+    token: string
+    expiry*: float64
+    issued*: float64
+    email: string
+    key: string
+    scope*: seq[string]
+    form: string
+    digest: Hash
+
+const
+  endpoint = "https://www.googleapis.com/oauth2/v4/token".parseUri
+var auth = GoogleAuth(endpoint: endpoint)
+proc hash(auth: GoogleAuth): Hash =
+  ## yield differing values for effectively different auth payloads
+  result = hash($auth.endpoint)
+  result = result !& hash(auth.email)
+  result = result !& hash(auth.key)
+  result = result !& hash(auth.scope.join(" "))
+  result = !$result
+
+proc newAuthenticator*(path: string): GoogleAuth =
+  let
+    input = readFile(path)
+    js = parseJson(input)
+  auth.email = js["client_email"].getStr
+  auth.key = js["private_key"].getStr
+  result = auth
+
+proc store(auth: var GoogleAuth; token: string; expiry: int; form: string) =
+  auth.token = token
+  auth.issued = epochTime()
+  auth.expiry = auth.issued + expiry.float64
+  auth.form = form
+  auth.digest = auth.hash
+
+proc authenticate*(fresh: float64 = -3600.0; lifetime: int = 3600): Future[bool] {.async.} =
+  ## get or refresh an authentication token; provide `fresh`
+  ## to ensure that the token won't expire in the next N seconds.
+  ## provide `lifetime` to indicate how long the token should last.
+  let clock = epochTime()
+  if auth.expiry > clock + fresh:
+    if auth.hash == auth.digest:
+      return true
+  let
+    expiry = clock.int + lifetime
+    header = JOSEHeader(alg: RS256, typ: "JWT")
+    claims = %*{"iss": auth.email, "scope": auth.scope.join(" "),
+              "aud": "https://www.googleapis.com/oauth2/v4/token", "exp": expiry,
+              "iat": clock.int}
+  var tok = JWT(header: header, claims: toClaims(claims))
+  tok.sign(auth.key)
+  let post = encodeQuery({"grant_type": "urn:ietf:params:oauth:grant-type:jwt-bearer",
+                       "assertion": $tok}, usePlus = false, omitEq = false)
+  var client = newAsyncHttpClient()
+  client.headers = newHttpHeaders({"Content-Type": "application/x-www-form-urlencoded",
+                                 "Content-Length": $post.len})
+  let response = await client.request($auth.endpoint, HttpPost, body = post)
+  if not response.code.is2xx:
+    return false
+  let body = await response.body
+  client.close
+  try:
+    let js = parseJson(body)
+    auth.store(js["access_token"].getStr, js["expires_in"].getInt,
+               js["token_type"].getStr)
+  except KeyError:
+    return false
+  except JsonParsingError:
+    return false
+  return true
+
+proc composeQueryString(query: JsonNode): string =
+  var qs: seq[KeyVal]
+  if query == nil:
+    return ""
+  for k, v in query.pairs:
+    qs.add (key: k, val: v.getStr)
+  result = encodeQuery(qs, usePlus = false, omitEq = false)
+
 method hook(call: OpenApiRestCall; url: Uri; input: JsonNode): Recallable {.base.} =
-  let headers = massageHeaders(input.getOrDefault("header"))
-  result = newRecallable(call, url, headers, input.getOrDefault("body").getStr)
+  var headers = massageHeaders(input.getOrDefault("header"))
+  let body = input.getOrDefault("body").getStr
+  if auth.scope.len == 0:
+    raise newException(ValueError, "specify authentication scopes")
+  if not waitfor authenticate(fresh = 10.0):
+    raise newException(IOError, "unable to refresh authentication token")
+  headers.add ("Authorization", auth.form & " " & auth.token)
+  headers.add ("Content-Type", "application/json")
+  headers.add ("Content-Length", $body.len)
+  result = newRecallable(call, url, headers, body = body)

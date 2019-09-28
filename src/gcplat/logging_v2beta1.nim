@@ -1,6 +1,7 @@
 
 import
-  json, options, hashes, uri, openapi/rest, os, uri, strutils, httpcore
+  json, options, hashes, uri, rest, os, uri, strutils, times, httpcore, httpclient,
+  asyncdispatch, jwt
 
 ## auto-generated via openapi macro
 ## title: Stackdriver Logging
@@ -26,15 +27,15 @@ type
     url*: proc (protocol: Scheme; host: string; base: string; route: string;
               path: JsonNode; query: JsonNode): Uri
 
-  OpenApiRestCall_593408 = ref object of OpenApiRestCall
+  OpenApiRestCall_579408 = ref object of OpenApiRestCall
 proc hash(scheme: Scheme): Hash {.used.} =
   result = hash(ord(scheme))
 
-proc clone[T: OpenApiRestCall_593408](t: T): T {.used.} =
+proc clone[T: OpenApiRestCall_579408](t: T): T {.used.} =
   result = T(name: t.name, meth: t.meth, host: t.host, base: t.base, route: t.route,
            schemes: t.schemes, validator: t.validator, url: t.url)
 
-proc pickScheme(t: OpenApiRestCall_593408): Option[Scheme] {.used.} =
+proc pickScheme(t: OpenApiRestCall_579408): Option[Scheme] {.used.} =
   ## select a supported scheme from a set of candidates
   for scheme in Scheme.low ..
       Scheme.high:
@@ -102,17 +103,18 @@ proc hydratePath(input: JsonNode; segments: seq[PathToken]): Option[string] =
 
 const
   gcpServiceName = "logging"
+proc composeQueryString(query: JsonNode): string
 method hook(call: OpenApiRestCall; url: Uri; input: JsonNode): Recallable {.base.}
 type
-  Call_LoggingEntriesList_593677 = ref object of OpenApiRestCall_593408
-proc url_LoggingEntriesList_593679(protocol: Scheme; host: string; base: string;
+  Call_LoggingEntriesList_579677 = ref object of OpenApiRestCall_579408
+proc url_LoggingEntriesList_579679(protocol: Scheme; host: string; base: string;
                                   route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   result.path = base & route
 
-proc validate_LoggingEntriesList_593678(path: JsonNode; query: JsonNode;
+proc validate_LoggingEntriesList_579678(path: JsonNode; query: JsonNode;
                                        header: JsonNode; formData: JsonNode;
                                        body: JsonNode): JsonNode =
   ## Lists log entries. Use this method to retrieve log entries that originated from a project/folder/organization/billing account. For ways to export log entries, see Exporting Logs.
@@ -145,61 +147,61 @@ proc validate_LoggingEntriesList_593678(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_593791 = query.getOrDefault("upload_protocol")
-  valid_593791 = validateParameter(valid_593791, JString, required = false,
+  var valid_579791 = query.getOrDefault("upload_protocol")
+  valid_579791 = validateParameter(valid_579791, JString, required = false,
                                  default = nil)
-  if valid_593791 != nil:
-    section.add "upload_protocol", valid_593791
-  var valid_593792 = query.getOrDefault("fields")
-  valid_593792 = validateParameter(valid_593792, JString, required = false,
+  if valid_579791 != nil:
+    section.add "upload_protocol", valid_579791
+  var valid_579792 = query.getOrDefault("fields")
+  valid_579792 = validateParameter(valid_579792, JString, required = false,
                                  default = nil)
-  if valid_593792 != nil:
-    section.add "fields", valid_593792
-  var valid_593793 = query.getOrDefault("quotaUser")
-  valid_593793 = validateParameter(valid_593793, JString, required = false,
+  if valid_579792 != nil:
+    section.add "fields", valid_579792
+  var valid_579793 = query.getOrDefault("quotaUser")
+  valid_579793 = validateParameter(valid_579793, JString, required = false,
                                  default = nil)
-  if valid_593793 != nil:
-    section.add "quotaUser", valid_593793
-  var valid_593807 = query.getOrDefault("alt")
-  valid_593807 = validateParameter(valid_593807, JString, required = false,
+  if valid_579793 != nil:
+    section.add "quotaUser", valid_579793
+  var valid_579807 = query.getOrDefault("alt")
+  valid_579807 = validateParameter(valid_579807, JString, required = false,
                                  default = newJString("json"))
-  if valid_593807 != nil:
-    section.add "alt", valid_593807
-  var valid_593808 = query.getOrDefault("oauth_token")
-  valid_593808 = validateParameter(valid_593808, JString, required = false,
+  if valid_579807 != nil:
+    section.add "alt", valid_579807
+  var valid_579808 = query.getOrDefault("oauth_token")
+  valid_579808 = validateParameter(valid_579808, JString, required = false,
                                  default = nil)
-  if valid_593808 != nil:
-    section.add "oauth_token", valid_593808
-  var valid_593809 = query.getOrDefault("callback")
-  valid_593809 = validateParameter(valid_593809, JString, required = false,
+  if valid_579808 != nil:
+    section.add "oauth_token", valid_579808
+  var valid_579809 = query.getOrDefault("callback")
+  valid_579809 = validateParameter(valid_579809, JString, required = false,
                                  default = nil)
-  if valid_593809 != nil:
-    section.add "callback", valid_593809
-  var valid_593810 = query.getOrDefault("access_token")
-  valid_593810 = validateParameter(valid_593810, JString, required = false,
+  if valid_579809 != nil:
+    section.add "callback", valid_579809
+  var valid_579810 = query.getOrDefault("access_token")
+  valid_579810 = validateParameter(valid_579810, JString, required = false,
                                  default = nil)
-  if valid_593810 != nil:
-    section.add "access_token", valid_593810
-  var valid_593811 = query.getOrDefault("uploadType")
-  valid_593811 = validateParameter(valid_593811, JString, required = false,
+  if valid_579810 != nil:
+    section.add "access_token", valid_579810
+  var valid_579811 = query.getOrDefault("uploadType")
+  valid_579811 = validateParameter(valid_579811, JString, required = false,
                                  default = nil)
-  if valid_593811 != nil:
-    section.add "uploadType", valid_593811
-  var valid_593812 = query.getOrDefault("key")
-  valid_593812 = validateParameter(valid_593812, JString, required = false,
+  if valid_579811 != nil:
+    section.add "uploadType", valid_579811
+  var valid_579812 = query.getOrDefault("key")
+  valid_579812 = validateParameter(valid_579812, JString, required = false,
                                  default = nil)
-  if valid_593812 != nil:
-    section.add "key", valid_593812
-  var valid_593813 = query.getOrDefault("$.xgafv")
-  valid_593813 = validateParameter(valid_593813, JString, required = false,
+  if valid_579812 != nil:
+    section.add "key", valid_579812
+  var valid_579813 = query.getOrDefault("$.xgafv")
+  valid_579813 = validateParameter(valid_579813, JString, required = false,
                                  default = newJString("1"))
-  if valid_593813 != nil:
-    section.add "$.xgafv", valid_593813
-  var valid_593814 = query.getOrDefault("prettyPrint")
-  valid_593814 = validateParameter(valid_593814, JBool, required = false,
+  if valid_579813 != nil:
+    section.add "$.xgafv", valid_579813
+  var valid_579814 = query.getOrDefault("prettyPrint")
+  valid_579814 = validateParameter(valid_579814, JBool, required = false,
                                  default = newJBool(true))
-  if valid_593814 != nil:
-    section.add "prettyPrint", valid_593814
+  if valid_579814 != nil:
+    section.add "prettyPrint", valid_579814
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -211,20 +213,20 @@ proc validate_LoggingEntriesList_593678(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_593838: Call_LoggingEntriesList_593677; path: JsonNode;
+proc call*(call_579838: Call_LoggingEntriesList_579677; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Lists log entries. Use this method to retrieve log entries that originated from a project/folder/organization/billing account. For ways to export log entries, see Exporting Logs.
   ## 
-  let valid = call_593838.validator(path, query, header, formData, body)
-  let scheme = call_593838.pickScheme
+  let valid = call_579838.validator(path, query, header, formData, body)
+  let scheme = call_579838.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_593838.url(scheme.get, call_593838.host, call_593838.base,
-                         call_593838.route, valid.getOrDefault("path"),
+  let url = call_579838.url(scheme.get, call_579838.host, call_579838.base,
+                         call_579838.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_593838, url, valid)
+  result = hook(call_579838, url, valid)
 
-proc call*(call_593909: Call_LoggingEntriesList_593677;
+proc call*(call_579909: Call_LoggingEntriesList_579677;
           uploadProtocol: string = ""; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; callback: string = "";
           accessToken: string = ""; uploadType: string = ""; key: string = "";
@@ -254,38 +256,38 @@ proc call*(call_593909: Call_LoggingEntriesList_593677;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var query_593910 = newJObject()
-  var body_593912 = newJObject()
-  add(query_593910, "upload_protocol", newJString(uploadProtocol))
-  add(query_593910, "fields", newJString(fields))
-  add(query_593910, "quotaUser", newJString(quotaUser))
-  add(query_593910, "alt", newJString(alt))
-  add(query_593910, "oauth_token", newJString(oauthToken))
-  add(query_593910, "callback", newJString(callback))
-  add(query_593910, "access_token", newJString(accessToken))
-  add(query_593910, "uploadType", newJString(uploadType))
-  add(query_593910, "key", newJString(key))
-  add(query_593910, "$.xgafv", newJString(Xgafv))
+  var query_579910 = newJObject()
+  var body_579912 = newJObject()
+  add(query_579910, "upload_protocol", newJString(uploadProtocol))
+  add(query_579910, "fields", newJString(fields))
+  add(query_579910, "quotaUser", newJString(quotaUser))
+  add(query_579910, "alt", newJString(alt))
+  add(query_579910, "oauth_token", newJString(oauthToken))
+  add(query_579910, "callback", newJString(callback))
+  add(query_579910, "access_token", newJString(accessToken))
+  add(query_579910, "uploadType", newJString(uploadType))
+  add(query_579910, "key", newJString(key))
+  add(query_579910, "$.xgafv", newJString(Xgafv))
   if body != nil:
-    body_593912 = body
-  add(query_593910, "prettyPrint", newJBool(prettyPrint))
-  result = call_593909.call(nil, query_593910, nil, nil, body_593912)
+    body_579912 = body
+  add(query_579910, "prettyPrint", newJBool(prettyPrint))
+  result = call_579909.call(nil, query_579910, nil, nil, body_579912)
 
-var loggingEntriesList* = Call_LoggingEntriesList_593677(
+var loggingEntriesList* = Call_LoggingEntriesList_579677(
     name: "loggingEntriesList", meth: HttpMethod.HttpPost,
     host: "logging.googleapis.com", route: "/v2beta1/entries:list",
-    validator: validate_LoggingEntriesList_593678, base: "/",
-    url: url_LoggingEntriesList_593679, schemes: {Scheme.Https})
+    validator: validate_LoggingEntriesList_579678, base: "/",
+    url: url_LoggingEntriesList_579679, schemes: {Scheme.Https})
 type
-  Call_LoggingEntriesWrite_593951 = ref object of OpenApiRestCall_593408
-proc url_LoggingEntriesWrite_593953(protocol: Scheme; host: string; base: string;
+  Call_LoggingEntriesWrite_579951 = ref object of OpenApiRestCall_579408
+proc url_LoggingEntriesWrite_579953(protocol: Scheme; host: string; base: string;
                                    route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   result.path = base & route
 
-proc validate_LoggingEntriesWrite_593952(path: JsonNode; query: JsonNode;
+proc validate_LoggingEntriesWrite_579952(path: JsonNode; query: JsonNode;
                                         header: JsonNode; formData: JsonNode;
                                         body: JsonNode): JsonNode =
   ## Writes log entries to Logging. This API method is the only way to send log entries to Logging. This method is used, directly or indirectly, by the Logging agent (fluentd) and all logging libraries configured to use Logging. A single request may contain log entries for a maximum of 1000 different resources (projects, organizations, billing accounts or folders)
@@ -318,61 +320,61 @@ proc validate_LoggingEntriesWrite_593952(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_593954 = query.getOrDefault("upload_protocol")
-  valid_593954 = validateParameter(valid_593954, JString, required = false,
+  var valid_579954 = query.getOrDefault("upload_protocol")
+  valid_579954 = validateParameter(valid_579954, JString, required = false,
                                  default = nil)
-  if valid_593954 != nil:
-    section.add "upload_protocol", valid_593954
-  var valid_593955 = query.getOrDefault("fields")
-  valid_593955 = validateParameter(valid_593955, JString, required = false,
+  if valid_579954 != nil:
+    section.add "upload_protocol", valid_579954
+  var valid_579955 = query.getOrDefault("fields")
+  valid_579955 = validateParameter(valid_579955, JString, required = false,
                                  default = nil)
-  if valid_593955 != nil:
-    section.add "fields", valid_593955
-  var valid_593956 = query.getOrDefault("quotaUser")
-  valid_593956 = validateParameter(valid_593956, JString, required = false,
+  if valid_579955 != nil:
+    section.add "fields", valid_579955
+  var valid_579956 = query.getOrDefault("quotaUser")
+  valid_579956 = validateParameter(valid_579956, JString, required = false,
                                  default = nil)
-  if valid_593956 != nil:
-    section.add "quotaUser", valid_593956
-  var valid_593957 = query.getOrDefault("alt")
-  valid_593957 = validateParameter(valid_593957, JString, required = false,
+  if valid_579956 != nil:
+    section.add "quotaUser", valid_579956
+  var valid_579957 = query.getOrDefault("alt")
+  valid_579957 = validateParameter(valid_579957, JString, required = false,
                                  default = newJString("json"))
-  if valid_593957 != nil:
-    section.add "alt", valid_593957
-  var valid_593958 = query.getOrDefault("oauth_token")
-  valid_593958 = validateParameter(valid_593958, JString, required = false,
+  if valid_579957 != nil:
+    section.add "alt", valid_579957
+  var valid_579958 = query.getOrDefault("oauth_token")
+  valid_579958 = validateParameter(valid_579958, JString, required = false,
                                  default = nil)
-  if valid_593958 != nil:
-    section.add "oauth_token", valid_593958
-  var valid_593959 = query.getOrDefault("callback")
-  valid_593959 = validateParameter(valid_593959, JString, required = false,
+  if valid_579958 != nil:
+    section.add "oauth_token", valid_579958
+  var valid_579959 = query.getOrDefault("callback")
+  valid_579959 = validateParameter(valid_579959, JString, required = false,
                                  default = nil)
-  if valid_593959 != nil:
-    section.add "callback", valid_593959
-  var valid_593960 = query.getOrDefault("access_token")
-  valid_593960 = validateParameter(valid_593960, JString, required = false,
+  if valid_579959 != nil:
+    section.add "callback", valid_579959
+  var valid_579960 = query.getOrDefault("access_token")
+  valid_579960 = validateParameter(valid_579960, JString, required = false,
                                  default = nil)
-  if valid_593960 != nil:
-    section.add "access_token", valid_593960
-  var valid_593961 = query.getOrDefault("uploadType")
-  valid_593961 = validateParameter(valid_593961, JString, required = false,
+  if valid_579960 != nil:
+    section.add "access_token", valid_579960
+  var valid_579961 = query.getOrDefault("uploadType")
+  valid_579961 = validateParameter(valid_579961, JString, required = false,
                                  default = nil)
-  if valid_593961 != nil:
-    section.add "uploadType", valid_593961
-  var valid_593962 = query.getOrDefault("key")
-  valid_593962 = validateParameter(valid_593962, JString, required = false,
+  if valid_579961 != nil:
+    section.add "uploadType", valid_579961
+  var valid_579962 = query.getOrDefault("key")
+  valid_579962 = validateParameter(valid_579962, JString, required = false,
                                  default = nil)
-  if valid_593962 != nil:
-    section.add "key", valid_593962
-  var valid_593963 = query.getOrDefault("$.xgafv")
-  valid_593963 = validateParameter(valid_593963, JString, required = false,
+  if valid_579962 != nil:
+    section.add "key", valid_579962
+  var valid_579963 = query.getOrDefault("$.xgafv")
+  valid_579963 = validateParameter(valid_579963, JString, required = false,
                                  default = newJString("1"))
-  if valid_593963 != nil:
-    section.add "$.xgafv", valid_593963
-  var valid_593964 = query.getOrDefault("prettyPrint")
-  valid_593964 = validateParameter(valid_593964, JBool, required = false,
+  if valid_579963 != nil:
+    section.add "$.xgafv", valid_579963
+  var valid_579964 = query.getOrDefault("prettyPrint")
+  valid_579964 = validateParameter(valid_579964, JBool, required = false,
                                  default = newJBool(true))
-  if valid_593964 != nil:
-    section.add "prettyPrint", valid_593964
+  if valid_579964 != nil:
+    section.add "prettyPrint", valid_579964
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -384,20 +386,20 @@ proc validate_LoggingEntriesWrite_593952(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_593966: Call_LoggingEntriesWrite_593951; path: JsonNode;
+proc call*(call_579966: Call_LoggingEntriesWrite_579951; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Writes log entries to Logging. This API method is the only way to send log entries to Logging. This method is used, directly or indirectly, by the Logging agent (fluentd) and all logging libraries configured to use Logging. A single request may contain log entries for a maximum of 1000 different resources (projects, organizations, billing accounts or folders)
   ## 
-  let valid = call_593966.validator(path, query, header, formData, body)
-  let scheme = call_593966.pickScheme
+  let valid = call_579966.validator(path, query, header, formData, body)
+  let scheme = call_579966.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_593966.url(scheme.get, call_593966.host, call_593966.base,
-                         call_593966.route, valid.getOrDefault("path"),
+  let url = call_579966.url(scheme.get, call_579966.host, call_579966.base,
+                         call_579966.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_593966, url, valid)
+  result = hook(call_579966, url, valid)
 
-proc call*(call_593967: Call_LoggingEntriesWrite_593951;
+proc call*(call_579967: Call_LoggingEntriesWrite_579951;
           uploadProtocol: string = ""; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; callback: string = "";
           accessToken: string = ""; uploadType: string = ""; key: string = "";
@@ -427,38 +429,38 @@ proc call*(call_593967: Call_LoggingEntriesWrite_593951;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var query_593968 = newJObject()
-  var body_593969 = newJObject()
-  add(query_593968, "upload_protocol", newJString(uploadProtocol))
-  add(query_593968, "fields", newJString(fields))
-  add(query_593968, "quotaUser", newJString(quotaUser))
-  add(query_593968, "alt", newJString(alt))
-  add(query_593968, "oauth_token", newJString(oauthToken))
-  add(query_593968, "callback", newJString(callback))
-  add(query_593968, "access_token", newJString(accessToken))
-  add(query_593968, "uploadType", newJString(uploadType))
-  add(query_593968, "key", newJString(key))
-  add(query_593968, "$.xgafv", newJString(Xgafv))
+  var query_579968 = newJObject()
+  var body_579969 = newJObject()
+  add(query_579968, "upload_protocol", newJString(uploadProtocol))
+  add(query_579968, "fields", newJString(fields))
+  add(query_579968, "quotaUser", newJString(quotaUser))
+  add(query_579968, "alt", newJString(alt))
+  add(query_579968, "oauth_token", newJString(oauthToken))
+  add(query_579968, "callback", newJString(callback))
+  add(query_579968, "access_token", newJString(accessToken))
+  add(query_579968, "uploadType", newJString(uploadType))
+  add(query_579968, "key", newJString(key))
+  add(query_579968, "$.xgafv", newJString(Xgafv))
   if body != nil:
-    body_593969 = body
-  add(query_593968, "prettyPrint", newJBool(prettyPrint))
-  result = call_593967.call(nil, query_593968, nil, nil, body_593969)
+    body_579969 = body
+  add(query_579968, "prettyPrint", newJBool(prettyPrint))
+  result = call_579967.call(nil, query_579968, nil, nil, body_579969)
 
-var loggingEntriesWrite* = Call_LoggingEntriesWrite_593951(
+var loggingEntriesWrite* = Call_LoggingEntriesWrite_579951(
     name: "loggingEntriesWrite", meth: HttpMethod.HttpPost,
     host: "logging.googleapis.com", route: "/v2beta1/entries:write",
-    validator: validate_LoggingEntriesWrite_593952, base: "/",
-    url: url_LoggingEntriesWrite_593953, schemes: {Scheme.Https})
+    validator: validate_LoggingEntriesWrite_579952, base: "/",
+    url: url_LoggingEntriesWrite_579953, schemes: {Scheme.Https})
 type
-  Call_LoggingMonitoredResourceDescriptorsList_593970 = ref object of OpenApiRestCall_593408
-proc url_LoggingMonitoredResourceDescriptorsList_593972(protocol: Scheme;
+  Call_LoggingMonitoredResourceDescriptorsList_579970 = ref object of OpenApiRestCall_579408
+proc url_LoggingMonitoredResourceDescriptorsList_579972(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   result.path = base & route
 
-proc validate_LoggingMonitoredResourceDescriptorsList_593971(path: JsonNode;
+proc validate_LoggingMonitoredResourceDescriptorsList_579971(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Lists the descriptors for monitored resource types used by Logging.
   ## 
@@ -494,70 +496,70 @@ proc validate_LoggingMonitoredResourceDescriptorsList_593971(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_593973 = query.getOrDefault("upload_protocol")
-  valid_593973 = validateParameter(valid_593973, JString, required = false,
+  var valid_579973 = query.getOrDefault("upload_protocol")
+  valid_579973 = validateParameter(valid_579973, JString, required = false,
                                  default = nil)
-  if valid_593973 != nil:
-    section.add "upload_protocol", valid_593973
-  var valid_593974 = query.getOrDefault("fields")
-  valid_593974 = validateParameter(valid_593974, JString, required = false,
+  if valid_579973 != nil:
+    section.add "upload_protocol", valid_579973
+  var valid_579974 = query.getOrDefault("fields")
+  valid_579974 = validateParameter(valid_579974, JString, required = false,
                                  default = nil)
-  if valid_593974 != nil:
-    section.add "fields", valid_593974
-  var valid_593975 = query.getOrDefault("pageToken")
-  valid_593975 = validateParameter(valid_593975, JString, required = false,
+  if valid_579974 != nil:
+    section.add "fields", valid_579974
+  var valid_579975 = query.getOrDefault("pageToken")
+  valid_579975 = validateParameter(valid_579975, JString, required = false,
                                  default = nil)
-  if valid_593975 != nil:
-    section.add "pageToken", valid_593975
-  var valid_593976 = query.getOrDefault("quotaUser")
-  valid_593976 = validateParameter(valid_593976, JString, required = false,
+  if valid_579975 != nil:
+    section.add "pageToken", valid_579975
+  var valid_579976 = query.getOrDefault("quotaUser")
+  valid_579976 = validateParameter(valid_579976, JString, required = false,
                                  default = nil)
-  if valid_593976 != nil:
-    section.add "quotaUser", valid_593976
-  var valid_593977 = query.getOrDefault("alt")
-  valid_593977 = validateParameter(valid_593977, JString, required = false,
+  if valid_579976 != nil:
+    section.add "quotaUser", valid_579976
+  var valid_579977 = query.getOrDefault("alt")
+  valid_579977 = validateParameter(valid_579977, JString, required = false,
                                  default = newJString("json"))
-  if valid_593977 != nil:
-    section.add "alt", valid_593977
-  var valid_593978 = query.getOrDefault("oauth_token")
-  valid_593978 = validateParameter(valid_593978, JString, required = false,
+  if valid_579977 != nil:
+    section.add "alt", valid_579977
+  var valid_579978 = query.getOrDefault("oauth_token")
+  valid_579978 = validateParameter(valid_579978, JString, required = false,
                                  default = nil)
-  if valid_593978 != nil:
-    section.add "oauth_token", valid_593978
-  var valid_593979 = query.getOrDefault("callback")
-  valid_593979 = validateParameter(valid_593979, JString, required = false,
+  if valid_579978 != nil:
+    section.add "oauth_token", valid_579978
+  var valid_579979 = query.getOrDefault("callback")
+  valid_579979 = validateParameter(valid_579979, JString, required = false,
                                  default = nil)
-  if valid_593979 != nil:
-    section.add "callback", valid_593979
-  var valid_593980 = query.getOrDefault("access_token")
-  valid_593980 = validateParameter(valid_593980, JString, required = false,
+  if valid_579979 != nil:
+    section.add "callback", valid_579979
+  var valid_579980 = query.getOrDefault("access_token")
+  valid_579980 = validateParameter(valid_579980, JString, required = false,
                                  default = nil)
-  if valid_593980 != nil:
-    section.add "access_token", valid_593980
-  var valid_593981 = query.getOrDefault("uploadType")
-  valid_593981 = validateParameter(valid_593981, JString, required = false,
+  if valid_579980 != nil:
+    section.add "access_token", valid_579980
+  var valid_579981 = query.getOrDefault("uploadType")
+  valid_579981 = validateParameter(valid_579981, JString, required = false,
                                  default = nil)
-  if valid_593981 != nil:
-    section.add "uploadType", valid_593981
-  var valid_593982 = query.getOrDefault("key")
-  valid_593982 = validateParameter(valid_593982, JString, required = false,
+  if valid_579981 != nil:
+    section.add "uploadType", valid_579981
+  var valid_579982 = query.getOrDefault("key")
+  valid_579982 = validateParameter(valid_579982, JString, required = false,
                                  default = nil)
-  if valid_593982 != nil:
-    section.add "key", valid_593982
-  var valid_593983 = query.getOrDefault("$.xgafv")
-  valid_593983 = validateParameter(valid_593983, JString, required = false,
+  if valid_579982 != nil:
+    section.add "key", valid_579982
+  var valid_579983 = query.getOrDefault("$.xgafv")
+  valid_579983 = validateParameter(valid_579983, JString, required = false,
                                  default = newJString("1"))
-  if valid_593983 != nil:
-    section.add "$.xgafv", valid_593983
-  var valid_593984 = query.getOrDefault("pageSize")
-  valid_593984 = validateParameter(valid_593984, JInt, required = false, default = nil)
-  if valid_593984 != nil:
-    section.add "pageSize", valid_593984
-  var valid_593985 = query.getOrDefault("prettyPrint")
-  valid_593985 = validateParameter(valid_593985, JBool, required = false,
+  if valid_579983 != nil:
+    section.add "$.xgafv", valid_579983
+  var valid_579984 = query.getOrDefault("pageSize")
+  valid_579984 = validateParameter(valid_579984, JInt, required = false, default = nil)
+  if valid_579984 != nil:
+    section.add "pageSize", valid_579984
+  var valid_579985 = query.getOrDefault("prettyPrint")
+  valid_579985 = validateParameter(valid_579985, JBool, required = false,
                                  default = newJBool(true))
-  if valid_593985 != nil:
-    section.add "prettyPrint", valid_593985
+  if valid_579985 != nil:
+    section.add "prettyPrint", valid_579985
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -566,21 +568,21 @@ proc validate_LoggingMonitoredResourceDescriptorsList_593971(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_593986: Call_LoggingMonitoredResourceDescriptorsList_593970;
+proc call*(call_579986: Call_LoggingMonitoredResourceDescriptorsList_579970;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Lists the descriptors for monitored resource types used by Logging.
   ## 
-  let valid = call_593986.validator(path, query, header, formData, body)
-  let scheme = call_593986.pickScheme
+  let valid = call_579986.validator(path, query, header, formData, body)
+  let scheme = call_579986.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_593986.url(scheme.get, call_593986.host, call_593986.base,
-                         call_593986.route, valid.getOrDefault("path"),
+  let url = call_579986.url(scheme.get, call_579986.host, call_579986.base,
+                         call_579986.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_593986, url, valid)
+  result = hook(call_579986, url, valid)
 
-proc call*(call_593987: Call_LoggingMonitoredResourceDescriptorsList_593970;
+proc call*(call_579987: Call_LoggingMonitoredResourceDescriptorsList_579970;
           uploadProtocol: string = ""; fields: string = ""; pageToken: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           callback: string = ""; accessToken: string = ""; uploadType: string = "";
@@ -613,36 +615,36 @@ proc call*(call_593987: Call_LoggingMonitoredResourceDescriptorsList_593970;
   ##           : Optional. The maximum number of results to return from this request. Non-positive values are ignored. The presence of nextPageToken in the response indicates that more results might be available.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var query_593988 = newJObject()
-  add(query_593988, "upload_protocol", newJString(uploadProtocol))
-  add(query_593988, "fields", newJString(fields))
-  add(query_593988, "pageToken", newJString(pageToken))
-  add(query_593988, "quotaUser", newJString(quotaUser))
-  add(query_593988, "alt", newJString(alt))
-  add(query_593988, "oauth_token", newJString(oauthToken))
-  add(query_593988, "callback", newJString(callback))
-  add(query_593988, "access_token", newJString(accessToken))
-  add(query_593988, "uploadType", newJString(uploadType))
-  add(query_593988, "key", newJString(key))
-  add(query_593988, "$.xgafv", newJString(Xgafv))
-  add(query_593988, "pageSize", newJInt(pageSize))
-  add(query_593988, "prettyPrint", newJBool(prettyPrint))
-  result = call_593987.call(nil, query_593988, nil, nil, nil)
+  var query_579988 = newJObject()
+  add(query_579988, "upload_protocol", newJString(uploadProtocol))
+  add(query_579988, "fields", newJString(fields))
+  add(query_579988, "pageToken", newJString(pageToken))
+  add(query_579988, "quotaUser", newJString(quotaUser))
+  add(query_579988, "alt", newJString(alt))
+  add(query_579988, "oauth_token", newJString(oauthToken))
+  add(query_579988, "callback", newJString(callback))
+  add(query_579988, "access_token", newJString(accessToken))
+  add(query_579988, "uploadType", newJString(uploadType))
+  add(query_579988, "key", newJString(key))
+  add(query_579988, "$.xgafv", newJString(Xgafv))
+  add(query_579988, "pageSize", newJInt(pageSize))
+  add(query_579988, "prettyPrint", newJBool(prettyPrint))
+  result = call_579987.call(nil, query_579988, nil, nil, nil)
 
-var loggingMonitoredResourceDescriptorsList* = Call_LoggingMonitoredResourceDescriptorsList_593970(
+var loggingMonitoredResourceDescriptorsList* = Call_LoggingMonitoredResourceDescriptorsList_579970(
     name: "loggingMonitoredResourceDescriptorsList", meth: HttpMethod.HttpGet,
     host: "logging.googleapis.com",
     route: "/v2beta1/monitoredResourceDescriptors",
-    validator: validate_LoggingMonitoredResourceDescriptorsList_593971, base: "/",
-    url: url_LoggingMonitoredResourceDescriptorsList_593972,
+    validator: validate_LoggingMonitoredResourceDescriptorsList_579971, base: "/",
+    url: url_LoggingMonitoredResourceDescriptorsList_579972,
     schemes: {Scheme.Https})
 type
-  Call_LoggingProjectsMetricsUpdate_594022 = ref object of OpenApiRestCall_593408
-proc url_LoggingProjectsMetricsUpdate_594024(protocol: Scheme; host: string;
+  Call_LoggingProjectsMetricsUpdate_580022 = ref object of OpenApiRestCall_579408
+proc url_LoggingProjectsMetricsUpdate_580024(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "metricName" in path, "`metricName` is a required path parameter"
   const
@@ -653,7 +655,7 @@ proc url_LoggingProjectsMetricsUpdate_594024(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_LoggingProjectsMetricsUpdate_594023(path: JsonNode; query: JsonNode;
+proc validate_LoggingProjectsMetricsUpdate_580023(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Creates or updates a logs-based metric.
   ## 
@@ -667,11 +669,11 @@ proc validate_LoggingProjectsMetricsUpdate_594023(path: JsonNode; query: JsonNod
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `metricName` field"
-  var valid_594025 = path.getOrDefault("metricName")
-  valid_594025 = validateParameter(valid_594025, JString, required = true,
+  var valid_580025 = path.getOrDefault("metricName")
+  valid_580025 = validateParameter(valid_580025, JString, required = true,
                                  default = nil)
-  if valid_594025 != nil:
-    section.add "metricName", valid_594025
+  if valid_580025 != nil:
+    section.add "metricName", valid_580025
   result.add "path", section
   ## parameters in `query` object:
   ##   upload_protocol: JString
@@ -697,61 +699,61 @@ proc validate_LoggingProjectsMetricsUpdate_594023(path: JsonNode; query: JsonNod
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_594026 = query.getOrDefault("upload_protocol")
-  valid_594026 = validateParameter(valid_594026, JString, required = false,
+  var valid_580026 = query.getOrDefault("upload_protocol")
+  valid_580026 = validateParameter(valid_580026, JString, required = false,
                                  default = nil)
-  if valid_594026 != nil:
-    section.add "upload_protocol", valid_594026
-  var valid_594027 = query.getOrDefault("fields")
-  valid_594027 = validateParameter(valid_594027, JString, required = false,
+  if valid_580026 != nil:
+    section.add "upload_protocol", valid_580026
+  var valid_580027 = query.getOrDefault("fields")
+  valid_580027 = validateParameter(valid_580027, JString, required = false,
                                  default = nil)
-  if valid_594027 != nil:
-    section.add "fields", valid_594027
-  var valid_594028 = query.getOrDefault("quotaUser")
-  valid_594028 = validateParameter(valid_594028, JString, required = false,
+  if valid_580027 != nil:
+    section.add "fields", valid_580027
+  var valid_580028 = query.getOrDefault("quotaUser")
+  valid_580028 = validateParameter(valid_580028, JString, required = false,
                                  default = nil)
-  if valid_594028 != nil:
-    section.add "quotaUser", valid_594028
-  var valid_594029 = query.getOrDefault("alt")
-  valid_594029 = validateParameter(valid_594029, JString, required = false,
+  if valid_580028 != nil:
+    section.add "quotaUser", valid_580028
+  var valid_580029 = query.getOrDefault("alt")
+  valid_580029 = validateParameter(valid_580029, JString, required = false,
                                  default = newJString("json"))
-  if valid_594029 != nil:
-    section.add "alt", valid_594029
-  var valid_594030 = query.getOrDefault("oauth_token")
-  valid_594030 = validateParameter(valid_594030, JString, required = false,
+  if valid_580029 != nil:
+    section.add "alt", valid_580029
+  var valid_580030 = query.getOrDefault("oauth_token")
+  valid_580030 = validateParameter(valid_580030, JString, required = false,
                                  default = nil)
-  if valid_594030 != nil:
-    section.add "oauth_token", valid_594030
-  var valid_594031 = query.getOrDefault("callback")
-  valid_594031 = validateParameter(valid_594031, JString, required = false,
+  if valid_580030 != nil:
+    section.add "oauth_token", valid_580030
+  var valid_580031 = query.getOrDefault("callback")
+  valid_580031 = validateParameter(valid_580031, JString, required = false,
                                  default = nil)
-  if valid_594031 != nil:
-    section.add "callback", valid_594031
-  var valid_594032 = query.getOrDefault("access_token")
-  valid_594032 = validateParameter(valid_594032, JString, required = false,
+  if valid_580031 != nil:
+    section.add "callback", valid_580031
+  var valid_580032 = query.getOrDefault("access_token")
+  valid_580032 = validateParameter(valid_580032, JString, required = false,
                                  default = nil)
-  if valid_594032 != nil:
-    section.add "access_token", valid_594032
-  var valid_594033 = query.getOrDefault("uploadType")
-  valid_594033 = validateParameter(valid_594033, JString, required = false,
+  if valid_580032 != nil:
+    section.add "access_token", valid_580032
+  var valid_580033 = query.getOrDefault("uploadType")
+  valid_580033 = validateParameter(valid_580033, JString, required = false,
                                  default = nil)
-  if valid_594033 != nil:
-    section.add "uploadType", valid_594033
-  var valid_594034 = query.getOrDefault("key")
-  valid_594034 = validateParameter(valid_594034, JString, required = false,
+  if valid_580033 != nil:
+    section.add "uploadType", valid_580033
+  var valid_580034 = query.getOrDefault("key")
+  valid_580034 = validateParameter(valid_580034, JString, required = false,
                                  default = nil)
-  if valid_594034 != nil:
-    section.add "key", valid_594034
-  var valid_594035 = query.getOrDefault("$.xgafv")
-  valid_594035 = validateParameter(valid_594035, JString, required = false,
+  if valid_580034 != nil:
+    section.add "key", valid_580034
+  var valid_580035 = query.getOrDefault("$.xgafv")
+  valid_580035 = validateParameter(valid_580035, JString, required = false,
                                  default = newJString("1"))
-  if valid_594035 != nil:
-    section.add "$.xgafv", valid_594035
-  var valid_594036 = query.getOrDefault("prettyPrint")
-  valid_594036 = validateParameter(valid_594036, JBool, required = false,
+  if valid_580035 != nil:
+    section.add "$.xgafv", valid_580035
+  var valid_580036 = query.getOrDefault("prettyPrint")
+  valid_580036 = validateParameter(valid_580036, JBool, required = false,
                                  default = newJBool(true))
-  if valid_594036 != nil:
-    section.add "prettyPrint", valid_594036
+  if valid_580036 != nil:
+    section.add "prettyPrint", valid_580036
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -763,20 +765,20 @@ proc validate_LoggingProjectsMetricsUpdate_594023(path: JsonNode; query: JsonNod
   if body != nil:
     result.add "body", body
 
-proc call*(call_594038: Call_LoggingProjectsMetricsUpdate_594022; path: JsonNode;
+proc call*(call_580038: Call_LoggingProjectsMetricsUpdate_580022; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Creates or updates a logs-based metric.
   ## 
-  let valid = call_594038.validator(path, query, header, formData, body)
-  let scheme = call_594038.pickScheme
+  let valid = call_580038.validator(path, query, header, formData, body)
+  let scheme = call_580038.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_594038.url(scheme.get, call_594038.host, call_594038.base,
-                         call_594038.route, valid.getOrDefault("path"),
+  let url = call_580038.url(scheme.get, call_580038.host, call_580038.base,
+                         call_580038.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_594038, url, valid)
+  result = hook(call_580038, url, valid)
 
-proc call*(call_594039: Call_LoggingProjectsMetricsUpdate_594022;
+proc call*(call_580039: Call_LoggingProjectsMetricsUpdate_580022;
           metricName: string; uploadProtocol: string = ""; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           callback: string = ""; accessToken: string = ""; uploadType: string = "";
@@ -811,37 +813,37 @@ proc call*(call_594039: Call_LoggingProjectsMetricsUpdate_594022;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_594040 = newJObject()
-  var query_594041 = newJObject()
-  var body_594042 = newJObject()
-  add(query_594041, "upload_protocol", newJString(uploadProtocol))
-  add(query_594041, "fields", newJString(fields))
-  add(query_594041, "quotaUser", newJString(quotaUser))
-  add(query_594041, "alt", newJString(alt))
-  add(query_594041, "oauth_token", newJString(oauthToken))
-  add(query_594041, "callback", newJString(callback))
-  add(query_594041, "access_token", newJString(accessToken))
-  add(query_594041, "uploadType", newJString(uploadType))
-  add(path_594040, "metricName", newJString(metricName))
-  add(query_594041, "key", newJString(key))
-  add(query_594041, "$.xgafv", newJString(Xgafv))
+  var path_580040 = newJObject()
+  var query_580041 = newJObject()
+  var body_580042 = newJObject()
+  add(query_580041, "upload_protocol", newJString(uploadProtocol))
+  add(query_580041, "fields", newJString(fields))
+  add(query_580041, "quotaUser", newJString(quotaUser))
+  add(query_580041, "alt", newJString(alt))
+  add(query_580041, "oauth_token", newJString(oauthToken))
+  add(query_580041, "callback", newJString(callback))
+  add(query_580041, "access_token", newJString(accessToken))
+  add(query_580041, "uploadType", newJString(uploadType))
+  add(path_580040, "metricName", newJString(metricName))
+  add(query_580041, "key", newJString(key))
+  add(query_580041, "$.xgafv", newJString(Xgafv))
   if body != nil:
-    body_594042 = body
-  add(query_594041, "prettyPrint", newJBool(prettyPrint))
-  result = call_594039.call(path_594040, query_594041, nil, nil, body_594042)
+    body_580042 = body
+  add(query_580041, "prettyPrint", newJBool(prettyPrint))
+  result = call_580039.call(path_580040, query_580041, nil, nil, body_580042)
 
-var loggingProjectsMetricsUpdate* = Call_LoggingProjectsMetricsUpdate_594022(
+var loggingProjectsMetricsUpdate* = Call_LoggingProjectsMetricsUpdate_580022(
     name: "loggingProjectsMetricsUpdate", meth: HttpMethod.HttpPut,
     host: "logging.googleapis.com", route: "/v2beta1/{metricName}",
-    validator: validate_LoggingProjectsMetricsUpdate_594023, base: "/",
-    url: url_LoggingProjectsMetricsUpdate_594024, schemes: {Scheme.Https})
+    validator: validate_LoggingProjectsMetricsUpdate_580023, base: "/",
+    url: url_LoggingProjectsMetricsUpdate_580024, schemes: {Scheme.Https})
 type
-  Call_LoggingProjectsMetricsGet_593989 = ref object of OpenApiRestCall_593408
-proc url_LoggingProjectsMetricsGet_593991(protocol: Scheme; host: string;
+  Call_LoggingProjectsMetricsGet_579989 = ref object of OpenApiRestCall_579408
+proc url_LoggingProjectsMetricsGet_579991(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "metricName" in path, "`metricName` is a required path parameter"
   const
@@ -852,7 +854,7 @@ proc url_LoggingProjectsMetricsGet_593991(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_LoggingProjectsMetricsGet_593990(path: JsonNode; query: JsonNode;
+proc validate_LoggingProjectsMetricsGet_579990(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Gets a logs-based metric.
   ## 
@@ -866,11 +868,11 @@ proc validate_LoggingProjectsMetricsGet_593990(path: JsonNode; query: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `metricName` field"
-  var valid_594006 = path.getOrDefault("metricName")
-  valid_594006 = validateParameter(valid_594006, JString, required = true,
+  var valid_580006 = path.getOrDefault("metricName")
+  valid_580006 = validateParameter(valid_580006, JString, required = true,
                                  default = nil)
-  if valid_594006 != nil:
-    section.add "metricName", valid_594006
+  if valid_580006 != nil:
+    section.add "metricName", valid_580006
   result.add "path", section
   ## parameters in `query` object:
   ##   upload_protocol: JString
@@ -896,61 +898,61 @@ proc validate_LoggingProjectsMetricsGet_593990(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_594007 = query.getOrDefault("upload_protocol")
-  valid_594007 = validateParameter(valid_594007, JString, required = false,
+  var valid_580007 = query.getOrDefault("upload_protocol")
+  valid_580007 = validateParameter(valid_580007, JString, required = false,
                                  default = nil)
-  if valid_594007 != nil:
-    section.add "upload_protocol", valid_594007
-  var valid_594008 = query.getOrDefault("fields")
-  valid_594008 = validateParameter(valid_594008, JString, required = false,
+  if valid_580007 != nil:
+    section.add "upload_protocol", valid_580007
+  var valid_580008 = query.getOrDefault("fields")
+  valid_580008 = validateParameter(valid_580008, JString, required = false,
                                  default = nil)
-  if valid_594008 != nil:
-    section.add "fields", valid_594008
-  var valid_594009 = query.getOrDefault("quotaUser")
-  valid_594009 = validateParameter(valid_594009, JString, required = false,
+  if valid_580008 != nil:
+    section.add "fields", valid_580008
+  var valid_580009 = query.getOrDefault("quotaUser")
+  valid_580009 = validateParameter(valid_580009, JString, required = false,
                                  default = nil)
-  if valid_594009 != nil:
-    section.add "quotaUser", valid_594009
-  var valid_594010 = query.getOrDefault("alt")
-  valid_594010 = validateParameter(valid_594010, JString, required = false,
+  if valid_580009 != nil:
+    section.add "quotaUser", valid_580009
+  var valid_580010 = query.getOrDefault("alt")
+  valid_580010 = validateParameter(valid_580010, JString, required = false,
                                  default = newJString("json"))
-  if valid_594010 != nil:
-    section.add "alt", valid_594010
-  var valid_594011 = query.getOrDefault("oauth_token")
-  valid_594011 = validateParameter(valid_594011, JString, required = false,
+  if valid_580010 != nil:
+    section.add "alt", valid_580010
+  var valid_580011 = query.getOrDefault("oauth_token")
+  valid_580011 = validateParameter(valid_580011, JString, required = false,
                                  default = nil)
-  if valid_594011 != nil:
-    section.add "oauth_token", valid_594011
-  var valid_594012 = query.getOrDefault("callback")
-  valid_594012 = validateParameter(valid_594012, JString, required = false,
+  if valid_580011 != nil:
+    section.add "oauth_token", valid_580011
+  var valid_580012 = query.getOrDefault("callback")
+  valid_580012 = validateParameter(valid_580012, JString, required = false,
                                  default = nil)
-  if valid_594012 != nil:
-    section.add "callback", valid_594012
-  var valid_594013 = query.getOrDefault("access_token")
-  valid_594013 = validateParameter(valid_594013, JString, required = false,
+  if valid_580012 != nil:
+    section.add "callback", valid_580012
+  var valid_580013 = query.getOrDefault("access_token")
+  valid_580013 = validateParameter(valid_580013, JString, required = false,
                                  default = nil)
-  if valid_594013 != nil:
-    section.add "access_token", valid_594013
-  var valid_594014 = query.getOrDefault("uploadType")
-  valid_594014 = validateParameter(valid_594014, JString, required = false,
+  if valid_580013 != nil:
+    section.add "access_token", valid_580013
+  var valid_580014 = query.getOrDefault("uploadType")
+  valid_580014 = validateParameter(valid_580014, JString, required = false,
                                  default = nil)
-  if valid_594014 != nil:
-    section.add "uploadType", valid_594014
-  var valid_594015 = query.getOrDefault("key")
-  valid_594015 = validateParameter(valid_594015, JString, required = false,
+  if valid_580014 != nil:
+    section.add "uploadType", valid_580014
+  var valid_580015 = query.getOrDefault("key")
+  valid_580015 = validateParameter(valid_580015, JString, required = false,
                                  default = nil)
-  if valid_594015 != nil:
-    section.add "key", valid_594015
-  var valid_594016 = query.getOrDefault("$.xgafv")
-  valid_594016 = validateParameter(valid_594016, JString, required = false,
+  if valid_580015 != nil:
+    section.add "key", valid_580015
+  var valid_580016 = query.getOrDefault("$.xgafv")
+  valid_580016 = validateParameter(valid_580016, JString, required = false,
                                  default = newJString("1"))
-  if valid_594016 != nil:
-    section.add "$.xgafv", valid_594016
-  var valid_594017 = query.getOrDefault("prettyPrint")
-  valid_594017 = validateParameter(valid_594017, JBool, required = false,
+  if valid_580016 != nil:
+    section.add "$.xgafv", valid_580016
+  var valid_580017 = query.getOrDefault("prettyPrint")
+  valid_580017 = validateParameter(valid_580017, JBool, required = false,
                                  default = newJBool(true))
-  if valid_594017 != nil:
-    section.add "prettyPrint", valid_594017
+  if valid_580017 != nil:
+    section.add "prettyPrint", valid_580017
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -959,20 +961,20 @@ proc validate_LoggingProjectsMetricsGet_593990(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_594018: Call_LoggingProjectsMetricsGet_593989; path: JsonNode;
+proc call*(call_580018: Call_LoggingProjectsMetricsGet_579989; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Gets a logs-based metric.
   ## 
-  let valid = call_594018.validator(path, query, header, formData, body)
-  let scheme = call_594018.pickScheme
+  let valid = call_580018.validator(path, query, header, formData, body)
+  let scheme = call_580018.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_594018.url(scheme.get, call_594018.host, call_594018.base,
-                         call_594018.route, valid.getOrDefault("path"),
+  let url = call_580018.url(scheme.get, call_580018.host, call_580018.base,
+                         call_580018.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_594018, url, valid)
+  result = hook(call_580018, url, valid)
 
-proc call*(call_594019: Call_LoggingProjectsMetricsGet_593989; metricName: string;
+proc call*(call_580019: Call_LoggingProjectsMetricsGet_579989; metricName: string;
           uploadProtocol: string = ""; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; callback: string = "";
           accessToken: string = ""; uploadType: string = ""; key: string = "";
@@ -1005,34 +1007,34 @@ proc call*(call_594019: Call_LoggingProjectsMetricsGet_593989; metricName: strin
   ##        : V1 error format.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_594020 = newJObject()
-  var query_594021 = newJObject()
-  add(query_594021, "upload_protocol", newJString(uploadProtocol))
-  add(query_594021, "fields", newJString(fields))
-  add(query_594021, "quotaUser", newJString(quotaUser))
-  add(query_594021, "alt", newJString(alt))
-  add(query_594021, "oauth_token", newJString(oauthToken))
-  add(query_594021, "callback", newJString(callback))
-  add(query_594021, "access_token", newJString(accessToken))
-  add(query_594021, "uploadType", newJString(uploadType))
-  add(path_594020, "metricName", newJString(metricName))
-  add(query_594021, "key", newJString(key))
-  add(query_594021, "$.xgafv", newJString(Xgafv))
-  add(query_594021, "prettyPrint", newJBool(prettyPrint))
-  result = call_594019.call(path_594020, query_594021, nil, nil, nil)
+  var path_580020 = newJObject()
+  var query_580021 = newJObject()
+  add(query_580021, "upload_protocol", newJString(uploadProtocol))
+  add(query_580021, "fields", newJString(fields))
+  add(query_580021, "quotaUser", newJString(quotaUser))
+  add(query_580021, "alt", newJString(alt))
+  add(query_580021, "oauth_token", newJString(oauthToken))
+  add(query_580021, "callback", newJString(callback))
+  add(query_580021, "access_token", newJString(accessToken))
+  add(query_580021, "uploadType", newJString(uploadType))
+  add(path_580020, "metricName", newJString(metricName))
+  add(query_580021, "key", newJString(key))
+  add(query_580021, "$.xgafv", newJString(Xgafv))
+  add(query_580021, "prettyPrint", newJBool(prettyPrint))
+  result = call_580019.call(path_580020, query_580021, nil, nil, nil)
 
-var loggingProjectsMetricsGet* = Call_LoggingProjectsMetricsGet_593989(
+var loggingProjectsMetricsGet* = Call_LoggingProjectsMetricsGet_579989(
     name: "loggingProjectsMetricsGet", meth: HttpMethod.HttpGet,
     host: "logging.googleapis.com", route: "/v2beta1/{metricName}",
-    validator: validate_LoggingProjectsMetricsGet_593990, base: "/",
-    url: url_LoggingProjectsMetricsGet_593991, schemes: {Scheme.Https})
+    validator: validate_LoggingProjectsMetricsGet_579990, base: "/",
+    url: url_LoggingProjectsMetricsGet_579991, schemes: {Scheme.Https})
 type
-  Call_LoggingProjectsMetricsDelete_594043 = ref object of OpenApiRestCall_593408
-proc url_LoggingProjectsMetricsDelete_594045(protocol: Scheme; host: string;
+  Call_LoggingProjectsMetricsDelete_580043 = ref object of OpenApiRestCall_579408
+proc url_LoggingProjectsMetricsDelete_580045(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "metricName" in path, "`metricName` is a required path parameter"
   const
@@ -1043,7 +1045,7 @@ proc url_LoggingProjectsMetricsDelete_594045(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_LoggingProjectsMetricsDelete_594044(path: JsonNode; query: JsonNode;
+proc validate_LoggingProjectsMetricsDelete_580044(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Deletes a logs-based metric.
   ## 
@@ -1057,11 +1059,11 @@ proc validate_LoggingProjectsMetricsDelete_594044(path: JsonNode; query: JsonNod
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `metricName` field"
-  var valid_594046 = path.getOrDefault("metricName")
-  valid_594046 = validateParameter(valid_594046, JString, required = true,
+  var valid_580046 = path.getOrDefault("metricName")
+  valid_580046 = validateParameter(valid_580046, JString, required = true,
                                  default = nil)
-  if valid_594046 != nil:
-    section.add "metricName", valid_594046
+  if valid_580046 != nil:
+    section.add "metricName", valid_580046
   result.add "path", section
   ## parameters in `query` object:
   ##   upload_protocol: JString
@@ -1087,61 +1089,61 @@ proc validate_LoggingProjectsMetricsDelete_594044(path: JsonNode; query: JsonNod
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_594047 = query.getOrDefault("upload_protocol")
-  valid_594047 = validateParameter(valid_594047, JString, required = false,
+  var valid_580047 = query.getOrDefault("upload_protocol")
+  valid_580047 = validateParameter(valid_580047, JString, required = false,
                                  default = nil)
-  if valid_594047 != nil:
-    section.add "upload_protocol", valid_594047
-  var valid_594048 = query.getOrDefault("fields")
-  valid_594048 = validateParameter(valid_594048, JString, required = false,
+  if valid_580047 != nil:
+    section.add "upload_protocol", valid_580047
+  var valid_580048 = query.getOrDefault("fields")
+  valid_580048 = validateParameter(valid_580048, JString, required = false,
                                  default = nil)
-  if valid_594048 != nil:
-    section.add "fields", valid_594048
-  var valid_594049 = query.getOrDefault("quotaUser")
-  valid_594049 = validateParameter(valid_594049, JString, required = false,
+  if valid_580048 != nil:
+    section.add "fields", valid_580048
+  var valid_580049 = query.getOrDefault("quotaUser")
+  valid_580049 = validateParameter(valid_580049, JString, required = false,
                                  default = nil)
-  if valid_594049 != nil:
-    section.add "quotaUser", valid_594049
-  var valid_594050 = query.getOrDefault("alt")
-  valid_594050 = validateParameter(valid_594050, JString, required = false,
+  if valid_580049 != nil:
+    section.add "quotaUser", valid_580049
+  var valid_580050 = query.getOrDefault("alt")
+  valid_580050 = validateParameter(valid_580050, JString, required = false,
                                  default = newJString("json"))
-  if valid_594050 != nil:
-    section.add "alt", valid_594050
-  var valid_594051 = query.getOrDefault("oauth_token")
-  valid_594051 = validateParameter(valid_594051, JString, required = false,
+  if valid_580050 != nil:
+    section.add "alt", valid_580050
+  var valid_580051 = query.getOrDefault("oauth_token")
+  valid_580051 = validateParameter(valid_580051, JString, required = false,
                                  default = nil)
-  if valid_594051 != nil:
-    section.add "oauth_token", valid_594051
-  var valid_594052 = query.getOrDefault("callback")
-  valid_594052 = validateParameter(valid_594052, JString, required = false,
+  if valid_580051 != nil:
+    section.add "oauth_token", valid_580051
+  var valid_580052 = query.getOrDefault("callback")
+  valid_580052 = validateParameter(valid_580052, JString, required = false,
                                  default = nil)
-  if valid_594052 != nil:
-    section.add "callback", valid_594052
-  var valid_594053 = query.getOrDefault("access_token")
-  valid_594053 = validateParameter(valid_594053, JString, required = false,
+  if valid_580052 != nil:
+    section.add "callback", valid_580052
+  var valid_580053 = query.getOrDefault("access_token")
+  valid_580053 = validateParameter(valid_580053, JString, required = false,
                                  default = nil)
-  if valid_594053 != nil:
-    section.add "access_token", valid_594053
-  var valid_594054 = query.getOrDefault("uploadType")
-  valid_594054 = validateParameter(valid_594054, JString, required = false,
+  if valid_580053 != nil:
+    section.add "access_token", valid_580053
+  var valid_580054 = query.getOrDefault("uploadType")
+  valid_580054 = validateParameter(valid_580054, JString, required = false,
                                  default = nil)
-  if valid_594054 != nil:
-    section.add "uploadType", valid_594054
-  var valid_594055 = query.getOrDefault("key")
-  valid_594055 = validateParameter(valid_594055, JString, required = false,
+  if valid_580054 != nil:
+    section.add "uploadType", valid_580054
+  var valid_580055 = query.getOrDefault("key")
+  valid_580055 = validateParameter(valid_580055, JString, required = false,
                                  default = nil)
-  if valid_594055 != nil:
-    section.add "key", valid_594055
-  var valid_594056 = query.getOrDefault("$.xgafv")
-  valid_594056 = validateParameter(valid_594056, JString, required = false,
+  if valid_580055 != nil:
+    section.add "key", valid_580055
+  var valid_580056 = query.getOrDefault("$.xgafv")
+  valid_580056 = validateParameter(valid_580056, JString, required = false,
                                  default = newJString("1"))
-  if valid_594056 != nil:
-    section.add "$.xgafv", valid_594056
-  var valid_594057 = query.getOrDefault("prettyPrint")
-  valid_594057 = validateParameter(valid_594057, JBool, required = false,
+  if valid_580056 != nil:
+    section.add "$.xgafv", valid_580056
+  var valid_580057 = query.getOrDefault("prettyPrint")
+  valid_580057 = validateParameter(valid_580057, JBool, required = false,
                                  default = newJBool(true))
-  if valid_594057 != nil:
-    section.add "prettyPrint", valid_594057
+  if valid_580057 != nil:
+    section.add "prettyPrint", valid_580057
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1150,20 +1152,20 @@ proc validate_LoggingProjectsMetricsDelete_594044(path: JsonNode; query: JsonNod
   if body != nil:
     result.add "body", body
 
-proc call*(call_594058: Call_LoggingProjectsMetricsDelete_594043; path: JsonNode;
+proc call*(call_580058: Call_LoggingProjectsMetricsDelete_580043; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Deletes a logs-based metric.
   ## 
-  let valid = call_594058.validator(path, query, header, formData, body)
-  let scheme = call_594058.pickScheme
+  let valid = call_580058.validator(path, query, header, formData, body)
+  let scheme = call_580058.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_594058.url(scheme.get, call_594058.host, call_594058.base,
-                         call_594058.route, valid.getOrDefault("path"),
+  let url = call_580058.url(scheme.get, call_580058.host, call_580058.base,
+                         call_580058.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_594058, url, valid)
+  result = hook(call_580058, url, valid)
 
-proc call*(call_594059: Call_LoggingProjectsMetricsDelete_594043;
+proc call*(call_580059: Call_LoggingProjectsMetricsDelete_580043;
           metricName: string; uploadProtocol: string = ""; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           callback: string = ""; accessToken: string = ""; uploadType: string = "";
@@ -1196,34 +1198,34 @@ proc call*(call_594059: Call_LoggingProjectsMetricsDelete_594043;
   ##        : V1 error format.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_594060 = newJObject()
-  var query_594061 = newJObject()
-  add(query_594061, "upload_protocol", newJString(uploadProtocol))
-  add(query_594061, "fields", newJString(fields))
-  add(query_594061, "quotaUser", newJString(quotaUser))
-  add(query_594061, "alt", newJString(alt))
-  add(query_594061, "oauth_token", newJString(oauthToken))
-  add(query_594061, "callback", newJString(callback))
-  add(query_594061, "access_token", newJString(accessToken))
-  add(query_594061, "uploadType", newJString(uploadType))
-  add(path_594060, "metricName", newJString(metricName))
-  add(query_594061, "key", newJString(key))
-  add(query_594061, "$.xgafv", newJString(Xgafv))
-  add(query_594061, "prettyPrint", newJBool(prettyPrint))
-  result = call_594059.call(path_594060, query_594061, nil, nil, nil)
+  var path_580060 = newJObject()
+  var query_580061 = newJObject()
+  add(query_580061, "upload_protocol", newJString(uploadProtocol))
+  add(query_580061, "fields", newJString(fields))
+  add(query_580061, "quotaUser", newJString(quotaUser))
+  add(query_580061, "alt", newJString(alt))
+  add(query_580061, "oauth_token", newJString(oauthToken))
+  add(query_580061, "callback", newJString(callback))
+  add(query_580061, "access_token", newJString(accessToken))
+  add(query_580061, "uploadType", newJString(uploadType))
+  add(path_580060, "metricName", newJString(metricName))
+  add(query_580061, "key", newJString(key))
+  add(query_580061, "$.xgafv", newJString(Xgafv))
+  add(query_580061, "prettyPrint", newJBool(prettyPrint))
+  result = call_580059.call(path_580060, query_580061, nil, nil, nil)
 
-var loggingProjectsMetricsDelete* = Call_LoggingProjectsMetricsDelete_594043(
+var loggingProjectsMetricsDelete* = Call_LoggingProjectsMetricsDelete_580043(
     name: "loggingProjectsMetricsDelete", meth: HttpMethod.HttpDelete,
     host: "logging.googleapis.com", route: "/v2beta1/{metricName}",
-    validator: validate_LoggingProjectsMetricsDelete_594044, base: "/",
-    url: url_LoggingProjectsMetricsDelete_594045, schemes: {Scheme.Https})
+    validator: validate_LoggingProjectsMetricsDelete_580044, base: "/",
+    url: url_LoggingProjectsMetricsDelete_580045, schemes: {Scheme.Https})
 type
-  Call_LoggingProjectsMetricsCreate_594083 = ref object of OpenApiRestCall_593408
-proc url_LoggingProjectsMetricsCreate_594085(protocol: Scheme; host: string;
+  Call_LoggingProjectsMetricsCreate_580083 = ref object of OpenApiRestCall_579408
+proc url_LoggingProjectsMetricsCreate_580085(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "parent" in path, "`parent` is a required path parameter"
   const
@@ -1235,7 +1237,7 @@ proc url_LoggingProjectsMetricsCreate_594085(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_LoggingProjectsMetricsCreate_594084(path: JsonNode; query: JsonNode;
+proc validate_LoggingProjectsMetricsCreate_580084(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Creates a logs-based metric.
   ## 
@@ -1248,11 +1250,11 @@ proc validate_LoggingProjectsMetricsCreate_594084(path: JsonNode; query: JsonNod
   ## The new metric must be provided in the request.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `parent` field"
-  var valid_594086 = path.getOrDefault("parent")
-  valid_594086 = validateParameter(valid_594086, JString, required = true,
+  var valid_580086 = path.getOrDefault("parent")
+  valid_580086 = validateParameter(valid_580086, JString, required = true,
                                  default = nil)
-  if valid_594086 != nil:
-    section.add "parent", valid_594086
+  if valid_580086 != nil:
+    section.add "parent", valid_580086
   result.add "path", section
   ## parameters in `query` object:
   ##   upload_protocol: JString
@@ -1278,61 +1280,61 @@ proc validate_LoggingProjectsMetricsCreate_594084(path: JsonNode; query: JsonNod
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_594087 = query.getOrDefault("upload_protocol")
-  valid_594087 = validateParameter(valid_594087, JString, required = false,
+  var valid_580087 = query.getOrDefault("upload_protocol")
+  valid_580087 = validateParameter(valid_580087, JString, required = false,
                                  default = nil)
-  if valid_594087 != nil:
-    section.add "upload_protocol", valid_594087
-  var valid_594088 = query.getOrDefault("fields")
-  valid_594088 = validateParameter(valid_594088, JString, required = false,
+  if valid_580087 != nil:
+    section.add "upload_protocol", valid_580087
+  var valid_580088 = query.getOrDefault("fields")
+  valid_580088 = validateParameter(valid_580088, JString, required = false,
                                  default = nil)
-  if valid_594088 != nil:
-    section.add "fields", valid_594088
-  var valid_594089 = query.getOrDefault("quotaUser")
-  valid_594089 = validateParameter(valid_594089, JString, required = false,
+  if valid_580088 != nil:
+    section.add "fields", valid_580088
+  var valid_580089 = query.getOrDefault("quotaUser")
+  valid_580089 = validateParameter(valid_580089, JString, required = false,
                                  default = nil)
-  if valid_594089 != nil:
-    section.add "quotaUser", valid_594089
-  var valid_594090 = query.getOrDefault("alt")
-  valid_594090 = validateParameter(valid_594090, JString, required = false,
+  if valid_580089 != nil:
+    section.add "quotaUser", valid_580089
+  var valid_580090 = query.getOrDefault("alt")
+  valid_580090 = validateParameter(valid_580090, JString, required = false,
                                  default = newJString("json"))
-  if valid_594090 != nil:
-    section.add "alt", valid_594090
-  var valid_594091 = query.getOrDefault("oauth_token")
-  valid_594091 = validateParameter(valid_594091, JString, required = false,
+  if valid_580090 != nil:
+    section.add "alt", valid_580090
+  var valid_580091 = query.getOrDefault("oauth_token")
+  valid_580091 = validateParameter(valid_580091, JString, required = false,
                                  default = nil)
-  if valid_594091 != nil:
-    section.add "oauth_token", valid_594091
-  var valid_594092 = query.getOrDefault("callback")
-  valid_594092 = validateParameter(valid_594092, JString, required = false,
+  if valid_580091 != nil:
+    section.add "oauth_token", valid_580091
+  var valid_580092 = query.getOrDefault("callback")
+  valid_580092 = validateParameter(valid_580092, JString, required = false,
                                  default = nil)
-  if valid_594092 != nil:
-    section.add "callback", valid_594092
-  var valid_594093 = query.getOrDefault("access_token")
-  valid_594093 = validateParameter(valid_594093, JString, required = false,
+  if valid_580092 != nil:
+    section.add "callback", valid_580092
+  var valid_580093 = query.getOrDefault("access_token")
+  valid_580093 = validateParameter(valid_580093, JString, required = false,
                                  default = nil)
-  if valid_594093 != nil:
-    section.add "access_token", valid_594093
-  var valid_594094 = query.getOrDefault("uploadType")
-  valid_594094 = validateParameter(valid_594094, JString, required = false,
+  if valid_580093 != nil:
+    section.add "access_token", valid_580093
+  var valid_580094 = query.getOrDefault("uploadType")
+  valid_580094 = validateParameter(valid_580094, JString, required = false,
                                  default = nil)
-  if valid_594094 != nil:
-    section.add "uploadType", valid_594094
-  var valid_594095 = query.getOrDefault("key")
-  valid_594095 = validateParameter(valid_594095, JString, required = false,
+  if valid_580094 != nil:
+    section.add "uploadType", valid_580094
+  var valid_580095 = query.getOrDefault("key")
+  valid_580095 = validateParameter(valid_580095, JString, required = false,
                                  default = nil)
-  if valid_594095 != nil:
-    section.add "key", valid_594095
-  var valid_594096 = query.getOrDefault("$.xgafv")
-  valid_594096 = validateParameter(valid_594096, JString, required = false,
+  if valid_580095 != nil:
+    section.add "key", valid_580095
+  var valid_580096 = query.getOrDefault("$.xgafv")
+  valid_580096 = validateParameter(valid_580096, JString, required = false,
                                  default = newJString("1"))
-  if valid_594096 != nil:
-    section.add "$.xgafv", valid_594096
-  var valid_594097 = query.getOrDefault("prettyPrint")
-  valid_594097 = validateParameter(valid_594097, JBool, required = false,
+  if valid_580096 != nil:
+    section.add "$.xgafv", valid_580096
+  var valid_580097 = query.getOrDefault("prettyPrint")
+  valid_580097 = validateParameter(valid_580097, JBool, required = false,
                                  default = newJBool(true))
-  if valid_594097 != nil:
-    section.add "prettyPrint", valid_594097
+  if valid_580097 != nil:
+    section.add "prettyPrint", valid_580097
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1344,20 +1346,20 @@ proc validate_LoggingProjectsMetricsCreate_594084(path: JsonNode; query: JsonNod
   if body != nil:
     result.add "body", body
 
-proc call*(call_594099: Call_LoggingProjectsMetricsCreate_594083; path: JsonNode;
+proc call*(call_580099: Call_LoggingProjectsMetricsCreate_580083; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Creates a logs-based metric.
   ## 
-  let valid = call_594099.validator(path, query, header, formData, body)
-  let scheme = call_594099.pickScheme
+  let valid = call_580099.validator(path, query, header, formData, body)
+  let scheme = call_580099.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_594099.url(scheme.get, call_594099.host, call_594099.base,
-                         call_594099.route, valid.getOrDefault("path"),
+  let url = call_580099.url(scheme.get, call_580099.host, call_580099.base,
+                         call_580099.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_594099, url, valid)
+  result = hook(call_580099, url, valid)
 
-proc call*(call_594100: Call_LoggingProjectsMetricsCreate_594083; parent: string;
+proc call*(call_580100: Call_LoggingProjectsMetricsCreate_580083; parent: string;
           uploadProtocol: string = ""; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; callback: string = "";
           accessToken: string = ""; uploadType: string = ""; key: string = "";
@@ -1391,37 +1393,37 @@ proc call*(call_594100: Call_LoggingProjectsMetricsCreate_594083; parent: string
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_594101 = newJObject()
-  var query_594102 = newJObject()
-  var body_594103 = newJObject()
-  add(query_594102, "upload_protocol", newJString(uploadProtocol))
-  add(query_594102, "fields", newJString(fields))
-  add(query_594102, "quotaUser", newJString(quotaUser))
-  add(query_594102, "alt", newJString(alt))
-  add(query_594102, "oauth_token", newJString(oauthToken))
-  add(query_594102, "callback", newJString(callback))
-  add(query_594102, "access_token", newJString(accessToken))
-  add(query_594102, "uploadType", newJString(uploadType))
-  add(path_594101, "parent", newJString(parent))
-  add(query_594102, "key", newJString(key))
-  add(query_594102, "$.xgafv", newJString(Xgafv))
+  var path_580101 = newJObject()
+  var query_580102 = newJObject()
+  var body_580103 = newJObject()
+  add(query_580102, "upload_protocol", newJString(uploadProtocol))
+  add(query_580102, "fields", newJString(fields))
+  add(query_580102, "quotaUser", newJString(quotaUser))
+  add(query_580102, "alt", newJString(alt))
+  add(query_580102, "oauth_token", newJString(oauthToken))
+  add(query_580102, "callback", newJString(callback))
+  add(query_580102, "access_token", newJString(accessToken))
+  add(query_580102, "uploadType", newJString(uploadType))
+  add(path_580101, "parent", newJString(parent))
+  add(query_580102, "key", newJString(key))
+  add(query_580102, "$.xgafv", newJString(Xgafv))
   if body != nil:
-    body_594103 = body
-  add(query_594102, "prettyPrint", newJBool(prettyPrint))
-  result = call_594100.call(path_594101, query_594102, nil, nil, body_594103)
+    body_580103 = body
+  add(query_580102, "prettyPrint", newJBool(prettyPrint))
+  result = call_580100.call(path_580101, query_580102, nil, nil, body_580103)
 
-var loggingProjectsMetricsCreate* = Call_LoggingProjectsMetricsCreate_594083(
+var loggingProjectsMetricsCreate* = Call_LoggingProjectsMetricsCreate_580083(
     name: "loggingProjectsMetricsCreate", meth: HttpMethod.HttpPost,
     host: "logging.googleapis.com", route: "/v2beta1/{parent}/metrics",
-    validator: validate_LoggingProjectsMetricsCreate_594084, base: "/",
-    url: url_LoggingProjectsMetricsCreate_594085, schemes: {Scheme.Https})
+    validator: validate_LoggingProjectsMetricsCreate_580084, base: "/",
+    url: url_LoggingProjectsMetricsCreate_580085, schemes: {Scheme.Https})
 type
-  Call_LoggingProjectsMetricsList_594062 = ref object of OpenApiRestCall_593408
-proc url_LoggingProjectsMetricsList_594064(protocol: Scheme; host: string;
+  Call_LoggingProjectsMetricsList_580062 = ref object of OpenApiRestCall_579408
+proc url_LoggingProjectsMetricsList_580064(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "parent" in path, "`parent` is a required path parameter"
   const
@@ -1433,7 +1435,7 @@ proc url_LoggingProjectsMetricsList_594064(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_LoggingProjectsMetricsList_594063(path: JsonNode; query: JsonNode;
+proc validate_LoggingProjectsMetricsList_580063(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Lists logs-based metrics.
   ## 
@@ -1446,11 +1448,11 @@ proc validate_LoggingProjectsMetricsList_594063(path: JsonNode; query: JsonNode;
   ## 
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `parent` field"
-  var valid_594065 = path.getOrDefault("parent")
-  valid_594065 = validateParameter(valid_594065, JString, required = true,
+  var valid_580065 = path.getOrDefault("parent")
+  valid_580065 = validateParameter(valid_580065, JString, required = true,
                                  default = nil)
-  if valid_594065 != nil:
-    section.add "parent", valid_594065
+  if valid_580065 != nil:
+    section.add "parent", valid_580065
   result.add "path", section
   ## parameters in `query` object:
   ##   upload_protocol: JString
@@ -1480,70 +1482,70 @@ proc validate_LoggingProjectsMetricsList_594063(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_594066 = query.getOrDefault("upload_protocol")
-  valid_594066 = validateParameter(valid_594066, JString, required = false,
+  var valid_580066 = query.getOrDefault("upload_protocol")
+  valid_580066 = validateParameter(valid_580066, JString, required = false,
                                  default = nil)
-  if valid_594066 != nil:
-    section.add "upload_protocol", valid_594066
-  var valid_594067 = query.getOrDefault("fields")
-  valid_594067 = validateParameter(valid_594067, JString, required = false,
+  if valid_580066 != nil:
+    section.add "upload_protocol", valid_580066
+  var valid_580067 = query.getOrDefault("fields")
+  valid_580067 = validateParameter(valid_580067, JString, required = false,
                                  default = nil)
-  if valid_594067 != nil:
-    section.add "fields", valid_594067
-  var valid_594068 = query.getOrDefault("pageToken")
-  valid_594068 = validateParameter(valid_594068, JString, required = false,
+  if valid_580067 != nil:
+    section.add "fields", valid_580067
+  var valid_580068 = query.getOrDefault("pageToken")
+  valid_580068 = validateParameter(valid_580068, JString, required = false,
                                  default = nil)
-  if valid_594068 != nil:
-    section.add "pageToken", valid_594068
-  var valid_594069 = query.getOrDefault("quotaUser")
-  valid_594069 = validateParameter(valid_594069, JString, required = false,
+  if valid_580068 != nil:
+    section.add "pageToken", valid_580068
+  var valid_580069 = query.getOrDefault("quotaUser")
+  valid_580069 = validateParameter(valid_580069, JString, required = false,
                                  default = nil)
-  if valid_594069 != nil:
-    section.add "quotaUser", valid_594069
-  var valid_594070 = query.getOrDefault("alt")
-  valid_594070 = validateParameter(valid_594070, JString, required = false,
+  if valid_580069 != nil:
+    section.add "quotaUser", valid_580069
+  var valid_580070 = query.getOrDefault("alt")
+  valid_580070 = validateParameter(valid_580070, JString, required = false,
                                  default = newJString("json"))
-  if valid_594070 != nil:
-    section.add "alt", valid_594070
-  var valid_594071 = query.getOrDefault("oauth_token")
-  valid_594071 = validateParameter(valid_594071, JString, required = false,
+  if valid_580070 != nil:
+    section.add "alt", valid_580070
+  var valid_580071 = query.getOrDefault("oauth_token")
+  valid_580071 = validateParameter(valid_580071, JString, required = false,
                                  default = nil)
-  if valid_594071 != nil:
-    section.add "oauth_token", valid_594071
-  var valid_594072 = query.getOrDefault("callback")
-  valid_594072 = validateParameter(valid_594072, JString, required = false,
+  if valid_580071 != nil:
+    section.add "oauth_token", valid_580071
+  var valid_580072 = query.getOrDefault("callback")
+  valid_580072 = validateParameter(valid_580072, JString, required = false,
                                  default = nil)
-  if valid_594072 != nil:
-    section.add "callback", valid_594072
-  var valid_594073 = query.getOrDefault("access_token")
-  valid_594073 = validateParameter(valid_594073, JString, required = false,
+  if valid_580072 != nil:
+    section.add "callback", valid_580072
+  var valid_580073 = query.getOrDefault("access_token")
+  valid_580073 = validateParameter(valid_580073, JString, required = false,
                                  default = nil)
-  if valid_594073 != nil:
-    section.add "access_token", valid_594073
-  var valid_594074 = query.getOrDefault("uploadType")
-  valid_594074 = validateParameter(valid_594074, JString, required = false,
+  if valid_580073 != nil:
+    section.add "access_token", valid_580073
+  var valid_580074 = query.getOrDefault("uploadType")
+  valid_580074 = validateParameter(valid_580074, JString, required = false,
                                  default = nil)
-  if valid_594074 != nil:
-    section.add "uploadType", valid_594074
-  var valid_594075 = query.getOrDefault("key")
-  valid_594075 = validateParameter(valid_594075, JString, required = false,
+  if valid_580074 != nil:
+    section.add "uploadType", valid_580074
+  var valid_580075 = query.getOrDefault("key")
+  valid_580075 = validateParameter(valid_580075, JString, required = false,
                                  default = nil)
-  if valid_594075 != nil:
-    section.add "key", valid_594075
-  var valid_594076 = query.getOrDefault("$.xgafv")
-  valid_594076 = validateParameter(valid_594076, JString, required = false,
+  if valid_580075 != nil:
+    section.add "key", valid_580075
+  var valid_580076 = query.getOrDefault("$.xgafv")
+  valid_580076 = validateParameter(valid_580076, JString, required = false,
                                  default = newJString("1"))
-  if valid_594076 != nil:
-    section.add "$.xgafv", valid_594076
-  var valid_594077 = query.getOrDefault("pageSize")
-  valid_594077 = validateParameter(valid_594077, JInt, required = false, default = nil)
-  if valid_594077 != nil:
-    section.add "pageSize", valid_594077
-  var valid_594078 = query.getOrDefault("prettyPrint")
-  valid_594078 = validateParameter(valid_594078, JBool, required = false,
+  if valid_580076 != nil:
+    section.add "$.xgafv", valid_580076
+  var valid_580077 = query.getOrDefault("pageSize")
+  valid_580077 = validateParameter(valid_580077, JInt, required = false, default = nil)
+  if valid_580077 != nil:
+    section.add "pageSize", valid_580077
+  var valid_580078 = query.getOrDefault("prettyPrint")
+  valid_580078 = validateParameter(valid_580078, JBool, required = false,
                                  default = newJBool(true))
-  if valid_594078 != nil:
-    section.add "prettyPrint", valid_594078
+  if valid_580078 != nil:
+    section.add "prettyPrint", valid_580078
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1552,20 +1554,20 @@ proc validate_LoggingProjectsMetricsList_594063(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_594079: Call_LoggingProjectsMetricsList_594062; path: JsonNode;
+proc call*(call_580079: Call_LoggingProjectsMetricsList_580062; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Lists logs-based metrics.
   ## 
-  let valid = call_594079.validator(path, query, header, formData, body)
-  let scheme = call_594079.pickScheme
+  let valid = call_580079.validator(path, query, header, formData, body)
+  let scheme = call_580079.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_594079.url(scheme.get, call_594079.host, call_594079.base,
-                         call_594079.route, valid.getOrDefault("path"),
+  let url = call_580079.url(scheme.get, call_580079.host, call_580079.base,
+                         call_580079.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_594079, url, valid)
+  result = hook(call_580079, url, valid)
 
-proc call*(call_594080: Call_LoggingProjectsMetricsList_594062; parent: string;
+proc call*(call_580080: Call_LoggingProjectsMetricsList_580062; parent: string;
           uploadProtocol: string = ""; fields: string = ""; pageToken: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           callback: string = ""; accessToken: string = ""; uploadType: string = "";
@@ -1602,36 +1604,36 @@ proc call*(call_594080: Call_LoggingProjectsMetricsList_594062; parent: string;
   ##           : Optional. The maximum number of results to return from this request. Non-positive values are ignored. The presence of nextPageToken in the response indicates that more results might be available.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_594081 = newJObject()
-  var query_594082 = newJObject()
-  add(query_594082, "upload_protocol", newJString(uploadProtocol))
-  add(query_594082, "fields", newJString(fields))
-  add(query_594082, "pageToken", newJString(pageToken))
-  add(query_594082, "quotaUser", newJString(quotaUser))
-  add(query_594082, "alt", newJString(alt))
-  add(query_594082, "oauth_token", newJString(oauthToken))
-  add(query_594082, "callback", newJString(callback))
-  add(query_594082, "access_token", newJString(accessToken))
-  add(query_594082, "uploadType", newJString(uploadType))
-  add(path_594081, "parent", newJString(parent))
-  add(query_594082, "key", newJString(key))
-  add(query_594082, "$.xgafv", newJString(Xgafv))
-  add(query_594082, "pageSize", newJInt(pageSize))
-  add(query_594082, "prettyPrint", newJBool(prettyPrint))
-  result = call_594080.call(path_594081, query_594082, nil, nil, nil)
+  var path_580081 = newJObject()
+  var query_580082 = newJObject()
+  add(query_580082, "upload_protocol", newJString(uploadProtocol))
+  add(query_580082, "fields", newJString(fields))
+  add(query_580082, "pageToken", newJString(pageToken))
+  add(query_580082, "quotaUser", newJString(quotaUser))
+  add(query_580082, "alt", newJString(alt))
+  add(query_580082, "oauth_token", newJString(oauthToken))
+  add(query_580082, "callback", newJString(callback))
+  add(query_580082, "access_token", newJString(accessToken))
+  add(query_580082, "uploadType", newJString(uploadType))
+  add(path_580081, "parent", newJString(parent))
+  add(query_580082, "key", newJString(key))
+  add(query_580082, "$.xgafv", newJString(Xgafv))
+  add(query_580082, "pageSize", newJInt(pageSize))
+  add(query_580082, "prettyPrint", newJBool(prettyPrint))
+  result = call_580080.call(path_580081, query_580082, nil, nil, nil)
 
-var loggingProjectsMetricsList* = Call_LoggingProjectsMetricsList_594062(
+var loggingProjectsMetricsList* = Call_LoggingProjectsMetricsList_580062(
     name: "loggingProjectsMetricsList", meth: HttpMethod.HttpGet,
     host: "logging.googleapis.com", route: "/v2beta1/{parent}/metrics",
-    validator: validate_LoggingProjectsMetricsList_594063, base: "/",
-    url: url_LoggingProjectsMetricsList_594064, schemes: {Scheme.Https})
+    validator: validate_LoggingProjectsMetricsList_580063, base: "/",
+    url: url_LoggingProjectsMetricsList_580064, schemes: {Scheme.Https})
 type
-  Call_LoggingProjectsSinksCreate_594125 = ref object of OpenApiRestCall_593408
-proc url_LoggingProjectsSinksCreate_594127(protocol: Scheme; host: string;
+  Call_LoggingProjectsSinksCreate_580125 = ref object of OpenApiRestCall_579408
+proc url_LoggingProjectsSinksCreate_580127(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "parent" in path, "`parent` is a required path parameter"
   const
@@ -1643,7 +1645,7 @@ proc url_LoggingProjectsSinksCreate_594127(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_LoggingProjectsSinksCreate_594126(path: JsonNode; query: JsonNode;
+proc validate_LoggingProjectsSinksCreate_580126(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Creates a sink that exports specified log entries to a destination. The export of newly-ingested log entries begins immediately, unless the sink's writer_identity is not permitted to write to the destination. A sink can export log entries only from the resource owning the sink.
   ## 
@@ -1659,11 +1661,11 @@ proc validate_LoggingProjectsSinksCreate_594126(path: JsonNode; query: JsonNode;
   ## Examples: "projects/my-logging-project", "organizations/123456789".
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `parent` field"
-  var valid_594128 = path.getOrDefault("parent")
-  valid_594128 = validateParameter(valid_594128, JString, required = true,
+  var valid_580128 = path.getOrDefault("parent")
+  valid_580128 = validateParameter(valid_580128, JString, required = true,
                                  default = nil)
-  if valid_594128 != nil:
-    section.add "parent", valid_594128
+  if valid_580128 != nil:
+    section.add "parent", valid_580128
   result.add "path", section
   ## parameters in `query` object:
   ##   upload_protocol: JString
@@ -1691,65 +1693,65 @@ proc validate_LoggingProjectsSinksCreate_594126(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_594129 = query.getOrDefault("upload_protocol")
-  valid_594129 = validateParameter(valid_594129, JString, required = false,
+  var valid_580129 = query.getOrDefault("upload_protocol")
+  valid_580129 = validateParameter(valid_580129, JString, required = false,
                                  default = nil)
-  if valid_594129 != nil:
-    section.add "upload_protocol", valid_594129
-  var valid_594130 = query.getOrDefault("fields")
-  valid_594130 = validateParameter(valid_594130, JString, required = false,
+  if valid_580129 != nil:
+    section.add "upload_protocol", valid_580129
+  var valid_580130 = query.getOrDefault("fields")
+  valid_580130 = validateParameter(valid_580130, JString, required = false,
                                  default = nil)
-  if valid_594130 != nil:
-    section.add "fields", valid_594130
-  var valid_594131 = query.getOrDefault("quotaUser")
-  valid_594131 = validateParameter(valid_594131, JString, required = false,
+  if valid_580130 != nil:
+    section.add "fields", valid_580130
+  var valid_580131 = query.getOrDefault("quotaUser")
+  valid_580131 = validateParameter(valid_580131, JString, required = false,
                                  default = nil)
-  if valid_594131 != nil:
-    section.add "quotaUser", valid_594131
-  var valid_594132 = query.getOrDefault("alt")
-  valid_594132 = validateParameter(valid_594132, JString, required = false,
+  if valid_580131 != nil:
+    section.add "quotaUser", valid_580131
+  var valid_580132 = query.getOrDefault("alt")
+  valid_580132 = validateParameter(valid_580132, JString, required = false,
                                  default = newJString("json"))
-  if valid_594132 != nil:
-    section.add "alt", valid_594132
-  var valid_594133 = query.getOrDefault("uniqueWriterIdentity")
-  valid_594133 = validateParameter(valid_594133, JBool, required = false, default = nil)
-  if valid_594133 != nil:
-    section.add "uniqueWriterIdentity", valid_594133
-  var valid_594134 = query.getOrDefault("oauth_token")
-  valid_594134 = validateParameter(valid_594134, JString, required = false,
+  if valid_580132 != nil:
+    section.add "alt", valid_580132
+  var valid_580133 = query.getOrDefault("uniqueWriterIdentity")
+  valid_580133 = validateParameter(valid_580133, JBool, required = false, default = nil)
+  if valid_580133 != nil:
+    section.add "uniqueWriterIdentity", valid_580133
+  var valid_580134 = query.getOrDefault("oauth_token")
+  valid_580134 = validateParameter(valid_580134, JString, required = false,
                                  default = nil)
-  if valid_594134 != nil:
-    section.add "oauth_token", valid_594134
-  var valid_594135 = query.getOrDefault("callback")
-  valid_594135 = validateParameter(valid_594135, JString, required = false,
+  if valid_580134 != nil:
+    section.add "oauth_token", valid_580134
+  var valid_580135 = query.getOrDefault("callback")
+  valid_580135 = validateParameter(valid_580135, JString, required = false,
                                  default = nil)
-  if valid_594135 != nil:
-    section.add "callback", valid_594135
-  var valid_594136 = query.getOrDefault("access_token")
-  valid_594136 = validateParameter(valid_594136, JString, required = false,
+  if valid_580135 != nil:
+    section.add "callback", valid_580135
+  var valid_580136 = query.getOrDefault("access_token")
+  valid_580136 = validateParameter(valid_580136, JString, required = false,
                                  default = nil)
-  if valid_594136 != nil:
-    section.add "access_token", valid_594136
-  var valid_594137 = query.getOrDefault("uploadType")
-  valid_594137 = validateParameter(valid_594137, JString, required = false,
+  if valid_580136 != nil:
+    section.add "access_token", valid_580136
+  var valid_580137 = query.getOrDefault("uploadType")
+  valid_580137 = validateParameter(valid_580137, JString, required = false,
                                  default = nil)
-  if valid_594137 != nil:
-    section.add "uploadType", valid_594137
-  var valid_594138 = query.getOrDefault("key")
-  valid_594138 = validateParameter(valid_594138, JString, required = false,
+  if valid_580137 != nil:
+    section.add "uploadType", valid_580137
+  var valid_580138 = query.getOrDefault("key")
+  valid_580138 = validateParameter(valid_580138, JString, required = false,
                                  default = nil)
-  if valid_594138 != nil:
-    section.add "key", valid_594138
-  var valid_594139 = query.getOrDefault("$.xgafv")
-  valid_594139 = validateParameter(valid_594139, JString, required = false,
+  if valid_580138 != nil:
+    section.add "key", valid_580138
+  var valid_580139 = query.getOrDefault("$.xgafv")
+  valid_580139 = validateParameter(valid_580139, JString, required = false,
                                  default = newJString("1"))
-  if valid_594139 != nil:
-    section.add "$.xgafv", valid_594139
-  var valid_594140 = query.getOrDefault("prettyPrint")
-  valid_594140 = validateParameter(valid_594140, JBool, required = false,
+  if valid_580139 != nil:
+    section.add "$.xgafv", valid_580139
+  var valid_580140 = query.getOrDefault("prettyPrint")
+  valid_580140 = validateParameter(valid_580140, JBool, required = false,
                                  default = newJBool(true))
-  if valid_594140 != nil:
-    section.add "prettyPrint", valid_594140
+  if valid_580140 != nil:
+    section.add "prettyPrint", valid_580140
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1761,20 +1763,20 @@ proc validate_LoggingProjectsSinksCreate_594126(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_594142: Call_LoggingProjectsSinksCreate_594125; path: JsonNode;
+proc call*(call_580142: Call_LoggingProjectsSinksCreate_580125; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Creates a sink that exports specified log entries to a destination. The export of newly-ingested log entries begins immediately, unless the sink's writer_identity is not permitted to write to the destination. A sink can export log entries only from the resource owning the sink.
   ## 
-  let valid = call_594142.validator(path, query, header, formData, body)
-  let scheme = call_594142.pickScheme
+  let valid = call_580142.validator(path, query, header, formData, body)
+  let scheme = call_580142.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_594142.url(scheme.get, call_594142.host, call_594142.base,
-                         call_594142.route, valid.getOrDefault("path"),
+  let url = call_580142.url(scheme.get, call_580142.host, call_580142.base,
+                         call_580142.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_594142, url, valid)
+  result = hook(call_580142, url, valid)
 
-proc call*(call_594143: Call_LoggingProjectsSinksCreate_594125; parent: string;
+proc call*(call_580143: Call_LoggingProjectsSinksCreate_580125; parent: string;
           uploadProtocol: string = ""; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; uniqueWriterIdentity: bool = false;
           oauthToken: string = ""; callback: string = ""; accessToken: string = "";
@@ -1814,39 +1816,39 @@ proc call*(call_594143: Call_LoggingProjectsSinksCreate_594125; parent: string;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_594144 = newJObject()
-  var query_594145 = newJObject()
-  var body_594146 = newJObject()
-  add(query_594145, "upload_protocol", newJString(uploadProtocol))
-  add(query_594145, "fields", newJString(fields))
-  add(query_594145, "quotaUser", newJString(quotaUser))
-  add(query_594145, "alt", newJString(alt))
-  add(query_594145, "uniqueWriterIdentity", newJBool(uniqueWriterIdentity))
-  add(query_594145, "oauth_token", newJString(oauthToken))
-  add(query_594145, "callback", newJString(callback))
-  add(query_594145, "access_token", newJString(accessToken))
-  add(query_594145, "uploadType", newJString(uploadType))
-  add(path_594144, "parent", newJString(parent))
-  add(query_594145, "key", newJString(key))
-  add(query_594145, "$.xgafv", newJString(Xgafv))
+  var path_580144 = newJObject()
+  var query_580145 = newJObject()
+  var body_580146 = newJObject()
+  add(query_580145, "upload_protocol", newJString(uploadProtocol))
+  add(query_580145, "fields", newJString(fields))
+  add(query_580145, "quotaUser", newJString(quotaUser))
+  add(query_580145, "alt", newJString(alt))
+  add(query_580145, "uniqueWriterIdentity", newJBool(uniqueWriterIdentity))
+  add(query_580145, "oauth_token", newJString(oauthToken))
+  add(query_580145, "callback", newJString(callback))
+  add(query_580145, "access_token", newJString(accessToken))
+  add(query_580145, "uploadType", newJString(uploadType))
+  add(path_580144, "parent", newJString(parent))
+  add(query_580145, "key", newJString(key))
+  add(query_580145, "$.xgafv", newJString(Xgafv))
   if body != nil:
-    body_594146 = body
-  add(query_594145, "prettyPrint", newJBool(prettyPrint))
-  result = call_594143.call(path_594144, query_594145, nil, nil, body_594146)
+    body_580146 = body
+  add(query_580145, "prettyPrint", newJBool(prettyPrint))
+  result = call_580143.call(path_580144, query_580145, nil, nil, body_580146)
 
-var loggingProjectsSinksCreate* = Call_LoggingProjectsSinksCreate_594125(
+var loggingProjectsSinksCreate* = Call_LoggingProjectsSinksCreate_580125(
     name: "loggingProjectsSinksCreate", meth: HttpMethod.HttpPost,
     host: "logging.googleapis.com", route: "/v2beta1/{parent}/sinks",
-    validator: validate_LoggingProjectsSinksCreate_594126, base: "/",
-    url: url_LoggingProjectsSinksCreate_594127, schemes: {Scheme.Https})
+    validator: validate_LoggingProjectsSinksCreate_580126, base: "/",
+    url: url_LoggingProjectsSinksCreate_580127, schemes: {Scheme.Https})
 type
-  Call_LoggingProjectsSinksList_594104 = ref object of OpenApiRestCall_593408
-proc url_LoggingProjectsSinksList_594106(protocol: Scheme; host: string;
+  Call_LoggingProjectsSinksList_580104 = ref object of OpenApiRestCall_579408
+proc url_LoggingProjectsSinksList_580106(protocol: Scheme; host: string;
                                         base: string; route: string; path: JsonNode;
                                         query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "parent" in path, "`parent` is a required path parameter"
   const
@@ -1858,7 +1860,7 @@ proc url_LoggingProjectsSinksList_594106(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_LoggingProjectsSinksList_594105(path: JsonNode; query: JsonNode;
+proc validate_LoggingProjectsSinksList_580105(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Lists sinks.
   ## 
@@ -1874,11 +1876,11 @@ proc validate_LoggingProjectsSinksList_594105(path: JsonNode; query: JsonNode;
   ## 
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `parent` field"
-  var valid_594107 = path.getOrDefault("parent")
-  valid_594107 = validateParameter(valid_594107, JString, required = true,
+  var valid_580107 = path.getOrDefault("parent")
+  valid_580107 = validateParameter(valid_580107, JString, required = true,
                                  default = nil)
-  if valid_594107 != nil:
-    section.add "parent", valid_594107
+  if valid_580107 != nil:
+    section.add "parent", valid_580107
   result.add "path", section
   ## parameters in `query` object:
   ##   upload_protocol: JString
@@ -1908,70 +1910,70 @@ proc validate_LoggingProjectsSinksList_594105(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_594108 = query.getOrDefault("upload_protocol")
-  valid_594108 = validateParameter(valid_594108, JString, required = false,
+  var valid_580108 = query.getOrDefault("upload_protocol")
+  valid_580108 = validateParameter(valid_580108, JString, required = false,
                                  default = nil)
-  if valid_594108 != nil:
-    section.add "upload_protocol", valid_594108
-  var valid_594109 = query.getOrDefault("fields")
-  valid_594109 = validateParameter(valid_594109, JString, required = false,
+  if valid_580108 != nil:
+    section.add "upload_protocol", valid_580108
+  var valid_580109 = query.getOrDefault("fields")
+  valid_580109 = validateParameter(valid_580109, JString, required = false,
                                  default = nil)
-  if valid_594109 != nil:
-    section.add "fields", valid_594109
-  var valid_594110 = query.getOrDefault("pageToken")
-  valid_594110 = validateParameter(valid_594110, JString, required = false,
+  if valid_580109 != nil:
+    section.add "fields", valid_580109
+  var valid_580110 = query.getOrDefault("pageToken")
+  valid_580110 = validateParameter(valid_580110, JString, required = false,
                                  default = nil)
-  if valid_594110 != nil:
-    section.add "pageToken", valid_594110
-  var valid_594111 = query.getOrDefault("quotaUser")
-  valid_594111 = validateParameter(valid_594111, JString, required = false,
+  if valid_580110 != nil:
+    section.add "pageToken", valid_580110
+  var valid_580111 = query.getOrDefault("quotaUser")
+  valid_580111 = validateParameter(valid_580111, JString, required = false,
                                  default = nil)
-  if valid_594111 != nil:
-    section.add "quotaUser", valid_594111
-  var valid_594112 = query.getOrDefault("alt")
-  valid_594112 = validateParameter(valid_594112, JString, required = false,
+  if valid_580111 != nil:
+    section.add "quotaUser", valid_580111
+  var valid_580112 = query.getOrDefault("alt")
+  valid_580112 = validateParameter(valid_580112, JString, required = false,
                                  default = newJString("json"))
-  if valid_594112 != nil:
-    section.add "alt", valid_594112
-  var valid_594113 = query.getOrDefault("oauth_token")
-  valid_594113 = validateParameter(valid_594113, JString, required = false,
+  if valid_580112 != nil:
+    section.add "alt", valid_580112
+  var valid_580113 = query.getOrDefault("oauth_token")
+  valid_580113 = validateParameter(valid_580113, JString, required = false,
                                  default = nil)
-  if valid_594113 != nil:
-    section.add "oauth_token", valid_594113
-  var valid_594114 = query.getOrDefault("callback")
-  valid_594114 = validateParameter(valid_594114, JString, required = false,
+  if valid_580113 != nil:
+    section.add "oauth_token", valid_580113
+  var valid_580114 = query.getOrDefault("callback")
+  valid_580114 = validateParameter(valid_580114, JString, required = false,
                                  default = nil)
-  if valid_594114 != nil:
-    section.add "callback", valid_594114
-  var valid_594115 = query.getOrDefault("access_token")
-  valid_594115 = validateParameter(valid_594115, JString, required = false,
+  if valid_580114 != nil:
+    section.add "callback", valid_580114
+  var valid_580115 = query.getOrDefault("access_token")
+  valid_580115 = validateParameter(valid_580115, JString, required = false,
                                  default = nil)
-  if valid_594115 != nil:
-    section.add "access_token", valid_594115
-  var valid_594116 = query.getOrDefault("uploadType")
-  valid_594116 = validateParameter(valid_594116, JString, required = false,
+  if valid_580115 != nil:
+    section.add "access_token", valid_580115
+  var valid_580116 = query.getOrDefault("uploadType")
+  valid_580116 = validateParameter(valid_580116, JString, required = false,
                                  default = nil)
-  if valid_594116 != nil:
-    section.add "uploadType", valid_594116
-  var valid_594117 = query.getOrDefault("key")
-  valid_594117 = validateParameter(valid_594117, JString, required = false,
+  if valid_580116 != nil:
+    section.add "uploadType", valid_580116
+  var valid_580117 = query.getOrDefault("key")
+  valid_580117 = validateParameter(valid_580117, JString, required = false,
                                  default = nil)
-  if valid_594117 != nil:
-    section.add "key", valid_594117
-  var valid_594118 = query.getOrDefault("$.xgafv")
-  valid_594118 = validateParameter(valid_594118, JString, required = false,
+  if valid_580117 != nil:
+    section.add "key", valid_580117
+  var valid_580118 = query.getOrDefault("$.xgafv")
+  valid_580118 = validateParameter(valid_580118, JString, required = false,
                                  default = newJString("1"))
-  if valid_594118 != nil:
-    section.add "$.xgafv", valid_594118
-  var valid_594119 = query.getOrDefault("pageSize")
-  valid_594119 = validateParameter(valid_594119, JInt, required = false, default = nil)
-  if valid_594119 != nil:
-    section.add "pageSize", valid_594119
-  var valid_594120 = query.getOrDefault("prettyPrint")
-  valid_594120 = validateParameter(valid_594120, JBool, required = false,
+  if valid_580118 != nil:
+    section.add "$.xgafv", valid_580118
+  var valid_580119 = query.getOrDefault("pageSize")
+  valid_580119 = validateParameter(valid_580119, JInt, required = false, default = nil)
+  if valid_580119 != nil:
+    section.add "pageSize", valid_580119
+  var valid_580120 = query.getOrDefault("prettyPrint")
+  valid_580120 = validateParameter(valid_580120, JBool, required = false,
                                  default = newJBool(true))
-  if valid_594120 != nil:
-    section.add "prettyPrint", valid_594120
+  if valid_580120 != nil:
+    section.add "prettyPrint", valid_580120
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1980,20 +1982,20 @@ proc validate_LoggingProjectsSinksList_594105(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_594121: Call_LoggingProjectsSinksList_594104; path: JsonNode;
+proc call*(call_580121: Call_LoggingProjectsSinksList_580104; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Lists sinks.
   ## 
-  let valid = call_594121.validator(path, query, header, formData, body)
-  let scheme = call_594121.pickScheme
+  let valid = call_580121.validator(path, query, header, formData, body)
+  let scheme = call_580121.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_594121.url(scheme.get, call_594121.host, call_594121.base,
-                         call_594121.route, valid.getOrDefault("path"),
+  let url = call_580121.url(scheme.get, call_580121.host, call_580121.base,
+                         call_580121.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_594121, url, valid)
+  result = hook(call_580121, url, valid)
 
-proc call*(call_594122: Call_LoggingProjectsSinksList_594104; parent: string;
+proc call*(call_580122: Call_LoggingProjectsSinksList_580104; parent: string;
           uploadProtocol: string = ""; fields: string = ""; pageToken: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           callback: string = ""; accessToken: string = ""; uploadType: string = "";
@@ -2033,36 +2035,36 @@ proc call*(call_594122: Call_LoggingProjectsSinksList_594104; parent: string;
   ##           : Optional. The maximum number of results to return from this request. Non-positive values are ignored. The presence of nextPageToken in the response indicates that more results might be available.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_594123 = newJObject()
-  var query_594124 = newJObject()
-  add(query_594124, "upload_protocol", newJString(uploadProtocol))
-  add(query_594124, "fields", newJString(fields))
-  add(query_594124, "pageToken", newJString(pageToken))
-  add(query_594124, "quotaUser", newJString(quotaUser))
-  add(query_594124, "alt", newJString(alt))
-  add(query_594124, "oauth_token", newJString(oauthToken))
-  add(query_594124, "callback", newJString(callback))
-  add(query_594124, "access_token", newJString(accessToken))
-  add(query_594124, "uploadType", newJString(uploadType))
-  add(path_594123, "parent", newJString(parent))
-  add(query_594124, "key", newJString(key))
-  add(query_594124, "$.xgafv", newJString(Xgafv))
-  add(query_594124, "pageSize", newJInt(pageSize))
-  add(query_594124, "prettyPrint", newJBool(prettyPrint))
-  result = call_594122.call(path_594123, query_594124, nil, nil, nil)
+  var path_580123 = newJObject()
+  var query_580124 = newJObject()
+  add(query_580124, "upload_protocol", newJString(uploadProtocol))
+  add(query_580124, "fields", newJString(fields))
+  add(query_580124, "pageToken", newJString(pageToken))
+  add(query_580124, "quotaUser", newJString(quotaUser))
+  add(query_580124, "alt", newJString(alt))
+  add(query_580124, "oauth_token", newJString(oauthToken))
+  add(query_580124, "callback", newJString(callback))
+  add(query_580124, "access_token", newJString(accessToken))
+  add(query_580124, "uploadType", newJString(uploadType))
+  add(path_580123, "parent", newJString(parent))
+  add(query_580124, "key", newJString(key))
+  add(query_580124, "$.xgafv", newJString(Xgafv))
+  add(query_580124, "pageSize", newJInt(pageSize))
+  add(query_580124, "prettyPrint", newJBool(prettyPrint))
+  result = call_580122.call(path_580123, query_580124, nil, nil, nil)
 
-var loggingProjectsSinksList* = Call_LoggingProjectsSinksList_594104(
+var loggingProjectsSinksList* = Call_LoggingProjectsSinksList_580104(
     name: "loggingProjectsSinksList", meth: HttpMethod.HttpGet,
     host: "logging.googleapis.com", route: "/v2beta1/{parent}/sinks",
-    validator: validate_LoggingProjectsSinksList_594105, base: "/",
-    url: url_LoggingProjectsSinksList_594106, schemes: {Scheme.Https})
+    validator: validate_LoggingProjectsSinksList_580105, base: "/",
+    url: url_LoggingProjectsSinksList_580106, schemes: {Scheme.Https})
 type
-  Call_LoggingProjectsSinksUpdate_594166 = ref object of OpenApiRestCall_593408
-proc url_LoggingProjectsSinksUpdate_594168(protocol: Scheme; host: string;
+  Call_LoggingProjectsSinksUpdate_580166 = ref object of OpenApiRestCall_579408
+proc url_LoggingProjectsSinksUpdate_580168(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "sinkName" in path, "`sinkName` is a required path parameter"
   const
@@ -2073,7 +2075,7 @@ proc url_LoggingProjectsSinksUpdate_594168(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_LoggingProjectsSinksUpdate_594167(path: JsonNode; query: JsonNode;
+proc validate_LoggingProjectsSinksUpdate_580167(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Updates a sink. This method replaces the following fields in the existing sink with values from the new sink: destination, and filter.The updated sink might also have a new writer_identity; see the unique_writer_identity field.
   ## 
@@ -2089,11 +2091,11 @@ proc validate_LoggingProjectsSinksUpdate_594167(path: JsonNode; query: JsonNode;
   ## Example: "projects/my-project-id/sinks/my-sink-id".
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `sinkName` field"
-  var valid_594169 = path.getOrDefault("sinkName")
-  valid_594169 = validateParameter(valid_594169, JString, required = true,
+  var valid_580169 = path.getOrDefault("sinkName")
+  valid_580169 = validateParameter(valid_580169, JString, required = true,
                                  default = nil)
-  if valid_594169 != nil:
-    section.add "sinkName", valid_594169
+  if valid_580169 != nil:
+    section.add "sinkName", valid_580169
   result.add "path", section
   ## parameters in `query` object:
   ##   upload_protocol: JString
@@ -2127,70 +2129,70 @@ proc validate_LoggingProjectsSinksUpdate_594167(path: JsonNode; query: JsonNode;
   ##             : Optional. Field mask that specifies the fields in sink that need an update. A sink field will be overwritten if, and only if, it is in the update mask. name and output only fields cannot be updated.An empty updateMask is temporarily treated as using the following mask for backwards compatibility purposes:  destination,filter,includeChildren At some point in the future, behavior will be removed and specifying an empty updateMask will be an error.For a detailed FieldMask definition, see 
   ## https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#google.protobuf.FieldMaskExample: updateMask=filter.
   section = newJObject()
-  var valid_594170 = query.getOrDefault("upload_protocol")
-  valid_594170 = validateParameter(valid_594170, JString, required = false,
+  var valid_580170 = query.getOrDefault("upload_protocol")
+  valid_580170 = validateParameter(valid_580170, JString, required = false,
                                  default = nil)
-  if valid_594170 != nil:
-    section.add "upload_protocol", valid_594170
-  var valid_594171 = query.getOrDefault("fields")
-  valid_594171 = validateParameter(valid_594171, JString, required = false,
+  if valid_580170 != nil:
+    section.add "upload_protocol", valid_580170
+  var valid_580171 = query.getOrDefault("fields")
+  valid_580171 = validateParameter(valid_580171, JString, required = false,
                                  default = nil)
-  if valid_594171 != nil:
-    section.add "fields", valid_594171
-  var valid_594172 = query.getOrDefault("quotaUser")
-  valid_594172 = validateParameter(valid_594172, JString, required = false,
+  if valid_580171 != nil:
+    section.add "fields", valid_580171
+  var valid_580172 = query.getOrDefault("quotaUser")
+  valid_580172 = validateParameter(valid_580172, JString, required = false,
                                  default = nil)
-  if valid_594172 != nil:
-    section.add "quotaUser", valid_594172
-  var valid_594173 = query.getOrDefault("alt")
-  valid_594173 = validateParameter(valid_594173, JString, required = false,
+  if valid_580172 != nil:
+    section.add "quotaUser", valid_580172
+  var valid_580173 = query.getOrDefault("alt")
+  valid_580173 = validateParameter(valid_580173, JString, required = false,
                                  default = newJString("json"))
-  if valid_594173 != nil:
-    section.add "alt", valid_594173
-  var valid_594174 = query.getOrDefault("uniqueWriterIdentity")
-  valid_594174 = validateParameter(valid_594174, JBool, required = false, default = nil)
-  if valid_594174 != nil:
-    section.add "uniqueWriterIdentity", valid_594174
-  var valid_594175 = query.getOrDefault("oauth_token")
-  valid_594175 = validateParameter(valid_594175, JString, required = false,
+  if valid_580173 != nil:
+    section.add "alt", valid_580173
+  var valid_580174 = query.getOrDefault("uniqueWriterIdentity")
+  valid_580174 = validateParameter(valid_580174, JBool, required = false, default = nil)
+  if valid_580174 != nil:
+    section.add "uniqueWriterIdentity", valid_580174
+  var valid_580175 = query.getOrDefault("oauth_token")
+  valid_580175 = validateParameter(valid_580175, JString, required = false,
                                  default = nil)
-  if valid_594175 != nil:
-    section.add "oauth_token", valid_594175
-  var valid_594176 = query.getOrDefault("callback")
-  valid_594176 = validateParameter(valid_594176, JString, required = false,
+  if valid_580175 != nil:
+    section.add "oauth_token", valid_580175
+  var valid_580176 = query.getOrDefault("callback")
+  valid_580176 = validateParameter(valid_580176, JString, required = false,
                                  default = nil)
-  if valid_594176 != nil:
-    section.add "callback", valid_594176
-  var valid_594177 = query.getOrDefault("access_token")
-  valid_594177 = validateParameter(valid_594177, JString, required = false,
+  if valid_580176 != nil:
+    section.add "callback", valid_580176
+  var valid_580177 = query.getOrDefault("access_token")
+  valid_580177 = validateParameter(valid_580177, JString, required = false,
                                  default = nil)
-  if valid_594177 != nil:
-    section.add "access_token", valid_594177
-  var valid_594178 = query.getOrDefault("uploadType")
-  valid_594178 = validateParameter(valid_594178, JString, required = false,
+  if valid_580177 != nil:
+    section.add "access_token", valid_580177
+  var valid_580178 = query.getOrDefault("uploadType")
+  valid_580178 = validateParameter(valid_580178, JString, required = false,
                                  default = nil)
-  if valid_594178 != nil:
-    section.add "uploadType", valid_594178
-  var valid_594179 = query.getOrDefault("key")
-  valid_594179 = validateParameter(valid_594179, JString, required = false,
+  if valid_580178 != nil:
+    section.add "uploadType", valid_580178
+  var valid_580179 = query.getOrDefault("key")
+  valid_580179 = validateParameter(valid_580179, JString, required = false,
                                  default = nil)
-  if valid_594179 != nil:
-    section.add "key", valid_594179
-  var valid_594180 = query.getOrDefault("$.xgafv")
-  valid_594180 = validateParameter(valid_594180, JString, required = false,
+  if valid_580179 != nil:
+    section.add "key", valid_580179
+  var valid_580180 = query.getOrDefault("$.xgafv")
+  valid_580180 = validateParameter(valid_580180, JString, required = false,
                                  default = newJString("1"))
-  if valid_594180 != nil:
-    section.add "$.xgafv", valid_594180
-  var valid_594181 = query.getOrDefault("prettyPrint")
-  valid_594181 = validateParameter(valid_594181, JBool, required = false,
+  if valid_580180 != nil:
+    section.add "$.xgafv", valid_580180
+  var valid_580181 = query.getOrDefault("prettyPrint")
+  valid_580181 = validateParameter(valid_580181, JBool, required = false,
                                  default = newJBool(true))
-  if valid_594181 != nil:
-    section.add "prettyPrint", valid_594181
-  var valid_594182 = query.getOrDefault("updateMask")
-  valid_594182 = validateParameter(valid_594182, JString, required = false,
+  if valid_580181 != nil:
+    section.add "prettyPrint", valid_580181
+  var valid_580182 = query.getOrDefault("updateMask")
+  valid_580182 = validateParameter(valid_580182, JString, required = false,
                                  default = nil)
-  if valid_594182 != nil:
-    section.add "updateMask", valid_594182
+  if valid_580182 != nil:
+    section.add "updateMask", valid_580182
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -2202,20 +2204,20 @@ proc validate_LoggingProjectsSinksUpdate_594167(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_594184: Call_LoggingProjectsSinksUpdate_594166; path: JsonNode;
+proc call*(call_580184: Call_LoggingProjectsSinksUpdate_580166; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Updates a sink. This method replaces the following fields in the existing sink with values from the new sink: destination, and filter.The updated sink might also have a new writer_identity; see the unique_writer_identity field.
   ## 
-  let valid = call_594184.validator(path, query, header, formData, body)
-  let scheme = call_594184.pickScheme
+  let valid = call_580184.validator(path, query, header, formData, body)
+  let scheme = call_580184.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_594184.url(scheme.get, call_594184.host, call_594184.base,
-                         call_594184.route, valid.getOrDefault("path"),
+  let url = call_580184.url(scheme.get, call_580184.host, call_580184.base,
+                         call_580184.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_594184, url, valid)
+  result = hook(call_580184, url, valid)
 
-proc call*(call_594185: Call_LoggingProjectsSinksUpdate_594166; sinkName: string;
+proc call*(call_580185: Call_LoggingProjectsSinksUpdate_580166; sinkName: string;
           uploadProtocol: string = ""; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; uniqueWriterIdentity: bool = false;
           oauthToken: string = ""; callback: string = ""; accessToken: string = "";
@@ -2261,40 +2263,40 @@ proc call*(call_594185: Call_LoggingProjectsSinksUpdate_594166; sinkName: string
   ##   updateMask: string
   ##             : Optional. Field mask that specifies the fields in sink that need an update. A sink field will be overwritten if, and only if, it is in the update mask. name and output only fields cannot be updated.An empty updateMask is temporarily treated as using the following mask for backwards compatibility purposes:  destination,filter,includeChildren At some point in the future, behavior will be removed and specifying an empty updateMask will be an error.For a detailed FieldMask definition, see 
   ## https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#google.protobuf.FieldMaskExample: updateMask=filter.
-  var path_594186 = newJObject()
-  var query_594187 = newJObject()
-  var body_594188 = newJObject()
-  add(query_594187, "upload_protocol", newJString(uploadProtocol))
-  add(query_594187, "fields", newJString(fields))
-  add(query_594187, "quotaUser", newJString(quotaUser))
-  add(path_594186, "sinkName", newJString(sinkName))
-  add(query_594187, "alt", newJString(alt))
-  add(query_594187, "uniqueWriterIdentity", newJBool(uniqueWriterIdentity))
-  add(query_594187, "oauth_token", newJString(oauthToken))
-  add(query_594187, "callback", newJString(callback))
-  add(query_594187, "access_token", newJString(accessToken))
-  add(query_594187, "uploadType", newJString(uploadType))
-  add(query_594187, "key", newJString(key))
-  add(query_594187, "$.xgafv", newJString(Xgafv))
+  var path_580186 = newJObject()
+  var query_580187 = newJObject()
+  var body_580188 = newJObject()
+  add(query_580187, "upload_protocol", newJString(uploadProtocol))
+  add(query_580187, "fields", newJString(fields))
+  add(query_580187, "quotaUser", newJString(quotaUser))
+  add(path_580186, "sinkName", newJString(sinkName))
+  add(query_580187, "alt", newJString(alt))
+  add(query_580187, "uniqueWriterIdentity", newJBool(uniqueWriterIdentity))
+  add(query_580187, "oauth_token", newJString(oauthToken))
+  add(query_580187, "callback", newJString(callback))
+  add(query_580187, "access_token", newJString(accessToken))
+  add(query_580187, "uploadType", newJString(uploadType))
+  add(query_580187, "key", newJString(key))
+  add(query_580187, "$.xgafv", newJString(Xgafv))
   if body != nil:
-    body_594188 = body
-  add(query_594187, "prettyPrint", newJBool(prettyPrint))
-  add(query_594187, "updateMask", newJString(updateMask))
-  result = call_594185.call(path_594186, query_594187, nil, nil, body_594188)
+    body_580188 = body
+  add(query_580187, "prettyPrint", newJBool(prettyPrint))
+  add(query_580187, "updateMask", newJString(updateMask))
+  result = call_580185.call(path_580186, query_580187, nil, nil, body_580188)
 
-var loggingProjectsSinksUpdate* = Call_LoggingProjectsSinksUpdate_594166(
+var loggingProjectsSinksUpdate* = Call_LoggingProjectsSinksUpdate_580166(
     name: "loggingProjectsSinksUpdate", meth: HttpMethod.HttpPut,
     host: "logging.googleapis.com", route: "/v2beta1/{sinkName}",
-    validator: validate_LoggingProjectsSinksUpdate_594167, base: "/",
-    url: url_LoggingProjectsSinksUpdate_594168, schemes: {Scheme.Https})
+    validator: validate_LoggingProjectsSinksUpdate_580167, base: "/",
+    url: url_LoggingProjectsSinksUpdate_580168, schemes: {Scheme.Https})
 type
-  Call_LoggingProjectsSinksGet_594147 = ref object of OpenApiRestCall_593408
-proc url_LoggingProjectsSinksGet_594149(protocol: Scheme; host: string; base: string;
+  Call_LoggingProjectsSinksGet_580147 = ref object of OpenApiRestCall_579408
+proc url_LoggingProjectsSinksGet_580149(protocol: Scheme; host: string; base: string;
                                        route: string; path: JsonNode;
                                        query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "sinkName" in path, "`sinkName` is a required path parameter"
   const
@@ -2305,7 +2307,7 @@ proc url_LoggingProjectsSinksGet_594149(protocol: Scheme; host: string; base: st
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_LoggingProjectsSinksGet_594148(path: JsonNode; query: JsonNode;
+proc validate_LoggingProjectsSinksGet_580148(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Gets a sink.
   ## 
@@ -2321,11 +2323,11 @@ proc validate_LoggingProjectsSinksGet_594148(path: JsonNode; query: JsonNode;
   ## Example: "projects/my-project-id/sinks/my-sink-id".
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `sinkName` field"
-  var valid_594150 = path.getOrDefault("sinkName")
-  valid_594150 = validateParameter(valid_594150, JString, required = true,
+  var valid_580150 = path.getOrDefault("sinkName")
+  valid_580150 = validateParameter(valid_580150, JString, required = true,
                                  default = nil)
-  if valid_594150 != nil:
-    section.add "sinkName", valid_594150
+  if valid_580150 != nil:
+    section.add "sinkName", valid_580150
   result.add "path", section
   ## parameters in `query` object:
   ##   upload_protocol: JString
@@ -2351,61 +2353,61 @@ proc validate_LoggingProjectsSinksGet_594148(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_594151 = query.getOrDefault("upload_protocol")
-  valid_594151 = validateParameter(valid_594151, JString, required = false,
+  var valid_580151 = query.getOrDefault("upload_protocol")
+  valid_580151 = validateParameter(valid_580151, JString, required = false,
                                  default = nil)
-  if valid_594151 != nil:
-    section.add "upload_protocol", valid_594151
-  var valid_594152 = query.getOrDefault("fields")
-  valid_594152 = validateParameter(valid_594152, JString, required = false,
+  if valid_580151 != nil:
+    section.add "upload_protocol", valid_580151
+  var valid_580152 = query.getOrDefault("fields")
+  valid_580152 = validateParameter(valid_580152, JString, required = false,
                                  default = nil)
-  if valid_594152 != nil:
-    section.add "fields", valid_594152
-  var valid_594153 = query.getOrDefault("quotaUser")
-  valid_594153 = validateParameter(valid_594153, JString, required = false,
+  if valid_580152 != nil:
+    section.add "fields", valid_580152
+  var valid_580153 = query.getOrDefault("quotaUser")
+  valid_580153 = validateParameter(valid_580153, JString, required = false,
                                  default = nil)
-  if valid_594153 != nil:
-    section.add "quotaUser", valid_594153
-  var valid_594154 = query.getOrDefault("alt")
-  valid_594154 = validateParameter(valid_594154, JString, required = false,
+  if valid_580153 != nil:
+    section.add "quotaUser", valid_580153
+  var valid_580154 = query.getOrDefault("alt")
+  valid_580154 = validateParameter(valid_580154, JString, required = false,
                                  default = newJString("json"))
-  if valid_594154 != nil:
-    section.add "alt", valid_594154
-  var valid_594155 = query.getOrDefault("oauth_token")
-  valid_594155 = validateParameter(valid_594155, JString, required = false,
+  if valid_580154 != nil:
+    section.add "alt", valid_580154
+  var valid_580155 = query.getOrDefault("oauth_token")
+  valid_580155 = validateParameter(valid_580155, JString, required = false,
                                  default = nil)
-  if valid_594155 != nil:
-    section.add "oauth_token", valid_594155
-  var valid_594156 = query.getOrDefault("callback")
-  valid_594156 = validateParameter(valid_594156, JString, required = false,
+  if valid_580155 != nil:
+    section.add "oauth_token", valid_580155
+  var valid_580156 = query.getOrDefault("callback")
+  valid_580156 = validateParameter(valid_580156, JString, required = false,
                                  default = nil)
-  if valid_594156 != nil:
-    section.add "callback", valid_594156
-  var valid_594157 = query.getOrDefault("access_token")
-  valid_594157 = validateParameter(valid_594157, JString, required = false,
+  if valid_580156 != nil:
+    section.add "callback", valid_580156
+  var valid_580157 = query.getOrDefault("access_token")
+  valid_580157 = validateParameter(valid_580157, JString, required = false,
                                  default = nil)
-  if valid_594157 != nil:
-    section.add "access_token", valid_594157
-  var valid_594158 = query.getOrDefault("uploadType")
-  valid_594158 = validateParameter(valid_594158, JString, required = false,
+  if valid_580157 != nil:
+    section.add "access_token", valid_580157
+  var valid_580158 = query.getOrDefault("uploadType")
+  valid_580158 = validateParameter(valid_580158, JString, required = false,
                                  default = nil)
-  if valid_594158 != nil:
-    section.add "uploadType", valid_594158
-  var valid_594159 = query.getOrDefault("key")
-  valid_594159 = validateParameter(valid_594159, JString, required = false,
+  if valid_580158 != nil:
+    section.add "uploadType", valid_580158
+  var valid_580159 = query.getOrDefault("key")
+  valid_580159 = validateParameter(valid_580159, JString, required = false,
                                  default = nil)
-  if valid_594159 != nil:
-    section.add "key", valid_594159
-  var valid_594160 = query.getOrDefault("$.xgafv")
-  valid_594160 = validateParameter(valid_594160, JString, required = false,
+  if valid_580159 != nil:
+    section.add "key", valid_580159
+  var valid_580160 = query.getOrDefault("$.xgafv")
+  valid_580160 = validateParameter(valid_580160, JString, required = false,
                                  default = newJString("1"))
-  if valid_594160 != nil:
-    section.add "$.xgafv", valid_594160
-  var valid_594161 = query.getOrDefault("prettyPrint")
-  valid_594161 = validateParameter(valid_594161, JBool, required = false,
+  if valid_580160 != nil:
+    section.add "$.xgafv", valid_580160
+  var valid_580161 = query.getOrDefault("prettyPrint")
+  valid_580161 = validateParameter(valid_580161, JBool, required = false,
                                  default = newJBool(true))
-  if valid_594161 != nil:
-    section.add "prettyPrint", valid_594161
+  if valid_580161 != nil:
+    section.add "prettyPrint", valid_580161
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -2414,20 +2416,20 @@ proc validate_LoggingProjectsSinksGet_594148(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_594162: Call_LoggingProjectsSinksGet_594147; path: JsonNode;
+proc call*(call_580162: Call_LoggingProjectsSinksGet_580147; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Gets a sink.
   ## 
-  let valid = call_594162.validator(path, query, header, formData, body)
-  let scheme = call_594162.pickScheme
+  let valid = call_580162.validator(path, query, header, formData, body)
+  let scheme = call_580162.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_594162.url(scheme.get, call_594162.host, call_594162.base,
-                         call_594162.route, valid.getOrDefault("path"),
+  let url = call_580162.url(scheme.get, call_580162.host, call_580162.base,
+                         call_580162.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_594162, url, valid)
+  result = hook(call_580162, url, valid)
 
-proc call*(call_594163: Call_LoggingProjectsSinksGet_594147; sinkName: string;
+proc call*(call_580163: Call_LoggingProjectsSinksGet_580147; sinkName: string;
           uploadProtocol: string = ""; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; callback: string = "";
           accessToken: string = ""; uploadType: string = ""; key: string = "";
@@ -2463,34 +2465,34 @@ proc call*(call_594163: Call_LoggingProjectsSinksGet_594147; sinkName: string;
   ##        : V1 error format.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_594164 = newJObject()
-  var query_594165 = newJObject()
-  add(query_594165, "upload_protocol", newJString(uploadProtocol))
-  add(query_594165, "fields", newJString(fields))
-  add(query_594165, "quotaUser", newJString(quotaUser))
-  add(path_594164, "sinkName", newJString(sinkName))
-  add(query_594165, "alt", newJString(alt))
-  add(query_594165, "oauth_token", newJString(oauthToken))
-  add(query_594165, "callback", newJString(callback))
-  add(query_594165, "access_token", newJString(accessToken))
-  add(query_594165, "uploadType", newJString(uploadType))
-  add(query_594165, "key", newJString(key))
-  add(query_594165, "$.xgafv", newJString(Xgafv))
-  add(query_594165, "prettyPrint", newJBool(prettyPrint))
-  result = call_594163.call(path_594164, query_594165, nil, nil, nil)
+  var path_580164 = newJObject()
+  var query_580165 = newJObject()
+  add(query_580165, "upload_protocol", newJString(uploadProtocol))
+  add(query_580165, "fields", newJString(fields))
+  add(query_580165, "quotaUser", newJString(quotaUser))
+  add(path_580164, "sinkName", newJString(sinkName))
+  add(query_580165, "alt", newJString(alt))
+  add(query_580165, "oauth_token", newJString(oauthToken))
+  add(query_580165, "callback", newJString(callback))
+  add(query_580165, "access_token", newJString(accessToken))
+  add(query_580165, "uploadType", newJString(uploadType))
+  add(query_580165, "key", newJString(key))
+  add(query_580165, "$.xgafv", newJString(Xgafv))
+  add(query_580165, "prettyPrint", newJBool(prettyPrint))
+  result = call_580163.call(path_580164, query_580165, nil, nil, nil)
 
-var loggingProjectsSinksGet* = Call_LoggingProjectsSinksGet_594147(
+var loggingProjectsSinksGet* = Call_LoggingProjectsSinksGet_580147(
     name: "loggingProjectsSinksGet", meth: HttpMethod.HttpGet,
     host: "logging.googleapis.com", route: "/v2beta1/{sinkName}",
-    validator: validate_LoggingProjectsSinksGet_594148, base: "/",
-    url: url_LoggingProjectsSinksGet_594149, schemes: {Scheme.Https})
+    validator: validate_LoggingProjectsSinksGet_580148, base: "/",
+    url: url_LoggingProjectsSinksGet_580149, schemes: {Scheme.Https})
 type
-  Call_LoggingProjectsSinksDelete_594189 = ref object of OpenApiRestCall_593408
-proc url_LoggingProjectsSinksDelete_594191(protocol: Scheme; host: string;
+  Call_LoggingProjectsSinksDelete_580189 = ref object of OpenApiRestCall_579408
+proc url_LoggingProjectsSinksDelete_580191(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "sinkName" in path, "`sinkName` is a required path parameter"
   const
@@ -2501,7 +2503,7 @@ proc url_LoggingProjectsSinksDelete_594191(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_LoggingProjectsSinksDelete_594190(path: JsonNode; query: JsonNode;
+proc validate_LoggingProjectsSinksDelete_580190(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Deletes a sink. If the sink has a unique writer_identity, then that service account is also deleted.
   ## 
@@ -2517,11 +2519,11 @@ proc validate_LoggingProjectsSinksDelete_594190(path: JsonNode; query: JsonNode;
   ## Example: "projects/my-project-id/sinks/my-sink-id".
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `sinkName` field"
-  var valid_594192 = path.getOrDefault("sinkName")
-  valid_594192 = validateParameter(valid_594192, JString, required = true,
+  var valid_580192 = path.getOrDefault("sinkName")
+  valid_580192 = validateParameter(valid_580192, JString, required = true,
                                  default = nil)
-  if valid_594192 != nil:
-    section.add "sinkName", valid_594192
+  if valid_580192 != nil:
+    section.add "sinkName", valid_580192
   result.add "path", section
   ## parameters in `query` object:
   ##   upload_protocol: JString
@@ -2547,61 +2549,61 @@ proc validate_LoggingProjectsSinksDelete_594190(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_594193 = query.getOrDefault("upload_protocol")
-  valid_594193 = validateParameter(valid_594193, JString, required = false,
+  var valid_580193 = query.getOrDefault("upload_protocol")
+  valid_580193 = validateParameter(valid_580193, JString, required = false,
                                  default = nil)
-  if valid_594193 != nil:
-    section.add "upload_protocol", valid_594193
-  var valid_594194 = query.getOrDefault("fields")
-  valid_594194 = validateParameter(valid_594194, JString, required = false,
+  if valid_580193 != nil:
+    section.add "upload_protocol", valid_580193
+  var valid_580194 = query.getOrDefault("fields")
+  valid_580194 = validateParameter(valid_580194, JString, required = false,
                                  default = nil)
-  if valid_594194 != nil:
-    section.add "fields", valid_594194
-  var valid_594195 = query.getOrDefault("quotaUser")
-  valid_594195 = validateParameter(valid_594195, JString, required = false,
+  if valid_580194 != nil:
+    section.add "fields", valid_580194
+  var valid_580195 = query.getOrDefault("quotaUser")
+  valid_580195 = validateParameter(valid_580195, JString, required = false,
                                  default = nil)
-  if valid_594195 != nil:
-    section.add "quotaUser", valid_594195
-  var valid_594196 = query.getOrDefault("alt")
-  valid_594196 = validateParameter(valid_594196, JString, required = false,
+  if valid_580195 != nil:
+    section.add "quotaUser", valid_580195
+  var valid_580196 = query.getOrDefault("alt")
+  valid_580196 = validateParameter(valid_580196, JString, required = false,
                                  default = newJString("json"))
-  if valid_594196 != nil:
-    section.add "alt", valid_594196
-  var valid_594197 = query.getOrDefault("oauth_token")
-  valid_594197 = validateParameter(valid_594197, JString, required = false,
+  if valid_580196 != nil:
+    section.add "alt", valid_580196
+  var valid_580197 = query.getOrDefault("oauth_token")
+  valid_580197 = validateParameter(valid_580197, JString, required = false,
                                  default = nil)
-  if valid_594197 != nil:
-    section.add "oauth_token", valid_594197
-  var valid_594198 = query.getOrDefault("callback")
-  valid_594198 = validateParameter(valid_594198, JString, required = false,
+  if valid_580197 != nil:
+    section.add "oauth_token", valid_580197
+  var valid_580198 = query.getOrDefault("callback")
+  valid_580198 = validateParameter(valid_580198, JString, required = false,
                                  default = nil)
-  if valid_594198 != nil:
-    section.add "callback", valid_594198
-  var valid_594199 = query.getOrDefault("access_token")
-  valid_594199 = validateParameter(valid_594199, JString, required = false,
+  if valid_580198 != nil:
+    section.add "callback", valid_580198
+  var valid_580199 = query.getOrDefault("access_token")
+  valid_580199 = validateParameter(valid_580199, JString, required = false,
                                  default = nil)
-  if valid_594199 != nil:
-    section.add "access_token", valid_594199
-  var valid_594200 = query.getOrDefault("uploadType")
-  valid_594200 = validateParameter(valid_594200, JString, required = false,
+  if valid_580199 != nil:
+    section.add "access_token", valid_580199
+  var valid_580200 = query.getOrDefault("uploadType")
+  valid_580200 = validateParameter(valid_580200, JString, required = false,
                                  default = nil)
-  if valid_594200 != nil:
-    section.add "uploadType", valid_594200
-  var valid_594201 = query.getOrDefault("key")
-  valid_594201 = validateParameter(valid_594201, JString, required = false,
+  if valid_580200 != nil:
+    section.add "uploadType", valid_580200
+  var valid_580201 = query.getOrDefault("key")
+  valid_580201 = validateParameter(valid_580201, JString, required = false,
                                  default = nil)
-  if valid_594201 != nil:
-    section.add "key", valid_594201
-  var valid_594202 = query.getOrDefault("$.xgafv")
-  valid_594202 = validateParameter(valid_594202, JString, required = false,
+  if valid_580201 != nil:
+    section.add "key", valid_580201
+  var valid_580202 = query.getOrDefault("$.xgafv")
+  valid_580202 = validateParameter(valid_580202, JString, required = false,
                                  default = newJString("1"))
-  if valid_594202 != nil:
-    section.add "$.xgafv", valid_594202
-  var valid_594203 = query.getOrDefault("prettyPrint")
-  valid_594203 = validateParameter(valid_594203, JBool, required = false,
+  if valid_580202 != nil:
+    section.add "$.xgafv", valid_580202
+  var valid_580203 = query.getOrDefault("prettyPrint")
+  valid_580203 = validateParameter(valid_580203, JBool, required = false,
                                  default = newJBool(true))
-  if valid_594203 != nil:
-    section.add "prettyPrint", valid_594203
+  if valid_580203 != nil:
+    section.add "prettyPrint", valid_580203
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -2610,20 +2612,20 @@ proc validate_LoggingProjectsSinksDelete_594190(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_594204: Call_LoggingProjectsSinksDelete_594189; path: JsonNode;
+proc call*(call_580204: Call_LoggingProjectsSinksDelete_580189; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Deletes a sink. If the sink has a unique writer_identity, then that service account is also deleted.
   ## 
-  let valid = call_594204.validator(path, query, header, formData, body)
-  let scheme = call_594204.pickScheme
+  let valid = call_580204.validator(path, query, header, formData, body)
+  let scheme = call_580204.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_594204.url(scheme.get, call_594204.host, call_594204.base,
-                         call_594204.route, valid.getOrDefault("path"),
+  let url = call_580204.url(scheme.get, call_580204.host, call_580204.base,
+                         call_580204.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_594204, url, valid)
+  result = hook(call_580204, url, valid)
 
-proc call*(call_594205: Call_LoggingProjectsSinksDelete_594189; sinkName: string;
+proc call*(call_580205: Call_LoggingProjectsSinksDelete_580189; sinkName: string;
           uploadProtocol: string = ""; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; callback: string = "";
           accessToken: string = ""; uploadType: string = ""; key: string = "";
@@ -2659,30 +2661,120 @@ proc call*(call_594205: Call_LoggingProjectsSinksDelete_594189; sinkName: string
   ##        : V1 error format.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_594206 = newJObject()
-  var query_594207 = newJObject()
-  add(query_594207, "upload_protocol", newJString(uploadProtocol))
-  add(query_594207, "fields", newJString(fields))
-  add(query_594207, "quotaUser", newJString(quotaUser))
-  add(path_594206, "sinkName", newJString(sinkName))
-  add(query_594207, "alt", newJString(alt))
-  add(query_594207, "oauth_token", newJString(oauthToken))
-  add(query_594207, "callback", newJString(callback))
-  add(query_594207, "access_token", newJString(accessToken))
-  add(query_594207, "uploadType", newJString(uploadType))
-  add(query_594207, "key", newJString(key))
-  add(query_594207, "$.xgafv", newJString(Xgafv))
-  add(query_594207, "prettyPrint", newJBool(prettyPrint))
-  result = call_594205.call(path_594206, query_594207, nil, nil, nil)
+  var path_580206 = newJObject()
+  var query_580207 = newJObject()
+  add(query_580207, "upload_protocol", newJString(uploadProtocol))
+  add(query_580207, "fields", newJString(fields))
+  add(query_580207, "quotaUser", newJString(quotaUser))
+  add(path_580206, "sinkName", newJString(sinkName))
+  add(query_580207, "alt", newJString(alt))
+  add(query_580207, "oauth_token", newJString(oauthToken))
+  add(query_580207, "callback", newJString(callback))
+  add(query_580207, "access_token", newJString(accessToken))
+  add(query_580207, "uploadType", newJString(uploadType))
+  add(query_580207, "key", newJString(key))
+  add(query_580207, "$.xgafv", newJString(Xgafv))
+  add(query_580207, "prettyPrint", newJBool(prettyPrint))
+  result = call_580205.call(path_580206, query_580207, nil, nil, nil)
 
-var loggingProjectsSinksDelete* = Call_LoggingProjectsSinksDelete_594189(
+var loggingProjectsSinksDelete* = Call_LoggingProjectsSinksDelete_580189(
     name: "loggingProjectsSinksDelete", meth: HttpMethod.HttpDelete,
     host: "logging.googleapis.com", route: "/v2beta1/{sinkName}",
-    validator: validate_LoggingProjectsSinksDelete_594190, base: "/",
-    url: url_LoggingProjectsSinksDelete_594191, schemes: {Scheme.Https})
+    validator: validate_LoggingProjectsSinksDelete_580190, base: "/",
+    url: url_LoggingProjectsSinksDelete_580191, schemes: {Scheme.Https})
 export
   rest
 
+type
+  GoogleAuth = ref object
+    endpoint*: Uri
+    token: string
+    expiry*: float64
+    issued*: float64
+    email: string
+    key: string
+    scope*: seq[string]
+    form: string
+    digest: Hash
+
+const
+  endpoint = "https://www.googleapis.com/oauth2/v4/token".parseUri
+var auth = GoogleAuth(endpoint: endpoint)
+proc hash(auth: GoogleAuth): Hash =
+  ## yield differing values for effectively different auth payloads
+  result = hash($auth.endpoint)
+  result = result !& hash(auth.email)
+  result = result !& hash(auth.key)
+  result = result !& hash(auth.scope.join(" "))
+  result = !$result
+
+proc newAuthenticator*(path: string): GoogleAuth =
+  let
+    input = readFile(path)
+    js = parseJson(input)
+  auth.email = js["client_email"].getStr
+  auth.key = js["private_key"].getStr
+  result = auth
+
+proc store(auth: var GoogleAuth; token: string; expiry: int; form: string) =
+  auth.token = token
+  auth.issued = epochTime()
+  auth.expiry = auth.issued + expiry.float64
+  auth.form = form
+  auth.digest = auth.hash
+
+proc authenticate*(fresh: float64 = -3600.0; lifetime: int = 3600): Future[bool] {.async.} =
+  ## get or refresh an authentication token; provide `fresh`
+  ## to ensure that the token won't expire in the next N seconds.
+  ## provide `lifetime` to indicate how long the token should last.
+  let clock = epochTime()
+  if auth.expiry > clock + fresh:
+    if auth.hash == auth.digest:
+      return true
+  let
+    expiry = clock.int + lifetime
+    header = JOSEHeader(alg: RS256, typ: "JWT")
+    claims = %*{"iss": auth.email, "scope": auth.scope.join(" "),
+              "aud": "https://www.googleapis.com/oauth2/v4/token", "exp": expiry,
+              "iat": clock.int}
+  var tok = JWT(header: header, claims: toClaims(claims))
+  tok.sign(auth.key)
+  let post = encodeQuery({"grant_type": "urn:ietf:params:oauth:grant-type:jwt-bearer",
+                       "assertion": $tok}, usePlus = false, omitEq = false)
+  var client = newAsyncHttpClient()
+  client.headers = newHttpHeaders({"Content-Type": "application/x-www-form-urlencoded",
+                                 "Content-Length": $post.len})
+  let response = await client.request($auth.endpoint, HttpPost, body = post)
+  if not response.code.is2xx:
+    return false
+  let body = await response.body
+  client.close
+  try:
+    let js = parseJson(body)
+    auth.store(js["access_token"].getStr, js["expires_in"].getInt,
+               js["token_type"].getStr)
+  except KeyError:
+    return false
+  except JsonParsingError:
+    return false
+  return true
+
+proc composeQueryString(query: JsonNode): string =
+  var qs: seq[KeyVal]
+  if query == nil:
+    return ""
+  for k, v in query.pairs:
+    qs.add (key: k, val: v.getStr)
+  result = encodeQuery(qs, usePlus = false, omitEq = false)
+
 method hook(call: OpenApiRestCall; url: Uri; input: JsonNode): Recallable {.base.} =
-  let headers = massageHeaders(input.getOrDefault("header"))
-  result = newRecallable(call, url, headers, input.getOrDefault("body").getStr)
+  var headers = massageHeaders(input.getOrDefault("header"))
+  let body = input.getOrDefault("body").getStr
+  if auth.scope.len == 0:
+    raise newException(ValueError, "specify authentication scopes")
+  if not waitfor authenticate(fresh = 10.0):
+    raise newException(IOError, "unable to refresh authentication token")
+  headers.add ("Authorization", auth.form & " " & auth.token)
+  headers.add ("Content-Type", "application/json")
+  headers.add ("Content-Length", $body.len)
+  result = newRecallable(call, url, headers, body = body)

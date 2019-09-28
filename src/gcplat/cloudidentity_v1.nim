@@ -1,6 +1,7 @@
 
 import
-  json, options, hashes, uri, openapi/rest, os, uri, strutils, httpcore
+  json, options, hashes, uri, rest, os, uri, strutils, times, httpcore, httpclient,
+  asyncdispatch, jwt
 
 ## auto-generated via openapi macro
 ## title: Cloud Identity
@@ -28,15 +29,15 @@ type
     url*: proc (protocol: Scheme; host: string; base: string; route: string;
               path: JsonNode; query: JsonNode): Uri
 
-  OpenApiRestCall_597408 = ref object of OpenApiRestCall
+  OpenApiRestCall_579408 = ref object of OpenApiRestCall
 proc hash(scheme: Scheme): Hash {.used.} =
   result = hash(ord(scheme))
 
-proc clone[T: OpenApiRestCall_597408](t: T): T {.used.} =
+proc clone[T: OpenApiRestCall_579408](t: T): T {.used.} =
   result = T(name: t.name, meth: t.meth, host: t.host, base: t.base, route: t.route,
            schemes: t.schemes, validator: t.validator, url: t.url)
 
-proc pickScheme(t: OpenApiRestCall_597408): Option[Scheme] {.used.} =
+proc pickScheme(t: OpenApiRestCall_579408): Option[Scheme] {.used.} =
   ## select a supported scheme from a set of candidates
   for scheme in Scheme.low ..
       Scheme.high:
@@ -104,17 +105,18 @@ proc hydratePath(input: JsonNode; segments: seq[PathToken]): Option[string] =
 
 const
   gcpServiceName = "cloudidentity"
+proc composeQueryString(query: JsonNode): string
 method hook(call: OpenApiRestCall; url: Uri; input: JsonNode): Recallable {.base.}
 type
-  Call_CloudidentityGroupsCreate_597953 = ref object of OpenApiRestCall_597408
-proc url_CloudidentityGroupsCreate_597955(protocol: Scheme; host: string;
+  Call_CloudidentityGroupsCreate_579953 = ref object of OpenApiRestCall_579408
+proc url_CloudidentityGroupsCreate_579955(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   result.path = base & route
 
-proc validate_CloudidentityGroupsCreate_597954(path: JsonNode; query: JsonNode;
+proc validate_CloudidentityGroupsCreate_579954(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Creates a Group.
   ## 
@@ -146,61 +148,61 @@ proc validate_CloudidentityGroupsCreate_597954(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_597956 = query.getOrDefault("upload_protocol")
-  valid_597956 = validateParameter(valid_597956, JString, required = false,
+  var valid_579956 = query.getOrDefault("upload_protocol")
+  valid_579956 = validateParameter(valid_579956, JString, required = false,
                                  default = nil)
-  if valid_597956 != nil:
-    section.add "upload_protocol", valid_597956
-  var valid_597957 = query.getOrDefault("fields")
-  valid_597957 = validateParameter(valid_597957, JString, required = false,
+  if valid_579956 != nil:
+    section.add "upload_protocol", valid_579956
+  var valid_579957 = query.getOrDefault("fields")
+  valid_579957 = validateParameter(valid_579957, JString, required = false,
                                  default = nil)
-  if valid_597957 != nil:
-    section.add "fields", valid_597957
-  var valid_597958 = query.getOrDefault("quotaUser")
-  valid_597958 = validateParameter(valid_597958, JString, required = false,
+  if valid_579957 != nil:
+    section.add "fields", valid_579957
+  var valid_579958 = query.getOrDefault("quotaUser")
+  valid_579958 = validateParameter(valid_579958, JString, required = false,
                                  default = nil)
-  if valid_597958 != nil:
-    section.add "quotaUser", valid_597958
-  var valid_597959 = query.getOrDefault("alt")
-  valid_597959 = validateParameter(valid_597959, JString, required = false,
+  if valid_579958 != nil:
+    section.add "quotaUser", valid_579958
+  var valid_579959 = query.getOrDefault("alt")
+  valid_579959 = validateParameter(valid_579959, JString, required = false,
                                  default = newJString("json"))
-  if valid_597959 != nil:
-    section.add "alt", valid_597959
-  var valid_597960 = query.getOrDefault("oauth_token")
-  valid_597960 = validateParameter(valid_597960, JString, required = false,
+  if valid_579959 != nil:
+    section.add "alt", valid_579959
+  var valid_579960 = query.getOrDefault("oauth_token")
+  valid_579960 = validateParameter(valid_579960, JString, required = false,
                                  default = nil)
-  if valid_597960 != nil:
-    section.add "oauth_token", valid_597960
-  var valid_597961 = query.getOrDefault("callback")
-  valid_597961 = validateParameter(valid_597961, JString, required = false,
+  if valid_579960 != nil:
+    section.add "oauth_token", valid_579960
+  var valid_579961 = query.getOrDefault("callback")
+  valid_579961 = validateParameter(valid_579961, JString, required = false,
                                  default = nil)
-  if valid_597961 != nil:
-    section.add "callback", valid_597961
-  var valid_597962 = query.getOrDefault("access_token")
-  valid_597962 = validateParameter(valid_597962, JString, required = false,
+  if valid_579961 != nil:
+    section.add "callback", valid_579961
+  var valid_579962 = query.getOrDefault("access_token")
+  valid_579962 = validateParameter(valid_579962, JString, required = false,
                                  default = nil)
-  if valid_597962 != nil:
-    section.add "access_token", valid_597962
-  var valid_597963 = query.getOrDefault("uploadType")
-  valid_597963 = validateParameter(valid_597963, JString, required = false,
+  if valid_579962 != nil:
+    section.add "access_token", valid_579962
+  var valid_579963 = query.getOrDefault("uploadType")
+  valid_579963 = validateParameter(valid_579963, JString, required = false,
                                  default = nil)
-  if valid_597963 != nil:
-    section.add "uploadType", valid_597963
-  var valid_597964 = query.getOrDefault("key")
-  valid_597964 = validateParameter(valid_597964, JString, required = false,
+  if valid_579963 != nil:
+    section.add "uploadType", valid_579963
+  var valid_579964 = query.getOrDefault("key")
+  valid_579964 = validateParameter(valid_579964, JString, required = false,
                                  default = nil)
-  if valid_597964 != nil:
-    section.add "key", valid_597964
-  var valid_597965 = query.getOrDefault("$.xgafv")
-  valid_597965 = validateParameter(valid_597965, JString, required = false,
+  if valid_579964 != nil:
+    section.add "key", valid_579964
+  var valid_579965 = query.getOrDefault("$.xgafv")
+  valid_579965 = validateParameter(valid_579965, JString, required = false,
                                  default = newJString("1"))
-  if valid_597965 != nil:
-    section.add "$.xgafv", valid_597965
-  var valid_597966 = query.getOrDefault("prettyPrint")
-  valid_597966 = validateParameter(valid_597966, JBool, required = false,
+  if valid_579965 != nil:
+    section.add "$.xgafv", valid_579965
+  var valid_579966 = query.getOrDefault("prettyPrint")
+  valid_579966 = validateParameter(valid_579966, JBool, required = false,
                                  default = newJBool(true))
-  if valid_597966 != nil:
-    section.add "prettyPrint", valid_597966
+  if valid_579966 != nil:
+    section.add "prettyPrint", valid_579966
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -212,20 +214,20 @@ proc validate_CloudidentityGroupsCreate_597954(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_597968: Call_CloudidentityGroupsCreate_597953; path: JsonNode;
+proc call*(call_579968: Call_CloudidentityGroupsCreate_579953; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Creates a Group.
   ## 
-  let valid = call_597968.validator(path, query, header, formData, body)
-  let scheme = call_597968.pickScheme
+  let valid = call_579968.validator(path, query, header, formData, body)
+  let scheme = call_579968.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_597968.url(scheme.get, call_597968.host, call_597968.base,
-                         call_597968.route, valid.getOrDefault("path"),
+  let url = call_579968.url(scheme.get, call_579968.host, call_579968.base,
+                         call_579968.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_597968, url, valid)
+  result = hook(call_579968, url, valid)
 
-proc call*(call_597969: Call_CloudidentityGroupsCreate_597953;
+proc call*(call_579969: Call_CloudidentityGroupsCreate_579953;
           uploadProtocol: string = ""; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; callback: string = "";
           accessToken: string = ""; uploadType: string = ""; key: string = "";
@@ -255,39 +257,39 @@ proc call*(call_597969: Call_CloudidentityGroupsCreate_597953;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var query_597970 = newJObject()
-  var body_597971 = newJObject()
-  add(query_597970, "upload_protocol", newJString(uploadProtocol))
-  add(query_597970, "fields", newJString(fields))
-  add(query_597970, "quotaUser", newJString(quotaUser))
-  add(query_597970, "alt", newJString(alt))
-  add(query_597970, "oauth_token", newJString(oauthToken))
-  add(query_597970, "callback", newJString(callback))
-  add(query_597970, "access_token", newJString(accessToken))
-  add(query_597970, "uploadType", newJString(uploadType))
-  add(query_597970, "key", newJString(key))
-  add(query_597970, "$.xgafv", newJString(Xgafv))
+  var query_579970 = newJObject()
+  var body_579971 = newJObject()
+  add(query_579970, "upload_protocol", newJString(uploadProtocol))
+  add(query_579970, "fields", newJString(fields))
+  add(query_579970, "quotaUser", newJString(quotaUser))
+  add(query_579970, "alt", newJString(alt))
+  add(query_579970, "oauth_token", newJString(oauthToken))
+  add(query_579970, "callback", newJString(callback))
+  add(query_579970, "access_token", newJString(accessToken))
+  add(query_579970, "uploadType", newJString(uploadType))
+  add(query_579970, "key", newJString(key))
+  add(query_579970, "$.xgafv", newJString(Xgafv))
   if body != nil:
-    body_597971 = body
-  add(query_597970, "prettyPrint", newJBool(prettyPrint))
-  result = call_597969.call(nil, query_597970, nil, nil, body_597971)
+    body_579971 = body
+  add(query_579970, "prettyPrint", newJBool(prettyPrint))
+  result = call_579969.call(nil, query_579970, nil, nil, body_579971)
 
-var cloudidentityGroupsCreate* = Call_CloudidentityGroupsCreate_597953(
+var cloudidentityGroupsCreate* = Call_CloudidentityGroupsCreate_579953(
     name: "cloudidentityGroupsCreate", meth: HttpMethod.HttpPost,
     host: "cloudidentity.googleapis.com", route: "/v1/groups",
-    validator: validate_CloudidentityGroupsCreate_597954, base: "/",
-    url: url_CloudidentityGroupsCreate_597955, schemes: {Scheme.Https})
+    validator: validate_CloudidentityGroupsCreate_579954, base: "/",
+    url: url_CloudidentityGroupsCreate_579955, schemes: {Scheme.Https})
 type
-  Call_CloudidentityGroupsList_597677 = ref object of OpenApiRestCall_597408
-proc url_CloudidentityGroupsList_597679(protocol: Scheme; host: string; base: string;
+  Call_CloudidentityGroupsList_579677 = ref object of OpenApiRestCall_579408
+proc url_CloudidentityGroupsList_579679(protocol: Scheme; host: string; base: string;
                                        route: string; path: JsonNode;
                                        query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   result.path = base & route
 
-proc validate_CloudidentityGroupsList_597678(path: JsonNode; query: JsonNode;
+proc validate_CloudidentityGroupsList_579678(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## List groups within a customer or a domain.
   ## 
@@ -329,80 +331,80 @@ proc validate_CloudidentityGroupsList_597678(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_597791 = query.getOrDefault("upload_protocol")
-  valid_597791 = validateParameter(valid_597791, JString, required = false,
+  var valid_579791 = query.getOrDefault("upload_protocol")
+  valid_579791 = validateParameter(valid_579791, JString, required = false,
                                  default = nil)
-  if valid_597791 != nil:
-    section.add "upload_protocol", valid_597791
-  var valid_597792 = query.getOrDefault("fields")
-  valid_597792 = validateParameter(valid_597792, JString, required = false,
+  if valid_579791 != nil:
+    section.add "upload_protocol", valid_579791
+  var valid_579792 = query.getOrDefault("fields")
+  valid_579792 = validateParameter(valid_579792, JString, required = false,
                                  default = nil)
-  if valid_597792 != nil:
-    section.add "fields", valid_597792
-  var valid_597793 = query.getOrDefault("pageToken")
-  valid_597793 = validateParameter(valid_597793, JString, required = false,
+  if valid_579792 != nil:
+    section.add "fields", valid_579792
+  var valid_579793 = query.getOrDefault("pageToken")
+  valid_579793 = validateParameter(valid_579793, JString, required = false,
                                  default = nil)
-  if valid_597793 != nil:
-    section.add "pageToken", valid_597793
-  var valid_597794 = query.getOrDefault("quotaUser")
-  valid_597794 = validateParameter(valid_597794, JString, required = false,
+  if valid_579793 != nil:
+    section.add "pageToken", valid_579793
+  var valid_579794 = query.getOrDefault("quotaUser")
+  valid_579794 = validateParameter(valid_579794, JString, required = false,
                                  default = nil)
-  if valid_597794 != nil:
-    section.add "quotaUser", valid_597794
-  var valid_597808 = query.getOrDefault("view")
-  valid_597808 = validateParameter(valid_597808, JString, required = false,
+  if valid_579794 != nil:
+    section.add "quotaUser", valid_579794
+  var valid_579808 = query.getOrDefault("view")
+  valid_579808 = validateParameter(valid_579808, JString, required = false,
                                  default = newJString("VIEW_UNSPECIFIED"))
-  if valid_597808 != nil:
-    section.add "view", valid_597808
-  var valid_597809 = query.getOrDefault("alt")
-  valid_597809 = validateParameter(valid_597809, JString, required = false,
+  if valid_579808 != nil:
+    section.add "view", valid_579808
+  var valid_579809 = query.getOrDefault("alt")
+  valid_579809 = validateParameter(valid_579809, JString, required = false,
                                  default = newJString("json"))
-  if valid_597809 != nil:
-    section.add "alt", valid_597809
-  var valid_597810 = query.getOrDefault("oauth_token")
-  valid_597810 = validateParameter(valid_597810, JString, required = false,
+  if valid_579809 != nil:
+    section.add "alt", valid_579809
+  var valid_579810 = query.getOrDefault("oauth_token")
+  valid_579810 = validateParameter(valid_579810, JString, required = false,
                                  default = nil)
-  if valid_597810 != nil:
-    section.add "oauth_token", valid_597810
-  var valid_597811 = query.getOrDefault("callback")
-  valid_597811 = validateParameter(valid_597811, JString, required = false,
+  if valid_579810 != nil:
+    section.add "oauth_token", valid_579810
+  var valid_579811 = query.getOrDefault("callback")
+  valid_579811 = validateParameter(valid_579811, JString, required = false,
                                  default = nil)
-  if valid_597811 != nil:
-    section.add "callback", valid_597811
-  var valid_597812 = query.getOrDefault("access_token")
-  valid_597812 = validateParameter(valid_597812, JString, required = false,
+  if valid_579811 != nil:
+    section.add "callback", valid_579811
+  var valid_579812 = query.getOrDefault("access_token")
+  valid_579812 = validateParameter(valid_579812, JString, required = false,
                                  default = nil)
-  if valid_597812 != nil:
-    section.add "access_token", valid_597812
-  var valid_597813 = query.getOrDefault("uploadType")
-  valid_597813 = validateParameter(valid_597813, JString, required = false,
+  if valid_579812 != nil:
+    section.add "access_token", valid_579812
+  var valid_579813 = query.getOrDefault("uploadType")
+  valid_579813 = validateParameter(valid_579813, JString, required = false,
                                  default = nil)
-  if valid_597813 != nil:
-    section.add "uploadType", valid_597813
-  var valid_597814 = query.getOrDefault("parent")
-  valid_597814 = validateParameter(valid_597814, JString, required = false,
+  if valid_579813 != nil:
+    section.add "uploadType", valid_579813
+  var valid_579814 = query.getOrDefault("parent")
+  valid_579814 = validateParameter(valid_579814, JString, required = false,
                                  default = nil)
-  if valid_597814 != nil:
-    section.add "parent", valid_597814
-  var valid_597815 = query.getOrDefault("key")
-  valid_597815 = validateParameter(valid_597815, JString, required = false,
+  if valid_579814 != nil:
+    section.add "parent", valid_579814
+  var valid_579815 = query.getOrDefault("key")
+  valid_579815 = validateParameter(valid_579815, JString, required = false,
                                  default = nil)
-  if valid_597815 != nil:
-    section.add "key", valid_597815
-  var valid_597816 = query.getOrDefault("$.xgafv")
-  valid_597816 = validateParameter(valid_597816, JString, required = false,
+  if valid_579815 != nil:
+    section.add "key", valid_579815
+  var valid_579816 = query.getOrDefault("$.xgafv")
+  valid_579816 = validateParameter(valid_579816, JString, required = false,
                                  default = newJString("1"))
-  if valid_597816 != nil:
-    section.add "$.xgafv", valid_597816
-  var valid_597817 = query.getOrDefault("pageSize")
-  valid_597817 = validateParameter(valid_597817, JInt, required = false, default = nil)
-  if valid_597817 != nil:
-    section.add "pageSize", valid_597817
-  var valid_597818 = query.getOrDefault("prettyPrint")
-  valid_597818 = validateParameter(valid_597818, JBool, required = false,
+  if valid_579816 != nil:
+    section.add "$.xgafv", valid_579816
+  var valid_579817 = query.getOrDefault("pageSize")
+  valid_579817 = validateParameter(valid_579817, JInt, required = false, default = nil)
+  if valid_579817 != nil:
+    section.add "pageSize", valid_579817
+  var valid_579818 = query.getOrDefault("prettyPrint")
+  valid_579818 = validateParameter(valid_579818, JBool, required = false,
                                  default = newJBool(true))
-  if valid_597818 != nil:
-    section.add "prettyPrint", valid_597818
+  if valid_579818 != nil:
+    section.add "prettyPrint", valid_579818
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -411,20 +413,20 @@ proc validate_CloudidentityGroupsList_597678(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_597841: Call_CloudidentityGroupsList_597677; path: JsonNode;
+proc call*(call_579841: Call_CloudidentityGroupsList_579677; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## List groups within a customer or a domain.
   ## 
-  let valid = call_597841.validator(path, query, header, formData, body)
-  let scheme = call_597841.pickScheme
+  let valid = call_579841.validator(path, query, header, formData, body)
+  let scheme = call_579841.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_597841.url(scheme.get, call_597841.host, call_597841.base,
-                         call_597841.route, valid.getOrDefault("path"),
+  let url = call_579841.url(scheme.get, call_579841.host, call_579841.base,
+                         call_579841.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_597841, url, valid)
+  result = hook(call_579841, url, valid)
 
-proc call*(call_597912: Call_CloudidentityGroupsList_597677;
+proc call*(call_579912: Call_CloudidentityGroupsList_579677;
           uploadProtocol: string = ""; fields: string = ""; pageToken: string = "";
           quotaUser: string = ""; view: string = "VIEW_UNSPECIFIED";
           alt: string = "json"; oauthToken: string = ""; callback: string = "";
@@ -464,39 +466,39 @@ proc call*(call_597912: Call_CloudidentityGroupsList_597677;
   ## (max 500) for the FULL view.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var query_597913 = newJObject()
-  add(query_597913, "upload_protocol", newJString(uploadProtocol))
-  add(query_597913, "fields", newJString(fields))
-  add(query_597913, "pageToken", newJString(pageToken))
-  add(query_597913, "quotaUser", newJString(quotaUser))
-  add(query_597913, "view", newJString(view))
-  add(query_597913, "alt", newJString(alt))
-  add(query_597913, "oauth_token", newJString(oauthToken))
-  add(query_597913, "callback", newJString(callback))
-  add(query_597913, "access_token", newJString(accessToken))
-  add(query_597913, "uploadType", newJString(uploadType))
-  add(query_597913, "parent", newJString(parent))
-  add(query_597913, "key", newJString(key))
-  add(query_597913, "$.xgafv", newJString(Xgafv))
-  add(query_597913, "pageSize", newJInt(pageSize))
-  add(query_597913, "prettyPrint", newJBool(prettyPrint))
-  result = call_597912.call(nil, query_597913, nil, nil, nil)
+  var query_579913 = newJObject()
+  add(query_579913, "upload_protocol", newJString(uploadProtocol))
+  add(query_579913, "fields", newJString(fields))
+  add(query_579913, "pageToken", newJString(pageToken))
+  add(query_579913, "quotaUser", newJString(quotaUser))
+  add(query_579913, "view", newJString(view))
+  add(query_579913, "alt", newJString(alt))
+  add(query_579913, "oauth_token", newJString(oauthToken))
+  add(query_579913, "callback", newJString(callback))
+  add(query_579913, "access_token", newJString(accessToken))
+  add(query_579913, "uploadType", newJString(uploadType))
+  add(query_579913, "parent", newJString(parent))
+  add(query_579913, "key", newJString(key))
+  add(query_579913, "$.xgafv", newJString(Xgafv))
+  add(query_579913, "pageSize", newJInt(pageSize))
+  add(query_579913, "prettyPrint", newJBool(prettyPrint))
+  result = call_579912.call(nil, query_579913, nil, nil, nil)
 
-var cloudidentityGroupsList* = Call_CloudidentityGroupsList_597677(
+var cloudidentityGroupsList* = Call_CloudidentityGroupsList_579677(
     name: "cloudidentityGroupsList", meth: HttpMethod.HttpGet,
     host: "cloudidentity.googleapis.com", route: "/v1/groups",
-    validator: validate_CloudidentityGroupsList_597678, base: "/",
-    url: url_CloudidentityGroupsList_597679, schemes: {Scheme.Https})
+    validator: validate_CloudidentityGroupsList_579678, base: "/",
+    url: url_CloudidentityGroupsList_579679, schemes: {Scheme.Https})
 type
-  Call_CloudidentityGroupsLookup_597972 = ref object of OpenApiRestCall_597408
-proc url_CloudidentityGroupsLookup_597974(protocol: Scheme; host: string;
+  Call_CloudidentityGroupsLookup_579972 = ref object of OpenApiRestCall_579408
+proc url_CloudidentityGroupsLookup_579974(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   result.path = base & route
 
-proc validate_CloudidentityGroupsLookup_597973(path: JsonNode; query: JsonNode;
+proc validate_CloudidentityGroupsLookup_579973(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Looks up [resource
   ## name](https://cloud.google.com/apis/design/resource_names) of a Group by
@@ -540,71 +542,71 @@ proc validate_CloudidentityGroupsLookup_597973(path: JsonNode; query: JsonNode;
   ##              : The ID of the entity within the given namespace. The ID must be unique
   ## within its namespace.
   section = newJObject()
-  var valid_597975 = query.getOrDefault("upload_protocol")
-  valid_597975 = validateParameter(valid_597975, JString, required = false,
+  var valid_579975 = query.getOrDefault("upload_protocol")
+  valid_579975 = validateParameter(valid_579975, JString, required = false,
                                  default = nil)
-  if valid_597975 != nil:
-    section.add "upload_protocol", valid_597975
-  var valid_597976 = query.getOrDefault("fields")
-  valid_597976 = validateParameter(valid_597976, JString, required = false,
+  if valid_579975 != nil:
+    section.add "upload_protocol", valid_579975
+  var valid_579976 = query.getOrDefault("fields")
+  valid_579976 = validateParameter(valid_579976, JString, required = false,
                                  default = nil)
-  if valid_597976 != nil:
-    section.add "fields", valid_597976
-  var valid_597977 = query.getOrDefault("quotaUser")
-  valid_597977 = validateParameter(valid_597977, JString, required = false,
+  if valid_579976 != nil:
+    section.add "fields", valid_579976
+  var valid_579977 = query.getOrDefault("quotaUser")
+  valid_579977 = validateParameter(valid_579977, JString, required = false,
                                  default = nil)
-  if valid_597977 != nil:
-    section.add "quotaUser", valid_597977
-  var valid_597978 = query.getOrDefault("alt")
-  valid_597978 = validateParameter(valid_597978, JString, required = false,
+  if valid_579977 != nil:
+    section.add "quotaUser", valid_579977
+  var valid_579978 = query.getOrDefault("alt")
+  valid_579978 = validateParameter(valid_579978, JString, required = false,
                                  default = newJString("json"))
-  if valid_597978 != nil:
-    section.add "alt", valid_597978
-  var valid_597979 = query.getOrDefault("oauth_token")
-  valid_597979 = validateParameter(valid_597979, JString, required = false,
+  if valid_579978 != nil:
+    section.add "alt", valid_579978
+  var valid_579979 = query.getOrDefault("oauth_token")
+  valid_579979 = validateParameter(valid_579979, JString, required = false,
                                  default = nil)
-  if valid_597979 != nil:
-    section.add "oauth_token", valid_597979
-  var valid_597980 = query.getOrDefault("callback")
-  valid_597980 = validateParameter(valid_597980, JString, required = false,
+  if valid_579979 != nil:
+    section.add "oauth_token", valid_579979
+  var valid_579980 = query.getOrDefault("callback")
+  valid_579980 = validateParameter(valid_579980, JString, required = false,
                                  default = nil)
-  if valid_597980 != nil:
-    section.add "callback", valid_597980
-  var valid_597981 = query.getOrDefault("access_token")
-  valid_597981 = validateParameter(valid_597981, JString, required = false,
+  if valid_579980 != nil:
+    section.add "callback", valid_579980
+  var valid_579981 = query.getOrDefault("access_token")
+  valid_579981 = validateParameter(valid_579981, JString, required = false,
                                  default = nil)
-  if valid_597981 != nil:
-    section.add "access_token", valid_597981
-  var valid_597982 = query.getOrDefault("uploadType")
-  valid_597982 = validateParameter(valid_597982, JString, required = false,
+  if valid_579981 != nil:
+    section.add "access_token", valid_579981
+  var valid_579982 = query.getOrDefault("uploadType")
+  valid_579982 = validateParameter(valid_579982, JString, required = false,
                                  default = nil)
-  if valid_597982 != nil:
-    section.add "uploadType", valid_597982
-  var valid_597983 = query.getOrDefault("groupKey.namespace")
-  valid_597983 = validateParameter(valid_597983, JString, required = false,
+  if valid_579982 != nil:
+    section.add "uploadType", valid_579982
+  var valid_579983 = query.getOrDefault("groupKey.namespace")
+  valid_579983 = validateParameter(valid_579983, JString, required = false,
                                  default = nil)
-  if valid_597983 != nil:
-    section.add "groupKey.namespace", valid_597983
-  var valid_597984 = query.getOrDefault("key")
-  valid_597984 = validateParameter(valid_597984, JString, required = false,
+  if valid_579983 != nil:
+    section.add "groupKey.namespace", valid_579983
+  var valid_579984 = query.getOrDefault("key")
+  valid_579984 = validateParameter(valid_579984, JString, required = false,
                                  default = nil)
-  if valid_597984 != nil:
-    section.add "key", valid_597984
-  var valid_597985 = query.getOrDefault("$.xgafv")
-  valid_597985 = validateParameter(valid_597985, JString, required = false,
+  if valid_579984 != nil:
+    section.add "key", valid_579984
+  var valid_579985 = query.getOrDefault("$.xgafv")
+  valid_579985 = validateParameter(valid_579985, JString, required = false,
                                  default = newJString("1"))
-  if valid_597985 != nil:
-    section.add "$.xgafv", valid_597985
-  var valid_597986 = query.getOrDefault("prettyPrint")
-  valid_597986 = validateParameter(valid_597986, JBool, required = false,
+  if valid_579985 != nil:
+    section.add "$.xgafv", valid_579985
+  var valid_579986 = query.getOrDefault("prettyPrint")
+  valid_579986 = validateParameter(valid_579986, JBool, required = false,
                                  default = newJBool(true))
-  if valid_597986 != nil:
-    section.add "prettyPrint", valid_597986
-  var valid_597987 = query.getOrDefault("groupKey.id")
-  valid_597987 = validateParameter(valid_597987, JString, required = false,
+  if valid_579986 != nil:
+    section.add "prettyPrint", valid_579986
+  var valid_579987 = query.getOrDefault("groupKey.id")
+  valid_579987 = validateParameter(valid_579987, JString, required = false,
                                  default = nil)
-  if valid_597987 != nil:
-    section.add "groupKey.id", valid_597987
+  if valid_579987 != nil:
+    section.add "groupKey.id", valid_579987
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -613,22 +615,22 @@ proc validate_CloudidentityGroupsLookup_597973(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_597988: Call_CloudidentityGroupsLookup_597972; path: JsonNode;
+proc call*(call_579988: Call_CloudidentityGroupsLookup_579972; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Looks up [resource
   ## name](https://cloud.google.com/apis/design/resource_names) of a Group by
   ## its EntityKey.
   ## 
-  let valid = call_597988.validator(path, query, header, formData, body)
-  let scheme = call_597988.pickScheme
+  let valid = call_579988.validator(path, query, header, formData, body)
+  let scheme = call_579988.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_597988.url(scheme.get, call_597988.host, call_597988.base,
-                         call_597988.route, valid.getOrDefault("path"),
+  let url = call_579988.url(scheme.get, call_579988.host, call_579988.base,
+                         call_579988.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_597988, url, valid)
+  result = hook(call_579988, url, valid)
 
-proc call*(call_597989: Call_CloudidentityGroupsLookup_597972;
+proc call*(call_579989: Call_CloudidentityGroupsLookup_579972;
           uploadProtocol: string = ""; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; callback: string = "";
           accessToken: string = ""; uploadType: string = "";
@@ -670,37 +672,37 @@ proc call*(call_597989: Call_CloudidentityGroupsLookup_597972;
   ##   groupKeyId: string
   ##             : The ID of the entity within the given namespace. The ID must be unique
   ## within its namespace.
-  var query_597990 = newJObject()
-  add(query_597990, "upload_protocol", newJString(uploadProtocol))
-  add(query_597990, "fields", newJString(fields))
-  add(query_597990, "quotaUser", newJString(quotaUser))
-  add(query_597990, "alt", newJString(alt))
-  add(query_597990, "oauth_token", newJString(oauthToken))
-  add(query_597990, "callback", newJString(callback))
-  add(query_597990, "access_token", newJString(accessToken))
-  add(query_597990, "uploadType", newJString(uploadType))
-  add(query_597990, "groupKey.namespace", newJString(groupKeyNamespace))
-  add(query_597990, "key", newJString(key))
-  add(query_597990, "$.xgafv", newJString(Xgafv))
-  add(query_597990, "prettyPrint", newJBool(prettyPrint))
-  add(query_597990, "groupKey.id", newJString(groupKeyId))
-  result = call_597989.call(nil, query_597990, nil, nil, nil)
+  var query_579990 = newJObject()
+  add(query_579990, "upload_protocol", newJString(uploadProtocol))
+  add(query_579990, "fields", newJString(fields))
+  add(query_579990, "quotaUser", newJString(quotaUser))
+  add(query_579990, "alt", newJString(alt))
+  add(query_579990, "oauth_token", newJString(oauthToken))
+  add(query_579990, "callback", newJString(callback))
+  add(query_579990, "access_token", newJString(accessToken))
+  add(query_579990, "uploadType", newJString(uploadType))
+  add(query_579990, "groupKey.namespace", newJString(groupKeyNamespace))
+  add(query_579990, "key", newJString(key))
+  add(query_579990, "$.xgafv", newJString(Xgafv))
+  add(query_579990, "prettyPrint", newJBool(prettyPrint))
+  add(query_579990, "groupKey.id", newJString(groupKeyId))
+  result = call_579989.call(nil, query_579990, nil, nil, nil)
 
-var cloudidentityGroupsLookup* = Call_CloudidentityGroupsLookup_597972(
+var cloudidentityGroupsLookup* = Call_CloudidentityGroupsLookup_579972(
     name: "cloudidentityGroupsLookup", meth: HttpMethod.HttpGet,
     host: "cloudidentity.googleapis.com", route: "/v1/groups:lookup",
-    validator: validate_CloudidentityGroupsLookup_597973, base: "/",
-    url: url_CloudidentityGroupsLookup_597974, schemes: {Scheme.Https})
+    validator: validate_CloudidentityGroupsLookup_579973, base: "/",
+    url: url_CloudidentityGroupsLookup_579974, schemes: {Scheme.Https})
 type
-  Call_CloudidentityGroupsSearch_597991 = ref object of OpenApiRestCall_597408
-proc url_CloudidentityGroupsSearch_597993(protocol: Scheme; host: string;
+  Call_CloudidentityGroupsSearch_579991 = ref object of OpenApiRestCall_579408
+proc url_CloudidentityGroupsSearch_579993(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   result.path = base & route
 
-proc validate_CloudidentityGroupsSearch_597992(path: JsonNode; query: JsonNode;
+proc validate_CloudidentityGroupsSearch_579992(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Searches for Groups.
   ## 
@@ -744,80 +746,80 @@ proc validate_CloudidentityGroupsSearch_597992(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_597994 = query.getOrDefault("upload_protocol")
-  valid_597994 = validateParameter(valid_597994, JString, required = false,
+  var valid_579994 = query.getOrDefault("upload_protocol")
+  valid_579994 = validateParameter(valid_579994, JString, required = false,
                                  default = nil)
-  if valid_597994 != nil:
-    section.add "upload_protocol", valid_597994
-  var valid_597995 = query.getOrDefault("fields")
-  valid_597995 = validateParameter(valid_597995, JString, required = false,
+  if valid_579994 != nil:
+    section.add "upload_protocol", valid_579994
+  var valid_579995 = query.getOrDefault("fields")
+  valid_579995 = validateParameter(valid_579995, JString, required = false,
                                  default = nil)
-  if valid_597995 != nil:
-    section.add "fields", valid_597995
-  var valid_597996 = query.getOrDefault("pageToken")
-  valid_597996 = validateParameter(valid_597996, JString, required = false,
+  if valid_579995 != nil:
+    section.add "fields", valid_579995
+  var valid_579996 = query.getOrDefault("pageToken")
+  valid_579996 = validateParameter(valid_579996, JString, required = false,
                                  default = nil)
-  if valid_597996 != nil:
-    section.add "pageToken", valid_597996
-  var valid_597997 = query.getOrDefault("quotaUser")
-  valid_597997 = validateParameter(valid_597997, JString, required = false,
+  if valid_579996 != nil:
+    section.add "pageToken", valid_579996
+  var valid_579997 = query.getOrDefault("quotaUser")
+  valid_579997 = validateParameter(valid_579997, JString, required = false,
                                  default = nil)
-  if valid_597997 != nil:
-    section.add "quotaUser", valid_597997
-  var valid_597998 = query.getOrDefault("view")
-  valid_597998 = validateParameter(valid_597998, JString, required = false,
+  if valid_579997 != nil:
+    section.add "quotaUser", valid_579997
+  var valid_579998 = query.getOrDefault("view")
+  valid_579998 = validateParameter(valid_579998, JString, required = false,
                                  default = newJString("VIEW_UNSPECIFIED"))
-  if valid_597998 != nil:
-    section.add "view", valid_597998
-  var valid_597999 = query.getOrDefault("alt")
-  valid_597999 = validateParameter(valid_597999, JString, required = false,
+  if valid_579998 != nil:
+    section.add "view", valid_579998
+  var valid_579999 = query.getOrDefault("alt")
+  valid_579999 = validateParameter(valid_579999, JString, required = false,
                                  default = newJString("json"))
-  if valid_597999 != nil:
-    section.add "alt", valid_597999
-  var valid_598000 = query.getOrDefault("query")
-  valid_598000 = validateParameter(valid_598000, JString, required = false,
+  if valid_579999 != nil:
+    section.add "alt", valid_579999
+  var valid_580000 = query.getOrDefault("query")
+  valid_580000 = validateParameter(valid_580000, JString, required = false,
                                  default = nil)
-  if valid_598000 != nil:
-    section.add "query", valid_598000
-  var valid_598001 = query.getOrDefault("oauth_token")
-  valid_598001 = validateParameter(valid_598001, JString, required = false,
+  if valid_580000 != nil:
+    section.add "query", valid_580000
+  var valid_580001 = query.getOrDefault("oauth_token")
+  valid_580001 = validateParameter(valid_580001, JString, required = false,
                                  default = nil)
-  if valid_598001 != nil:
-    section.add "oauth_token", valid_598001
-  var valid_598002 = query.getOrDefault("callback")
-  valid_598002 = validateParameter(valid_598002, JString, required = false,
+  if valid_580001 != nil:
+    section.add "oauth_token", valid_580001
+  var valid_580002 = query.getOrDefault("callback")
+  valid_580002 = validateParameter(valid_580002, JString, required = false,
                                  default = nil)
-  if valid_598002 != nil:
-    section.add "callback", valid_598002
-  var valid_598003 = query.getOrDefault("access_token")
-  valid_598003 = validateParameter(valid_598003, JString, required = false,
+  if valid_580002 != nil:
+    section.add "callback", valid_580002
+  var valid_580003 = query.getOrDefault("access_token")
+  valid_580003 = validateParameter(valid_580003, JString, required = false,
                                  default = nil)
-  if valid_598003 != nil:
-    section.add "access_token", valid_598003
-  var valid_598004 = query.getOrDefault("uploadType")
-  valid_598004 = validateParameter(valid_598004, JString, required = false,
+  if valid_580003 != nil:
+    section.add "access_token", valid_580003
+  var valid_580004 = query.getOrDefault("uploadType")
+  valid_580004 = validateParameter(valid_580004, JString, required = false,
                                  default = nil)
-  if valid_598004 != nil:
-    section.add "uploadType", valid_598004
-  var valid_598005 = query.getOrDefault("key")
-  valid_598005 = validateParameter(valid_598005, JString, required = false,
+  if valid_580004 != nil:
+    section.add "uploadType", valid_580004
+  var valid_580005 = query.getOrDefault("key")
+  valid_580005 = validateParameter(valid_580005, JString, required = false,
                                  default = nil)
-  if valid_598005 != nil:
-    section.add "key", valid_598005
-  var valid_598006 = query.getOrDefault("$.xgafv")
-  valid_598006 = validateParameter(valid_598006, JString, required = false,
+  if valid_580005 != nil:
+    section.add "key", valid_580005
+  var valid_580006 = query.getOrDefault("$.xgafv")
+  valid_580006 = validateParameter(valid_580006, JString, required = false,
                                  default = newJString("1"))
-  if valid_598006 != nil:
-    section.add "$.xgafv", valid_598006
-  var valid_598007 = query.getOrDefault("pageSize")
-  valid_598007 = validateParameter(valid_598007, JInt, required = false, default = nil)
-  if valid_598007 != nil:
-    section.add "pageSize", valid_598007
-  var valid_598008 = query.getOrDefault("prettyPrint")
-  valid_598008 = validateParameter(valid_598008, JBool, required = false,
+  if valid_580006 != nil:
+    section.add "$.xgafv", valid_580006
+  var valid_580007 = query.getOrDefault("pageSize")
+  valid_580007 = validateParameter(valid_580007, JInt, required = false, default = nil)
+  if valid_580007 != nil:
+    section.add "pageSize", valid_580007
+  var valid_580008 = query.getOrDefault("prettyPrint")
+  valid_580008 = validateParameter(valid_580008, JBool, required = false,
                                  default = newJBool(true))
-  if valid_598008 != nil:
-    section.add "prettyPrint", valid_598008
+  if valid_580008 != nil:
+    section.add "prettyPrint", valid_580008
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -826,20 +828,20 @@ proc validate_CloudidentityGroupsSearch_597992(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_598009: Call_CloudidentityGroupsSearch_597991; path: JsonNode;
+proc call*(call_580009: Call_CloudidentityGroupsSearch_579991; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Searches for Groups.
   ## 
-  let valid = call_598009.validator(path, query, header, formData, body)
-  let scheme = call_598009.pickScheme
+  let valid = call_580009.validator(path, query, header, formData, body)
+  let scheme = call_580009.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_598009.url(scheme.get, call_598009.host, call_598009.base,
-                         call_598009.route, valid.getOrDefault("path"),
+  let url = call_580009.url(scheme.get, call_580009.host, call_580009.base,
+                         call_580009.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_598009, url, valid)
+  result = hook(call_580009, url, valid)
 
-proc call*(call_598010: Call_CloudidentityGroupsSearch_597991;
+proc call*(call_580010: Call_CloudidentityGroupsSearch_579991;
           uploadProtocol: string = ""; fields: string = ""; pageToken: string = "";
           quotaUser: string = ""; view: string = "VIEW_UNSPECIFIED";
           alt: string = "json"; query: string = ""; oauthToken: string = "";
@@ -881,36 +883,36 @@ proc call*(call_598010: Call_CloudidentityGroupsSearch_597991;
   ## (max 500) for the FULL view.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var query_598011 = newJObject()
-  add(query_598011, "upload_protocol", newJString(uploadProtocol))
-  add(query_598011, "fields", newJString(fields))
-  add(query_598011, "pageToken", newJString(pageToken))
-  add(query_598011, "quotaUser", newJString(quotaUser))
-  add(query_598011, "view", newJString(view))
-  add(query_598011, "alt", newJString(alt))
-  add(query_598011, "query", newJString(query))
-  add(query_598011, "oauth_token", newJString(oauthToken))
-  add(query_598011, "callback", newJString(callback))
-  add(query_598011, "access_token", newJString(accessToken))
-  add(query_598011, "uploadType", newJString(uploadType))
-  add(query_598011, "key", newJString(key))
-  add(query_598011, "$.xgafv", newJString(Xgafv))
-  add(query_598011, "pageSize", newJInt(pageSize))
-  add(query_598011, "prettyPrint", newJBool(prettyPrint))
-  result = call_598010.call(nil, query_598011, nil, nil, nil)
+  var query_580011 = newJObject()
+  add(query_580011, "upload_protocol", newJString(uploadProtocol))
+  add(query_580011, "fields", newJString(fields))
+  add(query_580011, "pageToken", newJString(pageToken))
+  add(query_580011, "quotaUser", newJString(quotaUser))
+  add(query_580011, "view", newJString(view))
+  add(query_580011, "alt", newJString(alt))
+  add(query_580011, "query", newJString(query))
+  add(query_580011, "oauth_token", newJString(oauthToken))
+  add(query_580011, "callback", newJString(callback))
+  add(query_580011, "access_token", newJString(accessToken))
+  add(query_580011, "uploadType", newJString(uploadType))
+  add(query_580011, "key", newJString(key))
+  add(query_580011, "$.xgafv", newJString(Xgafv))
+  add(query_580011, "pageSize", newJInt(pageSize))
+  add(query_580011, "prettyPrint", newJBool(prettyPrint))
+  result = call_580010.call(nil, query_580011, nil, nil, nil)
 
-var cloudidentityGroupsSearch* = Call_CloudidentityGroupsSearch_597991(
+var cloudidentityGroupsSearch* = Call_CloudidentityGroupsSearch_579991(
     name: "cloudidentityGroupsSearch", meth: HttpMethod.HttpGet,
     host: "cloudidentity.googleapis.com", route: "/v1/groups:search",
-    validator: validate_CloudidentityGroupsSearch_597992, base: "/",
-    url: url_CloudidentityGroupsSearch_597993, schemes: {Scheme.Https})
+    validator: validate_CloudidentityGroupsSearch_579992, base: "/",
+    url: url_CloudidentityGroupsSearch_579993, schemes: {Scheme.Https})
 type
-  Call_CloudidentityGroupsMembershipsGet_598012 = ref object of OpenApiRestCall_597408
-proc url_CloudidentityGroupsMembershipsGet_598014(protocol: Scheme; host: string;
+  Call_CloudidentityGroupsMembershipsGet_580012 = ref object of OpenApiRestCall_579408
+proc url_CloudidentityGroupsMembershipsGet_580014(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "name" in path, "`name` is a required path parameter"
   const
@@ -921,7 +923,7 @@ proc url_CloudidentityGroupsMembershipsGet_598014(protocol: Scheme; host: string
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_CloudidentityGroupsMembershipsGet_598013(path: JsonNode;
+proc validate_CloudidentityGroupsMembershipsGet_580013(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Retrieves a Membership.
   ## 
@@ -937,11 +939,11 @@ proc validate_CloudidentityGroupsMembershipsGet_598013(path: JsonNode;
   ## `member_id` is the unique ID assigned to the member.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `name` field"
-  var valid_598029 = path.getOrDefault("name")
-  valid_598029 = validateParameter(valid_598029, JString, required = true,
+  var valid_580029 = path.getOrDefault("name")
+  valid_580029 = validateParameter(valid_580029, JString, required = true,
                                  default = nil)
-  if valid_598029 != nil:
-    section.add "name", valid_598029
+  if valid_580029 != nil:
+    section.add "name", valid_580029
   result.add "path", section
   ## parameters in `query` object:
   ##   upload_protocol: JString
@@ -967,61 +969,61 @@ proc validate_CloudidentityGroupsMembershipsGet_598013(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_598030 = query.getOrDefault("upload_protocol")
-  valid_598030 = validateParameter(valid_598030, JString, required = false,
+  var valid_580030 = query.getOrDefault("upload_protocol")
+  valid_580030 = validateParameter(valid_580030, JString, required = false,
                                  default = nil)
-  if valid_598030 != nil:
-    section.add "upload_protocol", valid_598030
-  var valid_598031 = query.getOrDefault("fields")
-  valid_598031 = validateParameter(valid_598031, JString, required = false,
+  if valid_580030 != nil:
+    section.add "upload_protocol", valid_580030
+  var valid_580031 = query.getOrDefault("fields")
+  valid_580031 = validateParameter(valid_580031, JString, required = false,
                                  default = nil)
-  if valid_598031 != nil:
-    section.add "fields", valid_598031
-  var valid_598032 = query.getOrDefault("quotaUser")
-  valid_598032 = validateParameter(valid_598032, JString, required = false,
+  if valid_580031 != nil:
+    section.add "fields", valid_580031
+  var valid_580032 = query.getOrDefault("quotaUser")
+  valid_580032 = validateParameter(valid_580032, JString, required = false,
                                  default = nil)
-  if valid_598032 != nil:
-    section.add "quotaUser", valid_598032
-  var valid_598033 = query.getOrDefault("alt")
-  valid_598033 = validateParameter(valid_598033, JString, required = false,
+  if valid_580032 != nil:
+    section.add "quotaUser", valid_580032
+  var valid_580033 = query.getOrDefault("alt")
+  valid_580033 = validateParameter(valid_580033, JString, required = false,
                                  default = newJString("json"))
-  if valid_598033 != nil:
-    section.add "alt", valid_598033
-  var valid_598034 = query.getOrDefault("oauth_token")
-  valid_598034 = validateParameter(valid_598034, JString, required = false,
+  if valid_580033 != nil:
+    section.add "alt", valid_580033
+  var valid_580034 = query.getOrDefault("oauth_token")
+  valid_580034 = validateParameter(valid_580034, JString, required = false,
                                  default = nil)
-  if valid_598034 != nil:
-    section.add "oauth_token", valid_598034
-  var valid_598035 = query.getOrDefault("callback")
-  valid_598035 = validateParameter(valid_598035, JString, required = false,
+  if valid_580034 != nil:
+    section.add "oauth_token", valid_580034
+  var valid_580035 = query.getOrDefault("callback")
+  valid_580035 = validateParameter(valid_580035, JString, required = false,
                                  default = nil)
-  if valid_598035 != nil:
-    section.add "callback", valid_598035
-  var valid_598036 = query.getOrDefault("access_token")
-  valid_598036 = validateParameter(valid_598036, JString, required = false,
+  if valid_580035 != nil:
+    section.add "callback", valid_580035
+  var valid_580036 = query.getOrDefault("access_token")
+  valid_580036 = validateParameter(valid_580036, JString, required = false,
                                  default = nil)
-  if valid_598036 != nil:
-    section.add "access_token", valid_598036
-  var valid_598037 = query.getOrDefault("uploadType")
-  valid_598037 = validateParameter(valid_598037, JString, required = false,
+  if valid_580036 != nil:
+    section.add "access_token", valid_580036
+  var valid_580037 = query.getOrDefault("uploadType")
+  valid_580037 = validateParameter(valid_580037, JString, required = false,
                                  default = nil)
-  if valid_598037 != nil:
-    section.add "uploadType", valid_598037
-  var valid_598038 = query.getOrDefault("key")
-  valid_598038 = validateParameter(valid_598038, JString, required = false,
+  if valid_580037 != nil:
+    section.add "uploadType", valid_580037
+  var valid_580038 = query.getOrDefault("key")
+  valid_580038 = validateParameter(valid_580038, JString, required = false,
                                  default = nil)
-  if valid_598038 != nil:
-    section.add "key", valid_598038
-  var valid_598039 = query.getOrDefault("$.xgafv")
-  valid_598039 = validateParameter(valid_598039, JString, required = false,
+  if valid_580038 != nil:
+    section.add "key", valid_580038
+  var valid_580039 = query.getOrDefault("$.xgafv")
+  valid_580039 = validateParameter(valid_580039, JString, required = false,
                                  default = newJString("1"))
-  if valid_598039 != nil:
-    section.add "$.xgafv", valid_598039
-  var valid_598040 = query.getOrDefault("prettyPrint")
-  valid_598040 = validateParameter(valid_598040, JBool, required = false,
+  if valid_580039 != nil:
+    section.add "$.xgafv", valid_580039
+  var valid_580040 = query.getOrDefault("prettyPrint")
+  valid_580040 = validateParameter(valid_580040, JBool, required = false,
                                  default = newJBool(true))
-  if valid_598040 != nil:
-    section.add "prettyPrint", valid_598040
+  if valid_580040 != nil:
+    section.add "prettyPrint", valid_580040
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1030,21 +1032,21 @@ proc validate_CloudidentityGroupsMembershipsGet_598013(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_598041: Call_CloudidentityGroupsMembershipsGet_598012;
+proc call*(call_580041: Call_CloudidentityGroupsMembershipsGet_580012;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Retrieves a Membership.
   ## 
-  let valid = call_598041.validator(path, query, header, formData, body)
-  let scheme = call_598041.pickScheme
+  let valid = call_580041.validator(path, query, header, formData, body)
+  let scheme = call_580041.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_598041.url(scheme.get, call_598041.host, call_598041.base,
-                         call_598041.route, valid.getOrDefault("path"),
+  let url = call_580041.url(scheme.get, call_580041.host, call_580041.base,
+                         call_580041.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_598041, url, valid)
+  result = hook(call_580041, url, valid)
 
-proc call*(call_598042: Call_CloudidentityGroupsMembershipsGet_598012;
+proc call*(call_580042: Call_CloudidentityGroupsMembershipsGet_580012;
           name: string; uploadProtocol: string = ""; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           callback: string = ""; accessToken: string = ""; uploadType: string = "";
@@ -1080,35 +1082,35 @@ proc call*(call_598042: Call_CloudidentityGroupsMembershipsGet_598012;
   ##        : V1 error format.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_598043 = newJObject()
-  var query_598044 = newJObject()
-  add(query_598044, "upload_protocol", newJString(uploadProtocol))
-  add(query_598044, "fields", newJString(fields))
-  add(query_598044, "quotaUser", newJString(quotaUser))
-  add(path_598043, "name", newJString(name))
-  add(query_598044, "alt", newJString(alt))
-  add(query_598044, "oauth_token", newJString(oauthToken))
-  add(query_598044, "callback", newJString(callback))
-  add(query_598044, "access_token", newJString(accessToken))
-  add(query_598044, "uploadType", newJString(uploadType))
-  add(query_598044, "key", newJString(key))
-  add(query_598044, "$.xgafv", newJString(Xgafv))
-  add(query_598044, "prettyPrint", newJBool(prettyPrint))
-  result = call_598042.call(path_598043, query_598044, nil, nil, nil)
+  var path_580043 = newJObject()
+  var query_580044 = newJObject()
+  add(query_580044, "upload_protocol", newJString(uploadProtocol))
+  add(query_580044, "fields", newJString(fields))
+  add(query_580044, "quotaUser", newJString(quotaUser))
+  add(path_580043, "name", newJString(name))
+  add(query_580044, "alt", newJString(alt))
+  add(query_580044, "oauth_token", newJString(oauthToken))
+  add(query_580044, "callback", newJString(callback))
+  add(query_580044, "access_token", newJString(accessToken))
+  add(query_580044, "uploadType", newJString(uploadType))
+  add(query_580044, "key", newJString(key))
+  add(query_580044, "$.xgafv", newJString(Xgafv))
+  add(query_580044, "prettyPrint", newJBool(prettyPrint))
+  result = call_580042.call(path_580043, query_580044, nil, nil, nil)
 
-var cloudidentityGroupsMembershipsGet* = Call_CloudidentityGroupsMembershipsGet_598012(
+var cloudidentityGroupsMembershipsGet* = Call_CloudidentityGroupsMembershipsGet_580012(
     name: "cloudidentityGroupsMembershipsGet", meth: HttpMethod.HttpGet,
     host: "cloudidentity.googleapis.com", route: "/v1/{name}",
-    validator: validate_CloudidentityGroupsMembershipsGet_598013, base: "/",
-    url: url_CloudidentityGroupsMembershipsGet_598014, schemes: {Scheme.Https})
+    validator: validate_CloudidentityGroupsMembershipsGet_580013, base: "/",
+    url: url_CloudidentityGroupsMembershipsGet_580014, schemes: {Scheme.Https})
 type
-  Call_CloudidentityGroupsPatch_598064 = ref object of OpenApiRestCall_597408
-proc url_CloudidentityGroupsPatch_598066(protocol: Scheme; host: string;
+  Call_CloudidentityGroupsPatch_580064 = ref object of OpenApiRestCall_579408
+proc url_CloudidentityGroupsPatch_580066(protocol: Scheme; host: string;
                                         base: string; route: string; path: JsonNode;
                                         query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "name" in path, "`name` is a required path parameter"
   const
@@ -1119,7 +1121,7 @@ proc url_CloudidentityGroupsPatch_598066(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_CloudidentityGroupsPatch_598065(path: JsonNode; query: JsonNode;
+proc validate_CloudidentityGroupsPatch_580065(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Updates a Group.
   ## 
@@ -1134,11 +1136,11 @@ proc validate_CloudidentityGroupsPatch_598065(path: JsonNode; query: JsonNode;
   ## Must be left blank while creating a Group.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `name` field"
-  var valid_598067 = path.getOrDefault("name")
-  valid_598067 = validateParameter(valid_598067, JString, required = true,
+  var valid_580067 = path.getOrDefault("name")
+  valid_580067 = validateParameter(valid_580067, JString, required = true,
                                  default = nil)
-  if valid_598067 != nil:
-    section.add "name", valid_598067
+  if valid_580067 != nil:
+    section.add "name", valid_580067
   result.add "path", section
   ## parameters in `query` object:
   ##   upload_protocol: JString
@@ -1166,66 +1168,66 @@ proc validate_CloudidentityGroupsPatch_598065(path: JsonNode; query: JsonNode;
   ##   updateMask: JString
   ##             : Editable fields: `display_name`, `description`
   section = newJObject()
-  var valid_598068 = query.getOrDefault("upload_protocol")
-  valid_598068 = validateParameter(valid_598068, JString, required = false,
+  var valid_580068 = query.getOrDefault("upload_protocol")
+  valid_580068 = validateParameter(valid_580068, JString, required = false,
                                  default = nil)
-  if valid_598068 != nil:
-    section.add "upload_protocol", valid_598068
-  var valid_598069 = query.getOrDefault("fields")
-  valid_598069 = validateParameter(valid_598069, JString, required = false,
+  if valid_580068 != nil:
+    section.add "upload_protocol", valid_580068
+  var valid_580069 = query.getOrDefault("fields")
+  valid_580069 = validateParameter(valid_580069, JString, required = false,
                                  default = nil)
-  if valid_598069 != nil:
-    section.add "fields", valid_598069
-  var valid_598070 = query.getOrDefault("quotaUser")
-  valid_598070 = validateParameter(valid_598070, JString, required = false,
+  if valid_580069 != nil:
+    section.add "fields", valid_580069
+  var valid_580070 = query.getOrDefault("quotaUser")
+  valid_580070 = validateParameter(valid_580070, JString, required = false,
                                  default = nil)
-  if valid_598070 != nil:
-    section.add "quotaUser", valid_598070
-  var valid_598071 = query.getOrDefault("alt")
-  valid_598071 = validateParameter(valid_598071, JString, required = false,
+  if valid_580070 != nil:
+    section.add "quotaUser", valid_580070
+  var valid_580071 = query.getOrDefault("alt")
+  valid_580071 = validateParameter(valid_580071, JString, required = false,
                                  default = newJString("json"))
-  if valid_598071 != nil:
-    section.add "alt", valid_598071
-  var valid_598072 = query.getOrDefault("oauth_token")
-  valid_598072 = validateParameter(valid_598072, JString, required = false,
+  if valid_580071 != nil:
+    section.add "alt", valid_580071
+  var valid_580072 = query.getOrDefault("oauth_token")
+  valid_580072 = validateParameter(valid_580072, JString, required = false,
                                  default = nil)
-  if valid_598072 != nil:
-    section.add "oauth_token", valid_598072
-  var valid_598073 = query.getOrDefault("callback")
-  valid_598073 = validateParameter(valid_598073, JString, required = false,
+  if valid_580072 != nil:
+    section.add "oauth_token", valid_580072
+  var valid_580073 = query.getOrDefault("callback")
+  valid_580073 = validateParameter(valid_580073, JString, required = false,
                                  default = nil)
-  if valid_598073 != nil:
-    section.add "callback", valid_598073
-  var valid_598074 = query.getOrDefault("access_token")
-  valid_598074 = validateParameter(valid_598074, JString, required = false,
+  if valid_580073 != nil:
+    section.add "callback", valid_580073
+  var valid_580074 = query.getOrDefault("access_token")
+  valid_580074 = validateParameter(valid_580074, JString, required = false,
                                  default = nil)
-  if valid_598074 != nil:
-    section.add "access_token", valid_598074
-  var valid_598075 = query.getOrDefault("uploadType")
-  valid_598075 = validateParameter(valid_598075, JString, required = false,
+  if valid_580074 != nil:
+    section.add "access_token", valid_580074
+  var valid_580075 = query.getOrDefault("uploadType")
+  valid_580075 = validateParameter(valid_580075, JString, required = false,
                                  default = nil)
-  if valid_598075 != nil:
-    section.add "uploadType", valid_598075
-  var valid_598076 = query.getOrDefault("key")
-  valid_598076 = validateParameter(valid_598076, JString, required = false,
+  if valid_580075 != nil:
+    section.add "uploadType", valid_580075
+  var valid_580076 = query.getOrDefault("key")
+  valid_580076 = validateParameter(valid_580076, JString, required = false,
                                  default = nil)
-  if valid_598076 != nil:
-    section.add "key", valid_598076
-  var valid_598077 = query.getOrDefault("$.xgafv")
-  valid_598077 = validateParameter(valid_598077, JString, required = false,
+  if valid_580076 != nil:
+    section.add "key", valid_580076
+  var valid_580077 = query.getOrDefault("$.xgafv")
+  valid_580077 = validateParameter(valid_580077, JString, required = false,
                                  default = newJString("1"))
-  if valid_598077 != nil:
-    section.add "$.xgafv", valid_598077
-  var valid_598078 = query.getOrDefault("prettyPrint")
-  valid_598078 = validateParameter(valid_598078, JBool, required = false,
+  if valid_580077 != nil:
+    section.add "$.xgafv", valid_580077
+  var valid_580078 = query.getOrDefault("prettyPrint")
+  valid_580078 = validateParameter(valid_580078, JBool, required = false,
                                  default = newJBool(true))
-  if valid_598078 != nil:
-    section.add "prettyPrint", valid_598078
-  var valid_598079 = query.getOrDefault("updateMask")
-  valid_598079 = validateParameter(valid_598079, JString, required = false,
+  if valid_580078 != nil:
+    section.add "prettyPrint", valid_580078
+  var valid_580079 = query.getOrDefault("updateMask")
+  valid_580079 = validateParameter(valid_580079, JString, required = false,
                                  default = nil)
-  if valid_598079 != nil:
-    section.add "updateMask", valid_598079
+  if valid_580079 != nil:
+    section.add "updateMask", valid_580079
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1237,20 +1239,20 @@ proc validate_CloudidentityGroupsPatch_598065(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_598081: Call_CloudidentityGroupsPatch_598064; path: JsonNode;
+proc call*(call_580081: Call_CloudidentityGroupsPatch_580064; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Updates a Group.
   ## 
-  let valid = call_598081.validator(path, query, header, formData, body)
-  let scheme = call_598081.pickScheme
+  let valid = call_580081.validator(path, query, header, formData, body)
+  let scheme = call_580081.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_598081.url(scheme.get, call_598081.host, call_598081.base,
-                         call_598081.route, valid.getOrDefault("path"),
+  let url = call_580081.url(scheme.get, call_580081.host, call_580081.base,
+                         call_580081.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_598081, url, valid)
+  result = hook(call_580081, url, valid)
 
-proc call*(call_598082: Call_CloudidentityGroupsPatch_598064; name: string;
+proc call*(call_580082: Call_CloudidentityGroupsPatch_580064; name: string;
           uploadProtocol: string = ""; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; callback: string = "";
           accessToken: string = ""; uploadType: string = ""; key: string = "";
@@ -1289,38 +1291,38 @@ proc call*(call_598082: Call_CloudidentityGroupsPatch_598064; name: string;
   ##              : Returns response with indentations and line breaks.
   ##   updateMask: string
   ##             : Editable fields: `display_name`, `description`
-  var path_598083 = newJObject()
-  var query_598084 = newJObject()
-  var body_598085 = newJObject()
-  add(query_598084, "upload_protocol", newJString(uploadProtocol))
-  add(query_598084, "fields", newJString(fields))
-  add(query_598084, "quotaUser", newJString(quotaUser))
-  add(path_598083, "name", newJString(name))
-  add(query_598084, "alt", newJString(alt))
-  add(query_598084, "oauth_token", newJString(oauthToken))
-  add(query_598084, "callback", newJString(callback))
-  add(query_598084, "access_token", newJString(accessToken))
-  add(query_598084, "uploadType", newJString(uploadType))
-  add(query_598084, "key", newJString(key))
-  add(query_598084, "$.xgafv", newJString(Xgafv))
+  var path_580083 = newJObject()
+  var query_580084 = newJObject()
+  var body_580085 = newJObject()
+  add(query_580084, "upload_protocol", newJString(uploadProtocol))
+  add(query_580084, "fields", newJString(fields))
+  add(query_580084, "quotaUser", newJString(quotaUser))
+  add(path_580083, "name", newJString(name))
+  add(query_580084, "alt", newJString(alt))
+  add(query_580084, "oauth_token", newJString(oauthToken))
+  add(query_580084, "callback", newJString(callback))
+  add(query_580084, "access_token", newJString(accessToken))
+  add(query_580084, "uploadType", newJString(uploadType))
+  add(query_580084, "key", newJString(key))
+  add(query_580084, "$.xgafv", newJString(Xgafv))
   if body != nil:
-    body_598085 = body
-  add(query_598084, "prettyPrint", newJBool(prettyPrint))
-  add(query_598084, "updateMask", newJString(updateMask))
-  result = call_598082.call(path_598083, query_598084, nil, nil, body_598085)
+    body_580085 = body
+  add(query_580084, "prettyPrint", newJBool(prettyPrint))
+  add(query_580084, "updateMask", newJString(updateMask))
+  result = call_580082.call(path_580083, query_580084, nil, nil, body_580085)
 
-var cloudidentityGroupsPatch* = Call_CloudidentityGroupsPatch_598064(
+var cloudidentityGroupsPatch* = Call_CloudidentityGroupsPatch_580064(
     name: "cloudidentityGroupsPatch", meth: HttpMethod.HttpPatch,
     host: "cloudidentity.googleapis.com", route: "/v1/{name}",
-    validator: validate_CloudidentityGroupsPatch_598065, base: "/",
-    url: url_CloudidentityGroupsPatch_598066, schemes: {Scheme.Https})
+    validator: validate_CloudidentityGroupsPatch_580065, base: "/",
+    url: url_CloudidentityGroupsPatch_580066, schemes: {Scheme.Https})
 type
-  Call_CloudidentityGroupsMembershipsDelete_598045 = ref object of OpenApiRestCall_597408
-proc url_CloudidentityGroupsMembershipsDelete_598047(protocol: Scheme;
+  Call_CloudidentityGroupsMembershipsDelete_580045 = ref object of OpenApiRestCall_579408
+proc url_CloudidentityGroupsMembershipsDelete_580047(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "name" in path, "`name` is a required path parameter"
   const
@@ -1331,7 +1333,7 @@ proc url_CloudidentityGroupsMembershipsDelete_598047(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_CloudidentityGroupsMembershipsDelete_598046(path: JsonNode;
+proc validate_CloudidentityGroupsMembershipsDelete_580046(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Deletes a Membership.
   ## 
@@ -1347,11 +1349,11 @@ proc validate_CloudidentityGroupsMembershipsDelete_598046(path: JsonNode;
   ## member_id is the unique ID assigned to the member.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `name` field"
-  var valid_598048 = path.getOrDefault("name")
-  valid_598048 = validateParameter(valid_598048, JString, required = true,
+  var valid_580048 = path.getOrDefault("name")
+  valid_580048 = validateParameter(valid_580048, JString, required = true,
                                  default = nil)
-  if valid_598048 != nil:
-    section.add "name", valid_598048
+  if valid_580048 != nil:
+    section.add "name", valid_580048
   result.add "path", section
   ## parameters in `query` object:
   ##   upload_protocol: JString
@@ -1377,61 +1379,61 @@ proc validate_CloudidentityGroupsMembershipsDelete_598046(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_598049 = query.getOrDefault("upload_protocol")
-  valid_598049 = validateParameter(valid_598049, JString, required = false,
+  var valid_580049 = query.getOrDefault("upload_protocol")
+  valid_580049 = validateParameter(valid_580049, JString, required = false,
                                  default = nil)
-  if valid_598049 != nil:
-    section.add "upload_protocol", valid_598049
-  var valid_598050 = query.getOrDefault("fields")
-  valid_598050 = validateParameter(valid_598050, JString, required = false,
+  if valid_580049 != nil:
+    section.add "upload_protocol", valid_580049
+  var valid_580050 = query.getOrDefault("fields")
+  valid_580050 = validateParameter(valid_580050, JString, required = false,
                                  default = nil)
-  if valid_598050 != nil:
-    section.add "fields", valid_598050
-  var valid_598051 = query.getOrDefault("quotaUser")
-  valid_598051 = validateParameter(valid_598051, JString, required = false,
+  if valid_580050 != nil:
+    section.add "fields", valid_580050
+  var valid_580051 = query.getOrDefault("quotaUser")
+  valid_580051 = validateParameter(valid_580051, JString, required = false,
                                  default = nil)
-  if valid_598051 != nil:
-    section.add "quotaUser", valid_598051
-  var valid_598052 = query.getOrDefault("alt")
-  valid_598052 = validateParameter(valid_598052, JString, required = false,
+  if valid_580051 != nil:
+    section.add "quotaUser", valid_580051
+  var valid_580052 = query.getOrDefault("alt")
+  valid_580052 = validateParameter(valid_580052, JString, required = false,
                                  default = newJString("json"))
-  if valid_598052 != nil:
-    section.add "alt", valid_598052
-  var valid_598053 = query.getOrDefault("oauth_token")
-  valid_598053 = validateParameter(valid_598053, JString, required = false,
+  if valid_580052 != nil:
+    section.add "alt", valid_580052
+  var valid_580053 = query.getOrDefault("oauth_token")
+  valid_580053 = validateParameter(valid_580053, JString, required = false,
                                  default = nil)
-  if valid_598053 != nil:
-    section.add "oauth_token", valid_598053
-  var valid_598054 = query.getOrDefault("callback")
-  valid_598054 = validateParameter(valid_598054, JString, required = false,
+  if valid_580053 != nil:
+    section.add "oauth_token", valid_580053
+  var valid_580054 = query.getOrDefault("callback")
+  valid_580054 = validateParameter(valid_580054, JString, required = false,
                                  default = nil)
-  if valid_598054 != nil:
-    section.add "callback", valid_598054
-  var valid_598055 = query.getOrDefault("access_token")
-  valid_598055 = validateParameter(valid_598055, JString, required = false,
+  if valid_580054 != nil:
+    section.add "callback", valid_580054
+  var valid_580055 = query.getOrDefault("access_token")
+  valid_580055 = validateParameter(valid_580055, JString, required = false,
                                  default = nil)
-  if valid_598055 != nil:
-    section.add "access_token", valid_598055
-  var valid_598056 = query.getOrDefault("uploadType")
-  valid_598056 = validateParameter(valid_598056, JString, required = false,
+  if valid_580055 != nil:
+    section.add "access_token", valid_580055
+  var valid_580056 = query.getOrDefault("uploadType")
+  valid_580056 = validateParameter(valid_580056, JString, required = false,
                                  default = nil)
-  if valid_598056 != nil:
-    section.add "uploadType", valid_598056
-  var valid_598057 = query.getOrDefault("key")
-  valid_598057 = validateParameter(valid_598057, JString, required = false,
+  if valid_580056 != nil:
+    section.add "uploadType", valid_580056
+  var valid_580057 = query.getOrDefault("key")
+  valid_580057 = validateParameter(valid_580057, JString, required = false,
                                  default = nil)
-  if valid_598057 != nil:
-    section.add "key", valid_598057
-  var valid_598058 = query.getOrDefault("$.xgafv")
-  valid_598058 = validateParameter(valid_598058, JString, required = false,
+  if valid_580057 != nil:
+    section.add "key", valid_580057
+  var valid_580058 = query.getOrDefault("$.xgafv")
+  valid_580058 = validateParameter(valid_580058, JString, required = false,
                                  default = newJString("1"))
-  if valid_598058 != nil:
-    section.add "$.xgafv", valid_598058
-  var valid_598059 = query.getOrDefault("prettyPrint")
-  valid_598059 = validateParameter(valid_598059, JBool, required = false,
+  if valid_580058 != nil:
+    section.add "$.xgafv", valid_580058
+  var valid_580059 = query.getOrDefault("prettyPrint")
+  valid_580059 = validateParameter(valid_580059, JBool, required = false,
                                  default = newJBool(true))
-  if valid_598059 != nil:
-    section.add "prettyPrint", valid_598059
+  if valid_580059 != nil:
+    section.add "prettyPrint", valid_580059
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1440,21 +1442,21 @@ proc validate_CloudidentityGroupsMembershipsDelete_598046(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_598060: Call_CloudidentityGroupsMembershipsDelete_598045;
+proc call*(call_580060: Call_CloudidentityGroupsMembershipsDelete_580045;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Deletes a Membership.
   ## 
-  let valid = call_598060.validator(path, query, header, formData, body)
-  let scheme = call_598060.pickScheme
+  let valid = call_580060.validator(path, query, header, formData, body)
+  let scheme = call_580060.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_598060.url(scheme.get, call_598060.host, call_598060.base,
-                         call_598060.route, valid.getOrDefault("path"),
+  let url = call_580060.url(scheme.get, call_580060.host, call_580060.base,
+                         call_580060.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_598060, url, valid)
+  result = hook(call_580060, url, valid)
 
-proc call*(call_598061: Call_CloudidentityGroupsMembershipsDelete_598045;
+proc call*(call_580061: Call_CloudidentityGroupsMembershipsDelete_580045;
           name: string; uploadProtocol: string = ""; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           callback: string = ""; accessToken: string = ""; uploadType: string = "";
@@ -1490,34 +1492,34 @@ proc call*(call_598061: Call_CloudidentityGroupsMembershipsDelete_598045;
   ##        : V1 error format.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_598062 = newJObject()
-  var query_598063 = newJObject()
-  add(query_598063, "upload_protocol", newJString(uploadProtocol))
-  add(query_598063, "fields", newJString(fields))
-  add(query_598063, "quotaUser", newJString(quotaUser))
-  add(path_598062, "name", newJString(name))
-  add(query_598063, "alt", newJString(alt))
-  add(query_598063, "oauth_token", newJString(oauthToken))
-  add(query_598063, "callback", newJString(callback))
-  add(query_598063, "access_token", newJString(accessToken))
-  add(query_598063, "uploadType", newJString(uploadType))
-  add(query_598063, "key", newJString(key))
-  add(query_598063, "$.xgafv", newJString(Xgafv))
-  add(query_598063, "prettyPrint", newJBool(prettyPrint))
-  result = call_598061.call(path_598062, query_598063, nil, nil, nil)
+  var path_580062 = newJObject()
+  var query_580063 = newJObject()
+  add(query_580063, "upload_protocol", newJString(uploadProtocol))
+  add(query_580063, "fields", newJString(fields))
+  add(query_580063, "quotaUser", newJString(quotaUser))
+  add(path_580062, "name", newJString(name))
+  add(query_580063, "alt", newJString(alt))
+  add(query_580063, "oauth_token", newJString(oauthToken))
+  add(query_580063, "callback", newJString(callback))
+  add(query_580063, "access_token", newJString(accessToken))
+  add(query_580063, "uploadType", newJString(uploadType))
+  add(query_580063, "key", newJString(key))
+  add(query_580063, "$.xgafv", newJString(Xgafv))
+  add(query_580063, "prettyPrint", newJBool(prettyPrint))
+  result = call_580061.call(path_580062, query_580063, nil, nil, nil)
 
-var cloudidentityGroupsMembershipsDelete* = Call_CloudidentityGroupsMembershipsDelete_598045(
+var cloudidentityGroupsMembershipsDelete* = Call_CloudidentityGroupsMembershipsDelete_580045(
     name: "cloudidentityGroupsMembershipsDelete", meth: HttpMethod.HttpDelete,
     host: "cloudidentity.googleapis.com", route: "/v1/{name}",
-    validator: validate_CloudidentityGroupsMembershipsDelete_598046, base: "/",
-    url: url_CloudidentityGroupsMembershipsDelete_598047, schemes: {Scheme.Https})
+    validator: validate_CloudidentityGroupsMembershipsDelete_580046, base: "/",
+    url: url_CloudidentityGroupsMembershipsDelete_580047, schemes: {Scheme.Https})
 type
-  Call_CloudidentityGroupsMembershipsCreate_598108 = ref object of OpenApiRestCall_597408
-proc url_CloudidentityGroupsMembershipsCreate_598110(protocol: Scheme;
+  Call_CloudidentityGroupsMembershipsCreate_580108 = ref object of OpenApiRestCall_579408
+proc url_CloudidentityGroupsMembershipsCreate_580110(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "parent" in path, "`parent` is a required path parameter"
   const
@@ -1529,7 +1531,7 @@ proc url_CloudidentityGroupsMembershipsCreate_598110(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_CloudidentityGroupsMembershipsCreate_598109(path: JsonNode;
+proc validate_CloudidentityGroupsMembershipsCreate_580109(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Creates a Membership.
   ## 
@@ -1542,11 +1544,11 @@ proc validate_CloudidentityGroupsMembershipsCreate_598109(path: JsonNode;
   ## `group_id` is the unique ID assigned to the Group.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `parent` field"
-  var valid_598111 = path.getOrDefault("parent")
-  valid_598111 = validateParameter(valid_598111, JString, required = true,
+  var valid_580111 = path.getOrDefault("parent")
+  valid_580111 = validateParameter(valid_580111, JString, required = true,
                                  default = nil)
-  if valid_598111 != nil:
-    section.add "parent", valid_598111
+  if valid_580111 != nil:
+    section.add "parent", valid_580111
   result.add "path", section
   ## parameters in `query` object:
   ##   upload_protocol: JString
@@ -1572,61 +1574,61 @@ proc validate_CloudidentityGroupsMembershipsCreate_598109(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_598112 = query.getOrDefault("upload_protocol")
-  valid_598112 = validateParameter(valid_598112, JString, required = false,
+  var valid_580112 = query.getOrDefault("upload_protocol")
+  valid_580112 = validateParameter(valid_580112, JString, required = false,
                                  default = nil)
-  if valid_598112 != nil:
-    section.add "upload_protocol", valid_598112
-  var valid_598113 = query.getOrDefault("fields")
-  valid_598113 = validateParameter(valid_598113, JString, required = false,
+  if valid_580112 != nil:
+    section.add "upload_protocol", valid_580112
+  var valid_580113 = query.getOrDefault("fields")
+  valid_580113 = validateParameter(valid_580113, JString, required = false,
                                  default = nil)
-  if valid_598113 != nil:
-    section.add "fields", valid_598113
-  var valid_598114 = query.getOrDefault("quotaUser")
-  valid_598114 = validateParameter(valid_598114, JString, required = false,
+  if valid_580113 != nil:
+    section.add "fields", valid_580113
+  var valid_580114 = query.getOrDefault("quotaUser")
+  valid_580114 = validateParameter(valid_580114, JString, required = false,
                                  default = nil)
-  if valid_598114 != nil:
-    section.add "quotaUser", valid_598114
-  var valid_598115 = query.getOrDefault("alt")
-  valid_598115 = validateParameter(valid_598115, JString, required = false,
+  if valid_580114 != nil:
+    section.add "quotaUser", valid_580114
+  var valid_580115 = query.getOrDefault("alt")
+  valid_580115 = validateParameter(valid_580115, JString, required = false,
                                  default = newJString("json"))
-  if valid_598115 != nil:
-    section.add "alt", valid_598115
-  var valid_598116 = query.getOrDefault("oauth_token")
-  valid_598116 = validateParameter(valid_598116, JString, required = false,
+  if valid_580115 != nil:
+    section.add "alt", valid_580115
+  var valid_580116 = query.getOrDefault("oauth_token")
+  valid_580116 = validateParameter(valid_580116, JString, required = false,
                                  default = nil)
-  if valid_598116 != nil:
-    section.add "oauth_token", valid_598116
-  var valid_598117 = query.getOrDefault("callback")
-  valid_598117 = validateParameter(valid_598117, JString, required = false,
+  if valid_580116 != nil:
+    section.add "oauth_token", valid_580116
+  var valid_580117 = query.getOrDefault("callback")
+  valid_580117 = validateParameter(valid_580117, JString, required = false,
                                  default = nil)
-  if valid_598117 != nil:
-    section.add "callback", valid_598117
-  var valid_598118 = query.getOrDefault("access_token")
-  valid_598118 = validateParameter(valid_598118, JString, required = false,
+  if valid_580117 != nil:
+    section.add "callback", valid_580117
+  var valid_580118 = query.getOrDefault("access_token")
+  valid_580118 = validateParameter(valid_580118, JString, required = false,
                                  default = nil)
-  if valid_598118 != nil:
-    section.add "access_token", valid_598118
-  var valid_598119 = query.getOrDefault("uploadType")
-  valid_598119 = validateParameter(valid_598119, JString, required = false,
+  if valid_580118 != nil:
+    section.add "access_token", valid_580118
+  var valid_580119 = query.getOrDefault("uploadType")
+  valid_580119 = validateParameter(valid_580119, JString, required = false,
                                  default = nil)
-  if valid_598119 != nil:
-    section.add "uploadType", valid_598119
-  var valid_598120 = query.getOrDefault("key")
-  valid_598120 = validateParameter(valid_598120, JString, required = false,
+  if valid_580119 != nil:
+    section.add "uploadType", valid_580119
+  var valid_580120 = query.getOrDefault("key")
+  valid_580120 = validateParameter(valid_580120, JString, required = false,
                                  default = nil)
-  if valid_598120 != nil:
-    section.add "key", valid_598120
-  var valid_598121 = query.getOrDefault("$.xgafv")
-  valid_598121 = validateParameter(valid_598121, JString, required = false,
+  if valid_580120 != nil:
+    section.add "key", valid_580120
+  var valid_580121 = query.getOrDefault("$.xgafv")
+  valid_580121 = validateParameter(valid_580121, JString, required = false,
                                  default = newJString("1"))
-  if valid_598121 != nil:
-    section.add "$.xgafv", valid_598121
-  var valid_598122 = query.getOrDefault("prettyPrint")
-  valid_598122 = validateParameter(valid_598122, JBool, required = false,
+  if valid_580121 != nil:
+    section.add "$.xgafv", valid_580121
+  var valid_580122 = query.getOrDefault("prettyPrint")
+  valid_580122 = validateParameter(valid_580122, JBool, required = false,
                                  default = newJBool(true))
-  if valid_598122 != nil:
-    section.add "prettyPrint", valid_598122
+  if valid_580122 != nil:
+    section.add "prettyPrint", valid_580122
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1638,21 +1640,21 @@ proc validate_CloudidentityGroupsMembershipsCreate_598109(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_598124: Call_CloudidentityGroupsMembershipsCreate_598108;
+proc call*(call_580124: Call_CloudidentityGroupsMembershipsCreate_580108;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Creates a Membership.
   ## 
-  let valid = call_598124.validator(path, query, header, formData, body)
-  let scheme = call_598124.pickScheme
+  let valid = call_580124.validator(path, query, header, formData, body)
+  let scheme = call_580124.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_598124.url(scheme.get, call_598124.host, call_598124.base,
-                         call_598124.route, valid.getOrDefault("path"),
+  let url = call_580124.url(scheme.get, call_580124.host, call_580124.base,
+                         call_580124.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_598124, url, valid)
+  result = hook(call_580124, url, valid)
 
-proc call*(call_598125: Call_CloudidentityGroupsMembershipsCreate_598108;
+proc call*(call_580125: Call_CloudidentityGroupsMembershipsCreate_580108;
           parent: string; uploadProtocol: string = ""; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           callback: string = ""; accessToken: string = ""; uploadType: string = "";
@@ -1687,37 +1689,37 @@ proc call*(call_598125: Call_CloudidentityGroupsMembershipsCreate_598108;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_598126 = newJObject()
-  var query_598127 = newJObject()
-  var body_598128 = newJObject()
-  add(query_598127, "upload_protocol", newJString(uploadProtocol))
-  add(query_598127, "fields", newJString(fields))
-  add(query_598127, "quotaUser", newJString(quotaUser))
-  add(query_598127, "alt", newJString(alt))
-  add(query_598127, "oauth_token", newJString(oauthToken))
-  add(query_598127, "callback", newJString(callback))
-  add(query_598127, "access_token", newJString(accessToken))
-  add(query_598127, "uploadType", newJString(uploadType))
-  add(path_598126, "parent", newJString(parent))
-  add(query_598127, "key", newJString(key))
-  add(query_598127, "$.xgafv", newJString(Xgafv))
+  var path_580126 = newJObject()
+  var query_580127 = newJObject()
+  var body_580128 = newJObject()
+  add(query_580127, "upload_protocol", newJString(uploadProtocol))
+  add(query_580127, "fields", newJString(fields))
+  add(query_580127, "quotaUser", newJString(quotaUser))
+  add(query_580127, "alt", newJString(alt))
+  add(query_580127, "oauth_token", newJString(oauthToken))
+  add(query_580127, "callback", newJString(callback))
+  add(query_580127, "access_token", newJString(accessToken))
+  add(query_580127, "uploadType", newJString(uploadType))
+  add(path_580126, "parent", newJString(parent))
+  add(query_580127, "key", newJString(key))
+  add(query_580127, "$.xgafv", newJString(Xgafv))
   if body != nil:
-    body_598128 = body
-  add(query_598127, "prettyPrint", newJBool(prettyPrint))
-  result = call_598125.call(path_598126, query_598127, nil, nil, body_598128)
+    body_580128 = body
+  add(query_580127, "prettyPrint", newJBool(prettyPrint))
+  result = call_580125.call(path_580126, query_580127, nil, nil, body_580128)
 
-var cloudidentityGroupsMembershipsCreate* = Call_CloudidentityGroupsMembershipsCreate_598108(
+var cloudidentityGroupsMembershipsCreate* = Call_CloudidentityGroupsMembershipsCreate_580108(
     name: "cloudidentityGroupsMembershipsCreate", meth: HttpMethod.HttpPost,
     host: "cloudidentity.googleapis.com", route: "/v1/{parent}/memberships",
-    validator: validate_CloudidentityGroupsMembershipsCreate_598109, base: "/",
-    url: url_CloudidentityGroupsMembershipsCreate_598110, schemes: {Scheme.Https})
+    validator: validate_CloudidentityGroupsMembershipsCreate_580109, base: "/",
+    url: url_CloudidentityGroupsMembershipsCreate_580110, schemes: {Scheme.Https})
 type
-  Call_CloudidentityGroupsMembershipsList_598086 = ref object of OpenApiRestCall_597408
-proc url_CloudidentityGroupsMembershipsList_598088(protocol: Scheme; host: string;
+  Call_CloudidentityGroupsMembershipsList_580086 = ref object of OpenApiRestCall_579408
+proc url_CloudidentityGroupsMembershipsList_580088(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "parent" in path, "`parent` is a required path parameter"
   const
@@ -1729,7 +1731,7 @@ proc url_CloudidentityGroupsMembershipsList_598088(protocol: Scheme; host: strin
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_CloudidentityGroupsMembershipsList_598087(path: JsonNode;
+proc validate_CloudidentityGroupsMembershipsList_580087(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## List Memberships within a Group.
   ## 
@@ -1744,11 +1746,11 @@ proc validate_CloudidentityGroupsMembershipsList_598087(path: JsonNode;
   ## the Group.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `parent` field"
-  var valid_598089 = path.getOrDefault("parent")
-  valid_598089 = validateParameter(valid_598089, JString, required = true,
+  var valid_580089 = path.getOrDefault("parent")
+  valid_580089 = validateParameter(valid_580089, JString, required = true,
                                  default = nil)
-  if valid_598089 != nil:
-    section.add "parent", valid_598089
+  if valid_580089 != nil:
+    section.add "parent", valid_580089
   result.add "path", section
   ## parameters in `query` object:
   ##   upload_protocol: JString
@@ -1781,75 +1783,75 @@ proc validate_CloudidentityGroupsMembershipsList_598087(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_598090 = query.getOrDefault("upload_protocol")
-  valid_598090 = validateParameter(valid_598090, JString, required = false,
+  var valid_580090 = query.getOrDefault("upload_protocol")
+  valid_580090 = validateParameter(valid_580090, JString, required = false,
                                  default = nil)
-  if valid_598090 != nil:
-    section.add "upload_protocol", valid_598090
-  var valid_598091 = query.getOrDefault("fields")
-  valid_598091 = validateParameter(valid_598091, JString, required = false,
+  if valid_580090 != nil:
+    section.add "upload_protocol", valid_580090
+  var valid_580091 = query.getOrDefault("fields")
+  valid_580091 = validateParameter(valid_580091, JString, required = false,
                                  default = nil)
-  if valid_598091 != nil:
-    section.add "fields", valid_598091
-  var valid_598092 = query.getOrDefault("pageToken")
-  valid_598092 = validateParameter(valid_598092, JString, required = false,
+  if valid_580091 != nil:
+    section.add "fields", valid_580091
+  var valid_580092 = query.getOrDefault("pageToken")
+  valid_580092 = validateParameter(valid_580092, JString, required = false,
                                  default = nil)
-  if valid_598092 != nil:
-    section.add "pageToken", valid_598092
-  var valid_598093 = query.getOrDefault("quotaUser")
-  valid_598093 = validateParameter(valid_598093, JString, required = false,
+  if valid_580092 != nil:
+    section.add "pageToken", valid_580092
+  var valid_580093 = query.getOrDefault("quotaUser")
+  valid_580093 = validateParameter(valid_580093, JString, required = false,
                                  default = nil)
-  if valid_598093 != nil:
-    section.add "quotaUser", valid_598093
-  var valid_598094 = query.getOrDefault("view")
-  valid_598094 = validateParameter(valid_598094, JString, required = false,
+  if valid_580093 != nil:
+    section.add "quotaUser", valid_580093
+  var valid_580094 = query.getOrDefault("view")
+  valid_580094 = validateParameter(valid_580094, JString, required = false,
                                  default = newJString("VIEW_UNSPECIFIED"))
-  if valid_598094 != nil:
-    section.add "view", valid_598094
-  var valid_598095 = query.getOrDefault("alt")
-  valid_598095 = validateParameter(valid_598095, JString, required = false,
+  if valid_580094 != nil:
+    section.add "view", valid_580094
+  var valid_580095 = query.getOrDefault("alt")
+  valid_580095 = validateParameter(valid_580095, JString, required = false,
                                  default = newJString("json"))
-  if valid_598095 != nil:
-    section.add "alt", valid_598095
-  var valid_598096 = query.getOrDefault("oauth_token")
-  valid_598096 = validateParameter(valid_598096, JString, required = false,
+  if valid_580095 != nil:
+    section.add "alt", valid_580095
+  var valid_580096 = query.getOrDefault("oauth_token")
+  valid_580096 = validateParameter(valid_580096, JString, required = false,
                                  default = nil)
-  if valid_598096 != nil:
-    section.add "oauth_token", valid_598096
-  var valid_598097 = query.getOrDefault("callback")
-  valid_598097 = validateParameter(valid_598097, JString, required = false,
+  if valid_580096 != nil:
+    section.add "oauth_token", valid_580096
+  var valid_580097 = query.getOrDefault("callback")
+  valid_580097 = validateParameter(valid_580097, JString, required = false,
                                  default = nil)
-  if valid_598097 != nil:
-    section.add "callback", valid_598097
-  var valid_598098 = query.getOrDefault("access_token")
-  valid_598098 = validateParameter(valid_598098, JString, required = false,
+  if valid_580097 != nil:
+    section.add "callback", valid_580097
+  var valid_580098 = query.getOrDefault("access_token")
+  valid_580098 = validateParameter(valid_580098, JString, required = false,
                                  default = nil)
-  if valid_598098 != nil:
-    section.add "access_token", valid_598098
-  var valid_598099 = query.getOrDefault("uploadType")
-  valid_598099 = validateParameter(valid_598099, JString, required = false,
+  if valid_580098 != nil:
+    section.add "access_token", valid_580098
+  var valid_580099 = query.getOrDefault("uploadType")
+  valid_580099 = validateParameter(valid_580099, JString, required = false,
                                  default = nil)
-  if valid_598099 != nil:
-    section.add "uploadType", valid_598099
-  var valid_598100 = query.getOrDefault("key")
-  valid_598100 = validateParameter(valid_598100, JString, required = false,
+  if valid_580099 != nil:
+    section.add "uploadType", valid_580099
+  var valid_580100 = query.getOrDefault("key")
+  valid_580100 = validateParameter(valid_580100, JString, required = false,
                                  default = nil)
-  if valid_598100 != nil:
-    section.add "key", valid_598100
-  var valid_598101 = query.getOrDefault("$.xgafv")
-  valid_598101 = validateParameter(valid_598101, JString, required = false,
+  if valid_580100 != nil:
+    section.add "key", valid_580100
+  var valid_580101 = query.getOrDefault("$.xgafv")
+  valid_580101 = validateParameter(valid_580101, JString, required = false,
                                  default = newJString("1"))
-  if valid_598101 != nil:
-    section.add "$.xgafv", valid_598101
-  var valid_598102 = query.getOrDefault("pageSize")
-  valid_598102 = validateParameter(valid_598102, JInt, required = false, default = nil)
-  if valid_598102 != nil:
-    section.add "pageSize", valid_598102
-  var valid_598103 = query.getOrDefault("prettyPrint")
-  valid_598103 = validateParameter(valid_598103, JBool, required = false,
+  if valid_580101 != nil:
+    section.add "$.xgafv", valid_580101
+  var valid_580102 = query.getOrDefault("pageSize")
+  valid_580102 = validateParameter(valid_580102, JInt, required = false, default = nil)
+  if valid_580102 != nil:
+    section.add "pageSize", valid_580102
+  var valid_580103 = query.getOrDefault("prettyPrint")
+  valid_580103 = validateParameter(valid_580103, JBool, required = false,
                                  default = newJBool(true))
-  if valid_598103 != nil:
-    section.add "prettyPrint", valid_598103
+  if valid_580103 != nil:
+    section.add "prettyPrint", valid_580103
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1858,21 +1860,21 @@ proc validate_CloudidentityGroupsMembershipsList_598087(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_598104: Call_CloudidentityGroupsMembershipsList_598086;
+proc call*(call_580104: Call_CloudidentityGroupsMembershipsList_580086;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## List Memberships within a Group.
   ## 
-  let valid = call_598104.validator(path, query, header, formData, body)
-  let scheme = call_598104.pickScheme
+  let valid = call_580104.validator(path, query, header, formData, body)
+  let scheme = call_580104.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_598104.url(scheme.get, call_598104.host, call_598104.base,
-                         call_598104.route, valid.getOrDefault("path"),
+  let url = call_580104.url(scheme.get, call_580104.host, call_580104.base,
+                         call_580104.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_598104, url, valid)
+  result = hook(call_580104, url, valid)
 
-proc call*(call_598105: Call_CloudidentityGroupsMembershipsList_598086;
+proc call*(call_580105: Call_CloudidentityGroupsMembershipsList_580086;
           parent: string; uploadProtocol: string = ""; fields: string = "";
           pageToken: string = ""; quotaUser: string = "";
           view: string = "VIEW_UNSPECIFIED"; alt: string = "json";
@@ -1916,37 +1918,37 @@ proc call*(call_598105: Call_CloudidentityGroupsMembershipsList_598086;
   ## (max 500) for the FULL view.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_598106 = newJObject()
-  var query_598107 = newJObject()
-  add(query_598107, "upload_protocol", newJString(uploadProtocol))
-  add(query_598107, "fields", newJString(fields))
-  add(query_598107, "pageToken", newJString(pageToken))
-  add(query_598107, "quotaUser", newJString(quotaUser))
-  add(query_598107, "view", newJString(view))
-  add(query_598107, "alt", newJString(alt))
-  add(query_598107, "oauth_token", newJString(oauthToken))
-  add(query_598107, "callback", newJString(callback))
-  add(query_598107, "access_token", newJString(accessToken))
-  add(query_598107, "uploadType", newJString(uploadType))
-  add(path_598106, "parent", newJString(parent))
-  add(query_598107, "key", newJString(key))
-  add(query_598107, "$.xgafv", newJString(Xgafv))
-  add(query_598107, "pageSize", newJInt(pageSize))
-  add(query_598107, "prettyPrint", newJBool(prettyPrint))
-  result = call_598105.call(path_598106, query_598107, nil, nil, nil)
+  var path_580106 = newJObject()
+  var query_580107 = newJObject()
+  add(query_580107, "upload_protocol", newJString(uploadProtocol))
+  add(query_580107, "fields", newJString(fields))
+  add(query_580107, "pageToken", newJString(pageToken))
+  add(query_580107, "quotaUser", newJString(quotaUser))
+  add(query_580107, "view", newJString(view))
+  add(query_580107, "alt", newJString(alt))
+  add(query_580107, "oauth_token", newJString(oauthToken))
+  add(query_580107, "callback", newJString(callback))
+  add(query_580107, "access_token", newJString(accessToken))
+  add(query_580107, "uploadType", newJString(uploadType))
+  add(path_580106, "parent", newJString(parent))
+  add(query_580107, "key", newJString(key))
+  add(query_580107, "$.xgafv", newJString(Xgafv))
+  add(query_580107, "pageSize", newJInt(pageSize))
+  add(query_580107, "prettyPrint", newJBool(prettyPrint))
+  result = call_580105.call(path_580106, query_580107, nil, nil, nil)
 
-var cloudidentityGroupsMembershipsList* = Call_CloudidentityGroupsMembershipsList_598086(
+var cloudidentityGroupsMembershipsList* = Call_CloudidentityGroupsMembershipsList_580086(
     name: "cloudidentityGroupsMembershipsList", meth: HttpMethod.HttpGet,
     host: "cloudidentity.googleapis.com", route: "/v1/{parent}/memberships",
-    validator: validate_CloudidentityGroupsMembershipsList_598087, base: "/",
-    url: url_CloudidentityGroupsMembershipsList_598088, schemes: {Scheme.Https})
+    validator: validate_CloudidentityGroupsMembershipsList_580087, base: "/",
+    url: url_CloudidentityGroupsMembershipsList_580088, schemes: {Scheme.Https})
 type
-  Call_CloudidentityGroupsMembershipsLookup_598129 = ref object of OpenApiRestCall_597408
-proc url_CloudidentityGroupsMembershipsLookup_598131(protocol: Scheme;
+  Call_CloudidentityGroupsMembershipsLookup_580129 = ref object of OpenApiRestCall_579408
+proc url_CloudidentityGroupsMembershipsLookup_580131(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "parent" in path, "`parent` is a required path parameter"
   const
@@ -1958,7 +1960,7 @@ proc url_CloudidentityGroupsMembershipsLookup_598131(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_CloudidentityGroupsMembershipsLookup_598130(path: JsonNode;
+proc validate_CloudidentityGroupsMembershipsLookup_580130(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Looks up [resource
   ## name](https://cloud.google.com/apis/design/resource_names) of a Membership
@@ -1975,11 +1977,11 @@ proc validate_CloudidentityGroupsMembershipsLookup_598130(path: JsonNode;
   ## the Group.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `parent` field"
-  var valid_598132 = path.getOrDefault("parent")
-  valid_598132 = validateParameter(valid_598132, JString, required = true,
+  var valid_580132 = path.getOrDefault("parent")
+  valid_580132 = validateParameter(valid_580132, JString, required = true,
                                  default = nil)
-  if valid_598132 != nil:
-    section.add "parent", valid_598132
+  if valid_580132 != nil:
+    section.add "parent", valid_580132
   result.add "path", section
   ## parameters in `query` object:
   ##   upload_protocol: JString
@@ -2015,71 +2017,71 @@ proc validate_CloudidentityGroupsMembershipsLookup_598130(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_598133 = query.getOrDefault("upload_protocol")
-  valid_598133 = validateParameter(valid_598133, JString, required = false,
+  var valid_580133 = query.getOrDefault("upload_protocol")
+  valid_580133 = validateParameter(valid_580133, JString, required = false,
                                  default = nil)
-  if valid_598133 != nil:
-    section.add "upload_protocol", valid_598133
-  var valid_598134 = query.getOrDefault("fields")
-  valid_598134 = validateParameter(valid_598134, JString, required = false,
+  if valid_580133 != nil:
+    section.add "upload_protocol", valid_580133
+  var valid_580134 = query.getOrDefault("fields")
+  valid_580134 = validateParameter(valid_580134, JString, required = false,
                                  default = nil)
-  if valid_598134 != nil:
-    section.add "fields", valid_598134
-  var valid_598135 = query.getOrDefault("quotaUser")
-  valid_598135 = validateParameter(valid_598135, JString, required = false,
+  if valid_580134 != nil:
+    section.add "fields", valid_580134
+  var valid_580135 = query.getOrDefault("quotaUser")
+  valid_580135 = validateParameter(valid_580135, JString, required = false,
                                  default = nil)
-  if valid_598135 != nil:
-    section.add "quotaUser", valid_598135
-  var valid_598136 = query.getOrDefault("alt")
-  valid_598136 = validateParameter(valid_598136, JString, required = false,
+  if valid_580135 != nil:
+    section.add "quotaUser", valid_580135
+  var valid_580136 = query.getOrDefault("alt")
+  valid_580136 = validateParameter(valid_580136, JString, required = false,
                                  default = newJString("json"))
-  if valid_598136 != nil:
-    section.add "alt", valid_598136
-  var valid_598137 = query.getOrDefault("oauth_token")
-  valid_598137 = validateParameter(valid_598137, JString, required = false,
+  if valid_580136 != nil:
+    section.add "alt", valid_580136
+  var valid_580137 = query.getOrDefault("oauth_token")
+  valid_580137 = validateParameter(valid_580137, JString, required = false,
                                  default = nil)
-  if valid_598137 != nil:
-    section.add "oauth_token", valid_598137
-  var valid_598138 = query.getOrDefault("callback")
-  valid_598138 = validateParameter(valid_598138, JString, required = false,
+  if valid_580137 != nil:
+    section.add "oauth_token", valid_580137
+  var valid_580138 = query.getOrDefault("callback")
+  valid_580138 = validateParameter(valid_580138, JString, required = false,
                                  default = nil)
-  if valid_598138 != nil:
-    section.add "callback", valid_598138
-  var valid_598139 = query.getOrDefault("access_token")
-  valid_598139 = validateParameter(valid_598139, JString, required = false,
+  if valid_580138 != nil:
+    section.add "callback", valid_580138
+  var valid_580139 = query.getOrDefault("access_token")
+  valid_580139 = validateParameter(valid_580139, JString, required = false,
                                  default = nil)
-  if valid_598139 != nil:
-    section.add "access_token", valid_598139
-  var valid_598140 = query.getOrDefault("uploadType")
-  valid_598140 = validateParameter(valid_598140, JString, required = false,
+  if valid_580139 != nil:
+    section.add "access_token", valid_580139
+  var valid_580140 = query.getOrDefault("uploadType")
+  valid_580140 = validateParameter(valid_580140, JString, required = false,
                                  default = nil)
-  if valid_598140 != nil:
-    section.add "uploadType", valid_598140
-  var valid_598141 = query.getOrDefault("memberKey.namespace")
-  valid_598141 = validateParameter(valid_598141, JString, required = false,
+  if valid_580140 != nil:
+    section.add "uploadType", valid_580140
+  var valid_580141 = query.getOrDefault("memberKey.namespace")
+  valid_580141 = validateParameter(valid_580141, JString, required = false,
                                  default = nil)
-  if valid_598141 != nil:
-    section.add "memberKey.namespace", valid_598141
-  var valid_598142 = query.getOrDefault("key")
-  valid_598142 = validateParameter(valid_598142, JString, required = false,
+  if valid_580141 != nil:
+    section.add "memberKey.namespace", valid_580141
+  var valid_580142 = query.getOrDefault("key")
+  valid_580142 = validateParameter(valid_580142, JString, required = false,
                                  default = nil)
-  if valid_598142 != nil:
-    section.add "key", valid_598142
-  var valid_598143 = query.getOrDefault("$.xgafv")
-  valid_598143 = validateParameter(valid_598143, JString, required = false,
+  if valid_580142 != nil:
+    section.add "key", valid_580142
+  var valid_580143 = query.getOrDefault("$.xgafv")
+  valid_580143 = validateParameter(valid_580143, JString, required = false,
                                  default = newJString("1"))
-  if valid_598143 != nil:
-    section.add "$.xgafv", valid_598143
-  var valid_598144 = query.getOrDefault("memberKey.id")
-  valid_598144 = validateParameter(valid_598144, JString, required = false,
+  if valid_580143 != nil:
+    section.add "$.xgafv", valid_580143
+  var valid_580144 = query.getOrDefault("memberKey.id")
+  valid_580144 = validateParameter(valid_580144, JString, required = false,
                                  default = nil)
-  if valid_598144 != nil:
-    section.add "memberKey.id", valid_598144
-  var valid_598145 = query.getOrDefault("prettyPrint")
-  valid_598145 = validateParameter(valid_598145, JBool, required = false,
+  if valid_580144 != nil:
+    section.add "memberKey.id", valid_580144
+  var valid_580145 = query.getOrDefault("prettyPrint")
+  valid_580145 = validateParameter(valid_580145, JBool, required = false,
                                  default = newJBool(true))
-  if valid_598145 != nil:
-    section.add "prettyPrint", valid_598145
+  if valid_580145 != nil:
+    section.add "prettyPrint", valid_580145
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -2088,23 +2090,23 @@ proc validate_CloudidentityGroupsMembershipsLookup_598130(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_598146: Call_CloudidentityGroupsMembershipsLookup_598129;
+proc call*(call_580146: Call_CloudidentityGroupsMembershipsLookup_580129;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Looks up [resource
   ## name](https://cloud.google.com/apis/design/resource_names) of a Membership
   ## within a Group by member's EntityKey.
   ## 
-  let valid = call_598146.validator(path, query, header, formData, body)
-  let scheme = call_598146.pickScheme
+  let valid = call_580146.validator(path, query, header, formData, body)
+  let scheme = call_580146.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_598146.url(scheme.get, call_598146.host, call_598146.base,
-                         call_598146.route, valid.getOrDefault("path"),
+  let url = call_580146.url(scheme.get, call_580146.host, call_580146.base,
+                         call_580146.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_598146, url, valid)
+  result = hook(call_580146, url, valid)
 
-proc call*(call_598147: Call_CloudidentityGroupsMembershipsLookup_598129;
+proc call*(call_580147: Call_CloudidentityGroupsMembershipsLookup_580129;
           parent: string; uploadProtocol: string = ""; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           callback: string = ""; accessToken: string = ""; uploadType: string = "";
@@ -2152,33 +2154,123 @@ proc call*(call_598147: Call_CloudidentityGroupsMembershipsLookup_598129;
   ## within its namespace.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_598148 = newJObject()
-  var query_598149 = newJObject()
-  add(query_598149, "upload_protocol", newJString(uploadProtocol))
-  add(query_598149, "fields", newJString(fields))
-  add(query_598149, "quotaUser", newJString(quotaUser))
-  add(query_598149, "alt", newJString(alt))
-  add(query_598149, "oauth_token", newJString(oauthToken))
-  add(query_598149, "callback", newJString(callback))
-  add(query_598149, "access_token", newJString(accessToken))
-  add(query_598149, "uploadType", newJString(uploadType))
-  add(path_598148, "parent", newJString(parent))
-  add(query_598149, "memberKey.namespace", newJString(memberKeyNamespace))
-  add(query_598149, "key", newJString(key))
-  add(query_598149, "$.xgafv", newJString(Xgafv))
-  add(query_598149, "memberKey.id", newJString(memberKeyId))
-  add(query_598149, "prettyPrint", newJBool(prettyPrint))
-  result = call_598147.call(path_598148, query_598149, nil, nil, nil)
+  var path_580148 = newJObject()
+  var query_580149 = newJObject()
+  add(query_580149, "upload_protocol", newJString(uploadProtocol))
+  add(query_580149, "fields", newJString(fields))
+  add(query_580149, "quotaUser", newJString(quotaUser))
+  add(query_580149, "alt", newJString(alt))
+  add(query_580149, "oauth_token", newJString(oauthToken))
+  add(query_580149, "callback", newJString(callback))
+  add(query_580149, "access_token", newJString(accessToken))
+  add(query_580149, "uploadType", newJString(uploadType))
+  add(path_580148, "parent", newJString(parent))
+  add(query_580149, "memberKey.namespace", newJString(memberKeyNamespace))
+  add(query_580149, "key", newJString(key))
+  add(query_580149, "$.xgafv", newJString(Xgafv))
+  add(query_580149, "memberKey.id", newJString(memberKeyId))
+  add(query_580149, "prettyPrint", newJBool(prettyPrint))
+  result = call_580147.call(path_580148, query_580149, nil, nil, nil)
 
-var cloudidentityGroupsMembershipsLookup* = Call_CloudidentityGroupsMembershipsLookup_598129(
+var cloudidentityGroupsMembershipsLookup* = Call_CloudidentityGroupsMembershipsLookup_580129(
     name: "cloudidentityGroupsMembershipsLookup", meth: HttpMethod.HttpGet,
     host: "cloudidentity.googleapis.com",
     route: "/v1/{parent}/memberships:lookup",
-    validator: validate_CloudidentityGroupsMembershipsLookup_598130, base: "/",
-    url: url_CloudidentityGroupsMembershipsLookup_598131, schemes: {Scheme.Https})
+    validator: validate_CloudidentityGroupsMembershipsLookup_580130, base: "/",
+    url: url_CloudidentityGroupsMembershipsLookup_580131, schemes: {Scheme.Https})
 export
   rest
 
+type
+  GoogleAuth = ref object
+    endpoint*: Uri
+    token: string
+    expiry*: float64
+    issued*: float64
+    email: string
+    key: string
+    scope*: seq[string]
+    form: string
+    digest: Hash
+
+const
+  endpoint = "https://www.googleapis.com/oauth2/v4/token".parseUri
+var auth = GoogleAuth(endpoint: endpoint)
+proc hash(auth: GoogleAuth): Hash =
+  ## yield differing values for effectively different auth payloads
+  result = hash($auth.endpoint)
+  result = result !& hash(auth.email)
+  result = result !& hash(auth.key)
+  result = result !& hash(auth.scope.join(" "))
+  result = !$result
+
+proc newAuthenticator*(path: string): GoogleAuth =
+  let
+    input = readFile(path)
+    js = parseJson(input)
+  auth.email = js["client_email"].getStr
+  auth.key = js["private_key"].getStr
+  result = auth
+
+proc store(auth: var GoogleAuth; token: string; expiry: int; form: string) =
+  auth.token = token
+  auth.issued = epochTime()
+  auth.expiry = auth.issued + expiry.float64
+  auth.form = form
+  auth.digest = auth.hash
+
+proc authenticate*(fresh: float64 = -3600.0; lifetime: int = 3600): Future[bool] {.async.} =
+  ## get or refresh an authentication token; provide `fresh`
+  ## to ensure that the token won't expire in the next N seconds.
+  ## provide `lifetime` to indicate how long the token should last.
+  let clock = epochTime()
+  if auth.expiry > clock + fresh:
+    if auth.hash == auth.digest:
+      return true
+  let
+    expiry = clock.int + lifetime
+    header = JOSEHeader(alg: RS256, typ: "JWT")
+    claims = %*{"iss": auth.email, "scope": auth.scope.join(" "),
+              "aud": "https://www.googleapis.com/oauth2/v4/token", "exp": expiry,
+              "iat": clock.int}
+  var tok = JWT(header: header, claims: toClaims(claims))
+  tok.sign(auth.key)
+  let post = encodeQuery({"grant_type": "urn:ietf:params:oauth:grant-type:jwt-bearer",
+                       "assertion": $tok}, usePlus = false, omitEq = false)
+  var client = newAsyncHttpClient()
+  client.headers = newHttpHeaders({"Content-Type": "application/x-www-form-urlencoded",
+                                 "Content-Length": $post.len})
+  let response = await client.request($auth.endpoint, HttpPost, body = post)
+  if not response.code.is2xx:
+    return false
+  let body = await response.body
+  client.close
+  try:
+    let js = parseJson(body)
+    auth.store(js["access_token"].getStr, js["expires_in"].getInt,
+               js["token_type"].getStr)
+  except KeyError:
+    return false
+  except JsonParsingError:
+    return false
+  return true
+
+proc composeQueryString(query: JsonNode): string =
+  var qs: seq[KeyVal]
+  if query == nil:
+    return ""
+  for k, v in query.pairs:
+    qs.add (key: k, val: v.getStr)
+  result = encodeQuery(qs, usePlus = false, omitEq = false)
+
 method hook(call: OpenApiRestCall; url: Uri; input: JsonNode): Recallable {.base.} =
-  let headers = massageHeaders(input.getOrDefault("header"))
-  result = newRecallable(call, url, headers, input.getOrDefault("body").getStr)
+  var headers = massageHeaders(input.getOrDefault("header"))
+  let body = input.getOrDefault("body").getStr
+  if auth.scope.len == 0:
+    raise newException(ValueError, "specify authentication scopes")
+  if not waitfor authenticate(fresh = 10.0):
+    raise newException(IOError, "unable to refresh authentication token")
+  headers.add ("Authorization", auth.form & " " & auth.token)
+  headers.add ("Content-Type", "application/json")
+  headers.add ("Content-Length", $body.len)
+  result = newRecallable(call, url, headers, body = body)

@@ -1,6 +1,7 @@
 
 import
-  json, options, hashes, uri, openapi/rest, os, uri, strutils, httpcore
+  json, options, hashes, uri, rest, os, uri, strutils, times, httpcore, httpclient,
+  asyncdispatch, jwt
 
 ## auto-generated via openapi macro
 ## title: Tag Manager
@@ -28,15 +29,15 @@ type
     url*: proc (protocol: Scheme; host: string; base: string; route: string;
               path: JsonNode; query: JsonNode): Uri
 
-  OpenApiRestCall_593408 = ref object of OpenApiRestCall
+  OpenApiRestCall_579408 = ref object of OpenApiRestCall
 proc hash(scheme: Scheme): Hash {.used.} =
   result = hash(ord(scheme))
 
-proc clone[T: OpenApiRestCall_593408](t: T): T {.used.} =
+proc clone[T: OpenApiRestCall_579408](t: T): T {.used.} =
   result = T(name: t.name, meth: t.meth, host: t.host, base: t.base, route: t.route,
            schemes: t.schemes, validator: t.validator, url: t.url)
 
-proc pickScheme(t: OpenApiRestCall_593408): Option[Scheme] {.used.} =
+proc pickScheme(t: OpenApiRestCall_579408): Option[Scheme] {.used.} =
   ## select a supported scheme from a set of candidates
   for scheme in Scheme.low ..
       Scheme.high:
@@ -104,17 +105,18 @@ proc hydratePath(input: JsonNode; segments: seq[PathToken]): Option[string] =
 
 const
   gcpServiceName = "tagmanager"
+proc composeQueryString(query: JsonNode): string
 method hook(call: OpenApiRestCall; url: Uri; input: JsonNode): Recallable {.base.}
 type
-  Call_TagmanagerAccountsList_593676 = ref object of OpenApiRestCall_593408
-proc url_TagmanagerAccountsList_593678(protocol: Scheme; host: string; base: string;
+  Call_TagmanagerAccountsList_579676 = ref object of OpenApiRestCall_579408
+proc url_TagmanagerAccountsList_579678(protocol: Scheme; host: string; base: string;
                                       route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   result.path = base & route
 
-proc validate_TagmanagerAccountsList_593677(path: JsonNode; query: JsonNode;
+proc validate_TagmanagerAccountsList_579677(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Lists all GTM Accounts that a user has access to.
   ## 
@@ -138,41 +140,41 @@ proc validate_TagmanagerAccountsList_593677(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_593790 = query.getOrDefault("fields")
-  valid_593790 = validateParameter(valid_593790, JString, required = false,
+  var valid_579790 = query.getOrDefault("fields")
+  valid_579790 = validateParameter(valid_579790, JString, required = false,
                                  default = nil)
-  if valid_593790 != nil:
-    section.add "fields", valid_593790
-  var valid_593791 = query.getOrDefault("quotaUser")
-  valid_593791 = validateParameter(valid_593791, JString, required = false,
+  if valid_579790 != nil:
+    section.add "fields", valid_579790
+  var valid_579791 = query.getOrDefault("quotaUser")
+  valid_579791 = validateParameter(valid_579791, JString, required = false,
                                  default = nil)
-  if valid_593791 != nil:
-    section.add "quotaUser", valid_593791
-  var valid_593805 = query.getOrDefault("alt")
-  valid_593805 = validateParameter(valid_593805, JString, required = false,
+  if valid_579791 != nil:
+    section.add "quotaUser", valid_579791
+  var valid_579805 = query.getOrDefault("alt")
+  valid_579805 = validateParameter(valid_579805, JString, required = false,
                                  default = newJString("json"))
-  if valid_593805 != nil:
-    section.add "alt", valid_593805
-  var valid_593806 = query.getOrDefault("oauth_token")
-  valid_593806 = validateParameter(valid_593806, JString, required = false,
+  if valid_579805 != nil:
+    section.add "alt", valid_579805
+  var valid_579806 = query.getOrDefault("oauth_token")
+  valid_579806 = validateParameter(valid_579806, JString, required = false,
                                  default = nil)
-  if valid_593806 != nil:
-    section.add "oauth_token", valid_593806
-  var valid_593807 = query.getOrDefault("userIp")
-  valid_593807 = validateParameter(valid_593807, JString, required = false,
+  if valid_579806 != nil:
+    section.add "oauth_token", valid_579806
+  var valid_579807 = query.getOrDefault("userIp")
+  valid_579807 = validateParameter(valid_579807, JString, required = false,
                                  default = nil)
-  if valid_593807 != nil:
-    section.add "userIp", valid_593807
-  var valid_593808 = query.getOrDefault("key")
-  valid_593808 = validateParameter(valid_593808, JString, required = false,
+  if valid_579807 != nil:
+    section.add "userIp", valid_579807
+  var valid_579808 = query.getOrDefault("key")
+  valid_579808 = validateParameter(valid_579808, JString, required = false,
                                  default = nil)
-  if valid_593808 != nil:
-    section.add "key", valid_593808
-  var valid_593809 = query.getOrDefault("prettyPrint")
-  valid_593809 = validateParameter(valid_593809, JBool, required = false,
+  if valid_579808 != nil:
+    section.add "key", valid_579808
+  var valid_579809 = query.getOrDefault("prettyPrint")
+  valid_579809 = validateParameter(valid_579809, JBool, required = false,
                                  default = newJBool(true))
-  if valid_593809 != nil:
-    section.add "prettyPrint", valid_593809
+  if valid_579809 != nil:
+    section.add "prettyPrint", valid_579809
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -181,20 +183,20 @@ proc validate_TagmanagerAccountsList_593677(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_593832: Call_TagmanagerAccountsList_593676; path: JsonNode;
+proc call*(call_579832: Call_TagmanagerAccountsList_579676; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Lists all GTM Accounts that a user has access to.
   ## 
-  let valid = call_593832.validator(path, query, header, formData, body)
-  let scheme = call_593832.pickScheme
+  let valid = call_579832.validator(path, query, header, formData, body)
+  let scheme = call_579832.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_593832.url(scheme.get, call_593832.host, call_593832.base,
-                         call_593832.route, valid.getOrDefault("path"),
+  let url = call_579832.url(scheme.get, call_579832.host, call_579832.base,
+                         call_579832.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_593832, url, valid)
+  result = hook(call_579832, url, valid)
 
-proc call*(call_593903: Call_TagmanagerAccountsList_593676; fields: string = "";
+proc call*(call_579903: Call_TagmanagerAccountsList_579676; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; key: string = ""; prettyPrint: bool = true): Recallable =
   ## tagmanagerAccountsList
@@ -213,29 +215,29 @@ proc call*(call_593903: Call_TagmanagerAccountsList_593676; fields: string = "";
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var query_593904 = newJObject()
-  add(query_593904, "fields", newJString(fields))
-  add(query_593904, "quotaUser", newJString(quotaUser))
-  add(query_593904, "alt", newJString(alt))
-  add(query_593904, "oauth_token", newJString(oauthToken))
-  add(query_593904, "userIp", newJString(userIp))
-  add(query_593904, "key", newJString(key))
-  add(query_593904, "prettyPrint", newJBool(prettyPrint))
-  result = call_593903.call(nil, query_593904, nil, nil, nil)
+  var query_579904 = newJObject()
+  add(query_579904, "fields", newJString(fields))
+  add(query_579904, "quotaUser", newJString(quotaUser))
+  add(query_579904, "alt", newJString(alt))
+  add(query_579904, "oauth_token", newJString(oauthToken))
+  add(query_579904, "userIp", newJString(userIp))
+  add(query_579904, "key", newJString(key))
+  add(query_579904, "prettyPrint", newJBool(prettyPrint))
+  result = call_579903.call(nil, query_579904, nil, nil, nil)
 
-var tagmanagerAccountsList* = Call_TagmanagerAccountsList_593676(
+var tagmanagerAccountsList* = Call_TagmanagerAccountsList_579676(
     name: "tagmanagerAccountsList", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/accounts",
-    validator: validate_TagmanagerAccountsList_593677, base: "/tagmanager/v1",
-    url: url_TagmanagerAccountsList_593678, schemes: {Scheme.Https})
+    validator: validate_TagmanagerAccountsList_579677, base: "/tagmanager/v1",
+    url: url_TagmanagerAccountsList_579678, schemes: {Scheme.Https})
 type
-  Call_TagmanagerAccountsUpdate_593973 = ref object of OpenApiRestCall_593408
-proc url_TagmanagerAccountsUpdate_593975(protocol: Scheme; host: string;
+  Call_TagmanagerAccountsUpdate_579973 = ref object of OpenApiRestCall_579408
+proc url_TagmanagerAccountsUpdate_579975(protocol: Scheme; host: string;
                                         base: string; route: string; path: JsonNode;
                                         query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "accountId" in path, "`accountId` is a required path parameter"
   const
@@ -246,7 +248,7 @@ proc url_TagmanagerAccountsUpdate_593975(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_TagmanagerAccountsUpdate_593974(path: JsonNode; query: JsonNode;
+proc validate_TagmanagerAccountsUpdate_579974(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Updates a GTM Account.
   ## 
@@ -257,11 +259,11 @@ proc validate_TagmanagerAccountsUpdate_593974(path: JsonNode; query: JsonNode;
   ##            : The GTM Account ID.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `accountId` field"
-  var valid_593976 = path.getOrDefault("accountId")
-  valid_593976 = validateParameter(valid_593976, JString, required = true,
+  var valid_579976 = path.getOrDefault("accountId")
+  valid_579976 = validateParameter(valid_579976, JString, required = true,
                                  default = nil)
-  if valid_593976 != nil:
-    section.add "accountId", valid_593976
+  if valid_579976 != nil:
+    section.add "accountId", valid_579976
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -281,46 +283,46 @@ proc validate_TagmanagerAccountsUpdate_593974(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_593977 = query.getOrDefault("fields")
-  valid_593977 = validateParameter(valid_593977, JString, required = false,
+  var valid_579977 = query.getOrDefault("fields")
+  valid_579977 = validateParameter(valid_579977, JString, required = false,
                                  default = nil)
-  if valid_593977 != nil:
-    section.add "fields", valid_593977
-  var valid_593978 = query.getOrDefault("fingerprint")
-  valid_593978 = validateParameter(valid_593978, JString, required = false,
+  if valid_579977 != nil:
+    section.add "fields", valid_579977
+  var valid_579978 = query.getOrDefault("fingerprint")
+  valid_579978 = validateParameter(valid_579978, JString, required = false,
                                  default = nil)
-  if valid_593978 != nil:
-    section.add "fingerprint", valid_593978
-  var valid_593979 = query.getOrDefault("quotaUser")
-  valid_593979 = validateParameter(valid_593979, JString, required = false,
+  if valid_579978 != nil:
+    section.add "fingerprint", valid_579978
+  var valid_579979 = query.getOrDefault("quotaUser")
+  valid_579979 = validateParameter(valid_579979, JString, required = false,
                                  default = nil)
-  if valid_593979 != nil:
-    section.add "quotaUser", valid_593979
-  var valid_593980 = query.getOrDefault("alt")
-  valid_593980 = validateParameter(valid_593980, JString, required = false,
+  if valid_579979 != nil:
+    section.add "quotaUser", valid_579979
+  var valid_579980 = query.getOrDefault("alt")
+  valid_579980 = validateParameter(valid_579980, JString, required = false,
                                  default = newJString("json"))
-  if valid_593980 != nil:
-    section.add "alt", valid_593980
-  var valid_593981 = query.getOrDefault("oauth_token")
-  valid_593981 = validateParameter(valid_593981, JString, required = false,
+  if valid_579980 != nil:
+    section.add "alt", valid_579980
+  var valid_579981 = query.getOrDefault("oauth_token")
+  valid_579981 = validateParameter(valid_579981, JString, required = false,
                                  default = nil)
-  if valid_593981 != nil:
-    section.add "oauth_token", valid_593981
-  var valid_593982 = query.getOrDefault("userIp")
-  valid_593982 = validateParameter(valid_593982, JString, required = false,
+  if valid_579981 != nil:
+    section.add "oauth_token", valid_579981
+  var valid_579982 = query.getOrDefault("userIp")
+  valid_579982 = validateParameter(valid_579982, JString, required = false,
                                  default = nil)
-  if valid_593982 != nil:
-    section.add "userIp", valid_593982
-  var valid_593983 = query.getOrDefault("key")
-  valid_593983 = validateParameter(valid_593983, JString, required = false,
+  if valid_579982 != nil:
+    section.add "userIp", valid_579982
+  var valid_579983 = query.getOrDefault("key")
+  valid_579983 = validateParameter(valid_579983, JString, required = false,
                                  default = nil)
-  if valid_593983 != nil:
-    section.add "key", valid_593983
-  var valid_593984 = query.getOrDefault("prettyPrint")
-  valid_593984 = validateParameter(valid_593984, JBool, required = false,
+  if valid_579983 != nil:
+    section.add "key", valid_579983
+  var valid_579984 = query.getOrDefault("prettyPrint")
+  valid_579984 = validateParameter(valid_579984, JBool, required = false,
                                  default = newJBool(true))
-  if valid_593984 != nil:
-    section.add "prettyPrint", valid_593984
+  if valid_579984 != nil:
+    section.add "prettyPrint", valid_579984
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -332,20 +334,20 @@ proc validate_TagmanagerAccountsUpdate_593974(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_593986: Call_TagmanagerAccountsUpdate_593973; path: JsonNode;
+proc call*(call_579986: Call_TagmanagerAccountsUpdate_579973; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Updates a GTM Account.
   ## 
-  let valid = call_593986.validator(path, query, header, formData, body)
-  let scheme = call_593986.pickScheme
+  let valid = call_579986.validator(path, query, header, formData, body)
+  let scheme = call_579986.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_593986.url(scheme.get, call_593986.host, call_593986.base,
-                         call_593986.route, valid.getOrDefault("path"),
+  let url = call_579986.url(scheme.get, call_579986.host, call_579986.base,
+                         call_579986.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_593986, url, valid)
+  result = hook(call_579986, url, valid)
 
-proc call*(call_593987: Call_TagmanagerAccountsUpdate_593973; accountId: string;
+proc call*(call_579987: Call_TagmanagerAccountsUpdate_579973; accountId: string;
           fields: string = ""; fingerprint: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; userIp: string = "";
           key: string = ""; body: JsonNode = nil; prettyPrint: bool = true): Recallable =
@@ -370,34 +372,34 @@ proc call*(call_593987: Call_TagmanagerAccountsUpdate_593973; accountId: string;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_593988 = newJObject()
-  var query_593989 = newJObject()
-  var body_593990 = newJObject()
-  add(query_593989, "fields", newJString(fields))
-  add(query_593989, "fingerprint", newJString(fingerprint))
-  add(query_593989, "quotaUser", newJString(quotaUser))
-  add(query_593989, "alt", newJString(alt))
-  add(query_593989, "oauth_token", newJString(oauthToken))
-  add(path_593988, "accountId", newJString(accountId))
-  add(query_593989, "userIp", newJString(userIp))
-  add(query_593989, "key", newJString(key))
+  var path_579988 = newJObject()
+  var query_579989 = newJObject()
+  var body_579990 = newJObject()
+  add(query_579989, "fields", newJString(fields))
+  add(query_579989, "fingerprint", newJString(fingerprint))
+  add(query_579989, "quotaUser", newJString(quotaUser))
+  add(query_579989, "alt", newJString(alt))
+  add(query_579989, "oauth_token", newJString(oauthToken))
+  add(path_579988, "accountId", newJString(accountId))
+  add(query_579989, "userIp", newJString(userIp))
+  add(query_579989, "key", newJString(key))
   if body != nil:
-    body_593990 = body
-  add(query_593989, "prettyPrint", newJBool(prettyPrint))
-  result = call_593987.call(path_593988, query_593989, nil, nil, body_593990)
+    body_579990 = body
+  add(query_579989, "prettyPrint", newJBool(prettyPrint))
+  result = call_579987.call(path_579988, query_579989, nil, nil, body_579990)
 
-var tagmanagerAccountsUpdate* = Call_TagmanagerAccountsUpdate_593973(
+var tagmanagerAccountsUpdate* = Call_TagmanagerAccountsUpdate_579973(
     name: "tagmanagerAccountsUpdate", meth: HttpMethod.HttpPut,
     host: "www.googleapis.com", route: "/accounts/{accountId}",
-    validator: validate_TagmanagerAccountsUpdate_593974, base: "/tagmanager/v1",
-    url: url_TagmanagerAccountsUpdate_593975, schemes: {Scheme.Https})
+    validator: validate_TagmanagerAccountsUpdate_579974, base: "/tagmanager/v1",
+    url: url_TagmanagerAccountsUpdate_579975, schemes: {Scheme.Https})
 type
-  Call_TagmanagerAccountsGet_593944 = ref object of OpenApiRestCall_593408
-proc url_TagmanagerAccountsGet_593946(protocol: Scheme; host: string; base: string;
+  Call_TagmanagerAccountsGet_579944 = ref object of OpenApiRestCall_579408
+proc url_TagmanagerAccountsGet_579946(protocol: Scheme; host: string; base: string;
                                      route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "accountId" in path, "`accountId` is a required path parameter"
   const
@@ -408,7 +410,7 @@ proc url_TagmanagerAccountsGet_593946(protocol: Scheme; host: string; base: stri
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_TagmanagerAccountsGet_593945(path: JsonNode; query: JsonNode;
+proc validate_TagmanagerAccountsGet_579945(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Gets a GTM Account.
   ## 
@@ -419,11 +421,11 @@ proc validate_TagmanagerAccountsGet_593945(path: JsonNode; query: JsonNode;
   ##            : The GTM Account ID.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `accountId` field"
-  var valid_593961 = path.getOrDefault("accountId")
-  valid_593961 = validateParameter(valid_593961, JString, required = true,
+  var valid_579961 = path.getOrDefault("accountId")
+  valid_579961 = validateParameter(valid_579961, JString, required = true,
                                  default = nil)
-  if valid_593961 != nil:
-    section.add "accountId", valid_593961
+  if valid_579961 != nil:
+    section.add "accountId", valid_579961
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -441,41 +443,41 @@ proc validate_TagmanagerAccountsGet_593945(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_593962 = query.getOrDefault("fields")
-  valid_593962 = validateParameter(valid_593962, JString, required = false,
+  var valid_579962 = query.getOrDefault("fields")
+  valid_579962 = validateParameter(valid_579962, JString, required = false,
                                  default = nil)
-  if valid_593962 != nil:
-    section.add "fields", valid_593962
-  var valid_593963 = query.getOrDefault("quotaUser")
-  valid_593963 = validateParameter(valid_593963, JString, required = false,
+  if valid_579962 != nil:
+    section.add "fields", valid_579962
+  var valid_579963 = query.getOrDefault("quotaUser")
+  valid_579963 = validateParameter(valid_579963, JString, required = false,
                                  default = nil)
-  if valid_593963 != nil:
-    section.add "quotaUser", valid_593963
-  var valid_593964 = query.getOrDefault("alt")
-  valid_593964 = validateParameter(valid_593964, JString, required = false,
+  if valid_579963 != nil:
+    section.add "quotaUser", valid_579963
+  var valid_579964 = query.getOrDefault("alt")
+  valid_579964 = validateParameter(valid_579964, JString, required = false,
                                  default = newJString("json"))
-  if valid_593964 != nil:
-    section.add "alt", valid_593964
-  var valid_593965 = query.getOrDefault("oauth_token")
-  valid_593965 = validateParameter(valid_593965, JString, required = false,
+  if valid_579964 != nil:
+    section.add "alt", valid_579964
+  var valid_579965 = query.getOrDefault("oauth_token")
+  valid_579965 = validateParameter(valid_579965, JString, required = false,
                                  default = nil)
-  if valid_593965 != nil:
-    section.add "oauth_token", valid_593965
-  var valid_593966 = query.getOrDefault("userIp")
-  valid_593966 = validateParameter(valid_593966, JString, required = false,
+  if valid_579965 != nil:
+    section.add "oauth_token", valid_579965
+  var valid_579966 = query.getOrDefault("userIp")
+  valid_579966 = validateParameter(valid_579966, JString, required = false,
                                  default = nil)
-  if valid_593966 != nil:
-    section.add "userIp", valid_593966
-  var valid_593967 = query.getOrDefault("key")
-  valid_593967 = validateParameter(valid_593967, JString, required = false,
+  if valid_579966 != nil:
+    section.add "userIp", valid_579966
+  var valid_579967 = query.getOrDefault("key")
+  valid_579967 = validateParameter(valid_579967, JString, required = false,
                                  default = nil)
-  if valid_593967 != nil:
-    section.add "key", valid_593967
-  var valid_593968 = query.getOrDefault("prettyPrint")
-  valid_593968 = validateParameter(valid_593968, JBool, required = false,
+  if valid_579967 != nil:
+    section.add "key", valid_579967
+  var valid_579968 = query.getOrDefault("prettyPrint")
+  valid_579968 = validateParameter(valid_579968, JBool, required = false,
                                  default = newJBool(true))
-  if valid_593968 != nil:
-    section.add "prettyPrint", valid_593968
+  if valid_579968 != nil:
+    section.add "prettyPrint", valid_579968
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -484,20 +486,20 @@ proc validate_TagmanagerAccountsGet_593945(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_593969: Call_TagmanagerAccountsGet_593944; path: JsonNode;
+proc call*(call_579969: Call_TagmanagerAccountsGet_579944; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Gets a GTM Account.
   ## 
-  let valid = call_593969.validator(path, query, header, formData, body)
-  let scheme = call_593969.pickScheme
+  let valid = call_579969.validator(path, query, header, formData, body)
+  let scheme = call_579969.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_593969.url(scheme.get, call_593969.host, call_593969.base,
-                         call_593969.route, valid.getOrDefault("path"),
+  let url = call_579969.url(scheme.get, call_579969.host, call_579969.base,
+                         call_579969.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_593969, url, valid)
+  result = hook(call_579969, url, valid)
 
-proc call*(call_593970: Call_TagmanagerAccountsGet_593944; accountId: string;
+proc call*(call_579970: Call_TagmanagerAccountsGet_579944; accountId: string;
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           oauthToken: string = ""; userIp: string = ""; key: string = "";
           prettyPrint: bool = true): Recallable =
@@ -519,30 +521,30 @@ proc call*(call_593970: Call_TagmanagerAccountsGet_593944; accountId: string;
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_593971 = newJObject()
-  var query_593972 = newJObject()
-  add(query_593972, "fields", newJString(fields))
-  add(query_593972, "quotaUser", newJString(quotaUser))
-  add(query_593972, "alt", newJString(alt))
-  add(query_593972, "oauth_token", newJString(oauthToken))
-  add(path_593971, "accountId", newJString(accountId))
-  add(query_593972, "userIp", newJString(userIp))
-  add(query_593972, "key", newJString(key))
-  add(query_593972, "prettyPrint", newJBool(prettyPrint))
-  result = call_593970.call(path_593971, query_593972, nil, nil, nil)
+  var path_579971 = newJObject()
+  var query_579972 = newJObject()
+  add(query_579972, "fields", newJString(fields))
+  add(query_579972, "quotaUser", newJString(quotaUser))
+  add(query_579972, "alt", newJString(alt))
+  add(query_579972, "oauth_token", newJString(oauthToken))
+  add(path_579971, "accountId", newJString(accountId))
+  add(query_579972, "userIp", newJString(userIp))
+  add(query_579972, "key", newJString(key))
+  add(query_579972, "prettyPrint", newJBool(prettyPrint))
+  result = call_579970.call(path_579971, query_579972, nil, nil, nil)
 
-var tagmanagerAccountsGet* = Call_TagmanagerAccountsGet_593944(
+var tagmanagerAccountsGet* = Call_TagmanagerAccountsGet_579944(
     name: "tagmanagerAccountsGet", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/accounts/{accountId}",
-    validator: validate_TagmanagerAccountsGet_593945, base: "/tagmanager/v1",
-    url: url_TagmanagerAccountsGet_593946, schemes: {Scheme.Https})
+    validator: validate_TagmanagerAccountsGet_579945, base: "/tagmanager/v1",
+    url: url_TagmanagerAccountsGet_579946, schemes: {Scheme.Https})
 type
-  Call_TagmanagerAccountsContainersCreate_594006 = ref object of OpenApiRestCall_593408
-proc url_TagmanagerAccountsContainersCreate_594008(protocol: Scheme; host: string;
+  Call_TagmanagerAccountsContainersCreate_580006 = ref object of OpenApiRestCall_579408
+proc url_TagmanagerAccountsContainersCreate_580008(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "accountId" in path, "`accountId` is a required path parameter"
   const
@@ -554,7 +556,7 @@ proc url_TagmanagerAccountsContainersCreate_594008(protocol: Scheme; host: strin
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_TagmanagerAccountsContainersCreate_594007(path: JsonNode;
+proc validate_TagmanagerAccountsContainersCreate_580007(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Creates a Container.
   ## 
@@ -565,11 +567,11 @@ proc validate_TagmanagerAccountsContainersCreate_594007(path: JsonNode;
   ##            : The GTM Account ID.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `accountId` field"
-  var valid_594009 = path.getOrDefault("accountId")
-  valid_594009 = validateParameter(valid_594009, JString, required = true,
+  var valid_580009 = path.getOrDefault("accountId")
+  valid_580009 = validateParameter(valid_580009, JString, required = true,
                                  default = nil)
-  if valid_594009 != nil:
-    section.add "accountId", valid_594009
+  if valid_580009 != nil:
+    section.add "accountId", valid_580009
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -587,41 +589,41 @@ proc validate_TagmanagerAccountsContainersCreate_594007(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_594010 = query.getOrDefault("fields")
-  valid_594010 = validateParameter(valid_594010, JString, required = false,
+  var valid_580010 = query.getOrDefault("fields")
+  valid_580010 = validateParameter(valid_580010, JString, required = false,
                                  default = nil)
-  if valid_594010 != nil:
-    section.add "fields", valid_594010
-  var valid_594011 = query.getOrDefault("quotaUser")
-  valid_594011 = validateParameter(valid_594011, JString, required = false,
+  if valid_580010 != nil:
+    section.add "fields", valid_580010
+  var valid_580011 = query.getOrDefault("quotaUser")
+  valid_580011 = validateParameter(valid_580011, JString, required = false,
                                  default = nil)
-  if valid_594011 != nil:
-    section.add "quotaUser", valid_594011
-  var valid_594012 = query.getOrDefault("alt")
-  valid_594012 = validateParameter(valid_594012, JString, required = false,
+  if valid_580011 != nil:
+    section.add "quotaUser", valid_580011
+  var valid_580012 = query.getOrDefault("alt")
+  valid_580012 = validateParameter(valid_580012, JString, required = false,
                                  default = newJString("json"))
-  if valid_594012 != nil:
-    section.add "alt", valid_594012
-  var valid_594013 = query.getOrDefault("oauth_token")
-  valid_594013 = validateParameter(valid_594013, JString, required = false,
+  if valid_580012 != nil:
+    section.add "alt", valid_580012
+  var valid_580013 = query.getOrDefault("oauth_token")
+  valid_580013 = validateParameter(valid_580013, JString, required = false,
                                  default = nil)
-  if valid_594013 != nil:
-    section.add "oauth_token", valid_594013
-  var valid_594014 = query.getOrDefault("userIp")
-  valid_594014 = validateParameter(valid_594014, JString, required = false,
+  if valid_580013 != nil:
+    section.add "oauth_token", valid_580013
+  var valid_580014 = query.getOrDefault("userIp")
+  valid_580014 = validateParameter(valid_580014, JString, required = false,
                                  default = nil)
-  if valid_594014 != nil:
-    section.add "userIp", valid_594014
-  var valid_594015 = query.getOrDefault("key")
-  valid_594015 = validateParameter(valid_594015, JString, required = false,
+  if valid_580014 != nil:
+    section.add "userIp", valid_580014
+  var valid_580015 = query.getOrDefault("key")
+  valid_580015 = validateParameter(valid_580015, JString, required = false,
                                  default = nil)
-  if valid_594015 != nil:
-    section.add "key", valid_594015
-  var valid_594016 = query.getOrDefault("prettyPrint")
-  valid_594016 = validateParameter(valid_594016, JBool, required = false,
+  if valid_580015 != nil:
+    section.add "key", valid_580015
+  var valid_580016 = query.getOrDefault("prettyPrint")
+  valid_580016 = validateParameter(valid_580016, JBool, required = false,
                                  default = newJBool(true))
-  if valid_594016 != nil:
-    section.add "prettyPrint", valid_594016
+  if valid_580016 != nil:
+    section.add "prettyPrint", valid_580016
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -633,21 +635,21 @@ proc validate_TagmanagerAccountsContainersCreate_594007(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_594018: Call_TagmanagerAccountsContainersCreate_594006;
+proc call*(call_580018: Call_TagmanagerAccountsContainersCreate_580006;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Creates a Container.
   ## 
-  let valid = call_594018.validator(path, query, header, formData, body)
-  let scheme = call_594018.pickScheme
+  let valid = call_580018.validator(path, query, header, formData, body)
+  let scheme = call_580018.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_594018.url(scheme.get, call_594018.host, call_594018.base,
-                         call_594018.route, valid.getOrDefault("path"),
+  let url = call_580018.url(scheme.get, call_580018.host, call_580018.base,
+                         call_580018.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_594018, url, valid)
+  result = hook(call_580018, url, valid)
 
-proc call*(call_594019: Call_TagmanagerAccountsContainersCreate_594006;
+proc call*(call_580019: Call_TagmanagerAccountsContainersCreate_580006;
           accountId: string; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; userIp: string = "";
           key: string = ""; body: JsonNode = nil; prettyPrint: bool = true): Recallable =
@@ -670,34 +672,34 @@ proc call*(call_594019: Call_TagmanagerAccountsContainersCreate_594006;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_594020 = newJObject()
-  var query_594021 = newJObject()
-  var body_594022 = newJObject()
-  add(query_594021, "fields", newJString(fields))
-  add(query_594021, "quotaUser", newJString(quotaUser))
-  add(query_594021, "alt", newJString(alt))
-  add(query_594021, "oauth_token", newJString(oauthToken))
-  add(path_594020, "accountId", newJString(accountId))
-  add(query_594021, "userIp", newJString(userIp))
-  add(query_594021, "key", newJString(key))
+  var path_580020 = newJObject()
+  var query_580021 = newJObject()
+  var body_580022 = newJObject()
+  add(query_580021, "fields", newJString(fields))
+  add(query_580021, "quotaUser", newJString(quotaUser))
+  add(query_580021, "alt", newJString(alt))
+  add(query_580021, "oauth_token", newJString(oauthToken))
+  add(path_580020, "accountId", newJString(accountId))
+  add(query_580021, "userIp", newJString(userIp))
+  add(query_580021, "key", newJString(key))
   if body != nil:
-    body_594022 = body
-  add(query_594021, "prettyPrint", newJBool(prettyPrint))
-  result = call_594019.call(path_594020, query_594021, nil, nil, body_594022)
+    body_580022 = body
+  add(query_580021, "prettyPrint", newJBool(prettyPrint))
+  result = call_580019.call(path_580020, query_580021, nil, nil, body_580022)
 
-var tagmanagerAccountsContainersCreate* = Call_TagmanagerAccountsContainersCreate_594006(
+var tagmanagerAccountsContainersCreate* = Call_TagmanagerAccountsContainersCreate_580006(
     name: "tagmanagerAccountsContainersCreate", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com", route: "/accounts/{accountId}/containers",
-    validator: validate_TagmanagerAccountsContainersCreate_594007,
-    base: "/tagmanager/v1", url: url_TagmanagerAccountsContainersCreate_594008,
+    validator: validate_TagmanagerAccountsContainersCreate_580007,
+    base: "/tagmanager/v1", url: url_TagmanagerAccountsContainersCreate_580008,
     schemes: {Scheme.Https})
 type
-  Call_TagmanagerAccountsContainersList_593991 = ref object of OpenApiRestCall_593408
-proc url_TagmanagerAccountsContainersList_593993(protocol: Scheme; host: string;
+  Call_TagmanagerAccountsContainersList_579991 = ref object of OpenApiRestCall_579408
+proc url_TagmanagerAccountsContainersList_579993(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "accountId" in path, "`accountId` is a required path parameter"
   const
@@ -709,7 +711,7 @@ proc url_TagmanagerAccountsContainersList_593993(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_TagmanagerAccountsContainersList_593992(path: JsonNode;
+proc validate_TagmanagerAccountsContainersList_579992(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Lists all Containers that belongs to a GTM Account.
   ## 
@@ -720,11 +722,11 @@ proc validate_TagmanagerAccountsContainersList_593992(path: JsonNode;
   ##            : The GTM Account ID.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `accountId` field"
-  var valid_593994 = path.getOrDefault("accountId")
-  valid_593994 = validateParameter(valid_593994, JString, required = true,
+  var valid_579994 = path.getOrDefault("accountId")
+  valid_579994 = validateParameter(valid_579994, JString, required = true,
                                  default = nil)
-  if valid_593994 != nil:
-    section.add "accountId", valid_593994
+  if valid_579994 != nil:
+    section.add "accountId", valid_579994
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -742,41 +744,41 @@ proc validate_TagmanagerAccountsContainersList_593992(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_593995 = query.getOrDefault("fields")
-  valid_593995 = validateParameter(valid_593995, JString, required = false,
+  var valid_579995 = query.getOrDefault("fields")
+  valid_579995 = validateParameter(valid_579995, JString, required = false,
                                  default = nil)
-  if valid_593995 != nil:
-    section.add "fields", valid_593995
-  var valid_593996 = query.getOrDefault("quotaUser")
-  valid_593996 = validateParameter(valid_593996, JString, required = false,
+  if valid_579995 != nil:
+    section.add "fields", valid_579995
+  var valid_579996 = query.getOrDefault("quotaUser")
+  valid_579996 = validateParameter(valid_579996, JString, required = false,
                                  default = nil)
-  if valid_593996 != nil:
-    section.add "quotaUser", valid_593996
-  var valid_593997 = query.getOrDefault("alt")
-  valid_593997 = validateParameter(valid_593997, JString, required = false,
+  if valid_579996 != nil:
+    section.add "quotaUser", valid_579996
+  var valid_579997 = query.getOrDefault("alt")
+  valid_579997 = validateParameter(valid_579997, JString, required = false,
                                  default = newJString("json"))
-  if valid_593997 != nil:
-    section.add "alt", valid_593997
-  var valid_593998 = query.getOrDefault("oauth_token")
-  valid_593998 = validateParameter(valid_593998, JString, required = false,
+  if valid_579997 != nil:
+    section.add "alt", valid_579997
+  var valid_579998 = query.getOrDefault("oauth_token")
+  valid_579998 = validateParameter(valid_579998, JString, required = false,
                                  default = nil)
-  if valid_593998 != nil:
-    section.add "oauth_token", valid_593998
-  var valid_593999 = query.getOrDefault("userIp")
-  valid_593999 = validateParameter(valid_593999, JString, required = false,
+  if valid_579998 != nil:
+    section.add "oauth_token", valid_579998
+  var valid_579999 = query.getOrDefault("userIp")
+  valid_579999 = validateParameter(valid_579999, JString, required = false,
                                  default = nil)
-  if valid_593999 != nil:
-    section.add "userIp", valid_593999
-  var valid_594000 = query.getOrDefault("key")
-  valid_594000 = validateParameter(valid_594000, JString, required = false,
+  if valid_579999 != nil:
+    section.add "userIp", valid_579999
+  var valid_580000 = query.getOrDefault("key")
+  valid_580000 = validateParameter(valid_580000, JString, required = false,
                                  default = nil)
-  if valid_594000 != nil:
-    section.add "key", valid_594000
-  var valid_594001 = query.getOrDefault("prettyPrint")
-  valid_594001 = validateParameter(valid_594001, JBool, required = false,
+  if valid_580000 != nil:
+    section.add "key", valid_580000
+  var valid_580001 = query.getOrDefault("prettyPrint")
+  valid_580001 = validateParameter(valid_580001, JBool, required = false,
                                  default = newJBool(true))
-  if valid_594001 != nil:
-    section.add "prettyPrint", valid_594001
+  if valid_580001 != nil:
+    section.add "prettyPrint", valid_580001
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -785,21 +787,21 @@ proc validate_TagmanagerAccountsContainersList_593992(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_594002: Call_TagmanagerAccountsContainersList_593991;
+proc call*(call_580002: Call_TagmanagerAccountsContainersList_579991;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Lists all Containers that belongs to a GTM Account.
   ## 
-  let valid = call_594002.validator(path, query, header, formData, body)
-  let scheme = call_594002.pickScheme
+  let valid = call_580002.validator(path, query, header, formData, body)
+  let scheme = call_580002.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_594002.url(scheme.get, call_594002.host, call_594002.base,
-                         call_594002.route, valid.getOrDefault("path"),
+  let url = call_580002.url(scheme.get, call_580002.host, call_580002.base,
+                         call_580002.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_594002, url, valid)
+  result = hook(call_580002, url, valid)
 
-proc call*(call_594003: Call_TagmanagerAccountsContainersList_593991;
+proc call*(call_580003: Call_TagmanagerAccountsContainersList_579991;
           accountId: string; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; userIp: string = "";
           key: string = ""; prettyPrint: bool = true): Recallable =
@@ -821,31 +823,31 @@ proc call*(call_594003: Call_TagmanagerAccountsContainersList_593991;
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_594004 = newJObject()
-  var query_594005 = newJObject()
-  add(query_594005, "fields", newJString(fields))
-  add(query_594005, "quotaUser", newJString(quotaUser))
-  add(query_594005, "alt", newJString(alt))
-  add(query_594005, "oauth_token", newJString(oauthToken))
-  add(path_594004, "accountId", newJString(accountId))
-  add(query_594005, "userIp", newJString(userIp))
-  add(query_594005, "key", newJString(key))
-  add(query_594005, "prettyPrint", newJBool(prettyPrint))
-  result = call_594003.call(path_594004, query_594005, nil, nil, nil)
+  var path_580004 = newJObject()
+  var query_580005 = newJObject()
+  add(query_580005, "fields", newJString(fields))
+  add(query_580005, "quotaUser", newJString(quotaUser))
+  add(query_580005, "alt", newJString(alt))
+  add(query_580005, "oauth_token", newJString(oauthToken))
+  add(path_580004, "accountId", newJString(accountId))
+  add(query_580005, "userIp", newJString(userIp))
+  add(query_580005, "key", newJString(key))
+  add(query_580005, "prettyPrint", newJBool(prettyPrint))
+  result = call_580003.call(path_580004, query_580005, nil, nil, nil)
 
-var tagmanagerAccountsContainersList* = Call_TagmanagerAccountsContainersList_593991(
+var tagmanagerAccountsContainersList* = Call_TagmanagerAccountsContainersList_579991(
     name: "tagmanagerAccountsContainersList", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/accounts/{accountId}/containers",
-    validator: validate_TagmanagerAccountsContainersList_593992,
-    base: "/tagmanager/v1", url: url_TagmanagerAccountsContainersList_593993,
+    validator: validate_TagmanagerAccountsContainersList_579992,
+    base: "/tagmanager/v1", url: url_TagmanagerAccountsContainersList_579993,
     schemes: {Scheme.Https})
 type
-  Call_TagmanagerAccountsContainersUpdate_594039 = ref object of OpenApiRestCall_593408
-proc url_TagmanagerAccountsContainersUpdate_594041(protocol: Scheme; host: string;
+  Call_TagmanagerAccountsContainersUpdate_580039 = ref object of OpenApiRestCall_579408
+proc url_TagmanagerAccountsContainersUpdate_580041(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "accountId" in path, "`accountId` is a required path parameter"
   assert "containerId" in path, "`containerId` is a required path parameter"
@@ -859,7 +861,7 @@ proc url_TagmanagerAccountsContainersUpdate_594041(protocol: Scheme; host: strin
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_TagmanagerAccountsContainersUpdate_594040(path: JsonNode;
+proc validate_TagmanagerAccountsContainersUpdate_580040(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Updates a Container.
   ## 
@@ -873,16 +875,16 @@ proc validate_TagmanagerAccountsContainersUpdate_594040(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `containerId` field"
-  var valid_594042 = path.getOrDefault("containerId")
-  valid_594042 = validateParameter(valid_594042, JString, required = true,
+  var valid_580042 = path.getOrDefault("containerId")
+  valid_580042 = validateParameter(valid_580042, JString, required = true,
                                  default = nil)
-  if valid_594042 != nil:
-    section.add "containerId", valid_594042
-  var valid_594043 = path.getOrDefault("accountId")
-  valid_594043 = validateParameter(valid_594043, JString, required = true,
+  if valid_580042 != nil:
+    section.add "containerId", valid_580042
+  var valid_580043 = path.getOrDefault("accountId")
+  valid_580043 = validateParameter(valid_580043, JString, required = true,
                                  default = nil)
-  if valid_594043 != nil:
-    section.add "accountId", valid_594043
+  if valid_580043 != nil:
+    section.add "accountId", valid_580043
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -902,46 +904,46 @@ proc validate_TagmanagerAccountsContainersUpdate_594040(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_594044 = query.getOrDefault("fields")
-  valid_594044 = validateParameter(valid_594044, JString, required = false,
+  var valid_580044 = query.getOrDefault("fields")
+  valid_580044 = validateParameter(valid_580044, JString, required = false,
                                  default = nil)
-  if valid_594044 != nil:
-    section.add "fields", valid_594044
-  var valid_594045 = query.getOrDefault("fingerprint")
-  valid_594045 = validateParameter(valid_594045, JString, required = false,
+  if valid_580044 != nil:
+    section.add "fields", valid_580044
+  var valid_580045 = query.getOrDefault("fingerprint")
+  valid_580045 = validateParameter(valid_580045, JString, required = false,
                                  default = nil)
-  if valid_594045 != nil:
-    section.add "fingerprint", valid_594045
-  var valid_594046 = query.getOrDefault("quotaUser")
-  valid_594046 = validateParameter(valid_594046, JString, required = false,
+  if valid_580045 != nil:
+    section.add "fingerprint", valid_580045
+  var valid_580046 = query.getOrDefault("quotaUser")
+  valid_580046 = validateParameter(valid_580046, JString, required = false,
                                  default = nil)
-  if valid_594046 != nil:
-    section.add "quotaUser", valid_594046
-  var valid_594047 = query.getOrDefault("alt")
-  valid_594047 = validateParameter(valid_594047, JString, required = false,
+  if valid_580046 != nil:
+    section.add "quotaUser", valid_580046
+  var valid_580047 = query.getOrDefault("alt")
+  valid_580047 = validateParameter(valid_580047, JString, required = false,
                                  default = newJString("json"))
-  if valid_594047 != nil:
-    section.add "alt", valid_594047
-  var valid_594048 = query.getOrDefault("oauth_token")
-  valid_594048 = validateParameter(valid_594048, JString, required = false,
+  if valid_580047 != nil:
+    section.add "alt", valid_580047
+  var valid_580048 = query.getOrDefault("oauth_token")
+  valid_580048 = validateParameter(valid_580048, JString, required = false,
                                  default = nil)
-  if valid_594048 != nil:
-    section.add "oauth_token", valid_594048
-  var valid_594049 = query.getOrDefault("userIp")
-  valid_594049 = validateParameter(valid_594049, JString, required = false,
+  if valid_580048 != nil:
+    section.add "oauth_token", valid_580048
+  var valid_580049 = query.getOrDefault("userIp")
+  valid_580049 = validateParameter(valid_580049, JString, required = false,
                                  default = nil)
-  if valid_594049 != nil:
-    section.add "userIp", valid_594049
-  var valid_594050 = query.getOrDefault("key")
-  valid_594050 = validateParameter(valid_594050, JString, required = false,
+  if valid_580049 != nil:
+    section.add "userIp", valid_580049
+  var valid_580050 = query.getOrDefault("key")
+  valid_580050 = validateParameter(valid_580050, JString, required = false,
                                  default = nil)
-  if valid_594050 != nil:
-    section.add "key", valid_594050
-  var valid_594051 = query.getOrDefault("prettyPrint")
-  valid_594051 = validateParameter(valid_594051, JBool, required = false,
+  if valid_580050 != nil:
+    section.add "key", valid_580050
+  var valid_580051 = query.getOrDefault("prettyPrint")
+  valid_580051 = validateParameter(valid_580051, JBool, required = false,
                                  default = newJBool(true))
-  if valid_594051 != nil:
-    section.add "prettyPrint", valid_594051
+  if valid_580051 != nil:
+    section.add "prettyPrint", valid_580051
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -953,21 +955,21 @@ proc validate_TagmanagerAccountsContainersUpdate_594040(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_594053: Call_TagmanagerAccountsContainersUpdate_594039;
+proc call*(call_580053: Call_TagmanagerAccountsContainersUpdate_580039;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Updates a Container.
   ## 
-  let valid = call_594053.validator(path, query, header, formData, body)
-  let scheme = call_594053.pickScheme
+  let valid = call_580053.validator(path, query, header, formData, body)
+  let scheme = call_580053.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_594053.url(scheme.get, call_594053.host, call_594053.base,
-                         call_594053.route, valid.getOrDefault("path"),
+  let url = call_580053.url(scheme.get, call_580053.host, call_580053.base,
+                         call_580053.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_594053, url, valid)
+  result = hook(call_580053, url, valid)
 
-proc call*(call_594054: Call_TagmanagerAccountsContainersUpdate_594039;
+proc call*(call_580054: Call_TagmanagerAccountsContainersUpdate_580039;
           containerId: string; accountId: string; fields: string = "";
           fingerprint: string = ""; quotaUser: string = ""; alt: string = "json";
           oauthToken: string = ""; userIp: string = ""; key: string = "";
@@ -995,37 +997,37 @@ proc call*(call_594054: Call_TagmanagerAccountsContainersUpdate_594039;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_594055 = newJObject()
-  var query_594056 = newJObject()
-  var body_594057 = newJObject()
-  add(path_594055, "containerId", newJString(containerId))
-  add(query_594056, "fields", newJString(fields))
-  add(query_594056, "fingerprint", newJString(fingerprint))
-  add(query_594056, "quotaUser", newJString(quotaUser))
-  add(query_594056, "alt", newJString(alt))
-  add(query_594056, "oauth_token", newJString(oauthToken))
-  add(path_594055, "accountId", newJString(accountId))
-  add(query_594056, "userIp", newJString(userIp))
-  add(query_594056, "key", newJString(key))
+  var path_580055 = newJObject()
+  var query_580056 = newJObject()
+  var body_580057 = newJObject()
+  add(path_580055, "containerId", newJString(containerId))
+  add(query_580056, "fields", newJString(fields))
+  add(query_580056, "fingerprint", newJString(fingerprint))
+  add(query_580056, "quotaUser", newJString(quotaUser))
+  add(query_580056, "alt", newJString(alt))
+  add(query_580056, "oauth_token", newJString(oauthToken))
+  add(path_580055, "accountId", newJString(accountId))
+  add(query_580056, "userIp", newJString(userIp))
+  add(query_580056, "key", newJString(key))
   if body != nil:
-    body_594057 = body
-  add(query_594056, "prettyPrint", newJBool(prettyPrint))
-  result = call_594054.call(path_594055, query_594056, nil, nil, body_594057)
+    body_580057 = body
+  add(query_580056, "prettyPrint", newJBool(prettyPrint))
+  result = call_580054.call(path_580055, query_580056, nil, nil, body_580057)
 
-var tagmanagerAccountsContainersUpdate* = Call_TagmanagerAccountsContainersUpdate_594039(
+var tagmanagerAccountsContainersUpdate* = Call_TagmanagerAccountsContainersUpdate_580039(
     name: "tagmanagerAccountsContainersUpdate", meth: HttpMethod.HttpPut,
     host: "www.googleapis.com",
     route: "/accounts/{accountId}/containers/{containerId}",
-    validator: validate_TagmanagerAccountsContainersUpdate_594040,
-    base: "/tagmanager/v1", url: url_TagmanagerAccountsContainersUpdate_594041,
+    validator: validate_TagmanagerAccountsContainersUpdate_580040,
+    base: "/tagmanager/v1", url: url_TagmanagerAccountsContainersUpdate_580041,
     schemes: {Scheme.Https})
 type
-  Call_TagmanagerAccountsContainersGet_594023 = ref object of OpenApiRestCall_593408
-proc url_TagmanagerAccountsContainersGet_594025(protocol: Scheme; host: string;
+  Call_TagmanagerAccountsContainersGet_580023 = ref object of OpenApiRestCall_579408
+proc url_TagmanagerAccountsContainersGet_580025(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "accountId" in path, "`accountId` is a required path parameter"
   assert "containerId" in path, "`containerId` is a required path parameter"
@@ -1039,7 +1041,7 @@ proc url_TagmanagerAccountsContainersGet_594025(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_TagmanagerAccountsContainersGet_594024(path: JsonNode;
+proc validate_TagmanagerAccountsContainersGet_580024(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Gets a Container.
   ## 
@@ -1053,16 +1055,16 @@ proc validate_TagmanagerAccountsContainersGet_594024(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `containerId` field"
-  var valid_594026 = path.getOrDefault("containerId")
-  valid_594026 = validateParameter(valid_594026, JString, required = true,
+  var valid_580026 = path.getOrDefault("containerId")
+  valid_580026 = validateParameter(valid_580026, JString, required = true,
                                  default = nil)
-  if valid_594026 != nil:
-    section.add "containerId", valid_594026
-  var valid_594027 = path.getOrDefault("accountId")
-  valid_594027 = validateParameter(valid_594027, JString, required = true,
+  if valid_580026 != nil:
+    section.add "containerId", valid_580026
+  var valid_580027 = path.getOrDefault("accountId")
+  valid_580027 = validateParameter(valid_580027, JString, required = true,
                                  default = nil)
-  if valid_594027 != nil:
-    section.add "accountId", valid_594027
+  if valid_580027 != nil:
+    section.add "accountId", valid_580027
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -1080,41 +1082,41 @@ proc validate_TagmanagerAccountsContainersGet_594024(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_594028 = query.getOrDefault("fields")
-  valid_594028 = validateParameter(valid_594028, JString, required = false,
+  var valid_580028 = query.getOrDefault("fields")
+  valid_580028 = validateParameter(valid_580028, JString, required = false,
                                  default = nil)
-  if valid_594028 != nil:
-    section.add "fields", valid_594028
-  var valid_594029 = query.getOrDefault("quotaUser")
-  valid_594029 = validateParameter(valid_594029, JString, required = false,
+  if valid_580028 != nil:
+    section.add "fields", valid_580028
+  var valid_580029 = query.getOrDefault("quotaUser")
+  valid_580029 = validateParameter(valid_580029, JString, required = false,
                                  default = nil)
-  if valid_594029 != nil:
-    section.add "quotaUser", valid_594029
-  var valid_594030 = query.getOrDefault("alt")
-  valid_594030 = validateParameter(valid_594030, JString, required = false,
+  if valid_580029 != nil:
+    section.add "quotaUser", valid_580029
+  var valid_580030 = query.getOrDefault("alt")
+  valid_580030 = validateParameter(valid_580030, JString, required = false,
                                  default = newJString("json"))
-  if valid_594030 != nil:
-    section.add "alt", valid_594030
-  var valid_594031 = query.getOrDefault("oauth_token")
-  valid_594031 = validateParameter(valid_594031, JString, required = false,
+  if valid_580030 != nil:
+    section.add "alt", valid_580030
+  var valid_580031 = query.getOrDefault("oauth_token")
+  valid_580031 = validateParameter(valid_580031, JString, required = false,
                                  default = nil)
-  if valid_594031 != nil:
-    section.add "oauth_token", valid_594031
-  var valid_594032 = query.getOrDefault("userIp")
-  valid_594032 = validateParameter(valid_594032, JString, required = false,
+  if valid_580031 != nil:
+    section.add "oauth_token", valid_580031
+  var valid_580032 = query.getOrDefault("userIp")
+  valid_580032 = validateParameter(valid_580032, JString, required = false,
                                  default = nil)
-  if valid_594032 != nil:
-    section.add "userIp", valid_594032
-  var valid_594033 = query.getOrDefault("key")
-  valid_594033 = validateParameter(valid_594033, JString, required = false,
+  if valid_580032 != nil:
+    section.add "userIp", valid_580032
+  var valid_580033 = query.getOrDefault("key")
+  valid_580033 = validateParameter(valid_580033, JString, required = false,
                                  default = nil)
-  if valid_594033 != nil:
-    section.add "key", valid_594033
-  var valid_594034 = query.getOrDefault("prettyPrint")
-  valid_594034 = validateParameter(valid_594034, JBool, required = false,
+  if valid_580033 != nil:
+    section.add "key", valid_580033
+  var valid_580034 = query.getOrDefault("prettyPrint")
+  valid_580034 = validateParameter(valid_580034, JBool, required = false,
                                  default = newJBool(true))
-  if valid_594034 != nil:
-    section.add "prettyPrint", valid_594034
+  if valid_580034 != nil:
+    section.add "prettyPrint", valid_580034
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1123,21 +1125,21 @@ proc validate_TagmanagerAccountsContainersGet_594024(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_594035: Call_TagmanagerAccountsContainersGet_594023;
+proc call*(call_580035: Call_TagmanagerAccountsContainersGet_580023;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Gets a Container.
   ## 
-  let valid = call_594035.validator(path, query, header, formData, body)
-  let scheme = call_594035.pickScheme
+  let valid = call_580035.validator(path, query, header, formData, body)
+  let scheme = call_580035.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_594035.url(scheme.get, call_594035.host, call_594035.base,
-                         call_594035.route, valid.getOrDefault("path"),
+  let url = call_580035.url(scheme.get, call_580035.host, call_580035.base,
+                         call_580035.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_594035, url, valid)
+  result = hook(call_580035, url, valid)
 
-proc call*(call_594036: Call_TagmanagerAccountsContainersGet_594023;
+proc call*(call_580036: Call_TagmanagerAccountsContainersGet_580023;
           containerId: string; accountId: string; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; key: string = ""; prettyPrint: bool = true): Recallable =
@@ -1161,33 +1163,33 @@ proc call*(call_594036: Call_TagmanagerAccountsContainersGet_594023;
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_594037 = newJObject()
-  var query_594038 = newJObject()
-  add(path_594037, "containerId", newJString(containerId))
-  add(query_594038, "fields", newJString(fields))
-  add(query_594038, "quotaUser", newJString(quotaUser))
-  add(query_594038, "alt", newJString(alt))
-  add(query_594038, "oauth_token", newJString(oauthToken))
-  add(path_594037, "accountId", newJString(accountId))
-  add(query_594038, "userIp", newJString(userIp))
-  add(query_594038, "key", newJString(key))
-  add(query_594038, "prettyPrint", newJBool(prettyPrint))
-  result = call_594036.call(path_594037, query_594038, nil, nil, nil)
+  var path_580037 = newJObject()
+  var query_580038 = newJObject()
+  add(path_580037, "containerId", newJString(containerId))
+  add(query_580038, "fields", newJString(fields))
+  add(query_580038, "quotaUser", newJString(quotaUser))
+  add(query_580038, "alt", newJString(alt))
+  add(query_580038, "oauth_token", newJString(oauthToken))
+  add(path_580037, "accountId", newJString(accountId))
+  add(query_580038, "userIp", newJString(userIp))
+  add(query_580038, "key", newJString(key))
+  add(query_580038, "prettyPrint", newJBool(prettyPrint))
+  result = call_580036.call(path_580037, query_580038, nil, nil, nil)
 
-var tagmanagerAccountsContainersGet* = Call_TagmanagerAccountsContainersGet_594023(
+var tagmanagerAccountsContainersGet* = Call_TagmanagerAccountsContainersGet_580023(
     name: "tagmanagerAccountsContainersGet", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com",
     route: "/accounts/{accountId}/containers/{containerId}",
-    validator: validate_TagmanagerAccountsContainersGet_594024,
-    base: "/tagmanager/v1", url: url_TagmanagerAccountsContainersGet_594025,
+    validator: validate_TagmanagerAccountsContainersGet_580024,
+    base: "/tagmanager/v1", url: url_TagmanagerAccountsContainersGet_580025,
     schemes: {Scheme.Https})
 type
-  Call_TagmanagerAccountsContainersDelete_594058 = ref object of OpenApiRestCall_593408
-proc url_TagmanagerAccountsContainersDelete_594060(protocol: Scheme; host: string;
+  Call_TagmanagerAccountsContainersDelete_580058 = ref object of OpenApiRestCall_579408
+proc url_TagmanagerAccountsContainersDelete_580060(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "accountId" in path, "`accountId` is a required path parameter"
   assert "containerId" in path, "`containerId` is a required path parameter"
@@ -1201,7 +1203,7 @@ proc url_TagmanagerAccountsContainersDelete_594060(protocol: Scheme; host: strin
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_TagmanagerAccountsContainersDelete_594059(path: JsonNode;
+proc validate_TagmanagerAccountsContainersDelete_580059(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Deletes a Container.
   ## 
@@ -1215,16 +1217,16 @@ proc validate_TagmanagerAccountsContainersDelete_594059(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `containerId` field"
-  var valid_594061 = path.getOrDefault("containerId")
-  valid_594061 = validateParameter(valid_594061, JString, required = true,
+  var valid_580061 = path.getOrDefault("containerId")
+  valid_580061 = validateParameter(valid_580061, JString, required = true,
                                  default = nil)
-  if valid_594061 != nil:
-    section.add "containerId", valid_594061
-  var valid_594062 = path.getOrDefault("accountId")
-  valid_594062 = validateParameter(valid_594062, JString, required = true,
+  if valid_580061 != nil:
+    section.add "containerId", valid_580061
+  var valid_580062 = path.getOrDefault("accountId")
+  valid_580062 = validateParameter(valid_580062, JString, required = true,
                                  default = nil)
-  if valid_594062 != nil:
-    section.add "accountId", valid_594062
+  if valid_580062 != nil:
+    section.add "accountId", valid_580062
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -1242,41 +1244,41 @@ proc validate_TagmanagerAccountsContainersDelete_594059(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_594063 = query.getOrDefault("fields")
-  valid_594063 = validateParameter(valid_594063, JString, required = false,
+  var valid_580063 = query.getOrDefault("fields")
+  valid_580063 = validateParameter(valid_580063, JString, required = false,
                                  default = nil)
-  if valid_594063 != nil:
-    section.add "fields", valid_594063
-  var valid_594064 = query.getOrDefault("quotaUser")
-  valid_594064 = validateParameter(valid_594064, JString, required = false,
+  if valid_580063 != nil:
+    section.add "fields", valid_580063
+  var valid_580064 = query.getOrDefault("quotaUser")
+  valid_580064 = validateParameter(valid_580064, JString, required = false,
                                  default = nil)
-  if valid_594064 != nil:
-    section.add "quotaUser", valid_594064
-  var valid_594065 = query.getOrDefault("alt")
-  valid_594065 = validateParameter(valid_594065, JString, required = false,
+  if valid_580064 != nil:
+    section.add "quotaUser", valid_580064
+  var valid_580065 = query.getOrDefault("alt")
+  valid_580065 = validateParameter(valid_580065, JString, required = false,
                                  default = newJString("json"))
-  if valid_594065 != nil:
-    section.add "alt", valid_594065
-  var valid_594066 = query.getOrDefault("oauth_token")
-  valid_594066 = validateParameter(valid_594066, JString, required = false,
+  if valid_580065 != nil:
+    section.add "alt", valid_580065
+  var valid_580066 = query.getOrDefault("oauth_token")
+  valid_580066 = validateParameter(valid_580066, JString, required = false,
                                  default = nil)
-  if valid_594066 != nil:
-    section.add "oauth_token", valid_594066
-  var valid_594067 = query.getOrDefault("userIp")
-  valid_594067 = validateParameter(valid_594067, JString, required = false,
+  if valid_580066 != nil:
+    section.add "oauth_token", valid_580066
+  var valid_580067 = query.getOrDefault("userIp")
+  valid_580067 = validateParameter(valid_580067, JString, required = false,
                                  default = nil)
-  if valid_594067 != nil:
-    section.add "userIp", valid_594067
-  var valid_594068 = query.getOrDefault("key")
-  valid_594068 = validateParameter(valid_594068, JString, required = false,
+  if valid_580067 != nil:
+    section.add "userIp", valid_580067
+  var valid_580068 = query.getOrDefault("key")
+  valid_580068 = validateParameter(valid_580068, JString, required = false,
                                  default = nil)
-  if valid_594068 != nil:
-    section.add "key", valid_594068
-  var valid_594069 = query.getOrDefault("prettyPrint")
-  valid_594069 = validateParameter(valid_594069, JBool, required = false,
+  if valid_580068 != nil:
+    section.add "key", valid_580068
+  var valid_580069 = query.getOrDefault("prettyPrint")
+  valid_580069 = validateParameter(valid_580069, JBool, required = false,
                                  default = newJBool(true))
-  if valid_594069 != nil:
-    section.add "prettyPrint", valid_594069
+  if valid_580069 != nil:
+    section.add "prettyPrint", valid_580069
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1285,21 +1287,21 @@ proc validate_TagmanagerAccountsContainersDelete_594059(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_594070: Call_TagmanagerAccountsContainersDelete_594058;
+proc call*(call_580070: Call_TagmanagerAccountsContainersDelete_580058;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Deletes a Container.
   ## 
-  let valid = call_594070.validator(path, query, header, formData, body)
-  let scheme = call_594070.pickScheme
+  let valid = call_580070.validator(path, query, header, formData, body)
+  let scheme = call_580070.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_594070.url(scheme.get, call_594070.host, call_594070.base,
-                         call_594070.route, valid.getOrDefault("path"),
+  let url = call_580070.url(scheme.get, call_580070.host, call_580070.base,
+                         call_580070.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_594070, url, valid)
+  result = hook(call_580070, url, valid)
 
-proc call*(call_594071: Call_TagmanagerAccountsContainersDelete_594058;
+proc call*(call_580071: Call_TagmanagerAccountsContainersDelete_580058;
           containerId: string; accountId: string; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; key: string = ""; prettyPrint: bool = true): Recallable =
@@ -1323,33 +1325,33 @@ proc call*(call_594071: Call_TagmanagerAccountsContainersDelete_594058;
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_594072 = newJObject()
-  var query_594073 = newJObject()
-  add(path_594072, "containerId", newJString(containerId))
-  add(query_594073, "fields", newJString(fields))
-  add(query_594073, "quotaUser", newJString(quotaUser))
-  add(query_594073, "alt", newJString(alt))
-  add(query_594073, "oauth_token", newJString(oauthToken))
-  add(path_594072, "accountId", newJString(accountId))
-  add(query_594073, "userIp", newJString(userIp))
-  add(query_594073, "key", newJString(key))
-  add(query_594073, "prettyPrint", newJBool(prettyPrint))
-  result = call_594071.call(path_594072, query_594073, nil, nil, nil)
+  var path_580072 = newJObject()
+  var query_580073 = newJObject()
+  add(path_580072, "containerId", newJString(containerId))
+  add(query_580073, "fields", newJString(fields))
+  add(query_580073, "quotaUser", newJString(quotaUser))
+  add(query_580073, "alt", newJString(alt))
+  add(query_580073, "oauth_token", newJString(oauthToken))
+  add(path_580072, "accountId", newJString(accountId))
+  add(query_580073, "userIp", newJString(userIp))
+  add(query_580073, "key", newJString(key))
+  add(query_580073, "prettyPrint", newJBool(prettyPrint))
+  result = call_580071.call(path_580072, query_580073, nil, nil, nil)
 
-var tagmanagerAccountsContainersDelete* = Call_TagmanagerAccountsContainersDelete_594058(
+var tagmanagerAccountsContainersDelete* = Call_TagmanagerAccountsContainersDelete_580058(
     name: "tagmanagerAccountsContainersDelete", meth: HttpMethod.HttpDelete,
     host: "www.googleapis.com",
     route: "/accounts/{accountId}/containers/{containerId}",
-    validator: validate_TagmanagerAccountsContainersDelete_594059,
-    base: "/tagmanager/v1", url: url_TagmanagerAccountsContainersDelete_594060,
+    validator: validate_TagmanagerAccountsContainersDelete_580059,
+    base: "/tagmanager/v1", url: url_TagmanagerAccountsContainersDelete_580060,
     schemes: {Scheme.Https})
 type
-  Call_TagmanagerAccountsContainersEnvironmentsCreate_594090 = ref object of OpenApiRestCall_593408
-proc url_TagmanagerAccountsContainersEnvironmentsCreate_594092(protocol: Scheme;
+  Call_TagmanagerAccountsContainersEnvironmentsCreate_580090 = ref object of OpenApiRestCall_579408
+proc url_TagmanagerAccountsContainersEnvironmentsCreate_580092(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "accountId" in path, "`accountId` is a required path parameter"
   assert "containerId" in path, "`containerId` is a required path parameter"
@@ -1364,7 +1366,7 @@ proc url_TagmanagerAccountsContainersEnvironmentsCreate_594092(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_TagmanagerAccountsContainersEnvironmentsCreate_594091(
+proc validate_TagmanagerAccountsContainersEnvironmentsCreate_580091(
     path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
     body: JsonNode): JsonNode =
   ## Creates a GTM Environment.
@@ -1379,16 +1381,16 @@ proc validate_TagmanagerAccountsContainersEnvironmentsCreate_594091(
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `containerId` field"
-  var valid_594093 = path.getOrDefault("containerId")
-  valid_594093 = validateParameter(valid_594093, JString, required = true,
+  var valid_580093 = path.getOrDefault("containerId")
+  valid_580093 = validateParameter(valid_580093, JString, required = true,
                                  default = nil)
-  if valid_594093 != nil:
-    section.add "containerId", valid_594093
-  var valid_594094 = path.getOrDefault("accountId")
-  valid_594094 = validateParameter(valid_594094, JString, required = true,
+  if valid_580093 != nil:
+    section.add "containerId", valid_580093
+  var valid_580094 = path.getOrDefault("accountId")
+  valid_580094 = validateParameter(valid_580094, JString, required = true,
                                  default = nil)
-  if valid_594094 != nil:
-    section.add "accountId", valid_594094
+  if valid_580094 != nil:
+    section.add "accountId", valid_580094
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -1406,41 +1408,41 @@ proc validate_TagmanagerAccountsContainersEnvironmentsCreate_594091(
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_594095 = query.getOrDefault("fields")
-  valid_594095 = validateParameter(valid_594095, JString, required = false,
+  var valid_580095 = query.getOrDefault("fields")
+  valid_580095 = validateParameter(valid_580095, JString, required = false,
                                  default = nil)
-  if valid_594095 != nil:
-    section.add "fields", valid_594095
-  var valid_594096 = query.getOrDefault("quotaUser")
-  valid_594096 = validateParameter(valid_594096, JString, required = false,
+  if valid_580095 != nil:
+    section.add "fields", valid_580095
+  var valid_580096 = query.getOrDefault("quotaUser")
+  valid_580096 = validateParameter(valid_580096, JString, required = false,
                                  default = nil)
-  if valid_594096 != nil:
-    section.add "quotaUser", valid_594096
-  var valid_594097 = query.getOrDefault("alt")
-  valid_594097 = validateParameter(valid_594097, JString, required = false,
+  if valid_580096 != nil:
+    section.add "quotaUser", valid_580096
+  var valid_580097 = query.getOrDefault("alt")
+  valid_580097 = validateParameter(valid_580097, JString, required = false,
                                  default = newJString("json"))
-  if valid_594097 != nil:
-    section.add "alt", valid_594097
-  var valid_594098 = query.getOrDefault("oauth_token")
-  valid_594098 = validateParameter(valid_594098, JString, required = false,
+  if valid_580097 != nil:
+    section.add "alt", valid_580097
+  var valid_580098 = query.getOrDefault("oauth_token")
+  valid_580098 = validateParameter(valid_580098, JString, required = false,
                                  default = nil)
-  if valid_594098 != nil:
-    section.add "oauth_token", valid_594098
-  var valid_594099 = query.getOrDefault("userIp")
-  valid_594099 = validateParameter(valid_594099, JString, required = false,
+  if valid_580098 != nil:
+    section.add "oauth_token", valid_580098
+  var valid_580099 = query.getOrDefault("userIp")
+  valid_580099 = validateParameter(valid_580099, JString, required = false,
                                  default = nil)
-  if valid_594099 != nil:
-    section.add "userIp", valid_594099
-  var valid_594100 = query.getOrDefault("key")
-  valid_594100 = validateParameter(valid_594100, JString, required = false,
+  if valid_580099 != nil:
+    section.add "userIp", valid_580099
+  var valid_580100 = query.getOrDefault("key")
+  valid_580100 = validateParameter(valid_580100, JString, required = false,
                                  default = nil)
-  if valid_594100 != nil:
-    section.add "key", valid_594100
-  var valid_594101 = query.getOrDefault("prettyPrint")
-  valid_594101 = validateParameter(valid_594101, JBool, required = false,
+  if valid_580100 != nil:
+    section.add "key", valid_580100
+  var valid_580101 = query.getOrDefault("prettyPrint")
+  valid_580101 = validateParameter(valid_580101, JBool, required = false,
                                  default = newJBool(true))
-  if valid_594101 != nil:
-    section.add "prettyPrint", valid_594101
+  if valid_580101 != nil:
+    section.add "prettyPrint", valid_580101
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1452,21 +1454,21 @@ proc validate_TagmanagerAccountsContainersEnvironmentsCreate_594091(
   if body != nil:
     result.add "body", body
 
-proc call*(call_594103: Call_TagmanagerAccountsContainersEnvironmentsCreate_594090;
+proc call*(call_580103: Call_TagmanagerAccountsContainersEnvironmentsCreate_580090;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Creates a GTM Environment.
   ## 
-  let valid = call_594103.validator(path, query, header, formData, body)
-  let scheme = call_594103.pickScheme
+  let valid = call_580103.validator(path, query, header, formData, body)
+  let scheme = call_580103.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_594103.url(scheme.get, call_594103.host, call_594103.base,
-                         call_594103.route, valid.getOrDefault("path"),
+  let url = call_580103.url(scheme.get, call_580103.host, call_580103.base,
+                         call_580103.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_594103, url, valid)
+  result = hook(call_580103, url, valid)
 
-proc call*(call_594104: Call_TagmanagerAccountsContainersEnvironmentsCreate_594090;
+proc call*(call_580104: Call_TagmanagerAccountsContainersEnvironmentsCreate_580090;
           containerId: string; accountId: string; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; key: string = ""; body: JsonNode = nil;
@@ -1492,37 +1494,37 @@ proc call*(call_594104: Call_TagmanagerAccountsContainersEnvironmentsCreate_5940
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_594105 = newJObject()
-  var query_594106 = newJObject()
-  var body_594107 = newJObject()
-  add(path_594105, "containerId", newJString(containerId))
-  add(query_594106, "fields", newJString(fields))
-  add(query_594106, "quotaUser", newJString(quotaUser))
-  add(query_594106, "alt", newJString(alt))
-  add(query_594106, "oauth_token", newJString(oauthToken))
-  add(path_594105, "accountId", newJString(accountId))
-  add(query_594106, "userIp", newJString(userIp))
-  add(query_594106, "key", newJString(key))
+  var path_580105 = newJObject()
+  var query_580106 = newJObject()
+  var body_580107 = newJObject()
+  add(path_580105, "containerId", newJString(containerId))
+  add(query_580106, "fields", newJString(fields))
+  add(query_580106, "quotaUser", newJString(quotaUser))
+  add(query_580106, "alt", newJString(alt))
+  add(query_580106, "oauth_token", newJString(oauthToken))
+  add(path_580105, "accountId", newJString(accountId))
+  add(query_580106, "userIp", newJString(userIp))
+  add(query_580106, "key", newJString(key))
   if body != nil:
-    body_594107 = body
-  add(query_594106, "prettyPrint", newJBool(prettyPrint))
-  result = call_594104.call(path_594105, query_594106, nil, nil, body_594107)
+    body_580107 = body
+  add(query_580106, "prettyPrint", newJBool(prettyPrint))
+  result = call_580104.call(path_580105, query_580106, nil, nil, body_580107)
 
-var tagmanagerAccountsContainersEnvironmentsCreate* = Call_TagmanagerAccountsContainersEnvironmentsCreate_594090(
+var tagmanagerAccountsContainersEnvironmentsCreate* = Call_TagmanagerAccountsContainersEnvironmentsCreate_580090(
     name: "tagmanagerAccountsContainersEnvironmentsCreate",
     meth: HttpMethod.HttpPost, host: "www.googleapis.com",
     route: "/accounts/{accountId}/containers/{containerId}/environments",
-    validator: validate_TagmanagerAccountsContainersEnvironmentsCreate_594091,
+    validator: validate_TagmanagerAccountsContainersEnvironmentsCreate_580091,
     base: "/tagmanager/v1",
-    url: url_TagmanagerAccountsContainersEnvironmentsCreate_594092,
+    url: url_TagmanagerAccountsContainersEnvironmentsCreate_580092,
     schemes: {Scheme.Https})
 type
-  Call_TagmanagerAccountsContainersEnvironmentsList_594074 = ref object of OpenApiRestCall_593408
-proc url_TagmanagerAccountsContainersEnvironmentsList_594076(protocol: Scheme;
+  Call_TagmanagerAccountsContainersEnvironmentsList_580074 = ref object of OpenApiRestCall_579408
+proc url_TagmanagerAccountsContainersEnvironmentsList_580076(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "accountId" in path, "`accountId` is a required path parameter"
   assert "containerId" in path, "`containerId` is a required path parameter"
@@ -1537,7 +1539,7 @@ proc url_TagmanagerAccountsContainersEnvironmentsList_594076(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_TagmanagerAccountsContainersEnvironmentsList_594075(path: JsonNode;
+proc validate_TagmanagerAccountsContainersEnvironmentsList_580075(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Lists all GTM Environments of a GTM Container.
   ## 
@@ -1551,16 +1553,16 @@ proc validate_TagmanagerAccountsContainersEnvironmentsList_594075(path: JsonNode
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `containerId` field"
-  var valid_594077 = path.getOrDefault("containerId")
-  valid_594077 = validateParameter(valid_594077, JString, required = true,
+  var valid_580077 = path.getOrDefault("containerId")
+  valid_580077 = validateParameter(valid_580077, JString, required = true,
                                  default = nil)
-  if valid_594077 != nil:
-    section.add "containerId", valid_594077
-  var valid_594078 = path.getOrDefault("accountId")
-  valid_594078 = validateParameter(valid_594078, JString, required = true,
+  if valid_580077 != nil:
+    section.add "containerId", valid_580077
+  var valid_580078 = path.getOrDefault("accountId")
+  valid_580078 = validateParameter(valid_580078, JString, required = true,
                                  default = nil)
-  if valid_594078 != nil:
-    section.add "accountId", valid_594078
+  if valid_580078 != nil:
+    section.add "accountId", valid_580078
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -1578,41 +1580,41 @@ proc validate_TagmanagerAccountsContainersEnvironmentsList_594075(path: JsonNode
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_594079 = query.getOrDefault("fields")
-  valid_594079 = validateParameter(valid_594079, JString, required = false,
+  var valid_580079 = query.getOrDefault("fields")
+  valid_580079 = validateParameter(valid_580079, JString, required = false,
                                  default = nil)
-  if valid_594079 != nil:
-    section.add "fields", valid_594079
-  var valid_594080 = query.getOrDefault("quotaUser")
-  valid_594080 = validateParameter(valid_594080, JString, required = false,
+  if valid_580079 != nil:
+    section.add "fields", valid_580079
+  var valid_580080 = query.getOrDefault("quotaUser")
+  valid_580080 = validateParameter(valid_580080, JString, required = false,
                                  default = nil)
-  if valid_594080 != nil:
-    section.add "quotaUser", valid_594080
-  var valid_594081 = query.getOrDefault("alt")
-  valid_594081 = validateParameter(valid_594081, JString, required = false,
+  if valid_580080 != nil:
+    section.add "quotaUser", valid_580080
+  var valid_580081 = query.getOrDefault("alt")
+  valid_580081 = validateParameter(valid_580081, JString, required = false,
                                  default = newJString("json"))
-  if valid_594081 != nil:
-    section.add "alt", valid_594081
-  var valid_594082 = query.getOrDefault("oauth_token")
-  valid_594082 = validateParameter(valid_594082, JString, required = false,
+  if valid_580081 != nil:
+    section.add "alt", valid_580081
+  var valid_580082 = query.getOrDefault("oauth_token")
+  valid_580082 = validateParameter(valid_580082, JString, required = false,
                                  default = nil)
-  if valid_594082 != nil:
-    section.add "oauth_token", valid_594082
-  var valid_594083 = query.getOrDefault("userIp")
-  valid_594083 = validateParameter(valid_594083, JString, required = false,
+  if valid_580082 != nil:
+    section.add "oauth_token", valid_580082
+  var valid_580083 = query.getOrDefault("userIp")
+  valid_580083 = validateParameter(valid_580083, JString, required = false,
                                  default = nil)
-  if valid_594083 != nil:
-    section.add "userIp", valid_594083
-  var valid_594084 = query.getOrDefault("key")
-  valid_594084 = validateParameter(valid_594084, JString, required = false,
+  if valid_580083 != nil:
+    section.add "userIp", valid_580083
+  var valid_580084 = query.getOrDefault("key")
+  valid_580084 = validateParameter(valid_580084, JString, required = false,
                                  default = nil)
-  if valid_594084 != nil:
-    section.add "key", valid_594084
-  var valid_594085 = query.getOrDefault("prettyPrint")
-  valid_594085 = validateParameter(valid_594085, JBool, required = false,
+  if valid_580084 != nil:
+    section.add "key", valid_580084
+  var valid_580085 = query.getOrDefault("prettyPrint")
+  valid_580085 = validateParameter(valid_580085, JBool, required = false,
                                  default = newJBool(true))
-  if valid_594085 != nil:
-    section.add "prettyPrint", valid_594085
+  if valid_580085 != nil:
+    section.add "prettyPrint", valid_580085
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1621,21 +1623,21 @@ proc validate_TagmanagerAccountsContainersEnvironmentsList_594075(path: JsonNode
   if body != nil:
     result.add "body", body
 
-proc call*(call_594086: Call_TagmanagerAccountsContainersEnvironmentsList_594074;
+proc call*(call_580086: Call_TagmanagerAccountsContainersEnvironmentsList_580074;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Lists all GTM Environments of a GTM Container.
   ## 
-  let valid = call_594086.validator(path, query, header, formData, body)
-  let scheme = call_594086.pickScheme
+  let valid = call_580086.validator(path, query, header, formData, body)
+  let scheme = call_580086.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_594086.url(scheme.get, call_594086.host, call_594086.base,
-                         call_594086.route, valid.getOrDefault("path"),
+  let url = call_580086.url(scheme.get, call_580086.host, call_580086.base,
+                         call_580086.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_594086, url, valid)
+  result = hook(call_580086, url, valid)
 
-proc call*(call_594087: Call_TagmanagerAccountsContainersEnvironmentsList_594074;
+proc call*(call_580087: Call_TagmanagerAccountsContainersEnvironmentsList_580074;
           containerId: string; accountId: string; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; key: string = ""; prettyPrint: bool = true): Recallable =
@@ -1659,33 +1661,33 @@ proc call*(call_594087: Call_TagmanagerAccountsContainersEnvironmentsList_594074
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_594088 = newJObject()
-  var query_594089 = newJObject()
-  add(path_594088, "containerId", newJString(containerId))
-  add(query_594089, "fields", newJString(fields))
-  add(query_594089, "quotaUser", newJString(quotaUser))
-  add(query_594089, "alt", newJString(alt))
-  add(query_594089, "oauth_token", newJString(oauthToken))
-  add(path_594088, "accountId", newJString(accountId))
-  add(query_594089, "userIp", newJString(userIp))
-  add(query_594089, "key", newJString(key))
-  add(query_594089, "prettyPrint", newJBool(prettyPrint))
-  result = call_594087.call(path_594088, query_594089, nil, nil, nil)
+  var path_580088 = newJObject()
+  var query_580089 = newJObject()
+  add(path_580088, "containerId", newJString(containerId))
+  add(query_580089, "fields", newJString(fields))
+  add(query_580089, "quotaUser", newJString(quotaUser))
+  add(query_580089, "alt", newJString(alt))
+  add(query_580089, "oauth_token", newJString(oauthToken))
+  add(path_580088, "accountId", newJString(accountId))
+  add(query_580089, "userIp", newJString(userIp))
+  add(query_580089, "key", newJString(key))
+  add(query_580089, "prettyPrint", newJBool(prettyPrint))
+  result = call_580087.call(path_580088, query_580089, nil, nil, nil)
 
-var tagmanagerAccountsContainersEnvironmentsList* = Call_TagmanagerAccountsContainersEnvironmentsList_594074(
+var tagmanagerAccountsContainersEnvironmentsList* = Call_TagmanagerAccountsContainersEnvironmentsList_580074(
     name: "tagmanagerAccountsContainersEnvironmentsList",
     meth: HttpMethod.HttpGet, host: "www.googleapis.com",
     route: "/accounts/{accountId}/containers/{containerId}/environments",
-    validator: validate_TagmanagerAccountsContainersEnvironmentsList_594075,
-    base: "/tagmanager/v1", url: url_TagmanagerAccountsContainersEnvironmentsList_594076,
+    validator: validate_TagmanagerAccountsContainersEnvironmentsList_580075,
+    base: "/tagmanager/v1", url: url_TagmanagerAccountsContainersEnvironmentsList_580076,
     schemes: {Scheme.Https})
 type
-  Call_TagmanagerAccountsContainersEnvironmentsUpdate_594125 = ref object of OpenApiRestCall_593408
-proc url_TagmanagerAccountsContainersEnvironmentsUpdate_594127(protocol: Scheme;
+  Call_TagmanagerAccountsContainersEnvironmentsUpdate_580125 = ref object of OpenApiRestCall_579408
+proc url_TagmanagerAccountsContainersEnvironmentsUpdate_580127(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "accountId" in path, "`accountId` is a required path parameter"
   assert "containerId" in path, "`containerId` is a required path parameter"
@@ -1702,7 +1704,7 @@ proc url_TagmanagerAccountsContainersEnvironmentsUpdate_594127(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_TagmanagerAccountsContainersEnvironmentsUpdate_594126(
+proc validate_TagmanagerAccountsContainersEnvironmentsUpdate_580126(
     path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
     body: JsonNode): JsonNode =
   ## Updates a GTM Environment.
@@ -1719,21 +1721,21 @@ proc validate_TagmanagerAccountsContainersEnvironmentsUpdate_594126(
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `containerId` field"
-  var valid_594128 = path.getOrDefault("containerId")
-  valid_594128 = validateParameter(valid_594128, JString, required = true,
+  var valid_580128 = path.getOrDefault("containerId")
+  valid_580128 = validateParameter(valid_580128, JString, required = true,
                                  default = nil)
-  if valid_594128 != nil:
-    section.add "containerId", valid_594128
-  var valid_594129 = path.getOrDefault("accountId")
-  valid_594129 = validateParameter(valid_594129, JString, required = true,
+  if valid_580128 != nil:
+    section.add "containerId", valid_580128
+  var valid_580129 = path.getOrDefault("accountId")
+  valid_580129 = validateParameter(valid_580129, JString, required = true,
                                  default = nil)
-  if valid_594129 != nil:
-    section.add "accountId", valid_594129
-  var valid_594130 = path.getOrDefault("environmentId")
-  valid_594130 = validateParameter(valid_594130, JString, required = true,
+  if valid_580129 != nil:
+    section.add "accountId", valid_580129
+  var valid_580130 = path.getOrDefault("environmentId")
+  valid_580130 = validateParameter(valid_580130, JString, required = true,
                                  default = nil)
-  if valid_594130 != nil:
-    section.add "environmentId", valid_594130
+  if valid_580130 != nil:
+    section.add "environmentId", valid_580130
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -1753,46 +1755,46 @@ proc validate_TagmanagerAccountsContainersEnvironmentsUpdate_594126(
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_594131 = query.getOrDefault("fields")
-  valid_594131 = validateParameter(valid_594131, JString, required = false,
+  var valid_580131 = query.getOrDefault("fields")
+  valid_580131 = validateParameter(valid_580131, JString, required = false,
                                  default = nil)
-  if valid_594131 != nil:
-    section.add "fields", valid_594131
-  var valid_594132 = query.getOrDefault("fingerprint")
-  valid_594132 = validateParameter(valid_594132, JString, required = false,
+  if valid_580131 != nil:
+    section.add "fields", valid_580131
+  var valid_580132 = query.getOrDefault("fingerprint")
+  valid_580132 = validateParameter(valid_580132, JString, required = false,
                                  default = nil)
-  if valid_594132 != nil:
-    section.add "fingerprint", valid_594132
-  var valid_594133 = query.getOrDefault("quotaUser")
-  valid_594133 = validateParameter(valid_594133, JString, required = false,
+  if valid_580132 != nil:
+    section.add "fingerprint", valid_580132
+  var valid_580133 = query.getOrDefault("quotaUser")
+  valid_580133 = validateParameter(valid_580133, JString, required = false,
                                  default = nil)
-  if valid_594133 != nil:
-    section.add "quotaUser", valid_594133
-  var valid_594134 = query.getOrDefault("alt")
-  valid_594134 = validateParameter(valid_594134, JString, required = false,
+  if valid_580133 != nil:
+    section.add "quotaUser", valid_580133
+  var valid_580134 = query.getOrDefault("alt")
+  valid_580134 = validateParameter(valid_580134, JString, required = false,
                                  default = newJString("json"))
-  if valid_594134 != nil:
-    section.add "alt", valid_594134
-  var valid_594135 = query.getOrDefault("oauth_token")
-  valid_594135 = validateParameter(valid_594135, JString, required = false,
+  if valid_580134 != nil:
+    section.add "alt", valid_580134
+  var valid_580135 = query.getOrDefault("oauth_token")
+  valid_580135 = validateParameter(valid_580135, JString, required = false,
                                  default = nil)
-  if valid_594135 != nil:
-    section.add "oauth_token", valid_594135
-  var valid_594136 = query.getOrDefault("userIp")
-  valid_594136 = validateParameter(valid_594136, JString, required = false,
+  if valid_580135 != nil:
+    section.add "oauth_token", valid_580135
+  var valid_580136 = query.getOrDefault("userIp")
+  valid_580136 = validateParameter(valid_580136, JString, required = false,
                                  default = nil)
-  if valid_594136 != nil:
-    section.add "userIp", valid_594136
-  var valid_594137 = query.getOrDefault("key")
-  valid_594137 = validateParameter(valid_594137, JString, required = false,
+  if valid_580136 != nil:
+    section.add "userIp", valid_580136
+  var valid_580137 = query.getOrDefault("key")
+  valid_580137 = validateParameter(valid_580137, JString, required = false,
                                  default = nil)
-  if valid_594137 != nil:
-    section.add "key", valid_594137
-  var valid_594138 = query.getOrDefault("prettyPrint")
-  valid_594138 = validateParameter(valid_594138, JBool, required = false,
+  if valid_580137 != nil:
+    section.add "key", valid_580137
+  var valid_580138 = query.getOrDefault("prettyPrint")
+  valid_580138 = validateParameter(valid_580138, JBool, required = false,
                                  default = newJBool(true))
-  if valid_594138 != nil:
-    section.add "prettyPrint", valid_594138
+  if valid_580138 != nil:
+    section.add "prettyPrint", valid_580138
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1804,21 +1806,21 @@ proc validate_TagmanagerAccountsContainersEnvironmentsUpdate_594126(
   if body != nil:
     result.add "body", body
 
-proc call*(call_594140: Call_TagmanagerAccountsContainersEnvironmentsUpdate_594125;
+proc call*(call_580140: Call_TagmanagerAccountsContainersEnvironmentsUpdate_580125;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Updates a GTM Environment.
   ## 
-  let valid = call_594140.validator(path, query, header, formData, body)
-  let scheme = call_594140.pickScheme
+  let valid = call_580140.validator(path, query, header, formData, body)
+  let scheme = call_580140.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_594140.url(scheme.get, call_594140.host, call_594140.base,
-                         call_594140.route, valid.getOrDefault("path"),
+  let url = call_580140.url(scheme.get, call_580140.host, call_580140.base,
+                         call_580140.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_594140, url, valid)
+  result = hook(call_580140, url, valid)
 
-proc call*(call_594141: Call_TagmanagerAccountsContainersEnvironmentsUpdate_594125;
+proc call*(call_580141: Call_TagmanagerAccountsContainersEnvironmentsUpdate_580125;
           containerId: string; accountId: string; environmentId: string;
           fields: string = ""; fingerprint: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; userIp: string = "";
@@ -1848,38 +1850,38 @@ proc call*(call_594141: Call_TagmanagerAccountsContainersEnvironmentsUpdate_5941
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_594142 = newJObject()
-  var query_594143 = newJObject()
-  var body_594144 = newJObject()
-  add(path_594142, "containerId", newJString(containerId))
-  add(query_594143, "fields", newJString(fields))
-  add(query_594143, "fingerprint", newJString(fingerprint))
-  add(query_594143, "quotaUser", newJString(quotaUser))
-  add(query_594143, "alt", newJString(alt))
-  add(query_594143, "oauth_token", newJString(oauthToken))
-  add(path_594142, "accountId", newJString(accountId))
-  add(query_594143, "userIp", newJString(userIp))
-  add(query_594143, "key", newJString(key))
-  add(path_594142, "environmentId", newJString(environmentId))
+  var path_580142 = newJObject()
+  var query_580143 = newJObject()
+  var body_580144 = newJObject()
+  add(path_580142, "containerId", newJString(containerId))
+  add(query_580143, "fields", newJString(fields))
+  add(query_580143, "fingerprint", newJString(fingerprint))
+  add(query_580143, "quotaUser", newJString(quotaUser))
+  add(query_580143, "alt", newJString(alt))
+  add(query_580143, "oauth_token", newJString(oauthToken))
+  add(path_580142, "accountId", newJString(accountId))
+  add(query_580143, "userIp", newJString(userIp))
+  add(query_580143, "key", newJString(key))
+  add(path_580142, "environmentId", newJString(environmentId))
   if body != nil:
-    body_594144 = body
-  add(query_594143, "prettyPrint", newJBool(prettyPrint))
-  result = call_594141.call(path_594142, query_594143, nil, nil, body_594144)
+    body_580144 = body
+  add(query_580143, "prettyPrint", newJBool(prettyPrint))
+  result = call_580141.call(path_580142, query_580143, nil, nil, body_580144)
 
-var tagmanagerAccountsContainersEnvironmentsUpdate* = Call_TagmanagerAccountsContainersEnvironmentsUpdate_594125(
+var tagmanagerAccountsContainersEnvironmentsUpdate* = Call_TagmanagerAccountsContainersEnvironmentsUpdate_580125(
     name: "tagmanagerAccountsContainersEnvironmentsUpdate",
     meth: HttpMethod.HttpPut, host: "www.googleapis.com", route: "/accounts/{accountId}/containers/{containerId}/environments/{environmentId}",
-    validator: validate_TagmanagerAccountsContainersEnvironmentsUpdate_594126,
+    validator: validate_TagmanagerAccountsContainersEnvironmentsUpdate_580126,
     base: "/tagmanager/v1",
-    url: url_TagmanagerAccountsContainersEnvironmentsUpdate_594127,
+    url: url_TagmanagerAccountsContainersEnvironmentsUpdate_580127,
     schemes: {Scheme.Https})
 type
-  Call_TagmanagerAccountsContainersEnvironmentsGet_594108 = ref object of OpenApiRestCall_593408
-proc url_TagmanagerAccountsContainersEnvironmentsGet_594110(protocol: Scheme;
+  Call_TagmanagerAccountsContainersEnvironmentsGet_580108 = ref object of OpenApiRestCall_579408
+proc url_TagmanagerAccountsContainersEnvironmentsGet_580110(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "accountId" in path, "`accountId` is a required path parameter"
   assert "containerId" in path, "`containerId` is a required path parameter"
@@ -1896,7 +1898,7 @@ proc url_TagmanagerAccountsContainersEnvironmentsGet_594110(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_TagmanagerAccountsContainersEnvironmentsGet_594109(path: JsonNode;
+proc validate_TagmanagerAccountsContainersEnvironmentsGet_580109(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Gets a GTM Environment.
   ## 
@@ -1912,21 +1914,21 @@ proc validate_TagmanagerAccountsContainersEnvironmentsGet_594109(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `containerId` field"
-  var valid_594111 = path.getOrDefault("containerId")
-  valid_594111 = validateParameter(valid_594111, JString, required = true,
+  var valid_580111 = path.getOrDefault("containerId")
+  valid_580111 = validateParameter(valid_580111, JString, required = true,
                                  default = nil)
-  if valid_594111 != nil:
-    section.add "containerId", valid_594111
-  var valid_594112 = path.getOrDefault("accountId")
-  valid_594112 = validateParameter(valid_594112, JString, required = true,
+  if valid_580111 != nil:
+    section.add "containerId", valid_580111
+  var valid_580112 = path.getOrDefault("accountId")
+  valid_580112 = validateParameter(valid_580112, JString, required = true,
                                  default = nil)
-  if valid_594112 != nil:
-    section.add "accountId", valid_594112
-  var valid_594113 = path.getOrDefault("environmentId")
-  valid_594113 = validateParameter(valid_594113, JString, required = true,
+  if valid_580112 != nil:
+    section.add "accountId", valid_580112
+  var valid_580113 = path.getOrDefault("environmentId")
+  valid_580113 = validateParameter(valid_580113, JString, required = true,
                                  default = nil)
-  if valid_594113 != nil:
-    section.add "environmentId", valid_594113
+  if valid_580113 != nil:
+    section.add "environmentId", valid_580113
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -1944,41 +1946,41 @@ proc validate_TagmanagerAccountsContainersEnvironmentsGet_594109(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_594114 = query.getOrDefault("fields")
-  valid_594114 = validateParameter(valid_594114, JString, required = false,
+  var valid_580114 = query.getOrDefault("fields")
+  valid_580114 = validateParameter(valid_580114, JString, required = false,
                                  default = nil)
-  if valid_594114 != nil:
-    section.add "fields", valid_594114
-  var valid_594115 = query.getOrDefault("quotaUser")
-  valid_594115 = validateParameter(valid_594115, JString, required = false,
+  if valid_580114 != nil:
+    section.add "fields", valid_580114
+  var valid_580115 = query.getOrDefault("quotaUser")
+  valid_580115 = validateParameter(valid_580115, JString, required = false,
                                  default = nil)
-  if valid_594115 != nil:
-    section.add "quotaUser", valid_594115
-  var valid_594116 = query.getOrDefault("alt")
-  valid_594116 = validateParameter(valid_594116, JString, required = false,
+  if valid_580115 != nil:
+    section.add "quotaUser", valid_580115
+  var valid_580116 = query.getOrDefault("alt")
+  valid_580116 = validateParameter(valid_580116, JString, required = false,
                                  default = newJString("json"))
-  if valid_594116 != nil:
-    section.add "alt", valid_594116
-  var valid_594117 = query.getOrDefault("oauth_token")
-  valid_594117 = validateParameter(valid_594117, JString, required = false,
+  if valid_580116 != nil:
+    section.add "alt", valid_580116
+  var valid_580117 = query.getOrDefault("oauth_token")
+  valid_580117 = validateParameter(valid_580117, JString, required = false,
                                  default = nil)
-  if valid_594117 != nil:
-    section.add "oauth_token", valid_594117
-  var valid_594118 = query.getOrDefault("userIp")
-  valid_594118 = validateParameter(valid_594118, JString, required = false,
+  if valid_580117 != nil:
+    section.add "oauth_token", valid_580117
+  var valid_580118 = query.getOrDefault("userIp")
+  valid_580118 = validateParameter(valid_580118, JString, required = false,
                                  default = nil)
-  if valid_594118 != nil:
-    section.add "userIp", valid_594118
-  var valid_594119 = query.getOrDefault("key")
-  valid_594119 = validateParameter(valid_594119, JString, required = false,
+  if valid_580118 != nil:
+    section.add "userIp", valid_580118
+  var valid_580119 = query.getOrDefault("key")
+  valid_580119 = validateParameter(valid_580119, JString, required = false,
                                  default = nil)
-  if valid_594119 != nil:
-    section.add "key", valid_594119
-  var valid_594120 = query.getOrDefault("prettyPrint")
-  valid_594120 = validateParameter(valid_594120, JBool, required = false,
+  if valid_580119 != nil:
+    section.add "key", valid_580119
+  var valid_580120 = query.getOrDefault("prettyPrint")
+  valid_580120 = validateParameter(valid_580120, JBool, required = false,
                                  default = newJBool(true))
-  if valid_594120 != nil:
-    section.add "prettyPrint", valid_594120
+  if valid_580120 != nil:
+    section.add "prettyPrint", valid_580120
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1987,21 +1989,21 @@ proc validate_TagmanagerAccountsContainersEnvironmentsGet_594109(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_594121: Call_TagmanagerAccountsContainersEnvironmentsGet_594108;
+proc call*(call_580121: Call_TagmanagerAccountsContainersEnvironmentsGet_580108;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Gets a GTM Environment.
   ## 
-  let valid = call_594121.validator(path, query, header, formData, body)
-  let scheme = call_594121.pickScheme
+  let valid = call_580121.validator(path, query, header, formData, body)
+  let scheme = call_580121.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_594121.url(scheme.get, call_594121.host, call_594121.base,
-                         call_594121.route, valid.getOrDefault("path"),
+  let url = call_580121.url(scheme.get, call_580121.host, call_580121.base,
+                         call_580121.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_594121, url, valid)
+  result = hook(call_580121, url, valid)
 
-proc call*(call_594122: Call_TagmanagerAccountsContainersEnvironmentsGet_594108;
+proc call*(call_580122: Call_TagmanagerAccountsContainersEnvironmentsGet_580108;
           containerId: string; accountId: string; environmentId: string;
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           oauthToken: string = ""; userIp: string = ""; key: string = "";
@@ -2028,33 +2030,33 @@ proc call*(call_594122: Call_TagmanagerAccountsContainersEnvironmentsGet_594108;
   ##                : The GTM Environment ID.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_594123 = newJObject()
-  var query_594124 = newJObject()
-  add(path_594123, "containerId", newJString(containerId))
-  add(query_594124, "fields", newJString(fields))
-  add(query_594124, "quotaUser", newJString(quotaUser))
-  add(query_594124, "alt", newJString(alt))
-  add(query_594124, "oauth_token", newJString(oauthToken))
-  add(path_594123, "accountId", newJString(accountId))
-  add(query_594124, "userIp", newJString(userIp))
-  add(query_594124, "key", newJString(key))
-  add(path_594123, "environmentId", newJString(environmentId))
-  add(query_594124, "prettyPrint", newJBool(prettyPrint))
-  result = call_594122.call(path_594123, query_594124, nil, nil, nil)
+  var path_580123 = newJObject()
+  var query_580124 = newJObject()
+  add(path_580123, "containerId", newJString(containerId))
+  add(query_580124, "fields", newJString(fields))
+  add(query_580124, "quotaUser", newJString(quotaUser))
+  add(query_580124, "alt", newJString(alt))
+  add(query_580124, "oauth_token", newJString(oauthToken))
+  add(path_580123, "accountId", newJString(accountId))
+  add(query_580124, "userIp", newJString(userIp))
+  add(query_580124, "key", newJString(key))
+  add(path_580123, "environmentId", newJString(environmentId))
+  add(query_580124, "prettyPrint", newJBool(prettyPrint))
+  result = call_580122.call(path_580123, query_580124, nil, nil, nil)
 
-var tagmanagerAccountsContainersEnvironmentsGet* = Call_TagmanagerAccountsContainersEnvironmentsGet_594108(
+var tagmanagerAccountsContainersEnvironmentsGet* = Call_TagmanagerAccountsContainersEnvironmentsGet_580108(
     name: "tagmanagerAccountsContainersEnvironmentsGet", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/accounts/{accountId}/containers/{containerId}/environments/{environmentId}",
-    validator: validate_TagmanagerAccountsContainersEnvironmentsGet_594109,
-    base: "/tagmanager/v1", url: url_TagmanagerAccountsContainersEnvironmentsGet_594110,
+    validator: validate_TagmanagerAccountsContainersEnvironmentsGet_580109,
+    base: "/tagmanager/v1", url: url_TagmanagerAccountsContainersEnvironmentsGet_580110,
     schemes: {Scheme.Https})
 type
-  Call_TagmanagerAccountsContainersEnvironmentsDelete_594145 = ref object of OpenApiRestCall_593408
-proc url_TagmanagerAccountsContainersEnvironmentsDelete_594147(protocol: Scheme;
+  Call_TagmanagerAccountsContainersEnvironmentsDelete_580145 = ref object of OpenApiRestCall_579408
+proc url_TagmanagerAccountsContainersEnvironmentsDelete_580147(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "accountId" in path, "`accountId` is a required path parameter"
   assert "containerId" in path, "`containerId` is a required path parameter"
@@ -2071,7 +2073,7 @@ proc url_TagmanagerAccountsContainersEnvironmentsDelete_594147(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_TagmanagerAccountsContainersEnvironmentsDelete_594146(
+proc validate_TagmanagerAccountsContainersEnvironmentsDelete_580146(
     path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
     body: JsonNode): JsonNode =
   ## Deletes a GTM Environment.
@@ -2088,21 +2090,21 @@ proc validate_TagmanagerAccountsContainersEnvironmentsDelete_594146(
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `containerId` field"
-  var valid_594148 = path.getOrDefault("containerId")
-  valid_594148 = validateParameter(valid_594148, JString, required = true,
+  var valid_580148 = path.getOrDefault("containerId")
+  valid_580148 = validateParameter(valid_580148, JString, required = true,
                                  default = nil)
-  if valid_594148 != nil:
-    section.add "containerId", valid_594148
-  var valid_594149 = path.getOrDefault("accountId")
-  valid_594149 = validateParameter(valid_594149, JString, required = true,
+  if valid_580148 != nil:
+    section.add "containerId", valid_580148
+  var valid_580149 = path.getOrDefault("accountId")
+  valid_580149 = validateParameter(valid_580149, JString, required = true,
                                  default = nil)
-  if valid_594149 != nil:
-    section.add "accountId", valid_594149
-  var valid_594150 = path.getOrDefault("environmentId")
-  valid_594150 = validateParameter(valid_594150, JString, required = true,
+  if valid_580149 != nil:
+    section.add "accountId", valid_580149
+  var valid_580150 = path.getOrDefault("environmentId")
+  valid_580150 = validateParameter(valid_580150, JString, required = true,
                                  default = nil)
-  if valid_594150 != nil:
-    section.add "environmentId", valid_594150
+  if valid_580150 != nil:
+    section.add "environmentId", valid_580150
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -2120,41 +2122,41 @@ proc validate_TagmanagerAccountsContainersEnvironmentsDelete_594146(
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_594151 = query.getOrDefault("fields")
-  valid_594151 = validateParameter(valid_594151, JString, required = false,
+  var valid_580151 = query.getOrDefault("fields")
+  valid_580151 = validateParameter(valid_580151, JString, required = false,
                                  default = nil)
-  if valid_594151 != nil:
-    section.add "fields", valid_594151
-  var valid_594152 = query.getOrDefault("quotaUser")
-  valid_594152 = validateParameter(valid_594152, JString, required = false,
+  if valid_580151 != nil:
+    section.add "fields", valid_580151
+  var valid_580152 = query.getOrDefault("quotaUser")
+  valid_580152 = validateParameter(valid_580152, JString, required = false,
                                  default = nil)
-  if valid_594152 != nil:
-    section.add "quotaUser", valid_594152
-  var valid_594153 = query.getOrDefault("alt")
-  valid_594153 = validateParameter(valid_594153, JString, required = false,
+  if valid_580152 != nil:
+    section.add "quotaUser", valid_580152
+  var valid_580153 = query.getOrDefault("alt")
+  valid_580153 = validateParameter(valid_580153, JString, required = false,
                                  default = newJString("json"))
-  if valid_594153 != nil:
-    section.add "alt", valid_594153
-  var valid_594154 = query.getOrDefault("oauth_token")
-  valid_594154 = validateParameter(valid_594154, JString, required = false,
+  if valid_580153 != nil:
+    section.add "alt", valid_580153
+  var valid_580154 = query.getOrDefault("oauth_token")
+  valid_580154 = validateParameter(valid_580154, JString, required = false,
                                  default = nil)
-  if valid_594154 != nil:
-    section.add "oauth_token", valid_594154
-  var valid_594155 = query.getOrDefault("userIp")
-  valid_594155 = validateParameter(valid_594155, JString, required = false,
+  if valid_580154 != nil:
+    section.add "oauth_token", valid_580154
+  var valid_580155 = query.getOrDefault("userIp")
+  valid_580155 = validateParameter(valid_580155, JString, required = false,
                                  default = nil)
-  if valid_594155 != nil:
-    section.add "userIp", valid_594155
-  var valid_594156 = query.getOrDefault("key")
-  valid_594156 = validateParameter(valid_594156, JString, required = false,
+  if valid_580155 != nil:
+    section.add "userIp", valid_580155
+  var valid_580156 = query.getOrDefault("key")
+  valid_580156 = validateParameter(valid_580156, JString, required = false,
                                  default = nil)
-  if valid_594156 != nil:
-    section.add "key", valid_594156
-  var valid_594157 = query.getOrDefault("prettyPrint")
-  valid_594157 = validateParameter(valid_594157, JBool, required = false,
+  if valid_580156 != nil:
+    section.add "key", valid_580156
+  var valid_580157 = query.getOrDefault("prettyPrint")
+  valid_580157 = validateParameter(valid_580157, JBool, required = false,
                                  default = newJBool(true))
-  if valid_594157 != nil:
-    section.add "prettyPrint", valid_594157
+  if valid_580157 != nil:
+    section.add "prettyPrint", valid_580157
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -2163,21 +2165,21 @@ proc validate_TagmanagerAccountsContainersEnvironmentsDelete_594146(
   if body != nil:
     result.add "body", body
 
-proc call*(call_594158: Call_TagmanagerAccountsContainersEnvironmentsDelete_594145;
+proc call*(call_580158: Call_TagmanagerAccountsContainersEnvironmentsDelete_580145;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Deletes a GTM Environment.
   ## 
-  let valid = call_594158.validator(path, query, header, formData, body)
-  let scheme = call_594158.pickScheme
+  let valid = call_580158.validator(path, query, header, formData, body)
+  let scheme = call_580158.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_594158.url(scheme.get, call_594158.host, call_594158.base,
-                         call_594158.route, valid.getOrDefault("path"),
+  let url = call_580158.url(scheme.get, call_580158.host, call_580158.base,
+                         call_580158.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_594158, url, valid)
+  result = hook(call_580158, url, valid)
 
-proc call*(call_594159: Call_TagmanagerAccountsContainersEnvironmentsDelete_594145;
+proc call*(call_580159: Call_TagmanagerAccountsContainersEnvironmentsDelete_580145;
           containerId: string; accountId: string; environmentId: string;
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           oauthToken: string = ""; userIp: string = ""; key: string = "";
@@ -2204,34 +2206,34 @@ proc call*(call_594159: Call_TagmanagerAccountsContainersEnvironmentsDelete_5941
   ##                : The GTM Environment ID.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_594160 = newJObject()
-  var query_594161 = newJObject()
-  add(path_594160, "containerId", newJString(containerId))
-  add(query_594161, "fields", newJString(fields))
-  add(query_594161, "quotaUser", newJString(quotaUser))
-  add(query_594161, "alt", newJString(alt))
-  add(query_594161, "oauth_token", newJString(oauthToken))
-  add(path_594160, "accountId", newJString(accountId))
-  add(query_594161, "userIp", newJString(userIp))
-  add(query_594161, "key", newJString(key))
-  add(path_594160, "environmentId", newJString(environmentId))
-  add(query_594161, "prettyPrint", newJBool(prettyPrint))
-  result = call_594159.call(path_594160, query_594161, nil, nil, nil)
+  var path_580160 = newJObject()
+  var query_580161 = newJObject()
+  add(path_580160, "containerId", newJString(containerId))
+  add(query_580161, "fields", newJString(fields))
+  add(query_580161, "quotaUser", newJString(quotaUser))
+  add(query_580161, "alt", newJString(alt))
+  add(query_580161, "oauth_token", newJString(oauthToken))
+  add(path_580160, "accountId", newJString(accountId))
+  add(query_580161, "userIp", newJString(userIp))
+  add(query_580161, "key", newJString(key))
+  add(path_580160, "environmentId", newJString(environmentId))
+  add(query_580161, "prettyPrint", newJBool(prettyPrint))
+  result = call_580159.call(path_580160, query_580161, nil, nil, nil)
 
-var tagmanagerAccountsContainersEnvironmentsDelete* = Call_TagmanagerAccountsContainersEnvironmentsDelete_594145(
+var tagmanagerAccountsContainersEnvironmentsDelete* = Call_TagmanagerAccountsContainersEnvironmentsDelete_580145(
     name: "tagmanagerAccountsContainersEnvironmentsDelete",
     meth: HttpMethod.HttpDelete, host: "www.googleapis.com", route: "/accounts/{accountId}/containers/{containerId}/environments/{environmentId}",
-    validator: validate_TagmanagerAccountsContainersEnvironmentsDelete_594146,
+    validator: validate_TagmanagerAccountsContainersEnvironmentsDelete_580146,
     base: "/tagmanager/v1",
-    url: url_TagmanagerAccountsContainersEnvironmentsDelete_594147,
+    url: url_TagmanagerAccountsContainersEnvironmentsDelete_580147,
     schemes: {Scheme.Https})
 type
-  Call_TagmanagerAccountsContainersFoldersCreate_594178 = ref object of OpenApiRestCall_593408
-proc url_TagmanagerAccountsContainersFoldersCreate_594180(protocol: Scheme;
+  Call_TagmanagerAccountsContainersFoldersCreate_580178 = ref object of OpenApiRestCall_579408
+proc url_TagmanagerAccountsContainersFoldersCreate_580180(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "accountId" in path, "`accountId` is a required path parameter"
   assert "containerId" in path, "`containerId` is a required path parameter"
@@ -2246,7 +2248,7 @@ proc url_TagmanagerAccountsContainersFoldersCreate_594180(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_TagmanagerAccountsContainersFoldersCreate_594179(path: JsonNode;
+proc validate_TagmanagerAccountsContainersFoldersCreate_580179(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Creates a GTM Folder.
   ## 
@@ -2260,16 +2262,16 @@ proc validate_TagmanagerAccountsContainersFoldersCreate_594179(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `containerId` field"
-  var valid_594181 = path.getOrDefault("containerId")
-  valid_594181 = validateParameter(valid_594181, JString, required = true,
+  var valid_580181 = path.getOrDefault("containerId")
+  valid_580181 = validateParameter(valid_580181, JString, required = true,
                                  default = nil)
-  if valid_594181 != nil:
-    section.add "containerId", valid_594181
-  var valid_594182 = path.getOrDefault("accountId")
-  valid_594182 = validateParameter(valid_594182, JString, required = true,
+  if valid_580181 != nil:
+    section.add "containerId", valid_580181
+  var valid_580182 = path.getOrDefault("accountId")
+  valid_580182 = validateParameter(valid_580182, JString, required = true,
                                  default = nil)
-  if valid_594182 != nil:
-    section.add "accountId", valid_594182
+  if valid_580182 != nil:
+    section.add "accountId", valid_580182
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -2287,41 +2289,41 @@ proc validate_TagmanagerAccountsContainersFoldersCreate_594179(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_594183 = query.getOrDefault("fields")
-  valid_594183 = validateParameter(valid_594183, JString, required = false,
+  var valid_580183 = query.getOrDefault("fields")
+  valid_580183 = validateParameter(valid_580183, JString, required = false,
                                  default = nil)
-  if valid_594183 != nil:
-    section.add "fields", valid_594183
-  var valid_594184 = query.getOrDefault("quotaUser")
-  valid_594184 = validateParameter(valid_594184, JString, required = false,
+  if valid_580183 != nil:
+    section.add "fields", valid_580183
+  var valid_580184 = query.getOrDefault("quotaUser")
+  valid_580184 = validateParameter(valid_580184, JString, required = false,
                                  default = nil)
-  if valid_594184 != nil:
-    section.add "quotaUser", valid_594184
-  var valid_594185 = query.getOrDefault("alt")
-  valid_594185 = validateParameter(valid_594185, JString, required = false,
+  if valid_580184 != nil:
+    section.add "quotaUser", valid_580184
+  var valid_580185 = query.getOrDefault("alt")
+  valid_580185 = validateParameter(valid_580185, JString, required = false,
                                  default = newJString("json"))
-  if valid_594185 != nil:
-    section.add "alt", valid_594185
-  var valid_594186 = query.getOrDefault("oauth_token")
-  valid_594186 = validateParameter(valid_594186, JString, required = false,
+  if valid_580185 != nil:
+    section.add "alt", valid_580185
+  var valid_580186 = query.getOrDefault("oauth_token")
+  valid_580186 = validateParameter(valid_580186, JString, required = false,
                                  default = nil)
-  if valid_594186 != nil:
-    section.add "oauth_token", valid_594186
-  var valid_594187 = query.getOrDefault("userIp")
-  valid_594187 = validateParameter(valid_594187, JString, required = false,
+  if valid_580186 != nil:
+    section.add "oauth_token", valid_580186
+  var valid_580187 = query.getOrDefault("userIp")
+  valid_580187 = validateParameter(valid_580187, JString, required = false,
                                  default = nil)
-  if valid_594187 != nil:
-    section.add "userIp", valid_594187
-  var valid_594188 = query.getOrDefault("key")
-  valid_594188 = validateParameter(valid_594188, JString, required = false,
+  if valid_580187 != nil:
+    section.add "userIp", valid_580187
+  var valid_580188 = query.getOrDefault("key")
+  valid_580188 = validateParameter(valid_580188, JString, required = false,
                                  default = nil)
-  if valid_594188 != nil:
-    section.add "key", valid_594188
-  var valid_594189 = query.getOrDefault("prettyPrint")
-  valid_594189 = validateParameter(valid_594189, JBool, required = false,
+  if valid_580188 != nil:
+    section.add "key", valid_580188
+  var valid_580189 = query.getOrDefault("prettyPrint")
+  valid_580189 = validateParameter(valid_580189, JBool, required = false,
                                  default = newJBool(true))
-  if valid_594189 != nil:
-    section.add "prettyPrint", valid_594189
+  if valid_580189 != nil:
+    section.add "prettyPrint", valid_580189
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -2333,21 +2335,21 @@ proc validate_TagmanagerAccountsContainersFoldersCreate_594179(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_594191: Call_TagmanagerAccountsContainersFoldersCreate_594178;
+proc call*(call_580191: Call_TagmanagerAccountsContainersFoldersCreate_580178;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Creates a GTM Folder.
   ## 
-  let valid = call_594191.validator(path, query, header, formData, body)
-  let scheme = call_594191.pickScheme
+  let valid = call_580191.validator(path, query, header, formData, body)
+  let scheme = call_580191.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_594191.url(scheme.get, call_594191.host, call_594191.base,
-                         call_594191.route, valid.getOrDefault("path"),
+  let url = call_580191.url(scheme.get, call_580191.host, call_580191.base,
+                         call_580191.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_594191, url, valid)
+  result = hook(call_580191, url, valid)
 
-proc call*(call_594192: Call_TagmanagerAccountsContainersFoldersCreate_594178;
+proc call*(call_580192: Call_TagmanagerAccountsContainersFoldersCreate_580178;
           containerId: string; accountId: string; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; key: string = ""; body: JsonNode = nil;
@@ -2373,36 +2375,36 @@ proc call*(call_594192: Call_TagmanagerAccountsContainersFoldersCreate_594178;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_594193 = newJObject()
-  var query_594194 = newJObject()
-  var body_594195 = newJObject()
-  add(path_594193, "containerId", newJString(containerId))
-  add(query_594194, "fields", newJString(fields))
-  add(query_594194, "quotaUser", newJString(quotaUser))
-  add(query_594194, "alt", newJString(alt))
-  add(query_594194, "oauth_token", newJString(oauthToken))
-  add(path_594193, "accountId", newJString(accountId))
-  add(query_594194, "userIp", newJString(userIp))
-  add(query_594194, "key", newJString(key))
+  var path_580193 = newJObject()
+  var query_580194 = newJObject()
+  var body_580195 = newJObject()
+  add(path_580193, "containerId", newJString(containerId))
+  add(query_580194, "fields", newJString(fields))
+  add(query_580194, "quotaUser", newJString(quotaUser))
+  add(query_580194, "alt", newJString(alt))
+  add(query_580194, "oauth_token", newJString(oauthToken))
+  add(path_580193, "accountId", newJString(accountId))
+  add(query_580194, "userIp", newJString(userIp))
+  add(query_580194, "key", newJString(key))
   if body != nil:
-    body_594195 = body
-  add(query_594194, "prettyPrint", newJBool(prettyPrint))
-  result = call_594192.call(path_594193, query_594194, nil, nil, body_594195)
+    body_580195 = body
+  add(query_580194, "prettyPrint", newJBool(prettyPrint))
+  result = call_580192.call(path_580193, query_580194, nil, nil, body_580195)
 
-var tagmanagerAccountsContainersFoldersCreate* = Call_TagmanagerAccountsContainersFoldersCreate_594178(
+var tagmanagerAccountsContainersFoldersCreate* = Call_TagmanagerAccountsContainersFoldersCreate_580178(
     name: "tagmanagerAccountsContainersFoldersCreate", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com",
     route: "/accounts/{accountId}/containers/{containerId}/folders",
-    validator: validate_TagmanagerAccountsContainersFoldersCreate_594179,
-    base: "/tagmanager/v1", url: url_TagmanagerAccountsContainersFoldersCreate_594180,
+    validator: validate_TagmanagerAccountsContainersFoldersCreate_580179,
+    base: "/tagmanager/v1", url: url_TagmanagerAccountsContainersFoldersCreate_580180,
     schemes: {Scheme.Https})
 type
-  Call_TagmanagerAccountsContainersFoldersList_594162 = ref object of OpenApiRestCall_593408
-proc url_TagmanagerAccountsContainersFoldersList_594164(protocol: Scheme;
+  Call_TagmanagerAccountsContainersFoldersList_580162 = ref object of OpenApiRestCall_579408
+proc url_TagmanagerAccountsContainersFoldersList_580164(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "accountId" in path, "`accountId` is a required path parameter"
   assert "containerId" in path, "`containerId` is a required path parameter"
@@ -2417,7 +2419,7 @@ proc url_TagmanagerAccountsContainersFoldersList_594164(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_TagmanagerAccountsContainersFoldersList_594163(path: JsonNode;
+proc validate_TagmanagerAccountsContainersFoldersList_580163(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Lists all GTM Folders of a Container.
   ## 
@@ -2431,16 +2433,16 @@ proc validate_TagmanagerAccountsContainersFoldersList_594163(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `containerId` field"
-  var valid_594165 = path.getOrDefault("containerId")
-  valid_594165 = validateParameter(valid_594165, JString, required = true,
+  var valid_580165 = path.getOrDefault("containerId")
+  valid_580165 = validateParameter(valid_580165, JString, required = true,
                                  default = nil)
-  if valid_594165 != nil:
-    section.add "containerId", valid_594165
-  var valid_594166 = path.getOrDefault("accountId")
-  valid_594166 = validateParameter(valid_594166, JString, required = true,
+  if valid_580165 != nil:
+    section.add "containerId", valid_580165
+  var valid_580166 = path.getOrDefault("accountId")
+  valid_580166 = validateParameter(valid_580166, JString, required = true,
                                  default = nil)
-  if valid_594166 != nil:
-    section.add "accountId", valid_594166
+  if valid_580166 != nil:
+    section.add "accountId", valid_580166
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -2458,41 +2460,41 @@ proc validate_TagmanagerAccountsContainersFoldersList_594163(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_594167 = query.getOrDefault("fields")
-  valid_594167 = validateParameter(valid_594167, JString, required = false,
+  var valid_580167 = query.getOrDefault("fields")
+  valid_580167 = validateParameter(valid_580167, JString, required = false,
                                  default = nil)
-  if valid_594167 != nil:
-    section.add "fields", valid_594167
-  var valid_594168 = query.getOrDefault("quotaUser")
-  valid_594168 = validateParameter(valid_594168, JString, required = false,
+  if valid_580167 != nil:
+    section.add "fields", valid_580167
+  var valid_580168 = query.getOrDefault("quotaUser")
+  valid_580168 = validateParameter(valid_580168, JString, required = false,
                                  default = nil)
-  if valid_594168 != nil:
-    section.add "quotaUser", valid_594168
-  var valid_594169 = query.getOrDefault("alt")
-  valid_594169 = validateParameter(valid_594169, JString, required = false,
+  if valid_580168 != nil:
+    section.add "quotaUser", valid_580168
+  var valid_580169 = query.getOrDefault("alt")
+  valid_580169 = validateParameter(valid_580169, JString, required = false,
                                  default = newJString("json"))
-  if valid_594169 != nil:
-    section.add "alt", valid_594169
-  var valid_594170 = query.getOrDefault("oauth_token")
-  valid_594170 = validateParameter(valid_594170, JString, required = false,
+  if valid_580169 != nil:
+    section.add "alt", valid_580169
+  var valid_580170 = query.getOrDefault("oauth_token")
+  valid_580170 = validateParameter(valid_580170, JString, required = false,
                                  default = nil)
-  if valid_594170 != nil:
-    section.add "oauth_token", valid_594170
-  var valid_594171 = query.getOrDefault("userIp")
-  valid_594171 = validateParameter(valid_594171, JString, required = false,
+  if valid_580170 != nil:
+    section.add "oauth_token", valid_580170
+  var valid_580171 = query.getOrDefault("userIp")
+  valid_580171 = validateParameter(valid_580171, JString, required = false,
                                  default = nil)
-  if valid_594171 != nil:
-    section.add "userIp", valid_594171
-  var valid_594172 = query.getOrDefault("key")
-  valid_594172 = validateParameter(valid_594172, JString, required = false,
+  if valid_580171 != nil:
+    section.add "userIp", valid_580171
+  var valid_580172 = query.getOrDefault("key")
+  valid_580172 = validateParameter(valid_580172, JString, required = false,
                                  default = nil)
-  if valid_594172 != nil:
-    section.add "key", valid_594172
-  var valid_594173 = query.getOrDefault("prettyPrint")
-  valid_594173 = validateParameter(valid_594173, JBool, required = false,
+  if valid_580172 != nil:
+    section.add "key", valid_580172
+  var valid_580173 = query.getOrDefault("prettyPrint")
+  valid_580173 = validateParameter(valid_580173, JBool, required = false,
                                  default = newJBool(true))
-  if valid_594173 != nil:
-    section.add "prettyPrint", valid_594173
+  if valid_580173 != nil:
+    section.add "prettyPrint", valid_580173
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -2501,21 +2503,21 @@ proc validate_TagmanagerAccountsContainersFoldersList_594163(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_594174: Call_TagmanagerAccountsContainersFoldersList_594162;
+proc call*(call_580174: Call_TagmanagerAccountsContainersFoldersList_580162;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Lists all GTM Folders of a Container.
   ## 
-  let valid = call_594174.validator(path, query, header, formData, body)
-  let scheme = call_594174.pickScheme
+  let valid = call_580174.validator(path, query, header, formData, body)
+  let scheme = call_580174.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_594174.url(scheme.get, call_594174.host, call_594174.base,
-                         call_594174.route, valid.getOrDefault("path"),
+  let url = call_580174.url(scheme.get, call_580174.host, call_580174.base,
+                         call_580174.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_594174, url, valid)
+  result = hook(call_580174, url, valid)
 
-proc call*(call_594175: Call_TagmanagerAccountsContainersFoldersList_594162;
+proc call*(call_580175: Call_TagmanagerAccountsContainersFoldersList_580162;
           containerId: string; accountId: string; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; key: string = ""; prettyPrint: bool = true): Recallable =
@@ -2539,33 +2541,33 @@ proc call*(call_594175: Call_TagmanagerAccountsContainersFoldersList_594162;
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_594176 = newJObject()
-  var query_594177 = newJObject()
-  add(path_594176, "containerId", newJString(containerId))
-  add(query_594177, "fields", newJString(fields))
-  add(query_594177, "quotaUser", newJString(quotaUser))
-  add(query_594177, "alt", newJString(alt))
-  add(query_594177, "oauth_token", newJString(oauthToken))
-  add(path_594176, "accountId", newJString(accountId))
-  add(query_594177, "userIp", newJString(userIp))
-  add(query_594177, "key", newJString(key))
-  add(query_594177, "prettyPrint", newJBool(prettyPrint))
-  result = call_594175.call(path_594176, query_594177, nil, nil, nil)
+  var path_580176 = newJObject()
+  var query_580177 = newJObject()
+  add(path_580176, "containerId", newJString(containerId))
+  add(query_580177, "fields", newJString(fields))
+  add(query_580177, "quotaUser", newJString(quotaUser))
+  add(query_580177, "alt", newJString(alt))
+  add(query_580177, "oauth_token", newJString(oauthToken))
+  add(path_580176, "accountId", newJString(accountId))
+  add(query_580177, "userIp", newJString(userIp))
+  add(query_580177, "key", newJString(key))
+  add(query_580177, "prettyPrint", newJBool(prettyPrint))
+  result = call_580175.call(path_580176, query_580177, nil, nil, nil)
 
-var tagmanagerAccountsContainersFoldersList* = Call_TagmanagerAccountsContainersFoldersList_594162(
+var tagmanagerAccountsContainersFoldersList* = Call_TagmanagerAccountsContainersFoldersList_580162(
     name: "tagmanagerAccountsContainersFoldersList", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com",
     route: "/accounts/{accountId}/containers/{containerId}/folders",
-    validator: validate_TagmanagerAccountsContainersFoldersList_594163,
-    base: "/tagmanager/v1", url: url_TagmanagerAccountsContainersFoldersList_594164,
+    validator: validate_TagmanagerAccountsContainersFoldersList_580163,
+    base: "/tagmanager/v1", url: url_TagmanagerAccountsContainersFoldersList_580164,
     schemes: {Scheme.Https})
 type
-  Call_TagmanagerAccountsContainersFoldersUpdate_594213 = ref object of OpenApiRestCall_593408
-proc url_TagmanagerAccountsContainersFoldersUpdate_594215(protocol: Scheme;
+  Call_TagmanagerAccountsContainersFoldersUpdate_580213 = ref object of OpenApiRestCall_579408
+proc url_TagmanagerAccountsContainersFoldersUpdate_580215(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "accountId" in path, "`accountId` is a required path parameter"
   assert "containerId" in path, "`containerId` is a required path parameter"
@@ -2582,7 +2584,7 @@ proc url_TagmanagerAccountsContainersFoldersUpdate_594215(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_TagmanagerAccountsContainersFoldersUpdate_594214(path: JsonNode;
+proc validate_TagmanagerAccountsContainersFoldersUpdate_580214(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Updates a GTM Folder.
   ## 
@@ -2598,21 +2600,21 @@ proc validate_TagmanagerAccountsContainersFoldersUpdate_594214(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `containerId` field"
-  var valid_594216 = path.getOrDefault("containerId")
-  valid_594216 = validateParameter(valid_594216, JString, required = true,
+  var valid_580216 = path.getOrDefault("containerId")
+  valid_580216 = validateParameter(valid_580216, JString, required = true,
                                  default = nil)
-  if valid_594216 != nil:
-    section.add "containerId", valid_594216
-  var valid_594217 = path.getOrDefault("accountId")
-  valid_594217 = validateParameter(valid_594217, JString, required = true,
+  if valid_580216 != nil:
+    section.add "containerId", valid_580216
+  var valid_580217 = path.getOrDefault("accountId")
+  valid_580217 = validateParameter(valid_580217, JString, required = true,
                                  default = nil)
-  if valid_594217 != nil:
-    section.add "accountId", valid_594217
-  var valid_594218 = path.getOrDefault("folderId")
-  valid_594218 = validateParameter(valid_594218, JString, required = true,
+  if valid_580217 != nil:
+    section.add "accountId", valid_580217
+  var valid_580218 = path.getOrDefault("folderId")
+  valid_580218 = validateParameter(valid_580218, JString, required = true,
                                  default = nil)
-  if valid_594218 != nil:
-    section.add "folderId", valid_594218
+  if valid_580218 != nil:
+    section.add "folderId", valid_580218
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -2632,46 +2634,46 @@ proc validate_TagmanagerAccountsContainersFoldersUpdate_594214(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_594219 = query.getOrDefault("fields")
-  valid_594219 = validateParameter(valid_594219, JString, required = false,
+  var valid_580219 = query.getOrDefault("fields")
+  valid_580219 = validateParameter(valid_580219, JString, required = false,
                                  default = nil)
-  if valid_594219 != nil:
-    section.add "fields", valid_594219
-  var valid_594220 = query.getOrDefault("fingerprint")
-  valid_594220 = validateParameter(valid_594220, JString, required = false,
+  if valid_580219 != nil:
+    section.add "fields", valid_580219
+  var valid_580220 = query.getOrDefault("fingerprint")
+  valid_580220 = validateParameter(valid_580220, JString, required = false,
                                  default = nil)
-  if valid_594220 != nil:
-    section.add "fingerprint", valid_594220
-  var valid_594221 = query.getOrDefault("quotaUser")
-  valid_594221 = validateParameter(valid_594221, JString, required = false,
+  if valid_580220 != nil:
+    section.add "fingerprint", valid_580220
+  var valid_580221 = query.getOrDefault("quotaUser")
+  valid_580221 = validateParameter(valid_580221, JString, required = false,
                                  default = nil)
-  if valid_594221 != nil:
-    section.add "quotaUser", valid_594221
-  var valid_594222 = query.getOrDefault("alt")
-  valid_594222 = validateParameter(valid_594222, JString, required = false,
+  if valid_580221 != nil:
+    section.add "quotaUser", valid_580221
+  var valid_580222 = query.getOrDefault("alt")
+  valid_580222 = validateParameter(valid_580222, JString, required = false,
                                  default = newJString("json"))
-  if valid_594222 != nil:
-    section.add "alt", valid_594222
-  var valid_594223 = query.getOrDefault("oauth_token")
-  valid_594223 = validateParameter(valid_594223, JString, required = false,
+  if valid_580222 != nil:
+    section.add "alt", valid_580222
+  var valid_580223 = query.getOrDefault("oauth_token")
+  valid_580223 = validateParameter(valid_580223, JString, required = false,
                                  default = nil)
-  if valid_594223 != nil:
-    section.add "oauth_token", valid_594223
-  var valid_594224 = query.getOrDefault("userIp")
-  valid_594224 = validateParameter(valid_594224, JString, required = false,
+  if valid_580223 != nil:
+    section.add "oauth_token", valid_580223
+  var valid_580224 = query.getOrDefault("userIp")
+  valid_580224 = validateParameter(valid_580224, JString, required = false,
                                  default = nil)
-  if valid_594224 != nil:
-    section.add "userIp", valid_594224
-  var valid_594225 = query.getOrDefault("key")
-  valid_594225 = validateParameter(valid_594225, JString, required = false,
+  if valid_580224 != nil:
+    section.add "userIp", valid_580224
+  var valid_580225 = query.getOrDefault("key")
+  valid_580225 = validateParameter(valid_580225, JString, required = false,
                                  default = nil)
-  if valid_594225 != nil:
-    section.add "key", valid_594225
-  var valid_594226 = query.getOrDefault("prettyPrint")
-  valid_594226 = validateParameter(valid_594226, JBool, required = false,
+  if valid_580225 != nil:
+    section.add "key", valid_580225
+  var valid_580226 = query.getOrDefault("prettyPrint")
+  valid_580226 = validateParameter(valid_580226, JBool, required = false,
                                  default = newJBool(true))
-  if valid_594226 != nil:
-    section.add "prettyPrint", valid_594226
+  if valid_580226 != nil:
+    section.add "prettyPrint", valid_580226
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -2683,21 +2685,21 @@ proc validate_TagmanagerAccountsContainersFoldersUpdate_594214(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_594228: Call_TagmanagerAccountsContainersFoldersUpdate_594213;
+proc call*(call_580228: Call_TagmanagerAccountsContainersFoldersUpdate_580213;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Updates a GTM Folder.
   ## 
-  let valid = call_594228.validator(path, query, header, formData, body)
-  let scheme = call_594228.pickScheme
+  let valid = call_580228.validator(path, query, header, formData, body)
+  let scheme = call_580228.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_594228.url(scheme.get, call_594228.host, call_594228.base,
-                         call_594228.route, valid.getOrDefault("path"),
+  let url = call_580228.url(scheme.get, call_580228.host, call_580228.base,
+                         call_580228.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_594228, url, valid)
+  result = hook(call_580228, url, valid)
 
-proc call*(call_594229: Call_TagmanagerAccountsContainersFoldersUpdate_594213;
+proc call*(call_580229: Call_TagmanagerAccountsContainersFoldersUpdate_580213;
           containerId: string; accountId: string; folderId: string;
           fields: string = ""; fingerprint: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; userIp: string = "";
@@ -2727,38 +2729,38 @@ proc call*(call_594229: Call_TagmanagerAccountsContainersFoldersUpdate_594213;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_594230 = newJObject()
-  var query_594231 = newJObject()
-  var body_594232 = newJObject()
-  add(path_594230, "containerId", newJString(containerId))
-  add(query_594231, "fields", newJString(fields))
-  add(query_594231, "fingerprint", newJString(fingerprint))
-  add(query_594231, "quotaUser", newJString(quotaUser))
-  add(query_594231, "alt", newJString(alt))
-  add(query_594231, "oauth_token", newJString(oauthToken))
-  add(path_594230, "accountId", newJString(accountId))
-  add(query_594231, "userIp", newJString(userIp))
-  add(path_594230, "folderId", newJString(folderId))
-  add(query_594231, "key", newJString(key))
+  var path_580230 = newJObject()
+  var query_580231 = newJObject()
+  var body_580232 = newJObject()
+  add(path_580230, "containerId", newJString(containerId))
+  add(query_580231, "fields", newJString(fields))
+  add(query_580231, "fingerprint", newJString(fingerprint))
+  add(query_580231, "quotaUser", newJString(quotaUser))
+  add(query_580231, "alt", newJString(alt))
+  add(query_580231, "oauth_token", newJString(oauthToken))
+  add(path_580230, "accountId", newJString(accountId))
+  add(query_580231, "userIp", newJString(userIp))
+  add(path_580230, "folderId", newJString(folderId))
+  add(query_580231, "key", newJString(key))
   if body != nil:
-    body_594232 = body
-  add(query_594231, "prettyPrint", newJBool(prettyPrint))
-  result = call_594229.call(path_594230, query_594231, nil, nil, body_594232)
+    body_580232 = body
+  add(query_580231, "prettyPrint", newJBool(prettyPrint))
+  result = call_580229.call(path_580230, query_580231, nil, nil, body_580232)
 
-var tagmanagerAccountsContainersFoldersUpdate* = Call_TagmanagerAccountsContainersFoldersUpdate_594213(
+var tagmanagerAccountsContainersFoldersUpdate* = Call_TagmanagerAccountsContainersFoldersUpdate_580213(
     name: "tagmanagerAccountsContainersFoldersUpdate", meth: HttpMethod.HttpPut,
     host: "www.googleapis.com",
     route: "/accounts/{accountId}/containers/{containerId}/folders/{folderId}",
-    validator: validate_TagmanagerAccountsContainersFoldersUpdate_594214,
-    base: "/tagmanager/v1", url: url_TagmanagerAccountsContainersFoldersUpdate_594215,
+    validator: validate_TagmanagerAccountsContainersFoldersUpdate_580214,
+    base: "/tagmanager/v1", url: url_TagmanagerAccountsContainersFoldersUpdate_580215,
     schemes: {Scheme.Https})
 type
-  Call_TagmanagerAccountsContainersFoldersGet_594196 = ref object of OpenApiRestCall_593408
-proc url_TagmanagerAccountsContainersFoldersGet_594198(protocol: Scheme;
+  Call_TagmanagerAccountsContainersFoldersGet_580196 = ref object of OpenApiRestCall_579408
+proc url_TagmanagerAccountsContainersFoldersGet_580198(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "accountId" in path, "`accountId` is a required path parameter"
   assert "containerId" in path, "`containerId` is a required path parameter"
@@ -2775,7 +2777,7 @@ proc url_TagmanagerAccountsContainersFoldersGet_594198(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_TagmanagerAccountsContainersFoldersGet_594197(path: JsonNode;
+proc validate_TagmanagerAccountsContainersFoldersGet_580197(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Gets a GTM Folder.
   ## 
@@ -2791,21 +2793,21 @@ proc validate_TagmanagerAccountsContainersFoldersGet_594197(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `containerId` field"
-  var valid_594199 = path.getOrDefault("containerId")
-  valid_594199 = validateParameter(valid_594199, JString, required = true,
+  var valid_580199 = path.getOrDefault("containerId")
+  valid_580199 = validateParameter(valid_580199, JString, required = true,
                                  default = nil)
-  if valid_594199 != nil:
-    section.add "containerId", valid_594199
-  var valid_594200 = path.getOrDefault("accountId")
-  valid_594200 = validateParameter(valid_594200, JString, required = true,
+  if valid_580199 != nil:
+    section.add "containerId", valid_580199
+  var valid_580200 = path.getOrDefault("accountId")
+  valid_580200 = validateParameter(valid_580200, JString, required = true,
                                  default = nil)
-  if valid_594200 != nil:
-    section.add "accountId", valid_594200
-  var valid_594201 = path.getOrDefault("folderId")
-  valid_594201 = validateParameter(valid_594201, JString, required = true,
+  if valid_580200 != nil:
+    section.add "accountId", valid_580200
+  var valid_580201 = path.getOrDefault("folderId")
+  valid_580201 = validateParameter(valid_580201, JString, required = true,
                                  default = nil)
-  if valid_594201 != nil:
-    section.add "folderId", valid_594201
+  if valid_580201 != nil:
+    section.add "folderId", valid_580201
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -2823,41 +2825,41 @@ proc validate_TagmanagerAccountsContainersFoldersGet_594197(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_594202 = query.getOrDefault("fields")
-  valid_594202 = validateParameter(valid_594202, JString, required = false,
+  var valid_580202 = query.getOrDefault("fields")
+  valid_580202 = validateParameter(valid_580202, JString, required = false,
                                  default = nil)
-  if valid_594202 != nil:
-    section.add "fields", valid_594202
-  var valid_594203 = query.getOrDefault("quotaUser")
-  valid_594203 = validateParameter(valid_594203, JString, required = false,
+  if valid_580202 != nil:
+    section.add "fields", valid_580202
+  var valid_580203 = query.getOrDefault("quotaUser")
+  valid_580203 = validateParameter(valid_580203, JString, required = false,
                                  default = nil)
-  if valid_594203 != nil:
-    section.add "quotaUser", valid_594203
-  var valid_594204 = query.getOrDefault("alt")
-  valid_594204 = validateParameter(valid_594204, JString, required = false,
+  if valid_580203 != nil:
+    section.add "quotaUser", valid_580203
+  var valid_580204 = query.getOrDefault("alt")
+  valid_580204 = validateParameter(valid_580204, JString, required = false,
                                  default = newJString("json"))
-  if valid_594204 != nil:
-    section.add "alt", valid_594204
-  var valid_594205 = query.getOrDefault("oauth_token")
-  valid_594205 = validateParameter(valid_594205, JString, required = false,
+  if valid_580204 != nil:
+    section.add "alt", valid_580204
+  var valid_580205 = query.getOrDefault("oauth_token")
+  valid_580205 = validateParameter(valid_580205, JString, required = false,
                                  default = nil)
-  if valid_594205 != nil:
-    section.add "oauth_token", valid_594205
-  var valid_594206 = query.getOrDefault("userIp")
-  valid_594206 = validateParameter(valid_594206, JString, required = false,
+  if valid_580205 != nil:
+    section.add "oauth_token", valid_580205
+  var valid_580206 = query.getOrDefault("userIp")
+  valid_580206 = validateParameter(valid_580206, JString, required = false,
                                  default = nil)
-  if valid_594206 != nil:
-    section.add "userIp", valid_594206
-  var valid_594207 = query.getOrDefault("key")
-  valid_594207 = validateParameter(valid_594207, JString, required = false,
+  if valid_580206 != nil:
+    section.add "userIp", valid_580206
+  var valid_580207 = query.getOrDefault("key")
+  valid_580207 = validateParameter(valid_580207, JString, required = false,
                                  default = nil)
-  if valid_594207 != nil:
-    section.add "key", valid_594207
-  var valid_594208 = query.getOrDefault("prettyPrint")
-  valid_594208 = validateParameter(valid_594208, JBool, required = false,
+  if valid_580207 != nil:
+    section.add "key", valid_580207
+  var valid_580208 = query.getOrDefault("prettyPrint")
+  valid_580208 = validateParameter(valid_580208, JBool, required = false,
                                  default = newJBool(true))
-  if valid_594208 != nil:
-    section.add "prettyPrint", valid_594208
+  if valid_580208 != nil:
+    section.add "prettyPrint", valid_580208
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -2866,21 +2868,21 @@ proc validate_TagmanagerAccountsContainersFoldersGet_594197(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_594209: Call_TagmanagerAccountsContainersFoldersGet_594196;
+proc call*(call_580209: Call_TagmanagerAccountsContainersFoldersGet_580196;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Gets a GTM Folder.
   ## 
-  let valid = call_594209.validator(path, query, header, formData, body)
-  let scheme = call_594209.pickScheme
+  let valid = call_580209.validator(path, query, header, formData, body)
+  let scheme = call_580209.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_594209.url(scheme.get, call_594209.host, call_594209.base,
-                         call_594209.route, valid.getOrDefault("path"),
+  let url = call_580209.url(scheme.get, call_580209.host, call_580209.base,
+                         call_580209.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_594209, url, valid)
+  result = hook(call_580209, url, valid)
 
-proc call*(call_594210: Call_TagmanagerAccountsContainersFoldersGet_594196;
+proc call*(call_580210: Call_TagmanagerAccountsContainersFoldersGet_580196;
           containerId: string; accountId: string; folderId: string;
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           oauthToken: string = ""; userIp: string = ""; key: string = "";
@@ -2907,34 +2909,34 @@ proc call*(call_594210: Call_TagmanagerAccountsContainersFoldersGet_594196;
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_594211 = newJObject()
-  var query_594212 = newJObject()
-  add(path_594211, "containerId", newJString(containerId))
-  add(query_594212, "fields", newJString(fields))
-  add(query_594212, "quotaUser", newJString(quotaUser))
-  add(query_594212, "alt", newJString(alt))
-  add(query_594212, "oauth_token", newJString(oauthToken))
-  add(path_594211, "accountId", newJString(accountId))
-  add(query_594212, "userIp", newJString(userIp))
-  add(path_594211, "folderId", newJString(folderId))
-  add(query_594212, "key", newJString(key))
-  add(query_594212, "prettyPrint", newJBool(prettyPrint))
-  result = call_594210.call(path_594211, query_594212, nil, nil, nil)
+  var path_580211 = newJObject()
+  var query_580212 = newJObject()
+  add(path_580211, "containerId", newJString(containerId))
+  add(query_580212, "fields", newJString(fields))
+  add(query_580212, "quotaUser", newJString(quotaUser))
+  add(query_580212, "alt", newJString(alt))
+  add(query_580212, "oauth_token", newJString(oauthToken))
+  add(path_580211, "accountId", newJString(accountId))
+  add(query_580212, "userIp", newJString(userIp))
+  add(path_580211, "folderId", newJString(folderId))
+  add(query_580212, "key", newJString(key))
+  add(query_580212, "prettyPrint", newJBool(prettyPrint))
+  result = call_580210.call(path_580211, query_580212, nil, nil, nil)
 
-var tagmanagerAccountsContainersFoldersGet* = Call_TagmanagerAccountsContainersFoldersGet_594196(
+var tagmanagerAccountsContainersFoldersGet* = Call_TagmanagerAccountsContainersFoldersGet_580196(
     name: "tagmanagerAccountsContainersFoldersGet", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com",
     route: "/accounts/{accountId}/containers/{containerId}/folders/{folderId}",
-    validator: validate_TagmanagerAccountsContainersFoldersGet_594197,
-    base: "/tagmanager/v1", url: url_TagmanagerAccountsContainersFoldersGet_594198,
+    validator: validate_TagmanagerAccountsContainersFoldersGet_580197,
+    base: "/tagmanager/v1", url: url_TagmanagerAccountsContainersFoldersGet_580198,
     schemes: {Scheme.Https})
 type
-  Call_TagmanagerAccountsContainersFoldersDelete_594233 = ref object of OpenApiRestCall_593408
-proc url_TagmanagerAccountsContainersFoldersDelete_594235(protocol: Scheme;
+  Call_TagmanagerAccountsContainersFoldersDelete_580233 = ref object of OpenApiRestCall_579408
+proc url_TagmanagerAccountsContainersFoldersDelete_580235(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "accountId" in path, "`accountId` is a required path parameter"
   assert "containerId" in path, "`containerId` is a required path parameter"
@@ -2951,7 +2953,7 @@ proc url_TagmanagerAccountsContainersFoldersDelete_594235(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_TagmanagerAccountsContainersFoldersDelete_594234(path: JsonNode;
+proc validate_TagmanagerAccountsContainersFoldersDelete_580234(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Deletes a GTM Folder.
   ## 
@@ -2967,21 +2969,21 @@ proc validate_TagmanagerAccountsContainersFoldersDelete_594234(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `containerId` field"
-  var valid_594236 = path.getOrDefault("containerId")
-  valid_594236 = validateParameter(valid_594236, JString, required = true,
+  var valid_580236 = path.getOrDefault("containerId")
+  valid_580236 = validateParameter(valid_580236, JString, required = true,
                                  default = nil)
-  if valid_594236 != nil:
-    section.add "containerId", valid_594236
-  var valid_594237 = path.getOrDefault("accountId")
-  valid_594237 = validateParameter(valid_594237, JString, required = true,
+  if valid_580236 != nil:
+    section.add "containerId", valid_580236
+  var valid_580237 = path.getOrDefault("accountId")
+  valid_580237 = validateParameter(valid_580237, JString, required = true,
                                  default = nil)
-  if valid_594237 != nil:
-    section.add "accountId", valid_594237
-  var valid_594238 = path.getOrDefault("folderId")
-  valid_594238 = validateParameter(valid_594238, JString, required = true,
+  if valid_580237 != nil:
+    section.add "accountId", valid_580237
+  var valid_580238 = path.getOrDefault("folderId")
+  valid_580238 = validateParameter(valid_580238, JString, required = true,
                                  default = nil)
-  if valid_594238 != nil:
-    section.add "folderId", valid_594238
+  if valid_580238 != nil:
+    section.add "folderId", valid_580238
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -2999,41 +3001,41 @@ proc validate_TagmanagerAccountsContainersFoldersDelete_594234(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_594239 = query.getOrDefault("fields")
-  valid_594239 = validateParameter(valid_594239, JString, required = false,
+  var valid_580239 = query.getOrDefault("fields")
+  valid_580239 = validateParameter(valid_580239, JString, required = false,
                                  default = nil)
-  if valid_594239 != nil:
-    section.add "fields", valid_594239
-  var valid_594240 = query.getOrDefault("quotaUser")
-  valid_594240 = validateParameter(valid_594240, JString, required = false,
+  if valid_580239 != nil:
+    section.add "fields", valid_580239
+  var valid_580240 = query.getOrDefault("quotaUser")
+  valid_580240 = validateParameter(valid_580240, JString, required = false,
                                  default = nil)
-  if valid_594240 != nil:
-    section.add "quotaUser", valid_594240
-  var valid_594241 = query.getOrDefault("alt")
-  valid_594241 = validateParameter(valid_594241, JString, required = false,
+  if valid_580240 != nil:
+    section.add "quotaUser", valid_580240
+  var valid_580241 = query.getOrDefault("alt")
+  valid_580241 = validateParameter(valid_580241, JString, required = false,
                                  default = newJString("json"))
-  if valid_594241 != nil:
-    section.add "alt", valid_594241
-  var valid_594242 = query.getOrDefault("oauth_token")
-  valid_594242 = validateParameter(valid_594242, JString, required = false,
+  if valid_580241 != nil:
+    section.add "alt", valid_580241
+  var valid_580242 = query.getOrDefault("oauth_token")
+  valid_580242 = validateParameter(valid_580242, JString, required = false,
                                  default = nil)
-  if valid_594242 != nil:
-    section.add "oauth_token", valid_594242
-  var valid_594243 = query.getOrDefault("userIp")
-  valid_594243 = validateParameter(valid_594243, JString, required = false,
+  if valid_580242 != nil:
+    section.add "oauth_token", valid_580242
+  var valid_580243 = query.getOrDefault("userIp")
+  valid_580243 = validateParameter(valid_580243, JString, required = false,
                                  default = nil)
-  if valid_594243 != nil:
-    section.add "userIp", valid_594243
-  var valid_594244 = query.getOrDefault("key")
-  valid_594244 = validateParameter(valid_594244, JString, required = false,
+  if valid_580243 != nil:
+    section.add "userIp", valid_580243
+  var valid_580244 = query.getOrDefault("key")
+  valid_580244 = validateParameter(valid_580244, JString, required = false,
                                  default = nil)
-  if valid_594244 != nil:
-    section.add "key", valid_594244
-  var valid_594245 = query.getOrDefault("prettyPrint")
-  valid_594245 = validateParameter(valid_594245, JBool, required = false,
+  if valid_580244 != nil:
+    section.add "key", valid_580244
+  var valid_580245 = query.getOrDefault("prettyPrint")
+  valid_580245 = validateParameter(valid_580245, JBool, required = false,
                                  default = newJBool(true))
-  if valid_594245 != nil:
-    section.add "prettyPrint", valid_594245
+  if valid_580245 != nil:
+    section.add "prettyPrint", valid_580245
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -3042,21 +3044,21 @@ proc validate_TagmanagerAccountsContainersFoldersDelete_594234(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_594246: Call_TagmanagerAccountsContainersFoldersDelete_594233;
+proc call*(call_580246: Call_TagmanagerAccountsContainersFoldersDelete_580233;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Deletes a GTM Folder.
   ## 
-  let valid = call_594246.validator(path, query, header, formData, body)
-  let scheme = call_594246.pickScheme
+  let valid = call_580246.validator(path, query, header, formData, body)
+  let scheme = call_580246.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_594246.url(scheme.get, call_594246.host, call_594246.base,
-                         call_594246.route, valid.getOrDefault("path"),
+  let url = call_580246.url(scheme.get, call_580246.host, call_580246.base,
+                         call_580246.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_594246, url, valid)
+  result = hook(call_580246, url, valid)
 
-proc call*(call_594247: Call_TagmanagerAccountsContainersFoldersDelete_594233;
+proc call*(call_580247: Call_TagmanagerAccountsContainersFoldersDelete_580233;
           containerId: string; accountId: string; folderId: string;
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           oauthToken: string = ""; userIp: string = ""; key: string = "";
@@ -3083,34 +3085,34 @@ proc call*(call_594247: Call_TagmanagerAccountsContainersFoldersDelete_594233;
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_594248 = newJObject()
-  var query_594249 = newJObject()
-  add(path_594248, "containerId", newJString(containerId))
-  add(query_594249, "fields", newJString(fields))
-  add(query_594249, "quotaUser", newJString(quotaUser))
-  add(query_594249, "alt", newJString(alt))
-  add(query_594249, "oauth_token", newJString(oauthToken))
-  add(path_594248, "accountId", newJString(accountId))
-  add(query_594249, "userIp", newJString(userIp))
-  add(path_594248, "folderId", newJString(folderId))
-  add(query_594249, "key", newJString(key))
-  add(query_594249, "prettyPrint", newJBool(prettyPrint))
-  result = call_594247.call(path_594248, query_594249, nil, nil, nil)
+  var path_580248 = newJObject()
+  var query_580249 = newJObject()
+  add(path_580248, "containerId", newJString(containerId))
+  add(query_580249, "fields", newJString(fields))
+  add(query_580249, "quotaUser", newJString(quotaUser))
+  add(query_580249, "alt", newJString(alt))
+  add(query_580249, "oauth_token", newJString(oauthToken))
+  add(path_580248, "accountId", newJString(accountId))
+  add(query_580249, "userIp", newJString(userIp))
+  add(path_580248, "folderId", newJString(folderId))
+  add(query_580249, "key", newJString(key))
+  add(query_580249, "prettyPrint", newJBool(prettyPrint))
+  result = call_580247.call(path_580248, query_580249, nil, nil, nil)
 
-var tagmanagerAccountsContainersFoldersDelete* = Call_TagmanagerAccountsContainersFoldersDelete_594233(
+var tagmanagerAccountsContainersFoldersDelete* = Call_TagmanagerAccountsContainersFoldersDelete_580233(
     name: "tagmanagerAccountsContainersFoldersDelete",
     meth: HttpMethod.HttpDelete, host: "www.googleapis.com",
     route: "/accounts/{accountId}/containers/{containerId}/folders/{folderId}",
-    validator: validate_TagmanagerAccountsContainersFoldersDelete_594234,
-    base: "/tagmanager/v1", url: url_TagmanagerAccountsContainersFoldersDelete_594235,
+    validator: validate_TagmanagerAccountsContainersFoldersDelete_580234,
+    base: "/tagmanager/v1", url: url_TagmanagerAccountsContainersFoldersDelete_580235,
     schemes: {Scheme.Https})
 type
-  Call_TagmanagerAccountsContainersFoldersEntitiesList_594250 = ref object of OpenApiRestCall_593408
-proc url_TagmanagerAccountsContainersFoldersEntitiesList_594252(protocol: Scheme;
+  Call_TagmanagerAccountsContainersFoldersEntitiesList_580250 = ref object of OpenApiRestCall_579408
+proc url_TagmanagerAccountsContainersFoldersEntitiesList_580252(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "accountId" in path, "`accountId` is a required path parameter"
   assert "containerId" in path, "`containerId` is a required path parameter"
@@ -3128,7 +3130,7 @@ proc url_TagmanagerAccountsContainersFoldersEntitiesList_594252(protocol: Scheme
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_TagmanagerAccountsContainersFoldersEntitiesList_594251(
+proc validate_TagmanagerAccountsContainersFoldersEntitiesList_580251(
     path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
     body: JsonNode): JsonNode =
   ## List all entities in a GTM Folder.
@@ -3145,21 +3147,21 @@ proc validate_TagmanagerAccountsContainersFoldersEntitiesList_594251(
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `containerId` field"
-  var valid_594253 = path.getOrDefault("containerId")
-  valid_594253 = validateParameter(valid_594253, JString, required = true,
+  var valid_580253 = path.getOrDefault("containerId")
+  valid_580253 = validateParameter(valid_580253, JString, required = true,
                                  default = nil)
-  if valid_594253 != nil:
-    section.add "containerId", valid_594253
-  var valid_594254 = path.getOrDefault("accountId")
-  valid_594254 = validateParameter(valid_594254, JString, required = true,
+  if valid_580253 != nil:
+    section.add "containerId", valid_580253
+  var valid_580254 = path.getOrDefault("accountId")
+  valid_580254 = validateParameter(valid_580254, JString, required = true,
                                  default = nil)
-  if valid_594254 != nil:
-    section.add "accountId", valid_594254
-  var valid_594255 = path.getOrDefault("folderId")
-  valid_594255 = validateParameter(valid_594255, JString, required = true,
+  if valid_580254 != nil:
+    section.add "accountId", valid_580254
+  var valid_580255 = path.getOrDefault("folderId")
+  valid_580255 = validateParameter(valid_580255, JString, required = true,
                                  default = nil)
-  if valid_594255 != nil:
-    section.add "folderId", valid_594255
+  if valid_580255 != nil:
+    section.add "folderId", valid_580255
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -3177,41 +3179,41 @@ proc validate_TagmanagerAccountsContainersFoldersEntitiesList_594251(
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_594256 = query.getOrDefault("fields")
-  valid_594256 = validateParameter(valid_594256, JString, required = false,
+  var valid_580256 = query.getOrDefault("fields")
+  valid_580256 = validateParameter(valid_580256, JString, required = false,
                                  default = nil)
-  if valid_594256 != nil:
-    section.add "fields", valid_594256
-  var valid_594257 = query.getOrDefault("quotaUser")
-  valid_594257 = validateParameter(valid_594257, JString, required = false,
+  if valid_580256 != nil:
+    section.add "fields", valid_580256
+  var valid_580257 = query.getOrDefault("quotaUser")
+  valid_580257 = validateParameter(valid_580257, JString, required = false,
                                  default = nil)
-  if valid_594257 != nil:
-    section.add "quotaUser", valid_594257
-  var valid_594258 = query.getOrDefault("alt")
-  valid_594258 = validateParameter(valid_594258, JString, required = false,
+  if valid_580257 != nil:
+    section.add "quotaUser", valid_580257
+  var valid_580258 = query.getOrDefault("alt")
+  valid_580258 = validateParameter(valid_580258, JString, required = false,
                                  default = newJString("json"))
-  if valid_594258 != nil:
-    section.add "alt", valid_594258
-  var valid_594259 = query.getOrDefault("oauth_token")
-  valid_594259 = validateParameter(valid_594259, JString, required = false,
+  if valid_580258 != nil:
+    section.add "alt", valid_580258
+  var valid_580259 = query.getOrDefault("oauth_token")
+  valid_580259 = validateParameter(valid_580259, JString, required = false,
                                  default = nil)
-  if valid_594259 != nil:
-    section.add "oauth_token", valid_594259
-  var valid_594260 = query.getOrDefault("userIp")
-  valid_594260 = validateParameter(valid_594260, JString, required = false,
+  if valid_580259 != nil:
+    section.add "oauth_token", valid_580259
+  var valid_580260 = query.getOrDefault("userIp")
+  valid_580260 = validateParameter(valid_580260, JString, required = false,
                                  default = nil)
-  if valid_594260 != nil:
-    section.add "userIp", valid_594260
-  var valid_594261 = query.getOrDefault("key")
-  valid_594261 = validateParameter(valid_594261, JString, required = false,
+  if valid_580260 != nil:
+    section.add "userIp", valid_580260
+  var valid_580261 = query.getOrDefault("key")
+  valid_580261 = validateParameter(valid_580261, JString, required = false,
                                  default = nil)
-  if valid_594261 != nil:
-    section.add "key", valid_594261
-  var valid_594262 = query.getOrDefault("prettyPrint")
-  valid_594262 = validateParameter(valid_594262, JBool, required = false,
+  if valid_580261 != nil:
+    section.add "key", valid_580261
+  var valid_580262 = query.getOrDefault("prettyPrint")
+  valid_580262 = validateParameter(valid_580262, JBool, required = false,
                                  default = newJBool(true))
-  if valid_594262 != nil:
-    section.add "prettyPrint", valid_594262
+  if valid_580262 != nil:
+    section.add "prettyPrint", valid_580262
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -3220,21 +3222,21 @@ proc validate_TagmanagerAccountsContainersFoldersEntitiesList_594251(
   if body != nil:
     result.add "body", body
 
-proc call*(call_594263: Call_TagmanagerAccountsContainersFoldersEntitiesList_594250;
+proc call*(call_580263: Call_TagmanagerAccountsContainersFoldersEntitiesList_580250;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## List all entities in a GTM Folder.
   ## 
-  let valid = call_594263.validator(path, query, header, formData, body)
-  let scheme = call_594263.pickScheme
+  let valid = call_580263.validator(path, query, header, formData, body)
+  let scheme = call_580263.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_594263.url(scheme.get, call_594263.host, call_594263.base,
-                         call_594263.route, valid.getOrDefault("path"),
+  let url = call_580263.url(scheme.get, call_580263.host, call_580263.base,
+                         call_580263.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_594263, url, valid)
+  result = hook(call_580263, url, valid)
 
-proc call*(call_594264: Call_TagmanagerAccountsContainersFoldersEntitiesList_594250;
+proc call*(call_580264: Call_TagmanagerAccountsContainersFoldersEntitiesList_580250;
           containerId: string; accountId: string; folderId: string;
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           oauthToken: string = ""; userIp: string = ""; key: string = "";
@@ -3261,34 +3263,34 @@ proc call*(call_594264: Call_TagmanagerAccountsContainersFoldersEntitiesList_594
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_594265 = newJObject()
-  var query_594266 = newJObject()
-  add(path_594265, "containerId", newJString(containerId))
-  add(query_594266, "fields", newJString(fields))
-  add(query_594266, "quotaUser", newJString(quotaUser))
-  add(query_594266, "alt", newJString(alt))
-  add(query_594266, "oauth_token", newJString(oauthToken))
-  add(path_594265, "accountId", newJString(accountId))
-  add(query_594266, "userIp", newJString(userIp))
-  add(path_594265, "folderId", newJString(folderId))
-  add(query_594266, "key", newJString(key))
-  add(query_594266, "prettyPrint", newJBool(prettyPrint))
-  result = call_594264.call(path_594265, query_594266, nil, nil, nil)
+  var path_580265 = newJObject()
+  var query_580266 = newJObject()
+  add(path_580265, "containerId", newJString(containerId))
+  add(query_580266, "fields", newJString(fields))
+  add(query_580266, "quotaUser", newJString(quotaUser))
+  add(query_580266, "alt", newJString(alt))
+  add(query_580266, "oauth_token", newJString(oauthToken))
+  add(path_580265, "accountId", newJString(accountId))
+  add(query_580266, "userIp", newJString(userIp))
+  add(path_580265, "folderId", newJString(folderId))
+  add(query_580266, "key", newJString(key))
+  add(query_580266, "prettyPrint", newJBool(prettyPrint))
+  result = call_580264.call(path_580265, query_580266, nil, nil, nil)
 
-var tagmanagerAccountsContainersFoldersEntitiesList* = Call_TagmanagerAccountsContainersFoldersEntitiesList_594250(
+var tagmanagerAccountsContainersFoldersEntitiesList* = Call_TagmanagerAccountsContainersFoldersEntitiesList_580250(
     name: "tagmanagerAccountsContainersFoldersEntitiesList",
     meth: HttpMethod.HttpGet, host: "www.googleapis.com", route: "/accounts/{accountId}/containers/{containerId}/folders/{folderId}/entities",
-    validator: validate_TagmanagerAccountsContainersFoldersEntitiesList_594251,
+    validator: validate_TagmanagerAccountsContainersFoldersEntitiesList_580251,
     base: "/tagmanager/v1",
-    url: url_TagmanagerAccountsContainersFoldersEntitiesList_594252,
+    url: url_TagmanagerAccountsContainersFoldersEntitiesList_580252,
     schemes: {Scheme.Https})
 type
-  Call_TagmanagerAccountsContainersMoveFoldersUpdate_594267 = ref object of OpenApiRestCall_593408
-proc url_TagmanagerAccountsContainersMoveFoldersUpdate_594269(protocol: Scheme;
+  Call_TagmanagerAccountsContainersMoveFoldersUpdate_580267 = ref object of OpenApiRestCall_579408
+proc url_TagmanagerAccountsContainersMoveFoldersUpdate_580269(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "accountId" in path, "`accountId` is a required path parameter"
   assert "containerId" in path, "`containerId` is a required path parameter"
@@ -3305,7 +3307,7 @@ proc url_TagmanagerAccountsContainersMoveFoldersUpdate_594269(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_TagmanagerAccountsContainersMoveFoldersUpdate_594268(
+proc validate_TagmanagerAccountsContainersMoveFoldersUpdate_580268(
     path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
     body: JsonNode): JsonNode =
   ## Moves entities to a GTM Folder.
@@ -3322,21 +3324,21 @@ proc validate_TagmanagerAccountsContainersMoveFoldersUpdate_594268(
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `containerId` field"
-  var valid_594270 = path.getOrDefault("containerId")
-  valid_594270 = validateParameter(valid_594270, JString, required = true,
+  var valid_580270 = path.getOrDefault("containerId")
+  valid_580270 = validateParameter(valid_580270, JString, required = true,
                                  default = nil)
-  if valid_594270 != nil:
-    section.add "containerId", valid_594270
-  var valid_594271 = path.getOrDefault("accountId")
-  valid_594271 = validateParameter(valid_594271, JString, required = true,
+  if valid_580270 != nil:
+    section.add "containerId", valid_580270
+  var valid_580271 = path.getOrDefault("accountId")
+  valid_580271 = validateParameter(valid_580271, JString, required = true,
                                  default = nil)
-  if valid_594271 != nil:
-    section.add "accountId", valid_594271
-  var valid_594272 = path.getOrDefault("folderId")
-  valid_594272 = validateParameter(valid_594272, JString, required = true,
+  if valid_580271 != nil:
+    section.add "accountId", valid_580271
+  var valid_580272 = path.getOrDefault("folderId")
+  valid_580272 = validateParameter(valid_580272, JString, required = true,
                                  default = nil)
-  if valid_594272 != nil:
-    section.add "folderId", valid_594272
+  if valid_580272 != nil:
+    section.add "folderId", valid_580272
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -3360,56 +3362,56 @@ proc validate_TagmanagerAccountsContainersMoveFoldersUpdate_594268(
   ##   variableId: JArray
   ##             : The variables to be moved to the folder.
   section = newJObject()
-  var valid_594273 = query.getOrDefault("fields")
-  valid_594273 = validateParameter(valid_594273, JString, required = false,
+  var valid_580273 = query.getOrDefault("fields")
+  valid_580273 = validateParameter(valid_580273, JString, required = false,
                                  default = nil)
-  if valid_594273 != nil:
-    section.add "fields", valid_594273
-  var valid_594274 = query.getOrDefault("quotaUser")
-  valid_594274 = validateParameter(valid_594274, JString, required = false,
+  if valid_580273 != nil:
+    section.add "fields", valid_580273
+  var valid_580274 = query.getOrDefault("quotaUser")
+  valid_580274 = validateParameter(valid_580274, JString, required = false,
                                  default = nil)
-  if valid_594274 != nil:
-    section.add "quotaUser", valid_594274
-  var valid_594275 = query.getOrDefault("alt")
-  valid_594275 = validateParameter(valid_594275, JString, required = false,
+  if valid_580274 != nil:
+    section.add "quotaUser", valid_580274
+  var valid_580275 = query.getOrDefault("alt")
+  valid_580275 = validateParameter(valid_580275, JString, required = false,
                                  default = newJString("json"))
-  if valid_594275 != nil:
-    section.add "alt", valid_594275
-  var valid_594276 = query.getOrDefault("oauth_token")
-  valid_594276 = validateParameter(valid_594276, JString, required = false,
+  if valid_580275 != nil:
+    section.add "alt", valid_580275
+  var valid_580276 = query.getOrDefault("oauth_token")
+  valid_580276 = validateParameter(valid_580276, JString, required = false,
                                  default = nil)
-  if valid_594276 != nil:
-    section.add "oauth_token", valid_594276
-  var valid_594277 = query.getOrDefault("userIp")
-  valid_594277 = validateParameter(valid_594277, JString, required = false,
+  if valid_580276 != nil:
+    section.add "oauth_token", valid_580276
+  var valid_580277 = query.getOrDefault("userIp")
+  valid_580277 = validateParameter(valid_580277, JString, required = false,
                                  default = nil)
-  if valid_594277 != nil:
-    section.add "userIp", valid_594277
-  var valid_594278 = query.getOrDefault("key")
-  valid_594278 = validateParameter(valid_594278, JString, required = false,
+  if valid_580277 != nil:
+    section.add "userIp", valid_580277
+  var valid_580278 = query.getOrDefault("key")
+  valid_580278 = validateParameter(valid_580278, JString, required = false,
                                  default = nil)
-  if valid_594278 != nil:
-    section.add "key", valid_594278
-  var valid_594279 = query.getOrDefault("triggerId")
-  valid_594279 = validateParameter(valid_594279, JArray, required = false,
+  if valid_580278 != nil:
+    section.add "key", valid_580278
+  var valid_580279 = query.getOrDefault("triggerId")
+  valid_580279 = validateParameter(valid_580279, JArray, required = false,
                                  default = nil)
-  if valid_594279 != nil:
-    section.add "triggerId", valid_594279
-  var valid_594280 = query.getOrDefault("prettyPrint")
-  valid_594280 = validateParameter(valid_594280, JBool, required = false,
+  if valid_580279 != nil:
+    section.add "triggerId", valid_580279
+  var valid_580280 = query.getOrDefault("prettyPrint")
+  valid_580280 = validateParameter(valid_580280, JBool, required = false,
                                  default = newJBool(true))
-  if valid_594280 != nil:
-    section.add "prettyPrint", valid_594280
-  var valid_594281 = query.getOrDefault("tagId")
-  valid_594281 = validateParameter(valid_594281, JArray, required = false,
+  if valid_580280 != nil:
+    section.add "prettyPrint", valid_580280
+  var valid_580281 = query.getOrDefault("tagId")
+  valid_580281 = validateParameter(valid_580281, JArray, required = false,
                                  default = nil)
-  if valid_594281 != nil:
-    section.add "tagId", valid_594281
-  var valid_594282 = query.getOrDefault("variableId")
-  valid_594282 = validateParameter(valid_594282, JArray, required = false,
+  if valid_580281 != nil:
+    section.add "tagId", valid_580281
+  var valid_580282 = query.getOrDefault("variableId")
+  valid_580282 = validateParameter(valid_580282, JArray, required = false,
                                  default = nil)
-  if valid_594282 != nil:
-    section.add "variableId", valid_594282
+  if valid_580282 != nil:
+    section.add "variableId", valid_580282
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -3421,21 +3423,21 @@ proc validate_TagmanagerAccountsContainersMoveFoldersUpdate_594268(
   if body != nil:
     result.add "body", body
 
-proc call*(call_594284: Call_TagmanagerAccountsContainersMoveFoldersUpdate_594267;
+proc call*(call_580284: Call_TagmanagerAccountsContainersMoveFoldersUpdate_580267;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Moves entities to a GTM Folder.
   ## 
-  let valid = call_594284.validator(path, query, header, formData, body)
-  let scheme = call_594284.pickScheme
+  let valid = call_580284.validator(path, query, header, formData, body)
+  let scheme = call_580284.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_594284.url(scheme.get, call_594284.host, call_594284.base,
-                         call_594284.route, valid.getOrDefault("path"),
+  let url = call_580284.url(scheme.get, call_580284.host, call_580284.base,
+                         call_580284.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_594284, url, valid)
+  result = hook(call_580284, url, valid)
 
-proc call*(call_594285: Call_TagmanagerAccountsContainersMoveFoldersUpdate_594267;
+proc call*(call_580285: Call_TagmanagerAccountsContainersMoveFoldersUpdate_580267;
           containerId: string; accountId: string; folderId: string;
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           oauthToken: string = ""; userIp: string = ""; key: string = "";
@@ -3470,44 +3472,44 @@ proc call*(call_594285: Call_TagmanagerAccountsContainersMoveFoldersUpdate_59426
   ##        : The tags to be moved to the folder.
   ##   variableId: JArray
   ##             : The variables to be moved to the folder.
-  var path_594286 = newJObject()
-  var query_594287 = newJObject()
-  var body_594288 = newJObject()
-  add(path_594286, "containerId", newJString(containerId))
-  add(query_594287, "fields", newJString(fields))
-  add(query_594287, "quotaUser", newJString(quotaUser))
-  add(query_594287, "alt", newJString(alt))
-  add(query_594287, "oauth_token", newJString(oauthToken))
-  add(path_594286, "accountId", newJString(accountId))
-  add(query_594287, "userIp", newJString(userIp))
-  add(path_594286, "folderId", newJString(folderId))
-  add(query_594287, "key", newJString(key))
+  var path_580286 = newJObject()
+  var query_580287 = newJObject()
+  var body_580288 = newJObject()
+  add(path_580286, "containerId", newJString(containerId))
+  add(query_580287, "fields", newJString(fields))
+  add(query_580287, "quotaUser", newJString(quotaUser))
+  add(query_580287, "alt", newJString(alt))
+  add(query_580287, "oauth_token", newJString(oauthToken))
+  add(path_580286, "accountId", newJString(accountId))
+  add(query_580287, "userIp", newJString(userIp))
+  add(path_580286, "folderId", newJString(folderId))
+  add(query_580287, "key", newJString(key))
   if triggerId != nil:
-    query_594287.add "triggerId", triggerId
+    query_580287.add "triggerId", triggerId
   if body != nil:
-    body_594288 = body
-  add(query_594287, "prettyPrint", newJBool(prettyPrint))
+    body_580288 = body
+  add(query_580287, "prettyPrint", newJBool(prettyPrint))
   if tagId != nil:
-    query_594287.add "tagId", tagId
+    query_580287.add "tagId", tagId
   if variableId != nil:
-    query_594287.add "variableId", variableId
-  result = call_594285.call(path_594286, query_594287, nil, nil, body_594288)
+    query_580287.add "variableId", variableId
+  result = call_580285.call(path_580286, query_580287, nil, nil, body_580288)
 
-var tagmanagerAccountsContainersMoveFoldersUpdate* = Call_TagmanagerAccountsContainersMoveFoldersUpdate_594267(
+var tagmanagerAccountsContainersMoveFoldersUpdate* = Call_TagmanagerAccountsContainersMoveFoldersUpdate_580267(
     name: "tagmanagerAccountsContainersMoveFoldersUpdate",
     meth: HttpMethod.HttpPut, host: "www.googleapis.com", route: "/accounts/{accountId}/containers/{containerId}/move_folders/{folderId}",
-    validator: validate_TagmanagerAccountsContainersMoveFoldersUpdate_594268,
+    validator: validate_TagmanagerAccountsContainersMoveFoldersUpdate_580268,
     base: "/tagmanager/v1",
-    url: url_TagmanagerAccountsContainersMoveFoldersUpdate_594269,
+    url: url_TagmanagerAccountsContainersMoveFoldersUpdate_580269,
     schemes: {Scheme.Https})
 type
-  Call_TagmanagerAccountsContainersReauthorizeEnvironmentsUpdate_594289 = ref object of OpenApiRestCall_593408
-proc url_TagmanagerAccountsContainersReauthorizeEnvironmentsUpdate_594291(
+  Call_TagmanagerAccountsContainersReauthorizeEnvironmentsUpdate_580289 = ref object of OpenApiRestCall_579408
+proc url_TagmanagerAccountsContainersReauthorizeEnvironmentsUpdate_580291(
     protocol: Scheme; host: string; base: string; route: string; path: JsonNode;
     query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "accountId" in path, "`accountId` is a required path parameter"
   assert "containerId" in path, "`containerId` is a required path parameter"
@@ -3524,7 +3526,7 @@ proc url_TagmanagerAccountsContainersReauthorizeEnvironmentsUpdate_594291(
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_TagmanagerAccountsContainersReauthorizeEnvironmentsUpdate_594290(
+proc validate_TagmanagerAccountsContainersReauthorizeEnvironmentsUpdate_580290(
     path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
     body: JsonNode): JsonNode =
   ## Re-generates the authorization code for a GTM Environment.
@@ -3541,21 +3543,21 @@ proc validate_TagmanagerAccountsContainersReauthorizeEnvironmentsUpdate_594290(
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `containerId` field"
-  var valid_594292 = path.getOrDefault("containerId")
-  valid_594292 = validateParameter(valid_594292, JString, required = true,
+  var valid_580292 = path.getOrDefault("containerId")
+  valid_580292 = validateParameter(valid_580292, JString, required = true,
                                  default = nil)
-  if valid_594292 != nil:
-    section.add "containerId", valid_594292
-  var valid_594293 = path.getOrDefault("accountId")
-  valid_594293 = validateParameter(valid_594293, JString, required = true,
+  if valid_580292 != nil:
+    section.add "containerId", valid_580292
+  var valid_580293 = path.getOrDefault("accountId")
+  valid_580293 = validateParameter(valid_580293, JString, required = true,
                                  default = nil)
-  if valid_594293 != nil:
-    section.add "accountId", valid_594293
-  var valid_594294 = path.getOrDefault("environmentId")
-  valid_594294 = validateParameter(valid_594294, JString, required = true,
+  if valid_580293 != nil:
+    section.add "accountId", valid_580293
+  var valid_580294 = path.getOrDefault("environmentId")
+  valid_580294 = validateParameter(valid_580294, JString, required = true,
                                  default = nil)
-  if valid_594294 != nil:
-    section.add "environmentId", valid_594294
+  if valid_580294 != nil:
+    section.add "environmentId", valid_580294
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -3573,41 +3575,41 @@ proc validate_TagmanagerAccountsContainersReauthorizeEnvironmentsUpdate_594290(
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_594295 = query.getOrDefault("fields")
-  valid_594295 = validateParameter(valid_594295, JString, required = false,
+  var valid_580295 = query.getOrDefault("fields")
+  valid_580295 = validateParameter(valid_580295, JString, required = false,
                                  default = nil)
-  if valid_594295 != nil:
-    section.add "fields", valid_594295
-  var valid_594296 = query.getOrDefault("quotaUser")
-  valid_594296 = validateParameter(valid_594296, JString, required = false,
+  if valid_580295 != nil:
+    section.add "fields", valid_580295
+  var valid_580296 = query.getOrDefault("quotaUser")
+  valid_580296 = validateParameter(valid_580296, JString, required = false,
                                  default = nil)
-  if valid_594296 != nil:
-    section.add "quotaUser", valid_594296
-  var valid_594297 = query.getOrDefault("alt")
-  valid_594297 = validateParameter(valid_594297, JString, required = false,
+  if valid_580296 != nil:
+    section.add "quotaUser", valid_580296
+  var valid_580297 = query.getOrDefault("alt")
+  valid_580297 = validateParameter(valid_580297, JString, required = false,
                                  default = newJString("json"))
-  if valid_594297 != nil:
-    section.add "alt", valid_594297
-  var valid_594298 = query.getOrDefault("oauth_token")
-  valid_594298 = validateParameter(valid_594298, JString, required = false,
+  if valid_580297 != nil:
+    section.add "alt", valid_580297
+  var valid_580298 = query.getOrDefault("oauth_token")
+  valid_580298 = validateParameter(valid_580298, JString, required = false,
                                  default = nil)
-  if valid_594298 != nil:
-    section.add "oauth_token", valid_594298
-  var valid_594299 = query.getOrDefault("userIp")
-  valid_594299 = validateParameter(valid_594299, JString, required = false,
+  if valid_580298 != nil:
+    section.add "oauth_token", valid_580298
+  var valid_580299 = query.getOrDefault("userIp")
+  valid_580299 = validateParameter(valid_580299, JString, required = false,
                                  default = nil)
-  if valid_594299 != nil:
-    section.add "userIp", valid_594299
-  var valid_594300 = query.getOrDefault("key")
-  valid_594300 = validateParameter(valid_594300, JString, required = false,
+  if valid_580299 != nil:
+    section.add "userIp", valid_580299
+  var valid_580300 = query.getOrDefault("key")
+  valid_580300 = validateParameter(valid_580300, JString, required = false,
                                  default = nil)
-  if valid_594300 != nil:
-    section.add "key", valid_594300
-  var valid_594301 = query.getOrDefault("prettyPrint")
-  valid_594301 = validateParameter(valid_594301, JBool, required = false,
+  if valid_580300 != nil:
+    section.add "key", valid_580300
+  var valid_580301 = query.getOrDefault("prettyPrint")
+  valid_580301 = validateParameter(valid_580301, JBool, required = false,
                                  default = newJBool(true))
-  if valid_594301 != nil:
-    section.add "prettyPrint", valid_594301
+  if valid_580301 != nil:
+    section.add "prettyPrint", valid_580301
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -3619,21 +3621,21 @@ proc validate_TagmanagerAccountsContainersReauthorizeEnvironmentsUpdate_594290(
   if body != nil:
     result.add "body", body
 
-proc call*(call_594303: Call_TagmanagerAccountsContainersReauthorizeEnvironmentsUpdate_594289;
+proc call*(call_580303: Call_TagmanagerAccountsContainersReauthorizeEnvironmentsUpdate_580289;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Re-generates the authorization code for a GTM Environment.
   ## 
-  let valid = call_594303.validator(path, query, header, formData, body)
-  let scheme = call_594303.pickScheme
+  let valid = call_580303.validator(path, query, header, formData, body)
+  let scheme = call_580303.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_594303.url(scheme.get, call_594303.host, call_594303.base,
-                         call_594303.route, valid.getOrDefault("path"),
+  let url = call_580303.url(scheme.get, call_580303.host, call_580303.base,
+                         call_580303.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_594303, url, valid)
+  result = hook(call_580303, url, valid)
 
-proc call*(call_594304: Call_TagmanagerAccountsContainersReauthorizeEnvironmentsUpdate_594289;
+proc call*(call_580304: Call_TagmanagerAccountsContainersReauthorizeEnvironmentsUpdate_580289;
           containerId: string; accountId: string; environmentId: string;
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           oauthToken: string = ""; userIp: string = ""; key: string = "";
@@ -3661,36 +3663,36 @@ proc call*(call_594304: Call_TagmanagerAccountsContainersReauthorizeEnvironments
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_594305 = newJObject()
-  var query_594306 = newJObject()
-  var body_594307 = newJObject()
-  add(path_594305, "containerId", newJString(containerId))
-  add(query_594306, "fields", newJString(fields))
-  add(query_594306, "quotaUser", newJString(quotaUser))
-  add(query_594306, "alt", newJString(alt))
-  add(query_594306, "oauth_token", newJString(oauthToken))
-  add(path_594305, "accountId", newJString(accountId))
-  add(query_594306, "userIp", newJString(userIp))
-  add(query_594306, "key", newJString(key))
-  add(path_594305, "environmentId", newJString(environmentId))
+  var path_580305 = newJObject()
+  var query_580306 = newJObject()
+  var body_580307 = newJObject()
+  add(path_580305, "containerId", newJString(containerId))
+  add(query_580306, "fields", newJString(fields))
+  add(query_580306, "quotaUser", newJString(quotaUser))
+  add(query_580306, "alt", newJString(alt))
+  add(query_580306, "oauth_token", newJString(oauthToken))
+  add(path_580305, "accountId", newJString(accountId))
+  add(query_580306, "userIp", newJString(userIp))
+  add(query_580306, "key", newJString(key))
+  add(path_580305, "environmentId", newJString(environmentId))
   if body != nil:
-    body_594307 = body
-  add(query_594306, "prettyPrint", newJBool(prettyPrint))
-  result = call_594304.call(path_594305, query_594306, nil, nil, body_594307)
+    body_580307 = body
+  add(query_580306, "prettyPrint", newJBool(prettyPrint))
+  result = call_580304.call(path_580305, query_580306, nil, nil, body_580307)
 
-var tagmanagerAccountsContainersReauthorizeEnvironmentsUpdate* = Call_TagmanagerAccountsContainersReauthorizeEnvironmentsUpdate_594289(
+var tagmanagerAccountsContainersReauthorizeEnvironmentsUpdate* = Call_TagmanagerAccountsContainersReauthorizeEnvironmentsUpdate_580289(
     name: "tagmanagerAccountsContainersReauthorizeEnvironmentsUpdate",
-    meth: HttpMethod.HttpPut, host: "www.googleapis.com", route: "/accounts/{accountId}/containers/{containerId}/reauthorize_environments/{environmentId}", validator: validate_TagmanagerAccountsContainersReauthorizeEnvironmentsUpdate_594290,
+    meth: HttpMethod.HttpPut, host: "www.googleapis.com", route: "/accounts/{accountId}/containers/{containerId}/reauthorize_environments/{environmentId}", validator: validate_TagmanagerAccountsContainersReauthorizeEnvironmentsUpdate_580290,
     base: "/tagmanager/v1",
-    url: url_TagmanagerAccountsContainersReauthorizeEnvironmentsUpdate_594291,
+    url: url_TagmanagerAccountsContainersReauthorizeEnvironmentsUpdate_580291,
     schemes: {Scheme.Https})
 type
-  Call_TagmanagerAccountsContainersTagsCreate_594324 = ref object of OpenApiRestCall_593408
-proc url_TagmanagerAccountsContainersTagsCreate_594326(protocol: Scheme;
+  Call_TagmanagerAccountsContainersTagsCreate_580324 = ref object of OpenApiRestCall_579408
+proc url_TagmanagerAccountsContainersTagsCreate_580326(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "accountId" in path, "`accountId` is a required path parameter"
   assert "containerId" in path, "`containerId` is a required path parameter"
@@ -3705,7 +3707,7 @@ proc url_TagmanagerAccountsContainersTagsCreate_594326(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_TagmanagerAccountsContainersTagsCreate_594325(path: JsonNode;
+proc validate_TagmanagerAccountsContainersTagsCreate_580325(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Creates a GTM Tag.
   ## 
@@ -3719,16 +3721,16 @@ proc validate_TagmanagerAccountsContainersTagsCreate_594325(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `containerId` field"
-  var valid_594327 = path.getOrDefault("containerId")
-  valid_594327 = validateParameter(valid_594327, JString, required = true,
+  var valid_580327 = path.getOrDefault("containerId")
+  valid_580327 = validateParameter(valid_580327, JString, required = true,
                                  default = nil)
-  if valid_594327 != nil:
-    section.add "containerId", valid_594327
-  var valid_594328 = path.getOrDefault("accountId")
-  valid_594328 = validateParameter(valid_594328, JString, required = true,
+  if valid_580327 != nil:
+    section.add "containerId", valid_580327
+  var valid_580328 = path.getOrDefault("accountId")
+  valid_580328 = validateParameter(valid_580328, JString, required = true,
                                  default = nil)
-  if valid_594328 != nil:
-    section.add "accountId", valid_594328
+  if valid_580328 != nil:
+    section.add "accountId", valid_580328
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -3746,41 +3748,41 @@ proc validate_TagmanagerAccountsContainersTagsCreate_594325(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_594329 = query.getOrDefault("fields")
-  valid_594329 = validateParameter(valid_594329, JString, required = false,
+  var valid_580329 = query.getOrDefault("fields")
+  valid_580329 = validateParameter(valid_580329, JString, required = false,
                                  default = nil)
-  if valid_594329 != nil:
-    section.add "fields", valid_594329
-  var valid_594330 = query.getOrDefault("quotaUser")
-  valid_594330 = validateParameter(valid_594330, JString, required = false,
+  if valid_580329 != nil:
+    section.add "fields", valid_580329
+  var valid_580330 = query.getOrDefault("quotaUser")
+  valid_580330 = validateParameter(valid_580330, JString, required = false,
                                  default = nil)
-  if valid_594330 != nil:
-    section.add "quotaUser", valid_594330
-  var valid_594331 = query.getOrDefault("alt")
-  valid_594331 = validateParameter(valid_594331, JString, required = false,
+  if valid_580330 != nil:
+    section.add "quotaUser", valid_580330
+  var valid_580331 = query.getOrDefault("alt")
+  valid_580331 = validateParameter(valid_580331, JString, required = false,
                                  default = newJString("json"))
-  if valid_594331 != nil:
-    section.add "alt", valid_594331
-  var valid_594332 = query.getOrDefault("oauth_token")
-  valid_594332 = validateParameter(valid_594332, JString, required = false,
+  if valid_580331 != nil:
+    section.add "alt", valid_580331
+  var valid_580332 = query.getOrDefault("oauth_token")
+  valid_580332 = validateParameter(valid_580332, JString, required = false,
                                  default = nil)
-  if valid_594332 != nil:
-    section.add "oauth_token", valid_594332
-  var valid_594333 = query.getOrDefault("userIp")
-  valid_594333 = validateParameter(valid_594333, JString, required = false,
+  if valid_580332 != nil:
+    section.add "oauth_token", valid_580332
+  var valid_580333 = query.getOrDefault("userIp")
+  valid_580333 = validateParameter(valid_580333, JString, required = false,
                                  default = nil)
-  if valid_594333 != nil:
-    section.add "userIp", valid_594333
-  var valid_594334 = query.getOrDefault("key")
-  valid_594334 = validateParameter(valid_594334, JString, required = false,
+  if valid_580333 != nil:
+    section.add "userIp", valid_580333
+  var valid_580334 = query.getOrDefault("key")
+  valid_580334 = validateParameter(valid_580334, JString, required = false,
                                  default = nil)
-  if valid_594334 != nil:
-    section.add "key", valid_594334
-  var valid_594335 = query.getOrDefault("prettyPrint")
-  valid_594335 = validateParameter(valid_594335, JBool, required = false,
+  if valid_580334 != nil:
+    section.add "key", valid_580334
+  var valid_580335 = query.getOrDefault("prettyPrint")
+  valid_580335 = validateParameter(valid_580335, JBool, required = false,
                                  default = newJBool(true))
-  if valid_594335 != nil:
-    section.add "prettyPrint", valid_594335
+  if valid_580335 != nil:
+    section.add "prettyPrint", valid_580335
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -3792,21 +3794,21 @@ proc validate_TagmanagerAccountsContainersTagsCreate_594325(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_594337: Call_TagmanagerAccountsContainersTagsCreate_594324;
+proc call*(call_580337: Call_TagmanagerAccountsContainersTagsCreate_580324;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Creates a GTM Tag.
   ## 
-  let valid = call_594337.validator(path, query, header, formData, body)
-  let scheme = call_594337.pickScheme
+  let valid = call_580337.validator(path, query, header, formData, body)
+  let scheme = call_580337.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_594337.url(scheme.get, call_594337.host, call_594337.base,
-                         call_594337.route, valid.getOrDefault("path"),
+  let url = call_580337.url(scheme.get, call_580337.host, call_580337.base,
+                         call_580337.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_594337, url, valid)
+  result = hook(call_580337, url, valid)
 
-proc call*(call_594338: Call_TagmanagerAccountsContainersTagsCreate_594324;
+proc call*(call_580338: Call_TagmanagerAccountsContainersTagsCreate_580324;
           containerId: string; accountId: string; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; key: string = ""; body: JsonNode = nil;
@@ -3832,36 +3834,36 @@ proc call*(call_594338: Call_TagmanagerAccountsContainersTagsCreate_594324;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_594339 = newJObject()
-  var query_594340 = newJObject()
-  var body_594341 = newJObject()
-  add(path_594339, "containerId", newJString(containerId))
-  add(query_594340, "fields", newJString(fields))
-  add(query_594340, "quotaUser", newJString(quotaUser))
-  add(query_594340, "alt", newJString(alt))
-  add(query_594340, "oauth_token", newJString(oauthToken))
-  add(path_594339, "accountId", newJString(accountId))
-  add(query_594340, "userIp", newJString(userIp))
-  add(query_594340, "key", newJString(key))
+  var path_580339 = newJObject()
+  var query_580340 = newJObject()
+  var body_580341 = newJObject()
+  add(path_580339, "containerId", newJString(containerId))
+  add(query_580340, "fields", newJString(fields))
+  add(query_580340, "quotaUser", newJString(quotaUser))
+  add(query_580340, "alt", newJString(alt))
+  add(query_580340, "oauth_token", newJString(oauthToken))
+  add(path_580339, "accountId", newJString(accountId))
+  add(query_580340, "userIp", newJString(userIp))
+  add(query_580340, "key", newJString(key))
   if body != nil:
-    body_594341 = body
-  add(query_594340, "prettyPrint", newJBool(prettyPrint))
-  result = call_594338.call(path_594339, query_594340, nil, nil, body_594341)
+    body_580341 = body
+  add(query_580340, "prettyPrint", newJBool(prettyPrint))
+  result = call_580338.call(path_580339, query_580340, nil, nil, body_580341)
 
-var tagmanagerAccountsContainersTagsCreate* = Call_TagmanagerAccountsContainersTagsCreate_594324(
+var tagmanagerAccountsContainersTagsCreate* = Call_TagmanagerAccountsContainersTagsCreate_580324(
     name: "tagmanagerAccountsContainersTagsCreate", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com",
     route: "/accounts/{accountId}/containers/{containerId}/tags",
-    validator: validate_TagmanagerAccountsContainersTagsCreate_594325,
-    base: "/tagmanager/v1", url: url_TagmanagerAccountsContainersTagsCreate_594326,
+    validator: validate_TagmanagerAccountsContainersTagsCreate_580325,
+    base: "/tagmanager/v1", url: url_TagmanagerAccountsContainersTagsCreate_580326,
     schemes: {Scheme.Https})
 type
-  Call_TagmanagerAccountsContainersTagsList_594308 = ref object of OpenApiRestCall_593408
-proc url_TagmanagerAccountsContainersTagsList_594310(protocol: Scheme;
+  Call_TagmanagerAccountsContainersTagsList_580308 = ref object of OpenApiRestCall_579408
+proc url_TagmanagerAccountsContainersTagsList_580310(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "accountId" in path, "`accountId` is a required path parameter"
   assert "containerId" in path, "`containerId` is a required path parameter"
@@ -3876,7 +3878,7 @@ proc url_TagmanagerAccountsContainersTagsList_594310(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_TagmanagerAccountsContainersTagsList_594309(path: JsonNode;
+proc validate_TagmanagerAccountsContainersTagsList_580309(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Lists all GTM Tags of a Container.
   ## 
@@ -3890,16 +3892,16 @@ proc validate_TagmanagerAccountsContainersTagsList_594309(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `containerId` field"
-  var valid_594311 = path.getOrDefault("containerId")
-  valid_594311 = validateParameter(valid_594311, JString, required = true,
+  var valid_580311 = path.getOrDefault("containerId")
+  valid_580311 = validateParameter(valid_580311, JString, required = true,
                                  default = nil)
-  if valid_594311 != nil:
-    section.add "containerId", valid_594311
-  var valid_594312 = path.getOrDefault("accountId")
-  valid_594312 = validateParameter(valid_594312, JString, required = true,
+  if valid_580311 != nil:
+    section.add "containerId", valid_580311
+  var valid_580312 = path.getOrDefault("accountId")
+  valid_580312 = validateParameter(valid_580312, JString, required = true,
                                  default = nil)
-  if valid_594312 != nil:
-    section.add "accountId", valid_594312
+  if valid_580312 != nil:
+    section.add "accountId", valid_580312
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -3917,41 +3919,41 @@ proc validate_TagmanagerAccountsContainersTagsList_594309(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_594313 = query.getOrDefault("fields")
-  valid_594313 = validateParameter(valid_594313, JString, required = false,
+  var valid_580313 = query.getOrDefault("fields")
+  valid_580313 = validateParameter(valid_580313, JString, required = false,
                                  default = nil)
-  if valid_594313 != nil:
-    section.add "fields", valid_594313
-  var valid_594314 = query.getOrDefault("quotaUser")
-  valid_594314 = validateParameter(valid_594314, JString, required = false,
+  if valid_580313 != nil:
+    section.add "fields", valid_580313
+  var valid_580314 = query.getOrDefault("quotaUser")
+  valid_580314 = validateParameter(valid_580314, JString, required = false,
                                  default = nil)
-  if valid_594314 != nil:
-    section.add "quotaUser", valid_594314
-  var valid_594315 = query.getOrDefault("alt")
-  valid_594315 = validateParameter(valid_594315, JString, required = false,
+  if valid_580314 != nil:
+    section.add "quotaUser", valid_580314
+  var valid_580315 = query.getOrDefault("alt")
+  valid_580315 = validateParameter(valid_580315, JString, required = false,
                                  default = newJString("json"))
-  if valid_594315 != nil:
-    section.add "alt", valid_594315
-  var valid_594316 = query.getOrDefault("oauth_token")
-  valid_594316 = validateParameter(valid_594316, JString, required = false,
+  if valid_580315 != nil:
+    section.add "alt", valid_580315
+  var valid_580316 = query.getOrDefault("oauth_token")
+  valid_580316 = validateParameter(valid_580316, JString, required = false,
                                  default = nil)
-  if valid_594316 != nil:
-    section.add "oauth_token", valid_594316
-  var valid_594317 = query.getOrDefault("userIp")
-  valid_594317 = validateParameter(valid_594317, JString, required = false,
+  if valid_580316 != nil:
+    section.add "oauth_token", valid_580316
+  var valid_580317 = query.getOrDefault("userIp")
+  valid_580317 = validateParameter(valid_580317, JString, required = false,
                                  default = nil)
-  if valid_594317 != nil:
-    section.add "userIp", valid_594317
-  var valid_594318 = query.getOrDefault("key")
-  valid_594318 = validateParameter(valid_594318, JString, required = false,
+  if valid_580317 != nil:
+    section.add "userIp", valid_580317
+  var valid_580318 = query.getOrDefault("key")
+  valid_580318 = validateParameter(valid_580318, JString, required = false,
                                  default = nil)
-  if valid_594318 != nil:
-    section.add "key", valid_594318
-  var valid_594319 = query.getOrDefault("prettyPrint")
-  valid_594319 = validateParameter(valid_594319, JBool, required = false,
+  if valid_580318 != nil:
+    section.add "key", valid_580318
+  var valid_580319 = query.getOrDefault("prettyPrint")
+  valid_580319 = validateParameter(valid_580319, JBool, required = false,
                                  default = newJBool(true))
-  if valid_594319 != nil:
-    section.add "prettyPrint", valid_594319
+  if valid_580319 != nil:
+    section.add "prettyPrint", valid_580319
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -3960,21 +3962,21 @@ proc validate_TagmanagerAccountsContainersTagsList_594309(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_594320: Call_TagmanagerAccountsContainersTagsList_594308;
+proc call*(call_580320: Call_TagmanagerAccountsContainersTagsList_580308;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Lists all GTM Tags of a Container.
   ## 
-  let valid = call_594320.validator(path, query, header, formData, body)
-  let scheme = call_594320.pickScheme
+  let valid = call_580320.validator(path, query, header, formData, body)
+  let scheme = call_580320.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_594320.url(scheme.get, call_594320.host, call_594320.base,
-                         call_594320.route, valid.getOrDefault("path"),
+  let url = call_580320.url(scheme.get, call_580320.host, call_580320.base,
+                         call_580320.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_594320, url, valid)
+  result = hook(call_580320, url, valid)
 
-proc call*(call_594321: Call_TagmanagerAccountsContainersTagsList_594308;
+proc call*(call_580321: Call_TagmanagerAccountsContainersTagsList_580308;
           containerId: string; accountId: string; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; key: string = ""; prettyPrint: bool = true): Recallable =
@@ -3998,33 +4000,33 @@ proc call*(call_594321: Call_TagmanagerAccountsContainersTagsList_594308;
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_594322 = newJObject()
-  var query_594323 = newJObject()
-  add(path_594322, "containerId", newJString(containerId))
-  add(query_594323, "fields", newJString(fields))
-  add(query_594323, "quotaUser", newJString(quotaUser))
-  add(query_594323, "alt", newJString(alt))
-  add(query_594323, "oauth_token", newJString(oauthToken))
-  add(path_594322, "accountId", newJString(accountId))
-  add(query_594323, "userIp", newJString(userIp))
-  add(query_594323, "key", newJString(key))
-  add(query_594323, "prettyPrint", newJBool(prettyPrint))
-  result = call_594321.call(path_594322, query_594323, nil, nil, nil)
+  var path_580322 = newJObject()
+  var query_580323 = newJObject()
+  add(path_580322, "containerId", newJString(containerId))
+  add(query_580323, "fields", newJString(fields))
+  add(query_580323, "quotaUser", newJString(quotaUser))
+  add(query_580323, "alt", newJString(alt))
+  add(query_580323, "oauth_token", newJString(oauthToken))
+  add(path_580322, "accountId", newJString(accountId))
+  add(query_580323, "userIp", newJString(userIp))
+  add(query_580323, "key", newJString(key))
+  add(query_580323, "prettyPrint", newJBool(prettyPrint))
+  result = call_580321.call(path_580322, query_580323, nil, nil, nil)
 
-var tagmanagerAccountsContainersTagsList* = Call_TagmanagerAccountsContainersTagsList_594308(
+var tagmanagerAccountsContainersTagsList* = Call_TagmanagerAccountsContainersTagsList_580308(
     name: "tagmanagerAccountsContainersTagsList", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com",
     route: "/accounts/{accountId}/containers/{containerId}/tags",
-    validator: validate_TagmanagerAccountsContainersTagsList_594309,
-    base: "/tagmanager/v1", url: url_TagmanagerAccountsContainersTagsList_594310,
+    validator: validate_TagmanagerAccountsContainersTagsList_580309,
+    base: "/tagmanager/v1", url: url_TagmanagerAccountsContainersTagsList_580310,
     schemes: {Scheme.Https})
 type
-  Call_TagmanagerAccountsContainersTagsUpdate_594359 = ref object of OpenApiRestCall_593408
-proc url_TagmanagerAccountsContainersTagsUpdate_594361(protocol: Scheme;
+  Call_TagmanagerAccountsContainersTagsUpdate_580359 = ref object of OpenApiRestCall_579408
+proc url_TagmanagerAccountsContainersTagsUpdate_580361(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "accountId" in path, "`accountId` is a required path parameter"
   assert "containerId" in path, "`containerId` is a required path parameter"
@@ -4041,7 +4043,7 @@ proc url_TagmanagerAccountsContainersTagsUpdate_594361(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_TagmanagerAccountsContainersTagsUpdate_594360(path: JsonNode;
+proc validate_TagmanagerAccountsContainersTagsUpdate_580360(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Updates a GTM Tag.
   ## 
@@ -4057,21 +4059,21 @@ proc validate_TagmanagerAccountsContainersTagsUpdate_594360(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `containerId` field"
-  var valid_594362 = path.getOrDefault("containerId")
-  valid_594362 = validateParameter(valid_594362, JString, required = true,
+  var valid_580362 = path.getOrDefault("containerId")
+  valid_580362 = validateParameter(valid_580362, JString, required = true,
                                  default = nil)
-  if valid_594362 != nil:
-    section.add "containerId", valid_594362
-  var valid_594363 = path.getOrDefault("tagId")
-  valid_594363 = validateParameter(valid_594363, JString, required = true,
+  if valid_580362 != nil:
+    section.add "containerId", valid_580362
+  var valid_580363 = path.getOrDefault("tagId")
+  valid_580363 = validateParameter(valid_580363, JString, required = true,
                                  default = nil)
-  if valid_594363 != nil:
-    section.add "tagId", valid_594363
-  var valid_594364 = path.getOrDefault("accountId")
-  valid_594364 = validateParameter(valid_594364, JString, required = true,
+  if valid_580363 != nil:
+    section.add "tagId", valid_580363
+  var valid_580364 = path.getOrDefault("accountId")
+  valid_580364 = validateParameter(valid_580364, JString, required = true,
                                  default = nil)
-  if valid_594364 != nil:
-    section.add "accountId", valid_594364
+  if valid_580364 != nil:
+    section.add "accountId", valid_580364
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -4091,46 +4093,46 @@ proc validate_TagmanagerAccountsContainersTagsUpdate_594360(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_594365 = query.getOrDefault("fields")
-  valid_594365 = validateParameter(valid_594365, JString, required = false,
+  var valid_580365 = query.getOrDefault("fields")
+  valid_580365 = validateParameter(valid_580365, JString, required = false,
                                  default = nil)
-  if valid_594365 != nil:
-    section.add "fields", valid_594365
-  var valid_594366 = query.getOrDefault("fingerprint")
-  valid_594366 = validateParameter(valid_594366, JString, required = false,
+  if valid_580365 != nil:
+    section.add "fields", valid_580365
+  var valid_580366 = query.getOrDefault("fingerprint")
+  valid_580366 = validateParameter(valid_580366, JString, required = false,
                                  default = nil)
-  if valid_594366 != nil:
-    section.add "fingerprint", valid_594366
-  var valid_594367 = query.getOrDefault("quotaUser")
-  valid_594367 = validateParameter(valid_594367, JString, required = false,
+  if valid_580366 != nil:
+    section.add "fingerprint", valid_580366
+  var valid_580367 = query.getOrDefault("quotaUser")
+  valid_580367 = validateParameter(valid_580367, JString, required = false,
                                  default = nil)
-  if valid_594367 != nil:
-    section.add "quotaUser", valid_594367
-  var valid_594368 = query.getOrDefault("alt")
-  valid_594368 = validateParameter(valid_594368, JString, required = false,
+  if valid_580367 != nil:
+    section.add "quotaUser", valid_580367
+  var valid_580368 = query.getOrDefault("alt")
+  valid_580368 = validateParameter(valid_580368, JString, required = false,
                                  default = newJString("json"))
-  if valid_594368 != nil:
-    section.add "alt", valid_594368
-  var valid_594369 = query.getOrDefault("oauth_token")
-  valid_594369 = validateParameter(valid_594369, JString, required = false,
+  if valid_580368 != nil:
+    section.add "alt", valid_580368
+  var valid_580369 = query.getOrDefault("oauth_token")
+  valid_580369 = validateParameter(valid_580369, JString, required = false,
                                  default = nil)
-  if valid_594369 != nil:
-    section.add "oauth_token", valid_594369
-  var valid_594370 = query.getOrDefault("userIp")
-  valid_594370 = validateParameter(valid_594370, JString, required = false,
+  if valid_580369 != nil:
+    section.add "oauth_token", valid_580369
+  var valid_580370 = query.getOrDefault("userIp")
+  valid_580370 = validateParameter(valid_580370, JString, required = false,
                                  default = nil)
-  if valid_594370 != nil:
-    section.add "userIp", valid_594370
-  var valid_594371 = query.getOrDefault("key")
-  valid_594371 = validateParameter(valid_594371, JString, required = false,
+  if valid_580370 != nil:
+    section.add "userIp", valid_580370
+  var valid_580371 = query.getOrDefault("key")
+  valid_580371 = validateParameter(valid_580371, JString, required = false,
                                  default = nil)
-  if valid_594371 != nil:
-    section.add "key", valid_594371
-  var valid_594372 = query.getOrDefault("prettyPrint")
-  valid_594372 = validateParameter(valid_594372, JBool, required = false,
+  if valid_580371 != nil:
+    section.add "key", valid_580371
+  var valid_580372 = query.getOrDefault("prettyPrint")
+  valid_580372 = validateParameter(valid_580372, JBool, required = false,
                                  default = newJBool(true))
-  if valid_594372 != nil:
-    section.add "prettyPrint", valid_594372
+  if valid_580372 != nil:
+    section.add "prettyPrint", valid_580372
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -4142,21 +4144,21 @@ proc validate_TagmanagerAccountsContainersTagsUpdate_594360(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_594374: Call_TagmanagerAccountsContainersTagsUpdate_594359;
+proc call*(call_580374: Call_TagmanagerAccountsContainersTagsUpdate_580359;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Updates a GTM Tag.
   ## 
-  let valid = call_594374.validator(path, query, header, formData, body)
-  let scheme = call_594374.pickScheme
+  let valid = call_580374.validator(path, query, header, formData, body)
+  let scheme = call_580374.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_594374.url(scheme.get, call_594374.host, call_594374.base,
-                         call_594374.route, valid.getOrDefault("path"),
+  let url = call_580374.url(scheme.get, call_580374.host, call_580374.base,
+                         call_580374.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_594374, url, valid)
+  result = hook(call_580374, url, valid)
 
-proc call*(call_594375: Call_TagmanagerAccountsContainersTagsUpdate_594359;
+proc call*(call_580375: Call_TagmanagerAccountsContainersTagsUpdate_580359;
           containerId: string; tagId: string; accountId: string; fields: string = "";
           fingerprint: string = ""; quotaUser: string = ""; alt: string = "json";
           oauthToken: string = ""; userIp: string = ""; key: string = "";
@@ -4186,38 +4188,38 @@ proc call*(call_594375: Call_TagmanagerAccountsContainersTagsUpdate_594359;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_594376 = newJObject()
-  var query_594377 = newJObject()
-  var body_594378 = newJObject()
-  add(path_594376, "containerId", newJString(containerId))
-  add(path_594376, "tagId", newJString(tagId))
-  add(query_594377, "fields", newJString(fields))
-  add(query_594377, "fingerprint", newJString(fingerprint))
-  add(query_594377, "quotaUser", newJString(quotaUser))
-  add(query_594377, "alt", newJString(alt))
-  add(query_594377, "oauth_token", newJString(oauthToken))
-  add(path_594376, "accountId", newJString(accountId))
-  add(query_594377, "userIp", newJString(userIp))
-  add(query_594377, "key", newJString(key))
+  var path_580376 = newJObject()
+  var query_580377 = newJObject()
+  var body_580378 = newJObject()
+  add(path_580376, "containerId", newJString(containerId))
+  add(path_580376, "tagId", newJString(tagId))
+  add(query_580377, "fields", newJString(fields))
+  add(query_580377, "fingerprint", newJString(fingerprint))
+  add(query_580377, "quotaUser", newJString(quotaUser))
+  add(query_580377, "alt", newJString(alt))
+  add(query_580377, "oauth_token", newJString(oauthToken))
+  add(path_580376, "accountId", newJString(accountId))
+  add(query_580377, "userIp", newJString(userIp))
+  add(query_580377, "key", newJString(key))
   if body != nil:
-    body_594378 = body
-  add(query_594377, "prettyPrint", newJBool(prettyPrint))
-  result = call_594375.call(path_594376, query_594377, nil, nil, body_594378)
+    body_580378 = body
+  add(query_580377, "prettyPrint", newJBool(prettyPrint))
+  result = call_580375.call(path_580376, query_580377, nil, nil, body_580378)
 
-var tagmanagerAccountsContainersTagsUpdate* = Call_TagmanagerAccountsContainersTagsUpdate_594359(
+var tagmanagerAccountsContainersTagsUpdate* = Call_TagmanagerAccountsContainersTagsUpdate_580359(
     name: "tagmanagerAccountsContainersTagsUpdate", meth: HttpMethod.HttpPut,
     host: "www.googleapis.com",
     route: "/accounts/{accountId}/containers/{containerId}/tags/{tagId}",
-    validator: validate_TagmanagerAccountsContainersTagsUpdate_594360,
-    base: "/tagmanager/v1", url: url_TagmanagerAccountsContainersTagsUpdate_594361,
+    validator: validate_TagmanagerAccountsContainersTagsUpdate_580360,
+    base: "/tagmanager/v1", url: url_TagmanagerAccountsContainersTagsUpdate_580361,
     schemes: {Scheme.Https})
 type
-  Call_TagmanagerAccountsContainersTagsGet_594342 = ref object of OpenApiRestCall_593408
-proc url_TagmanagerAccountsContainersTagsGet_594344(protocol: Scheme; host: string;
+  Call_TagmanagerAccountsContainersTagsGet_580342 = ref object of OpenApiRestCall_579408
+proc url_TagmanagerAccountsContainersTagsGet_580344(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "accountId" in path, "`accountId` is a required path parameter"
   assert "containerId" in path, "`containerId` is a required path parameter"
@@ -4234,7 +4236,7 @@ proc url_TagmanagerAccountsContainersTagsGet_594344(protocol: Scheme; host: stri
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_TagmanagerAccountsContainersTagsGet_594343(path: JsonNode;
+proc validate_TagmanagerAccountsContainersTagsGet_580343(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Gets a GTM Tag.
   ## 
@@ -4250,21 +4252,21 @@ proc validate_TagmanagerAccountsContainersTagsGet_594343(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `containerId` field"
-  var valid_594345 = path.getOrDefault("containerId")
-  valid_594345 = validateParameter(valid_594345, JString, required = true,
+  var valid_580345 = path.getOrDefault("containerId")
+  valid_580345 = validateParameter(valid_580345, JString, required = true,
                                  default = nil)
-  if valid_594345 != nil:
-    section.add "containerId", valid_594345
-  var valid_594346 = path.getOrDefault("tagId")
-  valid_594346 = validateParameter(valid_594346, JString, required = true,
+  if valid_580345 != nil:
+    section.add "containerId", valid_580345
+  var valid_580346 = path.getOrDefault("tagId")
+  valid_580346 = validateParameter(valid_580346, JString, required = true,
                                  default = nil)
-  if valid_594346 != nil:
-    section.add "tagId", valid_594346
-  var valid_594347 = path.getOrDefault("accountId")
-  valid_594347 = validateParameter(valid_594347, JString, required = true,
+  if valid_580346 != nil:
+    section.add "tagId", valid_580346
+  var valid_580347 = path.getOrDefault("accountId")
+  valid_580347 = validateParameter(valid_580347, JString, required = true,
                                  default = nil)
-  if valid_594347 != nil:
-    section.add "accountId", valid_594347
+  if valid_580347 != nil:
+    section.add "accountId", valid_580347
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -4282,41 +4284,41 @@ proc validate_TagmanagerAccountsContainersTagsGet_594343(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_594348 = query.getOrDefault("fields")
-  valid_594348 = validateParameter(valid_594348, JString, required = false,
+  var valid_580348 = query.getOrDefault("fields")
+  valid_580348 = validateParameter(valid_580348, JString, required = false,
                                  default = nil)
-  if valid_594348 != nil:
-    section.add "fields", valid_594348
-  var valid_594349 = query.getOrDefault("quotaUser")
-  valid_594349 = validateParameter(valid_594349, JString, required = false,
+  if valid_580348 != nil:
+    section.add "fields", valid_580348
+  var valid_580349 = query.getOrDefault("quotaUser")
+  valid_580349 = validateParameter(valid_580349, JString, required = false,
                                  default = nil)
-  if valid_594349 != nil:
-    section.add "quotaUser", valid_594349
-  var valid_594350 = query.getOrDefault("alt")
-  valid_594350 = validateParameter(valid_594350, JString, required = false,
+  if valid_580349 != nil:
+    section.add "quotaUser", valid_580349
+  var valid_580350 = query.getOrDefault("alt")
+  valid_580350 = validateParameter(valid_580350, JString, required = false,
                                  default = newJString("json"))
-  if valid_594350 != nil:
-    section.add "alt", valid_594350
-  var valid_594351 = query.getOrDefault("oauth_token")
-  valid_594351 = validateParameter(valid_594351, JString, required = false,
+  if valid_580350 != nil:
+    section.add "alt", valid_580350
+  var valid_580351 = query.getOrDefault("oauth_token")
+  valid_580351 = validateParameter(valid_580351, JString, required = false,
                                  default = nil)
-  if valid_594351 != nil:
-    section.add "oauth_token", valid_594351
-  var valid_594352 = query.getOrDefault("userIp")
-  valid_594352 = validateParameter(valid_594352, JString, required = false,
+  if valid_580351 != nil:
+    section.add "oauth_token", valid_580351
+  var valid_580352 = query.getOrDefault("userIp")
+  valid_580352 = validateParameter(valid_580352, JString, required = false,
                                  default = nil)
-  if valid_594352 != nil:
-    section.add "userIp", valid_594352
-  var valid_594353 = query.getOrDefault("key")
-  valid_594353 = validateParameter(valid_594353, JString, required = false,
+  if valid_580352 != nil:
+    section.add "userIp", valid_580352
+  var valid_580353 = query.getOrDefault("key")
+  valid_580353 = validateParameter(valid_580353, JString, required = false,
                                  default = nil)
-  if valid_594353 != nil:
-    section.add "key", valid_594353
-  var valid_594354 = query.getOrDefault("prettyPrint")
-  valid_594354 = validateParameter(valid_594354, JBool, required = false,
+  if valid_580353 != nil:
+    section.add "key", valid_580353
+  var valid_580354 = query.getOrDefault("prettyPrint")
+  valid_580354 = validateParameter(valid_580354, JBool, required = false,
                                  default = newJBool(true))
-  if valid_594354 != nil:
-    section.add "prettyPrint", valid_594354
+  if valid_580354 != nil:
+    section.add "prettyPrint", valid_580354
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -4325,21 +4327,21 @@ proc validate_TagmanagerAccountsContainersTagsGet_594343(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_594355: Call_TagmanagerAccountsContainersTagsGet_594342;
+proc call*(call_580355: Call_TagmanagerAccountsContainersTagsGet_580342;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Gets a GTM Tag.
   ## 
-  let valid = call_594355.validator(path, query, header, formData, body)
-  let scheme = call_594355.pickScheme
+  let valid = call_580355.validator(path, query, header, formData, body)
+  let scheme = call_580355.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_594355.url(scheme.get, call_594355.host, call_594355.base,
-                         call_594355.route, valid.getOrDefault("path"),
+  let url = call_580355.url(scheme.get, call_580355.host, call_580355.base,
+                         call_580355.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_594355, url, valid)
+  result = hook(call_580355, url, valid)
 
-proc call*(call_594356: Call_TagmanagerAccountsContainersTagsGet_594342;
+proc call*(call_580356: Call_TagmanagerAccountsContainersTagsGet_580342;
           containerId: string; tagId: string; accountId: string; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; key: string = ""; prettyPrint: bool = true): Recallable =
@@ -4365,34 +4367,34 @@ proc call*(call_594356: Call_TagmanagerAccountsContainersTagsGet_594342;
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_594357 = newJObject()
-  var query_594358 = newJObject()
-  add(path_594357, "containerId", newJString(containerId))
-  add(path_594357, "tagId", newJString(tagId))
-  add(query_594358, "fields", newJString(fields))
-  add(query_594358, "quotaUser", newJString(quotaUser))
-  add(query_594358, "alt", newJString(alt))
-  add(query_594358, "oauth_token", newJString(oauthToken))
-  add(path_594357, "accountId", newJString(accountId))
-  add(query_594358, "userIp", newJString(userIp))
-  add(query_594358, "key", newJString(key))
-  add(query_594358, "prettyPrint", newJBool(prettyPrint))
-  result = call_594356.call(path_594357, query_594358, nil, nil, nil)
+  var path_580357 = newJObject()
+  var query_580358 = newJObject()
+  add(path_580357, "containerId", newJString(containerId))
+  add(path_580357, "tagId", newJString(tagId))
+  add(query_580358, "fields", newJString(fields))
+  add(query_580358, "quotaUser", newJString(quotaUser))
+  add(query_580358, "alt", newJString(alt))
+  add(query_580358, "oauth_token", newJString(oauthToken))
+  add(path_580357, "accountId", newJString(accountId))
+  add(query_580358, "userIp", newJString(userIp))
+  add(query_580358, "key", newJString(key))
+  add(query_580358, "prettyPrint", newJBool(prettyPrint))
+  result = call_580356.call(path_580357, query_580358, nil, nil, nil)
 
-var tagmanagerAccountsContainersTagsGet* = Call_TagmanagerAccountsContainersTagsGet_594342(
+var tagmanagerAccountsContainersTagsGet* = Call_TagmanagerAccountsContainersTagsGet_580342(
     name: "tagmanagerAccountsContainersTagsGet", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com",
     route: "/accounts/{accountId}/containers/{containerId}/tags/{tagId}",
-    validator: validate_TagmanagerAccountsContainersTagsGet_594343,
-    base: "/tagmanager/v1", url: url_TagmanagerAccountsContainersTagsGet_594344,
+    validator: validate_TagmanagerAccountsContainersTagsGet_580343,
+    base: "/tagmanager/v1", url: url_TagmanagerAccountsContainersTagsGet_580344,
     schemes: {Scheme.Https})
 type
-  Call_TagmanagerAccountsContainersTagsDelete_594379 = ref object of OpenApiRestCall_593408
-proc url_TagmanagerAccountsContainersTagsDelete_594381(protocol: Scheme;
+  Call_TagmanagerAccountsContainersTagsDelete_580379 = ref object of OpenApiRestCall_579408
+proc url_TagmanagerAccountsContainersTagsDelete_580381(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "accountId" in path, "`accountId` is a required path parameter"
   assert "containerId" in path, "`containerId` is a required path parameter"
@@ -4409,7 +4411,7 @@ proc url_TagmanagerAccountsContainersTagsDelete_594381(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_TagmanagerAccountsContainersTagsDelete_594380(path: JsonNode;
+proc validate_TagmanagerAccountsContainersTagsDelete_580380(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Deletes a GTM Tag.
   ## 
@@ -4425,21 +4427,21 @@ proc validate_TagmanagerAccountsContainersTagsDelete_594380(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `containerId` field"
-  var valid_594382 = path.getOrDefault("containerId")
-  valid_594382 = validateParameter(valid_594382, JString, required = true,
+  var valid_580382 = path.getOrDefault("containerId")
+  valid_580382 = validateParameter(valid_580382, JString, required = true,
                                  default = nil)
-  if valid_594382 != nil:
-    section.add "containerId", valid_594382
-  var valid_594383 = path.getOrDefault("tagId")
-  valid_594383 = validateParameter(valid_594383, JString, required = true,
+  if valid_580382 != nil:
+    section.add "containerId", valid_580382
+  var valid_580383 = path.getOrDefault("tagId")
+  valid_580383 = validateParameter(valid_580383, JString, required = true,
                                  default = nil)
-  if valid_594383 != nil:
-    section.add "tagId", valid_594383
-  var valid_594384 = path.getOrDefault("accountId")
-  valid_594384 = validateParameter(valid_594384, JString, required = true,
+  if valid_580383 != nil:
+    section.add "tagId", valid_580383
+  var valid_580384 = path.getOrDefault("accountId")
+  valid_580384 = validateParameter(valid_580384, JString, required = true,
                                  default = nil)
-  if valid_594384 != nil:
-    section.add "accountId", valid_594384
+  if valid_580384 != nil:
+    section.add "accountId", valid_580384
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -4457,41 +4459,41 @@ proc validate_TagmanagerAccountsContainersTagsDelete_594380(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_594385 = query.getOrDefault("fields")
-  valid_594385 = validateParameter(valid_594385, JString, required = false,
+  var valid_580385 = query.getOrDefault("fields")
+  valid_580385 = validateParameter(valid_580385, JString, required = false,
                                  default = nil)
-  if valid_594385 != nil:
-    section.add "fields", valid_594385
-  var valid_594386 = query.getOrDefault("quotaUser")
-  valid_594386 = validateParameter(valid_594386, JString, required = false,
+  if valid_580385 != nil:
+    section.add "fields", valid_580385
+  var valid_580386 = query.getOrDefault("quotaUser")
+  valid_580386 = validateParameter(valid_580386, JString, required = false,
                                  default = nil)
-  if valid_594386 != nil:
-    section.add "quotaUser", valid_594386
-  var valid_594387 = query.getOrDefault("alt")
-  valid_594387 = validateParameter(valid_594387, JString, required = false,
+  if valid_580386 != nil:
+    section.add "quotaUser", valid_580386
+  var valid_580387 = query.getOrDefault("alt")
+  valid_580387 = validateParameter(valid_580387, JString, required = false,
                                  default = newJString("json"))
-  if valid_594387 != nil:
-    section.add "alt", valid_594387
-  var valid_594388 = query.getOrDefault("oauth_token")
-  valid_594388 = validateParameter(valid_594388, JString, required = false,
+  if valid_580387 != nil:
+    section.add "alt", valid_580387
+  var valid_580388 = query.getOrDefault("oauth_token")
+  valid_580388 = validateParameter(valid_580388, JString, required = false,
                                  default = nil)
-  if valid_594388 != nil:
-    section.add "oauth_token", valid_594388
-  var valid_594389 = query.getOrDefault("userIp")
-  valid_594389 = validateParameter(valid_594389, JString, required = false,
+  if valid_580388 != nil:
+    section.add "oauth_token", valid_580388
+  var valid_580389 = query.getOrDefault("userIp")
+  valid_580389 = validateParameter(valid_580389, JString, required = false,
                                  default = nil)
-  if valid_594389 != nil:
-    section.add "userIp", valid_594389
-  var valid_594390 = query.getOrDefault("key")
-  valid_594390 = validateParameter(valid_594390, JString, required = false,
+  if valid_580389 != nil:
+    section.add "userIp", valid_580389
+  var valid_580390 = query.getOrDefault("key")
+  valid_580390 = validateParameter(valid_580390, JString, required = false,
                                  default = nil)
-  if valid_594390 != nil:
-    section.add "key", valid_594390
-  var valid_594391 = query.getOrDefault("prettyPrint")
-  valid_594391 = validateParameter(valid_594391, JBool, required = false,
+  if valid_580390 != nil:
+    section.add "key", valid_580390
+  var valid_580391 = query.getOrDefault("prettyPrint")
+  valid_580391 = validateParameter(valid_580391, JBool, required = false,
                                  default = newJBool(true))
-  if valid_594391 != nil:
-    section.add "prettyPrint", valid_594391
+  if valid_580391 != nil:
+    section.add "prettyPrint", valid_580391
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -4500,21 +4502,21 @@ proc validate_TagmanagerAccountsContainersTagsDelete_594380(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_594392: Call_TagmanagerAccountsContainersTagsDelete_594379;
+proc call*(call_580392: Call_TagmanagerAccountsContainersTagsDelete_580379;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Deletes a GTM Tag.
   ## 
-  let valid = call_594392.validator(path, query, header, formData, body)
-  let scheme = call_594392.pickScheme
+  let valid = call_580392.validator(path, query, header, formData, body)
+  let scheme = call_580392.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_594392.url(scheme.get, call_594392.host, call_594392.base,
-                         call_594392.route, valid.getOrDefault("path"),
+  let url = call_580392.url(scheme.get, call_580392.host, call_580392.base,
+                         call_580392.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_594392, url, valid)
+  result = hook(call_580392, url, valid)
 
-proc call*(call_594393: Call_TagmanagerAccountsContainersTagsDelete_594379;
+proc call*(call_580393: Call_TagmanagerAccountsContainersTagsDelete_580379;
           containerId: string; tagId: string; accountId: string; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; key: string = ""; prettyPrint: bool = true): Recallable =
@@ -4540,34 +4542,34 @@ proc call*(call_594393: Call_TagmanagerAccountsContainersTagsDelete_594379;
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_594394 = newJObject()
-  var query_594395 = newJObject()
-  add(path_594394, "containerId", newJString(containerId))
-  add(path_594394, "tagId", newJString(tagId))
-  add(query_594395, "fields", newJString(fields))
-  add(query_594395, "quotaUser", newJString(quotaUser))
-  add(query_594395, "alt", newJString(alt))
-  add(query_594395, "oauth_token", newJString(oauthToken))
-  add(path_594394, "accountId", newJString(accountId))
-  add(query_594395, "userIp", newJString(userIp))
-  add(query_594395, "key", newJString(key))
-  add(query_594395, "prettyPrint", newJBool(prettyPrint))
-  result = call_594393.call(path_594394, query_594395, nil, nil, nil)
+  var path_580394 = newJObject()
+  var query_580395 = newJObject()
+  add(path_580394, "containerId", newJString(containerId))
+  add(path_580394, "tagId", newJString(tagId))
+  add(query_580395, "fields", newJString(fields))
+  add(query_580395, "quotaUser", newJString(quotaUser))
+  add(query_580395, "alt", newJString(alt))
+  add(query_580395, "oauth_token", newJString(oauthToken))
+  add(path_580394, "accountId", newJString(accountId))
+  add(query_580395, "userIp", newJString(userIp))
+  add(query_580395, "key", newJString(key))
+  add(query_580395, "prettyPrint", newJBool(prettyPrint))
+  result = call_580393.call(path_580394, query_580395, nil, nil, nil)
 
-var tagmanagerAccountsContainersTagsDelete* = Call_TagmanagerAccountsContainersTagsDelete_594379(
+var tagmanagerAccountsContainersTagsDelete* = Call_TagmanagerAccountsContainersTagsDelete_580379(
     name: "tagmanagerAccountsContainersTagsDelete", meth: HttpMethod.HttpDelete,
     host: "www.googleapis.com",
     route: "/accounts/{accountId}/containers/{containerId}/tags/{tagId}",
-    validator: validate_TagmanagerAccountsContainersTagsDelete_594380,
-    base: "/tagmanager/v1", url: url_TagmanagerAccountsContainersTagsDelete_594381,
+    validator: validate_TagmanagerAccountsContainersTagsDelete_580380,
+    base: "/tagmanager/v1", url: url_TagmanagerAccountsContainersTagsDelete_580381,
     schemes: {Scheme.Https})
 type
-  Call_TagmanagerAccountsContainersTriggersCreate_594412 = ref object of OpenApiRestCall_593408
-proc url_TagmanagerAccountsContainersTriggersCreate_594414(protocol: Scheme;
+  Call_TagmanagerAccountsContainersTriggersCreate_580412 = ref object of OpenApiRestCall_579408
+proc url_TagmanagerAccountsContainersTriggersCreate_580414(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "accountId" in path, "`accountId` is a required path parameter"
   assert "containerId" in path, "`containerId` is a required path parameter"
@@ -4582,7 +4584,7 @@ proc url_TagmanagerAccountsContainersTriggersCreate_594414(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_TagmanagerAccountsContainersTriggersCreate_594413(path: JsonNode;
+proc validate_TagmanagerAccountsContainersTriggersCreate_580413(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Creates a GTM Trigger.
   ## 
@@ -4596,16 +4598,16 @@ proc validate_TagmanagerAccountsContainersTriggersCreate_594413(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `containerId` field"
-  var valid_594415 = path.getOrDefault("containerId")
-  valid_594415 = validateParameter(valid_594415, JString, required = true,
+  var valid_580415 = path.getOrDefault("containerId")
+  valid_580415 = validateParameter(valid_580415, JString, required = true,
                                  default = nil)
-  if valid_594415 != nil:
-    section.add "containerId", valid_594415
-  var valid_594416 = path.getOrDefault("accountId")
-  valid_594416 = validateParameter(valid_594416, JString, required = true,
+  if valid_580415 != nil:
+    section.add "containerId", valid_580415
+  var valid_580416 = path.getOrDefault("accountId")
+  valid_580416 = validateParameter(valid_580416, JString, required = true,
                                  default = nil)
-  if valid_594416 != nil:
-    section.add "accountId", valid_594416
+  if valid_580416 != nil:
+    section.add "accountId", valid_580416
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -4623,41 +4625,41 @@ proc validate_TagmanagerAccountsContainersTriggersCreate_594413(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_594417 = query.getOrDefault("fields")
-  valid_594417 = validateParameter(valid_594417, JString, required = false,
+  var valid_580417 = query.getOrDefault("fields")
+  valid_580417 = validateParameter(valid_580417, JString, required = false,
                                  default = nil)
-  if valid_594417 != nil:
-    section.add "fields", valid_594417
-  var valid_594418 = query.getOrDefault("quotaUser")
-  valid_594418 = validateParameter(valid_594418, JString, required = false,
+  if valid_580417 != nil:
+    section.add "fields", valid_580417
+  var valid_580418 = query.getOrDefault("quotaUser")
+  valid_580418 = validateParameter(valid_580418, JString, required = false,
                                  default = nil)
-  if valid_594418 != nil:
-    section.add "quotaUser", valid_594418
-  var valid_594419 = query.getOrDefault("alt")
-  valid_594419 = validateParameter(valid_594419, JString, required = false,
+  if valid_580418 != nil:
+    section.add "quotaUser", valid_580418
+  var valid_580419 = query.getOrDefault("alt")
+  valid_580419 = validateParameter(valid_580419, JString, required = false,
                                  default = newJString("json"))
-  if valid_594419 != nil:
-    section.add "alt", valid_594419
-  var valid_594420 = query.getOrDefault("oauth_token")
-  valid_594420 = validateParameter(valid_594420, JString, required = false,
+  if valid_580419 != nil:
+    section.add "alt", valid_580419
+  var valid_580420 = query.getOrDefault("oauth_token")
+  valid_580420 = validateParameter(valid_580420, JString, required = false,
                                  default = nil)
-  if valid_594420 != nil:
-    section.add "oauth_token", valid_594420
-  var valid_594421 = query.getOrDefault("userIp")
-  valid_594421 = validateParameter(valid_594421, JString, required = false,
+  if valid_580420 != nil:
+    section.add "oauth_token", valid_580420
+  var valid_580421 = query.getOrDefault("userIp")
+  valid_580421 = validateParameter(valid_580421, JString, required = false,
                                  default = nil)
-  if valid_594421 != nil:
-    section.add "userIp", valid_594421
-  var valid_594422 = query.getOrDefault("key")
-  valid_594422 = validateParameter(valid_594422, JString, required = false,
+  if valid_580421 != nil:
+    section.add "userIp", valid_580421
+  var valid_580422 = query.getOrDefault("key")
+  valid_580422 = validateParameter(valid_580422, JString, required = false,
                                  default = nil)
-  if valid_594422 != nil:
-    section.add "key", valid_594422
-  var valid_594423 = query.getOrDefault("prettyPrint")
-  valid_594423 = validateParameter(valid_594423, JBool, required = false,
+  if valid_580422 != nil:
+    section.add "key", valid_580422
+  var valid_580423 = query.getOrDefault("prettyPrint")
+  valid_580423 = validateParameter(valid_580423, JBool, required = false,
                                  default = newJBool(true))
-  if valid_594423 != nil:
-    section.add "prettyPrint", valid_594423
+  if valid_580423 != nil:
+    section.add "prettyPrint", valid_580423
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -4669,21 +4671,21 @@ proc validate_TagmanagerAccountsContainersTriggersCreate_594413(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_594425: Call_TagmanagerAccountsContainersTriggersCreate_594412;
+proc call*(call_580425: Call_TagmanagerAccountsContainersTriggersCreate_580412;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Creates a GTM Trigger.
   ## 
-  let valid = call_594425.validator(path, query, header, formData, body)
-  let scheme = call_594425.pickScheme
+  let valid = call_580425.validator(path, query, header, formData, body)
+  let scheme = call_580425.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_594425.url(scheme.get, call_594425.host, call_594425.base,
-                         call_594425.route, valid.getOrDefault("path"),
+  let url = call_580425.url(scheme.get, call_580425.host, call_580425.base,
+                         call_580425.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_594425, url, valid)
+  result = hook(call_580425, url, valid)
 
-proc call*(call_594426: Call_TagmanagerAccountsContainersTriggersCreate_594412;
+proc call*(call_580426: Call_TagmanagerAccountsContainersTriggersCreate_580412;
           containerId: string; accountId: string; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; key: string = ""; body: JsonNode = nil;
@@ -4709,36 +4711,36 @@ proc call*(call_594426: Call_TagmanagerAccountsContainersTriggersCreate_594412;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_594427 = newJObject()
-  var query_594428 = newJObject()
-  var body_594429 = newJObject()
-  add(path_594427, "containerId", newJString(containerId))
-  add(query_594428, "fields", newJString(fields))
-  add(query_594428, "quotaUser", newJString(quotaUser))
-  add(query_594428, "alt", newJString(alt))
-  add(query_594428, "oauth_token", newJString(oauthToken))
-  add(path_594427, "accountId", newJString(accountId))
-  add(query_594428, "userIp", newJString(userIp))
-  add(query_594428, "key", newJString(key))
+  var path_580427 = newJObject()
+  var query_580428 = newJObject()
+  var body_580429 = newJObject()
+  add(path_580427, "containerId", newJString(containerId))
+  add(query_580428, "fields", newJString(fields))
+  add(query_580428, "quotaUser", newJString(quotaUser))
+  add(query_580428, "alt", newJString(alt))
+  add(query_580428, "oauth_token", newJString(oauthToken))
+  add(path_580427, "accountId", newJString(accountId))
+  add(query_580428, "userIp", newJString(userIp))
+  add(query_580428, "key", newJString(key))
   if body != nil:
-    body_594429 = body
-  add(query_594428, "prettyPrint", newJBool(prettyPrint))
-  result = call_594426.call(path_594427, query_594428, nil, nil, body_594429)
+    body_580429 = body
+  add(query_580428, "prettyPrint", newJBool(prettyPrint))
+  result = call_580426.call(path_580427, query_580428, nil, nil, body_580429)
 
-var tagmanagerAccountsContainersTriggersCreate* = Call_TagmanagerAccountsContainersTriggersCreate_594412(
+var tagmanagerAccountsContainersTriggersCreate* = Call_TagmanagerAccountsContainersTriggersCreate_580412(
     name: "tagmanagerAccountsContainersTriggersCreate", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com",
     route: "/accounts/{accountId}/containers/{containerId}/triggers",
-    validator: validate_TagmanagerAccountsContainersTriggersCreate_594413,
-    base: "/tagmanager/v1", url: url_TagmanagerAccountsContainersTriggersCreate_594414,
+    validator: validate_TagmanagerAccountsContainersTriggersCreate_580413,
+    base: "/tagmanager/v1", url: url_TagmanagerAccountsContainersTriggersCreate_580414,
     schemes: {Scheme.Https})
 type
-  Call_TagmanagerAccountsContainersTriggersList_594396 = ref object of OpenApiRestCall_593408
-proc url_TagmanagerAccountsContainersTriggersList_594398(protocol: Scheme;
+  Call_TagmanagerAccountsContainersTriggersList_580396 = ref object of OpenApiRestCall_579408
+proc url_TagmanagerAccountsContainersTriggersList_580398(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "accountId" in path, "`accountId` is a required path parameter"
   assert "containerId" in path, "`containerId` is a required path parameter"
@@ -4753,7 +4755,7 @@ proc url_TagmanagerAccountsContainersTriggersList_594398(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_TagmanagerAccountsContainersTriggersList_594397(path: JsonNode;
+proc validate_TagmanagerAccountsContainersTriggersList_580397(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Lists all GTM Triggers of a Container.
   ## 
@@ -4767,16 +4769,16 @@ proc validate_TagmanagerAccountsContainersTriggersList_594397(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `containerId` field"
-  var valid_594399 = path.getOrDefault("containerId")
-  valid_594399 = validateParameter(valid_594399, JString, required = true,
+  var valid_580399 = path.getOrDefault("containerId")
+  valid_580399 = validateParameter(valid_580399, JString, required = true,
                                  default = nil)
-  if valid_594399 != nil:
-    section.add "containerId", valid_594399
-  var valid_594400 = path.getOrDefault("accountId")
-  valid_594400 = validateParameter(valid_594400, JString, required = true,
+  if valid_580399 != nil:
+    section.add "containerId", valid_580399
+  var valid_580400 = path.getOrDefault("accountId")
+  valid_580400 = validateParameter(valid_580400, JString, required = true,
                                  default = nil)
-  if valid_594400 != nil:
-    section.add "accountId", valid_594400
+  if valid_580400 != nil:
+    section.add "accountId", valid_580400
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -4794,41 +4796,41 @@ proc validate_TagmanagerAccountsContainersTriggersList_594397(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_594401 = query.getOrDefault("fields")
-  valid_594401 = validateParameter(valid_594401, JString, required = false,
+  var valid_580401 = query.getOrDefault("fields")
+  valid_580401 = validateParameter(valid_580401, JString, required = false,
                                  default = nil)
-  if valid_594401 != nil:
-    section.add "fields", valid_594401
-  var valid_594402 = query.getOrDefault("quotaUser")
-  valid_594402 = validateParameter(valid_594402, JString, required = false,
+  if valid_580401 != nil:
+    section.add "fields", valid_580401
+  var valid_580402 = query.getOrDefault("quotaUser")
+  valid_580402 = validateParameter(valid_580402, JString, required = false,
                                  default = nil)
-  if valid_594402 != nil:
-    section.add "quotaUser", valid_594402
-  var valid_594403 = query.getOrDefault("alt")
-  valid_594403 = validateParameter(valid_594403, JString, required = false,
+  if valid_580402 != nil:
+    section.add "quotaUser", valid_580402
+  var valid_580403 = query.getOrDefault("alt")
+  valid_580403 = validateParameter(valid_580403, JString, required = false,
                                  default = newJString("json"))
-  if valid_594403 != nil:
-    section.add "alt", valid_594403
-  var valid_594404 = query.getOrDefault("oauth_token")
-  valid_594404 = validateParameter(valid_594404, JString, required = false,
+  if valid_580403 != nil:
+    section.add "alt", valid_580403
+  var valid_580404 = query.getOrDefault("oauth_token")
+  valid_580404 = validateParameter(valid_580404, JString, required = false,
                                  default = nil)
-  if valid_594404 != nil:
-    section.add "oauth_token", valid_594404
-  var valid_594405 = query.getOrDefault("userIp")
-  valid_594405 = validateParameter(valid_594405, JString, required = false,
+  if valid_580404 != nil:
+    section.add "oauth_token", valid_580404
+  var valid_580405 = query.getOrDefault("userIp")
+  valid_580405 = validateParameter(valid_580405, JString, required = false,
                                  default = nil)
-  if valid_594405 != nil:
-    section.add "userIp", valid_594405
-  var valid_594406 = query.getOrDefault("key")
-  valid_594406 = validateParameter(valid_594406, JString, required = false,
+  if valid_580405 != nil:
+    section.add "userIp", valid_580405
+  var valid_580406 = query.getOrDefault("key")
+  valid_580406 = validateParameter(valid_580406, JString, required = false,
                                  default = nil)
-  if valid_594406 != nil:
-    section.add "key", valid_594406
-  var valid_594407 = query.getOrDefault("prettyPrint")
-  valid_594407 = validateParameter(valid_594407, JBool, required = false,
+  if valid_580406 != nil:
+    section.add "key", valid_580406
+  var valid_580407 = query.getOrDefault("prettyPrint")
+  valid_580407 = validateParameter(valid_580407, JBool, required = false,
                                  default = newJBool(true))
-  if valid_594407 != nil:
-    section.add "prettyPrint", valid_594407
+  if valid_580407 != nil:
+    section.add "prettyPrint", valid_580407
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -4837,21 +4839,21 @@ proc validate_TagmanagerAccountsContainersTriggersList_594397(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_594408: Call_TagmanagerAccountsContainersTriggersList_594396;
+proc call*(call_580408: Call_TagmanagerAccountsContainersTriggersList_580396;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Lists all GTM Triggers of a Container.
   ## 
-  let valid = call_594408.validator(path, query, header, formData, body)
-  let scheme = call_594408.pickScheme
+  let valid = call_580408.validator(path, query, header, formData, body)
+  let scheme = call_580408.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_594408.url(scheme.get, call_594408.host, call_594408.base,
-                         call_594408.route, valid.getOrDefault("path"),
+  let url = call_580408.url(scheme.get, call_580408.host, call_580408.base,
+                         call_580408.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_594408, url, valid)
+  result = hook(call_580408, url, valid)
 
-proc call*(call_594409: Call_TagmanagerAccountsContainersTriggersList_594396;
+proc call*(call_580409: Call_TagmanagerAccountsContainersTriggersList_580396;
           containerId: string; accountId: string; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; key: string = ""; prettyPrint: bool = true): Recallable =
@@ -4875,33 +4877,33 @@ proc call*(call_594409: Call_TagmanagerAccountsContainersTriggersList_594396;
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_594410 = newJObject()
-  var query_594411 = newJObject()
-  add(path_594410, "containerId", newJString(containerId))
-  add(query_594411, "fields", newJString(fields))
-  add(query_594411, "quotaUser", newJString(quotaUser))
-  add(query_594411, "alt", newJString(alt))
-  add(query_594411, "oauth_token", newJString(oauthToken))
-  add(path_594410, "accountId", newJString(accountId))
-  add(query_594411, "userIp", newJString(userIp))
-  add(query_594411, "key", newJString(key))
-  add(query_594411, "prettyPrint", newJBool(prettyPrint))
-  result = call_594409.call(path_594410, query_594411, nil, nil, nil)
+  var path_580410 = newJObject()
+  var query_580411 = newJObject()
+  add(path_580410, "containerId", newJString(containerId))
+  add(query_580411, "fields", newJString(fields))
+  add(query_580411, "quotaUser", newJString(quotaUser))
+  add(query_580411, "alt", newJString(alt))
+  add(query_580411, "oauth_token", newJString(oauthToken))
+  add(path_580410, "accountId", newJString(accountId))
+  add(query_580411, "userIp", newJString(userIp))
+  add(query_580411, "key", newJString(key))
+  add(query_580411, "prettyPrint", newJBool(prettyPrint))
+  result = call_580409.call(path_580410, query_580411, nil, nil, nil)
 
-var tagmanagerAccountsContainersTriggersList* = Call_TagmanagerAccountsContainersTriggersList_594396(
+var tagmanagerAccountsContainersTriggersList* = Call_TagmanagerAccountsContainersTriggersList_580396(
     name: "tagmanagerAccountsContainersTriggersList", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com",
     route: "/accounts/{accountId}/containers/{containerId}/triggers",
-    validator: validate_TagmanagerAccountsContainersTriggersList_594397,
-    base: "/tagmanager/v1", url: url_TagmanagerAccountsContainersTriggersList_594398,
+    validator: validate_TagmanagerAccountsContainersTriggersList_580397,
+    base: "/tagmanager/v1", url: url_TagmanagerAccountsContainersTriggersList_580398,
     schemes: {Scheme.Https})
 type
-  Call_TagmanagerAccountsContainersTriggersUpdate_594447 = ref object of OpenApiRestCall_593408
-proc url_TagmanagerAccountsContainersTriggersUpdate_594449(protocol: Scheme;
+  Call_TagmanagerAccountsContainersTriggersUpdate_580447 = ref object of OpenApiRestCall_579408
+proc url_TagmanagerAccountsContainersTriggersUpdate_580449(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "accountId" in path, "`accountId` is a required path parameter"
   assert "containerId" in path, "`containerId` is a required path parameter"
@@ -4918,7 +4920,7 @@ proc url_TagmanagerAccountsContainersTriggersUpdate_594449(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_TagmanagerAccountsContainersTriggersUpdate_594448(path: JsonNode;
+proc validate_TagmanagerAccountsContainersTriggersUpdate_580448(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Updates a GTM Trigger.
   ## 
@@ -4934,21 +4936,21 @@ proc validate_TagmanagerAccountsContainersTriggersUpdate_594448(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `containerId` field"
-  var valid_594450 = path.getOrDefault("containerId")
-  valid_594450 = validateParameter(valid_594450, JString, required = true,
+  var valid_580450 = path.getOrDefault("containerId")
+  valid_580450 = validateParameter(valid_580450, JString, required = true,
                                  default = nil)
-  if valid_594450 != nil:
-    section.add "containerId", valid_594450
-  var valid_594451 = path.getOrDefault("accountId")
-  valid_594451 = validateParameter(valid_594451, JString, required = true,
+  if valid_580450 != nil:
+    section.add "containerId", valid_580450
+  var valid_580451 = path.getOrDefault("accountId")
+  valid_580451 = validateParameter(valid_580451, JString, required = true,
                                  default = nil)
-  if valid_594451 != nil:
-    section.add "accountId", valid_594451
-  var valid_594452 = path.getOrDefault("triggerId")
-  valid_594452 = validateParameter(valid_594452, JString, required = true,
+  if valid_580451 != nil:
+    section.add "accountId", valid_580451
+  var valid_580452 = path.getOrDefault("triggerId")
+  valid_580452 = validateParameter(valid_580452, JString, required = true,
                                  default = nil)
-  if valid_594452 != nil:
-    section.add "triggerId", valid_594452
+  if valid_580452 != nil:
+    section.add "triggerId", valid_580452
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -4968,46 +4970,46 @@ proc validate_TagmanagerAccountsContainersTriggersUpdate_594448(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_594453 = query.getOrDefault("fields")
-  valid_594453 = validateParameter(valid_594453, JString, required = false,
+  var valid_580453 = query.getOrDefault("fields")
+  valid_580453 = validateParameter(valid_580453, JString, required = false,
                                  default = nil)
-  if valid_594453 != nil:
-    section.add "fields", valid_594453
-  var valid_594454 = query.getOrDefault("fingerprint")
-  valid_594454 = validateParameter(valid_594454, JString, required = false,
+  if valid_580453 != nil:
+    section.add "fields", valid_580453
+  var valid_580454 = query.getOrDefault("fingerprint")
+  valid_580454 = validateParameter(valid_580454, JString, required = false,
                                  default = nil)
-  if valid_594454 != nil:
-    section.add "fingerprint", valid_594454
-  var valid_594455 = query.getOrDefault("quotaUser")
-  valid_594455 = validateParameter(valid_594455, JString, required = false,
+  if valid_580454 != nil:
+    section.add "fingerprint", valid_580454
+  var valid_580455 = query.getOrDefault("quotaUser")
+  valid_580455 = validateParameter(valid_580455, JString, required = false,
                                  default = nil)
-  if valid_594455 != nil:
-    section.add "quotaUser", valid_594455
-  var valid_594456 = query.getOrDefault("alt")
-  valid_594456 = validateParameter(valid_594456, JString, required = false,
+  if valid_580455 != nil:
+    section.add "quotaUser", valid_580455
+  var valid_580456 = query.getOrDefault("alt")
+  valid_580456 = validateParameter(valid_580456, JString, required = false,
                                  default = newJString("json"))
-  if valid_594456 != nil:
-    section.add "alt", valid_594456
-  var valid_594457 = query.getOrDefault("oauth_token")
-  valid_594457 = validateParameter(valid_594457, JString, required = false,
+  if valid_580456 != nil:
+    section.add "alt", valid_580456
+  var valid_580457 = query.getOrDefault("oauth_token")
+  valid_580457 = validateParameter(valid_580457, JString, required = false,
                                  default = nil)
-  if valid_594457 != nil:
-    section.add "oauth_token", valid_594457
-  var valid_594458 = query.getOrDefault("userIp")
-  valid_594458 = validateParameter(valid_594458, JString, required = false,
+  if valid_580457 != nil:
+    section.add "oauth_token", valid_580457
+  var valid_580458 = query.getOrDefault("userIp")
+  valid_580458 = validateParameter(valid_580458, JString, required = false,
                                  default = nil)
-  if valid_594458 != nil:
-    section.add "userIp", valid_594458
-  var valid_594459 = query.getOrDefault("key")
-  valid_594459 = validateParameter(valid_594459, JString, required = false,
+  if valid_580458 != nil:
+    section.add "userIp", valid_580458
+  var valid_580459 = query.getOrDefault("key")
+  valid_580459 = validateParameter(valid_580459, JString, required = false,
                                  default = nil)
-  if valid_594459 != nil:
-    section.add "key", valid_594459
-  var valid_594460 = query.getOrDefault("prettyPrint")
-  valid_594460 = validateParameter(valid_594460, JBool, required = false,
+  if valid_580459 != nil:
+    section.add "key", valid_580459
+  var valid_580460 = query.getOrDefault("prettyPrint")
+  valid_580460 = validateParameter(valid_580460, JBool, required = false,
                                  default = newJBool(true))
-  if valid_594460 != nil:
-    section.add "prettyPrint", valid_594460
+  if valid_580460 != nil:
+    section.add "prettyPrint", valid_580460
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -5019,21 +5021,21 @@ proc validate_TagmanagerAccountsContainersTriggersUpdate_594448(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_594462: Call_TagmanagerAccountsContainersTriggersUpdate_594447;
+proc call*(call_580462: Call_TagmanagerAccountsContainersTriggersUpdate_580447;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Updates a GTM Trigger.
   ## 
-  let valid = call_594462.validator(path, query, header, formData, body)
-  let scheme = call_594462.pickScheme
+  let valid = call_580462.validator(path, query, header, formData, body)
+  let scheme = call_580462.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_594462.url(scheme.get, call_594462.host, call_594462.base,
-                         call_594462.route, valid.getOrDefault("path"),
+  let url = call_580462.url(scheme.get, call_580462.host, call_580462.base,
+                         call_580462.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_594462, url, valid)
+  result = hook(call_580462, url, valid)
 
-proc call*(call_594463: Call_TagmanagerAccountsContainersTriggersUpdate_594447;
+proc call*(call_580463: Call_TagmanagerAccountsContainersTriggersUpdate_580447;
           containerId: string; accountId: string; triggerId: string;
           fields: string = ""; fingerprint: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; userIp: string = "";
@@ -5063,37 +5065,37 @@ proc call*(call_594463: Call_TagmanagerAccountsContainersTriggersUpdate_594447;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_594464 = newJObject()
-  var query_594465 = newJObject()
-  var body_594466 = newJObject()
-  add(path_594464, "containerId", newJString(containerId))
-  add(query_594465, "fields", newJString(fields))
-  add(query_594465, "fingerprint", newJString(fingerprint))
-  add(query_594465, "quotaUser", newJString(quotaUser))
-  add(query_594465, "alt", newJString(alt))
-  add(query_594465, "oauth_token", newJString(oauthToken))
-  add(path_594464, "accountId", newJString(accountId))
-  add(query_594465, "userIp", newJString(userIp))
-  add(path_594464, "triggerId", newJString(triggerId))
-  add(query_594465, "key", newJString(key))
+  var path_580464 = newJObject()
+  var query_580465 = newJObject()
+  var body_580466 = newJObject()
+  add(path_580464, "containerId", newJString(containerId))
+  add(query_580465, "fields", newJString(fields))
+  add(query_580465, "fingerprint", newJString(fingerprint))
+  add(query_580465, "quotaUser", newJString(quotaUser))
+  add(query_580465, "alt", newJString(alt))
+  add(query_580465, "oauth_token", newJString(oauthToken))
+  add(path_580464, "accountId", newJString(accountId))
+  add(query_580465, "userIp", newJString(userIp))
+  add(path_580464, "triggerId", newJString(triggerId))
+  add(query_580465, "key", newJString(key))
   if body != nil:
-    body_594466 = body
-  add(query_594465, "prettyPrint", newJBool(prettyPrint))
-  result = call_594463.call(path_594464, query_594465, nil, nil, body_594466)
+    body_580466 = body
+  add(query_580465, "prettyPrint", newJBool(prettyPrint))
+  result = call_580463.call(path_580464, query_580465, nil, nil, body_580466)
 
-var tagmanagerAccountsContainersTriggersUpdate* = Call_TagmanagerAccountsContainersTriggersUpdate_594447(
+var tagmanagerAccountsContainersTriggersUpdate* = Call_TagmanagerAccountsContainersTriggersUpdate_580447(
     name: "tagmanagerAccountsContainersTriggersUpdate", meth: HttpMethod.HttpPut,
     host: "www.googleapis.com", route: "/accounts/{accountId}/containers/{containerId}/triggers/{triggerId}",
-    validator: validate_TagmanagerAccountsContainersTriggersUpdate_594448,
-    base: "/tagmanager/v1", url: url_TagmanagerAccountsContainersTriggersUpdate_594449,
+    validator: validate_TagmanagerAccountsContainersTriggersUpdate_580448,
+    base: "/tagmanager/v1", url: url_TagmanagerAccountsContainersTriggersUpdate_580449,
     schemes: {Scheme.Https})
 type
-  Call_TagmanagerAccountsContainersTriggersGet_594430 = ref object of OpenApiRestCall_593408
-proc url_TagmanagerAccountsContainersTriggersGet_594432(protocol: Scheme;
+  Call_TagmanagerAccountsContainersTriggersGet_580430 = ref object of OpenApiRestCall_579408
+proc url_TagmanagerAccountsContainersTriggersGet_580432(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "accountId" in path, "`accountId` is a required path parameter"
   assert "containerId" in path, "`containerId` is a required path parameter"
@@ -5110,7 +5112,7 @@ proc url_TagmanagerAccountsContainersTriggersGet_594432(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_TagmanagerAccountsContainersTriggersGet_594431(path: JsonNode;
+proc validate_TagmanagerAccountsContainersTriggersGet_580431(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Gets a GTM Trigger.
   ## 
@@ -5126,21 +5128,21 @@ proc validate_TagmanagerAccountsContainersTriggersGet_594431(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `containerId` field"
-  var valid_594433 = path.getOrDefault("containerId")
-  valid_594433 = validateParameter(valid_594433, JString, required = true,
+  var valid_580433 = path.getOrDefault("containerId")
+  valid_580433 = validateParameter(valid_580433, JString, required = true,
                                  default = nil)
-  if valid_594433 != nil:
-    section.add "containerId", valid_594433
-  var valid_594434 = path.getOrDefault("accountId")
-  valid_594434 = validateParameter(valid_594434, JString, required = true,
+  if valid_580433 != nil:
+    section.add "containerId", valid_580433
+  var valid_580434 = path.getOrDefault("accountId")
+  valid_580434 = validateParameter(valid_580434, JString, required = true,
                                  default = nil)
-  if valid_594434 != nil:
-    section.add "accountId", valid_594434
-  var valid_594435 = path.getOrDefault("triggerId")
-  valid_594435 = validateParameter(valid_594435, JString, required = true,
+  if valid_580434 != nil:
+    section.add "accountId", valid_580434
+  var valid_580435 = path.getOrDefault("triggerId")
+  valid_580435 = validateParameter(valid_580435, JString, required = true,
                                  default = nil)
-  if valid_594435 != nil:
-    section.add "triggerId", valid_594435
+  if valid_580435 != nil:
+    section.add "triggerId", valid_580435
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -5158,41 +5160,41 @@ proc validate_TagmanagerAccountsContainersTriggersGet_594431(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_594436 = query.getOrDefault("fields")
-  valid_594436 = validateParameter(valid_594436, JString, required = false,
+  var valid_580436 = query.getOrDefault("fields")
+  valid_580436 = validateParameter(valid_580436, JString, required = false,
                                  default = nil)
-  if valid_594436 != nil:
-    section.add "fields", valid_594436
-  var valid_594437 = query.getOrDefault("quotaUser")
-  valid_594437 = validateParameter(valid_594437, JString, required = false,
+  if valid_580436 != nil:
+    section.add "fields", valid_580436
+  var valid_580437 = query.getOrDefault("quotaUser")
+  valid_580437 = validateParameter(valid_580437, JString, required = false,
                                  default = nil)
-  if valid_594437 != nil:
-    section.add "quotaUser", valid_594437
-  var valid_594438 = query.getOrDefault("alt")
-  valid_594438 = validateParameter(valid_594438, JString, required = false,
+  if valid_580437 != nil:
+    section.add "quotaUser", valid_580437
+  var valid_580438 = query.getOrDefault("alt")
+  valid_580438 = validateParameter(valid_580438, JString, required = false,
                                  default = newJString("json"))
-  if valid_594438 != nil:
-    section.add "alt", valid_594438
-  var valid_594439 = query.getOrDefault("oauth_token")
-  valid_594439 = validateParameter(valid_594439, JString, required = false,
+  if valid_580438 != nil:
+    section.add "alt", valid_580438
+  var valid_580439 = query.getOrDefault("oauth_token")
+  valid_580439 = validateParameter(valid_580439, JString, required = false,
                                  default = nil)
-  if valid_594439 != nil:
-    section.add "oauth_token", valid_594439
-  var valid_594440 = query.getOrDefault("userIp")
-  valid_594440 = validateParameter(valid_594440, JString, required = false,
+  if valid_580439 != nil:
+    section.add "oauth_token", valid_580439
+  var valid_580440 = query.getOrDefault("userIp")
+  valid_580440 = validateParameter(valid_580440, JString, required = false,
                                  default = nil)
-  if valid_594440 != nil:
-    section.add "userIp", valid_594440
-  var valid_594441 = query.getOrDefault("key")
-  valid_594441 = validateParameter(valid_594441, JString, required = false,
+  if valid_580440 != nil:
+    section.add "userIp", valid_580440
+  var valid_580441 = query.getOrDefault("key")
+  valid_580441 = validateParameter(valid_580441, JString, required = false,
                                  default = nil)
-  if valid_594441 != nil:
-    section.add "key", valid_594441
-  var valid_594442 = query.getOrDefault("prettyPrint")
-  valid_594442 = validateParameter(valid_594442, JBool, required = false,
+  if valid_580441 != nil:
+    section.add "key", valid_580441
+  var valid_580442 = query.getOrDefault("prettyPrint")
+  valid_580442 = validateParameter(valid_580442, JBool, required = false,
                                  default = newJBool(true))
-  if valid_594442 != nil:
-    section.add "prettyPrint", valid_594442
+  if valid_580442 != nil:
+    section.add "prettyPrint", valid_580442
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -5201,21 +5203,21 @@ proc validate_TagmanagerAccountsContainersTriggersGet_594431(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_594443: Call_TagmanagerAccountsContainersTriggersGet_594430;
+proc call*(call_580443: Call_TagmanagerAccountsContainersTriggersGet_580430;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Gets a GTM Trigger.
   ## 
-  let valid = call_594443.validator(path, query, header, formData, body)
-  let scheme = call_594443.pickScheme
+  let valid = call_580443.validator(path, query, header, formData, body)
+  let scheme = call_580443.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_594443.url(scheme.get, call_594443.host, call_594443.base,
-                         call_594443.route, valid.getOrDefault("path"),
+  let url = call_580443.url(scheme.get, call_580443.host, call_580443.base,
+                         call_580443.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_594443, url, valid)
+  result = hook(call_580443, url, valid)
 
-proc call*(call_594444: Call_TagmanagerAccountsContainersTriggersGet_594430;
+proc call*(call_580444: Call_TagmanagerAccountsContainersTriggersGet_580430;
           containerId: string; accountId: string; triggerId: string;
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           oauthToken: string = ""; userIp: string = ""; key: string = "";
@@ -5242,33 +5244,33 @@ proc call*(call_594444: Call_TagmanagerAccountsContainersTriggersGet_594430;
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_594445 = newJObject()
-  var query_594446 = newJObject()
-  add(path_594445, "containerId", newJString(containerId))
-  add(query_594446, "fields", newJString(fields))
-  add(query_594446, "quotaUser", newJString(quotaUser))
-  add(query_594446, "alt", newJString(alt))
-  add(query_594446, "oauth_token", newJString(oauthToken))
-  add(path_594445, "accountId", newJString(accountId))
-  add(query_594446, "userIp", newJString(userIp))
-  add(path_594445, "triggerId", newJString(triggerId))
-  add(query_594446, "key", newJString(key))
-  add(query_594446, "prettyPrint", newJBool(prettyPrint))
-  result = call_594444.call(path_594445, query_594446, nil, nil, nil)
+  var path_580445 = newJObject()
+  var query_580446 = newJObject()
+  add(path_580445, "containerId", newJString(containerId))
+  add(query_580446, "fields", newJString(fields))
+  add(query_580446, "quotaUser", newJString(quotaUser))
+  add(query_580446, "alt", newJString(alt))
+  add(query_580446, "oauth_token", newJString(oauthToken))
+  add(path_580445, "accountId", newJString(accountId))
+  add(query_580446, "userIp", newJString(userIp))
+  add(path_580445, "triggerId", newJString(triggerId))
+  add(query_580446, "key", newJString(key))
+  add(query_580446, "prettyPrint", newJBool(prettyPrint))
+  result = call_580444.call(path_580445, query_580446, nil, nil, nil)
 
-var tagmanagerAccountsContainersTriggersGet* = Call_TagmanagerAccountsContainersTriggersGet_594430(
+var tagmanagerAccountsContainersTriggersGet* = Call_TagmanagerAccountsContainersTriggersGet_580430(
     name: "tagmanagerAccountsContainersTriggersGet", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/accounts/{accountId}/containers/{containerId}/triggers/{triggerId}",
-    validator: validate_TagmanagerAccountsContainersTriggersGet_594431,
-    base: "/tagmanager/v1", url: url_TagmanagerAccountsContainersTriggersGet_594432,
+    validator: validate_TagmanagerAccountsContainersTriggersGet_580431,
+    base: "/tagmanager/v1", url: url_TagmanagerAccountsContainersTriggersGet_580432,
     schemes: {Scheme.Https})
 type
-  Call_TagmanagerAccountsContainersTriggersDelete_594467 = ref object of OpenApiRestCall_593408
-proc url_TagmanagerAccountsContainersTriggersDelete_594469(protocol: Scheme;
+  Call_TagmanagerAccountsContainersTriggersDelete_580467 = ref object of OpenApiRestCall_579408
+proc url_TagmanagerAccountsContainersTriggersDelete_580469(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "accountId" in path, "`accountId` is a required path parameter"
   assert "containerId" in path, "`containerId` is a required path parameter"
@@ -5285,7 +5287,7 @@ proc url_TagmanagerAccountsContainersTriggersDelete_594469(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_TagmanagerAccountsContainersTriggersDelete_594468(path: JsonNode;
+proc validate_TagmanagerAccountsContainersTriggersDelete_580468(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Deletes a GTM Trigger.
   ## 
@@ -5301,21 +5303,21 @@ proc validate_TagmanagerAccountsContainersTriggersDelete_594468(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `containerId` field"
-  var valid_594470 = path.getOrDefault("containerId")
-  valid_594470 = validateParameter(valid_594470, JString, required = true,
+  var valid_580470 = path.getOrDefault("containerId")
+  valid_580470 = validateParameter(valid_580470, JString, required = true,
                                  default = nil)
-  if valid_594470 != nil:
-    section.add "containerId", valid_594470
-  var valid_594471 = path.getOrDefault("accountId")
-  valid_594471 = validateParameter(valid_594471, JString, required = true,
+  if valid_580470 != nil:
+    section.add "containerId", valid_580470
+  var valid_580471 = path.getOrDefault("accountId")
+  valid_580471 = validateParameter(valid_580471, JString, required = true,
                                  default = nil)
-  if valid_594471 != nil:
-    section.add "accountId", valid_594471
-  var valid_594472 = path.getOrDefault("triggerId")
-  valid_594472 = validateParameter(valid_594472, JString, required = true,
+  if valid_580471 != nil:
+    section.add "accountId", valid_580471
+  var valid_580472 = path.getOrDefault("triggerId")
+  valid_580472 = validateParameter(valid_580472, JString, required = true,
                                  default = nil)
-  if valid_594472 != nil:
-    section.add "triggerId", valid_594472
+  if valid_580472 != nil:
+    section.add "triggerId", valid_580472
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -5333,41 +5335,41 @@ proc validate_TagmanagerAccountsContainersTriggersDelete_594468(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_594473 = query.getOrDefault("fields")
-  valid_594473 = validateParameter(valid_594473, JString, required = false,
+  var valid_580473 = query.getOrDefault("fields")
+  valid_580473 = validateParameter(valid_580473, JString, required = false,
                                  default = nil)
-  if valid_594473 != nil:
-    section.add "fields", valid_594473
-  var valid_594474 = query.getOrDefault("quotaUser")
-  valid_594474 = validateParameter(valid_594474, JString, required = false,
+  if valid_580473 != nil:
+    section.add "fields", valid_580473
+  var valid_580474 = query.getOrDefault("quotaUser")
+  valid_580474 = validateParameter(valid_580474, JString, required = false,
                                  default = nil)
-  if valid_594474 != nil:
-    section.add "quotaUser", valid_594474
-  var valid_594475 = query.getOrDefault("alt")
-  valid_594475 = validateParameter(valid_594475, JString, required = false,
+  if valid_580474 != nil:
+    section.add "quotaUser", valid_580474
+  var valid_580475 = query.getOrDefault("alt")
+  valid_580475 = validateParameter(valid_580475, JString, required = false,
                                  default = newJString("json"))
-  if valid_594475 != nil:
-    section.add "alt", valid_594475
-  var valid_594476 = query.getOrDefault("oauth_token")
-  valid_594476 = validateParameter(valid_594476, JString, required = false,
+  if valid_580475 != nil:
+    section.add "alt", valid_580475
+  var valid_580476 = query.getOrDefault("oauth_token")
+  valid_580476 = validateParameter(valid_580476, JString, required = false,
                                  default = nil)
-  if valid_594476 != nil:
-    section.add "oauth_token", valid_594476
-  var valid_594477 = query.getOrDefault("userIp")
-  valid_594477 = validateParameter(valid_594477, JString, required = false,
+  if valid_580476 != nil:
+    section.add "oauth_token", valid_580476
+  var valid_580477 = query.getOrDefault("userIp")
+  valid_580477 = validateParameter(valid_580477, JString, required = false,
                                  default = nil)
-  if valid_594477 != nil:
-    section.add "userIp", valid_594477
-  var valid_594478 = query.getOrDefault("key")
-  valid_594478 = validateParameter(valid_594478, JString, required = false,
+  if valid_580477 != nil:
+    section.add "userIp", valid_580477
+  var valid_580478 = query.getOrDefault("key")
+  valid_580478 = validateParameter(valid_580478, JString, required = false,
                                  default = nil)
-  if valid_594478 != nil:
-    section.add "key", valid_594478
-  var valid_594479 = query.getOrDefault("prettyPrint")
-  valid_594479 = validateParameter(valid_594479, JBool, required = false,
+  if valid_580478 != nil:
+    section.add "key", valid_580478
+  var valid_580479 = query.getOrDefault("prettyPrint")
+  valid_580479 = validateParameter(valid_580479, JBool, required = false,
                                  default = newJBool(true))
-  if valid_594479 != nil:
-    section.add "prettyPrint", valid_594479
+  if valid_580479 != nil:
+    section.add "prettyPrint", valid_580479
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -5376,21 +5378,21 @@ proc validate_TagmanagerAccountsContainersTriggersDelete_594468(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_594480: Call_TagmanagerAccountsContainersTriggersDelete_594467;
+proc call*(call_580480: Call_TagmanagerAccountsContainersTriggersDelete_580467;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Deletes a GTM Trigger.
   ## 
-  let valid = call_594480.validator(path, query, header, formData, body)
-  let scheme = call_594480.pickScheme
+  let valid = call_580480.validator(path, query, header, formData, body)
+  let scheme = call_580480.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_594480.url(scheme.get, call_594480.host, call_594480.base,
-                         call_594480.route, valid.getOrDefault("path"),
+  let url = call_580480.url(scheme.get, call_580480.host, call_580480.base,
+                         call_580480.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_594480, url, valid)
+  result = hook(call_580480, url, valid)
 
-proc call*(call_594481: Call_TagmanagerAccountsContainersTriggersDelete_594467;
+proc call*(call_580481: Call_TagmanagerAccountsContainersTriggersDelete_580467;
           containerId: string; accountId: string; triggerId: string;
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           oauthToken: string = ""; userIp: string = ""; key: string = "";
@@ -5417,33 +5419,33 @@ proc call*(call_594481: Call_TagmanagerAccountsContainersTriggersDelete_594467;
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_594482 = newJObject()
-  var query_594483 = newJObject()
-  add(path_594482, "containerId", newJString(containerId))
-  add(query_594483, "fields", newJString(fields))
-  add(query_594483, "quotaUser", newJString(quotaUser))
-  add(query_594483, "alt", newJString(alt))
-  add(query_594483, "oauth_token", newJString(oauthToken))
-  add(path_594482, "accountId", newJString(accountId))
-  add(query_594483, "userIp", newJString(userIp))
-  add(path_594482, "triggerId", newJString(triggerId))
-  add(query_594483, "key", newJString(key))
-  add(query_594483, "prettyPrint", newJBool(prettyPrint))
-  result = call_594481.call(path_594482, query_594483, nil, nil, nil)
+  var path_580482 = newJObject()
+  var query_580483 = newJObject()
+  add(path_580482, "containerId", newJString(containerId))
+  add(query_580483, "fields", newJString(fields))
+  add(query_580483, "quotaUser", newJString(quotaUser))
+  add(query_580483, "alt", newJString(alt))
+  add(query_580483, "oauth_token", newJString(oauthToken))
+  add(path_580482, "accountId", newJString(accountId))
+  add(query_580483, "userIp", newJString(userIp))
+  add(path_580482, "triggerId", newJString(triggerId))
+  add(query_580483, "key", newJString(key))
+  add(query_580483, "prettyPrint", newJBool(prettyPrint))
+  result = call_580481.call(path_580482, query_580483, nil, nil, nil)
 
-var tagmanagerAccountsContainersTriggersDelete* = Call_TagmanagerAccountsContainersTriggersDelete_594467(
+var tagmanagerAccountsContainersTriggersDelete* = Call_TagmanagerAccountsContainersTriggersDelete_580467(
     name: "tagmanagerAccountsContainersTriggersDelete",
     meth: HttpMethod.HttpDelete, host: "www.googleapis.com", route: "/accounts/{accountId}/containers/{containerId}/triggers/{triggerId}",
-    validator: validate_TagmanagerAccountsContainersTriggersDelete_594468,
-    base: "/tagmanager/v1", url: url_TagmanagerAccountsContainersTriggersDelete_594469,
+    validator: validate_TagmanagerAccountsContainersTriggersDelete_580468,
+    base: "/tagmanager/v1", url: url_TagmanagerAccountsContainersTriggersDelete_580469,
     schemes: {Scheme.Https})
 type
-  Call_TagmanagerAccountsContainersVariablesCreate_594500 = ref object of OpenApiRestCall_593408
-proc url_TagmanagerAccountsContainersVariablesCreate_594502(protocol: Scheme;
+  Call_TagmanagerAccountsContainersVariablesCreate_580500 = ref object of OpenApiRestCall_579408
+proc url_TagmanagerAccountsContainersVariablesCreate_580502(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "accountId" in path, "`accountId` is a required path parameter"
   assert "containerId" in path, "`containerId` is a required path parameter"
@@ -5458,7 +5460,7 @@ proc url_TagmanagerAccountsContainersVariablesCreate_594502(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_TagmanagerAccountsContainersVariablesCreate_594501(path: JsonNode;
+proc validate_TagmanagerAccountsContainersVariablesCreate_580501(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Creates a GTM Variable.
   ## 
@@ -5472,16 +5474,16 @@ proc validate_TagmanagerAccountsContainersVariablesCreate_594501(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `containerId` field"
-  var valid_594503 = path.getOrDefault("containerId")
-  valid_594503 = validateParameter(valid_594503, JString, required = true,
+  var valid_580503 = path.getOrDefault("containerId")
+  valid_580503 = validateParameter(valid_580503, JString, required = true,
                                  default = nil)
-  if valid_594503 != nil:
-    section.add "containerId", valid_594503
-  var valid_594504 = path.getOrDefault("accountId")
-  valid_594504 = validateParameter(valid_594504, JString, required = true,
+  if valid_580503 != nil:
+    section.add "containerId", valid_580503
+  var valid_580504 = path.getOrDefault("accountId")
+  valid_580504 = validateParameter(valid_580504, JString, required = true,
                                  default = nil)
-  if valid_594504 != nil:
-    section.add "accountId", valid_594504
+  if valid_580504 != nil:
+    section.add "accountId", valid_580504
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -5499,41 +5501,41 @@ proc validate_TagmanagerAccountsContainersVariablesCreate_594501(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_594505 = query.getOrDefault("fields")
-  valid_594505 = validateParameter(valid_594505, JString, required = false,
+  var valid_580505 = query.getOrDefault("fields")
+  valid_580505 = validateParameter(valid_580505, JString, required = false,
                                  default = nil)
-  if valid_594505 != nil:
-    section.add "fields", valid_594505
-  var valid_594506 = query.getOrDefault("quotaUser")
-  valid_594506 = validateParameter(valid_594506, JString, required = false,
+  if valid_580505 != nil:
+    section.add "fields", valid_580505
+  var valid_580506 = query.getOrDefault("quotaUser")
+  valid_580506 = validateParameter(valid_580506, JString, required = false,
                                  default = nil)
-  if valid_594506 != nil:
-    section.add "quotaUser", valid_594506
-  var valid_594507 = query.getOrDefault("alt")
-  valid_594507 = validateParameter(valid_594507, JString, required = false,
+  if valid_580506 != nil:
+    section.add "quotaUser", valid_580506
+  var valid_580507 = query.getOrDefault("alt")
+  valid_580507 = validateParameter(valid_580507, JString, required = false,
                                  default = newJString("json"))
-  if valid_594507 != nil:
-    section.add "alt", valid_594507
-  var valid_594508 = query.getOrDefault("oauth_token")
-  valid_594508 = validateParameter(valid_594508, JString, required = false,
+  if valid_580507 != nil:
+    section.add "alt", valid_580507
+  var valid_580508 = query.getOrDefault("oauth_token")
+  valid_580508 = validateParameter(valid_580508, JString, required = false,
                                  default = nil)
-  if valid_594508 != nil:
-    section.add "oauth_token", valid_594508
-  var valid_594509 = query.getOrDefault("userIp")
-  valid_594509 = validateParameter(valid_594509, JString, required = false,
+  if valid_580508 != nil:
+    section.add "oauth_token", valid_580508
+  var valid_580509 = query.getOrDefault("userIp")
+  valid_580509 = validateParameter(valid_580509, JString, required = false,
                                  default = nil)
-  if valid_594509 != nil:
-    section.add "userIp", valid_594509
-  var valid_594510 = query.getOrDefault("key")
-  valid_594510 = validateParameter(valid_594510, JString, required = false,
+  if valid_580509 != nil:
+    section.add "userIp", valid_580509
+  var valid_580510 = query.getOrDefault("key")
+  valid_580510 = validateParameter(valid_580510, JString, required = false,
                                  default = nil)
-  if valid_594510 != nil:
-    section.add "key", valid_594510
-  var valid_594511 = query.getOrDefault("prettyPrint")
-  valid_594511 = validateParameter(valid_594511, JBool, required = false,
+  if valid_580510 != nil:
+    section.add "key", valid_580510
+  var valid_580511 = query.getOrDefault("prettyPrint")
+  valid_580511 = validateParameter(valid_580511, JBool, required = false,
                                  default = newJBool(true))
-  if valid_594511 != nil:
-    section.add "prettyPrint", valid_594511
+  if valid_580511 != nil:
+    section.add "prettyPrint", valid_580511
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -5545,21 +5547,21 @@ proc validate_TagmanagerAccountsContainersVariablesCreate_594501(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_594513: Call_TagmanagerAccountsContainersVariablesCreate_594500;
+proc call*(call_580513: Call_TagmanagerAccountsContainersVariablesCreate_580500;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Creates a GTM Variable.
   ## 
-  let valid = call_594513.validator(path, query, header, formData, body)
-  let scheme = call_594513.pickScheme
+  let valid = call_580513.validator(path, query, header, formData, body)
+  let scheme = call_580513.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_594513.url(scheme.get, call_594513.host, call_594513.base,
-                         call_594513.route, valid.getOrDefault("path"),
+  let url = call_580513.url(scheme.get, call_580513.host, call_580513.base,
+                         call_580513.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_594513, url, valid)
+  result = hook(call_580513, url, valid)
 
-proc call*(call_594514: Call_TagmanagerAccountsContainersVariablesCreate_594500;
+proc call*(call_580514: Call_TagmanagerAccountsContainersVariablesCreate_580500;
           containerId: string; accountId: string; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; key: string = ""; body: JsonNode = nil;
@@ -5585,36 +5587,36 @@ proc call*(call_594514: Call_TagmanagerAccountsContainersVariablesCreate_594500;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_594515 = newJObject()
-  var query_594516 = newJObject()
-  var body_594517 = newJObject()
-  add(path_594515, "containerId", newJString(containerId))
-  add(query_594516, "fields", newJString(fields))
-  add(query_594516, "quotaUser", newJString(quotaUser))
-  add(query_594516, "alt", newJString(alt))
-  add(query_594516, "oauth_token", newJString(oauthToken))
-  add(path_594515, "accountId", newJString(accountId))
-  add(query_594516, "userIp", newJString(userIp))
-  add(query_594516, "key", newJString(key))
+  var path_580515 = newJObject()
+  var query_580516 = newJObject()
+  var body_580517 = newJObject()
+  add(path_580515, "containerId", newJString(containerId))
+  add(query_580516, "fields", newJString(fields))
+  add(query_580516, "quotaUser", newJString(quotaUser))
+  add(query_580516, "alt", newJString(alt))
+  add(query_580516, "oauth_token", newJString(oauthToken))
+  add(path_580515, "accountId", newJString(accountId))
+  add(query_580516, "userIp", newJString(userIp))
+  add(query_580516, "key", newJString(key))
   if body != nil:
-    body_594517 = body
-  add(query_594516, "prettyPrint", newJBool(prettyPrint))
-  result = call_594514.call(path_594515, query_594516, nil, nil, body_594517)
+    body_580517 = body
+  add(query_580516, "prettyPrint", newJBool(prettyPrint))
+  result = call_580514.call(path_580515, query_580516, nil, nil, body_580517)
 
-var tagmanagerAccountsContainersVariablesCreate* = Call_TagmanagerAccountsContainersVariablesCreate_594500(
+var tagmanagerAccountsContainersVariablesCreate* = Call_TagmanagerAccountsContainersVariablesCreate_580500(
     name: "tagmanagerAccountsContainersVariablesCreate",
     meth: HttpMethod.HttpPost, host: "www.googleapis.com",
     route: "/accounts/{accountId}/containers/{containerId}/variables",
-    validator: validate_TagmanagerAccountsContainersVariablesCreate_594501,
-    base: "/tagmanager/v1", url: url_TagmanagerAccountsContainersVariablesCreate_594502,
+    validator: validate_TagmanagerAccountsContainersVariablesCreate_580501,
+    base: "/tagmanager/v1", url: url_TagmanagerAccountsContainersVariablesCreate_580502,
     schemes: {Scheme.Https})
 type
-  Call_TagmanagerAccountsContainersVariablesList_594484 = ref object of OpenApiRestCall_593408
-proc url_TagmanagerAccountsContainersVariablesList_594486(protocol: Scheme;
+  Call_TagmanagerAccountsContainersVariablesList_580484 = ref object of OpenApiRestCall_579408
+proc url_TagmanagerAccountsContainersVariablesList_580486(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "accountId" in path, "`accountId` is a required path parameter"
   assert "containerId" in path, "`containerId` is a required path parameter"
@@ -5629,7 +5631,7 @@ proc url_TagmanagerAccountsContainersVariablesList_594486(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_TagmanagerAccountsContainersVariablesList_594485(path: JsonNode;
+proc validate_TagmanagerAccountsContainersVariablesList_580485(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Lists all GTM Variables of a Container.
   ## 
@@ -5643,16 +5645,16 @@ proc validate_TagmanagerAccountsContainersVariablesList_594485(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `containerId` field"
-  var valid_594487 = path.getOrDefault("containerId")
-  valid_594487 = validateParameter(valid_594487, JString, required = true,
+  var valid_580487 = path.getOrDefault("containerId")
+  valid_580487 = validateParameter(valid_580487, JString, required = true,
                                  default = nil)
-  if valid_594487 != nil:
-    section.add "containerId", valid_594487
-  var valid_594488 = path.getOrDefault("accountId")
-  valid_594488 = validateParameter(valid_594488, JString, required = true,
+  if valid_580487 != nil:
+    section.add "containerId", valid_580487
+  var valid_580488 = path.getOrDefault("accountId")
+  valid_580488 = validateParameter(valid_580488, JString, required = true,
                                  default = nil)
-  if valid_594488 != nil:
-    section.add "accountId", valid_594488
+  if valid_580488 != nil:
+    section.add "accountId", valid_580488
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -5670,41 +5672,41 @@ proc validate_TagmanagerAccountsContainersVariablesList_594485(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_594489 = query.getOrDefault("fields")
-  valid_594489 = validateParameter(valid_594489, JString, required = false,
+  var valid_580489 = query.getOrDefault("fields")
+  valid_580489 = validateParameter(valid_580489, JString, required = false,
                                  default = nil)
-  if valid_594489 != nil:
-    section.add "fields", valid_594489
-  var valid_594490 = query.getOrDefault("quotaUser")
-  valid_594490 = validateParameter(valid_594490, JString, required = false,
+  if valid_580489 != nil:
+    section.add "fields", valid_580489
+  var valid_580490 = query.getOrDefault("quotaUser")
+  valid_580490 = validateParameter(valid_580490, JString, required = false,
                                  default = nil)
-  if valid_594490 != nil:
-    section.add "quotaUser", valid_594490
-  var valid_594491 = query.getOrDefault("alt")
-  valid_594491 = validateParameter(valid_594491, JString, required = false,
+  if valid_580490 != nil:
+    section.add "quotaUser", valid_580490
+  var valid_580491 = query.getOrDefault("alt")
+  valid_580491 = validateParameter(valid_580491, JString, required = false,
                                  default = newJString("json"))
-  if valid_594491 != nil:
-    section.add "alt", valid_594491
-  var valid_594492 = query.getOrDefault("oauth_token")
-  valid_594492 = validateParameter(valid_594492, JString, required = false,
+  if valid_580491 != nil:
+    section.add "alt", valid_580491
+  var valid_580492 = query.getOrDefault("oauth_token")
+  valid_580492 = validateParameter(valid_580492, JString, required = false,
                                  default = nil)
-  if valid_594492 != nil:
-    section.add "oauth_token", valid_594492
-  var valid_594493 = query.getOrDefault("userIp")
-  valid_594493 = validateParameter(valid_594493, JString, required = false,
+  if valid_580492 != nil:
+    section.add "oauth_token", valid_580492
+  var valid_580493 = query.getOrDefault("userIp")
+  valid_580493 = validateParameter(valid_580493, JString, required = false,
                                  default = nil)
-  if valid_594493 != nil:
-    section.add "userIp", valid_594493
-  var valid_594494 = query.getOrDefault("key")
-  valid_594494 = validateParameter(valid_594494, JString, required = false,
+  if valid_580493 != nil:
+    section.add "userIp", valid_580493
+  var valid_580494 = query.getOrDefault("key")
+  valid_580494 = validateParameter(valid_580494, JString, required = false,
                                  default = nil)
-  if valid_594494 != nil:
-    section.add "key", valid_594494
-  var valid_594495 = query.getOrDefault("prettyPrint")
-  valid_594495 = validateParameter(valid_594495, JBool, required = false,
+  if valid_580494 != nil:
+    section.add "key", valid_580494
+  var valid_580495 = query.getOrDefault("prettyPrint")
+  valid_580495 = validateParameter(valid_580495, JBool, required = false,
                                  default = newJBool(true))
-  if valid_594495 != nil:
-    section.add "prettyPrint", valid_594495
+  if valid_580495 != nil:
+    section.add "prettyPrint", valid_580495
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -5713,21 +5715,21 @@ proc validate_TagmanagerAccountsContainersVariablesList_594485(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_594496: Call_TagmanagerAccountsContainersVariablesList_594484;
+proc call*(call_580496: Call_TagmanagerAccountsContainersVariablesList_580484;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Lists all GTM Variables of a Container.
   ## 
-  let valid = call_594496.validator(path, query, header, formData, body)
-  let scheme = call_594496.pickScheme
+  let valid = call_580496.validator(path, query, header, formData, body)
+  let scheme = call_580496.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_594496.url(scheme.get, call_594496.host, call_594496.base,
-                         call_594496.route, valid.getOrDefault("path"),
+  let url = call_580496.url(scheme.get, call_580496.host, call_580496.base,
+                         call_580496.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_594496, url, valid)
+  result = hook(call_580496, url, valid)
 
-proc call*(call_594497: Call_TagmanagerAccountsContainersVariablesList_594484;
+proc call*(call_580497: Call_TagmanagerAccountsContainersVariablesList_580484;
           containerId: string; accountId: string; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; key: string = ""; prettyPrint: bool = true): Recallable =
@@ -5751,33 +5753,33 @@ proc call*(call_594497: Call_TagmanagerAccountsContainersVariablesList_594484;
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_594498 = newJObject()
-  var query_594499 = newJObject()
-  add(path_594498, "containerId", newJString(containerId))
-  add(query_594499, "fields", newJString(fields))
-  add(query_594499, "quotaUser", newJString(quotaUser))
-  add(query_594499, "alt", newJString(alt))
-  add(query_594499, "oauth_token", newJString(oauthToken))
-  add(path_594498, "accountId", newJString(accountId))
-  add(query_594499, "userIp", newJString(userIp))
-  add(query_594499, "key", newJString(key))
-  add(query_594499, "prettyPrint", newJBool(prettyPrint))
-  result = call_594497.call(path_594498, query_594499, nil, nil, nil)
+  var path_580498 = newJObject()
+  var query_580499 = newJObject()
+  add(path_580498, "containerId", newJString(containerId))
+  add(query_580499, "fields", newJString(fields))
+  add(query_580499, "quotaUser", newJString(quotaUser))
+  add(query_580499, "alt", newJString(alt))
+  add(query_580499, "oauth_token", newJString(oauthToken))
+  add(path_580498, "accountId", newJString(accountId))
+  add(query_580499, "userIp", newJString(userIp))
+  add(query_580499, "key", newJString(key))
+  add(query_580499, "prettyPrint", newJBool(prettyPrint))
+  result = call_580497.call(path_580498, query_580499, nil, nil, nil)
 
-var tagmanagerAccountsContainersVariablesList* = Call_TagmanagerAccountsContainersVariablesList_594484(
+var tagmanagerAccountsContainersVariablesList* = Call_TagmanagerAccountsContainersVariablesList_580484(
     name: "tagmanagerAccountsContainersVariablesList", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com",
     route: "/accounts/{accountId}/containers/{containerId}/variables",
-    validator: validate_TagmanagerAccountsContainersVariablesList_594485,
-    base: "/tagmanager/v1", url: url_TagmanagerAccountsContainersVariablesList_594486,
+    validator: validate_TagmanagerAccountsContainersVariablesList_580485,
+    base: "/tagmanager/v1", url: url_TagmanagerAccountsContainersVariablesList_580486,
     schemes: {Scheme.Https})
 type
-  Call_TagmanagerAccountsContainersVariablesUpdate_594535 = ref object of OpenApiRestCall_593408
-proc url_TagmanagerAccountsContainersVariablesUpdate_594537(protocol: Scheme;
+  Call_TagmanagerAccountsContainersVariablesUpdate_580535 = ref object of OpenApiRestCall_579408
+proc url_TagmanagerAccountsContainersVariablesUpdate_580537(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "accountId" in path, "`accountId` is a required path parameter"
   assert "containerId" in path, "`containerId` is a required path parameter"
@@ -5794,7 +5796,7 @@ proc url_TagmanagerAccountsContainersVariablesUpdate_594537(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_TagmanagerAccountsContainersVariablesUpdate_594536(path: JsonNode;
+proc validate_TagmanagerAccountsContainersVariablesUpdate_580536(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Updates a GTM Variable.
   ## 
@@ -5810,21 +5812,21 @@ proc validate_TagmanagerAccountsContainersVariablesUpdate_594536(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `containerId` field"
-  var valid_594538 = path.getOrDefault("containerId")
-  valid_594538 = validateParameter(valid_594538, JString, required = true,
+  var valid_580538 = path.getOrDefault("containerId")
+  valid_580538 = validateParameter(valid_580538, JString, required = true,
                                  default = nil)
-  if valid_594538 != nil:
-    section.add "containerId", valid_594538
-  var valid_594539 = path.getOrDefault("variableId")
-  valid_594539 = validateParameter(valid_594539, JString, required = true,
+  if valid_580538 != nil:
+    section.add "containerId", valid_580538
+  var valid_580539 = path.getOrDefault("variableId")
+  valid_580539 = validateParameter(valid_580539, JString, required = true,
                                  default = nil)
-  if valid_594539 != nil:
-    section.add "variableId", valid_594539
-  var valid_594540 = path.getOrDefault("accountId")
-  valid_594540 = validateParameter(valid_594540, JString, required = true,
+  if valid_580539 != nil:
+    section.add "variableId", valid_580539
+  var valid_580540 = path.getOrDefault("accountId")
+  valid_580540 = validateParameter(valid_580540, JString, required = true,
                                  default = nil)
-  if valid_594540 != nil:
-    section.add "accountId", valid_594540
+  if valid_580540 != nil:
+    section.add "accountId", valid_580540
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -5844,46 +5846,46 @@ proc validate_TagmanagerAccountsContainersVariablesUpdate_594536(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_594541 = query.getOrDefault("fields")
-  valid_594541 = validateParameter(valid_594541, JString, required = false,
+  var valid_580541 = query.getOrDefault("fields")
+  valid_580541 = validateParameter(valid_580541, JString, required = false,
                                  default = nil)
-  if valid_594541 != nil:
-    section.add "fields", valid_594541
-  var valid_594542 = query.getOrDefault("fingerprint")
-  valid_594542 = validateParameter(valid_594542, JString, required = false,
+  if valid_580541 != nil:
+    section.add "fields", valid_580541
+  var valid_580542 = query.getOrDefault("fingerprint")
+  valid_580542 = validateParameter(valid_580542, JString, required = false,
                                  default = nil)
-  if valid_594542 != nil:
-    section.add "fingerprint", valid_594542
-  var valid_594543 = query.getOrDefault("quotaUser")
-  valid_594543 = validateParameter(valid_594543, JString, required = false,
+  if valid_580542 != nil:
+    section.add "fingerprint", valid_580542
+  var valid_580543 = query.getOrDefault("quotaUser")
+  valid_580543 = validateParameter(valid_580543, JString, required = false,
                                  default = nil)
-  if valid_594543 != nil:
-    section.add "quotaUser", valid_594543
-  var valid_594544 = query.getOrDefault("alt")
-  valid_594544 = validateParameter(valid_594544, JString, required = false,
+  if valid_580543 != nil:
+    section.add "quotaUser", valid_580543
+  var valid_580544 = query.getOrDefault("alt")
+  valid_580544 = validateParameter(valid_580544, JString, required = false,
                                  default = newJString("json"))
-  if valid_594544 != nil:
-    section.add "alt", valid_594544
-  var valid_594545 = query.getOrDefault("oauth_token")
-  valid_594545 = validateParameter(valid_594545, JString, required = false,
+  if valid_580544 != nil:
+    section.add "alt", valid_580544
+  var valid_580545 = query.getOrDefault("oauth_token")
+  valid_580545 = validateParameter(valid_580545, JString, required = false,
                                  default = nil)
-  if valid_594545 != nil:
-    section.add "oauth_token", valid_594545
-  var valid_594546 = query.getOrDefault("userIp")
-  valid_594546 = validateParameter(valid_594546, JString, required = false,
+  if valid_580545 != nil:
+    section.add "oauth_token", valid_580545
+  var valid_580546 = query.getOrDefault("userIp")
+  valid_580546 = validateParameter(valid_580546, JString, required = false,
                                  default = nil)
-  if valid_594546 != nil:
-    section.add "userIp", valid_594546
-  var valid_594547 = query.getOrDefault("key")
-  valid_594547 = validateParameter(valid_594547, JString, required = false,
+  if valid_580546 != nil:
+    section.add "userIp", valid_580546
+  var valid_580547 = query.getOrDefault("key")
+  valid_580547 = validateParameter(valid_580547, JString, required = false,
                                  default = nil)
-  if valid_594547 != nil:
-    section.add "key", valid_594547
-  var valid_594548 = query.getOrDefault("prettyPrint")
-  valid_594548 = validateParameter(valid_594548, JBool, required = false,
+  if valid_580547 != nil:
+    section.add "key", valid_580547
+  var valid_580548 = query.getOrDefault("prettyPrint")
+  valid_580548 = validateParameter(valid_580548, JBool, required = false,
                                  default = newJBool(true))
-  if valid_594548 != nil:
-    section.add "prettyPrint", valid_594548
+  if valid_580548 != nil:
+    section.add "prettyPrint", valid_580548
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -5895,21 +5897,21 @@ proc validate_TagmanagerAccountsContainersVariablesUpdate_594536(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_594550: Call_TagmanagerAccountsContainersVariablesUpdate_594535;
+proc call*(call_580550: Call_TagmanagerAccountsContainersVariablesUpdate_580535;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Updates a GTM Variable.
   ## 
-  let valid = call_594550.validator(path, query, header, formData, body)
-  let scheme = call_594550.pickScheme
+  let valid = call_580550.validator(path, query, header, formData, body)
+  let scheme = call_580550.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_594550.url(scheme.get, call_594550.host, call_594550.base,
-                         call_594550.route, valid.getOrDefault("path"),
+  let url = call_580550.url(scheme.get, call_580550.host, call_580550.base,
+                         call_580550.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_594550, url, valid)
+  result = hook(call_580550, url, valid)
 
-proc call*(call_594551: Call_TagmanagerAccountsContainersVariablesUpdate_594535;
+proc call*(call_580551: Call_TagmanagerAccountsContainersVariablesUpdate_580535;
           containerId: string; variableId: string; accountId: string;
           fields: string = ""; fingerprint: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; userIp: string = "";
@@ -5939,37 +5941,37 @@ proc call*(call_594551: Call_TagmanagerAccountsContainersVariablesUpdate_594535;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_594552 = newJObject()
-  var query_594553 = newJObject()
-  var body_594554 = newJObject()
-  add(path_594552, "containerId", newJString(containerId))
-  add(query_594553, "fields", newJString(fields))
-  add(query_594553, "fingerprint", newJString(fingerprint))
-  add(query_594553, "quotaUser", newJString(quotaUser))
-  add(query_594553, "alt", newJString(alt))
-  add(path_594552, "variableId", newJString(variableId))
-  add(query_594553, "oauth_token", newJString(oauthToken))
-  add(path_594552, "accountId", newJString(accountId))
-  add(query_594553, "userIp", newJString(userIp))
-  add(query_594553, "key", newJString(key))
+  var path_580552 = newJObject()
+  var query_580553 = newJObject()
+  var body_580554 = newJObject()
+  add(path_580552, "containerId", newJString(containerId))
+  add(query_580553, "fields", newJString(fields))
+  add(query_580553, "fingerprint", newJString(fingerprint))
+  add(query_580553, "quotaUser", newJString(quotaUser))
+  add(query_580553, "alt", newJString(alt))
+  add(path_580552, "variableId", newJString(variableId))
+  add(query_580553, "oauth_token", newJString(oauthToken))
+  add(path_580552, "accountId", newJString(accountId))
+  add(query_580553, "userIp", newJString(userIp))
+  add(query_580553, "key", newJString(key))
   if body != nil:
-    body_594554 = body
-  add(query_594553, "prettyPrint", newJBool(prettyPrint))
-  result = call_594551.call(path_594552, query_594553, nil, nil, body_594554)
+    body_580554 = body
+  add(query_580553, "prettyPrint", newJBool(prettyPrint))
+  result = call_580551.call(path_580552, query_580553, nil, nil, body_580554)
 
-var tagmanagerAccountsContainersVariablesUpdate* = Call_TagmanagerAccountsContainersVariablesUpdate_594535(
+var tagmanagerAccountsContainersVariablesUpdate* = Call_TagmanagerAccountsContainersVariablesUpdate_580535(
     name: "tagmanagerAccountsContainersVariablesUpdate", meth: HttpMethod.HttpPut,
     host: "www.googleapis.com", route: "/accounts/{accountId}/containers/{containerId}/variables/{variableId}",
-    validator: validate_TagmanagerAccountsContainersVariablesUpdate_594536,
-    base: "/tagmanager/v1", url: url_TagmanagerAccountsContainersVariablesUpdate_594537,
+    validator: validate_TagmanagerAccountsContainersVariablesUpdate_580536,
+    base: "/tagmanager/v1", url: url_TagmanagerAccountsContainersVariablesUpdate_580537,
     schemes: {Scheme.Https})
 type
-  Call_TagmanagerAccountsContainersVariablesGet_594518 = ref object of OpenApiRestCall_593408
-proc url_TagmanagerAccountsContainersVariablesGet_594520(protocol: Scheme;
+  Call_TagmanagerAccountsContainersVariablesGet_580518 = ref object of OpenApiRestCall_579408
+proc url_TagmanagerAccountsContainersVariablesGet_580520(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "accountId" in path, "`accountId` is a required path parameter"
   assert "containerId" in path, "`containerId` is a required path parameter"
@@ -5986,7 +5988,7 @@ proc url_TagmanagerAccountsContainersVariablesGet_594520(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_TagmanagerAccountsContainersVariablesGet_594519(path: JsonNode;
+proc validate_TagmanagerAccountsContainersVariablesGet_580519(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Gets a GTM Variable.
   ## 
@@ -6002,21 +6004,21 @@ proc validate_TagmanagerAccountsContainersVariablesGet_594519(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `containerId` field"
-  var valid_594521 = path.getOrDefault("containerId")
-  valid_594521 = validateParameter(valid_594521, JString, required = true,
+  var valid_580521 = path.getOrDefault("containerId")
+  valid_580521 = validateParameter(valid_580521, JString, required = true,
                                  default = nil)
-  if valid_594521 != nil:
-    section.add "containerId", valid_594521
-  var valid_594522 = path.getOrDefault("variableId")
-  valid_594522 = validateParameter(valid_594522, JString, required = true,
+  if valid_580521 != nil:
+    section.add "containerId", valid_580521
+  var valid_580522 = path.getOrDefault("variableId")
+  valid_580522 = validateParameter(valid_580522, JString, required = true,
                                  default = nil)
-  if valid_594522 != nil:
-    section.add "variableId", valid_594522
-  var valid_594523 = path.getOrDefault("accountId")
-  valid_594523 = validateParameter(valid_594523, JString, required = true,
+  if valid_580522 != nil:
+    section.add "variableId", valid_580522
+  var valid_580523 = path.getOrDefault("accountId")
+  valid_580523 = validateParameter(valid_580523, JString, required = true,
                                  default = nil)
-  if valid_594523 != nil:
-    section.add "accountId", valid_594523
+  if valid_580523 != nil:
+    section.add "accountId", valid_580523
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -6034,41 +6036,41 @@ proc validate_TagmanagerAccountsContainersVariablesGet_594519(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_594524 = query.getOrDefault("fields")
-  valid_594524 = validateParameter(valid_594524, JString, required = false,
+  var valid_580524 = query.getOrDefault("fields")
+  valid_580524 = validateParameter(valid_580524, JString, required = false,
                                  default = nil)
-  if valid_594524 != nil:
-    section.add "fields", valid_594524
-  var valid_594525 = query.getOrDefault("quotaUser")
-  valid_594525 = validateParameter(valid_594525, JString, required = false,
+  if valid_580524 != nil:
+    section.add "fields", valid_580524
+  var valid_580525 = query.getOrDefault("quotaUser")
+  valid_580525 = validateParameter(valid_580525, JString, required = false,
                                  default = nil)
-  if valid_594525 != nil:
-    section.add "quotaUser", valid_594525
-  var valid_594526 = query.getOrDefault("alt")
-  valid_594526 = validateParameter(valid_594526, JString, required = false,
+  if valid_580525 != nil:
+    section.add "quotaUser", valid_580525
+  var valid_580526 = query.getOrDefault("alt")
+  valid_580526 = validateParameter(valid_580526, JString, required = false,
                                  default = newJString("json"))
-  if valid_594526 != nil:
-    section.add "alt", valid_594526
-  var valid_594527 = query.getOrDefault("oauth_token")
-  valid_594527 = validateParameter(valid_594527, JString, required = false,
+  if valid_580526 != nil:
+    section.add "alt", valid_580526
+  var valid_580527 = query.getOrDefault("oauth_token")
+  valid_580527 = validateParameter(valid_580527, JString, required = false,
                                  default = nil)
-  if valid_594527 != nil:
-    section.add "oauth_token", valid_594527
-  var valid_594528 = query.getOrDefault("userIp")
-  valid_594528 = validateParameter(valid_594528, JString, required = false,
+  if valid_580527 != nil:
+    section.add "oauth_token", valid_580527
+  var valid_580528 = query.getOrDefault("userIp")
+  valid_580528 = validateParameter(valid_580528, JString, required = false,
                                  default = nil)
-  if valid_594528 != nil:
-    section.add "userIp", valid_594528
-  var valid_594529 = query.getOrDefault("key")
-  valid_594529 = validateParameter(valid_594529, JString, required = false,
+  if valid_580528 != nil:
+    section.add "userIp", valid_580528
+  var valid_580529 = query.getOrDefault("key")
+  valid_580529 = validateParameter(valid_580529, JString, required = false,
                                  default = nil)
-  if valid_594529 != nil:
-    section.add "key", valid_594529
-  var valid_594530 = query.getOrDefault("prettyPrint")
-  valid_594530 = validateParameter(valid_594530, JBool, required = false,
+  if valid_580529 != nil:
+    section.add "key", valid_580529
+  var valid_580530 = query.getOrDefault("prettyPrint")
+  valid_580530 = validateParameter(valid_580530, JBool, required = false,
                                  default = newJBool(true))
-  if valid_594530 != nil:
-    section.add "prettyPrint", valid_594530
+  if valid_580530 != nil:
+    section.add "prettyPrint", valid_580530
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -6077,21 +6079,21 @@ proc validate_TagmanagerAccountsContainersVariablesGet_594519(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_594531: Call_TagmanagerAccountsContainersVariablesGet_594518;
+proc call*(call_580531: Call_TagmanagerAccountsContainersVariablesGet_580518;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Gets a GTM Variable.
   ## 
-  let valid = call_594531.validator(path, query, header, formData, body)
-  let scheme = call_594531.pickScheme
+  let valid = call_580531.validator(path, query, header, formData, body)
+  let scheme = call_580531.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_594531.url(scheme.get, call_594531.host, call_594531.base,
-                         call_594531.route, valid.getOrDefault("path"),
+  let url = call_580531.url(scheme.get, call_580531.host, call_580531.base,
+                         call_580531.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_594531, url, valid)
+  result = hook(call_580531, url, valid)
 
-proc call*(call_594532: Call_TagmanagerAccountsContainersVariablesGet_594518;
+proc call*(call_580532: Call_TagmanagerAccountsContainersVariablesGet_580518;
           containerId: string; variableId: string; accountId: string;
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           oauthToken: string = ""; userIp: string = ""; key: string = "";
@@ -6118,33 +6120,33 @@ proc call*(call_594532: Call_TagmanagerAccountsContainersVariablesGet_594518;
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_594533 = newJObject()
-  var query_594534 = newJObject()
-  add(path_594533, "containerId", newJString(containerId))
-  add(query_594534, "fields", newJString(fields))
-  add(query_594534, "quotaUser", newJString(quotaUser))
-  add(query_594534, "alt", newJString(alt))
-  add(path_594533, "variableId", newJString(variableId))
-  add(query_594534, "oauth_token", newJString(oauthToken))
-  add(path_594533, "accountId", newJString(accountId))
-  add(query_594534, "userIp", newJString(userIp))
-  add(query_594534, "key", newJString(key))
-  add(query_594534, "prettyPrint", newJBool(prettyPrint))
-  result = call_594532.call(path_594533, query_594534, nil, nil, nil)
+  var path_580533 = newJObject()
+  var query_580534 = newJObject()
+  add(path_580533, "containerId", newJString(containerId))
+  add(query_580534, "fields", newJString(fields))
+  add(query_580534, "quotaUser", newJString(quotaUser))
+  add(query_580534, "alt", newJString(alt))
+  add(path_580533, "variableId", newJString(variableId))
+  add(query_580534, "oauth_token", newJString(oauthToken))
+  add(path_580533, "accountId", newJString(accountId))
+  add(query_580534, "userIp", newJString(userIp))
+  add(query_580534, "key", newJString(key))
+  add(query_580534, "prettyPrint", newJBool(prettyPrint))
+  result = call_580532.call(path_580533, query_580534, nil, nil, nil)
 
-var tagmanagerAccountsContainersVariablesGet* = Call_TagmanagerAccountsContainersVariablesGet_594518(
+var tagmanagerAccountsContainersVariablesGet* = Call_TagmanagerAccountsContainersVariablesGet_580518(
     name: "tagmanagerAccountsContainersVariablesGet", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/accounts/{accountId}/containers/{containerId}/variables/{variableId}",
-    validator: validate_TagmanagerAccountsContainersVariablesGet_594519,
-    base: "/tagmanager/v1", url: url_TagmanagerAccountsContainersVariablesGet_594520,
+    validator: validate_TagmanagerAccountsContainersVariablesGet_580519,
+    base: "/tagmanager/v1", url: url_TagmanagerAccountsContainersVariablesGet_580520,
     schemes: {Scheme.Https})
 type
-  Call_TagmanagerAccountsContainersVariablesDelete_594555 = ref object of OpenApiRestCall_593408
-proc url_TagmanagerAccountsContainersVariablesDelete_594557(protocol: Scheme;
+  Call_TagmanagerAccountsContainersVariablesDelete_580555 = ref object of OpenApiRestCall_579408
+proc url_TagmanagerAccountsContainersVariablesDelete_580557(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "accountId" in path, "`accountId` is a required path parameter"
   assert "containerId" in path, "`containerId` is a required path parameter"
@@ -6161,7 +6163,7 @@ proc url_TagmanagerAccountsContainersVariablesDelete_594557(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_TagmanagerAccountsContainersVariablesDelete_594556(path: JsonNode;
+proc validate_TagmanagerAccountsContainersVariablesDelete_580556(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Deletes a GTM Variable.
   ## 
@@ -6177,21 +6179,21 @@ proc validate_TagmanagerAccountsContainersVariablesDelete_594556(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `containerId` field"
-  var valid_594558 = path.getOrDefault("containerId")
-  valid_594558 = validateParameter(valid_594558, JString, required = true,
+  var valid_580558 = path.getOrDefault("containerId")
+  valid_580558 = validateParameter(valid_580558, JString, required = true,
                                  default = nil)
-  if valid_594558 != nil:
-    section.add "containerId", valid_594558
-  var valid_594559 = path.getOrDefault("variableId")
-  valid_594559 = validateParameter(valid_594559, JString, required = true,
+  if valid_580558 != nil:
+    section.add "containerId", valid_580558
+  var valid_580559 = path.getOrDefault("variableId")
+  valid_580559 = validateParameter(valid_580559, JString, required = true,
                                  default = nil)
-  if valid_594559 != nil:
-    section.add "variableId", valid_594559
-  var valid_594560 = path.getOrDefault("accountId")
-  valid_594560 = validateParameter(valid_594560, JString, required = true,
+  if valid_580559 != nil:
+    section.add "variableId", valid_580559
+  var valid_580560 = path.getOrDefault("accountId")
+  valid_580560 = validateParameter(valid_580560, JString, required = true,
                                  default = nil)
-  if valid_594560 != nil:
-    section.add "accountId", valid_594560
+  if valid_580560 != nil:
+    section.add "accountId", valid_580560
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -6209,41 +6211,41 @@ proc validate_TagmanagerAccountsContainersVariablesDelete_594556(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_594561 = query.getOrDefault("fields")
-  valid_594561 = validateParameter(valid_594561, JString, required = false,
+  var valid_580561 = query.getOrDefault("fields")
+  valid_580561 = validateParameter(valid_580561, JString, required = false,
                                  default = nil)
-  if valid_594561 != nil:
-    section.add "fields", valid_594561
-  var valid_594562 = query.getOrDefault("quotaUser")
-  valid_594562 = validateParameter(valid_594562, JString, required = false,
+  if valid_580561 != nil:
+    section.add "fields", valid_580561
+  var valid_580562 = query.getOrDefault("quotaUser")
+  valid_580562 = validateParameter(valid_580562, JString, required = false,
                                  default = nil)
-  if valid_594562 != nil:
-    section.add "quotaUser", valid_594562
-  var valid_594563 = query.getOrDefault("alt")
-  valid_594563 = validateParameter(valid_594563, JString, required = false,
+  if valid_580562 != nil:
+    section.add "quotaUser", valid_580562
+  var valid_580563 = query.getOrDefault("alt")
+  valid_580563 = validateParameter(valid_580563, JString, required = false,
                                  default = newJString("json"))
-  if valid_594563 != nil:
-    section.add "alt", valid_594563
-  var valid_594564 = query.getOrDefault("oauth_token")
-  valid_594564 = validateParameter(valid_594564, JString, required = false,
+  if valid_580563 != nil:
+    section.add "alt", valid_580563
+  var valid_580564 = query.getOrDefault("oauth_token")
+  valid_580564 = validateParameter(valid_580564, JString, required = false,
                                  default = nil)
-  if valid_594564 != nil:
-    section.add "oauth_token", valid_594564
-  var valid_594565 = query.getOrDefault("userIp")
-  valid_594565 = validateParameter(valid_594565, JString, required = false,
+  if valid_580564 != nil:
+    section.add "oauth_token", valid_580564
+  var valid_580565 = query.getOrDefault("userIp")
+  valid_580565 = validateParameter(valid_580565, JString, required = false,
                                  default = nil)
-  if valid_594565 != nil:
-    section.add "userIp", valid_594565
-  var valid_594566 = query.getOrDefault("key")
-  valid_594566 = validateParameter(valid_594566, JString, required = false,
+  if valid_580565 != nil:
+    section.add "userIp", valid_580565
+  var valid_580566 = query.getOrDefault("key")
+  valid_580566 = validateParameter(valid_580566, JString, required = false,
                                  default = nil)
-  if valid_594566 != nil:
-    section.add "key", valid_594566
-  var valid_594567 = query.getOrDefault("prettyPrint")
-  valid_594567 = validateParameter(valid_594567, JBool, required = false,
+  if valid_580566 != nil:
+    section.add "key", valid_580566
+  var valid_580567 = query.getOrDefault("prettyPrint")
+  valid_580567 = validateParameter(valid_580567, JBool, required = false,
                                  default = newJBool(true))
-  if valid_594567 != nil:
-    section.add "prettyPrint", valid_594567
+  if valid_580567 != nil:
+    section.add "prettyPrint", valid_580567
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -6252,21 +6254,21 @@ proc validate_TagmanagerAccountsContainersVariablesDelete_594556(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_594568: Call_TagmanagerAccountsContainersVariablesDelete_594555;
+proc call*(call_580568: Call_TagmanagerAccountsContainersVariablesDelete_580555;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Deletes a GTM Variable.
   ## 
-  let valid = call_594568.validator(path, query, header, formData, body)
-  let scheme = call_594568.pickScheme
+  let valid = call_580568.validator(path, query, header, formData, body)
+  let scheme = call_580568.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_594568.url(scheme.get, call_594568.host, call_594568.base,
-                         call_594568.route, valid.getOrDefault("path"),
+  let url = call_580568.url(scheme.get, call_580568.host, call_580568.base,
+                         call_580568.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_594568, url, valid)
+  result = hook(call_580568, url, valid)
 
-proc call*(call_594569: Call_TagmanagerAccountsContainersVariablesDelete_594555;
+proc call*(call_580569: Call_TagmanagerAccountsContainersVariablesDelete_580555;
           containerId: string; variableId: string; accountId: string;
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           oauthToken: string = ""; userIp: string = ""; key: string = "";
@@ -6293,33 +6295,33 @@ proc call*(call_594569: Call_TagmanagerAccountsContainersVariablesDelete_594555;
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_594570 = newJObject()
-  var query_594571 = newJObject()
-  add(path_594570, "containerId", newJString(containerId))
-  add(query_594571, "fields", newJString(fields))
-  add(query_594571, "quotaUser", newJString(quotaUser))
-  add(query_594571, "alt", newJString(alt))
-  add(path_594570, "variableId", newJString(variableId))
-  add(query_594571, "oauth_token", newJString(oauthToken))
-  add(path_594570, "accountId", newJString(accountId))
-  add(query_594571, "userIp", newJString(userIp))
-  add(query_594571, "key", newJString(key))
-  add(query_594571, "prettyPrint", newJBool(prettyPrint))
-  result = call_594569.call(path_594570, query_594571, nil, nil, nil)
+  var path_580570 = newJObject()
+  var query_580571 = newJObject()
+  add(path_580570, "containerId", newJString(containerId))
+  add(query_580571, "fields", newJString(fields))
+  add(query_580571, "quotaUser", newJString(quotaUser))
+  add(query_580571, "alt", newJString(alt))
+  add(path_580570, "variableId", newJString(variableId))
+  add(query_580571, "oauth_token", newJString(oauthToken))
+  add(path_580570, "accountId", newJString(accountId))
+  add(query_580571, "userIp", newJString(userIp))
+  add(query_580571, "key", newJString(key))
+  add(query_580571, "prettyPrint", newJBool(prettyPrint))
+  result = call_580569.call(path_580570, query_580571, nil, nil, nil)
 
-var tagmanagerAccountsContainersVariablesDelete* = Call_TagmanagerAccountsContainersVariablesDelete_594555(
+var tagmanagerAccountsContainersVariablesDelete* = Call_TagmanagerAccountsContainersVariablesDelete_580555(
     name: "tagmanagerAccountsContainersVariablesDelete",
     meth: HttpMethod.HttpDelete, host: "www.googleapis.com", route: "/accounts/{accountId}/containers/{containerId}/variables/{variableId}",
-    validator: validate_TagmanagerAccountsContainersVariablesDelete_594556,
-    base: "/tagmanager/v1", url: url_TagmanagerAccountsContainersVariablesDelete_594557,
+    validator: validate_TagmanagerAccountsContainersVariablesDelete_580556,
+    base: "/tagmanager/v1", url: url_TagmanagerAccountsContainersVariablesDelete_580557,
     schemes: {Scheme.Https})
 type
-  Call_TagmanagerAccountsContainersVersionsCreate_594590 = ref object of OpenApiRestCall_593408
-proc url_TagmanagerAccountsContainersVersionsCreate_594592(protocol: Scheme;
+  Call_TagmanagerAccountsContainersVersionsCreate_580590 = ref object of OpenApiRestCall_579408
+proc url_TagmanagerAccountsContainersVersionsCreate_580592(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "accountId" in path, "`accountId` is a required path parameter"
   assert "containerId" in path, "`containerId` is a required path parameter"
@@ -6334,7 +6336,7 @@ proc url_TagmanagerAccountsContainersVersionsCreate_594592(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_TagmanagerAccountsContainersVersionsCreate_594591(path: JsonNode;
+proc validate_TagmanagerAccountsContainersVersionsCreate_580591(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Creates a Container Version.
   ## 
@@ -6348,16 +6350,16 @@ proc validate_TagmanagerAccountsContainersVersionsCreate_594591(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `containerId` field"
-  var valid_594593 = path.getOrDefault("containerId")
-  valid_594593 = validateParameter(valid_594593, JString, required = true,
+  var valid_580593 = path.getOrDefault("containerId")
+  valid_580593 = validateParameter(valid_580593, JString, required = true,
                                  default = nil)
-  if valid_594593 != nil:
-    section.add "containerId", valid_594593
-  var valid_594594 = path.getOrDefault("accountId")
-  valid_594594 = validateParameter(valid_594594, JString, required = true,
+  if valid_580593 != nil:
+    section.add "containerId", valid_580593
+  var valid_580594 = path.getOrDefault("accountId")
+  valid_580594 = validateParameter(valid_580594, JString, required = true,
                                  default = nil)
-  if valid_594594 != nil:
-    section.add "accountId", valid_594594
+  if valid_580594 != nil:
+    section.add "accountId", valid_580594
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -6375,41 +6377,41 @@ proc validate_TagmanagerAccountsContainersVersionsCreate_594591(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_594595 = query.getOrDefault("fields")
-  valid_594595 = validateParameter(valid_594595, JString, required = false,
+  var valid_580595 = query.getOrDefault("fields")
+  valid_580595 = validateParameter(valid_580595, JString, required = false,
                                  default = nil)
-  if valid_594595 != nil:
-    section.add "fields", valid_594595
-  var valid_594596 = query.getOrDefault("quotaUser")
-  valid_594596 = validateParameter(valid_594596, JString, required = false,
+  if valid_580595 != nil:
+    section.add "fields", valid_580595
+  var valid_580596 = query.getOrDefault("quotaUser")
+  valid_580596 = validateParameter(valid_580596, JString, required = false,
                                  default = nil)
-  if valid_594596 != nil:
-    section.add "quotaUser", valid_594596
-  var valid_594597 = query.getOrDefault("alt")
-  valid_594597 = validateParameter(valid_594597, JString, required = false,
+  if valid_580596 != nil:
+    section.add "quotaUser", valid_580596
+  var valid_580597 = query.getOrDefault("alt")
+  valid_580597 = validateParameter(valid_580597, JString, required = false,
                                  default = newJString("json"))
-  if valid_594597 != nil:
-    section.add "alt", valid_594597
-  var valid_594598 = query.getOrDefault("oauth_token")
-  valid_594598 = validateParameter(valid_594598, JString, required = false,
+  if valid_580597 != nil:
+    section.add "alt", valid_580597
+  var valid_580598 = query.getOrDefault("oauth_token")
+  valid_580598 = validateParameter(valid_580598, JString, required = false,
                                  default = nil)
-  if valid_594598 != nil:
-    section.add "oauth_token", valid_594598
-  var valid_594599 = query.getOrDefault("userIp")
-  valid_594599 = validateParameter(valid_594599, JString, required = false,
+  if valid_580598 != nil:
+    section.add "oauth_token", valid_580598
+  var valid_580599 = query.getOrDefault("userIp")
+  valid_580599 = validateParameter(valid_580599, JString, required = false,
                                  default = nil)
-  if valid_594599 != nil:
-    section.add "userIp", valid_594599
-  var valid_594600 = query.getOrDefault("key")
-  valid_594600 = validateParameter(valid_594600, JString, required = false,
+  if valid_580599 != nil:
+    section.add "userIp", valid_580599
+  var valid_580600 = query.getOrDefault("key")
+  valid_580600 = validateParameter(valid_580600, JString, required = false,
                                  default = nil)
-  if valid_594600 != nil:
-    section.add "key", valid_594600
-  var valid_594601 = query.getOrDefault("prettyPrint")
-  valid_594601 = validateParameter(valid_594601, JBool, required = false,
+  if valid_580600 != nil:
+    section.add "key", valid_580600
+  var valid_580601 = query.getOrDefault("prettyPrint")
+  valid_580601 = validateParameter(valid_580601, JBool, required = false,
                                  default = newJBool(true))
-  if valid_594601 != nil:
-    section.add "prettyPrint", valid_594601
+  if valid_580601 != nil:
+    section.add "prettyPrint", valid_580601
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -6421,21 +6423,21 @@ proc validate_TagmanagerAccountsContainersVersionsCreate_594591(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_594603: Call_TagmanagerAccountsContainersVersionsCreate_594590;
+proc call*(call_580603: Call_TagmanagerAccountsContainersVersionsCreate_580590;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Creates a Container Version.
   ## 
-  let valid = call_594603.validator(path, query, header, formData, body)
-  let scheme = call_594603.pickScheme
+  let valid = call_580603.validator(path, query, header, formData, body)
+  let scheme = call_580603.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_594603.url(scheme.get, call_594603.host, call_594603.base,
-                         call_594603.route, valid.getOrDefault("path"),
+  let url = call_580603.url(scheme.get, call_580603.host, call_580603.base,
+                         call_580603.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_594603, url, valid)
+  result = hook(call_580603, url, valid)
 
-proc call*(call_594604: Call_TagmanagerAccountsContainersVersionsCreate_594590;
+proc call*(call_580604: Call_TagmanagerAccountsContainersVersionsCreate_580590;
           containerId: string; accountId: string; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; key: string = ""; body: JsonNode = nil;
@@ -6461,36 +6463,36 @@ proc call*(call_594604: Call_TagmanagerAccountsContainersVersionsCreate_594590;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_594605 = newJObject()
-  var query_594606 = newJObject()
-  var body_594607 = newJObject()
-  add(path_594605, "containerId", newJString(containerId))
-  add(query_594606, "fields", newJString(fields))
-  add(query_594606, "quotaUser", newJString(quotaUser))
-  add(query_594606, "alt", newJString(alt))
-  add(query_594606, "oauth_token", newJString(oauthToken))
-  add(path_594605, "accountId", newJString(accountId))
-  add(query_594606, "userIp", newJString(userIp))
-  add(query_594606, "key", newJString(key))
+  var path_580605 = newJObject()
+  var query_580606 = newJObject()
+  var body_580607 = newJObject()
+  add(path_580605, "containerId", newJString(containerId))
+  add(query_580606, "fields", newJString(fields))
+  add(query_580606, "quotaUser", newJString(quotaUser))
+  add(query_580606, "alt", newJString(alt))
+  add(query_580606, "oauth_token", newJString(oauthToken))
+  add(path_580605, "accountId", newJString(accountId))
+  add(query_580606, "userIp", newJString(userIp))
+  add(query_580606, "key", newJString(key))
   if body != nil:
-    body_594607 = body
-  add(query_594606, "prettyPrint", newJBool(prettyPrint))
-  result = call_594604.call(path_594605, query_594606, nil, nil, body_594607)
+    body_580607 = body
+  add(query_580606, "prettyPrint", newJBool(prettyPrint))
+  result = call_580604.call(path_580605, query_580606, nil, nil, body_580607)
 
-var tagmanagerAccountsContainersVersionsCreate* = Call_TagmanagerAccountsContainersVersionsCreate_594590(
+var tagmanagerAccountsContainersVersionsCreate* = Call_TagmanagerAccountsContainersVersionsCreate_580590(
     name: "tagmanagerAccountsContainersVersionsCreate", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com",
     route: "/accounts/{accountId}/containers/{containerId}/versions",
-    validator: validate_TagmanagerAccountsContainersVersionsCreate_594591,
-    base: "/tagmanager/v1", url: url_TagmanagerAccountsContainersVersionsCreate_594592,
+    validator: validate_TagmanagerAccountsContainersVersionsCreate_580591,
+    base: "/tagmanager/v1", url: url_TagmanagerAccountsContainersVersionsCreate_580592,
     schemes: {Scheme.Https})
 type
-  Call_TagmanagerAccountsContainersVersionsList_594572 = ref object of OpenApiRestCall_593408
-proc url_TagmanagerAccountsContainersVersionsList_594574(protocol: Scheme;
+  Call_TagmanagerAccountsContainersVersionsList_580572 = ref object of OpenApiRestCall_579408
+proc url_TagmanagerAccountsContainersVersionsList_580574(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "accountId" in path, "`accountId` is a required path parameter"
   assert "containerId" in path, "`containerId` is a required path parameter"
@@ -6505,7 +6507,7 @@ proc url_TagmanagerAccountsContainersVersionsList_594574(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_TagmanagerAccountsContainersVersionsList_594573(path: JsonNode;
+proc validate_TagmanagerAccountsContainersVersionsList_580573(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Lists all Container Versions of a GTM Container.
   ## 
@@ -6519,16 +6521,16 @@ proc validate_TagmanagerAccountsContainersVersionsList_594573(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `containerId` field"
-  var valid_594575 = path.getOrDefault("containerId")
-  valid_594575 = validateParameter(valid_594575, JString, required = true,
+  var valid_580575 = path.getOrDefault("containerId")
+  valid_580575 = validateParameter(valid_580575, JString, required = true,
                                  default = nil)
-  if valid_594575 != nil:
-    section.add "containerId", valid_594575
-  var valid_594576 = path.getOrDefault("accountId")
-  valid_594576 = validateParameter(valid_594576, JString, required = true,
+  if valid_580575 != nil:
+    section.add "containerId", valid_580575
+  var valid_580576 = path.getOrDefault("accountId")
+  valid_580576 = validateParameter(valid_580576, JString, required = true,
                                  default = nil)
-  if valid_594576 != nil:
-    section.add "accountId", valid_594576
+  if valid_580576 != nil:
+    section.add "accountId", valid_580576
   result.add "path", section
   ## parameters in `query` object:
   ##   headers: JBool
@@ -6550,51 +6552,51 @@ proc validate_TagmanagerAccountsContainersVersionsList_594573(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_594577 = query.getOrDefault("headers")
-  valid_594577 = validateParameter(valid_594577, JBool, required = false,
+  var valid_580577 = query.getOrDefault("headers")
+  valid_580577 = validateParameter(valid_580577, JBool, required = false,
                                  default = newJBool(false))
-  if valid_594577 != nil:
-    section.add "headers", valid_594577
-  var valid_594578 = query.getOrDefault("fields")
-  valid_594578 = validateParameter(valid_594578, JString, required = false,
+  if valid_580577 != nil:
+    section.add "headers", valid_580577
+  var valid_580578 = query.getOrDefault("fields")
+  valid_580578 = validateParameter(valid_580578, JString, required = false,
                                  default = nil)
-  if valid_594578 != nil:
-    section.add "fields", valid_594578
-  var valid_594579 = query.getOrDefault("quotaUser")
-  valid_594579 = validateParameter(valid_594579, JString, required = false,
+  if valid_580578 != nil:
+    section.add "fields", valid_580578
+  var valid_580579 = query.getOrDefault("quotaUser")
+  valid_580579 = validateParameter(valid_580579, JString, required = false,
                                  default = nil)
-  if valid_594579 != nil:
-    section.add "quotaUser", valid_594579
-  var valid_594580 = query.getOrDefault("alt")
-  valid_594580 = validateParameter(valid_594580, JString, required = false,
+  if valid_580579 != nil:
+    section.add "quotaUser", valid_580579
+  var valid_580580 = query.getOrDefault("alt")
+  valid_580580 = validateParameter(valid_580580, JString, required = false,
                                  default = newJString("json"))
-  if valid_594580 != nil:
-    section.add "alt", valid_594580
-  var valid_594581 = query.getOrDefault("oauth_token")
-  valid_594581 = validateParameter(valid_594581, JString, required = false,
+  if valid_580580 != nil:
+    section.add "alt", valid_580580
+  var valid_580581 = query.getOrDefault("oauth_token")
+  valid_580581 = validateParameter(valid_580581, JString, required = false,
                                  default = nil)
-  if valid_594581 != nil:
-    section.add "oauth_token", valid_594581
-  var valid_594582 = query.getOrDefault("userIp")
-  valid_594582 = validateParameter(valid_594582, JString, required = false,
+  if valid_580581 != nil:
+    section.add "oauth_token", valid_580581
+  var valid_580582 = query.getOrDefault("userIp")
+  valid_580582 = validateParameter(valid_580582, JString, required = false,
                                  default = nil)
-  if valid_594582 != nil:
-    section.add "userIp", valid_594582
-  var valid_594583 = query.getOrDefault("key")
-  valid_594583 = validateParameter(valid_594583, JString, required = false,
+  if valid_580582 != nil:
+    section.add "userIp", valid_580582
+  var valid_580583 = query.getOrDefault("key")
+  valid_580583 = validateParameter(valid_580583, JString, required = false,
                                  default = nil)
-  if valid_594583 != nil:
-    section.add "key", valid_594583
-  var valid_594584 = query.getOrDefault("includeDeleted")
-  valid_594584 = validateParameter(valid_594584, JBool, required = false,
+  if valid_580583 != nil:
+    section.add "key", valid_580583
+  var valid_580584 = query.getOrDefault("includeDeleted")
+  valid_580584 = validateParameter(valid_580584, JBool, required = false,
                                  default = newJBool(false))
-  if valid_594584 != nil:
-    section.add "includeDeleted", valid_594584
-  var valid_594585 = query.getOrDefault("prettyPrint")
-  valid_594585 = validateParameter(valid_594585, JBool, required = false,
+  if valid_580584 != nil:
+    section.add "includeDeleted", valid_580584
+  var valid_580585 = query.getOrDefault("prettyPrint")
+  valid_580585 = validateParameter(valid_580585, JBool, required = false,
                                  default = newJBool(true))
-  if valid_594585 != nil:
-    section.add "prettyPrint", valid_594585
+  if valid_580585 != nil:
+    section.add "prettyPrint", valid_580585
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -6603,21 +6605,21 @@ proc validate_TagmanagerAccountsContainersVersionsList_594573(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_594586: Call_TagmanagerAccountsContainersVersionsList_594572;
+proc call*(call_580586: Call_TagmanagerAccountsContainersVersionsList_580572;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Lists all Container Versions of a GTM Container.
   ## 
-  let valid = call_594586.validator(path, query, header, formData, body)
-  let scheme = call_594586.pickScheme
+  let valid = call_580586.validator(path, query, header, formData, body)
+  let scheme = call_580586.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_594586.url(scheme.get, call_594586.host, call_594586.base,
-                         call_594586.route, valid.getOrDefault("path"),
+  let url = call_580586.url(scheme.get, call_580586.host, call_580586.base,
+                         call_580586.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_594586, url, valid)
+  result = hook(call_580586, url, valid)
 
-proc call*(call_594587: Call_TagmanagerAccountsContainersVersionsList_594572;
+proc call*(call_580587: Call_TagmanagerAccountsContainersVersionsList_580572;
           containerId: string; accountId: string; headers: bool = false;
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           oauthToken: string = ""; userIp: string = ""; key: string = "";
@@ -6646,35 +6648,35 @@ proc call*(call_594587: Call_TagmanagerAccountsContainersVersionsList_594572;
   ##                 : Also retrieve deleted (archived) versions when true.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_594588 = newJObject()
-  var query_594589 = newJObject()
-  add(query_594589, "headers", newJBool(headers))
-  add(path_594588, "containerId", newJString(containerId))
-  add(query_594589, "fields", newJString(fields))
-  add(query_594589, "quotaUser", newJString(quotaUser))
-  add(query_594589, "alt", newJString(alt))
-  add(query_594589, "oauth_token", newJString(oauthToken))
-  add(path_594588, "accountId", newJString(accountId))
-  add(query_594589, "userIp", newJString(userIp))
-  add(query_594589, "key", newJString(key))
-  add(query_594589, "includeDeleted", newJBool(includeDeleted))
-  add(query_594589, "prettyPrint", newJBool(prettyPrint))
-  result = call_594587.call(path_594588, query_594589, nil, nil, nil)
+  var path_580588 = newJObject()
+  var query_580589 = newJObject()
+  add(query_580589, "headers", newJBool(headers))
+  add(path_580588, "containerId", newJString(containerId))
+  add(query_580589, "fields", newJString(fields))
+  add(query_580589, "quotaUser", newJString(quotaUser))
+  add(query_580589, "alt", newJString(alt))
+  add(query_580589, "oauth_token", newJString(oauthToken))
+  add(path_580588, "accountId", newJString(accountId))
+  add(query_580589, "userIp", newJString(userIp))
+  add(query_580589, "key", newJString(key))
+  add(query_580589, "includeDeleted", newJBool(includeDeleted))
+  add(query_580589, "prettyPrint", newJBool(prettyPrint))
+  result = call_580587.call(path_580588, query_580589, nil, nil, nil)
 
-var tagmanagerAccountsContainersVersionsList* = Call_TagmanagerAccountsContainersVersionsList_594572(
+var tagmanagerAccountsContainersVersionsList* = Call_TagmanagerAccountsContainersVersionsList_580572(
     name: "tagmanagerAccountsContainersVersionsList", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com",
     route: "/accounts/{accountId}/containers/{containerId}/versions",
-    validator: validate_TagmanagerAccountsContainersVersionsList_594573,
-    base: "/tagmanager/v1", url: url_TagmanagerAccountsContainersVersionsList_594574,
+    validator: validate_TagmanagerAccountsContainersVersionsList_580573,
+    base: "/tagmanager/v1", url: url_TagmanagerAccountsContainersVersionsList_580574,
     schemes: {Scheme.Https})
 type
-  Call_TagmanagerAccountsContainersVersionsUpdate_594625 = ref object of OpenApiRestCall_593408
-proc url_TagmanagerAccountsContainersVersionsUpdate_594627(protocol: Scheme;
+  Call_TagmanagerAccountsContainersVersionsUpdate_580625 = ref object of OpenApiRestCall_579408
+proc url_TagmanagerAccountsContainersVersionsUpdate_580627(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "accountId" in path, "`accountId` is a required path parameter"
   assert "containerId" in path, "`containerId` is a required path parameter"
@@ -6692,7 +6694,7 @@ proc url_TagmanagerAccountsContainersVersionsUpdate_594627(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_TagmanagerAccountsContainersVersionsUpdate_594626(path: JsonNode;
+proc validate_TagmanagerAccountsContainersVersionsUpdate_580626(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Updates a Container Version.
   ## 
@@ -6708,21 +6710,21 @@ proc validate_TagmanagerAccountsContainersVersionsUpdate_594626(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `containerId` field"
-  var valid_594628 = path.getOrDefault("containerId")
-  valid_594628 = validateParameter(valid_594628, JString, required = true,
+  var valid_580628 = path.getOrDefault("containerId")
+  valid_580628 = validateParameter(valid_580628, JString, required = true,
                                  default = nil)
-  if valid_594628 != nil:
-    section.add "containerId", valid_594628
-  var valid_594629 = path.getOrDefault("accountId")
-  valid_594629 = validateParameter(valid_594629, JString, required = true,
+  if valid_580628 != nil:
+    section.add "containerId", valid_580628
+  var valid_580629 = path.getOrDefault("accountId")
+  valid_580629 = validateParameter(valid_580629, JString, required = true,
                                  default = nil)
-  if valid_594629 != nil:
-    section.add "accountId", valid_594629
-  var valid_594630 = path.getOrDefault("containerVersionId")
-  valid_594630 = validateParameter(valid_594630, JString, required = true,
+  if valid_580629 != nil:
+    section.add "accountId", valid_580629
+  var valid_580630 = path.getOrDefault("containerVersionId")
+  valid_580630 = validateParameter(valid_580630, JString, required = true,
                                  default = nil)
-  if valid_594630 != nil:
-    section.add "containerVersionId", valid_594630
+  if valid_580630 != nil:
+    section.add "containerVersionId", valid_580630
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -6742,46 +6744,46 @@ proc validate_TagmanagerAccountsContainersVersionsUpdate_594626(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_594631 = query.getOrDefault("fields")
-  valid_594631 = validateParameter(valid_594631, JString, required = false,
+  var valid_580631 = query.getOrDefault("fields")
+  valid_580631 = validateParameter(valid_580631, JString, required = false,
                                  default = nil)
-  if valid_594631 != nil:
-    section.add "fields", valid_594631
-  var valid_594632 = query.getOrDefault("fingerprint")
-  valid_594632 = validateParameter(valid_594632, JString, required = false,
+  if valid_580631 != nil:
+    section.add "fields", valid_580631
+  var valid_580632 = query.getOrDefault("fingerprint")
+  valid_580632 = validateParameter(valid_580632, JString, required = false,
                                  default = nil)
-  if valid_594632 != nil:
-    section.add "fingerprint", valid_594632
-  var valid_594633 = query.getOrDefault("quotaUser")
-  valid_594633 = validateParameter(valid_594633, JString, required = false,
+  if valid_580632 != nil:
+    section.add "fingerprint", valid_580632
+  var valid_580633 = query.getOrDefault("quotaUser")
+  valid_580633 = validateParameter(valid_580633, JString, required = false,
                                  default = nil)
-  if valid_594633 != nil:
-    section.add "quotaUser", valid_594633
-  var valid_594634 = query.getOrDefault("alt")
-  valid_594634 = validateParameter(valid_594634, JString, required = false,
+  if valid_580633 != nil:
+    section.add "quotaUser", valid_580633
+  var valid_580634 = query.getOrDefault("alt")
+  valid_580634 = validateParameter(valid_580634, JString, required = false,
                                  default = newJString("json"))
-  if valid_594634 != nil:
-    section.add "alt", valid_594634
-  var valid_594635 = query.getOrDefault("oauth_token")
-  valid_594635 = validateParameter(valid_594635, JString, required = false,
+  if valid_580634 != nil:
+    section.add "alt", valid_580634
+  var valid_580635 = query.getOrDefault("oauth_token")
+  valid_580635 = validateParameter(valid_580635, JString, required = false,
                                  default = nil)
-  if valid_594635 != nil:
-    section.add "oauth_token", valid_594635
-  var valid_594636 = query.getOrDefault("userIp")
-  valid_594636 = validateParameter(valid_594636, JString, required = false,
+  if valid_580635 != nil:
+    section.add "oauth_token", valid_580635
+  var valid_580636 = query.getOrDefault("userIp")
+  valid_580636 = validateParameter(valid_580636, JString, required = false,
                                  default = nil)
-  if valid_594636 != nil:
-    section.add "userIp", valid_594636
-  var valid_594637 = query.getOrDefault("key")
-  valid_594637 = validateParameter(valid_594637, JString, required = false,
+  if valid_580636 != nil:
+    section.add "userIp", valid_580636
+  var valid_580637 = query.getOrDefault("key")
+  valid_580637 = validateParameter(valid_580637, JString, required = false,
                                  default = nil)
-  if valid_594637 != nil:
-    section.add "key", valid_594637
-  var valid_594638 = query.getOrDefault("prettyPrint")
-  valid_594638 = validateParameter(valid_594638, JBool, required = false,
+  if valid_580637 != nil:
+    section.add "key", valid_580637
+  var valid_580638 = query.getOrDefault("prettyPrint")
+  valid_580638 = validateParameter(valid_580638, JBool, required = false,
                                  default = newJBool(true))
-  if valid_594638 != nil:
-    section.add "prettyPrint", valid_594638
+  if valid_580638 != nil:
+    section.add "prettyPrint", valid_580638
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -6793,21 +6795,21 @@ proc validate_TagmanagerAccountsContainersVersionsUpdate_594626(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_594640: Call_TagmanagerAccountsContainersVersionsUpdate_594625;
+proc call*(call_580640: Call_TagmanagerAccountsContainersVersionsUpdate_580625;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Updates a Container Version.
   ## 
-  let valid = call_594640.validator(path, query, header, formData, body)
-  let scheme = call_594640.pickScheme
+  let valid = call_580640.validator(path, query, header, formData, body)
+  let scheme = call_580640.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_594640.url(scheme.get, call_594640.host, call_594640.base,
-                         call_594640.route, valid.getOrDefault("path"),
+  let url = call_580640.url(scheme.get, call_580640.host, call_580640.base,
+                         call_580640.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_594640, url, valid)
+  result = hook(call_580640, url, valid)
 
-proc call*(call_594641: Call_TagmanagerAccountsContainersVersionsUpdate_594625;
+proc call*(call_580641: Call_TagmanagerAccountsContainersVersionsUpdate_580625;
           containerId: string; accountId: string; containerVersionId: string;
           fields: string = ""; fingerprint: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; userIp: string = "";
@@ -6837,37 +6839,37 @@ proc call*(call_594641: Call_TagmanagerAccountsContainersVersionsUpdate_594625;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_594642 = newJObject()
-  var query_594643 = newJObject()
-  var body_594644 = newJObject()
-  add(path_594642, "containerId", newJString(containerId))
-  add(query_594643, "fields", newJString(fields))
-  add(query_594643, "fingerprint", newJString(fingerprint))
-  add(query_594643, "quotaUser", newJString(quotaUser))
-  add(query_594643, "alt", newJString(alt))
-  add(query_594643, "oauth_token", newJString(oauthToken))
-  add(path_594642, "accountId", newJString(accountId))
-  add(query_594643, "userIp", newJString(userIp))
-  add(path_594642, "containerVersionId", newJString(containerVersionId))
-  add(query_594643, "key", newJString(key))
+  var path_580642 = newJObject()
+  var query_580643 = newJObject()
+  var body_580644 = newJObject()
+  add(path_580642, "containerId", newJString(containerId))
+  add(query_580643, "fields", newJString(fields))
+  add(query_580643, "fingerprint", newJString(fingerprint))
+  add(query_580643, "quotaUser", newJString(quotaUser))
+  add(query_580643, "alt", newJString(alt))
+  add(query_580643, "oauth_token", newJString(oauthToken))
+  add(path_580642, "accountId", newJString(accountId))
+  add(query_580643, "userIp", newJString(userIp))
+  add(path_580642, "containerVersionId", newJString(containerVersionId))
+  add(query_580643, "key", newJString(key))
   if body != nil:
-    body_594644 = body
-  add(query_594643, "prettyPrint", newJBool(prettyPrint))
-  result = call_594641.call(path_594642, query_594643, nil, nil, body_594644)
+    body_580644 = body
+  add(query_580643, "prettyPrint", newJBool(prettyPrint))
+  result = call_580641.call(path_580642, query_580643, nil, nil, body_580644)
 
-var tagmanagerAccountsContainersVersionsUpdate* = Call_TagmanagerAccountsContainersVersionsUpdate_594625(
+var tagmanagerAccountsContainersVersionsUpdate* = Call_TagmanagerAccountsContainersVersionsUpdate_580625(
     name: "tagmanagerAccountsContainersVersionsUpdate", meth: HttpMethod.HttpPut,
     host: "www.googleapis.com", route: "/accounts/{accountId}/containers/{containerId}/versions/{containerVersionId}",
-    validator: validate_TagmanagerAccountsContainersVersionsUpdate_594626,
-    base: "/tagmanager/v1", url: url_TagmanagerAccountsContainersVersionsUpdate_594627,
+    validator: validate_TagmanagerAccountsContainersVersionsUpdate_580626,
+    base: "/tagmanager/v1", url: url_TagmanagerAccountsContainersVersionsUpdate_580627,
     schemes: {Scheme.Https})
 type
-  Call_TagmanagerAccountsContainersVersionsGet_594608 = ref object of OpenApiRestCall_593408
-proc url_TagmanagerAccountsContainersVersionsGet_594610(protocol: Scheme;
+  Call_TagmanagerAccountsContainersVersionsGet_580608 = ref object of OpenApiRestCall_579408
+proc url_TagmanagerAccountsContainersVersionsGet_580610(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "accountId" in path, "`accountId` is a required path parameter"
   assert "containerId" in path, "`containerId` is a required path parameter"
@@ -6885,7 +6887,7 @@ proc url_TagmanagerAccountsContainersVersionsGet_594610(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_TagmanagerAccountsContainersVersionsGet_594609(path: JsonNode;
+proc validate_TagmanagerAccountsContainersVersionsGet_580609(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Gets a Container Version.
   ## 
@@ -6901,21 +6903,21 @@ proc validate_TagmanagerAccountsContainersVersionsGet_594609(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `containerId` field"
-  var valid_594611 = path.getOrDefault("containerId")
-  valid_594611 = validateParameter(valid_594611, JString, required = true,
+  var valid_580611 = path.getOrDefault("containerId")
+  valid_580611 = validateParameter(valid_580611, JString, required = true,
                                  default = nil)
-  if valid_594611 != nil:
-    section.add "containerId", valid_594611
-  var valid_594612 = path.getOrDefault("accountId")
-  valid_594612 = validateParameter(valid_594612, JString, required = true,
+  if valid_580611 != nil:
+    section.add "containerId", valid_580611
+  var valid_580612 = path.getOrDefault("accountId")
+  valid_580612 = validateParameter(valid_580612, JString, required = true,
                                  default = nil)
-  if valid_594612 != nil:
-    section.add "accountId", valid_594612
-  var valid_594613 = path.getOrDefault("containerVersionId")
-  valid_594613 = validateParameter(valid_594613, JString, required = true,
+  if valid_580612 != nil:
+    section.add "accountId", valid_580612
+  var valid_580613 = path.getOrDefault("containerVersionId")
+  valid_580613 = validateParameter(valid_580613, JString, required = true,
                                  default = nil)
-  if valid_594613 != nil:
-    section.add "containerVersionId", valid_594613
+  if valid_580613 != nil:
+    section.add "containerVersionId", valid_580613
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -6933,41 +6935,41 @@ proc validate_TagmanagerAccountsContainersVersionsGet_594609(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_594614 = query.getOrDefault("fields")
-  valid_594614 = validateParameter(valid_594614, JString, required = false,
+  var valid_580614 = query.getOrDefault("fields")
+  valid_580614 = validateParameter(valid_580614, JString, required = false,
                                  default = nil)
-  if valid_594614 != nil:
-    section.add "fields", valid_594614
-  var valid_594615 = query.getOrDefault("quotaUser")
-  valid_594615 = validateParameter(valid_594615, JString, required = false,
+  if valid_580614 != nil:
+    section.add "fields", valid_580614
+  var valid_580615 = query.getOrDefault("quotaUser")
+  valid_580615 = validateParameter(valid_580615, JString, required = false,
                                  default = nil)
-  if valid_594615 != nil:
-    section.add "quotaUser", valid_594615
-  var valid_594616 = query.getOrDefault("alt")
-  valid_594616 = validateParameter(valid_594616, JString, required = false,
+  if valid_580615 != nil:
+    section.add "quotaUser", valid_580615
+  var valid_580616 = query.getOrDefault("alt")
+  valid_580616 = validateParameter(valid_580616, JString, required = false,
                                  default = newJString("json"))
-  if valid_594616 != nil:
-    section.add "alt", valid_594616
-  var valid_594617 = query.getOrDefault("oauth_token")
-  valid_594617 = validateParameter(valid_594617, JString, required = false,
+  if valid_580616 != nil:
+    section.add "alt", valid_580616
+  var valid_580617 = query.getOrDefault("oauth_token")
+  valid_580617 = validateParameter(valid_580617, JString, required = false,
                                  default = nil)
-  if valid_594617 != nil:
-    section.add "oauth_token", valid_594617
-  var valid_594618 = query.getOrDefault("userIp")
-  valid_594618 = validateParameter(valid_594618, JString, required = false,
+  if valid_580617 != nil:
+    section.add "oauth_token", valid_580617
+  var valid_580618 = query.getOrDefault("userIp")
+  valid_580618 = validateParameter(valid_580618, JString, required = false,
                                  default = nil)
-  if valid_594618 != nil:
-    section.add "userIp", valid_594618
-  var valid_594619 = query.getOrDefault("key")
-  valid_594619 = validateParameter(valid_594619, JString, required = false,
+  if valid_580618 != nil:
+    section.add "userIp", valid_580618
+  var valid_580619 = query.getOrDefault("key")
+  valid_580619 = validateParameter(valid_580619, JString, required = false,
                                  default = nil)
-  if valid_594619 != nil:
-    section.add "key", valid_594619
-  var valid_594620 = query.getOrDefault("prettyPrint")
-  valid_594620 = validateParameter(valid_594620, JBool, required = false,
+  if valid_580619 != nil:
+    section.add "key", valid_580619
+  var valid_580620 = query.getOrDefault("prettyPrint")
+  valid_580620 = validateParameter(valid_580620, JBool, required = false,
                                  default = newJBool(true))
-  if valid_594620 != nil:
-    section.add "prettyPrint", valid_594620
+  if valid_580620 != nil:
+    section.add "prettyPrint", valid_580620
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -6976,21 +6978,21 @@ proc validate_TagmanagerAccountsContainersVersionsGet_594609(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_594621: Call_TagmanagerAccountsContainersVersionsGet_594608;
+proc call*(call_580621: Call_TagmanagerAccountsContainersVersionsGet_580608;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Gets a Container Version.
   ## 
-  let valid = call_594621.validator(path, query, header, formData, body)
-  let scheme = call_594621.pickScheme
+  let valid = call_580621.validator(path, query, header, formData, body)
+  let scheme = call_580621.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_594621.url(scheme.get, call_594621.host, call_594621.base,
-                         call_594621.route, valid.getOrDefault("path"),
+  let url = call_580621.url(scheme.get, call_580621.host, call_580621.base,
+                         call_580621.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_594621, url, valid)
+  result = hook(call_580621, url, valid)
 
-proc call*(call_594622: Call_TagmanagerAccountsContainersVersionsGet_594608;
+proc call*(call_580622: Call_TagmanagerAccountsContainersVersionsGet_580608;
           containerId: string; accountId: string; containerVersionId: string;
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           oauthToken: string = ""; userIp: string = ""; key: string = "";
@@ -7017,33 +7019,33 @@ proc call*(call_594622: Call_TagmanagerAccountsContainersVersionsGet_594608;
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_594623 = newJObject()
-  var query_594624 = newJObject()
-  add(path_594623, "containerId", newJString(containerId))
-  add(query_594624, "fields", newJString(fields))
-  add(query_594624, "quotaUser", newJString(quotaUser))
-  add(query_594624, "alt", newJString(alt))
-  add(query_594624, "oauth_token", newJString(oauthToken))
-  add(path_594623, "accountId", newJString(accountId))
-  add(query_594624, "userIp", newJString(userIp))
-  add(path_594623, "containerVersionId", newJString(containerVersionId))
-  add(query_594624, "key", newJString(key))
-  add(query_594624, "prettyPrint", newJBool(prettyPrint))
-  result = call_594622.call(path_594623, query_594624, nil, nil, nil)
+  var path_580623 = newJObject()
+  var query_580624 = newJObject()
+  add(path_580623, "containerId", newJString(containerId))
+  add(query_580624, "fields", newJString(fields))
+  add(query_580624, "quotaUser", newJString(quotaUser))
+  add(query_580624, "alt", newJString(alt))
+  add(query_580624, "oauth_token", newJString(oauthToken))
+  add(path_580623, "accountId", newJString(accountId))
+  add(query_580624, "userIp", newJString(userIp))
+  add(path_580623, "containerVersionId", newJString(containerVersionId))
+  add(query_580624, "key", newJString(key))
+  add(query_580624, "prettyPrint", newJBool(prettyPrint))
+  result = call_580622.call(path_580623, query_580624, nil, nil, nil)
 
-var tagmanagerAccountsContainersVersionsGet* = Call_TagmanagerAccountsContainersVersionsGet_594608(
+var tagmanagerAccountsContainersVersionsGet* = Call_TagmanagerAccountsContainersVersionsGet_580608(
     name: "tagmanagerAccountsContainersVersionsGet", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/accounts/{accountId}/containers/{containerId}/versions/{containerVersionId}",
-    validator: validate_TagmanagerAccountsContainersVersionsGet_594609,
-    base: "/tagmanager/v1", url: url_TagmanagerAccountsContainersVersionsGet_594610,
+    validator: validate_TagmanagerAccountsContainersVersionsGet_580609,
+    base: "/tagmanager/v1", url: url_TagmanagerAccountsContainersVersionsGet_580610,
     schemes: {Scheme.Https})
 type
-  Call_TagmanagerAccountsContainersVersionsDelete_594645 = ref object of OpenApiRestCall_593408
-proc url_TagmanagerAccountsContainersVersionsDelete_594647(protocol: Scheme;
+  Call_TagmanagerAccountsContainersVersionsDelete_580645 = ref object of OpenApiRestCall_579408
+proc url_TagmanagerAccountsContainersVersionsDelete_580647(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "accountId" in path, "`accountId` is a required path parameter"
   assert "containerId" in path, "`containerId` is a required path parameter"
@@ -7061,7 +7063,7 @@ proc url_TagmanagerAccountsContainersVersionsDelete_594647(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_TagmanagerAccountsContainersVersionsDelete_594646(path: JsonNode;
+proc validate_TagmanagerAccountsContainersVersionsDelete_580646(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Deletes a Container Version.
   ## 
@@ -7077,21 +7079,21 @@ proc validate_TagmanagerAccountsContainersVersionsDelete_594646(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `containerId` field"
-  var valid_594648 = path.getOrDefault("containerId")
-  valid_594648 = validateParameter(valid_594648, JString, required = true,
+  var valid_580648 = path.getOrDefault("containerId")
+  valid_580648 = validateParameter(valid_580648, JString, required = true,
                                  default = nil)
-  if valid_594648 != nil:
-    section.add "containerId", valid_594648
-  var valid_594649 = path.getOrDefault("accountId")
-  valid_594649 = validateParameter(valid_594649, JString, required = true,
+  if valid_580648 != nil:
+    section.add "containerId", valid_580648
+  var valid_580649 = path.getOrDefault("accountId")
+  valid_580649 = validateParameter(valid_580649, JString, required = true,
                                  default = nil)
-  if valid_594649 != nil:
-    section.add "accountId", valid_594649
-  var valid_594650 = path.getOrDefault("containerVersionId")
-  valid_594650 = validateParameter(valid_594650, JString, required = true,
+  if valid_580649 != nil:
+    section.add "accountId", valid_580649
+  var valid_580650 = path.getOrDefault("containerVersionId")
+  valid_580650 = validateParameter(valid_580650, JString, required = true,
                                  default = nil)
-  if valid_594650 != nil:
-    section.add "containerVersionId", valid_594650
+  if valid_580650 != nil:
+    section.add "containerVersionId", valid_580650
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -7109,41 +7111,41 @@ proc validate_TagmanagerAccountsContainersVersionsDelete_594646(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_594651 = query.getOrDefault("fields")
-  valid_594651 = validateParameter(valid_594651, JString, required = false,
+  var valid_580651 = query.getOrDefault("fields")
+  valid_580651 = validateParameter(valid_580651, JString, required = false,
                                  default = nil)
-  if valid_594651 != nil:
-    section.add "fields", valid_594651
-  var valid_594652 = query.getOrDefault("quotaUser")
-  valid_594652 = validateParameter(valid_594652, JString, required = false,
+  if valid_580651 != nil:
+    section.add "fields", valid_580651
+  var valid_580652 = query.getOrDefault("quotaUser")
+  valid_580652 = validateParameter(valid_580652, JString, required = false,
                                  default = nil)
-  if valid_594652 != nil:
-    section.add "quotaUser", valid_594652
-  var valid_594653 = query.getOrDefault("alt")
-  valid_594653 = validateParameter(valid_594653, JString, required = false,
+  if valid_580652 != nil:
+    section.add "quotaUser", valid_580652
+  var valid_580653 = query.getOrDefault("alt")
+  valid_580653 = validateParameter(valid_580653, JString, required = false,
                                  default = newJString("json"))
-  if valid_594653 != nil:
-    section.add "alt", valid_594653
-  var valid_594654 = query.getOrDefault("oauth_token")
-  valid_594654 = validateParameter(valid_594654, JString, required = false,
+  if valid_580653 != nil:
+    section.add "alt", valid_580653
+  var valid_580654 = query.getOrDefault("oauth_token")
+  valid_580654 = validateParameter(valid_580654, JString, required = false,
                                  default = nil)
-  if valid_594654 != nil:
-    section.add "oauth_token", valid_594654
-  var valid_594655 = query.getOrDefault("userIp")
-  valid_594655 = validateParameter(valid_594655, JString, required = false,
+  if valid_580654 != nil:
+    section.add "oauth_token", valid_580654
+  var valid_580655 = query.getOrDefault("userIp")
+  valid_580655 = validateParameter(valid_580655, JString, required = false,
                                  default = nil)
-  if valid_594655 != nil:
-    section.add "userIp", valid_594655
-  var valid_594656 = query.getOrDefault("key")
-  valid_594656 = validateParameter(valid_594656, JString, required = false,
+  if valid_580655 != nil:
+    section.add "userIp", valid_580655
+  var valid_580656 = query.getOrDefault("key")
+  valid_580656 = validateParameter(valid_580656, JString, required = false,
                                  default = nil)
-  if valid_594656 != nil:
-    section.add "key", valid_594656
-  var valid_594657 = query.getOrDefault("prettyPrint")
-  valid_594657 = validateParameter(valid_594657, JBool, required = false,
+  if valid_580656 != nil:
+    section.add "key", valid_580656
+  var valid_580657 = query.getOrDefault("prettyPrint")
+  valid_580657 = validateParameter(valid_580657, JBool, required = false,
                                  default = newJBool(true))
-  if valid_594657 != nil:
-    section.add "prettyPrint", valid_594657
+  if valid_580657 != nil:
+    section.add "prettyPrint", valid_580657
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -7152,21 +7154,21 @@ proc validate_TagmanagerAccountsContainersVersionsDelete_594646(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_594658: Call_TagmanagerAccountsContainersVersionsDelete_594645;
+proc call*(call_580658: Call_TagmanagerAccountsContainersVersionsDelete_580645;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Deletes a Container Version.
   ## 
-  let valid = call_594658.validator(path, query, header, formData, body)
-  let scheme = call_594658.pickScheme
+  let valid = call_580658.validator(path, query, header, formData, body)
+  let scheme = call_580658.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_594658.url(scheme.get, call_594658.host, call_594658.base,
-                         call_594658.route, valid.getOrDefault("path"),
+  let url = call_580658.url(scheme.get, call_580658.host, call_580658.base,
+                         call_580658.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_594658, url, valid)
+  result = hook(call_580658, url, valid)
 
-proc call*(call_594659: Call_TagmanagerAccountsContainersVersionsDelete_594645;
+proc call*(call_580659: Call_TagmanagerAccountsContainersVersionsDelete_580645;
           containerId: string; accountId: string; containerVersionId: string;
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           oauthToken: string = ""; userIp: string = ""; key: string = "";
@@ -7193,33 +7195,33 @@ proc call*(call_594659: Call_TagmanagerAccountsContainersVersionsDelete_594645;
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_594660 = newJObject()
-  var query_594661 = newJObject()
-  add(path_594660, "containerId", newJString(containerId))
-  add(query_594661, "fields", newJString(fields))
-  add(query_594661, "quotaUser", newJString(quotaUser))
-  add(query_594661, "alt", newJString(alt))
-  add(query_594661, "oauth_token", newJString(oauthToken))
-  add(path_594660, "accountId", newJString(accountId))
-  add(query_594661, "userIp", newJString(userIp))
-  add(path_594660, "containerVersionId", newJString(containerVersionId))
-  add(query_594661, "key", newJString(key))
-  add(query_594661, "prettyPrint", newJBool(prettyPrint))
-  result = call_594659.call(path_594660, query_594661, nil, nil, nil)
+  var path_580660 = newJObject()
+  var query_580661 = newJObject()
+  add(path_580660, "containerId", newJString(containerId))
+  add(query_580661, "fields", newJString(fields))
+  add(query_580661, "quotaUser", newJString(quotaUser))
+  add(query_580661, "alt", newJString(alt))
+  add(query_580661, "oauth_token", newJString(oauthToken))
+  add(path_580660, "accountId", newJString(accountId))
+  add(query_580661, "userIp", newJString(userIp))
+  add(path_580660, "containerVersionId", newJString(containerVersionId))
+  add(query_580661, "key", newJString(key))
+  add(query_580661, "prettyPrint", newJBool(prettyPrint))
+  result = call_580659.call(path_580660, query_580661, nil, nil, nil)
 
-var tagmanagerAccountsContainersVersionsDelete* = Call_TagmanagerAccountsContainersVersionsDelete_594645(
+var tagmanagerAccountsContainersVersionsDelete* = Call_TagmanagerAccountsContainersVersionsDelete_580645(
     name: "tagmanagerAccountsContainersVersionsDelete",
     meth: HttpMethod.HttpDelete, host: "www.googleapis.com", route: "/accounts/{accountId}/containers/{containerId}/versions/{containerVersionId}",
-    validator: validate_TagmanagerAccountsContainersVersionsDelete_594646,
-    base: "/tagmanager/v1", url: url_TagmanagerAccountsContainersVersionsDelete_594647,
+    validator: validate_TagmanagerAccountsContainersVersionsDelete_580646,
+    base: "/tagmanager/v1", url: url_TagmanagerAccountsContainersVersionsDelete_580647,
     schemes: {Scheme.Https})
 type
-  Call_TagmanagerAccountsContainersVersionsPublish_594662 = ref object of OpenApiRestCall_593408
-proc url_TagmanagerAccountsContainersVersionsPublish_594664(protocol: Scheme;
+  Call_TagmanagerAccountsContainersVersionsPublish_580662 = ref object of OpenApiRestCall_579408
+proc url_TagmanagerAccountsContainersVersionsPublish_580664(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "accountId" in path, "`accountId` is a required path parameter"
   assert "containerId" in path, "`containerId` is a required path parameter"
@@ -7238,7 +7240,7 @@ proc url_TagmanagerAccountsContainersVersionsPublish_594664(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_TagmanagerAccountsContainersVersionsPublish_594663(path: JsonNode;
+proc validate_TagmanagerAccountsContainersVersionsPublish_580663(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Publishes a Container Version.
   ## 
@@ -7254,21 +7256,21 @@ proc validate_TagmanagerAccountsContainersVersionsPublish_594663(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `containerId` field"
-  var valid_594665 = path.getOrDefault("containerId")
-  valid_594665 = validateParameter(valid_594665, JString, required = true,
+  var valid_580665 = path.getOrDefault("containerId")
+  valid_580665 = validateParameter(valid_580665, JString, required = true,
                                  default = nil)
-  if valid_594665 != nil:
-    section.add "containerId", valid_594665
-  var valid_594666 = path.getOrDefault("accountId")
-  valid_594666 = validateParameter(valid_594666, JString, required = true,
+  if valid_580665 != nil:
+    section.add "containerId", valid_580665
+  var valid_580666 = path.getOrDefault("accountId")
+  valid_580666 = validateParameter(valid_580666, JString, required = true,
                                  default = nil)
-  if valid_594666 != nil:
-    section.add "accountId", valid_594666
-  var valid_594667 = path.getOrDefault("containerVersionId")
-  valid_594667 = validateParameter(valid_594667, JString, required = true,
+  if valid_580666 != nil:
+    section.add "accountId", valid_580666
+  var valid_580667 = path.getOrDefault("containerVersionId")
+  valid_580667 = validateParameter(valid_580667, JString, required = true,
                                  default = nil)
-  if valid_594667 != nil:
-    section.add "containerVersionId", valid_594667
+  if valid_580667 != nil:
+    section.add "containerVersionId", valid_580667
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -7288,46 +7290,46 @@ proc validate_TagmanagerAccountsContainersVersionsPublish_594663(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_594668 = query.getOrDefault("fields")
-  valid_594668 = validateParameter(valid_594668, JString, required = false,
+  var valid_580668 = query.getOrDefault("fields")
+  valid_580668 = validateParameter(valid_580668, JString, required = false,
                                  default = nil)
-  if valid_594668 != nil:
-    section.add "fields", valid_594668
-  var valid_594669 = query.getOrDefault("fingerprint")
-  valid_594669 = validateParameter(valid_594669, JString, required = false,
+  if valid_580668 != nil:
+    section.add "fields", valid_580668
+  var valid_580669 = query.getOrDefault("fingerprint")
+  valid_580669 = validateParameter(valid_580669, JString, required = false,
                                  default = nil)
-  if valid_594669 != nil:
-    section.add "fingerprint", valid_594669
-  var valid_594670 = query.getOrDefault("quotaUser")
-  valid_594670 = validateParameter(valid_594670, JString, required = false,
+  if valid_580669 != nil:
+    section.add "fingerprint", valid_580669
+  var valid_580670 = query.getOrDefault("quotaUser")
+  valid_580670 = validateParameter(valid_580670, JString, required = false,
                                  default = nil)
-  if valid_594670 != nil:
-    section.add "quotaUser", valid_594670
-  var valid_594671 = query.getOrDefault("alt")
-  valid_594671 = validateParameter(valid_594671, JString, required = false,
+  if valid_580670 != nil:
+    section.add "quotaUser", valid_580670
+  var valid_580671 = query.getOrDefault("alt")
+  valid_580671 = validateParameter(valid_580671, JString, required = false,
                                  default = newJString("json"))
-  if valid_594671 != nil:
-    section.add "alt", valid_594671
-  var valid_594672 = query.getOrDefault("oauth_token")
-  valid_594672 = validateParameter(valid_594672, JString, required = false,
+  if valid_580671 != nil:
+    section.add "alt", valid_580671
+  var valid_580672 = query.getOrDefault("oauth_token")
+  valid_580672 = validateParameter(valid_580672, JString, required = false,
                                  default = nil)
-  if valid_594672 != nil:
-    section.add "oauth_token", valid_594672
-  var valid_594673 = query.getOrDefault("userIp")
-  valid_594673 = validateParameter(valid_594673, JString, required = false,
+  if valid_580672 != nil:
+    section.add "oauth_token", valid_580672
+  var valid_580673 = query.getOrDefault("userIp")
+  valid_580673 = validateParameter(valid_580673, JString, required = false,
                                  default = nil)
-  if valid_594673 != nil:
-    section.add "userIp", valid_594673
-  var valid_594674 = query.getOrDefault("key")
-  valid_594674 = validateParameter(valid_594674, JString, required = false,
+  if valid_580673 != nil:
+    section.add "userIp", valid_580673
+  var valid_580674 = query.getOrDefault("key")
+  valid_580674 = validateParameter(valid_580674, JString, required = false,
                                  default = nil)
-  if valid_594674 != nil:
-    section.add "key", valid_594674
-  var valid_594675 = query.getOrDefault("prettyPrint")
-  valid_594675 = validateParameter(valid_594675, JBool, required = false,
+  if valid_580674 != nil:
+    section.add "key", valid_580674
+  var valid_580675 = query.getOrDefault("prettyPrint")
+  valid_580675 = validateParameter(valid_580675, JBool, required = false,
                                  default = newJBool(true))
-  if valid_594675 != nil:
-    section.add "prettyPrint", valid_594675
+  if valid_580675 != nil:
+    section.add "prettyPrint", valid_580675
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -7336,21 +7338,21 @@ proc validate_TagmanagerAccountsContainersVersionsPublish_594663(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_594676: Call_TagmanagerAccountsContainersVersionsPublish_594662;
+proc call*(call_580676: Call_TagmanagerAccountsContainersVersionsPublish_580662;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Publishes a Container Version.
   ## 
-  let valid = call_594676.validator(path, query, header, formData, body)
-  let scheme = call_594676.pickScheme
+  let valid = call_580676.validator(path, query, header, formData, body)
+  let scheme = call_580676.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_594676.url(scheme.get, call_594676.host, call_594676.base,
-                         call_594676.route, valid.getOrDefault("path"),
+  let url = call_580676.url(scheme.get, call_580676.host, call_580676.base,
+                         call_580676.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_594676, url, valid)
+  result = hook(call_580676, url, valid)
 
-proc call*(call_594677: Call_TagmanagerAccountsContainersVersionsPublish_594662;
+proc call*(call_580677: Call_TagmanagerAccountsContainersVersionsPublish_580662;
           containerId: string; accountId: string; containerVersionId: string;
           fields: string = ""; fingerprint: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; userIp: string = "";
@@ -7379,34 +7381,34 @@ proc call*(call_594677: Call_TagmanagerAccountsContainersVersionsPublish_594662;
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_594678 = newJObject()
-  var query_594679 = newJObject()
-  add(path_594678, "containerId", newJString(containerId))
-  add(query_594679, "fields", newJString(fields))
-  add(query_594679, "fingerprint", newJString(fingerprint))
-  add(query_594679, "quotaUser", newJString(quotaUser))
-  add(query_594679, "alt", newJString(alt))
-  add(query_594679, "oauth_token", newJString(oauthToken))
-  add(path_594678, "accountId", newJString(accountId))
-  add(query_594679, "userIp", newJString(userIp))
-  add(path_594678, "containerVersionId", newJString(containerVersionId))
-  add(query_594679, "key", newJString(key))
-  add(query_594679, "prettyPrint", newJBool(prettyPrint))
-  result = call_594677.call(path_594678, query_594679, nil, nil, nil)
+  var path_580678 = newJObject()
+  var query_580679 = newJObject()
+  add(path_580678, "containerId", newJString(containerId))
+  add(query_580679, "fields", newJString(fields))
+  add(query_580679, "fingerprint", newJString(fingerprint))
+  add(query_580679, "quotaUser", newJString(quotaUser))
+  add(query_580679, "alt", newJString(alt))
+  add(query_580679, "oauth_token", newJString(oauthToken))
+  add(path_580678, "accountId", newJString(accountId))
+  add(query_580679, "userIp", newJString(userIp))
+  add(path_580678, "containerVersionId", newJString(containerVersionId))
+  add(query_580679, "key", newJString(key))
+  add(query_580679, "prettyPrint", newJBool(prettyPrint))
+  result = call_580677.call(path_580678, query_580679, nil, nil, nil)
 
-var tagmanagerAccountsContainersVersionsPublish* = Call_TagmanagerAccountsContainersVersionsPublish_594662(
+var tagmanagerAccountsContainersVersionsPublish* = Call_TagmanagerAccountsContainersVersionsPublish_580662(
     name: "tagmanagerAccountsContainersVersionsPublish",
     meth: HttpMethod.HttpPost, host: "www.googleapis.com", route: "/accounts/{accountId}/containers/{containerId}/versions/{containerVersionId}/publish",
-    validator: validate_TagmanagerAccountsContainersVersionsPublish_594663,
-    base: "/tagmanager/v1", url: url_TagmanagerAccountsContainersVersionsPublish_594664,
+    validator: validate_TagmanagerAccountsContainersVersionsPublish_580663,
+    base: "/tagmanager/v1", url: url_TagmanagerAccountsContainersVersionsPublish_580664,
     schemes: {Scheme.Https})
 type
-  Call_TagmanagerAccountsContainersVersionsRestore_594680 = ref object of OpenApiRestCall_593408
-proc url_TagmanagerAccountsContainersVersionsRestore_594682(protocol: Scheme;
+  Call_TagmanagerAccountsContainersVersionsRestore_580680 = ref object of OpenApiRestCall_579408
+proc url_TagmanagerAccountsContainersVersionsRestore_580682(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "accountId" in path, "`accountId` is a required path parameter"
   assert "containerId" in path, "`containerId` is a required path parameter"
@@ -7425,7 +7427,7 @@ proc url_TagmanagerAccountsContainersVersionsRestore_594682(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_TagmanagerAccountsContainersVersionsRestore_594681(path: JsonNode;
+proc validate_TagmanagerAccountsContainersVersionsRestore_580681(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Restores a Container Version. This will overwrite the container's current configuration (including its variables, triggers and tags). The operation will not have any effect on the version that is being served (i.e. the published version).
   ## 
@@ -7441,21 +7443,21 @@ proc validate_TagmanagerAccountsContainersVersionsRestore_594681(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `containerId` field"
-  var valid_594683 = path.getOrDefault("containerId")
-  valid_594683 = validateParameter(valid_594683, JString, required = true,
+  var valid_580683 = path.getOrDefault("containerId")
+  valid_580683 = validateParameter(valid_580683, JString, required = true,
                                  default = nil)
-  if valid_594683 != nil:
-    section.add "containerId", valid_594683
-  var valid_594684 = path.getOrDefault("accountId")
-  valid_594684 = validateParameter(valid_594684, JString, required = true,
+  if valid_580683 != nil:
+    section.add "containerId", valid_580683
+  var valid_580684 = path.getOrDefault("accountId")
+  valid_580684 = validateParameter(valid_580684, JString, required = true,
                                  default = nil)
-  if valid_594684 != nil:
-    section.add "accountId", valid_594684
-  var valid_594685 = path.getOrDefault("containerVersionId")
-  valid_594685 = validateParameter(valid_594685, JString, required = true,
+  if valid_580684 != nil:
+    section.add "accountId", valid_580684
+  var valid_580685 = path.getOrDefault("containerVersionId")
+  valid_580685 = validateParameter(valid_580685, JString, required = true,
                                  default = nil)
-  if valid_594685 != nil:
-    section.add "containerVersionId", valid_594685
+  if valid_580685 != nil:
+    section.add "containerVersionId", valid_580685
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -7473,41 +7475,41 @@ proc validate_TagmanagerAccountsContainersVersionsRestore_594681(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_594686 = query.getOrDefault("fields")
-  valid_594686 = validateParameter(valid_594686, JString, required = false,
+  var valid_580686 = query.getOrDefault("fields")
+  valid_580686 = validateParameter(valid_580686, JString, required = false,
                                  default = nil)
-  if valid_594686 != nil:
-    section.add "fields", valid_594686
-  var valid_594687 = query.getOrDefault("quotaUser")
-  valid_594687 = validateParameter(valid_594687, JString, required = false,
+  if valid_580686 != nil:
+    section.add "fields", valid_580686
+  var valid_580687 = query.getOrDefault("quotaUser")
+  valid_580687 = validateParameter(valid_580687, JString, required = false,
                                  default = nil)
-  if valid_594687 != nil:
-    section.add "quotaUser", valid_594687
-  var valid_594688 = query.getOrDefault("alt")
-  valid_594688 = validateParameter(valid_594688, JString, required = false,
+  if valid_580687 != nil:
+    section.add "quotaUser", valid_580687
+  var valid_580688 = query.getOrDefault("alt")
+  valid_580688 = validateParameter(valid_580688, JString, required = false,
                                  default = newJString("json"))
-  if valid_594688 != nil:
-    section.add "alt", valid_594688
-  var valid_594689 = query.getOrDefault("oauth_token")
-  valid_594689 = validateParameter(valid_594689, JString, required = false,
+  if valid_580688 != nil:
+    section.add "alt", valid_580688
+  var valid_580689 = query.getOrDefault("oauth_token")
+  valid_580689 = validateParameter(valid_580689, JString, required = false,
                                  default = nil)
-  if valid_594689 != nil:
-    section.add "oauth_token", valid_594689
-  var valid_594690 = query.getOrDefault("userIp")
-  valid_594690 = validateParameter(valid_594690, JString, required = false,
+  if valid_580689 != nil:
+    section.add "oauth_token", valid_580689
+  var valid_580690 = query.getOrDefault("userIp")
+  valid_580690 = validateParameter(valid_580690, JString, required = false,
                                  default = nil)
-  if valid_594690 != nil:
-    section.add "userIp", valid_594690
-  var valid_594691 = query.getOrDefault("key")
-  valid_594691 = validateParameter(valid_594691, JString, required = false,
+  if valid_580690 != nil:
+    section.add "userIp", valid_580690
+  var valid_580691 = query.getOrDefault("key")
+  valid_580691 = validateParameter(valid_580691, JString, required = false,
                                  default = nil)
-  if valid_594691 != nil:
-    section.add "key", valid_594691
-  var valid_594692 = query.getOrDefault("prettyPrint")
-  valid_594692 = validateParameter(valid_594692, JBool, required = false,
+  if valid_580691 != nil:
+    section.add "key", valid_580691
+  var valid_580692 = query.getOrDefault("prettyPrint")
+  valid_580692 = validateParameter(valid_580692, JBool, required = false,
                                  default = newJBool(true))
-  if valid_594692 != nil:
-    section.add "prettyPrint", valid_594692
+  if valid_580692 != nil:
+    section.add "prettyPrint", valid_580692
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -7516,21 +7518,21 @@ proc validate_TagmanagerAccountsContainersVersionsRestore_594681(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_594693: Call_TagmanagerAccountsContainersVersionsRestore_594680;
+proc call*(call_580693: Call_TagmanagerAccountsContainersVersionsRestore_580680;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Restores a Container Version. This will overwrite the container's current configuration (including its variables, triggers and tags). The operation will not have any effect on the version that is being served (i.e. the published version).
   ## 
-  let valid = call_594693.validator(path, query, header, formData, body)
-  let scheme = call_594693.pickScheme
+  let valid = call_580693.validator(path, query, header, formData, body)
+  let scheme = call_580693.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_594693.url(scheme.get, call_594693.host, call_594693.base,
-                         call_594693.route, valid.getOrDefault("path"),
+  let url = call_580693.url(scheme.get, call_580693.host, call_580693.base,
+                         call_580693.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_594693, url, valid)
+  result = hook(call_580693, url, valid)
 
-proc call*(call_594694: Call_TagmanagerAccountsContainersVersionsRestore_594680;
+proc call*(call_580694: Call_TagmanagerAccountsContainersVersionsRestore_580680;
           containerId: string; accountId: string; containerVersionId: string;
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           oauthToken: string = ""; userIp: string = ""; key: string = "";
@@ -7557,33 +7559,33 @@ proc call*(call_594694: Call_TagmanagerAccountsContainersVersionsRestore_594680;
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_594695 = newJObject()
-  var query_594696 = newJObject()
-  add(path_594695, "containerId", newJString(containerId))
-  add(query_594696, "fields", newJString(fields))
-  add(query_594696, "quotaUser", newJString(quotaUser))
-  add(query_594696, "alt", newJString(alt))
-  add(query_594696, "oauth_token", newJString(oauthToken))
-  add(path_594695, "accountId", newJString(accountId))
-  add(query_594696, "userIp", newJString(userIp))
-  add(path_594695, "containerVersionId", newJString(containerVersionId))
-  add(query_594696, "key", newJString(key))
-  add(query_594696, "prettyPrint", newJBool(prettyPrint))
-  result = call_594694.call(path_594695, query_594696, nil, nil, nil)
+  var path_580695 = newJObject()
+  var query_580696 = newJObject()
+  add(path_580695, "containerId", newJString(containerId))
+  add(query_580696, "fields", newJString(fields))
+  add(query_580696, "quotaUser", newJString(quotaUser))
+  add(query_580696, "alt", newJString(alt))
+  add(query_580696, "oauth_token", newJString(oauthToken))
+  add(path_580695, "accountId", newJString(accountId))
+  add(query_580696, "userIp", newJString(userIp))
+  add(path_580695, "containerVersionId", newJString(containerVersionId))
+  add(query_580696, "key", newJString(key))
+  add(query_580696, "prettyPrint", newJBool(prettyPrint))
+  result = call_580694.call(path_580695, query_580696, nil, nil, nil)
 
-var tagmanagerAccountsContainersVersionsRestore* = Call_TagmanagerAccountsContainersVersionsRestore_594680(
+var tagmanagerAccountsContainersVersionsRestore* = Call_TagmanagerAccountsContainersVersionsRestore_580680(
     name: "tagmanagerAccountsContainersVersionsRestore",
     meth: HttpMethod.HttpPost, host: "www.googleapis.com", route: "/accounts/{accountId}/containers/{containerId}/versions/{containerVersionId}/restore",
-    validator: validate_TagmanagerAccountsContainersVersionsRestore_594681,
-    base: "/tagmanager/v1", url: url_TagmanagerAccountsContainersVersionsRestore_594682,
+    validator: validate_TagmanagerAccountsContainersVersionsRestore_580681,
+    base: "/tagmanager/v1", url: url_TagmanagerAccountsContainersVersionsRestore_580682,
     schemes: {Scheme.Https})
 type
-  Call_TagmanagerAccountsContainersVersionsUndelete_594697 = ref object of OpenApiRestCall_593408
-proc url_TagmanagerAccountsContainersVersionsUndelete_594699(protocol: Scheme;
+  Call_TagmanagerAccountsContainersVersionsUndelete_580697 = ref object of OpenApiRestCall_579408
+proc url_TagmanagerAccountsContainersVersionsUndelete_580699(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "accountId" in path, "`accountId` is a required path parameter"
   assert "containerId" in path, "`containerId` is a required path parameter"
@@ -7602,7 +7604,7 @@ proc url_TagmanagerAccountsContainersVersionsUndelete_594699(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_TagmanagerAccountsContainersVersionsUndelete_594698(path: JsonNode;
+proc validate_TagmanagerAccountsContainersVersionsUndelete_580698(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Undeletes a Container Version.
   ## 
@@ -7618,21 +7620,21 @@ proc validate_TagmanagerAccountsContainersVersionsUndelete_594698(path: JsonNode
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `containerId` field"
-  var valid_594700 = path.getOrDefault("containerId")
-  valid_594700 = validateParameter(valid_594700, JString, required = true,
+  var valid_580700 = path.getOrDefault("containerId")
+  valid_580700 = validateParameter(valid_580700, JString, required = true,
                                  default = nil)
-  if valid_594700 != nil:
-    section.add "containerId", valid_594700
-  var valid_594701 = path.getOrDefault("accountId")
-  valid_594701 = validateParameter(valid_594701, JString, required = true,
+  if valid_580700 != nil:
+    section.add "containerId", valid_580700
+  var valid_580701 = path.getOrDefault("accountId")
+  valid_580701 = validateParameter(valid_580701, JString, required = true,
                                  default = nil)
-  if valid_594701 != nil:
-    section.add "accountId", valid_594701
-  var valid_594702 = path.getOrDefault("containerVersionId")
-  valid_594702 = validateParameter(valid_594702, JString, required = true,
+  if valid_580701 != nil:
+    section.add "accountId", valid_580701
+  var valid_580702 = path.getOrDefault("containerVersionId")
+  valid_580702 = validateParameter(valid_580702, JString, required = true,
                                  default = nil)
-  if valid_594702 != nil:
-    section.add "containerVersionId", valid_594702
+  if valid_580702 != nil:
+    section.add "containerVersionId", valid_580702
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -7650,41 +7652,41 @@ proc validate_TagmanagerAccountsContainersVersionsUndelete_594698(path: JsonNode
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_594703 = query.getOrDefault("fields")
-  valid_594703 = validateParameter(valid_594703, JString, required = false,
+  var valid_580703 = query.getOrDefault("fields")
+  valid_580703 = validateParameter(valid_580703, JString, required = false,
                                  default = nil)
-  if valid_594703 != nil:
-    section.add "fields", valid_594703
-  var valid_594704 = query.getOrDefault("quotaUser")
-  valid_594704 = validateParameter(valid_594704, JString, required = false,
+  if valid_580703 != nil:
+    section.add "fields", valid_580703
+  var valid_580704 = query.getOrDefault("quotaUser")
+  valid_580704 = validateParameter(valid_580704, JString, required = false,
                                  default = nil)
-  if valid_594704 != nil:
-    section.add "quotaUser", valid_594704
-  var valid_594705 = query.getOrDefault("alt")
-  valid_594705 = validateParameter(valid_594705, JString, required = false,
+  if valid_580704 != nil:
+    section.add "quotaUser", valid_580704
+  var valid_580705 = query.getOrDefault("alt")
+  valid_580705 = validateParameter(valid_580705, JString, required = false,
                                  default = newJString("json"))
-  if valid_594705 != nil:
-    section.add "alt", valid_594705
-  var valid_594706 = query.getOrDefault("oauth_token")
-  valid_594706 = validateParameter(valid_594706, JString, required = false,
+  if valid_580705 != nil:
+    section.add "alt", valid_580705
+  var valid_580706 = query.getOrDefault("oauth_token")
+  valid_580706 = validateParameter(valid_580706, JString, required = false,
                                  default = nil)
-  if valid_594706 != nil:
-    section.add "oauth_token", valid_594706
-  var valid_594707 = query.getOrDefault("userIp")
-  valid_594707 = validateParameter(valid_594707, JString, required = false,
+  if valid_580706 != nil:
+    section.add "oauth_token", valid_580706
+  var valid_580707 = query.getOrDefault("userIp")
+  valid_580707 = validateParameter(valid_580707, JString, required = false,
                                  default = nil)
-  if valid_594707 != nil:
-    section.add "userIp", valid_594707
-  var valid_594708 = query.getOrDefault("key")
-  valid_594708 = validateParameter(valid_594708, JString, required = false,
+  if valid_580707 != nil:
+    section.add "userIp", valid_580707
+  var valid_580708 = query.getOrDefault("key")
+  valid_580708 = validateParameter(valid_580708, JString, required = false,
                                  default = nil)
-  if valid_594708 != nil:
-    section.add "key", valid_594708
-  var valid_594709 = query.getOrDefault("prettyPrint")
-  valid_594709 = validateParameter(valid_594709, JBool, required = false,
+  if valid_580708 != nil:
+    section.add "key", valid_580708
+  var valid_580709 = query.getOrDefault("prettyPrint")
+  valid_580709 = validateParameter(valid_580709, JBool, required = false,
                                  default = newJBool(true))
-  if valid_594709 != nil:
-    section.add "prettyPrint", valid_594709
+  if valid_580709 != nil:
+    section.add "prettyPrint", valid_580709
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -7693,21 +7695,21 @@ proc validate_TagmanagerAccountsContainersVersionsUndelete_594698(path: JsonNode
   if body != nil:
     result.add "body", body
 
-proc call*(call_594710: Call_TagmanagerAccountsContainersVersionsUndelete_594697;
+proc call*(call_580710: Call_TagmanagerAccountsContainersVersionsUndelete_580697;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Undeletes a Container Version.
   ## 
-  let valid = call_594710.validator(path, query, header, formData, body)
-  let scheme = call_594710.pickScheme
+  let valid = call_580710.validator(path, query, header, formData, body)
+  let scheme = call_580710.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_594710.url(scheme.get, call_594710.host, call_594710.base,
-                         call_594710.route, valid.getOrDefault("path"),
+  let url = call_580710.url(scheme.get, call_580710.host, call_580710.base,
+                         call_580710.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_594710, url, valid)
+  result = hook(call_580710, url, valid)
 
-proc call*(call_594711: Call_TagmanagerAccountsContainersVersionsUndelete_594697;
+proc call*(call_580711: Call_TagmanagerAccountsContainersVersionsUndelete_580697;
           containerId: string; accountId: string; containerVersionId: string;
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           oauthToken: string = ""; userIp: string = ""; key: string = "";
@@ -7734,33 +7736,33 @@ proc call*(call_594711: Call_TagmanagerAccountsContainersVersionsUndelete_594697
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_594712 = newJObject()
-  var query_594713 = newJObject()
-  add(path_594712, "containerId", newJString(containerId))
-  add(query_594713, "fields", newJString(fields))
-  add(query_594713, "quotaUser", newJString(quotaUser))
-  add(query_594713, "alt", newJString(alt))
-  add(query_594713, "oauth_token", newJString(oauthToken))
-  add(path_594712, "accountId", newJString(accountId))
-  add(query_594713, "userIp", newJString(userIp))
-  add(path_594712, "containerVersionId", newJString(containerVersionId))
-  add(query_594713, "key", newJString(key))
-  add(query_594713, "prettyPrint", newJBool(prettyPrint))
-  result = call_594711.call(path_594712, query_594713, nil, nil, nil)
+  var path_580712 = newJObject()
+  var query_580713 = newJObject()
+  add(path_580712, "containerId", newJString(containerId))
+  add(query_580713, "fields", newJString(fields))
+  add(query_580713, "quotaUser", newJString(quotaUser))
+  add(query_580713, "alt", newJString(alt))
+  add(query_580713, "oauth_token", newJString(oauthToken))
+  add(path_580712, "accountId", newJString(accountId))
+  add(query_580713, "userIp", newJString(userIp))
+  add(path_580712, "containerVersionId", newJString(containerVersionId))
+  add(query_580713, "key", newJString(key))
+  add(query_580713, "prettyPrint", newJBool(prettyPrint))
+  result = call_580711.call(path_580712, query_580713, nil, nil, nil)
 
-var tagmanagerAccountsContainersVersionsUndelete* = Call_TagmanagerAccountsContainersVersionsUndelete_594697(
+var tagmanagerAccountsContainersVersionsUndelete* = Call_TagmanagerAccountsContainersVersionsUndelete_580697(
     name: "tagmanagerAccountsContainersVersionsUndelete",
     meth: HttpMethod.HttpPost, host: "www.googleapis.com", route: "/accounts/{accountId}/containers/{containerId}/versions/{containerVersionId}/undelete",
-    validator: validate_TagmanagerAccountsContainersVersionsUndelete_594698,
-    base: "/tagmanager/v1", url: url_TagmanagerAccountsContainersVersionsUndelete_594699,
+    validator: validate_TagmanagerAccountsContainersVersionsUndelete_580698,
+    base: "/tagmanager/v1", url: url_TagmanagerAccountsContainersVersionsUndelete_580699,
     schemes: {Scheme.Https})
 type
-  Call_TagmanagerAccountsPermissionsCreate_594729 = ref object of OpenApiRestCall_593408
-proc url_TagmanagerAccountsPermissionsCreate_594731(protocol: Scheme; host: string;
+  Call_TagmanagerAccountsPermissionsCreate_580729 = ref object of OpenApiRestCall_579408
+proc url_TagmanagerAccountsPermissionsCreate_580731(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "accountId" in path, "`accountId` is a required path parameter"
   const
@@ -7772,7 +7774,7 @@ proc url_TagmanagerAccountsPermissionsCreate_594731(protocol: Scheme; host: stri
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_TagmanagerAccountsPermissionsCreate_594730(path: JsonNode;
+proc validate_TagmanagerAccountsPermissionsCreate_580730(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Creates a user's Account & Container Permissions.
   ## 
@@ -7783,11 +7785,11 @@ proc validate_TagmanagerAccountsPermissionsCreate_594730(path: JsonNode;
   ##            : The GTM Account ID.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `accountId` field"
-  var valid_594732 = path.getOrDefault("accountId")
-  valid_594732 = validateParameter(valid_594732, JString, required = true,
+  var valid_580732 = path.getOrDefault("accountId")
+  valid_580732 = validateParameter(valid_580732, JString, required = true,
                                  default = nil)
-  if valid_594732 != nil:
-    section.add "accountId", valid_594732
+  if valid_580732 != nil:
+    section.add "accountId", valid_580732
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -7805,41 +7807,41 @@ proc validate_TagmanagerAccountsPermissionsCreate_594730(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_594733 = query.getOrDefault("fields")
-  valid_594733 = validateParameter(valid_594733, JString, required = false,
+  var valid_580733 = query.getOrDefault("fields")
+  valid_580733 = validateParameter(valid_580733, JString, required = false,
                                  default = nil)
-  if valid_594733 != nil:
-    section.add "fields", valid_594733
-  var valid_594734 = query.getOrDefault("quotaUser")
-  valid_594734 = validateParameter(valid_594734, JString, required = false,
+  if valid_580733 != nil:
+    section.add "fields", valid_580733
+  var valid_580734 = query.getOrDefault("quotaUser")
+  valid_580734 = validateParameter(valid_580734, JString, required = false,
                                  default = nil)
-  if valid_594734 != nil:
-    section.add "quotaUser", valid_594734
-  var valid_594735 = query.getOrDefault("alt")
-  valid_594735 = validateParameter(valid_594735, JString, required = false,
+  if valid_580734 != nil:
+    section.add "quotaUser", valid_580734
+  var valid_580735 = query.getOrDefault("alt")
+  valid_580735 = validateParameter(valid_580735, JString, required = false,
                                  default = newJString("json"))
-  if valid_594735 != nil:
-    section.add "alt", valid_594735
-  var valid_594736 = query.getOrDefault("oauth_token")
-  valid_594736 = validateParameter(valid_594736, JString, required = false,
+  if valid_580735 != nil:
+    section.add "alt", valid_580735
+  var valid_580736 = query.getOrDefault("oauth_token")
+  valid_580736 = validateParameter(valid_580736, JString, required = false,
                                  default = nil)
-  if valid_594736 != nil:
-    section.add "oauth_token", valid_594736
-  var valid_594737 = query.getOrDefault("userIp")
-  valid_594737 = validateParameter(valid_594737, JString, required = false,
+  if valid_580736 != nil:
+    section.add "oauth_token", valid_580736
+  var valid_580737 = query.getOrDefault("userIp")
+  valid_580737 = validateParameter(valid_580737, JString, required = false,
                                  default = nil)
-  if valid_594737 != nil:
-    section.add "userIp", valid_594737
-  var valid_594738 = query.getOrDefault("key")
-  valid_594738 = validateParameter(valid_594738, JString, required = false,
+  if valid_580737 != nil:
+    section.add "userIp", valid_580737
+  var valid_580738 = query.getOrDefault("key")
+  valid_580738 = validateParameter(valid_580738, JString, required = false,
                                  default = nil)
-  if valid_594738 != nil:
-    section.add "key", valid_594738
-  var valid_594739 = query.getOrDefault("prettyPrint")
-  valid_594739 = validateParameter(valid_594739, JBool, required = false,
+  if valid_580738 != nil:
+    section.add "key", valid_580738
+  var valid_580739 = query.getOrDefault("prettyPrint")
+  valid_580739 = validateParameter(valid_580739, JBool, required = false,
                                  default = newJBool(true))
-  if valid_594739 != nil:
-    section.add "prettyPrint", valid_594739
+  if valid_580739 != nil:
+    section.add "prettyPrint", valid_580739
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -7851,21 +7853,21 @@ proc validate_TagmanagerAccountsPermissionsCreate_594730(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_594741: Call_TagmanagerAccountsPermissionsCreate_594729;
+proc call*(call_580741: Call_TagmanagerAccountsPermissionsCreate_580729;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Creates a user's Account & Container Permissions.
   ## 
-  let valid = call_594741.validator(path, query, header, formData, body)
-  let scheme = call_594741.pickScheme
+  let valid = call_580741.validator(path, query, header, formData, body)
+  let scheme = call_580741.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_594741.url(scheme.get, call_594741.host, call_594741.base,
-                         call_594741.route, valid.getOrDefault("path"),
+  let url = call_580741.url(scheme.get, call_580741.host, call_580741.base,
+                         call_580741.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_594741, url, valid)
+  result = hook(call_580741, url, valid)
 
-proc call*(call_594742: Call_TagmanagerAccountsPermissionsCreate_594729;
+proc call*(call_580742: Call_TagmanagerAccountsPermissionsCreate_580729;
           accountId: string; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; userIp: string = "";
           key: string = ""; body: JsonNode = nil; prettyPrint: bool = true): Recallable =
@@ -7888,34 +7890,34 @@ proc call*(call_594742: Call_TagmanagerAccountsPermissionsCreate_594729;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_594743 = newJObject()
-  var query_594744 = newJObject()
-  var body_594745 = newJObject()
-  add(query_594744, "fields", newJString(fields))
-  add(query_594744, "quotaUser", newJString(quotaUser))
-  add(query_594744, "alt", newJString(alt))
-  add(query_594744, "oauth_token", newJString(oauthToken))
-  add(path_594743, "accountId", newJString(accountId))
-  add(query_594744, "userIp", newJString(userIp))
-  add(query_594744, "key", newJString(key))
+  var path_580743 = newJObject()
+  var query_580744 = newJObject()
+  var body_580745 = newJObject()
+  add(query_580744, "fields", newJString(fields))
+  add(query_580744, "quotaUser", newJString(quotaUser))
+  add(query_580744, "alt", newJString(alt))
+  add(query_580744, "oauth_token", newJString(oauthToken))
+  add(path_580743, "accountId", newJString(accountId))
+  add(query_580744, "userIp", newJString(userIp))
+  add(query_580744, "key", newJString(key))
   if body != nil:
-    body_594745 = body
-  add(query_594744, "prettyPrint", newJBool(prettyPrint))
-  result = call_594742.call(path_594743, query_594744, nil, nil, body_594745)
+    body_580745 = body
+  add(query_580744, "prettyPrint", newJBool(prettyPrint))
+  result = call_580742.call(path_580743, query_580744, nil, nil, body_580745)
 
-var tagmanagerAccountsPermissionsCreate* = Call_TagmanagerAccountsPermissionsCreate_594729(
+var tagmanagerAccountsPermissionsCreate* = Call_TagmanagerAccountsPermissionsCreate_580729(
     name: "tagmanagerAccountsPermissionsCreate", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com", route: "/accounts/{accountId}/permissions",
-    validator: validate_TagmanagerAccountsPermissionsCreate_594730,
-    base: "/tagmanager/v1", url: url_TagmanagerAccountsPermissionsCreate_594731,
+    validator: validate_TagmanagerAccountsPermissionsCreate_580730,
+    base: "/tagmanager/v1", url: url_TagmanagerAccountsPermissionsCreate_580731,
     schemes: {Scheme.Https})
 type
-  Call_TagmanagerAccountsPermissionsList_594714 = ref object of OpenApiRestCall_593408
-proc url_TagmanagerAccountsPermissionsList_594716(protocol: Scheme; host: string;
+  Call_TagmanagerAccountsPermissionsList_580714 = ref object of OpenApiRestCall_579408
+proc url_TagmanagerAccountsPermissionsList_580716(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "accountId" in path, "`accountId` is a required path parameter"
   const
@@ -7927,7 +7929,7 @@ proc url_TagmanagerAccountsPermissionsList_594716(protocol: Scheme; host: string
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_TagmanagerAccountsPermissionsList_594715(path: JsonNode;
+proc validate_TagmanagerAccountsPermissionsList_580715(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## List all users that have access to the account along with Account and Container Permissions granted to each of them.
   ## 
@@ -7938,11 +7940,11 @@ proc validate_TagmanagerAccountsPermissionsList_594715(path: JsonNode;
   ##            : The GTM Account ID. @required tagmanager.accounts.permissions.list
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `accountId` field"
-  var valid_594717 = path.getOrDefault("accountId")
-  valid_594717 = validateParameter(valid_594717, JString, required = true,
+  var valid_580717 = path.getOrDefault("accountId")
+  valid_580717 = validateParameter(valid_580717, JString, required = true,
                                  default = nil)
-  if valid_594717 != nil:
-    section.add "accountId", valid_594717
+  if valid_580717 != nil:
+    section.add "accountId", valid_580717
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -7960,41 +7962,41 @@ proc validate_TagmanagerAccountsPermissionsList_594715(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_594718 = query.getOrDefault("fields")
-  valid_594718 = validateParameter(valid_594718, JString, required = false,
+  var valid_580718 = query.getOrDefault("fields")
+  valid_580718 = validateParameter(valid_580718, JString, required = false,
                                  default = nil)
-  if valid_594718 != nil:
-    section.add "fields", valid_594718
-  var valid_594719 = query.getOrDefault("quotaUser")
-  valid_594719 = validateParameter(valid_594719, JString, required = false,
+  if valid_580718 != nil:
+    section.add "fields", valid_580718
+  var valid_580719 = query.getOrDefault("quotaUser")
+  valid_580719 = validateParameter(valid_580719, JString, required = false,
                                  default = nil)
-  if valid_594719 != nil:
-    section.add "quotaUser", valid_594719
-  var valid_594720 = query.getOrDefault("alt")
-  valid_594720 = validateParameter(valid_594720, JString, required = false,
+  if valid_580719 != nil:
+    section.add "quotaUser", valid_580719
+  var valid_580720 = query.getOrDefault("alt")
+  valid_580720 = validateParameter(valid_580720, JString, required = false,
                                  default = newJString("json"))
-  if valid_594720 != nil:
-    section.add "alt", valid_594720
-  var valid_594721 = query.getOrDefault("oauth_token")
-  valid_594721 = validateParameter(valid_594721, JString, required = false,
+  if valid_580720 != nil:
+    section.add "alt", valid_580720
+  var valid_580721 = query.getOrDefault("oauth_token")
+  valid_580721 = validateParameter(valid_580721, JString, required = false,
                                  default = nil)
-  if valid_594721 != nil:
-    section.add "oauth_token", valid_594721
-  var valid_594722 = query.getOrDefault("userIp")
-  valid_594722 = validateParameter(valid_594722, JString, required = false,
+  if valid_580721 != nil:
+    section.add "oauth_token", valid_580721
+  var valid_580722 = query.getOrDefault("userIp")
+  valid_580722 = validateParameter(valid_580722, JString, required = false,
                                  default = nil)
-  if valid_594722 != nil:
-    section.add "userIp", valid_594722
-  var valid_594723 = query.getOrDefault("key")
-  valid_594723 = validateParameter(valid_594723, JString, required = false,
+  if valid_580722 != nil:
+    section.add "userIp", valid_580722
+  var valid_580723 = query.getOrDefault("key")
+  valid_580723 = validateParameter(valid_580723, JString, required = false,
                                  default = nil)
-  if valid_594723 != nil:
-    section.add "key", valid_594723
-  var valid_594724 = query.getOrDefault("prettyPrint")
-  valid_594724 = validateParameter(valid_594724, JBool, required = false,
+  if valid_580723 != nil:
+    section.add "key", valid_580723
+  var valid_580724 = query.getOrDefault("prettyPrint")
+  valid_580724 = validateParameter(valid_580724, JBool, required = false,
                                  default = newJBool(true))
-  if valid_594724 != nil:
-    section.add "prettyPrint", valid_594724
+  if valid_580724 != nil:
+    section.add "prettyPrint", valid_580724
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -8003,21 +8005,21 @@ proc validate_TagmanagerAccountsPermissionsList_594715(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_594725: Call_TagmanagerAccountsPermissionsList_594714;
+proc call*(call_580725: Call_TagmanagerAccountsPermissionsList_580714;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## List all users that have access to the account along with Account and Container Permissions granted to each of them.
   ## 
-  let valid = call_594725.validator(path, query, header, formData, body)
-  let scheme = call_594725.pickScheme
+  let valid = call_580725.validator(path, query, header, formData, body)
+  let scheme = call_580725.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_594725.url(scheme.get, call_594725.host, call_594725.base,
-                         call_594725.route, valid.getOrDefault("path"),
+  let url = call_580725.url(scheme.get, call_580725.host, call_580725.base,
+                         call_580725.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_594725, url, valid)
+  result = hook(call_580725, url, valid)
 
-proc call*(call_594726: Call_TagmanagerAccountsPermissionsList_594714;
+proc call*(call_580726: Call_TagmanagerAccountsPermissionsList_580714;
           accountId: string; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; userIp: string = "";
           key: string = ""; prettyPrint: bool = true): Recallable =
@@ -8039,31 +8041,31 @@ proc call*(call_594726: Call_TagmanagerAccountsPermissionsList_594714;
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_594727 = newJObject()
-  var query_594728 = newJObject()
-  add(query_594728, "fields", newJString(fields))
-  add(query_594728, "quotaUser", newJString(quotaUser))
-  add(query_594728, "alt", newJString(alt))
-  add(query_594728, "oauth_token", newJString(oauthToken))
-  add(path_594727, "accountId", newJString(accountId))
-  add(query_594728, "userIp", newJString(userIp))
-  add(query_594728, "key", newJString(key))
-  add(query_594728, "prettyPrint", newJBool(prettyPrint))
-  result = call_594726.call(path_594727, query_594728, nil, nil, nil)
+  var path_580727 = newJObject()
+  var query_580728 = newJObject()
+  add(query_580728, "fields", newJString(fields))
+  add(query_580728, "quotaUser", newJString(quotaUser))
+  add(query_580728, "alt", newJString(alt))
+  add(query_580728, "oauth_token", newJString(oauthToken))
+  add(path_580727, "accountId", newJString(accountId))
+  add(query_580728, "userIp", newJString(userIp))
+  add(query_580728, "key", newJString(key))
+  add(query_580728, "prettyPrint", newJBool(prettyPrint))
+  result = call_580726.call(path_580727, query_580728, nil, nil, nil)
 
-var tagmanagerAccountsPermissionsList* = Call_TagmanagerAccountsPermissionsList_594714(
+var tagmanagerAccountsPermissionsList* = Call_TagmanagerAccountsPermissionsList_580714(
     name: "tagmanagerAccountsPermissionsList", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/accounts/{accountId}/permissions",
-    validator: validate_TagmanagerAccountsPermissionsList_594715,
-    base: "/tagmanager/v1", url: url_TagmanagerAccountsPermissionsList_594716,
+    validator: validate_TagmanagerAccountsPermissionsList_580715,
+    base: "/tagmanager/v1", url: url_TagmanagerAccountsPermissionsList_580716,
     schemes: {Scheme.Https})
 type
-  Call_TagmanagerAccountsPermissionsUpdate_594762 = ref object of OpenApiRestCall_593408
-proc url_TagmanagerAccountsPermissionsUpdate_594764(protocol: Scheme; host: string;
+  Call_TagmanagerAccountsPermissionsUpdate_580762 = ref object of OpenApiRestCall_579408
+proc url_TagmanagerAccountsPermissionsUpdate_580764(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "accountId" in path, "`accountId` is a required path parameter"
   assert "permissionId" in path, "`permissionId` is a required path parameter"
@@ -8077,7 +8079,7 @@ proc url_TagmanagerAccountsPermissionsUpdate_594764(protocol: Scheme; host: stri
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_TagmanagerAccountsPermissionsUpdate_594763(path: JsonNode;
+proc validate_TagmanagerAccountsPermissionsUpdate_580763(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Updates a user's Account & Container Permissions.
   ## 
@@ -8090,16 +8092,16 @@ proc validate_TagmanagerAccountsPermissionsUpdate_594763(path: JsonNode;
   ##               : The GTM User ID.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `accountId` field"
-  var valid_594765 = path.getOrDefault("accountId")
-  valid_594765 = validateParameter(valid_594765, JString, required = true,
+  var valid_580765 = path.getOrDefault("accountId")
+  valid_580765 = validateParameter(valid_580765, JString, required = true,
                                  default = nil)
-  if valid_594765 != nil:
-    section.add "accountId", valid_594765
-  var valid_594766 = path.getOrDefault("permissionId")
-  valid_594766 = validateParameter(valid_594766, JString, required = true,
+  if valid_580765 != nil:
+    section.add "accountId", valid_580765
+  var valid_580766 = path.getOrDefault("permissionId")
+  valid_580766 = validateParameter(valid_580766, JString, required = true,
                                  default = nil)
-  if valid_594766 != nil:
-    section.add "permissionId", valid_594766
+  if valid_580766 != nil:
+    section.add "permissionId", valid_580766
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -8117,41 +8119,41 @@ proc validate_TagmanagerAccountsPermissionsUpdate_594763(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_594767 = query.getOrDefault("fields")
-  valid_594767 = validateParameter(valid_594767, JString, required = false,
+  var valid_580767 = query.getOrDefault("fields")
+  valid_580767 = validateParameter(valid_580767, JString, required = false,
                                  default = nil)
-  if valid_594767 != nil:
-    section.add "fields", valid_594767
-  var valid_594768 = query.getOrDefault("quotaUser")
-  valid_594768 = validateParameter(valid_594768, JString, required = false,
+  if valid_580767 != nil:
+    section.add "fields", valid_580767
+  var valid_580768 = query.getOrDefault("quotaUser")
+  valid_580768 = validateParameter(valid_580768, JString, required = false,
                                  default = nil)
-  if valid_594768 != nil:
-    section.add "quotaUser", valid_594768
-  var valid_594769 = query.getOrDefault("alt")
-  valid_594769 = validateParameter(valid_594769, JString, required = false,
+  if valid_580768 != nil:
+    section.add "quotaUser", valid_580768
+  var valid_580769 = query.getOrDefault("alt")
+  valid_580769 = validateParameter(valid_580769, JString, required = false,
                                  default = newJString("json"))
-  if valid_594769 != nil:
-    section.add "alt", valid_594769
-  var valid_594770 = query.getOrDefault("oauth_token")
-  valid_594770 = validateParameter(valid_594770, JString, required = false,
+  if valid_580769 != nil:
+    section.add "alt", valid_580769
+  var valid_580770 = query.getOrDefault("oauth_token")
+  valid_580770 = validateParameter(valid_580770, JString, required = false,
                                  default = nil)
-  if valid_594770 != nil:
-    section.add "oauth_token", valid_594770
-  var valid_594771 = query.getOrDefault("userIp")
-  valid_594771 = validateParameter(valid_594771, JString, required = false,
+  if valid_580770 != nil:
+    section.add "oauth_token", valid_580770
+  var valid_580771 = query.getOrDefault("userIp")
+  valid_580771 = validateParameter(valid_580771, JString, required = false,
                                  default = nil)
-  if valid_594771 != nil:
-    section.add "userIp", valid_594771
-  var valid_594772 = query.getOrDefault("key")
-  valid_594772 = validateParameter(valid_594772, JString, required = false,
+  if valid_580771 != nil:
+    section.add "userIp", valid_580771
+  var valid_580772 = query.getOrDefault("key")
+  valid_580772 = validateParameter(valid_580772, JString, required = false,
                                  default = nil)
-  if valid_594772 != nil:
-    section.add "key", valid_594772
-  var valid_594773 = query.getOrDefault("prettyPrint")
-  valid_594773 = validateParameter(valid_594773, JBool, required = false,
+  if valid_580772 != nil:
+    section.add "key", valid_580772
+  var valid_580773 = query.getOrDefault("prettyPrint")
+  valid_580773 = validateParameter(valid_580773, JBool, required = false,
                                  default = newJBool(true))
-  if valid_594773 != nil:
-    section.add "prettyPrint", valid_594773
+  if valid_580773 != nil:
+    section.add "prettyPrint", valid_580773
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -8163,21 +8165,21 @@ proc validate_TagmanagerAccountsPermissionsUpdate_594763(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_594775: Call_TagmanagerAccountsPermissionsUpdate_594762;
+proc call*(call_580775: Call_TagmanagerAccountsPermissionsUpdate_580762;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Updates a user's Account & Container Permissions.
   ## 
-  let valid = call_594775.validator(path, query, header, formData, body)
-  let scheme = call_594775.pickScheme
+  let valid = call_580775.validator(path, query, header, formData, body)
+  let scheme = call_580775.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_594775.url(scheme.get, call_594775.host, call_594775.base,
-                         call_594775.route, valid.getOrDefault("path"),
+  let url = call_580775.url(scheme.get, call_580775.host, call_580775.base,
+                         call_580775.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_594775, url, valid)
+  result = hook(call_580775, url, valid)
 
-proc call*(call_594776: Call_TagmanagerAccountsPermissionsUpdate_594762;
+proc call*(call_580776: Call_TagmanagerAccountsPermissionsUpdate_580762;
           accountId: string; permissionId: string; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; key: string = ""; body: JsonNode = nil;
@@ -8203,36 +8205,36 @@ proc call*(call_594776: Call_TagmanagerAccountsPermissionsUpdate_594762;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_594777 = newJObject()
-  var query_594778 = newJObject()
-  var body_594779 = newJObject()
-  add(query_594778, "fields", newJString(fields))
-  add(query_594778, "quotaUser", newJString(quotaUser))
-  add(query_594778, "alt", newJString(alt))
-  add(query_594778, "oauth_token", newJString(oauthToken))
-  add(path_594777, "accountId", newJString(accountId))
-  add(path_594777, "permissionId", newJString(permissionId))
-  add(query_594778, "userIp", newJString(userIp))
-  add(query_594778, "key", newJString(key))
+  var path_580777 = newJObject()
+  var query_580778 = newJObject()
+  var body_580779 = newJObject()
+  add(query_580778, "fields", newJString(fields))
+  add(query_580778, "quotaUser", newJString(quotaUser))
+  add(query_580778, "alt", newJString(alt))
+  add(query_580778, "oauth_token", newJString(oauthToken))
+  add(path_580777, "accountId", newJString(accountId))
+  add(path_580777, "permissionId", newJString(permissionId))
+  add(query_580778, "userIp", newJString(userIp))
+  add(query_580778, "key", newJString(key))
   if body != nil:
-    body_594779 = body
-  add(query_594778, "prettyPrint", newJBool(prettyPrint))
-  result = call_594776.call(path_594777, query_594778, nil, nil, body_594779)
+    body_580779 = body
+  add(query_580778, "prettyPrint", newJBool(prettyPrint))
+  result = call_580776.call(path_580777, query_580778, nil, nil, body_580779)
 
-var tagmanagerAccountsPermissionsUpdate* = Call_TagmanagerAccountsPermissionsUpdate_594762(
+var tagmanagerAccountsPermissionsUpdate* = Call_TagmanagerAccountsPermissionsUpdate_580762(
     name: "tagmanagerAccountsPermissionsUpdate", meth: HttpMethod.HttpPut,
     host: "www.googleapis.com",
     route: "/accounts/{accountId}/permissions/{permissionId}",
-    validator: validate_TagmanagerAccountsPermissionsUpdate_594763,
-    base: "/tagmanager/v1", url: url_TagmanagerAccountsPermissionsUpdate_594764,
+    validator: validate_TagmanagerAccountsPermissionsUpdate_580763,
+    base: "/tagmanager/v1", url: url_TagmanagerAccountsPermissionsUpdate_580764,
     schemes: {Scheme.Https})
 type
-  Call_TagmanagerAccountsPermissionsGet_594746 = ref object of OpenApiRestCall_593408
-proc url_TagmanagerAccountsPermissionsGet_594748(protocol: Scheme; host: string;
+  Call_TagmanagerAccountsPermissionsGet_580746 = ref object of OpenApiRestCall_579408
+proc url_TagmanagerAccountsPermissionsGet_580748(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "accountId" in path, "`accountId` is a required path parameter"
   assert "permissionId" in path, "`permissionId` is a required path parameter"
@@ -8246,7 +8248,7 @@ proc url_TagmanagerAccountsPermissionsGet_594748(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_TagmanagerAccountsPermissionsGet_594747(path: JsonNode;
+proc validate_TagmanagerAccountsPermissionsGet_580747(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Gets a user's Account & Container Permissions.
   ## 
@@ -8259,16 +8261,16 @@ proc validate_TagmanagerAccountsPermissionsGet_594747(path: JsonNode;
   ##               : The GTM User ID.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `accountId` field"
-  var valid_594749 = path.getOrDefault("accountId")
-  valid_594749 = validateParameter(valid_594749, JString, required = true,
+  var valid_580749 = path.getOrDefault("accountId")
+  valid_580749 = validateParameter(valid_580749, JString, required = true,
                                  default = nil)
-  if valid_594749 != nil:
-    section.add "accountId", valid_594749
-  var valid_594750 = path.getOrDefault("permissionId")
-  valid_594750 = validateParameter(valid_594750, JString, required = true,
+  if valid_580749 != nil:
+    section.add "accountId", valid_580749
+  var valid_580750 = path.getOrDefault("permissionId")
+  valid_580750 = validateParameter(valid_580750, JString, required = true,
                                  default = nil)
-  if valid_594750 != nil:
-    section.add "permissionId", valid_594750
+  if valid_580750 != nil:
+    section.add "permissionId", valid_580750
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -8286,41 +8288,41 @@ proc validate_TagmanagerAccountsPermissionsGet_594747(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_594751 = query.getOrDefault("fields")
-  valid_594751 = validateParameter(valid_594751, JString, required = false,
+  var valid_580751 = query.getOrDefault("fields")
+  valid_580751 = validateParameter(valid_580751, JString, required = false,
                                  default = nil)
-  if valid_594751 != nil:
-    section.add "fields", valid_594751
-  var valid_594752 = query.getOrDefault("quotaUser")
-  valid_594752 = validateParameter(valid_594752, JString, required = false,
+  if valid_580751 != nil:
+    section.add "fields", valid_580751
+  var valid_580752 = query.getOrDefault("quotaUser")
+  valid_580752 = validateParameter(valid_580752, JString, required = false,
                                  default = nil)
-  if valid_594752 != nil:
-    section.add "quotaUser", valid_594752
-  var valid_594753 = query.getOrDefault("alt")
-  valid_594753 = validateParameter(valid_594753, JString, required = false,
+  if valid_580752 != nil:
+    section.add "quotaUser", valid_580752
+  var valid_580753 = query.getOrDefault("alt")
+  valid_580753 = validateParameter(valid_580753, JString, required = false,
                                  default = newJString("json"))
-  if valid_594753 != nil:
-    section.add "alt", valid_594753
-  var valid_594754 = query.getOrDefault("oauth_token")
-  valid_594754 = validateParameter(valid_594754, JString, required = false,
+  if valid_580753 != nil:
+    section.add "alt", valid_580753
+  var valid_580754 = query.getOrDefault("oauth_token")
+  valid_580754 = validateParameter(valid_580754, JString, required = false,
                                  default = nil)
-  if valid_594754 != nil:
-    section.add "oauth_token", valid_594754
-  var valid_594755 = query.getOrDefault("userIp")
-  valid_594755 = validateParameter(valid_594755, JString, required = false,
+  if valid_580754 != nil:
+    section.add "oauth_token", valid_580754
+  var valid_580755 = query.getOrDefault("userIp")
+  valid_580755 = validateParameter(valid_580755, JString, required = false,
                                  default = nil)
-  if valid_594755 != nil:
-    section.add "userIp", valid_594755
-  var valid_594756 = query.getOrDefault("key")
-  valid_594756 = validateParameter(valid_594756, JString, required = false,
+  if valid_580755 != nil:
+    section.add "userIp", valid_580755
+  var valid_580756 = query.getOrDefault("key")
+  valid_580756 = validateParameter(valid_580756, JString, required = false,
                                  default = nil)
-  if valid_594756 != nil:
-    section.add "key", valid_594756
-  var valid_594757 = query.getOrDefault("prettyPrint")
-  valid_594757 = validateParameter(valid_594757, JBool, required = false,
+  if valid_580756 != nil:
+    section.add "key", valid_580756
+  var valid_580757 = query.getOrDefault("prettyPrint")
+  valid_580757 = validateParameter(valid_580757, JBool, required = false,
                                  default = newJBool(true))
-  if valid_594757 != nil:
-    section.add "prettyPrint", valid_594757
+  if valid_580757 != nil:
+    section.add "prettyPrint", valid_580757
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -8329,21 +8331,21 @@ proc validate_TagmanagerAccountsPermissionsGet_594747(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_594758: Call_TagmanagerAccountsPermissionsGet_594746;
+proc call*(call_580758: Call_TagmanagerAccountsPermissionsGet_580746;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Gets a user's Account & Container Permissions.
   ## 
-  let valid = call_594758.validator(path, query, header, formData, body)
-  let scheme = call_594758.pickScheme
+  let valid = call_580758.validator(path, query, header, formData, body)
+  let scheme = call_580758.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_594758.url(scheme.get, call_594758.host, call_594758.base,
-                         call_594758.route, valid.getOrDefault("path"),
+  let url = call_580758.url(scheme.get, call_580758.host, call_580758.base,
+                         call_580758.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_594758, url, valid)
+  result = hook(call_580758, url, valid)
 
-proc call*(call_594759: Call_TagmanagerAccountsPermissionsGet_594746;
+proc call*(call_580759: Call_TagmanagerAccountsPermissionsGet_580746;
           accountId: string; permissionId: string; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; key: string = ""; prettyPrint: bool = true): Recallable =
@@ -8367,33 +8369,33 @@ proc call*(call_594759: Call_TagmanagerAccountsPermissionsGet_594746;
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_594760 = newJObject()
-  var query_594761 = newJObject()
-  add(query_594761, "fields", newJString(fields))
-  add(query_594761, "quotaUser", newJString(quotaUser))
-  add(query_594761, "alt", newJString(alt))
-  add(query_594761, "oauth_token", newJString(oauthToken))
-  add(path_594760, "accountId", newJString(accountId))
-  add(path_594760, "permissionId", newJString(permissionId))
-  add(query_594761, "userIp", newJString(userIp))
-  add(query_594761, "key", newJString(key))
-  add(query_594761, "prettyPrint", newJBool(prettyPrint))
-  result = call_594759.call(path_594760, query_594761, nil, nil, nil)
+  var path_580760 = newJObject()
+  var query_580761 = newJObject()
+  add(query_580761, "fields", newJString(fields))
+  add(query_580761, "quotaUser", newJString(quotaUser))
+  add(query_580761, "alt", newJString(alt))
+  add(query_580761, "oauth_token", newJString(oauthToken))
+  add(path_580760, "accountId", newJString(accountId))
+  add(path_580760, "permissionId", newJString(permissionId))
+  add(query_580761, "userIp", newJString(userIp))
+  add(query_580761, "key", newJString(key))
+  add(query_580761, "prettyPrint", newJBool(prettyPrint))
+  result = call_580759.call(path_580760, query_580761, nil, nil, nil)
 
-var tagmanagerAccountsPermissionsGet* = Call_TagmanagerAccountsPermissionsGet_594746(
+var tagmanagerAccountsPermissionsGet* = Call_TagmanagerAccountsPermissionsGet_580746(
     name: "tagmanagerAccountsPermissionsGet", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com",
     route: "/accounts/{accountId}/permissions/{permissionId}",
-    validator: validate_TagmanagerAccountsPermissionsGet_594747,
-    base: "/tagmanager/v1", url: url_TagmanagerAccountsPermissionsGet_594748,
+    validator: validate_TagmanagerAccountsPermissionsGet_580747,
+    base: "/tagmanager/v1", url: url_TagmanagerAccountsPermissionsGet_580748,
     schemes: {Scheme.Https})
 type
-  Call_TagmanagerAccountsPermissionsDelete_594780 = ref object of OpenApiRestCall_593408
-proc url_TagmanagerAccountsPermissionsDelete_594782(protocol: Scheme; host: string;
+  Call_TagmanagerAccountsPermissionsDelete_580780 = ref object of OpenApiRestCall_579408
+proc url_TagmanagerAccountsPermissionsDelete_580782(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "accountId" in path, "`accountId` is a required path parameter"
   assert "permissionId" in path, "`permissionId` is a required path parameter"
@@ -8407,7 +8409,7 @@ proc url_TagmanagerAccountsPermissionsDelete_594782(protocol: Scheme; host: stri
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_TagmanagerAccountsPermissionsDelete_594781(path: JsonNode;
+proc validate_TagmanagerAccountsPermissionsDelete_580781(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Removes a user from the account, revoking access to it and all of its containers.
   ## 
@@ -8420,16 +8422,16 @@ proc validate_TagmanagerAccountsPermissionsDelete_594781(path: JsonNode;
   ##               : The GTM User ID.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `accountId` field"
-  var valid_594783 = path.getOrDefault("accountId")
-  valid_594783 = validateParameter(valid_594783, JString, required = true,
+  var valid_580783 = path.getOrDefault("accountId")
+  valid_580783 = validateParameter(valid_580783, JString, required = true,
                                  default = nil)
-  if valid_594783 != nil:
-    section.add "accountId", valid_594783
-  var valid_594784 = path.getOrDefault("permissionId")
-  valid_594784 = validateParameter(valid_594784, JString, required = true,
+  if valid_580783 != nil:
+    section.add "accountId", valid_580783
+  var valid_580784 = path.getOrDefault("permissionId")
+  valid_580784 = validateParameter(valid_580784, JString, required = true,
                                  default = nil)
-  if valid_594784 != nil:
-    section.add "permissionId", valid_594784
+  if valid_580784 != nil:
+    section.add "permissionId", valid_580784
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -8447,41 +8449,41 @@ proc validate_TagmanagerAccountsPermissionsDelete_594781(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_594785 = query.getOrDefault("fields")
-  valid_594785 = validateParameter(valid_594785, JString, required = false,
+  var valid_580785 = query.getOrDefault("fields")
+  valid_580785 = validateParameter(valid_580785, JString, required = false,
                                  default = nil)
-  if valid_594785 != nil:
-    section.add "fields", valid_594785
-  var valid_594786 = query.getOrDefault("quotaUser")
-  valid_594786 = validateParameter(valid_594786, JString, required = false,
+  if valid_580785 != nil:
+    section.add "fields", valid_580785
+  var valid_580786 = query.getOrDefault("quotaUser")
+  valid_580786 = validateParameter(valid_580786, JString, required = false,
                                  default = nil)
-  if valid_594786 != nil:
-    section.add "quotaUser", valid_594786
-  var valid_594787 = query.getOrDefault("alt")
-  valid_594787 = validateParameter(valid_594787, JString, required = false,
+  if valid_580786 != nil:
+    section.add "quotaUser", valid_580786
+  var valid_580787 = query.getOrDefault("alt")
+  valid_580787 = validateParameter(valid_580787, JString, required = false,
                                  default = newJString("json"))
-  if valid_594787 != nil:
-    section.add "alt", valid_594787
-  var valid_594788 = query.getOrDefault("oauth_token")
-  valid_594788 = validateParameter(valid_594788, JString, required = false,
+  if valid_580787 != nil:
+    section.add "alt", valid_580787
+  var valid_580788 = query.getOrDefault("oauth_token")
+  valid_580788 = validateParameter(valid_580788, JString, required = false,
                                  default = nil)
-  if valid_594788 != nil:
-    section.add "oauth_token", valid_594788
-  var valid_594789 = query.getOrDefault("userIp")
-  valid_594789 = validateParameter(valid_594789, JString, required = false,
+  if valid_580788 != nil:
+    section.add "oauth_token", valid_580788
+  var valid_580789 = query.getOrDefault("userIp")
+  valid_580789 = validateParameter(valid_580789, JString, required = false,
                                  default = nil)
-  if valid_594789 != nil:
-    section.add "userIp", valid_594789
-  var valid_594790 = query.getOrDefault("key")
-  valid_594790 = validateParameter(valid_594790, JString, required = false,
+  if valid_580789 != nil:
+    section.add "userIp", valid_580789
+  var valid_580790 = query.getOrDefault("key")
+  valid_580790 = validateParameter(valid_580790, JString, required = false,
                                  default = nil)
-  if valid_594790 != nil:
-    section.add "key", valid_594790
-  var valid_594791 = query.getOrDefault("prettyPrint")
-  valid_594791 = validateParameter(valid_594791, JBool, required = false,
+  if valid_580790 != nil:
+    section.add "key", valid_580790
+  var valid_580791 = query.getOrDefault("prettyPrint")
+  valid_580791 = validateParameter(valid_580791, JBool, required = false,
                                  default = newJBool(true))
-  if valid_594791 != nil:
-    section.add "prettyPrint", valid_594791
+  if valid_580791 != nil:
+    section.add "prettyPrint", valid_580791
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -8490,21 +8492,21 @@ proc validate_TagmanagerAccountsPermissionsDelete_594781(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_594792: Call_TagmanagerAccountsPermissionsDelete_594780;
+proc call*(call_580792: Call_TagmanagerAccountsPermissionsDelete_580780;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Removes a user from the account, revoking access to it and all of its containers.
   ## 
-  let valid = call_594792.validator(path, query, header, formData, body)
-  let scheme = call_594792.pickScheme
+  let valid = call_580792.validator(path, query, header, formData, body)
+  let scheme = call_580792.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_594792.url(scheme.get, call_594792.host, call_594792.base,
-                         call_594792.route, valid.getOrDefault("path"),
+  let url = call_580792.url(scheme.get, call_580792.host, call_580792.base,
+                         call_580792.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_594792, url, valid)
+  result = hook(call_580792, url, valid)
 
-proc call*(call_594793: Call_TagmanagerAccountsPermissionsDelete_594780;
+proc call*(call_580793: Call_TagmanagerAccountsPermissionsDelete_580780;
           accountId: string; permissionId: string; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; key: string = ""; prettyPrint: bool = true): Recallable =
@@ -8528,29 +8530,119 @@ proc call*(call_594793: Call_TagmanagerAccountsPermissionsDelete_594780;
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_594794 = newJObject()
-  var query_594795 = newJObject()
-  add(query_594795, "fields", newJString(fields))
-  add(query_594795, "quotaUser", newJString(quotaUser))
-  add(query_594795, "alt", newJString(alt))
-  add(query_594795, "oauth_token", newJString(oauthToken))
-  add(path_594794, "accountId", newJString(accountId))
-  add(path_594794, "permissionId", newJString(permissionId))
-  add(query_594795, "userIp", newJString(userIp))
-  add(query_594795, "key", newJString(key))
-  add(query_594795, "prettyPrint", newJBool(prettyPrint))
-  result = call_594793.call(path_594794, query_594795, nil, nil, nil)
+  var path_580794 = newJObject()
+  var query_580795 = newJObject()
+  add(query_580795, "fields", newJString(fields))
+  add(query_580795, "quotaUser", newJString(quotaUser))
+  add(query_580795, "alt", newJString(alt))
+  add(query_580795, "oauth_token", newJString(oauthToken))
+  add(path_580794, "accountId", newJString(accountId))
+  add(path_580794, "permissionId", newJString(permissionId))
+  add(query_580795, "userIp", newJString(userIp))
+  add(query_580795, "key", newJString(key))
+  add(query_580795, "prettyPrint", newJBool(prettyPrint))
+  result = call_580793.call(path_580794, query_580795, nil, nil, nil)
 
-var tagmanagerAccountsPermissionsDelete* = Call_TagmanagerAccountsPermissionsDelete_594780(
+var tagmanagerAccountsPermissionsDelete* = Call_TagmanagerAccountsPermissionsDelete_580780(
     name: "tagmanagerAccountsPermissionsDelete", meth: HttpMethod.HttpDelete,
     host: "www.googleapis.com",
     route: "/accounts/{accountId}/permissions/{permissionId}",
-    validator: validate_TagmanagerAccountsPermissionsDelete_594781,
-    base: "/tagmanager/v1", url: url_TagmanagerAccountsPermissionsDelete_594782,
+    validator: validate_TagmanagerAccountsPermissionsDelete_580781,
+    base: "/tagmanager/v1", url: url_TagmanagerAccountsPermissionsDelete_580782,
     schemes: {Scheme.Https})
 export
   rest
 
+type
+  GoogleAuth = ref object
+    endpoint*: Uri
+    token: string
+    expiry*: float64
+    issued*: float64
+    email: string
+    key: string
+    scope*: seq[string]
+    form: string
+    digest: Hash
+
+const
+  endpoint = "https://www.googleapis.com/oauth2/v4/token".parseUri
+var auth = GoogleAuth(endpoint: endpoint)
+proc hash(auth: GoogleAuth): Hash =
+  ## yield differing values for effectively different auth payloads
+  result = hash($auth.endpoint)
+  result = result !& hash(auth.email)
+  result = result !& hash(auth.key)
+  result = result !& hash(auth.scope.join(" "))
+  result = !$result
+
+proc newAuthenticator*(path: string): GoogleAuth =
+  let
+    input = readFile(path)
+    js = parseJson(input)
+  auth.email = js["client_email"].getStr
+  auth.key = js["private_key"].getStr
+  result = auth
+
+proc store(auth: var GoogleAuth; token: string; expiry: int; form: string) =
+  auth.token = token
+  auth.issued = epochTime()
+  auth.expiry = auth.issued + expiry.float64
+  auth.form = form
+  auth.digest = auth.hash
+
+proc authenticate*(fresh: float64 = -3600.0; lifetime: int = 3600): Future[bool] {.async.} =
+  ## get or refresh an authentication token; provide `fresh`
+  ## to ensure that the token won't expire in the next N seconds.
+  ## provide `lifetime` to indicate how long the token should last.
+  let clock = epochTime()
+  if auth.expiry > clock + fresh:
+    if auth.hash == auth.digest:
+      return true
+  let
+    expiry = clock.int + lifetime
+    header = JOSEHeader(alg: RS256, typ: "JWT")
+    claims = %*{"iss": auth.email, "scope": auth.scope.join(" "),
+              "aud": "https://www.googleapis.com/oauth2/v4/token", "exp": expiry,
+              "iat": clock.int}
+  var tok = JWT(header: header, claims: toClaims(claims))
+  tok.sign(auth.key)
+  let post = encodeQuery({"grant_type": "urn:ietf:params:oauth:grant-type:jwt-bearer",
+                       "assertion": $tok}, usePlus = false, omitEq = false)
+  var client = newAsyncHttpClient()
+  client.headers = newHttpHeaders({"Content-Type": "application/x-www-form-urlencoded",
+                                 "Content-Length": $post.len})
+  let response = await client.request($auth.endpoint, HttpPost, body = post)
+  if not response.code.is2xx:
+    return false
+  let body = await response.body
+  client.close
+  try:
+    let js = parseJson(body)
+    auth.store(js["access_token"].getStr, js["expires_in"].getInt,
+               js["token_type"].getStr)
+  except KeyError:
+    return false
+  except JsonParsingError:
+    return false
+  return true
+
+proc composeQueryString(query: JsonNode): string =
+  var qs: seq[KeyVal]
+  if query == nil:
+    return ""
+  for k, v in query.pairs:
+    qs.add (key: k, val: v.getStr)
+  result = encodeQuery(qs, usePlus = false, omitEq = false)
+
 method hook(call: OpenApiRestCall; url: Uri; input: JsonNode): Recallable {.base.} =
-  let headers = massageHeaders(input.getOrDefault("header"))
-  result = newRecallable(call, url, headers, input.getOrDefault("body").getStr)
+  var headers = massageHeaders(input.getOrDefault("header"))
+  let body = input.getOrDefault("body").getStr
+  if auth.scope.len == 0:
+    raise newException(ValueError, "specify authentication scopes")
+  if not waitfor authenticate(fresh = 10.0):
+    raise newException(IOError, "unable to refresh authentication token")
+  headers.add ("Authorization", auth.form & " " & auth.token)
+  headers.add ("Content-Type", "application/json")
+  headers.add ("Content-Length", $body.len)
+  result = newRecallable(call, url, headers, body = body)

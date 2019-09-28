@@ -1,6 +1,7 @@
 
 import
-  json, options, hashes, uri, openapi/rest, os, uri, strutils, httpcore
+  json, options, hashes, uri, rest, os, uri, strutils, times, httpcore, httpclient,
+  asyncdispatch, jwt
 
 ## auto-generated via openapi macro
 ## title: Google Compute Engine Instance Group Manager
@@ -26,15 +27,15 @@ type
     url*: proc (protocol: Scheme; host: string; base: string; route: string;
               path: JsonNode; query: JsonNode): Uri
 
-  OpenApiRestCall_593424 = ref object of OpenApiRestCall
+  OpenApiRestCall_579424 = ref object of OpenApiRestCall
 proc hash(scheme: Scheme): Hash {.used.} =
   result = hash(ord(scheme))
 
-proc clone[T: OpenApiRestCall_593424](t: T): T {.used.} =
+proc clone[T: OpenApiRestCall_579424](t: T): T {.used.} =
   result = T(name: t.name, meth: t.meth, host: t.host, base: t.base, route: t.route,
            schemes: t.schemes, validator: t.validator, url: t.url)
 
-proc pickScheme(t: OpenApiRestCall_593424): Option[Scheme] {.used.} =
+proc pickScheme(t: OpenApiRestCall_579424): Option[Scheme] {.used.} =
   ## select a supported scheme from a set of candidates
   for scheme in Scheme.low ..
       Scheme.high:
@@ -102,14 +103,15 @@ proc hydratePath(input: JsonNode; segments: seq[PathToken]): Option[string] =
 
 const
   gcpServiceName = "replicapool"
+proc composeQueryString(query: JsonNode): string
 method hook(call: OpenApiRestCall; url: Uri; input: JsonNode): Recallable {.base.}
 type
-  Call_ReplicapoolInstanceGroupManagersInsert_593981 = ref object of OpenApiRestCall_593424
-proc url_ReplicapoolInstanceGroupManagersInsert_593983(protocol: Scheme;
+  Call_ReplicapoolInstanceGroupManagersInsert_579981 = ref object of OpenApiRestCall_579424
+proc url_ReplicapoolInstanceGroupManagersInsert_579983(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "project" in path, "`project` is a required path parameter"
   assert "zone" in path, "`zone` is a required path parameter"
@@ -124,7 +126,7 @@ proc url_ReplicapoolInstanceGroupManagersInsert_593983(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_ReplicapoolInstanceGroupManagersInsert_593982(path: JsonNode;
+proc validate_ReplicapoolInstanceGroupManagersInsert_579982(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Creates an instance group manager, as well as the instance group and the specified number of instances.
   ## 
@@ -137,16 +139,16 @@ proc validate_ReplicapoolInstanceGroupManagersInsert_593982(path: JsonNode;
   ##          : The Google Developers Console project name.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `zone` field"
-  var valid_593984 = path.getOrDefault("zone")
-  valid_593984 = validateParameter(valid_593984, JString, required = true,
+  var valid_579984 = path.getOrDefault("zone")
+  valid_579984 = validateParameter(valid_579984, JString, required = true,
                                  default = nil)
-  if valid_593984 != nil:
-    section.add "zone", valid_593984
-  var valid_593985 = path.getOrDefault("project")
-  valid_593985 = validateParameter(valid_593985, JString, required = true,
+  if valid_579984 != nil:
+    section.add "zone", valid_579984
+  var valid_579985 = path.getOrDefault("project")
+  valid_579985 = validateParameter(valid_579985, JString, required = true,
                                  default = nil)
-  if valid_593985 != nil:
-    section.add "project", valid_593985
+  if valid_579985 != nil:
+    section.add "project", valid_579985
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -166,46 +168,46 @@ proc validate_ReplicapoolInstanceGroupManagersInsert_593982(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_593986 = query.getOrDefault("fields")
-  valid_593986 = validateParameter(valid_593986, JString, required = false,
+  var valid_579986 = query.getOrDefault("fields")
+  valid_579986 = validateParameter(valid_579986, JString, required = false,
                                  default = nil)
-  if valid_593986 != nil:
-    section.add "fields", valid_593986
-  var valid_593987 = query.getOrDefault("quotaUser")
-  valid_593987 = validateParameter(valid_593987, JString, required = false,
+  if valid_579986 != nil:
+    section.add "fields", valid_579986
+  var valid_579987 = query.getOrDefault("quotaUser")
+  valid_579987 = validateParameter(valid_579987, JString, required = false,
                                  default = nil)
-  if valid_593987 != nil:
-    section.add "quotaUser", valid_593987
-  var valid_593988 = query.getOrDefault("alt")
-  valid_593988 = validateParameter(valid_593988, JString, required = false,
+  if valid_579987 != nil:
+    section.add "quotaUser", valid_579987
+  var valid_579988 = query.getOrDefault("alt")
+  valid_579988 = validateParameter(valid_579988, JString, required = false,
                                  default = newJString("json"))
-  if valid_593988 != nil:
-    section.add "alt", valid_593988
-  var valid_593989 = query.getOrDefault("oauth_token")
-  valid_593989 = validateParameter(valid_593989, JString, required = false,
+  if valid_579988 != nil:
+    section.add "alt", valid_579988
+  var valid_579989 = query.getOrDefault("oauth_token")
+  valid_579989 = validateParameter(valid_579989, JString, required = false,
                                  default = nil)
-  if valid_593989 != nil:
-    section.add "oauth_token", valid_593989
-  var valid_593990 = query.getOrDefault("userIp")
-  valid_593990 = validateParameter(valid_593990, JString, required = false,
+  if valid_579989 != nil:
+    section.add "oauth_token", valid_579989
+  var valid_579990 = query.getOrDefault("userIp")
+  valid_579990 = validateParameter(valid_579990, JString, required = false,
                                  default = nil)
-  if valid_593990 != nil:
-    section.add "userIp", valid_593990
-  var valid_593991 = query.getOrDefault("key")
-  valid_593991 = validateParameter(valid_593991, JString, required = false,
+  if valid_579990 != nil:
+    section.add "userIp", valid_579990
+  var valid_579991 = query.getOrDefault("key")
+  valid_579991 = validateParameter(valid_579991, JString, required = false,
                                  default = nil)
-  if valid_593991 != nil:
-    section.add "key", valid_593991
+  if valid_579991 != nil:
+    section.add "key", valid_579991
   assert query != nil, "query argument is necessary due to required `size` field"
-  var valid_593992 = query.getOrDefault("size")
-  valid_593992 = validateParameter(valid_593992, JInt, required = true, default = nil)
-  if valid_593992 != nil:
-    section.add "size", valid_593992
-  var valid_593993 = query.getOrDefault("prettyPrint")
-  valid_593993 = validateParameter(valid_593993, JBool, required = false,
+  var valid_579992 = query.getOrDefault("size")
+  valid_579992 = validateParameter(valid_579992, JInt, required = true, default = nil)
+  if valid_579992 != nil:
+    section.add "size", valid_579992
+  var valid_579993 = query.getOrDefault("prettyPrint")
+  valid_579993 = validateParameter(valid_579993, JBool, required = false,
                                  default = newJBool(true))
-  if valid_593993 != nil:
-    section.add "prettyPrint", valid_593993
+  if valid_579993 != nil:
+    section.add "prettyPrint", valid_579993
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -217,21 +219,21 @@ proc validate_ReplicapoolInstanceGroupManagersInsert_593982(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_593995: Call_ReplicapoolInstanceGroupManagersInsert_593981;
+proc call*(call_579995: Call_ReplicapoolInstanceGroupManagersInsert_579981;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Creates an instance group manager, as well as the instance group and the specified number of instances.
   ## 
-  let valid = call_593995.validator(path, query, header, formData, body)
-  let scheme = call_593995.pickScheme
+  let valid = call_579995.validator(path, query, header, formData, body)
+  let scheme = call_579995.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_593995.url(scheme.get, call_593995.host, call_593995.base,
-                         call_593995.route, valid.getOrDefault("path"),
+  let url = call_579995.url(scheme.get, call_579995.host, call_579995.base,
+                         call_579995.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_593995, url, valid)
+  result = hook(call_579995, url, valid)
 
-proc call*(call_593996: Call_ReplicapoolInstanceGroupManagersInsert_593981;
+proc call*(call_579996: Call_ReplicapoolInstanceGroupManagersInsert_579981;
           zone: string; size: int; project: string; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; key: string = ""; body: JsonNode = nil;
@@ -259,38 +261,38 @@ proc call*(call_593996: Call_ReplicapoolInstanceGroupManagersInsert_593981;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_593997 = newJObject()
-  var query_593998 = newJObject()
-  var body_593999 = newJObject()
-  add(path_593997, "zone", newJString(zone))
-  add(query_593998, "fields", newJString(fields))
-  add(query_593998, "quotaUser", newJString(quotaUser))
-  add(query_593998, "alt", newJString(alt))
-  add(query_593998, "oauth_token", newJString(oauthToken))
-  add(query_593998, "userIp", newJString(userIp))
-  add(query_593998, "key", newJString(key))
-  add(query_593998, "size", newJInt(size))
-  add(path_593997, "project", newJString(project))
+  var path_579997 = newJObject()
+  var query_579998 = newJObject()
+  var body_579999 = newJObject()
+  add(path_579997, "zone", newJString(zone))
+  add(query_579998, "fields", newJString(fields))
+  add(query_579998, "quotaUser", newJString(quotaUser))
+  add(query_579998, "alt", newJString(alt))
+  add(query_579998, "oauth_token", newJString(oauthToken))
+  add(query_579998, "userIp", newJString(userIp))
+  add(query_579998, "key", newJString(key))
+  add(query_579998, "size", newJInt(size))
+  add(path_579997, "project", newJString(project))
   if body != nil:
-    body_593999 = body
-  add(query_593998, "prettyPrint", newJBool(prettyPrint))
-  result = call_593996.call(path_593997, query_593998, nil, nil, body_593999)
+    body_579999 = body
+  add(query_579998, "prettyPrint", newJBool(prettyPrint))
+  result = call_579996.call(path_579997, query_579998, nil, nil, body_579999)
 
-var replicapoolInstanceGroupManagersInsert* = Call_ReplicapoolInstanceGroupManagersInsert_593981(
+var replicapoolInstanceGroupManagersInsert* = Call_ReplicapoolInstanceGroupManagersInsert_579981(
     name: "replicapoolInstanceGroupManagersInsert", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com",
     route: "/{project}/zones/{zone}/instanceGroupManagers",
-    validator: validate_ReplicapoolInstanceGroupManagersInsert_593982,
+    validator: validate_ReplicapoolInstanceGroupManagersInsert_579982,
     base: "/replicapool/v1beta2/projects",
-    url: url_ReplicapoolInstanceGroupManagersInsert_593983,
+    url: url_ReplicapoolInstanceGroupManagersInsert_579983,
     schemes: {Scheme.Https})
 type
-  Call_ReplicapoolInstanceGroupManagersList_593692 = ref object of OpenApiRestCall_593424
-proc url_ReplicapoolInstanceGroupManagersList_593694(protocol: Scheme;
+  Call_ReplicapoolInstanceGroupManagersList_579692 = ref object of OpenApiRestCall_579424
+proc url_ReplicapoolInstanceGroupManagersList_579694(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "project" in path, "`project` is a required path parameter"
   assert "zone" in path, "`zone` is a required path parameter"
@@ -305,7 +307,7 @@ proc url_ReplicapoolInstanceGroupManagersList_593694(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_ReplicapoolInstanceGroupManagersList_593693(path: JsonNode;
+proc validate_ReplicapoolInstanceGroupManagersList_579693(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Retrieves the list of Instance Group Manager resources contained within the specified zone.
   ## 
@@ -318,16 +320,16 @@ proc validate_ReplicapoolInstanceGroupManagersList_593693(path: JsonNode;
   ##          : The Google Developers Console project name.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `zone` field"
-  var valid_593820 = path.getOrDefault("zone")
-  valid_593820 = validateParameter(valid_593820, JString, required = true,
+  var valid_579820 = path.getOrDefault("zone")
+  valid_579820 = validateParameter(valid_579820, JString, required = true,
                                  default = nil)
-  if valid_593820 != nil:
-    section.add "zone", valid_593820
-  var valid_593821 = path.getOrDefault("project")
-  valid_593821 = validateParameter(valid_593821, JString, required = true,
+  if valid_579820 != nil:
+    section.add "zone", valid_579820
+  var valid_579821 = path.getOrDefault("project")
+  valid_579821 = validateParameter(valid_579821, JString, required = true,
                                  default = nil)
-  if valid_593821 != nil:
-    section.add "project", valid_593821
+  if valid_579821 != nil:
+    section.add "project", valid_579821
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -351,56 +353,56 @@ proc validate_ReplicapoolInstanceGroupManagersList_593693(path: JsonNode;
   ##   filter: JString
   ##         : Optional. Filter expression for filtering listed resources.
   section = newJObject()
-  var valid_593822 = query.getOrDefault("fields")
-  valid_593822 = validateParameter(valid_593822, JString, required = false,
+  var valid_579822 = query.getOrDefault("fields")
+  valid_579822 = validateParameter(valid_579822, JString, required = false,
                                  default = nil)
-  if valid_593822 != nil:
-    section.add "fields", valid_593822
-  var valid_593823 = query.getOrDefault("pageToken")
-  valid_593823 = validateParameter(valid_593823, JString, required = false,
+  if valid_579822 != nil:
+    section.add "fields", valid_579822
+  var valid_579823 = query.getOrDefault("pageToken")
+  valid_579823 = validateParameter(valid_579823, JString, required = false,
                                  default = nil)
-  if valid_593823 != nil:
-    section.add "pageToken", valid_593823
-  var valid_593824 = query.getOrDefault("quotaUser")
-  valid_593824 = validateParameter(valid_593824, JString, required = false,
+  if valid_579823 != nil:
+    section.add "pageToken", valid_579823
+  var valid_579824 = query.getOrDefault("quotaUser")
+  valid_579824 = validateParameter(valid_579824, JString, required = false,
                                  default = nil)
-  if valid_593824 != nil:
-    section.add "quotaUser", valid_593824
-  var valid_593838 = query.getOrDefault("alt")
-  valid_593838 = validateParameter(valid_593838, JString, required = false,
+  if valid_579824 != nil:
+    section.add "quotaUser", valid_579824
+  var valid_579838 = query.getOrDefault("alt")
+  valid_579838 = validateParameter(valid_579838, JString, required = false,
                                  default = newJString("json"))
-  if valid_593838 != nil:
-    section.add "alt", valid_593838
-  var valid_593839 = query.getOrDefault("oauth_token")
-  valid_593839 = validateParameter(valid_593839, JString, required = false,
+  if valid_579838 != nil:
+    section.add "alt", valid_579838
+  var valid_579839 = query.getOrDefault("oauth_token")
+  valid_579839 = validateParameter(valid_579839, JString, required = false,
                                  default = nil)
-  if valid_593839 != nil:
-    section.add "oauth_token", valid_593839
-  var valid_593840 = query.getOrDefault("userIp")
-  valid_593840 = validateParameter(valid_593840, JString, required = false,
+  if valid_579839 != nil:
+    section.add "oauth_token", valid_579839
+  var valid_579840 = query.getOrDefault("userIp")
+  valid_579840 = validateParameter(valid_579840, JString, required = false,
                                  default = nil)
-  if valid_593840 != nil:
-    section.add "userIp", valid_593840
-  var valid_593842 = query.getOrDefault("maxResults")
-  valid_593842 = validateParameter(valid_593842, JInt, required = false,
+  if valid_579840 != nil:
+    section.add "userIp", valid_579840
+  var valid_579842 = query.getOrDefault("maxResults")
+  valid_579842 = validateParameter(valid_579842, JInt, required = false,
                                  default = newJInt(500))
-  if valid_593842 != nil:
-    section.add "maxResults", valid_593842
-  var valid_593843 = query.getOrDefault("key")
-  valid_593843 = validateParameter(valid_593843, JString, required = false,
+  if valid_579842 != nil:
+    section.add "maxResults", valid_579842
+  var valid_579843 = query.getOrDefault("key")
+  valid_579843 = validateParameter(valid_579843, JString, required = false,
                                  default = nil)
-  if valid_593843 != nil:
-    section.add "key", valid_593843
-  var valid_593844 = query.getOrDefault("prettyPrint")
-  valid_593844 = validateParameter(valid_593844, JBool, required = false,
+  if valid_579843 != nil:
+    section.add "key", valid_579843
+  var valid_579844 = query.getOrDefault("prettyPrint")
+  valid_579844 = validateParameter(valid_579844, JBool, required = false,
                                  default = newJBool(true))
-  if valid_593844 != nil:
-    section.add "prettyPrint", valid_593844
-  var valid_593845 = query.getOrDefault("filter")
-  valid_593845 = validateParameter(valid_593845, JString, required = false,
+  if valid_579844 != nil:
+    section.add "prettyPrint", valid_579844
+  var valid_579845 = query.getOrDefault("filter")
+  valid_579845 = validateParameter(valid_579845, JString, required = false,
                                  default = nil)
-  if valid_593845 != nil:
-    section.add "filter", valid_593845
+  if valid_579845 != nil:
+    section.add "filter", valid_579845
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -409,21 +411,21 @@ proc validate_ReplicapoolInstanceGroupManagersList_593693(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_593868: Call_ReplicapoolInstanceGroupManagersList_593692;
+proc call*(call_579868: Call_ReplicapoolInstanceGroupManagersList_579692;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Retrieves the list of Instance Group Manager resources contained within the specified zone.
   ## 
-  let valid = call_593868.validator(path, query, header, formData, body)
-  let scheme = call_593868.pickScheme
+  let valid = call_579868.validator(path, query, header, formData, body)
+  let scheme = call_579868.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_593868.url(scheme.get, call_593868.host, call_593868.base,
-                         call_593868.route, valid.getOrDefault("path"),
+  let url = call_579868.url(scheme.get, call_579868.host, call_579868.base,
+                         call_579868.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_593868, url, valid)
+  result = hook(call_579868, url, valid)
 
-proc call*(call_593939: Call_ReplicapoolInstanceGroupManagersList_593692;
+proc call*(call_579939: Call_ReplicapoolInstanceGroupManagersList_579692;
           zone: string; project: string; fields: string = ""; pageToken: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; maxResults: int = 500; key: string = "";
@@ -454,36 +456,36 @@ proc call*(call_593939: Call_ReplicapoolInstanceGroupManagersList_593692;
   ##              : Returns response with indentations and line breaks.
   ##   filter: string
   ##         : Optional. Filter expression for filtering listed resources.
-  var path_593940 = newJObject()
-  var query_593942 = newJObject()
-  add(path_593940, "zone", newJString(zone))
-  add(query_593942, "fields", newJString(fields))
-  add(query_593942, "pageToken", newJString(pageToken))
-  add(query_593942, "quotaUser", newJString(quotaUser))
-  add(query_593942, "alt", newJString(alt))
-  add(query_593942, "oauth_token", newJString(oauthToken))
-  add(query_593942, "userIp", newJString(userIp))
-  add(query_593942, "maxResults", newJInt(maxResults))
-  add(query_593942, "key", newJString(key))
-  add(path_593940, "project", newJString(project))
-  add(query_593942, "prettyPrint", newJBool(prettyPrint))
-  add(query_593942, "filter", newJString(filter))
-  result = call_593939.call(path_593940, query_593942, nil, nil, nil)
+  var path_579940 = newJObject()
+  var query_579942 = newJObject()
+  add(path_579940, "zone", newJString(zone))
+  add(query_579942, "fields", newJString(fields))
+  add(query_579942, "pageToken", newJString(pageToken))
+  add(query_579942, "quotaUser", newJString(quotaUser))
+  add(query_579942, "alt", newJString(alt))
+  add(query_579942, "oauth_token", newJString(oauthToken))
+  add(query_579942, "userIp", newJString(userIp))
+  add(query_579942, "maxResults", newJInt(maxResults))
+  add(query_579942, "key", newJString(key))
+  add(path_579940, "project", newJString(project))
+  add(query_579942, "prettyPrint", newJBool(prettyPrint))
+  add(query_579942, "filter", newJString(filter))
+  result = call_579939.call(path_579940, query_579942, nil, nil, nil)
 
-var replicapoolInstanceGroupManagersList* = Call_ReplicapoolInstanceGroupManagersList_593692(
+var replicapoolInstanceGroupManagersList* = Call_ReplicapoolInstanceGroupManagersList_579692(
     name: "replicapoolInstanceGroupManagersList", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com",
     route: "/{project}/zones/{zone}/instanceGroupManagers",
-    validator: validate_ReplicapoolInstanceGroupManagersList_593693,
+    validator: validate_ReplicapoolInstanceGroupManagersList_579693,
     base: "/replicapool/v1beta2/projects",
-    url: url_ReplicapoolInstanceGroupManagersList_593694, schemes: {Scheme.Https})
+    url: url_ReplicapoolInstanceGroupManagersList_579694, schemes: {Scheme.Https})
 type
-  Call_ReplicapoolInstanceGroupManagersGet_594000 = ref object of OpenApiRestCall_593424
-proc url_ReplicapoolInstanceGroupManagersGet_594002(protocol: Scheme; host: string;
+  Call_ReplicapoolInstanceGroupManagersGet_580000 = ref object of OpenApiRestCall_579424
+proc url_ReplicapoolInstanceGroupManagersGet_580002(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "project" in path, "`project` is a required path parameter"
   assert "zone" in path, "`zone` is a required path parameter"
@@ -501,7 +503,7 @@ proc url_ReplicapoolInstanceGroupManagersGet_594002(protocol: Scheme; host: stri
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_ReplicapoolInstanceGroupManagersGet_594001(path: JsonNode;
+proc validate_ReplicapoolInstanceGroupManagersGet_580001(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Returns the specified Instance Group Manager resource.
   ## 
@@ -516,21 +518,21 @@ proc validate_ReplicapoolInstanceGroupManagersGet_594001(path: JsonNode;
   ##          : The Google Developers Console project name.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `zone` field"
-  var valid_594003 = path.getOrDefault("zone")
-  valid_594003 = validateParameter(valid_594003, JString, required = true,
+  var valid_580003 = path.getOrDefault("zone")
+  valid_580003 = validateParameter(valid_580003, JString, required = true,
                                  default = nil)
-  if valid_594003 != nil:
-    section.add "zone", valid_594003
-  var valid_594004 = path.getOrDefault("instanceGroupManager")
-  valid_594004 = validateParameter(valid_594004, JString, required = true,
+  if valid_580003 != nil:
+    section.add "zone", valid_580003
+  var valid_580004 = path.getOrDefault("instanceGroupManager")
+  valid_580004 = validateParameter(valid_580004, JString, required = true,
                                  default = nil)
-  if valid_594004 != nil:
-    section.add "instanceGroupManager", valid_594004
-  var valid_594005 = path.getOrDefault("project")
-  valid_594005 = validateParameter(valid_594005, JString, required = true,
+  if valid_580004 != nil:
+    section.add "instanceGroupManager", valid_580004
+  var valid_580005 = path.getOrDefault("project")
+  valid_580005 = validateParameter(valid_580005, JString, required = true,
                                  default = nil)
-  if valid_594005 != nil:
-    section.add "project", valid_594005
+  if valid_580005 != nil:
+    section.add "project", valid_580005
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -548,41 +550,41 @@ proc validate_ReplicapoolInstanceGroupManagersGet_594001(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_594006 = query.getOrDefault("fields")
-  valid_594006 = validateParameter(valid_594006, JString, required = false,
+  var valid_580006 = query.getOrDefault("fields")
+  valid_580006 = validateParameter(valid_580006, JString, required = false,
                                  default = nil)
-  if valid_594006 != nil:
-    section.add "fields", valid_594006
-  var valid_594007 = query.getOrDefault("quotaUser")
-  valid_594007 = validateParameter(valid_594007, JString, required = false,
+  if valid_580006 != nil:
+    section.add "fields", valid_580006
+  var valid_580007 = query.getOrDefault("quotaUser")
+  valid_580007 = validateParameter(valid_580007, JString, required = false,
                                  default = nil)
-  if valid_594007 != nil:
-    section.add "quotaUser", valid_594007
-  var valid_594008 = query.getOrDefault("alt")
-  valid_594008 = validateParameter(valid_594008, JString, required = false,
+  if valid_580007 != nil:
+    section.add "quotaUser", valid_580007
+  var valid_580008 = query.getOrDefault("alt")
+  valid_580008 = validateParameter(valid_580008, JString, required = false,
                                  default = newJString("json"))
-  if valid_594008 != nil:
-    section.add "alt", valid_594008
-  var valid_594009 = query.getOrDefault("oauth_token")
-  valid_594009 = validateParameter(valid_594009, JString, required = false,
+  if valid_580008 != nil:
+    section.add "alt", valid_580008
+  var valid_580009 = query.getOrDefault("oauth_token")
+  valid_580009 = validateParameter(valid_580009, JString, required = false,
                                  default = nil)
-  if valid_594009 != nil:
-    section.add "oauth_token", valid_594009
-  var valid_594010 = query.getOrDefault("userIp")
-  valid_594010 = validateParameter(valid_594010, JString, required = false,
+  if valid_580009 != nil:
+    section.add "oauth_token", valid_580009
+  var valid_580010 = query.getOrDefault("userIp")
+  valid_580010 = validateParameter(valid_580010, JString, required = false,
                                  default = nil)
-  if valid_594010 != nil:
-    section.add "userIp", valid_594010
-  var valid_594011 = query.getOrDefault("key")
-  valid_594011 = validateParameter(valid_594011, JString, required = false,
+  if valid_580010 != nil:
+    section.add "userIp", valid_580010
+  var valid_580011 = query.getOrDefault("key")
+  valid_580011 = validateParameter(valid_580011, JString, required = false,
                                  default = nil)
-  if valid_594011 != nil:
-    section.add "key", valid_594011
-  var valid_594012 = query.getOrDefault("prettyPrint")
-  valid_594012 = validateParameter(valid_594012, JBool, required = false,
+  if valid_580011 != nil:
+    section.add "key", valid_580011
+  var valid_580012 = query.getOrDefault("prettyPrint")
+  valid_580012 = validateParameter(valid_580012, JBool, required = false,
                                  default = newJBool(true))
-  if valid_594012 != nil:
-    section.add "prettyPrint", valid_594012
+  if valid_580012 != nil:
+    section.add "prettyPrint", valid_580012
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -591,21 +593,21 @@ proc validate_ReplicapoolInstanceGroupManagersGet_594001(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_594013: Call_ReplicapoolInstanceGroupManagersGet_594000;
+proc call*(call_580013: Call_ReplicapoolInstanceGroupManagersGet_580000;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Returns the specified Instance Group Manager resource.
   ## 
-  let valid = call_594013.validator(path, query, header, formData, body)
-  let scheme = call_594013.pickScheme
+  let valid = call_580013.validator(path, query, header, formData, body)
+  let scheme = call_580013.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_594013.url(scheme.get, call_594013.host, call_594013.base,
-                         call_594013.route, valid.getOrDefault("path"),
+  let url = call_580013.url(scheme.get, call_580013.host, call_580013.base,
+                         call_580013.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_594013, url, valid)
+  result = hook(call_580013, url, valid)
 
-proc call*(call_594014: Call_ReplicapoolInstanceGroupManagersGet_594000;
+proc call*(call_580014: Call_ReplicapoolInstanceGroupManagersGet_580000;
           zone: string; instanceGroupManager: string; project: string;
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           oauthToken: string = ""; userIp: string = ""; key: string = "";
@@ -632,33 +634,33 @@ proc call*(call_594014: Call_ReplicapoolInstanceGroupManagersGet_594000;
   ##          : The Google Developers Console project name.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_594015 = newJObject()
-  var query_594016 = newJObject()
-  add(path_594015, "zone", newJString(zone))
-  add(query_594016, "fields", newJString(fields))
-  add(query_594016, "quotaUser", newJString(quotaUser))
-  add(path_594015, "instanceGroupManager", newJString(instanceGroupManager))
-  add(query_594016, "alt", newJString(alt))
-  add(query_594016, "oauth_token", newJString(oauthToken))
-  add(query_594016, "userIp", newJString(userIp))
-  add(query_594016, "key", newJString(key))
-  add(path_594015, "project", newJString(project))
-  add(query_594016, "prettyPrint", newJBool(prettyPrint))
-  result = call_594014.call(path_594015, query_594016, nil, nil, nil)
+  var path_580015 = newJObject()
+  var query_580016 = newJObject()
+  add(path_580015, "zone", newJString(zone))
+  add(query_580016, "fields", newJString(fields))
+  add(query_580016, "quotaUser", newJString(quotaUser))
+  add(path_580015, "instanceGroupManager", newJString(instanceGroupManager))
+  add(query_580016, "alt", newJString(alt))
+  add(query_580016, "oauth_token", newJString(oauthToken))
+  add(query_580016, "userIp", newJString(userIp))
+  add(query_580016, "key", newJString(key))
+  add(path_580015, "project", newJString(project))
+  add(query_580016, "prettyPrint", newJBool(prettyPrint))
+  result = call_580014.call(path_580015, query_580016, nil, nil, nil)
 
-var replicapoolInstanceGroupManagersGet* = Call_ReplicapoolInstanceGroupManagersGet_594000(
+var replicapoolInstanceGroupManagersGet* = Call_ReplicapoolInstanceGroupManagersGet_580000(
     name: "replicapoolInstanceGroupManagersGet", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/{project}/zones/{zone}/instanceGroupManagers/{instanceGroupManager}",
-    validator: validate_ReplicapoolInstanceGroupManagersGet_594001,
+    validator: validate_ReplicapoolInstanceGroupManagersGet_580001,
     base: "/replicapool/v1beta2/projects",
-    url: url_ReplicapoolInstanceGroupManagersGet_594002, schemes: {Scheme.Https})
+    url: url_ReplicapoolInstanceGroupManagersGet_580002, schemes: {Scheme.Https})
 type
-  Call_ReplicapoolInstanceGroupManagersDelete_594017 = ref object of OpenApiRestCall_593424
-proc url_ReplicapoolInstanceGroupManagersDelete_594019(protocol: Scheme;
+  Call_ReplicapoolInstanceGroupManagersDelete_580017 = ref object of OpenApiRestCall_579424
+proc url_ReplicapoolInstanceGroupManagersDelete_580019(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "project" in path, "`project` is a required path parameter"
   assert "zone" in path, "`zone` is a required path parameter"
@@ -676,7 +678,7 @@ proc url_ReplicapoolInstanceGroupManagersDelete_594019(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_ReplicapoolInstanceGroupManagersDelete_594018(path: JsonNode;
+proc validate_ReplicapoolInstanceGroupManagersDelete_580018(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Deletes the instance group manager and all instances contained within. If you'd like to delete the manager without deleting the instances, you must first abandon the instances to remove them from the group.
   ## 
@@ -691,21 +693,21 @@ proc validate_ReplicapoolInstanceGroupManagersDelete_594018(path: JsonNode;
   ##          : The Google Developers Console project name.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `zone` field"
-  var valid_594020 = path.getOrDefault("zone")
-  valid_594020 = validateParameter(valid_594020, JString, required = true,
+  var valid_580020 = path.getOrDefault("zone")
+  valid_580020 = validateParameter(valid_580020, JString, required = true,
                                  default = nil)
-  if valid_594020 != nil:
-    section.add "zone", valid_594020
-  var valid_594021 = path.getOrDefault("instanceGroupManager")
-  valid_594021 = validateParameter(valid_594021, JString, required = true,
+  if valid_580020 != nil:
+    section.add "zone", valid_580020
+  var valid_580021 = path.getOrDefault("instanceGroupManager")
+  valid_580021 = validateParameter(valid_580021, JString, required = true,
                                  default = nil)
-  if valid_594021 != nil:
-    section.add "instanceGroupManager", valid_594021
-  var valid_594022 = path.getOrDefault("project")
-  valid_594022 = validateParameter(valid_594022, JString, required = true,
+  if valid_580021 != nil:
+    section.add "instanceGroupManager", valid_580021
+  var valid_580022 = path.getOrDefault("project")
+  valid_580022 = validateParameter(valid_580022, JString, required = true,
                                  default = nil)
-  if valid_594022 != nil:
-    section.add "project", valid_594022
+  if valid_580022 != nil:
+    section.add "project", valid_580022
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -723,41 +725,41 @@ proc validate_ReplicapoolInstanceGroupManagersDelete_594018(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_594023 = query.getOrDefault("fields")
-  valid_594023 = validateParameter(valid_594023, JString, required = false,
+  var valid_580023 = query.getOrDefault("fields")
+  valid_580023 = validateParameter(valid_580023, JString, required = false,
                                  default = nil)
-  if valid_594023 != nil:
-    section.add "fields", valid_594023
-  var valid_594024 = query.getOrDefault("quotaUser")
-  valid_594024 = validateParameter(valid_594024, JString, required = false,
+  if valid_580023 != nil:
+    section.add "fields", valid_580023
+  var valid_580024 = query.getOrDefault("quotaUser")
+  valid_580024 = validateParameter(valid_580024, JString, required = false,
                                  default = nil)
-  if valid_594024 != nil:
-    section.add "quotaUser", valid_594024
-  var valid_594025 = query.getOrDefault("alt")
-  valid_594025 = validateParameter(valid_594025, JString, required = false,
+  if valid_580024 != nil:
+    section.add "quotaUser", valid_580024
+  var valid_580025 = query.getOrDefault("alt")
+  valid_580025 = validateParameter(valid_580025, JString, required = false,
                                  default = newJString("json"))
-  if valid_594025 != nil:
-    section.add "alt", valid_594025
-  var valid_594026 = query.getOrDefault("oauth_token")
-  valid_594026 = validateParameter(valid_594026, JString, required = false,
+  if valid_580025 != nil:
+    section.add "alt", valid_580025
+  var valid_580026 = query.getOrDefault("oauth_token")
+  valid_580026 = validateParameter(valid_580026, JString, required = false,
                                  default = nil)
-  if valid_594026 != nil:
-    section.add "oauth_token", valid_594026
-  var valid_594027 = query.getOrDefault("userIp")
-  valid_594027 = validateParameter(valid_594027, JString, required = false,
+  if valid_580026 != nil:
+    section.add "oauth_token", valid_580026
+  var valid_580027 = query.getOrDefault("userIp")
+  valid_580027 = validateParameter(valid_580027, JString, required = false,
                                  default = nil)
-  if valid_594027 != nil:
-    section.add "userIp", valid_594027
-  var valid_594028 = query.getOrDefault("key")
-  valid_594028 = validateParameter(valid_594028, JString, required = false,
+  if valid_580027 != nil:
+    section.add "userIp", valid_580027
+  var valid_580028 = query.getOrDefault("key")
+  valid_580028 = validateParameter(valid_580028, JString, required = false,
                                  default = nil)
-  if valid_594028 != nil:
-    section.add "key", valid_594028
-  var valid_594029 = query.getOrDefault("prettyPrint")
-  valid_594029 = validateParameter(valid_594029, JBool, required = false,
+  if valid_580028 != nil:
+    section.add "key", valid_580028
+  var valid_580029 = query.getOrDefault("prettyPrint")
+  valid_580029 = validateParameter(valid_580029, JBool, required = false,
                                  default = newJBool(true))
-  if valid_594029 != nil:
-    section.add "prettyPrint", valid_594029
+  if valid_580029 != nil:
+    section.add "prettyPrint", valid_580029
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -766,21 +768,21 @@ proc validate_ReplicapoolInstanceGroupManagersDelete_594018(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_594030: Call_ReplicapoolInstanceGroupManagersDelete_594017;
+proc call*(call_580030: Call_ReplicapoolInstanceGroupManagersDelete_580017;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Deletes the instance group manager and all instances contained within. If you'd like to delete the manager without deleting the instances, you must first abandon the instances to remove them from the group.
   ## 
-  let valid = call_594030.validator(path, query, header, formData, body)
-  let scheme = call_594030.pickScheme
+  let valid = call_580030.validator(path, query, header, formData, body)
+  let scheme = call_580030.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_594030.url(scheme.get, call_594030.host, call_594030.base,
-                         call_594030.route, valid.getOrDefault("path"),
+  let url = call_580030.url(scheme.get, call_580030.host, call_580030.base,
+                         call_580030.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_594030, url, valid)
+  result = hook(call_580030, url, valid)
 
-proc call*(call_594031: Call_ReplicapoolInstanceGroupManagersDelete_594017;
+proc call*(call_580031: Call_ReplicapoolInstanceGroupManagersDelete_580017;
           zone: string; instanceGroupManager: string; project: string;
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           oauthToken: string = ""; userIp: string = ""; key: string = "";
@@ -807,35 +809,35 @@ proc call*(call_594031: Call_ReplicapoolInstanceGroupManagersDelete_594017;
   ##          : The Google Developers Console project name.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_594032 = newJObject()
-  var query_594033 = newJObject()
-  add(path_594032, "zone", newJString(zone))
-  add(query_594033, "fields", newJString(fields))
-  add(query_594033, "quotaUser", newJString(quotaUser))
-  add(path_594032, "instanceGroupManager", newJString(instanceGroupManager))
-  add(query_594033, "alt", newJString(alt))
-  add(query_594033, "oauth_token", newJString(oauthToken))
-  add(query_594033, "userIp", newJString(userIp))
-  add(query_594033, "key", newJString(key))
-  add(path_594032, "project", newJString(project))
-  add(query_594033, "prettyPrint", newJBool(prettyPrint))
-  result = call_594031.call(path_594032, query_594033, nil, nil, nil)
+  var path_580032 = newJObject()
+  var query_580033 = newJObject()
+  add(path_580032, "zone", newJString(zone))
+  add(query_580033, "fields", newJString(fields))
+  add(query_580033, "quotaUser", newJString(quotaUser))
+  add(path_580032, "instanceGroupManager", newJString(instanceGroupManager))
+  add(query_580033, "alt", newJString(alt))
+  add(query_580033, "oauth_token", newJString(oauthToken))
+  add(query_580033, "userIp", newJString(userIp))
+  add(query_580033, "key", newJString(key))
+  add(path_580032, "project", newJString(project))
+  add(query_580033, "prettyPrint", newJBool(prettyPrint))
+  result = call_580031.call(path_580032, query_580033, nil, nil, nil)
 
-var replicapoolInstanceGroupManagersDelete* = Call_ReplicapoolInstanceGroupManagersDelete_594017(
+var replicapoolInstanceGroupManagersDelete* = Call_ReplicapoolInstanceGroupManagersDelete_580017(
     name: "replicapoolInstanceGroupManagersDelete", meth: HttpMethod.HttpDelete,
     host: "www.googleapis.com", route: "/{project}/zones/{zone}/instanceGroupManagers/{instanceGroupManager}",
-    validator: validate_ReplicapoolInstanceGroupManagersDelete_594018,
+    validator: validate_ReplicapoolInstanceGroupManagersDelete_580018,
     base: "/replicapool/v1beta2/projects",
-    url: url_ReplicapoolInstanceGroupManagersDelete_594019,
+    url: url_ReplicapoolInstanceGroupManagersDelete_580019,
     schemes: {Scheme.Https})
 type
-  Call_ReplicapoolInstanceGroupManagersAbandonInstances_594034 = ref object of OpenApiRestCall_593424
-proc url_ReplicapoolInstanceGroupManagersAbandonInstances_594036(
+  Call_ReplicapoolInstanceGroupManagersAbandonInstances_580034 = ref object of OpenApiRestCall_579424
+proc url_ReplicapoolInstanceGroupManagersAbandonInstances_580036(
     protocol: Scheme; host: string; base: string; route: string; path: JsonNode;
     query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "project" in path, "`project` is a required path parameter"
   assert "zone" in path, "`zone` is a required path parameter"
@@ -854,7 +856,7 @@ proc url_ReplicapoolInstanceGroupManagersAbandonInstances_594036(
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_ReplicapoolInstanceGroupManagersAbandonInstances_594035(
+proc validate_ReplicapoolInstanceGroupManagersAbandonInstances_580035(
     path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
     body: JsonNode): JsonNode =
   ## Removes the specified instances from the managed instance group, and from any target pools of which they were members, without deleting the instances.
@@ -870,21 +872,21 @@ proc validate_ReplicapoolInstanceGroupManagersAbandonInstances_594035(
   ##          : The Google Developers Console project name.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `zone` field"
-  var valid_594037 = path.getOrDefault("zone")
-  valid_594037 = validateParameter(valid_594037, JString, required = true,
+  var valid_580037 = path.getOrDefault("zone")
+  valid_580037 = validateParameter(valid_580037, JString, required = true,
                                  default = nil)
-  if valid_594037 != nil:
-    section.add "zone", valid_594037
-  var valid_594038 = path.getOrDefault("instanceGroupManager")
-  valid_594038 = validateParameter(valid_594038, JString, required = true,
+  if valid_580037 != nil:
+    section.add "zone", valid_580037
+  var valid_580038 = path.getOrDefault("instanceGroupManager")
+  valid_580038 = validateParameter(valid_580038, JString, required = true,
                                  default = nil)
-  if valid_594038 != nil:
-    section.add "instanceGroupManager", valid_594038
-  var valid_594039 = path.getOrDefault("project")
-  valid_594039 = validateParameter(valid_594039, JString, required = true,
+  if valid_580038 != nil:
+    section.add "instanceGroupManager", valid_580038
+  var valid_580039 = path.getOrDefault("project")
+  valid_580039 = validateParameter(valid_580039, JString, required = true,
                                  default = nil)
-  if valid_594039 != nil:
-    section.add "project", valid_594039
+  if valid_580039 != nil:
+    section.add "project", valid_580039
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -902,41 +904,41 @@ proc validate_ReplicapoolInstanceGroupManagersAbandonInstances_594035(
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_594040 = query.getOrDefault("fields")
-  valid_594040 = validateParameter(valid_594040, JString, required = false,
+  var valid_580040 = query.getOrDefault("fields")
+  valid_580040 = validateParameter(valid_580040, JString, required = false,
                                  default = nil)
-  if valid_594040 != nil:
-    section.add "fields", valid_594040
-  var valid_594041 = query.getOrDefault("quotaUser")
-  valid_594041 = validateParameter(valid_594041, JString, required = false,
+  if valid_580040 != nil:
+    section.add "fields", valid_580040
+  var valid_580041 = query.getOrDefault("quotaUser")
+  valid_580041 = validateParameter(valid_580041, JString, required = false,
                                  default = nil)
-  if valid_594041 != nil:
-    section.add "quotaUser", valid_594041
-  var valid_594042 = query.getOrDefault("alt")
-  valid_594042 = validateParameter(valid_594042, JString, required = false,
+  if valid_580041 != nil:
+    section.add "quotaUser", valid_580041
+  var valid_580042 = query.getOrDefault("alt")
+  valid_580042 = validateParameter(valid_580042, JString, required = false,
                                  default = newJString("json"))
-  if valid_594042 != nil:
-    section.add "alt", valid_594042
-  var valid_594043 = query.getOrDefault("oauth_token")
-  valid_594043 = validateParameter(valid_594043, JString, required = false,
+  if valid_580042 != nil:
+    section.add "alt", valid_580042
+  var valid_580043 = query.getOrDefault("oauth_token")
+  valid_580043 = validateParameter(valid_580043, JString, required = false,
                                  default = nil)
-  if valid_594043 != nil:
-    section.add "oauth_token", valid_594043
-  var valid_594044 = query.getOrDefault("userIp")
-  valid_594044 = validateParameter(valid_594044, JString, required = false,
+  if valid_580043 != nil:
+    section.add "oauth_token", valid_580043
+  var valid_580044 = query.getOrDefault("userIp")
+  valid_580044 = validateParameter(valid_580044, JString, required = false,
                                  default = nil)
-  if valid_594044 != nil:
-    section.add "userIp", valid_594044
-  var valid_594045 = query.getOrDefault("key")
-  valid_594045 = validateParameter(valid_594045, JString, required = false,
+  if valid_580044 != nil:
+    section.add "userIp", valid_580044
+  var valid_580045 = query.getOrDefault("key")
+  valid_580045 = validateParameter(valid_580045, JString, required = false,
                                  default = nil)
-  if valid_594045 != nil:
-    section.add "key", valid_594045
-  var valid_594046 = query.getOrDefault("prettyPrint")
-  valid_594046 = validateParameter(valid_594046, JBool, required = false,
+  if valid_580045 != nil:
+    section.add "key", valid_580045
+  var valid_580046 = query.getOrDefault("prettyPrint")
+  valid_580046 = validateParameter(valid_580046, JBool, required = false,
                                  default = newJBool(true))
-  if valid_594046 != nil:
-    section.add "prettyPrint", valid_594046
+  if valid_580046 != nil:
+    section.add "prettyPrint", valid_580046
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -948,21 +950,21 @@ proc validate_ReplicapoolInstanceGroupManagersAbandonInstances_594035(
   if body != nil:
     result.add "body", body
 
-proc call*(call_594048: Call_ReplicapoolInstanceGroupManagersAbandonInstances_594034;
+proc call*(call_580048: Call_ReplicapoolInstanceGroupManagersAbandonInstances_580034;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Removes the specified instances from the managed instance group, and from any target pools of which they were members, without deleting the instances.
   ## 
-  let valid = call_594048.validator(path, query, header, formData, body)
-  let scheme = call_594048.pickScheme
+  let valid = call_580048.validator(path, query, header, formData, body)
+  let scheme = call_580048.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_594048.url(scheme.get, call_594048.host, call_594048.base,
-                         call_594048.route, valid.getOrDefault("path"),
+  let url = call_580048.url(scheme.get, call_580048.host, call_580048.base,
+                         call_580048.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_594048, url, valid)
+  result = hook(call_580048, url, valid)
 
-proc call*(call_594049: Call_ReplicapoolInstanceGroupManagersAbandonInstances_594034;
+proc call*(call_580049: Call_ReplicapoolInstanceGroupManagersAbandonInstances_580034;
           zone: string; instanceGroupManager: string; project: string;
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           oauthToken: string = ""; userIp: string = ""; key: string = "";
@@ -990,37 +992,37 @@ proc call*(call_594049: Call_ReplicapoolInstanceGroupManagersAbandonInstances_59
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_594050 = newJObject()
-  var query_594051 = newJObject()
-  var body_594052 = newJObject()
-  add(path_594050, "zone", newJString(zone))
-  add(query_594051, "fields", newJString(fields))
-  add(query_594051, "quotaUser", newJString(quotaUser))
-  add(path_594050, "instanceGroupManager", newJString(instanceGroupManager))
-  add(query_594051, "alt", newJString(alt))
-  add(query_594051, "oauth_token", newJString(oauthToken))
-  add(query_594051, "userIp", newJString(userIp))
-  add(query_594051, "key", newJString(key))
-  add(path_594050, "project", newJString(project))
+  var path_580050 = newJObject()
+  var query_580051 = newJObject()
+  var body_580052 = newJObject()
+  add(path_580050, "zone", newJString(zone))
+  add(query_580051, "fields", newJString(fields))
+  add(query_580051, "quotaUser", newJString(quotaUser))
+  add(path_580050, "instanceGroupManager", newJString(instanceGroupManager))
+  add(query_580051, "alt", newJString(alt))
+  add(query_580051, "oauth_token", newJString(oauthToken))
+  add(query_580051, "userIp", newJString(userIp))
+  add(query_580051, "key", newJString(key))
+  add(path_580050, "project", newJString(project))
   if body != nil:
-    body_594052 = body
-  add(query_594051, "prettyPrint", newJBool(prettyPrint))
-  result = call_594049.call(path_594050, query_594051, nil, nil, body_594052)
+    body_580052 = body
+  add(query_580051, "prettyPrint", newJBool(prettyPrint))
+  result = call_580049.call(path_580050, query_580051, nil, nil, body_580052)
 
-var replicapoolInstanceGroupManagersAbandonInstances* = Call_ReplicapoolInstanceGroupManagersAbandonInstances_594034(
+var replicapoolInstanceGroupManagersAbandonInstances* = Call_ReplicapoolInstanceGroupManagersAbandonInstances_580034(
     name: "replicapoolInstanceGroupManagersAbandonInstances",
     meth: HttpMethod.HttpPost, host: "www.googleapis.com", route: "/{project}/zones/{zone}/instanceGroupManagers/{instanceGroupManager}/abandonInstances",
-    validator: validate_ReplicapoolInstanceGroupManagersAbandonInstances_594035,
+    validator: validate_ReplicapoolInstanceGroupManagersAbandonInstances_580035,
     base: "/replicapool/v1beta2/projects",
-    url: url_ReplicapoolInstanceGroupManagersAbandonInstances_594036,
+    url: url_ReplicapoolInstanceGroupManagersAbandonInstances_580036,
     schemes: {Scheme.Https})
 type
-  Call_ReplicapoolInstanceGroupManagersDeleteInstances_594053 = ref object of OpenApiRestCall_593424
-proc url_ReplicapoolInstanceGroupManagersDeleteInstances_594055(protocol: Scheme;
+  Call_ReplicapoolInstanceGroupManagersDeleteInstances_580053 = ref object of OpenApiRestCall_579424
+proc url_ReplicapoolInstanceGroupManagersDeleteInstances_580055(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "project" in path, "`project` is a required path parameter"
   assert "zone" in path, "`zone` is a required path parameter"
@@ -1039,7 +1041,7 @@ proc url_ReplicapoolInstanceGroupManagersDeleteInstances_594055(protocol: Scheme
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_ReplicapoolInstanceGroupManagersDeleteInstances_594054(
+proc validate_ReplicapoolInstanceGroupManagersDeleteInstances_580054(
     path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
     body: JsonNode): JsonNode =
   ## Deletes the specified instances. The instances are deleted, then removed from the instance group and any target pools of which they were a member. The targetSize of the instance group manager is reduced by the number of instances deleted.
@@ -1055,21 +1057,21 @@ proc validate_ReplicapoolInstanceGroupManagersDeleteInstances_594054(
   ##          : The Google Developers Console project name.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `zone` field"
-  var valid_594056 = path.getOrDefault("zone")
-  valid_594056 = validateParameter(valid_594056, JString, required = true,
+  var valid_580056 = path.getOrDefault("zone")
+  valid_580056 = validateParameter(valid_580056, JString, required = true,
                                  default = nil)
-  if valid_594056 != nil:
-    section.add "zone", valid_594056
-  var valid_594057 = path.getOrDefault("instanceGroupManager")
-  valid_594057 = validateParameter(valid_594057, JString, required = true,
+  if valid_580056 != nil:
+    section.add "zone", valid_580056
+  var valid_580057 = path.getOrDefault("instanceGroupManager")
+  valid_580057 = validateParameter(valid_580057, JString, required = true,
                                  default = nil)
-  if valid_594057 != nil:
-    section.add "instanceGroupManager", valid_594057
-  var valid_594058 = path.getOrDefault("project")
-  valid_594058 = validateParameter(valid_594058, JString, required = true,
+  if valid_580057 != nil:
+    section.add "instanceGroupManager", valid_580057
+  var valid_580058 = path.getOrDefault("project")
+  valid_580058 = validateParameter(valid_580058, JString, required = true,
                                  default = nil)
-  if valid_594058 != nil:
-    section.add "project", valid_594058
+  if valid_580058 != nil:
+    section.add "project", valid_580058
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -1087,41 +1089,41 @@ proc validate_ReplicapoolInstanceGroupManagersDeleteInstances_594054(
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_594059 = query.getOrDefault("fields")
-  valid_594059 = validateParameter(valid_594059, JString, required = false,
+  var valid_580059 = query.getOrDefault("fields")
+  valid_580059 = validateParameter(valid_580059, JString, required = false,
                                  default = nil)
-  if valid_594059 != nil:
-    section.add "fields", valid_594059
-  var valid_594060 = query.getOrDefault("quotaUser")
-  valid_594060 = validateParameter(valid_594060, JString, required = false,
+  if valid_580059 != nil:
+    section.add "fields", valid_580059
+  var valid_580060 = query.getOrDefault("quotaUser")
+  valid_580060 = validateParameter(valid_580060, JString, required = false,
                                  default = nil)
-  if valid_594060 != nil:
-    section.add "quotaUser", valid_594060
-  var valid_594061 = query.getOrDefault("alt")
-  valid_594061 = validateParameter(valid_594061, JString, required = false,
+  if valid_580060 != nil:
+    section.add "quotaUser", valid_580060
+  var valid_580061 = query.getOrDefault("alt")
+  valid_580061 = validateParameter(valid_580061, JString, required = false,
                                  default = newJString("json"))
-  if valid_594061 != nil:
-    section.add "alt", valid_594061
-  var valid_594062 = query.getOrDefault("oauth_token")
-  valid_594062 = validateParameter(valid_594062, JString, required = false,
+  if valid_580061 != nil:
+    section.add "alt", valid_580061
+  var valid_580062 = query.getOrDefault("oauth_token")
+  valid_580062 = validateParameter(valid_580062, JString, required = false,
                                  default = nil)
-  if valid_594062 != nil:
-    section.add "oauth_token", valid_594062
-  var valid_594063 = query.getOrDefault("userIp")
-  valid_594063 = validateParameter(valid_594063, JString, required = false,
+  if valid_580062 != nil:
+    section.add "oauth_token", valid_580062
+  var valid_580063 = query.getOrDefault("userIp")
+  valid_580063 = validateParameter(valid_580063, JString, required = false,
                                  default = nil)
-  if valid_594063 != nil:
-    section.add "userIp", valid_594063
-  var valid_594064 = query.getOrDefault("key")
-  valid_594064 = validateParameter(valid_594064, JString, required = false,
+  if valid_580063 != nil:
+    section.add "userIp", valid_580063
+  var valid_580064 = query.getOrDefault("key")
+  valid_580064 = validateParameter(valid_580064, JString, required = false,
                                  default = nil)
-  if valid_594064 != nil:
-    section.add "key", valid_594064
-  var valid_594065 = query.getOrDefault("prettyPrint")
-  valid_594065 = validateParameter(valid_594065, JBool, required = false,
+  if valid_580064 != nil:
+    section.add "key", valid_580064
+  var valid_580065 = query.getOrDefault("prettyPrint")
+  valid_580065 = validateParameter(valid_580065, JBool, required = false,
                                  default = newJBool(true))
-  if valid_594065 != nil:
-    section.add "prettyPrint", valid_594065
+  if valid_580065 != nil:
+    section.add "prettyPrint", valid_580065
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1133,21 +1135,21 @@ proc validate_ReplicapoolInstanceGroupManagersDeleteInstances_594054(
   if body != nil:
     result.add "body", body
 
-proc call*(call_594067: Call_ReplicapoolInstanceGroupManagersDeleteInstances_594053;
+proc call*(call_580067: Call_ReplicapoolInstanceGroupManagersDeleteInstances_580053;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Deletes the specified instances. The instances are deleted, then removed from the instance group and any target pools of which they were a member. The targetSize of the instance group manager is reduced by the number of instances deleted.
   ## 
-  let valid = call_594067.validator(path, query, header, formData, body)
-  let scheme = call_594067.pickScheme
+  let valid = call_580067.validator(path, query, header, formData, body)
+  let scheme = call_580067.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_594067.url(scheme.get, call_594067.host, call_594067.base,
-                         call_594067.route, valid.getOrDefault("path"),
+  let url = call_580067.url(scheme.get, call_580067.host, call_580067.base,
+                         call_580067.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_594067, url, valid)
+  result = hook(call_580067, url, valid)
 
-proc call*(call_594068: Call_ReplicapoolInstanceGroupManagersDeleteInstances_594053;
+proc call*(call_580068: Call_ReplicapoolInstanceGroupManagersDeleteInstances_580053;
           zone: string; instanceGroupManager: string; project: string;
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           oauthToken: string = ""; userIp: string = ""; key: string = "";
@@ -1175,38 +1177,38 @@ proc call*(call_594068: Call_ReplicapoolInstanceGroupManagersDeleteInstances_594
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_594069 = newJObject()
-  var query_594070 = newJObject()
-  var body_594071 = newJObject()
-  add(path_594069, "zone", newJString(zone))
-  add(query_594070, "fields", newJString(fields))
-  add(query_594070, "quotaUser", newJString(quotaUser))
-  add(path_594069, "instanceGroupManager", newJString(instanceGroupManager))
-  add(query_594070, "alt", newJString(alt))
-  add(query_594070, "oauth_token", newJString(oauthToken))
-  add(query_594070, "userIp", newJString(userIp))
-  add(query_594070, "key", newJString(key))
-  add(path_594069, "project", newJString(project))
+  var path_580069 = newJObject()
+  var query_580070 = newJObject()
+  var body_580071 = newJObject()
+  add(path_580069, "zone", newJString(zone))
+  add(query_580070, "fields", newJString(fields))
+  add(query_580070, "quotaUser", newJString(quotaUser))
+  add(path_580069, "instanceGroupManager", newJString(instanceGroupManager))
+  add(query_580070, "alt", newJString(alt))
+  add(query_580070, "oauth_token", newJString(oauthToken))
+  add(query_580070, "userIp", newJString(userIp))
+  add(query_580070, "key", newJString(key))
+  add(path_580069, "project", newJString(project))
   if body != nil:
-    body_594071 = body
-  add(query_594070, "prettyPrint", newJBool(prettyPrint))
-  result = call_594068.call(path_594069, query_594070, nil, nil, body_594071)
+    body_580071 = body
+  add(query_580070, "prettyPrint", newJBool(prettyPrint))
+  result = call_580068.call(path_580069, query_580070, nil, nil, body_580071)
 
-var replicapoolInstanceGroupManagersDeleteInstances* = Call_ReplicapoolInstanceGroupManagersDeleteInstances_594053(
+var replicapoolInstanceGroupManagersDeleteInstances* = Call_ReplicapoolInstanceGroupManagersDeleteInstances_580053(
     name: "replicapoolInstanceGroupManagersDeleteInstances",
     meth: HttpMethod.HttpPost, host: "www.googleapis.com", route: "/{project}/zones/{zone}/instanceGroupManagers/{instanceGroupManager}/deleteInstances",
-    validator: validate_ReplicapoolInstanceGroupManagersDeleteInstances_594054,
+    validator: validate_ReplicapoolInstanceGroupManagersDeleteInstances_580054,
     base: "/replicapool/v1beta2/projects",
-    url: url_ReplicapoolInstanceGroupManagersDeleteInstances_594055,
+    url: url_ReplicapoolInstanceGroupManagersDeleteInstances_580055,
     schemes: {Scheme.Https})
 type
-  Call_ReplicapoolInstanceGroupManagersRecreateInstances_594072 = ref object of OpenApiRestCall_593424
-proc url_ReplicapoolInstanceGroupManagersRecreateInstances_594074(
+  Call_ReplicapoolInstanceGroupManagersRecreateInstances_580072 = ref object of OpenApiRestCall_579424
+proc url_ReplicapoolInstanceGroupManagersRecreateInstances_580074(
     protocol: Scheme; host: string; base: string; route: string; path: JsonNode;
     query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "project" in path, "`project` is a required path parameter"
   assert "zone" in path, "`zone` is a required path parameter"
@@ -1225,7 +1227,7 @@ proc url_ReplicapoolInstanceGroupManagersRecreateInstances_594074(
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_ReplicapoolInstanceGroupManagersRecreateInstances_594073(
+proc validate_ReplicapoolInstanceGroupManagersRecreateInstances_580073(
     path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
     body: JsonNode): JsonNode =
   ## Recreates the specified instances. The instances are deleted, then recreated using the instance group manager's current instance template.
@@ -1241,21 +1243,21 @@ proc validate_ReplicapoolInstanceGroupManagersRecreateInstances_594073(
   ##          : The Google Developers Console project name.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `zone` field"
-  var valid_594075 = path.getOrDefault("zone")
-  valid_594075 = validateParameter(valid_594075, JString, required = true,
+  var valid_580075 = path.getOrDefault("zone")
+  valid_580075 = validateParameter(valid_580075, JString, required = true,
                                  default = nil)
-  if valid_594075 != nil:
-    section.add "zone", valid_594075
-  var valid_594076 = path.getOrDefault("instanceGroupManager")
-  valid_594076 = validateParameter(valid_594076, JString, required = true,
+  if valid_580075 != nil:
+    section.add "zone", valid_580075
+  var valid_580076 = path.getOrDefault("instanceGroupManager")
+  valid_580076 = validateParameter(valid_580076, JString, required = true,
                                  default = nil)
-  if valid_594076 != nil:
-    section.add "instanceGroupManager", valid_594076
-  var valid_594077 = path.getOrDefault("project")
-  valid_594077 = validateParameter(valid_594077, JString, required = true,
+  if valid_580076 != nil:
+    section.add "instanceGroupManager", valid_580076
+  var valid_580077 = path.getOrDefault("project")
+  valid_580077 = validateParameter(valid_580077, JString, required = true,
                                  default = nil)
-  if valid_594077 != nil:
-    section.add "project", valid_594077
+  if valid_580077 != nil:
+    section.add "project", valid_580077
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -1273,41 +1275,41 @@ proc validate_ReplicapoolInstanceGroupManagersRecreateInstances_594073(
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_594078 = query.getOrDefault("fields")
-  valid_594078 = validateParameter(valid_594078, JString, required = false,
+  var valid_580078 = query.getOrDefault("fields")
+  valid_580078 = validateParameter(valid_580078, JString, required = false,
                                  default = nil)
-  if valid_594078 != nil:
-    section.add "fields", valid_594078
-  var valid_594079 = query.getOrDefault("quotaUser")
-  valid_594079 = validateParameter(valid_594079, JString, required = false,
+  if valid_580078 != nil:
+    section.add "fields", valid_580078
+  var valid_580079 = query.getOrDefault("quotaUser")
+  valid_580079 = validateParameter(valid_580079, JString, required = false,
                                  default = nil)
-  if valid_594079 != nil:
-    section.add "quotaUser", valid_594079
-  var valid_594080 = query.getOrDefault("alt")
-  valid_594080 = validateParameter(valid_594080, JString, required = false,
+  if valid_580079 != nil:
+    section.add "quotaUser", valid_580079
+  var valid_580080 = query.getOrDefault("alt")
+  valid_580080 = validateParameter(valid_580080, JString, required = false,
                                  default = newJString("json"))
-  if valid_594080 != nil:
-    section.add "alt", valid_594080
-  var valid_594081 = query.getOrDefault("oauth_token")
-  valid_594081 = validateParameter(valid_594081, JString, required = false,
+  if valid_580080 != nil:
+    section.add "alt", valid_580080
+  var valid_580081 = query.getOrDefault("oauth_token")
+  valid_580081 = validateParameter(valid_580081, JString, required = false,
                                  default = nil)
-  if valid_594081 != nil:
-    section.add "oauth_token", valid_594081
-  var valid_594082 = query.getOrDefault("userIp")
-  valid_594082 = validateParameter(valid_594082, JString, required = false,
+  if valid_580081 != nil:
+    section.add "oauth_token", valid_580081
+  var valid_580082 = query.getOrDefault("userIp")
+  valid_580082 = validateParameter(valid_580082, JString, required = false,
                                  default = nil)
-  if valid_594082 != nil:
-    section.add "userIp", valid_594082
-  var valid_594083 = query.getOrDefault("key")
-  valid_594083 = validateParameter(valid_594083, JString, required = false,
+  if valid_580082 != nil:
+    section.add "userIp", valid_580082
+  var valid_580083 = query.getOrDefault("key")
+  valid_580083 = validateParameter(valid_580083, JString, required = false,
                                  default = nil)
-  if valid_594083 != nil:
-    section.add "key", valid_594083
-  var valid_594084 = query.getOrDefault("prettyPrint")
-  valid_594084 = validateParameter(valid_594084, JBool, required = false,
+  if valid_580083 != nil:
+    section.add "key", valid_580083
+  var valid_580084 = query.getOrDefault("prettyPrint")
+  valid_580084 = validateParameter(valid_580084, JBool, required = false,
                                  default = newJBool(true))
-  if valid_594084 != nil:
-    section.add "prettyPrint", valid_594084
+  if valid_580084 != nil:
+    section.add "prettyPrint", valid_580084
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1319,21 +1321,21 @@ proc validate_ReplicapoolInstanceGroupManagersRecreateInstances_594073(
   if body != nil:
     result.add "body", body
 
-proc call*(call_594086: Call_ReplicapoolInstanceGroupManagersRecreateInstances_594072;
+proc call*(call_580086: Call_ReplicapoolInstanceGroupManagersRecreateInstances_580072;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Recreates the specified instances. The instances are deleted, then recreated using the instance group manager's current instance template.
   ## 
-  let valid = call_594086.validator(path, query, header, formData, body)
-  let scheme = call_594086.pickScheme
+  let valid = call_580086.validator(path, query, header, formData, body)
+  let scheme = call_580086.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_594086.url(scheme.get, call_594086.host, call_594086.base,
-                         call_594086.route, valid.getOrDefault("path"),
+  let url = call_580086.url(scheme.get, call_580086.host, call_580086.base,
+                         call_580086.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_594086, url, valid)
+  result = hook(call_580086, url, valid)
 
-proc call*(call_594087: Call_ReplicapoolInstanceGroupManagersRecreateInstances_594072;
+proc call*(call_580087: Call_ReplicapoolInstanceGroupManagersRecreateInstances_580072;
           zone: string; instanceGroupManager: string; project: string;
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           oauthToken: string = ""; userIp: string = ""; key: string = "";
@@ -1361,37 +1363,37 @@ proc call*(call_594087: Call_ReplicapoolInstanceGroupManagersRecreateInstances_5
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_594088 = newJObject()
-  var query_594089 = newJObject()
-  var body_594090 = newJObject()
-  add(path_594088, "zone", newJString(zone))
-  add(query_594089, "fields", newJString(fields))
-  add(query_594089, "quotaUser", newJString(quotaUser))
-  add(path_594088, "instanceGroupManager", newJString(instanceGroupManager))
-  add(query_594089, "alt", newJString(alt))
-  add(query_594089, "oauth_token", newJString(oauthToken))
-  add(query_594089, "userIp", newJString(userIp))
-  add(query_594089, "key", newJString(key))
-  add(path_594088, "project", newJString(project))
+  var path_580088 = newJObject()
+  var query_580089 = newJObject()
+  var body_580090 = newJObject()
+  add(path_580088, "zone", newJString(zone))
+  add(query_580089, "fields", newJString(fields))
+  add(query_580089, "quotaUser", newJString(quotaUser))
+  add(path_580088, "instanceGroupManager", newJString(instanceGroupManager))
+  add(query_580089, "alt", newJString(alt))
+  add(query_580089, "oauth_token", newJString(oauthToken))
+  add(query_580089, "userIp", newJString(userIp))
+  add(query_580089, "key", newJString(key))
+  add(path_580088, "project", newJString(project))
   if body != nil:
-    body_594090 = body
-  add(query_594089, "prettyPrint", newJBool(prettyPrint))
-  result = call_594087.call(path_594088, query_594089, nil, nil, body_594090)
+    body_580090 = body
+  add(query_580089, "prettyPrint", newJBool(prettyPrint))
+  result = call_580087.call(path_580088, query_580089, nil, nil, body_580090)
 
-var replicapoolInstanceGroupManagersRecreateInstances* = Call_ReplicapoolInstanceGroupManagersRecreateInstances_594072(
+var replicapoolInstanceGroupManagersRecreateInstances* = Call_ReplicapoolInstanceGroupManagersRecreateInstances_580072(
     name: "replicapoolInstanceGroupManagersRecreateInstances",
     meth: HttpMethod.HttpPost, host: "www.googleapis.com", route: "/{project}/zones/{zone}/instanceGroupManagers/{instanceGroupManager}/recreateInstances",
-    validator: validate_ReplicapoolInstanceGroupManagersRecreateInstances_594073,
+    validator: validate_ReplicapoolInstanceGroupManagersRecreateInstances_580073,
     base: "/replicapool/v1beta2/projects",
-    url: url_ReplicapoolInstanceGroupManagersRecreateInstances_594074,
+    url: url_ReplicapoolInstanceGroupManagersRecreateInstances_580074,
     schemes: {Scheme.Https})
 type
-  Call_ReplicapoolInstanceGroupManagersResize_594091 = ref object of OpenApiRestCall_593424
-proc url_ReplicapoolInstanceGroupManagersResize_594093(protocol: Scheme;
+  Call_ReplicapoolInstanceGroupManagersResize_580091 = ref object of OpenApiRestCall_579424
+proc url_ReplicapoolInstanceGroupManagersResize_580093(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "project" in path, "`project` is a required path parameter"
   assert "zone" in path, "`zone` is a required path parameter"
@@ -1410,7 +1412,7 @@ proc url_ReplicapoolInstanceGroupManagersResize_594093(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_ReplicapoolInstanceGroupManagersResize_594092(path: JsonNode;
+proc validate_ReplicapoolInstanceGroupManagersResize_580092(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Resizes the managed instance group up or down. If resized up, new instances are created using the current instance template. If resized down, instances are removed in the order outlined in Resizing a managed instance group.
   ## 
@@ -1425,21 +1427,21 @@ proc validate_ReplicapoolInstanceGroupManagersResize_594092(path: JsonNode;
   ##          : The Google Developers Console project name.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `zone` field"
-  var valid_594094 = path.getOrDefault("zone")
-  valid_594094 = validateParameter(valid_594094, JString, required = true,
+  var valid_580094 = path.getOrDefault("zone")
+  valid_580094 = validateParameter(valid_580094, JString, required = true,
                                  default = nil)
-  if valid_594094 != nil:
-    section.add "zone", valid_594094
-  var valid_594095 = path.getOrDefault("instanceGroupManager")
-  valid_594095 = validateParameter(valid_594095, JString, required = true,
+  if valid_580094 != nil:
+    section.add "zone", valid_580094
+  var valid_580095 = path.getOrDefault("instanceGroupManager")
+  valid_580095 = validateParameter(valid_580095, JString, required = true,
                                  default = nil)
-  if valid_594095 != nil:
-    section.add "instanceGroupManager", valid_594095
-  var valid_594096 = path.getOrDefault("project")
-  valid_594096 = validateParameter(valid_594096, JString, required = true,
+  if valid_580095 != nil:
+    section.add "instanceGroupManager", valid_580095
+  var valid_580096 = path.getOrDefault("project")
+  valid_580096 = validateParameter(valid_580096, JString, required = true,
                                  default = nil)
-  if valid_594096 != nil:
-    section.add "project", valid_594096
+  if valid_580096 != nil:
+    section.add "project", valid_580096
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -1459,46 +1461,46 @@ proc validate_ReplicapoolInstanceGroupManagersResize_594092(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_594097 = query.getOrDefault("fields")
-  valid_594097 = validateParameter(valid_594097, JString, required = false,
+  var valid_580097 = query.getOrDefault("fields")
+  valid_580097 = validateParameter(valid_580097, JString, required = false,
                                  default = nil)
-  if valid_594097 != nil:
-    section.add "fields", valid_594097
-  var valid_594098 = query.getOrDefault("quotaUser")
-  valid_594098 = validateParameter(valid_594098, JString, required = false,
+  if valid_580097 != nil:
+    section.add "fields", valid_580097
+  var valid_580098 = query.getOrDefault("quotaUser")
+  valid_580098 = validateParameter(valid_580098, JString, required = false,
                                  default = nil)
-  if valid_594098 != nil:
-    section.add "quotaUser", valid_594098
-  var valid_594099 = query.getOrDefault("alt")
-  valid_594099 = validateParameter(valid_594099, JString, required = false,
+  if valid_580098 != nil:
+    section.add "quotaUser", valid_580098
+  var valid_580099 = query.getOrDefault("alt")
+  valid_580099 = validateParameter(valid_580099, JString, required = false,
                                  default = newJString("json"))
-  if valid_594099 != nil:
-    section.add "alt", valid_594099
-  var valid_594100 = query.getOrDefault("oauth_token")
-  valid_594100 = validateParameter(valid_594100, JString, required = false,
+  if valid_580099 != nil:
+    section.add "alt", valid_580099
+  var valid_580100 = query.getOrDefault("oauth_token")
+  valid_580100 = validateParameter(valid_580100, JString, required = false,
                                  default = nil)
-  if valid_594100 != nil:
-    section.add "oauth_token", valid_594100
-  var valid_594101 = query.getOrDefault("userIp")
-  valid_594101 = validateParameter(valid_594101, JString, required = false,
+  if valid_580100 != nil:
+    section.add "oauth_token", valid_580100
+  var valid_580101 = query.getOrDefault("userIp")
+  valid_580101 = validateParameter(valid_580101, JString, required = false,
                                  default = nil)
-  if valid_594101 != nil:
-    section.add "userIp", valid_594101
-  var valid_594102 = query.getOrDefault("key")
-  valid_594102 = validateParameter(valid_594102, JString, required = false,
+  if valid_580101 != nil:
+    section.add "userIp", valid_580101
+  var valid_580102 = query.getOrDefault("key")
+  valid_580102 = validateParameter(valid_580102, JString, required = false,
                                  default = nil)
-  if valid_594102 != nil:
-    section.add "key", valid_594102
+  if valid_580102 != nil:
+    section.add "key", valid_580102
   assert query != nil, "query argument is necessary due to required `size` field"
-  var valid_594103 = query.getOrDefault("size")
-  valid_594103 = validateParameter(valid_594103, JInt, required = true, default = nil)
-  if valid_594103 != nil:
-    section.add "size", valid_594103
-  var valid_594104 = query.getOrDefault("prettyPrint")
-  valid_594104 = validateParameter(valid_594104, JBool, required = false,
+  var valid_580103 = query.getOrDefault("size")
+  valid_580103 = validateParameter(valid_580103, JInt, required = true, default = nil)
+  if valid_580103 != nil:
+    section.add "size", valid_580103
+  var valid_580104 = query.getOrDefault("prettyPrint")
+  valid_580104 = validateParameter(valid_580104, JBool, required = false,
                                  default = newJBool(true))
-  if valid_594104 != nil:
-    section.add "prettyPrint", valid_594104
+  if valid_580104 != nil:
+    section.add "prettyPrint", valid_580104
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1507,21 +1509,21 @@ proc validate_ReplicapoolInstanceGroupManagersResize_594092(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_594105: Call_ReplicapoolInstanceGroupManagersResize_594091;
+proc call*(call_580105: Call_ReplicapoolInstanceGroupManagersResize_580091;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Resizes the managed instance group up or down. If resized up, new instances are created using the current instance template. If resized down, instances are removed in the order outlined in Resizing a managed instance group.
   ## 
-  let valid = call_594105.validator(path, query, header, formData, body)
-  let scheme = call_594105.pickScheme
+  let valid = call_580105.validator(path, query, header, formData, body)
+  let scheme = call_580105.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_594105.url(scheme.get, call_594105.host, call_594105.base,
-                         call_594105.route, valid.getOrDefault("path"),
+  let url = call_580105.url(scheme.get, call_580105.host, call_580105.base,
+                         call_580105.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_594105, url, valid)
+  result = hook(call_580105, url, valid)
 
-proc call*(call_594106: Call_ReplicapoolInstanceGroupManagersResize_594091;
+proc call*(call_580106: Call_ReplicapoolInstanceGroupManagersResize_580091;
           zone: string; instanceGroupManager: string; size: int; project: string;
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           oauthToken: string = ""; userIp: string = ""; key: string = "";
@@ -1550,36 +1552,36 @@ proc call*(call_594106: Call_ReplicapoolInstanceGroupManagersResize_594091;
   ##          : The Google Developers Console project name.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_594107 = newJObject()
-  var query_594108 = newJObject()
-  add(path_594107, "zone", newJString(zone))
-  add(query_594108, "fields", newJString(fields))
-  add(query_594108, "quotaUser", newJString(quotaUser))
-  add(path_594107, "instanceGroupManager", newJString(instanceGroupManager))
-  add(query_594108, "alt", newJString(alt))
-  add(query_594108, "oauth_token", newJString(oauthToken))
-  add(query_594108, "userIp", newJString(userIp))
-  add(query_594108, "key", newJString(key))
-  add(query_594108, "size", newJInt(size))
-  add(path_594107, "project", newJString(project))
-  add(query_594108, "prettyPrint", newJBool(prettyPrint))
-  result = call_594106.call(path_594107, query_594108, nil, nil, nil)
+  var path_580107 = newJObject()
+  var query_580108 = newJObject()
+  add(path_580107, "zone", newJString(zone))
+  add(query_580108, "fields", newJString(fields))
+  add(query_580108, "quotaUser", newJString(quotaUser))
+  add(path_580107, "instanceGroupManager", newJString(instanceGroupManager))
+  add(query_580108, "alt", newJString(alt))
+  add(query_580108, "oauth_token", newJString(oauthToken))
+  add(query_580108, "userIp", newJString(userIp))
+  add(query_580108, "key", newJString(key))
+  add(query_580108, "size", newJInt(size))
+  add(path_580107, "project", newJString(project))
+  add(query_580108, "prettyPrint", newJBool(prettyPrint))
+  result = call_580106.call(path_580107, query_580108, nil, nil, nil)
 
-var replicapoolInstanceGroupManagersResize* = Call_ReplicapoolInstanceGroupManagersResize_594091(
+var replicapoolInstanceGroupManagersResize* = Call_ReplicapoolInstanceGroupManagersResize_580091(
     name: "replicapoolInstanceGroupManagersResize", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com", route: "/{project}/zones/{zone}/instanceGroupManagers/{instanceGroupManager}/resize",
-    validator: validate_ReplicapoolInstanceGroupManagersResize_594092,
+    validator: validate_ReplicapoolInstanceGroupManagersResize_580092,
     base: "/replicapool/v1beta2/projects",
-    url: url_ReplicapoolInstanceGroupManagersResize_594093,
+    url: url_ReplicapoolInstanceGroupManagersResize_580093,
     schemes: {Scheme.Https})
 type
-  Call_ReplicapoolInstanceGroupManagersSetInstanceTemplate_594109 = ref object of OpenApiRestCall_593424
-proc url_ReplicapoolInstanceGroupManagersSetInstanceTemplate_594111(
+  Call_ReplicapoolInstanceGroupManagersSetInstanceTemplate_580109 = ref object of OpenApiRestCall_579424
+proc url_ReplicapoolInstanceGroupManagersSetInstanceTemplate_580111(
     protocol: Scheme; host: string; base: string; route: string; path: JsonNode;
     query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "project" in path, "`project` is a required path parameter"
   assert "zone" in path, "`zone` is a required path parameter"
@@ -1598,7 +1600,7 @@ proc url_ReplicapoolInstanceGroupManagersSetInstanceTemplate_594111(
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_ReplicapoolInstanceGroupManagersSetInstanceTemplate_594110(
+proc validate_ReplicapoolInstanceGroupManagersSetInstanceTemplate_580110(
     path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
     body: JsonNode): JsonNode =
   ## Sets the instance template to use when creating new instances in this group. Existing instances are not affected.
@@ -1614,21 +1616,21 @@ proc validate_ReplicapoolInstanceGroupManagersSetInstanceTemplate_594110(
   ##          : The Google Developers Console project name.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `zone` field"
-  var valid_594112 = path.getOrDefault("zone")
-  valid_594112 = validateParameter(valid_594112, JString, required = true,
+  var valid_580112 = path.getOrDefault("zone")
+  valid_580112 = validateParameter(valid_580112, JString, required = true,
                                  default = nil)
-  if valid_594112 != nil:
-    section.add "zone", valid_594112
-  var valid_594113 = path.getOrDefault("instanceGroupManager")
-  valid_594113 = validateParameter(valid_594113, JString, required = true,
+  if valid_580112 != nil:
+    section.add "zone", valid_580112
+  var valid_580113 = path.getOrDefault("instanceGroupManager")
+  valid_580113 = validateParameter(valid_580113, JString, required = true,
                                  default = nil)
-  if valid_594113 != nil:
-    section.add "instanceGroupManager", valid_594113
-  var valid_594114 = path.getOrDefault("project")
-  valid_594114 = validateParameter(valid_594114, JString, required = true,
+  if valid_580113 != nil:
+    section.add "instanceGroupManager", valid_580113
+  var valid_580114 = path.getOrDefault("project")
+  valid_580114 = validateParameter(valid_580114, JString, required = true,
                                  default = nil)
-  if valid_594114 != nil:
-    section.add "project", valid_594114
+  if valid_580114 != nil:
+    section.add "project", valid_580114
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -1646,41 +1648,41 @@ proc validate_ReplicapoolInstanceGroupManagersSetInstanceTemplate_594110(
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_594115 = query.getOrDefault("fields")
-  valid_594115 = validateParameter(valid_594115, JString, required = false,
+  var valid_580115 = query.getOrDefault("fields")
+  valid_580115 = validateParameter(valid_580115, JString, required = false,
                                  default = nil)
-  if valid_594115 != nil:
-    section.add "fields", valid_594115
-  var valid_594116 = query.getOrDefault("quotaUser")
-  valid_594116 = validateParameter(valid_594116, JString, required = false,
+  if valid_580115 != nil:
+    section.add "fields", valid_580115
+  var valid_580116 = query.getOrDefault("quotaUser")
+  valid_580116 = validateParameter(valid_580116, JString, required = false,
                                  default = nil)
-  if valid_594116 != nil:
-    section.add "quotaUser", valid_594116
-  var valid_594117 = query.getOrDefault("alt")
-  valid_594117 = validateParameter(valid_594117, JString, required = false,
+  if valid_580116 != nil:
+    section.add "quotaUser", valid_580116
+  var valid_580117 = query.getOrDefault("alt")
+  valid_580117 = validateParameter(valid_580117, JString, required = false,
                                  default = newJString("json"))
-  if valid_594117 != nil:
-    section.add "alt", valid_594117
-  var valid_594118 = query.getOrDefault("oauth_token")
-  valid_594118 = validateParameter(valid_594118, JString, required = false,
+  if valid_580117 != nil:
+    section.add "alt", valid_580117
+  var valid_580118 = query.getOrDefault("oauth_token")
+  valid_580118 = validateParameter(valid_580118, JString, required = false,
                                  default = nil)
-  if valid_594118 != nil:
-    section.add "oauth_token", valid_594118
-  var valid_594119 = query.getOrDefault("userIp")
-  valid_594119 = validateParameter(valid_594119, JString, required = false,
+  if valid_580118 != nil:
+    section.add "oauth_token", valid_580118
+  var valid_580119 = query.getOrDefault("userIp")
+  valid_580119 = validateParameter(valid_580119, JString, required = false,
                                  default = nil)
-  if valid_594119 != nil:
-    section.add "userIp", valid_594119
-  var valid_594120 = query.getOrDefault("key")
-  valid_594120 = validateParameter(valid_594120, JString, required = false,
+  if valid_580119 != nil:
+    section.add "userIp", valid_580119
+  var valid_580120 = query.getOrDefault("key")
+  valid_580120 = validateParameter(valid_580120, JString, required = false,
                                  default = nil)
-  if valid_594120 != nil:
-    section.add "key", valid_594120
-  var valid_594121 = query.getOrDefault("prettyPrint")
-  valid_594121 = validateParameter(valid_594121, JBool, required = false,
+  if valid_580120 != nil:
+    section.add "key", valid_580120
+  var valid_580121 = query.getOrDefault("prettyPrint")
+  valid_580121 = validateParameter(valid_580121, JBool, required = false,
                                  default = newJBool(true))
-  if valid_594121 != nil:
-    section.add "prettyPrint", valid_594121
+  if valid_580121 != nil:
+    section.add "prettyPrint", valid_580121
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1692,21 +1694,21 @@ proc validate_ReplicapoolInstanceGroupManagersSetInstanceTemplate_594110(
   if body != nil:
     result.add "body", body
 
-proc call*(call_594123: Call_ReplicapoolInstanceGroupManagersSetInstanceTemplate_594109;
+proc call*(call_580123: Call_ReplicapoolInstanceGroupManagersSetInstanceTemplate_580109;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Sets the instance template to use when creating new instances in this group. Existing instances are not affected.
   ## 
-  let valid = call_594123.validator(path, query, header, formData, body)
-  let scheme = call_594123.pickScheme
+  let valid = call_580123.validator(path, query, header, formData, body)
+  let scheme = call_580123.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_594123.url(scheme.get, call_594123.host, call_594123.base,
-                         call_594123.route, valid.getOrDefault("path"),
+  let url = call_580123.url(scheme.get, call_580123.host, call_580123.base,
+                         call_580123.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_594123, url, valid)
+  result = hook(call_580123, url, valid)
 
-proc call*(call_594124: Call_ReplicapoolInstanceGroupManagersSetInstanceTemplate_594109;
+proc call*(call_580124: Call_ReplicapoolInstanceGroupManagersSetInstanceTemplate_580109;
           zone: string; instanceGroupManager: string; project: string;
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           oauthToken: string = ""; userIp: string = ""; key: string = "";
@@ -1734,37 +1736,37 @@ proc call*(call_594124: Call_ReplicapoolInstanceGroupManagersSetInstanceTemplate
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_594125 = newJObject()
-  var query_594126 = newJObject()
-  var body_594127 = newJObject()
-  add(path_594125, "zone", newJString(zone))
-  add(query_594126, "fields", newJString(fields))
-  add(query_594126, "quotaUser", newJString(quotaUser))
-  add(path_594125, "instanceGroupManager", newJString(instanceGroupManager))
-  add(query_594126, "alt", newJString(alt))
-  add(query_594126, "oauth_token", newJString(oauthToken))
-  add(query_594126, "userIp", newJString(userIp))
-  add(query_594126, "key", newJString(key))
-  add(path_594125, "project", newJString(project))
+  var path_580125 = newJObject()
+  var query_580126 = newJObject()
+  var body_580127 = newJObject()
+  add(path_580125, "zone", newJString(zone))
+  add(query_580126, "fields", newJString(fields))
+  add(query_580126, "quotaUser", newJString(quotaUser))
+  add(path_580125, "instanceGroupManager", newJString(instanceGroupManager))
+  add(query_580126, "alt", newJString(alt))
+  add(query_580126, "oauth_token", newJString(oauthToken))
+  add(query_580126, "userIp", newJString(userIp))
+  add(query_580126, "key", newJString(key))
+  add(path_580125, "project", newJString(project))
   if body != nil:
-    body_594127 = body
-  add(query_594126, "prettyPrint", newJBool(prettyPrint))
-  result = call_594124.call(path_594125, query_594126, nil, nil, body_594127)
+    body_580127 = body
+  add(query_580126, "prettyPrint", newJBool(prettyPrint))
+  result = call_580124.call(path_580125, query_580126, nil, nil, body_580127)
 
-var replicapoolInstanceGroupManagersSetInstanceTemplate* = Call_ReplicapoolInstanceGroupManagersSetInstanceTemplate_594109(
+var replicapoolInstanceGroupManagersSetInstanceTemplate* = Call_ReplicapoolInstanceGroupManagersSetInstanceTemplate_580109(
     name: "replicapoolInstanceGroupManagersSetInstanceTemplate",
     meth: HttpMethod.HttpPost, host: "www.googleapis.com", route: "/{project}/zones/{zone}/instanceGroupManagers/{instanceGroupManager}/setInstanceTemplate",
-    validator: validate_ReplicapoolInstanceGroupManagersSetInstanceTemplate_594110,
+    validator: validate_ReplicapoolInstanceGroupManagersSetInstanceTemplate_580110,
     base: "/replicapool/v1beta2/projects",
-    url: url_ReplicapoolInstanceGroupManagersSetInstanceTemplate_594111,
+    url: url_ReplicapoolInstanceGroupManagersSetInstanceTemplate_580111,
     schemes: {Scheme.Https})
 type
-  Call_ReplicapoolInstanceGroupManagersSetTargetPools_594128 = ref object of OpenApiRestCall_593424
-proc url_ReplicapoolInstanceGroupManagersSetTargetPools_594130(protocol: Scheme;
+  Call_ReplicapoolInstanceGroupManagersSetTargetPools_580128 = ref object of OpenApiRestCall_579424
+proc url_ReplicapoolInstanceGroupManagersSetTargetPools_580130(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "project" in path, "`project` is a required path parameter"
   assert "zone" in path, "`zone` is a required path parameter"
@@ -1783,7 +1785,7 @@ proc url_ReplicapoolInstanceGroupManagersSetTargetPools_594130(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_ReplicapoolInstanceGroupManagersSetTargetPools_594129(
+proc validate_ReplicapoolInstanceGroupManagersSetTargetPools_580129(
     path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
     body: JsonNode): JsonNode =
   ## Modifies the target pools to which all new instances in this group are assigned. Existing instances in the group are not affected.
@@ -1799,21 +1801,21 @@ proc validate_ReplicapoolInstanceGroupManagersSetTargetPools_594129(
   ##          : The Google Developers Console project name.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `zone` field"
-  var valid_594131 = path.getOrDefault("zone")
-  valid_594131 = validateParameter(valid_594131, JString, required = true,
+  var valid_580131 = path.getOrDefault("zone")
+  valid_580131 = validateParameter(valid_580131, JString, required = true,
                                  default = nil)
-  if valid_594131 != nil:
-    section.add "zone", valid_594131
-  var valid_594132 = path.getOrDefault("instanceGroupManager")
-  valid_594132 = validateParameter(valid_594132, JString, required = true,
+  if valid_580131 != nil:
+    section.add "zone", valid_580131
+  var valid_580132 = path.getOrDefault("instanceGroupManager")
+  valid_580132 = validateParameter(valid_580132, JString, required = true,
                                  default = nil)
-  if valid_594132 != nil:
-    section.add "instanceGroupManager", valid_594132
-  var valid_594133 = path.getOrDefault("project")
-  valid_594133 = validateParameter(valid_594133, JString, required = true,
+  if valid_580132 != nil:
+    section.add "instanceGroupManager", valid_580132
+  var valid_580133 = path.getOrDefault("project")
+  valid_580133 = validateParameter(valid_580133, JString, required = true,
                                  default = nil)
-  if valid_594133 != nil:
-    section.add "project", valid_594133
+  if valid_580133 != nil:
+    section.add "project", valid_580133
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -1831,41 +1833,41 @@ proc validate_ReplicapoolInstanceGroupManagersSetTargetPools_594129(
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_594134 = query.getOrDefault("fields")
-  valid_594134 = validateParameter(valid_594134, JString, required = false,
+  var valid_580134 = query.getOrDefault("fields")
+  valid_580134 = validateParameter(valid_580134, JString, required = false,
                                  default = nil)
-  if valid_594134 != nil:
-    section.add "fields", valid_594134
-  var valid_594135 = query.getOrDefault("quotaUser")
-  valid_594135 = validateParameter(valid_594135, JString, required = false,
+  if valid_580134 != nil:
+    section.add "fields", valid_580134
+  var valid_580135 = query.getOrDefault("quotaUser")
+  valid_580135 = validateParameter(valid_580135, JString, required = false,
                                  default = nil)
-  if valid_594135 != nil:
-    section.add "quotaUser", valid_594135
-  var valid_594136 = query.getOrDefault("alt")
-  valid_594136 = validateParameter(valid_594136, JString, required = false,
+  if valid_580135 != nil:
+    section.add "quotaUser", valid_580135
+  var valid_580136 = query.getOrDefault("alt")
+  valid_580136 = validateParameter(valid_580136, JString, required = false,
                                  default = newJString("json"))
-  if valid_594136 != nil:
-    section.add "alt", valid_594136
-  var valid_594137 = query.getOrDefault("oauth_token")
-  valid_594137 = validateParameter(valid_594137, JString, required = false,
+  if valid_580136 != nil:
+    section.add "alt", valid_580136
+  var valid_580137 = query.getOrDefault("oauth_token")
+  valid_580137 = validateParameter(valid_580137, JString, required = false,
                                  default = nil)
-  if valid_594137 != nil:
-    section.add "oauth_token", valid_594137
-  var valid_594138 = query.getOrDefault("userIp")
-  valid_594138 = validateParameter(valid_594138, JString, required = false,
+  if valid_580137 != nil:
+    section.add "oauth_token", valid_580137
+  var valid_580138 = query.getOrDefault("userIp")
+  valid_580138 = validateParameter(valid_580138, JString, required = false,
                                  default = nil)
-  if valid_594138 != nil:
-    section.add "userIp", valid_594138
-  var valid_594139 = query.getOrDefault("key")
-  valid_594139 = validateParameter(valid_594139, JString, required = false,
+  if valid_580138 != nil:
+    section.add "userIp", valid_580138
+  var valid_580139 = query.getOrDefault("key")
+  valid_580139 = validateParameter(valid_580139, JString, required = false,
                                  default = nil)
-  if valid_594139 != nil:
-    section.add "key", valid_594139
-  var valid_594140 = query.getOrDefault("prettyPrint")
-  valid_594140 = validateParameter(valid_594140, JBool, required = false,
+  if valid_580139 != nil:
+    section.add "key", valid_580139
+  var valid_580140 = query.getOrDefault("prettyPrint")
+  valid_580140 = validateParameter(valid_580140, JBool, required = false,
                                  default = newJBool(true))
-  if valid_594140 != nil:
-    section.add "prettyPrint", valid_594140
+  if valid_580140 != nil:
+    section.add "prettyPrint", valid_580140
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1877,21 +1879,21 @@ proc validate_ReplicapoolInstanceGroupManagersSetTargetPools_594129(
   if body != nil:
     result.add "body", body
 
-proc call*(call_594142: Call_ReplicapoolInstanceGroupManagersSetTargetPools_594128;
+proc call*(call_580142: Call_ReplicapoolInstanceGroupManagersSetTargetPools_580128;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Modifies the target pools to which all new instances in this group are assigned. Existing instances in the group are not affected.
   ## 
-  let valid = call_594142.validator(path, query, header, formData, body)
-  let scheme = call_594142.pickScheme
+  let valid = call_580142.validator(path, query, header, formData, body)
+  let scheme = call_580142.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_594142.url(scheme.get, call_594142.host, call_594142.base,
-                         call_594142.route, valid.getOrDefault("path"),
+  let url = call_580142.url(scheme.get, call_580142.host, call_580142.base,
+                         call_580142.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_594142, url, valid)
+  result = hook(call_580142, url, valid)
 
-proc call*(call_594143: Call_ReplicapoolInstanceGroupManagersSetTargetPools_594128;
+proc call*(call_580143: Call_ReplicapoolInstanceGroupManagersSetTargetPools_580128;
           zone: string; instanceGroupManager: string; project: string;
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           oauthToken: string = ""; userIp: string = ""; key: string = "";
@@ -1919,37 +1921,37 @@ proc call*(call_594143: Call_ReplicapoolInstanceGroupManagersSetTargetPools_5941
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_594144 = newJObject()
-  var query_594145 = newJObject()
-  var body_594146 = newJObject()
-  add(path_594144, "zone", newJString(zone))
-  add(query_594145, "fields", newJString(fields))
-  add(query_594145, "quotaUser", newJString(quotaUser))
-  add(path_594144, "instanceGroupManager", newJString(instanceGroupManager))
-  add(query_594145, "alt", newJString(alt))
-  add(query_594145, "oauth_token", newJString(oauthToken))
-  add(query_594145, "userIp", newJString(userIp))
-  add(query_594145, "key", newJString(key))
-  add(path_594144, "project", newJString(project))
+  var path_580144 = newJObject()
+  var query_580145 = newJObject()
+  var body_580146 = newJObject()
+  add(path_580144, "zone", newJString(zone))
+  add(query_580145, "fields", newJString(fields))
+  add(query_580145, "quotaUser", newJString(quotaUser))
+  add(path_580144, "instanceGroupManager", newJString(instanceGroupManager))
+  add(query_580145, "alt", newJString(alt))
+  add(query_580145, "oauth_token", newJString(oauthToken))
+  add(query_580145, "userIp", newJString(userIp))
+  add(query_580145, "key", newJString(key))
+  add(path_580144, "project", newJString(project))
   if body != nil:
-    body_594146 = body
-  add(query_594145, "prettyPrint", newJBool(prettyPrint))
-  result = call_594143.call(path_594144, query_594145, nil, nil, body_594146)
+    body_580146 = body
+  add(query_580145, "prettyPrint", newJBool(prettyPrint))
+  result = call_580143.call(path_580144, query_580145, nil, nil, body_580146)
 
-var replicapoolInstanceGroupManagersSetTargetPools* = Call_ReplicapoolInstanceGroupManagersSetTargetPools_594128(
+var replicapoolInstanceGroupManagersSetTargetPools* = Call_ReplicapoolInstanceGroupManagersSetTargetPools_580128(
     name: "replicapoolInstanceGroupManagersSetTargetPools",
     meth: HttpMethod.HttpPost, host: "www.googleapis.com", route: "/{project}/zones/{zone}/instanceGroupManagers/{instanceGroupManager}/setTargetPools",
-    validator: validate_ReplicapoolInstanceGroupManagersSetTargetPools_594129,
+    validator: validate_ReplicapoolInstanceGroupManagersSetTargetPools_580129,
     base: "/replicapool/v1beta2/projects",
-    url: url_ReplicapoolInstanceGroupManagersSetTargetPools_594130,
+    url: url_ReplicapoolInstanceGroupManagersSetTargetPools_580130,
     schemes: {Scheme.Https})
 type
-  Call_ReplicapoolZoneOperationsList_594147 = ref object of OpenApiRestCall_593424
-proc url_ReplicapoolZoneOperationsList_594149(protocol: Scheme; host: string;
+  Call_ReplicapoolZoneOperationsList_580147 = ref object of OpenApiRestCall_579424
+proc url_ReplicapoolZoneOperationsList_580149(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "project" in path, "`project` is a required path parameter"
   assert "zone" in path, "`zone` is a required path parameter"
@@ -1964,7 +1966,7 @@ proc url_ReplicapoolZoneOperationsList_594149(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_ReplicapoolZoneOperationsList_594148(path: JsonNode; query: JsonNode;
+proc validate_ReplicapoolZoneOperationsList_580148(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Retrieves the list of operation resources contained within the specified zone.
   ## 
@@ -1977,16 +1979,16 @@ proc validate_ReplicapoolZoneOperationsList_594148(path: JsonNode; query: JsonNo
   ##          : Name of the project scoping this request.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `zone` field"
-  var valid_594150 = path.getOrDefault("zone")
-  valid_594150 = validateParameter(valid_594150, JString, required = true,
+  var valid_580150 = path.getOrDefault("zone")
+  valid_580150 = validateParameter(valid_580150, JString, required = true,
                                  default = nil)
-  if valid_594150 != nil:
-    section.add "zone", valid_594150
-  var valid_594151 = path.getOrDefault("project")
-  valid_594151 = validateParameter(valid_594151, JString, required = true,
+  if valid_580150 != nil:
+    section.add "zone", valid_580150
+  var valid_580151 = path.getOrDefault("project")
+  valid_580151 = validateParameter(valid_580151, JString, required = true,
                                  default = nil)
-  if valid_594151 != nil:
-    section.add "project", valid_594151
+  if valid_580151 != nil:
+    section.add "project", valid_580151
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -2010,56 +2012,56 @@ proc validate_ReplicapoolZoneOperationsList_594148(path: JsonNode; query: JsonNo
   ##   filter: JString
   ##         : Optional. Filter expression for filtering listed resources.
   section = newJObject()
-  var valid_594152 = query.getOrDefault("fields")
-  valid_594152 = validateParameter(valid_594152, JString, required = false,
+  var valid_580152 = query.getOrDefault("fields")
+  valid_580152 = validateParameter(valid_580152, JString, required = false,
                                  default = nil)
-  if valid_594152 != nil:
-    section.add "fields", valid_594152
-  var valid_594153 = query.getOrDefault("pageToken")
-  valid_594153 = validateParameter(valid_594153, JString, required = false,
+  if valid_580152 != nil:
+    section.add "fields", valid_580152
+  var valid_580153 = query.getOrDefault("pageToken")
+  valid_580153 = validateParameter(valid_580153, JString, required = false,
                                  default = nil)
-  if valid_594153 != nil:
-    section.add "pageToken", valid_594153
-  var valid_594154 = query.getOrDefault("quotaUser")
-  valid_594154 = validateParameter(valid_594154, JString, required = false,
+  if valid_580153 != nil:
+    section.add "pageToken", valid_580153
+  var valid_580154 = query.getOrDefault("quotaUser")
+  valid_580154 = validateParameter(valid_580154, JString, required = false,
                                  default = nil)
-  if valid_594154 != nil:
-    section.add "quotaUser", valid_594154
-  var valid_594155 = query.getOrDefault("alt")
-  valid_594155 = validateParameter(valid_594155, JString, required = false,
+  if valid_580154 != nil:
+    section.add "quotaUser", valid_580154
+  var valid_580155 = query.getOrDefault("alt")
+  valid_580155 = validateParameter(valid_580155, JString, required = false,
                                  default = newJString("json"))
-  if valid_594155 != nil:
-    section.add "alt", valid_594155
-  var valid_594156 = query.getOrDefault("oauth_token")
-  valid_594156 = validateParameter(valid_594156, JString, required = false,
+  if valid_580155 != nil:
+    section.add "alt", valid_580155
+  var valid_580156 = query.getOrDefault("oauth_token")
+  valid_580156 = validateParameter(valid_580156, JString, required = false,
                                  default = nil)
-  if valid_594156 != nil:
-    section.add "oauth_token", valid_594156
-  var valid_594157 = query.getOrDefault("userIp")
-  valid_594157 = validateParameter(valid_594157, JString, required = false,
+  if valid_580156 != nil:
+    section.add "oauth_token", valid_580156
+  var valid_580157 = query.getOrDefault("userIp")
+  valid_580157 = validateParameter(valid_580157, JString, required = false,
                                  default = nil)
-  if valid_594157 != nil:
-    section.add "userIp", valid_594157
-  var valid_594158 = query.getOrDefault("maxResults")
-  valid_594158 = validateParameter(valid_594158, JInt, required = false,
+  if valid_580157 != nil:
+    section.add "userIp", valid_580157
+  var valid_580158 = query.getOrDefault("maxResults")
+  valid_580158 = validateParameter(valid_580158, JInt, required = false,
                                  default = newJInt(500))
-  if valid_594158 != nil:
-    section.add "maxResults", valid_594158
-  var valid_594159 = query.getOrDefault("key")
-  valid_594159 = validateParameter(valid_594159, JString, required = false,
+  if valid_580158 != nil:
+    section.add "maxResults", valid_580158
+  var valid_580159 = query.getOrDefault("key")
+  valid_580159 = validateParameter(valid_580159, JString, required = false,
                                  default = nil)
-  if valid_594159 != nil:
-    section.add "key", valid_594159
-  var valid_594160 = query.getOrDefault("prettyPrint")
-  valid_594160 = validateParameter(valid_594160, JBool, required = false,
+  if valid_580159 != nil:
+    section.add "key", valid_580159
+  var valid_580160 = query.getOrDefault("prettyPrint")
+  valid_580160 = validateParameter(valid_580160, JBool, required = false,
                                  default = newJBool(true))
-  if valid_594160 != nil:
-    section.add "prettyPrint", valid_594160
-  var valid_594161 = query.getOrDefault("filter")
-  valid_594161 = validateParameter(valid_594161, JString, required = false,
+  if valid_580160 != nil:
+    section.add "prettyPrint", valid_580160
+  var valid_580161 = query.getOrDefault("filter")
+  valid_580161 = validateParameter(valid_580161, JString, required = false,
                                  default = nil)
-  if valid_594161 != nil:
-    section.add "filter", valid_594161
+  if valid_580161 != nil:
+    section.add "filter", valid_580161
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -2068,20 +2070,20 @@ proc validate_ReplicapoolZoneOperationsList_594148(path: JsonNode; query: JsonNo
   if body != nil:
     result.add "body", body
 
-proc call*(call_594162: Call_ReplicapoolZoneOperationsList_594147; path: JsonNode;
+proc call*(call_580162: Call_ReplicapoolZoneOperationsList_580147; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Retrieves the list of operation resources contained within the specified zone.
   ## 
-  let valid = call_594162.validator(path, query, header, formData, body)
-  let scheme = call_594162.pickScheme
+  let valid = call_580162.validator(path, query, header, formData, body)
+  let scheme = call_580162.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_594162.url(scheme.get, call_594162.host, call_594162.base,
-                         call_594162.route, valid.getOrDefault("path"),
+  let url = call_580162.url(scheme.get, call_580162.host, call_580162.base,
+                         call_580162.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_594162, url, valid)
+  result = hook(call_580162, url, valid)
 
-proc call*(call_594163: Call_ReplicapoolZoneOperationsList_594147; zone: string;
+proc call*(call_580163: Call_ReplicapoolZoneOperationsList_580147; zone: string;
           project: string; fields: string = ""; pageToken: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; maxResults: int = 500; key: string = "";
@@ -2112,35 +2114,35 @@ proc call*(call_594163: Call_ReplicapoolZoneOperationsList_594147; zone: string;
   ##              : Returns response with indentations and line breaks.
   ##   filter: string
   ##         : Optional. Filter expression for filtering listed resources.
-  var path_594164 = newJObject()
-  var query_594165 = newJObject()
-  add(path_594164, "zone", newJString(zone))
-  add(query_594165, "fields", newJString(fields))
-  add(query_594165, "pageToken", newJString(pageToken))
-  add(query_594165, "quotaUser", newJString(quotaUser))
-  add(query_594165, "alt", newJString(alt))
-  add(query_594165, "oauth_token", newJString(oauthToken))
-  add(query_594165, "userIp", newJString(userIp))
-  add(query_594165, "maxResults", newJInt(maxResults))
-  add(query_594165, "key", newJString(key))
-  add(path_594164, "project", newJString(project))
-  add(query_594165, "prettyPrint", newJBool(prettyPrint))
-  add(query_594165, "filter", newJString(filter))
-  result = call_594163.call(path_594164, query_594165, nil, nil, nil)
+  var path_580164 = newJObject()
+  var query_580165 = newJObject()
+  add(path_580164, "zone", newJString(zone))
+  add(query_580165, "fields", newJString(fields))
+  add(query_580165, "pageToken", newJString(pageToken))
+  add(query_580165, "quotaUser", newJString(quotaUser))
+  add(query_580165, "alt", newJString(alt))
+  add(query_580165, "oauth_token", newJString(oauthToken))
+  add(query_580165, "userIp", newJString(userIp))
+  add(query_580165, "maxResults", newJInt(maxResults))
+  add(query_580165, "key", newJString(key))
+  add(path_580164, "project", newJString(project))
+  add(query_580165, "prettyPrint", newJBool(prettyPrint))
+  add(query_580165, "filter", newJString(filter))
+  result = call_580163.call(path_580164, query_580165, nil, nil, nil)
 
-var replicapoolZoneOperationsList* = Call_ReplicapoolZoneOperationsList_594147(
+var replicapoolZoneOperationsList* = Call_ReplicapoolZoneOperationsList_580147(
     name: "replicapoolZoneOperationsList", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/{project}/zones/{zone}/operations",
-    validator: validate_ReplicapoolZoneOperationsList_594148,
-    base: "/replicapool/v1beta2/projects", url: url_ReplicapoolZoneOperationsList_594149,
+    validator: validate_ReplicapoolZoneOperationsList_580148,
+    base: "/replicapool/v1beta2/projects", url: url_ReplicapoolZoneOperationsList_580149,
     schemes: {Scheme.Https})
 type
-  Call_ReplicapoolZoneOperationsGet_594166 = ref object of OpenApiRestCall_593424
-proc url_ReplicapoolZoneOperationsGet_594168(protocol: Scheme; host: string;
+  Call_ReplicapoolZoneOperationsGet_580166 = ref object of OpenApiRestCall_579424
+proc url_ReplicapoolZoneOperationsGet_580168(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "project" in path, "`project` is a required path parameter"
   assert "zone" in path, "`zone` is a required path parameter"
@@ -2157,7 +2159,7 @@ proc url_ReplicapoolZoneOperationsGet_594168(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_ReplicapoolZoneOperationsGet_594167(path: JsonNode; query: JsonNode;
+proc validate_ReplicapoolZoneOperationsGet_580167(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Retrieves the specified zone-specific operation resource.
   ## 
@@ -2172,21 +2174,21 @@ proc validate_ReplicapoolZoneOperationsGet_594167(path: JsonNode; query: JsonNod
   ##          : Name of the project scoping this request.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `zone` field"
-  var valid_594169 = path.getOrDefault("zone")
-  valid_594169 = validateParameter(valid_594169, JString, required = true,
+  var valid_580169 = path.getOrDefault("zone")
+  valid_580169 = validateParameter(valid_580169, JString, required = true,
                                  default = nil)
-  if valid_594169 != nil:
-    section.add "zone", valid_594169
-  var valid_594170 = path.getOrDefault("operation")
-  valid_594170 = validateParameter(valid_594170, JString, required = true,
+  if valid_580169 != nil:
+    section.add "zone", valid_580169
+  var valid_580170 = path.getOrDefault("operation")
+  valid_580170 = validateParameter(valid_580170, JString, required = true,
                                  default = nil)
-  if valid_594170 != nil:
-    section.add "operation", valid_594170
-  var valid_594171 = path.getOrDefault("project")
-  valid_594171 = validateParameter(valid_594171, JString, required = true,
+  if valid_580170 != nil:
+    section.add "operation", valid_580170
+  var valid_580171 = path.getOrDefault("project")
+  valid_580171 = validateParameter(valid_580171, JString, required = true,
                                  default = nil)
-  if valid_594171 != nil:
-    section.add "project", valid_594171
+  if valid_580171 != nil:
+    section.add "project", valid_580171
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -2204,41 +2206,41 @@ proc validate_ReplicapoolZoneOperationsGet_594167(path: JsonNode; query: JsonNod
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_594172 = query.getOrDefault("fields")
-  valid_594172 = validateParameter(valid_594172, JString, required = false,
+  var valid_580172 = query.getOrDefault("fields")
+  valid_580172 = validateParameter(valid_580172, JString, required = false,
                                  default = nil)
-  if valid_594172 != nil:
-    section.add "fields", valid_594172
-  var valid_594173 = query.getOrDefault("quotaUser")
-  valid_594173 = validateParameter(valid_594173, JString, required = false,
+  if valid_580172 != nil:
+    section.add "fields", valid_580172
+  var valid_580173 = query.getOrDefault("quotaUser")
+  valid_580173 = validateParameter(valid_580173, JString, required = false,
                                  default = nil)
-  if valid_594173 != nil:
-    section.add "quotaUser", valid_594173
-  var valid_594174 = query.getOrDefault("alt")
-  valid_594174 = validateParameter(valid_594174, JString, required = false,
+  if valid_580173 != nil:
+    section.add "quotaUser", valid_580173
+  var valid_580174 = query.getOrDefault("alt")
+  valid_580174 = validateParameter(valid_580174, JString, required = false,
                                  default = newJString("json"))
-  if valid_594174 != nil:
-    section.add "alt", valid_594174
-  var valid_594175 = query.getOrDefault("oauth_token")
-  valid_594175 = validateParameter(valid_594175, JString, required = false,
+  if valid_580174 != nil:
+    section.add "alt", valid_580174
+  var valid_580175 = query.getOrDefault("oauth_token")
+  valid_580175 = validateParameter(valid_580175, JString, required = false,
                                  default = nil)
-  if valid_594175 != nil:
-    section.add "oauth_token", valid_594175
-  var valid_594176 = query.getOrDefault("userIp")
-  valid_594176 = validateParameter(valid_594176, JString, required = false,
+  if valid_580175 != nil:
+    section.add "oauth_token", valid_580175
+  var valid_580176 = query.getOrDefault("userIp")
+  valid_580176 = validateParameter(valid_580176, JString, required = false,
                                  default = nil)
-  if valid_594176 != nil:
-    section.add "userIp", valid_594176
-  var valid_594177 = query.getOrDefault("key")
-  valid_594177 = validateParameter(valid_594177, JString, required = false,
+  if valid_580176 != nil:
+    section.add "userIp", valid_580176
+  var valid_580177 = query.getOrDefault("key")
+  valid_580177 = validateParameter(valid_580177, JString, required = false,
                                  default = nil)
-  if valid_594177 != nil:
-    section.add "key", valid_594177
-  var valid_594178 = query.getOrDefault("prettyPrint")
-  valid_594178 = validateParameter(valid_594178, JBool, required = false,
+  if valid_580177 != nil:
+    section.add "key", valid_580177
+  var valid_580178 = query.getOrDefault("prettyPrint")
+  valid_580178 = validateParameter(valid_580178, JBool, required = false,
                                  default = newJBool(true))
-  if valid_594178 != nil:
-    section.add "prettyPrint", valid_594178
+  if valid_580178 != nil:
+    section.add "prettyPrint", valid_580178
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -2247,20 +2249,20 @@ proc validate_ReplicapoolZoneOperationsGet_594167(path: JsonNode; query: JsonNod
   if body != nil:
     result.add "body", body
 
-proc call*(call_594179: Call_ReplicapoolZoneOperationsGet_594166; path: JsonNode;
+proc call*(call_580179: Call_ReplicapoolZoneOperationsGet_580166; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Retrieves the specified zone-specific operation resource.
   ## 
-  let valid = call_594179.validator(path, query, header, formData, body)
-  let scheme = call_594179.pickScheme
+  let valid = call_580179.validator(path, query, header, formData, body)
+  let scheme = call_580179.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_594179.url(scheme.get, call_594179.host, call_594179.base,
-                         call_594179.route, valid.getOrDefault("path"),
+  let url = call_580179.url(scheme.get, call_580179.host, call_580179.base,
+                         call_580179.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_594179, url, valid)
+  result = hook(call_580179, url, valid)
 
-proc call*(call_594180: Call_ReplicapoolZoneOperationsGet_594166; zone: string;
+proc call*(call_580180: Call_ReplicapoolZoneOperationsGet_580166; zone: string;
           operation: string; project: string; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; key: string = ""; prettyPrint: bool = true): Recallable =
@@ -2286,30 +2288,120 @@ proc call*(call_594180: Call_ReplicapoolZoneOperationsGet_594166; zone: string;
   ##          : Name of the project scoping this request.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_594181 = newJObject()
-  var query_594182 = newJObject()
-  add(path_594181, "zone", newJString(zone))
-  add(query_594182, "fields", newJString(fields))
-  add(query_594182, "quotaUser", newJString(quotaUser))
-  add(query_594182, "alt", newJString(alt))
-  add(path_594181, "operation", newJString(operation))
-  add(query_594182, "oauth_token", newJString(oauthToken))
-  add(query_594182, "userIp", newJString(userIp))
-  add(query_594182, "key", newJString(key))
-  add(path_594181, "project", newJString(project))
-  add(query_594182, "prettyPrint", newJBool(prettyPrint))
-  result = call_594180.call(path_594181, query_594182, nil, nil, nil)
+  var path_580181 = newJObject()
+  var query_580182 = newJObject()
+  add(path_580181, "zone", newJString(zone))
+  add(query_580182, "fields", newJString(fields))
+  add(query_580182, "quotaUser", newJString(quotaUser))
+  add(query_580182, "alt", newJString(alt))
+  add(path_580181, "operation", newJString(operation))
+  add(query_580182, "oauth_token", newJString(oauthToken))
+  add(query_580182, "userIp", newJString(userIp))
+  add(query_580182, "key", newJString(key))
+  add(path_580181, "project", newJString(project))
+  add(query_580182, "prettyPrint", newJBool(prettyPrint))
+  result = call_580180.call(path_580181, query_580182, nil, nil, nil)
 
-var replicapoolZoneOperationsGet* = Call_ReplicapoolZoneOperationsGet_594166(
+var replicapoolZoneOperationsGet* = Call_ReplicapoolZoneOperationsGet_580166(
     name: "replicapoolZoneOperationsGet", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com",
     route: "/{project}/zones/{zone}/operations/{operation}",
-    validator: validate_ReplicapoolZoneOperationsGet_594167,
-    base: "/replicapool/v1beta2/projects", url: url_ReplicapoolZoneOperationsGet_594168,
+    validator: validate_ReplicapoolZoneOperationsGet_580167,
+    base: "/replicapool/v1beta2/projects", url: url_ReplicapoolZoneOperationsGet_580168,
     schemes: {Scheme.Https})
 export
   rest
 
+type
+  GoogleAuth = ref object
+    endpoint*: Uri
+    token: string
+    expiry*: float64
+    issued*: float64
+    email: string
+    key: string
+    scope*: seq[string]
+    form: string
+    digest: Hash
+
+const
+  endpoint = "https://www.googleapis.com/oauth2/v4/token".parseUri
+var auth = GoogleAuth(endpoint: endpoint)
+proc hash(auth: GoogleAuth): Hash =
+  ## yield differing values for effectively different auth payloads
+  result = hash($auth.endpoint)
+  result = result !& hash(auth.email)
+  result = result !& hash(auth.key)
+  result = result !& hash(auth.scope.join(" "))
+  result = !$result
+
+proc newAuthenticator*(path: string): GoogleAuth =
+  let
+    input = readFile(path)
+    js = parseJson(input)
+  auth.email = js["client_email"].getStr
+  auth.key = js["private_key"].getStr
+  result = auth
+
+proc store(auth: var GoogleAuth; token: string; expiry: int; form: string) =
+  auth.token = token
+  auth.issued = epochTime()
+  auth.expiry = auth.issued + expiry.float64
+  auth.form = form
+  auth.digest = auth.hash
+
+proc authenticate*(fresh: float64 = -3600.0; lifetime: int = 3600): Future[bool] {.async.} =
+  ## get or refresh an authentication token; provide `fresh`
+  ## to ensure that the token won't expire in the next N seconds.
+  ## provide `lifetime` to indicate how long the token should last.
+  let clock = epochTime()
+  if auth.expiry > clock + fresh:
+    if auth.hash == auth.digest:
+      return true
+  let
+    expiry = clock.int + lifetime
+    header = JOSEHeader(alg: RS256, typ: "JWT")
+    claims = %*{"iss": auth.email, "scope": auth.scope.join(" "),
+              "aud": "https://www.googleapis.com/oauth2/v4/token", "exp": expiry,
+              "iat": clock.int}
+  var tok = JWT(header: header, claims: toClaims(claims))
+  tok.sign(auth.key)
+  let post = encodeQuery({"grant_type": "urn:ietf:params:oauth:grant-type:jwt-bearer",
+                       "assertion": $tok}, usePlus = false, omitEq = false)
+  var client = newAsyncHttpClient()
+  client.headers = newHttpHeaders({"Content-Type": "application/x-www-form-urlencoded",
+                                 "Content-Length": $post.len})
+  let response = await client.request($auth.endpoint, HttpPost, body = post)
+  if not response.code.is2xx:
+    return false
+  let body = await response.body
+  client.close
+  try:
+    let js = parseJson(body)
+    auth.store(js["access_token"].getStr, js["expires_in"].getInt,
+               js["token_type"].getStr)
+  except KeyError:
+    return false
+  except JsonParsingError:
+    return false
+  return true
+
+proc composeQueryString(query: JsonNode): string =
+  var qs: seq[KeyVal]
+  if query == nil:
+    return ""
+  for k, v in query.pairs:
+    qs.add (key: k, val: v.getStr)
+  result = encodeQuery(qs, usePlus = false, omitEq = false)
+
 method hook(call: OpenApiRestCall; url: Uri; input: JsonNode): Recallable {.base.} =
-  let headers = massageHeaders(input.getOrDefault("header"))
-  result = newRecallable(call, url, headers, input.getOrDefault("body").getStr)
+  var headers = massageHeaders(input.getOrDefault("header"))
+  let body = input.getOrDefault("body").getStr
+  if auth.scope.len == 0:
+    raise newException(ValueError, "specify authentication scopes")
+  if not waitfor authenticate(fresh = 10.0):
+    raise newException(IOError, "unable to refresh authentication token")
+  headers.add ("Authorization", auth.form & " " & auth.token)
+  headers.add ("Content-Type", "application/json")
+  headers.add ("Content-Length", $body.len)
+  result = newRecallable(call, url, headers, body = body)

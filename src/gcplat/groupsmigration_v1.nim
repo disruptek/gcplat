@@ -1,6 +1,7 @@
 
 import
-  json, options, hashes, uri, openapi/rest, os, uri, strutils, httpcore
+  json, options, hashes, uri, rest, os, uri, strutils, times, httpcore, httpclient,
+  asyncdispatch, jwt
 
 ## auto-generated via openapi macro
 ## title: Groups Migration
@@ -28,15 +29,15 @@ type
     url*: proc (protocol: Scheme; host: string; base: string; route: string;
               path: JsonNode; query: JsonNode): Uri
 
-  OpenApiRestCall_593408 = ref object of OpenApiRestCall
+  OpenApiRestCall_579408 = ref object of OpenApiRestCall
 proc hash(scheme: Scheme): Hash {.used.} =
   result = hash(ord(scheme))
 
-proc clone[T: OpenApiRestCall_593408](t: T): T {.used.} =
+proc clone[T: OpenApiRestCall_579408](t: T): T {.used.} =
   result = T(name: t.name, meth: t.meth, host: t.host, base: t.base, route: t.route,
            schemes: t.schemes, validator: t.validator, url: t.url)
 
-proc pickScheme(t: OpenApiRestCall_593408): Option[Scheme] {.used.} =
+proc pickScheme(t: OpenApiRestCall_579408): Option[Scheme] {.used.} =
   ## select a supported scheme from a set of candidates
   for scheme in Scheme.low ..
       Scheme.high:
@@ -104,14 +105,15 @@ proc hydratePath(input: JsonNode; segments: seq[PathToken]): Option[string] =
 
 const
   gcpServiceName = "groupsmigration"
+proc composeQueryString(query: JsonNode): string
 method hook(call: OpenApiRestCall; url: Uri; input: JsonNode): Recallable {.base.}
 type
-  Call_GroupsmigrationArchiveInsert_593676 = ref object of OpenApiRestCall_593408
-proc url_GroupsmigrationArchiveInsert_593678(protocol: Scheme; host: string;
+  Call_GroupsmigrationArchiveInsert_579676 = ref object of OpenApiRestCall_579408
+proc url_GroupsmigrationArchiveInsert_579678(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "groupId" in path, "`groupId` is a required path parameter"
   const
@@ -123,7 +125,7 @@ proc url_GroupsmigrationArchiveInsert_593678(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_GroupsmigrationArchiveInsert_593677(path: JsonNode; query: JsonNode;
+proc validate_GroupsmigrationArchiveInsert_579677(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Inserts a new mail into the archive of the Google group.
   ## 
@@ -134,11 +136,11 @@ proc validate_GroupsmigrationArchiveInsert_593677(path: JsonNode; query: JsonNod
   ##          : The group ID
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `groupId` field"
-  var valid_593804 = path.getOrDefault("groupId")
-  valid_593804 = validateParameter(valid_593804, JString, required = true,
+  var valid_579804 = path.getOrDefault("groupId")
+  valid_579804 = validateParameter(valid_579804, JString, required = true,
                                  default = nil)
-  if valid_593804 != nil:
-    section.add "groupId", valid_593804
+  if valid_579804 != nil:
+    section.add "groupId", valid_579804
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -156,41 +158,41 @@ proc validate_GroupsmigrationArchiveInsert_593677(path: JsonNode; query: JsonNod
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_593805 = query.getOrDefault("fields")
-  valid_593805 = validateParameter(valid_593805, JString, required = false,
+  var valid_579805 = query.getOrDefault("fields")
+  valid_579805 = validateParameter(valid_579805, JString, required = false,
                                  default = nil)
-  if valid_593805 != nil:
-    section.add "fields", valid_593805
-  var valid_593806 = query.getOrDefault("quotaUser")
-  valid_593806 = validateParameter(valid_593806, JString, required = false,
+  if valid_579805 != nil:
+    section.add "fields", valid_579805
+  var valid_579806 = query.getOrDefault("quotaUser")
+  valid_579806 = validateParameter(valid_579806, JString, required = false,
                                  default = nil)
-  if valid_593806 != nil:
-    section.add "quotaUser", valid_593806
-  var valid_593820 = query.getOrDefault("alt")
-  valid_593820 = validateParameter(valid_593820, JString, required = false,
+  if valid_579806 != nil:
+    section.add "quotaUser", valid_579806
+  var valid_579820 = query.getOrDefault("alt")
+  valid_579820 = validateParameter(valid_579820, JString, required = false,
                                  default = newJString("json"))
-  if valid_593820 != nil:
-    section.add "alt", valid_593820
-  var valid_593821 = query.getOrDefault("oauth_token")
-  valid_593821 = validateParameter(valid_593821, JString, required = false,
+  if valid_579820 != nil:
+    section.add "alt", valid_579820
+  var valid_579821 = query.getOrDefault("oauth_token")
+  valid_579821 = validateParameter(valid_579821, JString, required = false,
                                  default = nil)
-  if valid_593821 != nil:
-    section.add "oauth_token", valid_593821
-  var valid_593822 = query.getOrDefault("userIp")
-  valid_593822 = validateParameter(valid_593822, JString, required = false,
+  if valid_579821 != nil:
+    section.add "oauth_token", valid_579821
+  var valid_579822 = query.getOrDefault("userIp")
+  valid_579822 = validateParameter(valid_579822, JString, required = false,
                                  default = nil)
-  if valid_593822 != nil:
-    section.add "userIp", valid_593822
-  var valid_593823 = query.getOrDefault("key")
-  valid_593823 = validateParameter(valid_593823, JString, required = false,
+  if valid_579822 != nil:
+    section.add "userIp", valid_579822
+  var valid_579823 = query.getOrDefault("key")
+  valid_579823 = validateParameter(valid_579823, JString, required = false,
                                  default = nil)
-  if valid_593823 != nil:
-    section.add "key", valid_593823
-  var valid_593824 = query.getOrDefault("prettyPrint")
-  valid_593824 = validateParameter(valid_593824, JBool, required = false,
+  if valid_579823 != nil:
+    section.add "key", valid_579823
+  var valid_579824 = query.getOrDefault("prettyPrint")
+  valid_579824 = validateParameter(valid_579824, JBool, required = false,
                                  default = newJBool(true))
-  if valid_593824 != nil:
-    section.add "prettyPrint", valid_593824
+  if valid_579824 != nil:
+    section.add "prettyPrint", valid_579824
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -199,20 +201,20 @@ proc validate_GroupsmigrationArchiveInsert_593677(path: JsonNode; query: JsonNod
   if body != nil:
     result.add "body", body
 
-proc call*(call_593847: Call_GroupsmigrationArchiveInsert_593676; path: JsonNode;
+proc call*(call_579847: Call_GroupsmigrationArchiveInsert_579676; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Inserts a new mail into the archive of the Google group.
   ## 
-  let valid = call_593847.validator(path, query, header, formData, body)
-  let scheme = call_593847.pickScheme
+  let valid = call_579847.validator(path, query, header, formData, body)
+  let scheme = call_579847.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_593847.url(scheme.get, call_593847.host, call_593847.base,
-                         call_593847.route, valid.getOrDefault("path"),
+  let url = call_579847.url(scheme.get, call_579847.host, call_579847.base,
+                         call_579847.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_593847, url, valid)
+  result = hook(call_579847, url, valid)
 
-proc call*(call_593918: Call_GroupsmigrationArchiveInsert_593676; groupId: string;
+proc call*(call_579918: Call_GroupsmigrationArchiveInsert_579676; groupId: string;
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           oauthToken: string = ""; userIp: string = ""; key: string = "";
           prettyPrint: bool = true): Recallable =
@@ -234,27 +236,117 @@ proc call*(call_593918: Call_GroupsmigrationArchiveInsert_593676; groupId: strin
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_593919 = newJObject()
-  var query_593921 = newJObject()
-  add(path_593919, "groupId", newJString(groupId))
-  add(query_593921, "fields", newJString(fields))
-  add(query_593921, "quotaUser", newJString(quotaUser))
-  add(query_593921, "alt", newJString(alt))
-  add(query_593921, "oauth_token", newJString(oauthToken))
-  add(query_593921, "userIp", newJString(userIp))
-  add(query_593921, "key", newJString(key))
-  add(query_593921, "prettyPrint", newJBool(prettyPrint))
-  result = call_593918.call(path_593919, query_593921, nil, nil, nil)
+  var path_579919 = newJObject()
+  var query_579921 = newJObject()
+  add(path_579919, "groupId", newJString(groupId))
+  add(query_579921, "fields", newJString(fields))
+  add(query_579921, "quotaUser", newJString(quotaUser))
+  add(query_579921, "alt", newJString(alt))
+  add(query_579921, "oauth_token", newJString(oauthToken))
+  add(query_579921, "userIp", newJString(userIp))
+  add(query_579921, "key", newJString(key))
+  add(query_579921, "prettyPrint", newJBool(prettyPrint))
+  result = call_579918.call(path_579919, query_579921, nil, nil, nil)
 
-var groupsmigrationArchiveInsert* = Call_GroupsmigrationArchiveInsert_593676(
+var groupsmigrationArchiveInsert* = Call_GroupsmigrationArchiveInsert_579676(
     name: "groupsmigrationArchiveInsert", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com", route: "/{groupId}/archive",
-    validator: validate_GroupsmigrationArchiveInsert_593677,
-    base: "/groups/v1/groups", url: url_GroupsmigrationArchiveInsert_593678,
+    validator: validate_GroupsmigrationArchiveInsert_579677,
+    base: "/groups/v1/groups", url: url_GroupsmigrationArchiveInsert_579678,
     schemes: {Scheme.Https})
 export
   rest
 
+type
+  GoogleAuth = ref object
+    endpoint*: Uri
+    token: string
+    expiry*: float64
+    issued*: float64
+    email: string
+    key: string
+    scope*: seq[string]
+    form: string
+    digest: Hash
+
+const
+  endpoint = "https://www.googleapis.com/oauth2/v4/token".parseUri
+var auth = GoogleAuth(endpoint: endpoint)
+proc hash(auth: GoogleAuth): Hash =
+  ## yield differing values for effectively different auth payloads
+  result = hash($auth.endpoint)
+  result = result !& hash(auth.email)
+  result = result !& hash(auth.key)
+  result = result !& hash(auth.scope.join(" "))
+  result = !$result
+
+proc newAuthenticator*(path: string): GoogleAuth =
+  let
+    input = readFile(path)
+    js = parseJson(input)
+  auth.email = js["client_email"].getStr
+  auth.key = js["private_key"].getStr
+  result = auth
+
+proc store(auth: var GoogleAuth; token: string; expiry: int; form: string) =
+  auth.token = token
+  auth.issued = epochTime()
+  auth.expiry = auth.issued + expiry.float64
+  auth.form = form
+  auth.digest = auth.hash
+
+proc authenticate*(fresh: float64 = -3600.0; lifetime: int = 3600): Future[bool] {.async.} =
+  ## get or refresh an authentication token; provide `fresh`
+  ## to ensure that the token won't expire in the next N seconds.
+  ## provide `lifetime` to indicate how long the token should last.
+  let clock = epochTime()
+  if auth.expiry > clock + fresh:
+    if auth.hash == auth.digest:
+      return true
+  let
+    expiry = clock.int + lifetime
+    header = JOSEHeader(alg: RS256, typ: "JWT")
+    claims = %*{"iss": auth.email, "scope": auth.scope.join(" "),
+              "aud": "https://www.googleapis.com/oauth2/v4/token", "exp": expiry,
+              "iat": clock.int}
+  var tok = JWT(header: header, claims: toClaims(claims))
+  tok.sign(auth.key)
+  let post = encodeQuery({"grant_type": "urn:ietf:params:oauth:grant-type:jwt-bearer",
+                       "assertion": $tok}, usePlus = false, omitEq = false)
+  var client = newAsyncHttpClient()
+  client.headers = newHttpHeaders({"Content-Type": "application/x-www-form-urlencoded",
+                                 "Content-Length": $post.len})
+  let response = await client.request($auth.endpoint, HttpPost, body = post)
+  if not response.code.is2xx:
+    return false
+  let body = await response.body
+  client.close
+  try:
+    let js = parseJson(body)
+    auth.store(js["access_token"].getStr, js["expires_in"].getInt,
+               js["token_type"].getStr)
+  except KeyError:
+    return false
+  except JsonParsingError:
+    return false
+  return true
+
+proc composeQueryString(query: JsonNode): string =
+  var qs: seq[KeyVal]
+  if query == nil:
+    return ""
+  for k, v in query.pairs:
+    qs.add (key: k, val: v.getStr)
+  result = encodeQuery(qs, usePlus = false, omitEq = false)
+
 method hook(call: OpenApiRestCall; url: Uri; input: JsonNode): Recallable {.base.} =
-  let headers = massageHeaders(input.getOrDefault("header"))
-  result = newRecallable(call, url, headers, input.getOrDefault("body").getStr)
+  var headers = massageHeaders(input.getOrDefault("header"))
+  let body = input.getOrDefault("body").getStr
+  if auth.scope.len == 0:
+    raise newException(ValueError, "specify authentication scopes")
+  if not waitfor authenticate(fresh = 10.0):
+    raise newException(IOError, "unable to refresh authentication token")
+  headers.add ("Authorization", auth.form & " " & auth.token)
+  headers.add ("Content-Type", "application/json")
+  headers.add ("Content-Length", $body.len)
+  result = newRecallable(call, url, headers, body = body)

@@ -1,6 +1,7 @@
 
 import
-  json, options, hashes, uri, openapi/rest, os, uri, strutils, httpcore
+  json, options, hashes, uri, rest, os, uri, strutils, times, httpcore, httpclient,
+  asyncdispatch, jwt
 
 ## auto-generated via openapi macro
 ## title: Blogger
@@ -28,15 +29,15 @@ type
     url*: proc (protocol: Scheme; host: string; base: string; route: string;
               path: JsonNode; query: JsonNode): Uri
 
-  OpenApiRestCall_597408 = ref object of OpenApiRestCall
+  OpenApiRestCall_579408 = ref object of OpenApiRestCall
 proc hash(scheme: Scheme): Hash {.used.} =
   result = hash(ord(scheme))
 
-proc clone[T: OpenApiRestCall_597408](t: T): T {.used.} =
+proc clone[T: OpenApiRestCall_579408](t: T): T {.used.} =
   result = T(name: t.name, meth: t.meth, host: t.host, base: t.base, route: t.route,
            schemes: t.schemes, validator: t.validator, url: t.url)
 
-proc pickScheme(t: OpenApiRestCall_597408): Option[Scheme] {.used.} =
+proc pickScheme(t: OpenApiRestCall_579408): Option[Scheme] {.used.} =
   ## select a supported scheme from a set of candidates
   for scheme in Scheme.low ..
       Scheme.high:
@@ -104,14 +105,15 @@ proc hydratePath(input: JsonNode; segments: seq[PathToken]): Option[string] =
 
 const
   gcpServiceName = "blogger"
+proc composeQueryString(query: JsonNode): string
 method hook(call: OpenApiRestCall; url: Uri; input: JsonNode): Recallable {.base.}
 type
-  Call_BloggerBlogsGet_597676 = ref object of OpenApiRestCall_597408
-proc url_BloggerBlogsGet_597678(protocol: Scheme; host: string; base: string;
+  Call_BloggerBlogsGet_579676 = ref object of OpenApiRestCall_579408
+proc url_BloggerBlogsGet_579678(protocol: Scheme; host: string; base: string;
                                route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "blogId" in path, "`blogId` is a required path parameter"
   const
@@ -122,7 +124,7 @@ proc url_BloggerBlogsGet_597678(protocol: Scheme; host: string; base: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_BloggerBlogsGet_597677(path: JsonNode; query: JsonNode;
+proc validate_BloggerBlogsGet_579677(path: JsonNode; query: JsonNode;
                                     header: JsonNode; formData: JsonNode;
                                     body: JsonNode): JsonNode =
   ## Gets one blog by id.
@@ -134,11 +136,11 @@ proc validate_BloggerBlogsGet_597677(path: JsonNode; query: JsonNode;
   ##         : The ID of the blog to get.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `blogId` field"
-  var valid_597804 = path.getOrDefault("blogId")
-  valid_597804 = validateParameter(valid_597804, JString, required = true,
+  var valid_579804 = path.getOrDefault("blogId")
+  valid_579804 = validateParameter(valid_579804, JString, required = true,
                                  default = nil)
-  if valid_597804 != nil:
-    section.add "blogId", valid_597804
+  if valid_579804 != nil:
+    section.add "blogId", valid_579804
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -156,41 +158,41 @@ proc validate_BloggerBlogsGet_597677(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_597805 = query.getOrDefault("fields")
-  valid_597805 = validateParameter(valid_597805, JString, required = false,
+  var valid_579805 = query.getOrDefault("fields")
+  valid_579805 = validateParameter(valid_579805, JString, required = false,
                                  default = nil)
-  if valid_597805 != nil:
-    section.add "fields", valid_597805
-  var valid_597806 = query.getOrDefault("quotaUser")
-  valid_597806 = validateParameter(valid_597806, JString, required = false,
+  if valid_579805 != nil:
+    section.add "fields", valid_579805
+  var valid_579806 = query.getOrDefault("quotaUser")
+  valid_579806 = validateParameter(valid_579806, JString, required = false,
                                  default = nil)
-  if valid_597806 != nil:
-    section.add "quotaUser", valid_597806
-  var valid_597820 = query.getOrDefault("alt")
-  valid_597820 = validateParameter(valid_597820, JString, required = false,
+  if valid_579806 != nil:
+    section.add "quotaUser", valid_579806
+  var valid_579820 = query.getOrDefault("alt")
+  valid_579820 = validateParameter(valid_579820, JString, required = false,
                                  default = newJString("json"))
-  if valid_597820 != nil:
-    section.add "alt", valid_597820
-  var valid_597821 = query.getOrDefault("oauth_token")
-  valid_597821 = validateParameter(valid_597821, JString, required = false,
+  if valid_579820 != nil:
+    section.add "alt", valid_579820
+  var valid_579821 = query.getOrDefault("oauth_token")
+  valid_579821 = validateParameter(valid_579821, JString, required = false,
                                  default = nil)
-  if valid_597821 != nil:
-    section.add "oauth_token", valid_597821
-  var valid_597822 = query.getOrDefault("userIp")
-  valid_597822 = validateParameter(valid_597822, JString, required = false,
+  if valid_579821 != nil:
+    section.add "oauth_token", valid_579821
+  var valid_579822 = query.getOrDefault("userIp")
+  valid_579822 = validateParameter(valid_579822, JString, required = false,
                                  default = nil)
-  if valid_597822 != nil:
-    section.add "userIp", valid_597822
-  var valid_597823 = query.getOrDefault("key")
-  valid_597823 = validateParameter(valid_597823, JString, required = false,
+  if valid_579822 != nil:
+    section.add "userIp", valid_579822
+  var valid_579823 = query.getOrDefault("key")
+  valid_579823 = validateParameter(valid_579823, JString, required = false,
                                  default = nil)
-  if valid_597823 != nil:
-    section.add "key", valid_597823
-  var valid_597824 = query.getOrDefault("prettyPrint")
-  valid_597824 = validateParameter(valid_597824, JBool, required = false,
+  if valid_579823 != nil:
+    section.add "key", valid_579823
+  var valid_579824 = query.getOrDefault("prettyPrint")
+  valid_579824 = validateParameter(valid_579824, JBool, required = false,
                                  default = newJBool(true))
-  if valid_597824 != nil:
-    section.add "prettyPrint", valid_597824
+  if valid_579824 != nil:
+    section.add "prettyPrint", valid_579824
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -199,20 +201,20 @@ proc validate_BloggerBlogsGet_597677(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_597847: Call_BloggerBlogsGet_597676; path: JsonNode; query: JsonNode;
+proc call*(call_579847: Call_BloggerBlogsGet_579676; path: JsonNode; query: JsonNode;
           header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Gets one blog by id.
   ## 
-  let valid = call_597847.validator(path, query, header, formData, body)
-  let scheme = call_597847.pickScheme
+  let valid = call_579847.validator(path, query, header, formData, body)
+  let scheme = call_579847.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_597847.url(scheme.get, call_597847.host, call_597847.base,
-                         call_597847.route, valid.getOrDefault("path"),
+  let url = call_579847.url(scheme.get, call_579847.host, call_579847.base,
+                         call_579847.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_597847, url, valid)
+  result = hook(call_579847, url, valid)
 
-proc call*(call_597918: Call_BloggerBlogsGet_597676; blogId: string;
+proc call*(call_579918: Call_BloggerBlogsGet_579676; blogId: string;
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           oauthToken: string = ""; userIp: string = ""; key: string = "";
           prettyPrint: bool = true): Recallable =
@@ -234,29 +236,29 @@ proc call*(call_597918: Call_BloggerBlogsGet_597676; blogId: string;
   ##         : The ID of the blog to get.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_597919 = newJObject()
-  var query_597921 = newJObject()
-  add(query_597921, "fields", newJString(fields))
-  add(query_597921, "quotaUser", newJString(quotaUser))
-  add(query_597921, "alt", newJString(alt))
-  add(query_597921, "oauth_token", newJString(oauthToken))
-  add(query_597921, "userIp", newJString(userIp))
-  add(query_597921, "key", newJString(key))
-  add(path_597919, "blogId", newJString(blogId))
-  add(query_597921, "prettyPrint", newJBool(prettyPrint))
-  result = call_597918.call(path_597919, query_597921, nil, nil, nil)
+  var path_579919 = newJObject()
+  var query_579921 = newJObject()
+  add(query_579921, "fields", newJString(fields))
+  add(query_579921, "quotaUser", newJString(quotaUser))
+  add(query_579921, "alt", newJString(alt))
+  add(query_579921, "oauth_token", newJString(oauthToken))
+  add(query_579921, "userIp", newJString(userIp))
+  add(query_579921, "key", newJString(key))
+  add(path_579919, "blogId", newJString(blogId))
+  add(query_579921, "prettyPrint", newJBool(prettyPrint))
+  result = call_579918.call(path_579919, query_579921, nil, nil, nil)
 
-var bloggerBlogsGet* = Call_BloggerBlogsGet_597676(name: "bloggerBlogsGet",
+var bloggerBlogsGet* = Call_BloggerBlogsGet_579676(name: "bloggerBlogsGet",
     meth: HttpMethod.HttpGet, host: "www.googleapis.com", route: "/blogs/{blogId}",
-    validator: validate_BloggerBlogsGet_597677, base: "/blogger/v2",
-    url: url_BloggerBlogsGet_597678, schemes: {Scheme.Https})
+    validator: validate_BloggerBlogsGet_579677, base: "/blogger/v2",
+    url: url_BloggerBlogsGet_579678, schemes: {Scheme.Https})
 type
-  Call_BloggerPagesList_597960 = ref object of OpenApiRestCall_597408
-proc url_BloggerPagesList_597962(protocol: Scheme; host: string; base: string;
+  Call_BloggerPagesList_579960 = ref object of OpenApiRestCall_579408
+proc url_BloggerPagesList_579962(protocol: Scheme; host: string; base: string;
                                 route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "blogId" in path, "`blogId` is a required path parameter"
   const
@@ -268,7 +270,7 @@ proc url_BloggerPagesList_597962(protocol: Scheme; host: string; base: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_BloggerPagesList_597961(path: JsonNode; query: JsonNode;
+proc validate_BloggerPagesList_579961(path: JsonNode; query: JsonNode;
                                      header: JsonNode; formData: JsonNode;
                                      body: JsonNode): JsonNode =
   ## Retrieves pages for a blog, possibly filtered.
@@ -280,11 +282,11 @@ proc validate_BloggerPagesList_597961(path: JsonNode; query: JsonNode;
   ##         : ID of the blog to fetch pages from.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `blogId` field"
-  var valid_597963 = path.getOrDefault("blogId")
-  valid_597963 = validateParameter(valid_597963, JString, required = true,
+  var valid_579963 = path.getOrDefault("blogId")
+  valid_579963 = validateParameter(valid_579963, JString, required = true,
                                  default = nil)
-  if valid_597963 != nil:
-    section.add "blogId", valid_597963
+  if valid_579963 != nil:
+    section.add "blogId", valid_579963
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -304,45 +306,45 @@ proc validate_BloggerPagesList_597961(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_597964 = query.getOrDefault("fields")
-  valid_597964 = validateParameter(valid_597964, JString, required = false,
+  var valid_579964 = query.getOrDefault("fields")
+  valid_579964 = validateParameter(valid_579964, JString, required = false,
                                  default = nil)
-  if valid_597964 != nil:
-    section.add "fields", valid_597964
-  var valid_597965 = query.getOrDefault("quotaUser")
-  valid_597965 = validateParameter(valid_597965, JString, required = false,
+  if valid_579964 != nil:
+    section.add "fields", valid_579964
+  var valid_579965 = query.getOrDefault("quotaUser")
+  valid_579965 = validateParameter(valid_579965, JString, required = false,
                                  default = nil)
-  if valid_597965 != nil:
-    section.add "quotaUser", valid_597965
-  var valid_597966 = query.getOrDefault("alt")
-  valid_597966 = validateParameter(valid_597966, JString, required = false,
+  if valid_579965 != nil:
+    section.add "quotaUser", valid_579965
+  var valid_579966 = query.getOrDefault("alt")
+  valid_579966 = validateParameter(valid_579966, JString, required = false,
                                  default = newJString("json"))
-  if valid_597966 != nil:
-    section.add "alt", valid_597966
-  var valid_597967 = query.getOrDefault("oauth_token")
-  valid_597967 = validateParameter(valid_597967, JString, required = false,
+  if valid_579966 != nil:
+    section.add "alt", valid_579966
+  var valid_579967 = query.getOrDefault("oauth_token")
+  valid_579967 = validateParameter(valid_579967, JString, required = false,
                                  default = nil)
-  if valid_597967 != nil:
-    section.add "oauth_token", valid_597967
-  var valid_597968 = query.getOrDefault("userIp")
-  valid_597968 = validateParameter(valid_597968, JString, required = false,
+  if valid_579967 != nil:
+    section.add "oauth_token", valid_579967
+  var valid_579968 = query.getOrDefault("userIp")
+  valid_579968 = validateParameter(valid_579968, JString, required = false,
                                  default = nil)
-  if valid_597968 != nil:
-    section.add "userIp", valid_597968
-  var valid_597969 = query.getOrDefault("key")
-  valid_597969 = validateParameter(valid_597969, JString, required = false,
+  if valid_579968 != nil:
+    section.add "userIp", valid_579968
+  var valid_579969 = query.getOrDefault("key")
+  valid_579969 = validateParameter(valid_579969, JString, required = false,
                                  default = nil)
-  if valid_597969 != nil:
-    section.add "key", valid_597969
-  var valid_597970 = query.getOrDefault("fetchBodies")
-  valid_597970 = validateParameter(valid_597970, JBool, required = false, default = nil)
-  if valid_597970 != nil:
-    section.add "fetchBodies", valid_597970
-  var valid_597971 = query.getOrDefault("prettyPrint")
-  valid_597971 = validateParameter(valid_597971, JBool, required = false,
+  if valid_579969 != nil:
+    section.add "key", valid_579969
+  var valid_579970 = query.getOrDefault("fetchBodies")
+  valid_579970 = validateParameter(valid_579970, JBool, required = false, default = nil)
+  if valid_579970 != nil:
+    section.add "fetchBodies", valid_579970
+  var valid_579971 = query.getOrDefault("prettyPrint")
+  valid_579971 = validateParameter(valid_579971, JBool, required = false,
                                  default = newJBool(true))
-  if valid_597971 != nil:
-    section.add "prettyPrint", valid_597971
+  if valid_579971 != nil:
+    section.add "prettyPrint", valid_579971
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -351,20 +353,20 @@ proc validate_BloggerPagesList_597961(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_597972: Call_BloggerPagesList_597960; path: JsonNode;
+proc call*(call_579972: Call_BloggerPagesList_579960; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Retrieves pages for a blog, possibly filtered.
   ## 
-  let valid = call_597972.validator(path, query, header, formData, body)
-  let scheme = call_597972.pickScheme
+  let valid = call_579972.validator(path, query, header, formData, body)
+  let scheme = call_579972.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_597972.url(scheme.get, call_597972.host, call_597972.base,
-                         call_597972.route, valid.getOrDefault("path"),
+  let url = call_579972.url(scheme.get, call_579972.host, call_579972.base,
+                         call_579972.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_597972, url, valid)
+  result = hook(call_579972, url, valid)
 
-proc call*(call_597973: Call_BloggerPagesList_597960; blogId: string;
+proc call*(call_579973: Call_BloggerPagesList_579960; blogId: string;
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           oauthToken: string = ""; userIp: string = ""; key: string = "";
           fetchBodies: bool = false; prettyPrint: bool = true): Recallable =
@@ -388,30 +390,30 @@ proc call*(call_597973: Call_BloggerPagesList_597960; blogId: string;
   ##         : ID of the blog to fetch pages from.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_597974 = newJObject()
-  var query_597975 = newJObject()
-  add(query_597975, "fields", newJString(fields))
-  add(query_597975, "quotaUser", newJString(quotaUser))
-  add(query_597975, "alt", newJString(alt))
-  add(query_597975, "oauth_token", newJString(oauthToken))
-  add(query_597975, "userIp", newJString(userIp))
-  add(query_597975, "key", newJString(key))
-  add(query_597975, "fetchBodies", newJBool(fetchBodies))
-  add(path_597974, "blogId", newJString(blogId))
-  add(query_597975, "prettyPrint", newJBool(prettyPrint))
-  result = call_597973.call(path_597974, query_597975, nil, nil, nil)
+  var path_579974 = newJObject()
+  var query_579975 = newJObject()
+  add(query_579975, "fields", newJString(fields))
+  add(query_579975, "quotaUser", newJString(quotaUser))
+  add(query_579975, "alt", newJString(alt))
+  add(query_579975, "oauth_token", newJString(oauthToken))
+  add(query_579975, "userIp", newJString(userIp))
+  add(query_579975, "key", newJString(key))
+  add(query_579975, "fetchBodies", newJBool(fetchBodies))
+  add(path_579974, "blogId", newJString(blogId))
+  add(query_579975, "prettyPrint", newJBool(prettyPrint))
+  result = call_579973.call(path_579974, query_579975, nil, nil, nil)
 
-var bloggerPagesList* = Call_BloggerPagesList_597960(name: "bloggerPagesList",
+var bloggerPagesList* = Call_BloggerPagesList_579960(name: "bloggerPagesList",
     meth: HttpMethod.HttpGet, host: "www.googleapis.com",
-    route: "/blogs/{blogId}/pages", validator: validate_BloggerPagesList_597961,
-    base: "/blogger/v2", url: url_BloggerPagesList_597962, schemes: {Scheme.Https})
+    route: "/blogs/{blogId}/pages", validator: validate_BloggerPagesList_579961,
+    base: "/blogger/v2", url: url_BloggerPagesList_579962, schemes: {Scheme.Https})
 type
-  Call_BloggerPagesGet_597976 = ref object of OpenApiRestCall_597408
-proc url_BloggerPagesGet_597978(protocol: Scheme; host: string; base: string;
+  Call_BloggerPagesGet_579976 = ref object of OpenApiRestCall_579408
+proc url_BloggerPagesGet_579978(protocol: Scheme; host: string; base: string;
                                route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "blogId" in path, "`blogId` is a required path parameter"
   assert "pageId" in path, "`pageId` is a required path parameter"
@@ -425,7 +427,7 @@ proc url_BloggerPagesGet_597978(protocol: Scheme; host: string; base: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_BloggerPagesGet_597977(path: JsonNode; query: JsonNode;
+proc validate_BloggerPagesGet_579977(path: JsonNode; query: JsonNode;
                                     header: JsonNode; formData: JsonNode;
                                     body: JsonNode): JsonNode =
   ## Gets one blog page by id.
@@ -439,16 +441,16 @@ proc validate_BloggerPagesGet_597977(path: JsonNode; query: JsonNode;
   ##         : ID of the blog containing the page.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `pageId` field"
-  var valid_597979 = path.getOrDefault("pageId")
-  valid_597979 = validateParameter(valid_597979, JString, required = true,
+  var valid_579979 = path.getOrDefault("pageId")
+  valid_579979 = validateParameter(valid_579979, JString, required = true,
                                  default = nil)
-  if valid_597979 != nil:
-    section.add "pageId", valid_597979
-  var valid_597980 = path.getOrDefault("blogId")
-  valid_597980 = validateParameter(valid_597980, JString, required = true,
+  if valid_579979 != nil:
+    section.add "pageId", valid_579979
+  var valid_579980 = path.getOrDefault("blogId")
+  valid_579980 = validateParameter(valid_579980, JString, required = true,
                                  default = nil)
-  if valid_597980 != nil:
-    section.add "blogId", valid_597980
+  if valid_579980 != nil:
+    section.add "blogId", valid_579980
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -466,41 +468,41 @@ proc validate_BloggerPagesGet_597977(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_597981 = query.getOrDefault("fields")
-  valid_597981 = validateParameter(valid_597981, JString, required = false,
+  var valid_579981 = query.getOrDefault("fields")
+  valid_579981 = validateParameter(valid_579981, JString, required = false,
                                  default = nil)
-  if valid_597981 != nil:
-    section.add "fields", valid_597981
-  var valid_597982 = query.getOrDefault("quotaUser")
-  valid_597982 = validateParameter(valid_597982, JString, required = false,
+  if valid_579981 != nil:
+    section.add "fields", valid_579981
+  var valid_579982 = query.getOrDefault("quotaUser")
+  valid_579982 = validateParameter(valid_579982, JString, required = false,
                                  default = nil)
-  if valid_597982 != nil:
-    section.add "quotaUser", valid_597982
-  var valid_597983 = query.getOrDefault("alt")
-  valid_597983 = validateParameter(valid_597983, JString, required = false,
+  if valid_579982 != nil:
+    section.add "quotaUser", valid_579982
+  var valid_579983 = query.getOrDefault("alt")
+  valid_579983 = validateParameter(valid_579983, JString, required = false,
                                  default = newJString("json"))
-  if valid_597983 != nil:
-    section.add "alt", valid_597983
-  var valid_597984 = query.getOrDefault("oauth_token")
-  valid_597984 = validateParameter(valid_597984, JString, required = false,
+  if valid_579983 != nil:
+    section.add "alt", valid_579983
+  var valid_579984 = query.getOrDefault("oauth_token")
+  valid_579984 = validateParameter(valid_579984, JString, required = false,
                                  default = nil)
-  if valid_597984 != nil:
-    section.add "oauth_token", valid_597984
-  var valid_597985 = query.getOrDefault("userIp")
-  valid_597985 = validateParameter(valid_597985, JString, required = false,
+  if valid_579984 != nil:
+    section.add "oauth_token", valid_579984
+  var valid_579985 = query.getOrDefault("userIp")
+  valid_579985 = validateParameter(valid_579985, JString, required = false,
                                  default = nil)
-  if valid_597985 != nil:
-    section.add "userIp", valid_597985
-  var valid_597986 = query.getOrDefault("key")
-  valid_597986 = validateParameter(valid_597986, JString, required = false,
+  if valid_579985 != nil:
+    section.add "userIp", valid_579985
+  var valid_579986 = query.getOrDefault("key")
+  valid_579986 = validateParameter(valid_579986, JString, required = false,
                                  default = nil)
-  if valid_597986 != nil:
-    section.add "key", valid_597986
-  var valid_597987 = query.getOrDefault("prettyPrint")
-  valid_597987 = validateParameter(valid_597987, JBool, required = false,
+  if valid_579986 != nil:
+    section.add "key", valid_579986
+  var valid_579987 = query.getOrDefault("prettyPrint")
+  valid_579987 = validateParameter(valid_579987, JBool, required = false,
                                  default = newJBool(true))
-  if valid_597987 != nil:
-    section.add "prettyPrint", valid_597987
+  if valid_579987 != nil:
+    section.add "prettyPrint", valid_579987
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -509,20 +511,20 @@ proc validate_BloggerPagesGet_597977(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_597988: Call_BloggerPagesGet_597976; path: JsonNode; query: JsonNode;
+proc call*(call_579988: Call_BloggerPagesGet_579976; path: JsonNode; query: JsonNode;
           header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Gets one blog page by id.
   ## 
-  let valid = call_597988.validator(path, query, header, formData, body)
-  let scheme = call_597988.pickScheme
+  let valid = call_579988.validator(path, query, header, formData, body)
+  let scheme = call_579988.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_597988.url(scheme.get, call_597988.host, call_597988.base,
-                         call_597988.route, valid.getOrDefault("path"),
+  let url = call_579988.url(scheme.get, call_579988.host, call_579988.base,
+                         call_579988.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_597988, url, valid)
+  result = hook(call_579988, url, valid)
 
-proc call*(call_597989: Call_BloggerPagesGet_597976; pageId: string; blogId: string;
+proc call*(call_579989: Call_BloggerPagesGet_579976; pageId: string; blogId: string;
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           oauthToken: string = ""; userIp: string = ""; key: string = "";
           prettyPrint: bool = true): Recallable =
@@ -546,30 +548,30 @@ proc call*(call_597989: Call_BloggerPagesGet_597976; pageId: string; blogId: str
   ##         : ID of the blog containing the page.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_597990 = newJObject()
-  var query_597991 = newJObject()
-  add(query_597991, "fields", newJString(fields))
-  add(query_597991, "quotaUser", newJString(quotaUser))
-  add(query_597991, "alt", newJString(alt))
-  add(query_597991, "oauth_token", newJString(oauthToken))
-  add(query_597991, "userIp", newJString(userIp))
-  add(query_597991, "key", newJString(key))
-  add(path_597990, "pageId", newJString(pageId))
-  add(path_597990, "blogId", newJString(blogId))
-  add(query_597991, "prettyPrint", newJBool(prettyPrint))
-  result = call_597989.call(path_597990, query_597991, nil, nil, nil)
+  var path_579990 = newJObject()
+  var query_579991 = newJObject()
+  add(query_579991, "fields", newJString(fields))
+  add(query_579991, "quotaUser", newJString(quotaUser))
+  add(query_579991, "alt", newJString(alt))
+  add(query_579991, "oauth_token", newJString(oauthToken))
+  add(query_579991, "userIp", newJString(userIp))
+  add(query_579991, "key", newJString(key))
+  add(path_579990, "pageId", newJString(pageId))
+  add(path_579990, "blogId", newJString(blogId))
+  add(query_579991, "prettyPrint", newJBool(prettyPrint))
+  result = call_579989.call(path_579990, query_579991, nil, nil, nil)
 
-var bloggerPagesGet* = Call_BloggerPagesGet_597976(name: "bloggerPagesGet",
+var bloggerPagesGet* = Call_BloggerPagesGet_579976(name: "bloggerPagesGet",
     meth: HttpMethod.HttpGet, host: "www.googleapis.com",
-    route: "/blogs/{blogId}/pages/{pageId}", validator: validate_BloggerPagesGet_597977,
-    base: "/blogger/v2", url: url_BloggerPagesGet_597978, schemes: {Scheme.Https})
+    route: "/blogs/{blogId}/pages/{pageId}", validator: validate_BloggerPagesGet_579977,
+    base: "/blogger/v2", url: url_BloggerPagesGet_579978, schemes: {Scheme.Https})
 type
-  Call_BloggerPostsList_597992 = ref object of OpenApiRestCall_597408
-proc url_BloggerPostsList_597994(protocol: Scheme; host: string; base: string;
+  Call_BloggerPostsList_579992 = ref object of OpenApiRestCall_579408
+proc url_BloggerPostsList_579994(protocol: Scheme; host: string; base: string;
                                 route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "blogId" in path, "`blogId` is a required path parameter"
   const
@@ -581,7 +583,7 @@ proc url_BloggerPostsList_597994(protocol: Scheme; host: string; base: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_BloggerPostsList_597993(path: JsonNode; query: JsonNode;
+proc validate_BloggerPostsList_579993(path: JsonNode; query: JsonNode;
                                      header: JsonNode; formData: JsonNode;
                                      body: JsonNode): JsonNode =
   ## Retrieves a list of posts, possibly filtered.
@@ -593,11 +595,11 @@ proc validate_BloggerPostsList_597993(path: JsonNode; query: JsonNode;
   ##         : ID of the blog to fetch posts from.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `blogId` field"
-  var valid_597995 = path.getOrDefault("blogId")
-  valid_597995 = validateParameter(valid_597995, JString, required = true,
+  var valid_579995 = path.getOrDefault("blogId")
+  valid_579995 = validateParameter(valid_579995, JString, required = true,
                                  default = nil)
-  if valid_597995 != nil:
-    section.add "blogId", valid_597995
+  if valid_579995 != nil:
+    section.add "blogId", valid_579995
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -623,59 +625,59 @@ proc validate_BloggerPostsList_597993(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_597996 = query.getOrDefault("fields")
-  valid_597996 = validateParameter(valid_597996, JString, required = false,
+  var valid_579996 = query.getOrDefault("fields")
+  valid_579996 = validateParameter(valid_579996, JString, required = false,
                                  default = nil)
-  if valid_597996 != nil:
-    section.add "fields", valid_597996
-  var valid_597997 = query.getOrDefault("pageToken")
-  valid_597997 = validateParameter(valid_597997, JString, required = false,
+  if valid_579996 != nil:
+    section.add "fields", valid_579996
+  var valid_579997 = query.getOrDefault("pageToken")
+  valid_579997 = validateParameter(valid_579997, JString, required = false,
                                  default = nil)
-  if valid_597997 != nil:
-    section.add "pageToken", valid_597997
-  var valid_597998 = query.getOrDefault("quotaUser")
-  valid_597998 = validateParameter(valid_597998, JString, required = false,
+  if valid_579997 != nil:
+    section.add "pageToken", valid_579997
+  var valid_579998 = query.getOrDefault("quotaUser")
+  valid_579998 = validateParameter(valid_579998, JString, required = false,
                                  default = nil)
-  if valid_597998 != nil:
-    section.add "quotaUser", valid_597998
-  var valid_597999 = query.getOrDefault("alt")
-  valid_597999 = validateParameter(valid_597999, JString, required = false,
+  if valid_579998 != nil:
+    section.add "quotaUser", valid_579998
+  var valid_579999 = query.getOrDefault("alt")
+  valid_579999 = validateParameter(valid_579999, JString, required = false,
                                  default = newJString("json"))
-  if valid_597999 != nil:
-    section.add "alt", valid_597999
-  var valid_598000 = query.getOrDefault("startDate")
-  valid_598000 = validateParameter(valid_598000, JString, required = false,
+  if valid_579999 != nil:
+    section.add "alt", valid_579999
+  var valid_580000 = query.getOrDefault("startDate")
+  valid_580000 = validateParameter(valid_580000, JString, required = false,
                                  default = nil)
-  if valid_598000 != nil:
-    section.add "startDate", valid_598000
-  var valid_598001 = query.getOrDefault("oauth_token")
-  valid_598001 = validateParameter(valid_598001, JString, required = false,
+  if valid_580000 != nil:
+    section.add "startDate", valid_580000
+  var valid_580001 = query.getOrDefault("oauth_token")
+  valid_580001 = validateParameter(valid_580001, JString, required = false,
                                  default = nil)
-  if valid_598001 != nil:
-    section.add "oauth_token", valid_598001
-  var valid_598002 = query.getOrDefault("userIp")
-  valid_598002 = validateParameter(valid_598002, JString, required = false,
+  if valid_580001 != nil:
+    section.add "oauth_token", valid_580001
+  var valid_580002 = query.getOrDefault("userIp")
+  valid_580002 = validateParameter(valid_580002, JString, required = false,
                                  default = nil)
-  if valid_598002 != nil:
-    section.add "userIp", valid_598002
-  var valid_598003 = query.getOrDefault("maxResults")
-  valid_598003 = validateParameter(valid_598003, JInt, required = false, default = nil)
-  if valid_598003 != nil:
-    section.add "maxResults", valid_598003
-  var valid_598004 = query.getOrDefault("key")
-  valid_598004 = validateParameter(valid_598004, JString, required = false,
+  if valid_580002 != nil:
+    section.add "userIp", valid_580002
+  var valid_580003 = query.getOrDefault("maxResults")
+  valid_580003 = validateParameter(valid_580003, JInt, required = false, default = nil)
+  if valid_580003 != nil:
+    section.add "maxResults", valid_580003
+  var valid_580004 = query.getOrDefault("key")
+  valid_580004 = validateParameter(valid_580004, JString, required = false,
                                  default = nil)
-  if valid_598004 != nil:
-    section.add "key", valid_598004
-  var valid_598005 = query.getOrDefault("fetchBodies")
-  valid_598005 = validateParameter(valid_598005, JBool, required = false, default = nil)
-  if valid_598005 != nil:
-    section.add "fetchBodies", valid_598005
-  var valid_598006 = query.getOrDefault("prettyPrint")
-  valid_598006 = validateParameter(valid_598006, JBool, required = false,
+  if valid_580004 != nil:
+    section.add "key", valid_580004
+  var valid_580005 = query.getOrDefault("fetchBodies")
+  valid_580005 = validateParameter(valid_580005, JBool, required = false, default = nil)
+  if valid_580005 != nil:
+    section.add "fetchBodies", valid_580005
+  var valid_580006 = query.getOrDefault("prettyPrint")
+  valid_580006 = validateParameter(valid_580006, JBool, required = false,
                                  default = newJBool(true))
-  if valid_598006 != nil:
-    section.add "prettyPrint", valid_598006
+  if valid_580006 != nil:
+    section.add "prettyPrint", valid_580006
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -684,20 +686,20 @@ proc validate_BloggerPostsList_597993(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_598007: Call_BloggerPostsList_597992; path: JsonNode;
+proc call*(call_580007: Call_BloggerPostsList_579992; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Retrieves a list of posts, possibly filtered.
   ## 
-  let valid = call_598007.validator(path, query, header, formData, body)
-  let scheme = call_598007.pickScheme
+  let valid = call_580007.validator(path, query, header, formData, body)
+  let scheme = call_580007.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_598007.url(scheme.get, call_598007.host, call_598007.base,
-                         call_598007.route, valid.getOrDefault("path"),
+  let url = call_580007.url(scheme.get, call_580007.host, call_580007.base,
+                         call_580007.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_598007, url, valid)
+  result = hook(call_580007, url, valid)
 
-proc call*(call_598008: Call_BloggerPostsList_597992; blogId: string;
+proc call*(call_580008: Call_BloggerPostsList_579992; blogId: string;
           fields: string = ""; pageToken: string = ""; quotaUser: string = "";
           alt: string = "json"; startDate: string = ""; oauthToken: string = "";
           userIp: string = ""; maxResults: int = 0; key: string = "";
@@ -728,33 +730,33 @@ proc call*(call_598008: Call_BloggerPostsList_597992; blogId: string;
   ##         : ID of the blog to fetch posts from.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_598009 = newJObject()
-  var query_598010 = newJObject()
-  add(query_598010, "fields", newJString(fields))
-  add(query_598010, "pageToken", newJString(pageToken))
-  add(query_598010, "quotaUser", newJString(quotaUser))
-  add(query_598010, "alt", newJString(alt))
-  add(query_598010, "startDate", newJString(startDate))
-  add(query_598010, "oauth_token", newJString(oauthToken))
-  add(query_598010, "userIp", newJString(userIp))
-  add(query_598010, "maxResults", newJInt(maxResults))
-  add(query_598010, "key", newJString(key))
-  add(query_598010, "fetchBodies", newJBool(fetchBodies))
-  add(path_598009, "blogId", newJString(blogId))
-  add(query_598010, "prettyPrint", newJBool(prettyPrint))
-  result = call_598008.call(path_598009, query_598010, nil, nil, nil)
+  var path_580009 = newJObject()
+  var query_580010 = newJObject()
+  add(query_580010, "fields", newJString(fields))
+  add(query_580010, "pageToken", newJString(pageToken))
+  add(query_580010, "quotaUser", newJString(quotaUser))
+  add(query_580010, "alt", newJString(alt))
+  add(query_580010, "startDate", newJString(startDate))
+  add(query_580010, "oauth_token", newJString(oauthToken))
+  add(query_580010, "userIp", newJString(userIp))
+  add(query_580010, "maxResults", newJInt(maxResults))
+  add(query_580010, "key", newJString(key))
+  add(query_580010, "fetchBodies", newJBool(fetchBodies))
+  add(path_580009, "blogId", newJString(blogId))
+  add(query_580010, "prettyPrint", newJBool(prettyPrint))
+  result = call_580008.call(path_580009, query_580010, nil, nil, nil)
 
-var bloggerPostsList* = Call_BloggerPostsList_597992(name: "bloggerPostsList",
+var bloggerPostsList* = Call_BloggerPostsList_579992(name: "bloggerPostsList",
     meth: HttpMethod.HttpGet, host: "www.googleapis.com",
-    route: "/blogs/{blogId}/posts", validator: validate_BloggerPostsList_597993,
-    base: "/blogger/v2", url: url_BloggerPostsList_597994, schemes: {Scheme.Https})
+    route: "/blogs/{blogId}/posts", validator: validate_BloggerPostsList_579993,
+    base: "/blogger/v2", url: url_BloggerPostsList_579994, schemes: {Scheme.Https})
 type
-  Call_BloggerPostsGet_598011 = ref object of OpenApiRestCall_597408
-proc url_BloggerPostsGet_598013(protocol: Scheme; host: string; base: string;
+  Call_BloggerPostsGet_580011 = ref object of OpenApiRestCall_579408
+proc url_BloggerPostsGet_580013(protocol: Scheme; host: string; base: string;
                                route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "blogId" in path, "`blogId` is a required path parameter"
   assert "postId" in path, "`postId` is a required path parameter"
@@ -768,7 +770,7 @@ proc url_BloggerPostsGet_598013(protocol: Scheme; host: string; base: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_BloggerPostsGet_598012(path: JsonNode; query: JsonNode;
+proc validate_BloggerPostsGet_580012(path: JsonNode; query: JsonNode;
                                     header: JsonNode; formData: JsonNode;
                                     body: JsonNode): JsonNode =
   ## Get a post by id.
@@ -782,16 +784,16 @@ proc validate_BloggerPostsGet_598012(path: JsonNode; query: JsonNode;
   ##         : ID of the blog to fetch the post from.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `postId` field"
-  var valid_598014 = path.getOrDefault("postId")
-  valid_598014 = validateParameter(valid_598014, JString, required = true,
+  var valid_580014 = path.getOrDefault("postId")
+  valid_580014 = validateParameter(valid_580014, JString, required = true,
                                  default = nil)
-  if valid_598014 != nil:
-    section.add "postId", valid_598014
-  var valid_598015 = path.getOrDefault("blogId")
-  valid_598015 = validateParameter(valid_598015, JString, required = true,
+  if valid_580014 != nil:
+    section.add "postId", valid_580014
+  var valid_580015 = path.getOrDefault("blogId")
+  valid_580015 = validateParameter(valid_580015, JString, required = true,
                                  default = nil)
-  if valid_598015 != nil:
-    section.add "blogId", valid_598015
+  if valid_580015 != nil:
+    section.add "blogId", valid_580015
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -809,41 +811,41 @@ proc validate_BloggerPostsGet_598012(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_598016 = query.getOrDefault("fields")
-  valid_598016 = validateParameter(valid_598016, JString, required = false,
+  var valid_580016 = query.getOrDefault("fields")
+  valid_580016 = validateParameter(valid_580016, JString, required = false,
                                  default = nil)
-  if valid_598016 != nil:
-    section.add "fields", valid_598016
-  var valid_598017 = query.getOrDefault("quotaUser")
-  valid_598017 = validateParameter(valid_598017, JString, required = false,
+  if valid_580016 != nil:
+    section.add "fields", valid_580016
+  var valid_580017 = query.getOrDefault("quotaUser")
+  valid_580017 = validateParameter(valid_580017, JString, required = false,
                                  default = nil)
-  if valid_598017 != nil:
-    section.add "quotaUser", valid_598017
-  var valid_598018 = query.getOrDefault("alt")
-  valid_598018 = validateParameter(valid_598018, JString, required = false,
+  if valid_580017 != nil:
+    section.add "quotaUser", valid_580017
+  var valid_580018 = query.getOrDefault("alt")
+  valid_580018 = validateParameter(valid_580018, JString, required = false,
                                  default = newJString("json"))
-  if valid_598018 != nil:
-    section.add "alt", valid_598018
-  var valid_598019 = query.getOrDefault("oauth_token")
-  valid_598019 = validateParameter(valid_598019, JString, required = false,
+  if valid_580018 != nil:
+    section.add "alt", valid_580018
+  var valid_580019 = query.getOrDefault("oauth_token")
+  valid_580019 = validateParameter(valid_580019, JString, required = false,
                                  default = nil)
-  if valid_598019 != nil:
-    section.add "oauth_token", valid_598019
-  var valid_598020 = query.getOrDefault("userIp")
-  valid_598020 = validateParameter(valid_598020, JString, required = false,
+  if valid_580019 != nil:
+    section.add "oauth_token", valid_580019
+  var valid_580020 = query.getOrDefault("userIp")
+  valid_580020 = validateParameter(valid_580020, JString, required = false,
                                  default = nil)
-  if valid_598020 != nil:
-    section.add "userIp", valid_598020
-  var valid_598021 = query.getOrDefault("key")
-  valid_598021 = validateParameter(valid_598021, JString, required = false,
+  if valid_580020 != nil:
+    section.add "userIp", valid_580020
+  var valid_580021 = query.getOrDefault("key")
+  valid_580021 = validateParameter(valid_580021, JString, required = false,
                                  default = nil)
-  if valid_598021 != nil:
-    section.add "key", valid_598021
-  var valid_598022 = query.getOrDefault("prettyPrint")
-  valid_598022 = validateParameter(valid_598022, JBool, required = false,
+  if valid_580021 != nil:
+    section.add "key", valid_580021
+  var valid_580022 = query.getOrDefault("prettyPrint")
+  valid_580022 = validateParameter(valid_580022, JBool, required = false,
                                  default = newJBool(true))
-  if valid_598022 != nil:
-    section.add "prettyPrint", valid_598022
+  if valid_580022 != nil:
+    section.add "prettyPrint", valid_580022
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -852,20 +854,20 @@ proc validate_BloggerPostsGet_598012(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_598023: Call_BloggerPostsGet_598011; path: JsonNode; query: JsonNode;
+proc call*(call_580023: Call_BloggerPostsGet_580011; path: JsonNode; query: JsonNode;
           header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Get a post by id.
   ## 
-  let valid = call_598023.validator(path, query, header, formData, body)
-  let scheme = call_598023.pickScheme
+  let valid = call_580023.validator(path, query, header, formData, body)
+  let scheme = call_580023.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_598023.url(scheme.get, call_598023.host, call_598023.base,
-                         call_598023.route, valid.getOrDefault("path"),
+  let url = call_580023.url(scheme.get, call_580023.host, call_580023.base,
+                         call_580023.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_598023, url, valid)
+  result = hook(call_580023, url, valid)
 
-proc call*(call_598024: Call_BloggerPostsGet_598011; postId: string; blogId: string;
+proc call*(call_580024: Call_BloggerPostsGet_580011; postId: string; blogId: string;
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           oauthToken: string = ""; userIp: string = ""; key: string = "";
           prettyPrint: bool = true): Recallable =
@@ -889,30 +891,30 @@ proc call*(call_598024: Call_BloggerPostsGet_598011; postId: string; blogId: str
   ##         : ID of the blog to fetch the post from.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_598025 = newJObject()
-  var query_598026 = newJObject()
-  add(query_598026, "fields", newJString(fields))
-  add(query_598026, "quotaUser", newJString(quotaUser))
-  add(query_598026, "alt", newJString(alt))
-  add(query_598026, "oauth_token", newJString(oauthToken))
-  add(query_598026, "userIp", newJString(userIp))
-  add(query_598026, "key", newJString(key))
-  add(path_598025, "postId", newJString(postId))
-  add(path_598025, "blogId", newJString(blogId))
-  add(query_598026, "prettyPrint", newJBool(prettyPrint))
-  result = call_598024.call(path_598025, query_598026, nil, nil, nil)
+  var path_580025 = newJObject()
+  var query_580026 = newJObject()
+  add(query_580026, "fields", newJString(fields))
+  add(query_580026, "quotaUser", newJString(quotaUser))
+  add(query_580026, "alt", newJString(alt))
+  add(query_580026, "oauth_token", newJString(oauthToken))
+  add(query_580026, "userIp", newJString(userIp))
+  add(query_580026, "key", newJString(key))
+  add(path_580025, "postId", newJString(postId))
+  add(path_580025, "blogId", newJString(blogId))
+  add(query_580026, "prettyPrint", newJBool(prettyPrint))
+  result = call_580024.call(path_580025, query_580026, nil, nil, nil)
 
-var bloggerPostsGet* = Call_BloggerPostsGet_598011(name: "bloggerPostsGet",
+var bloggerPostsGet* = Call_BloggerPostsGet_580011(name: "bloggerPostsGet",
     meth: HttpMethod.HttpGet, host: "www.googleapis.com",
-    route: "/blogs/{blogId}/posts/{postId}", validator: validate_BloggerPostsGet_598012,
-    base: "/blogger/v2", url: url_BloggerPostsGet_598013, schemes: {Scheme.Https})
+    route: "/blogs/{blogId}/posts/{postId}", validator: validate_BloggerPostsGet_580012,
+    base: "/blogger/v2", url: url_BloggerPostsGet_580013, schemes: {Scheme.Https})
 type
-  Call_BloggerCommentsList_598027 = ref object of OpenApiRestCall_597408
-proc url_BloggerCommentsList_598029(protocol: Scheme; host: string; base: string;
+  Call_BloggerCommentsList_580027 = ref object of OpenApiRestCall_579408
+proc url_BloggerCommentsList_580029(protocol: Scheme; host: string; base: string;
                                    route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "blogId" in path, "`blogId` is a required path parameter"
   assert "postId" in path, "`postId` is a required path parameter"
@@ -927,7 +929,7 @@ proc url_BloggerCommentsList_598029(protocol: Scheme; host: string; base: string
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_BloggerCommentsList_598028(path: JsonNode; query: JsonNode;
+proc validate_BloggerCommentsList_580028(path: JsonNode; query: JsonNode;
                                         header: JsonNode; formData: JsonNode;
                                         body: JsonNode): JsonNode =
   ## Retrieves the comments for a blog, possibly filtered.
@@ -941,16 +943,16 @@ proc validate_BloggerCommentsList_598028(path: JsonNode; query: JsonNode;
   ##         : ID of the blog to fetch comments from.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `postId` field"
-  var valid_598030 = path.getOrDefault("postId")
-  valid_598030 = validateParameter(valid_598030, JString, required = true,
+  var valid_580030 = path.getOrDefault("postId")
+  valid_580030 = validateParameter(valid_580030, JString, required = true,
                                  default = nil)
-  if valid_598030 != nil:
-    section.add "postId", valid_598030
-  var valid_598031 = path.getOrDefault("blogId")
-  valid_598031 = validateParameter(valid_598031, JString, required = true,
+  if valid_580030 != nil:
+    section.add "postId", valid_580030
+  var valid_580031 = path.getOrDefault("blogId")
+  valid_580031 = validateParameter(valid_580031, JString, required = true,
                                  default = nil)
-  if valid_598031 != nil:
-    section.add "blogId", valid_598031
+  if valid_580031 != nil:
+    section.add "blogId", valid_580031
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -976,59 +978,59 @@ proc validate_BloggerCommentsList_598028(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_598032 = query.getOrDefault("fields")
-  valid_598032 = validateParameter(valid_598032, JString, required = false,
+  var valid_580032 = query.getOrDefault("fields")
+  valid_580032 = validateParameter(valid_580032, JString, required = false,
                                  default = nil)
-  if valid_598032 != nil:
-    section.add "fields", valid_598032
-  var valid_598033 = query.getOrDefault("pageToken")
-  valid_598033 = validateParameter(valid_598033, JString, required = false,
+  if valid_580032 != nil:
+    section.add "fields", valid_580032
+  var valid_580033 = query.getOrDefault("pageToken")
+  valid_580033 = validateParameter(valid_580033, JString, required = false,
                                  default = nil)
-  if valid_598033 != nil:
-    section.add "pageToken", valid_598033
-  var valid_598034 = query.getOrDefault("quotaUser")
-  valid_598034 = validateParameter(valid_598034, JString, required = false,
+  if valid_580033 != nil:
+    section.add "pageToken", valid_580033
+  var valid_580034 = query.getOrDefault("quotaUser")
+  valid_580034 = validateParameter(valid_580034, JString, required = false,
                                  default = nil)
-  if valid_598034 != nil:
-    section.add "quotaUser", valid_598034
-  var valid_598035 = query.getOrDefault("alt")
-  valid_598035 = validateParameter(valid_598035, JString, required = false,
+  if valid_580034 != nil:
+    section.add "quotaUser", valid_580034
+  var valid_580035 = query.getOrDefault("alt")
+  valid_580035 = validateParameter(valid_580035, JString, required = false,
                                  default = newJString("json"))
-  if valid_598035 != nil:
-    section.add "alt", valid_598035
-  var valid_598036 = query.getOrDefault("startDate")
-  valid_598036 = validateParameter(valid_598036, JString, required = false,
+  if valid_580035 != nil:
+    section.add "alt", valid_580035
+  var valid_580036 = query.getOrDefault("startDate")
+  valid_580036 = validateParameter(valid_580036, JString, required = false,
                                  default = nil)
-  if valid_598036 != nil:
-    section.add "startDate", valid_598036
-  var valid_598037 = query.getOrDefault("oauth_token")
-  valid_598037 = validateParameter(valid_598037, JString, required = false,
+  if valid_580036 != nil:
+    section.add "startDate", valid_580036
+  var valid_580037 = query.getOrDefault("oauth_token")
+  valid_580037 = validateParameter(valid_580037, JString, required = false,
                                  default = nil)
-  if valid_598037 != nil:
-    section.add "oauth_token", valid_598037
-  var valid_598038 = query.getOrDefault("userIp")
-  valid_598038 = validateParameter(valid_598038, JString, required = false,
+  if valid_580037 != nil:
+    section.add "oauth_token", valid_580037
+  var valid_580038 = query.getOrDefault("userIp")
+  valid_580038 = validateParameter(valid_580038, JString, required = false,
                                  default = nil)
-  if valid_598038 != nil:
-    section.add "userIp", valid_598038
-  var valid_598039 = query.getOrDefault("maxResults")
-  valid_598039 = validateParameter(valid_598039, JInt, required = false, default = nil)
-  if valid_598039 != nil:
-    section.add "maxResults", valid_598039
-  var valid_598040 = query.getOrDefault("key")
-  valid_598040 = validateParameter(valid_598040, JString, required = false,
+  if valid_580038 != nil:
+    section.add "userIp", valid_580038
+  var valid_580039 = query.getOrDefault("maxResults")
+  valid_580039 = validateParameter(valid_580039, JInt, required = false, default = nil)
+  if valid_580039 != nil:
+    section.add "maxResults", valid_580039
+  var valid_580040 = query.getOrDefault("key")
+  valid_580040 = validateParameter(valid_580040, JString, required = false,
                                  default = nil)
-  if valid_598040 != nil:
-    section.add "key", valid_598040
-  var valid_598041 = query.getOrDefault("fetchBodies")
-  valid_598041 = validateParameter(valid_598041, JBool, required = false, default = nil)
-  if valid_598041 != nil:
-    section.add "fetchBodies", valid_598041
-  var valid_598042 = query.getOrDefault("prettyPrint")
-  valid_598042 = validateParameter(valid_598042, JBool, required = false,
+  if valid_580040 != nil:
+    section.add "key", valid_580040
+  var valid_580041 = query.getOrDefault("fetchBodies")
+  valid_580041 = validateParameter(valid_580041, JBool, required = false, default = nil)
+  if valid_580041 != nil:
+    section.add "fetchBodies", valid_580041
+  var valid_580042 = query.getOrDefault("prettyPrint")
+  valid_580042 = validateParameter(valid_580042, JBool, required = false,
                                  default = newJBool(true))
-  if valid_598042 != nil:
-    section.add "prettyPrint", valid_598042
+  if valid_580042 != nil:
+    section.add "prettyPrint", valid_580042
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1037,20 +1039,20 @@ proc validate_BloggerCommentsList_598028(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_598043: Call_BloggerCommentsList_598027; path: JsonNode;
+proc call*(call_580043: Call_BloggerCommentsList_580027; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Retrieves the comments for a blog, possibly filtered.
   ## 
-  let valid = call_598043.validator(path, query, header, formData, body)
-  let scheme = call_598043.pickScheme
+  let valid = call_580043.validator(path, query, header, formData, body)
+  let scheme = call_580043.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_598043.url(scheme.get, call_598043.host, call_598043.base,
-                         call_598043.route, valid.getOrDefault("path"),
+  let url = call_580043.url(scheme.get, call_580043.host, call_580043.base,
+                         call_580043.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_598043, url, valid)
+  result = hook(call_580043, url, valid)
 
-proc call*(call_598044: Call_BloggerCommentsList_598027; postId: string;
+proc call*(call_580044: Call_BloggerCommentsList_580027; postId: string;
           blogId: string; fields: string = ""; pageToken: string = "";
           quotaUser: string = ""; alt: string = "json"; startDate: string = "";
           oauthToken: string = ""; userIp: string = ""; maxResults: int = 0;
@@ -1083,35 +1085,35 @@ proc call*(call_598044: Call_BloggerCommentsList_598027; postId: string;
   ##         : ID of the blog to fetch comments from.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_598045 = newJObject()
-  var query_598046 = newJObject()
-  add(query_598046, "fields", newJString(fields))
-  add(query_598046, "pageToken", newJString(pageToken))
-  add(query_598046, "quotaUser", newJString(quotaUser))
-  add(query_598046, "alt", newJString(alt))
-  add(query_598046, "startDate", newJString(startDate))
-  add(query_598046, "oauth_token", newJString(oauthToken))
-  add(query_598046, "userIp", newJString(userIp))
-  add(query_598046, "maxResults", newJInt(maxResults))
-  add(query_598046, "key", newJString(key))
-  add(path_598045, "postId", newJString(postId))
-  add(query_598046, "fetchBodies", newJBool(fetchBodies))
-  add(path_598045, "blogId", newJString(blogId))
-  add(query_598046, "prettyPrint", newJBool(prettyPrint))
-  result = call_598044.call(path_598045, query_598046, nil, nil, nil)
+  var path_580045 = newJObject()
+  var query_580046 = newJObject()
+  add(query_580046, "fields", newJString(fields))
+  add(query_580046, "pageToken", newJString(pageToken))
+  add(query_580046, "quotaUser", newJString(quotaUser))
+  add(query_580046, "alt", newJString(alt))
+  add(query_580046, "startDate", newJString(startDate))
+  add(query_580046, "oauth_token", newJString(oauthToken))
+  add(query_580046, "userIp", newJString(userIp))
+  add(query_580046, "maxResults", newJInt(maxResults))
+  add(query_580046, "key", newJString(key))
+  add(path_580045, "postId", newJString(postId))
+  add(query_580046, "fetchBodies", newJBool(fetchBodies))
+  add(path_580045, "blogId", newJString(blogId))
+  add(query_580046, "prettyPrint", newJBool(prettyPrint))
+  result = call_580044.call(path_580045, query_580046, nil, nil, nil)
 
-var bloggerCommentsList* = Call_BloggerCommentsList_598027(
+var bloggerCommentsList* = Call_BloggerCommentsList_580027(
     name: "bloggerCommentsList", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/blogs/{blogId}/posts/{postId}/comments",
-    validator: validate_BloggerCommentsList_598028, base: "/blogger/v2",
-    url: url_BloggerCommentsList_598029, schemes: {Scheme.Https})
+    validator: validate_BloggerCommentsList_580028, base: "/blogger/v2",
+    url: url_BloggerCommentsList_580029, schemes: {Scheme.Https})
 type
-  Call_BloggerCommentsGet_598047 = ref object of OpenApiRestCall_597408
-proc url_BloggerCommentsGet_598049(protocol: Scheme; host: string; base: string;
+  Call_BloggerCommentsGet_580047 = ref object of OpenApiRestCall_579408
+proc url_BloggerCommentsGet_580049(protocol: Scheme; host: string; base: string;
                                   route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "blogId" in path, "`blogId` is a required path parameter"
   assert "postId" in path, "`postId` is a required path parameter"
@@ -1128,7 +1130,7 @@ proc url_BloggerCommentsGet_598049(protocol: Scheme; host: string; base: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_BloggerCommentsGet_598048(path: JsonNode; query: JsonNode;
+proc validate_BloggerCommentsGet_580048(path: JsonNode; query: JsonNode;
                                        header: JsonNode; formData: JsonNode;
                                        body: JsonNode): JsonNode =
   ## Gets one comment by id.
@@ -1144,21 +1146,21 @@ proc validate_BloggerCommentsGet_598048(path: JsonNode; query: JsonNode;
   ##         : ID of the blog to containing the comment.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `commentId` field"
-  var valid_598050 = path.getOrDefault("commentId")
-  valid_598050 = validateParameter(valid_598050, JString, required = true,
+  var valid_580050 = path.getOrDefault("commentId")
+  valid_580050 = validateParameter(valid_580050, JString, required = true,
                                  default = nil)
-  if valid_598050 != nil:
-    section.add "commentId", valid_598050
-  var valid_598051 = path.getOrDefault("postId")
-  valid_598051 = validateParameter(valid_598051, JString, required = true,
+  if valid_580050 != nil:
+    section.add "commentId", valid_580050
+  var valid_580051 = path.getOrDefault("postId")
+  valid_580051 = validateParameter(valid_580051, JString, required = true,
                                  default = nil)
-  if valid_598051 != nil:
-    section.add "postId", valid_598051
-  var valid_598052 = path.getOrDefault("blogId")
-  valid_598052 = validateParameter(valid_598052, JString, required = true,
+  if valid_580051 != nil:
+    section.add "postId", valid_580051
+  var valid_580052 = path.getOrDefault("blogId")
+  valid_580052 = validateParameter(valid_580052, JString, required = true,
                                  default = nil)
-  if valid_598052 != nil:
-    section.add "blogId", valid_598052
+  if valid_580052 != nil:
+    section.add "blogId", valid_580052
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -1176,41 +1178,41 @@ proc validate_BloggerCommentsGet_598048(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_598053 = query.getOrDefault("fields")
-  valid_598053 = validateParameter(valid_598053, JString, required = false,
+  var valid_580053 = query.getOrDefault("fields")
+  valid_580053 = validateParameter(valid_580053, JString, required = false,
                                  default = nil)
-  if valid_598053 != nil:
-    section.add "fields", valid_598053
-  var valid_598054 = query.getOrDefault("quotaUser")
-  valid_598054 = validateParameter(valid_598054, JString, required = false,
+  if valid_580053 != nil:
+    section.add "fields", valid_580053
+  var valid_580054 = query.getOrDefault("quotaUser")
+  valid_580054 = validateParameter(valid_580054, JString, required = false,
                                  default = nil)
-  if valid_598054 != nil:
-    section.add "quotaUser", valid_598054
-  var valid_598055 = query.getOrDefault("alt")
-  valid_598055 = validateParameter(valid_598055, JString, required = false,
+  if valid_580054 != nil:
+    section.add "quotaUser", valid_580054
+  var valid_580055 = query.getOrDefault("alt")
+  valid_580055 = validateParameter(valid_580055, JString, required = false,
                                  default = newJString("json"))
-  if valid_598055 != nil:
-    section.add "alt", valid_598055
-  var valid_598056 = query.getOrDefault("oauth_token")
-  valid_598056 = validateParameter(valid_598056, JString, required = false,
+  if valid_580055 != nil:
+    section.add "alt", valid_580055
+  var valid_580056 = query.getOrDefault("oauth_token")
+  valid_580056 = validateParameter(valid_580056, JString, required = false,
                                  default = nil)
-  if valid_598056 != nil:
-    section.add "oauth_token", valid_598056
-  var valid_598057 = query.getOrDefault("userIp")
-  valid_598057 = validateParameter(valid_598057, JString, required = false,
+  if valid_580056 != nil:
+    section.add "oauth_token", valid_580056
+  var valid_580057 = query.getOrDefault("userIp")
+  valid_580057 = validateParameter(valid_580057, JString, required = false,
                                  default = nil)
-  if valid_598057 != nil:
-    section.add "userIp", valid_598057
-  var valid_598058 = query.getOrDefault("key")
-  valid_598058 = validateParameter(valid_598058, JString, required = false,
+  if valid_580057 != nil:
+    section.add "userIp", valid_580057
+  var valid_580058 = query.getOrDefault("key")
+  valid_580058 = validateParameter(valid_580058, JString, required = false,
                                  default = nil)
-  if valid_598058 != nil:
-    section.add "key", valid_598058
-  var valid_598059 = query.getOrDefault("prettyPrint")
-  valid_598059 = validateParameter(valid_598059, JBool, required = false,
+  if valid_580058 != nil:
+    section.add "key", valid_580058
+  var valid_580059 = query.getOrDefault("prettyPrint")
+  valid_580059 = validateParameter(valid_580059, JBool, required = false,
                                  default = newJBool(true))
-  if valid_598059 != nil:
-    section.add "prettyPrint", valid_598059
+  if valid_580059 != nil:
+    section.add "prettyPrint", valid_580059
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1219,20 +1221,20 @@ proc validate_BloggerCommentsGet_598048(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_598060: Call_BloggerCommentsGet_598047; path: JsonNode;
+proc call*(call_580060: Call_BloggerCommentsGet_580047; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Gets one comment by id.
   ## 
-  let valid = call_598060.validator(path, query, header, formData, body)
-  let scheme = call_598060.pickScheme
+  let valid = call_580060.validator(path, query, header, formData, body)
+  let scheme = call_580060.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_598060.url(scheme.get, call_598060.host, call_598060.base,
-                         call_598060.route, valid.getOrDefault("path"),
+  let url = call_580060.url(scheme.get, call_580060.host, call_580060.base,
+                         call_580060.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_598060, url, valid)
+  result = hook(call_580060, url, valid)
 
-proc call*(call_598061: Call_BloggerCommentsGet_598047; commentId: string;
+proc call*(call_580061: Call_BloggerCommentsGet_580047; commentId: string;
           postId: string; blogId: string; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; userIp: string = "";
           key: string = ""; prettyPrint: bool = true): Recallable =
@@ -1258,33 +1260,33 @@ proc call*(call_598061: Call_BloggerCommentsGet_598047; commentId: string;
   ##         : ID of the blog to containing the comment.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_598062 = newJObject()
-  var query_598063 = newJObject()
-  add(query_598063, "fields", newJString(fields))
-  add(query_598063, "quotaUser", newJString(quotaUser))
-  add(query_598063, "alt", newJString(alt))
-  add(query_598063, "oauth_token", newJString(oauthToken))
-  add(query_598063, "userIp", newJString(userIp))
-  add(query_598063, "key", newJString(key))
-  add(path_598062, "commentId", newJString(commentId))
-  add(path_598062, "postId", newJString(postId))
-  add(path_598062, "blogId", newJString(blogId))
-  add(query_598063, "prettyPrint", newJBool(prettyPrint))
-  result = call_598061.call(path_598062, query_598063, nil, nil, nil)
+  var path_580062 = newJObject()
+  var query_580063 = newJObject()
+  add(query_580063, "fields", newJString(fields))
+  add(query_580063, "quotaUser", newJString(quotaUser))
+  add(query_580063, "alt", newJString(alt))
+  add(query_580063, "oauth_token", newJString(oauthToken))
+  add(query_580063, "userIp", newJString(userIp))
+  add(query_580063, "key", newJString(key))
+  add(path_580062, "commentId", newJString(commentId))
+  add(path_580062, "postId", newJString(postId))
+  add(path_580062, "blogId", newJString(blogId))
+  add(query_580063, "prettyPrint", newJBool(prettyPrint))
+  result = call_580061.call(path_580062, query_580063, nil, nil, nil)
 
-var bloggerCommentsGet* = Call_BloggerCommentsGet_598047(
+var bloggerCommentsGet* = Call_BloggerCommentsGet_580047(
     name: "bloggerCommentsGet", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com",
     route: "/blogs/{blogId}/posts/{postId}/comments/{commentId}",
-    validator: validate_BloggerCommentsGet_598048, base: "/blogger/v2",
-    url: url_BloggerCommentsGet_598049, schemes: {Scheme.Https})
+    validator: validate_BloggerCommentsGet_580048, base: "/blogger/v2",
+    url: url_BloggerCommentsGet_580049, schemes: {Scheme.Https})
 type
-  Call_BloggerUsersGet_598064 = ref object of OpenApiRestCall_597408
-proc url_BloggerUsersGet_598066(protocol: Scheme; host: string; base: string;
+  Call_BloggerUsersGet_580064 = ref object of OpenApiRestCall_579408
+proc url_BloggerUsersGet_580066(protocol: Scheme; host: string; base: string;
                                route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "userId" in path, "`userId` is a required path parameter"
   const
@@ -1295,7 +1297,7 @@ proc url_BloggerUsersGet_598066(protocol: Scheme; host: string; base: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_BloggerUsersGet_598065(path: JsonNode; query: JsonNode;
+proc validate_BloggerUsersGet_580065(path: JsonNode; query: JsonNode;
                                     header: JsonNode; formData: JsonNode;
                                     body: JsonNode): JsonNode =
   ## Gets one user by id.
@@ -1307,11 +1309,11 @@ proc validate_BloggerUsersGet_598065(path: JsonNode; query: JsonNode;
   ##         : The ID of the user to get.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `userId` field"
-  var valid_598067 = path.getOrDefault("userId")
-  valid_598067 = validateParameter(valid_598067, JString, required = true,
+  var valid_580067 = path.getOrDefault("userId")
+  valid_580067 = validateParameter(valid_580067, JString, required = true,
                                  default = nil)
-  if valid_598067 != nil:
-    section.add "userId", valid_598067
+  if valid_580067 != nil:
+    section.add "userId", valid_580067
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -1329,41 +1331,41 @@ proc validate_BloggerUsersGet_598065(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_598068 = query.getOrDefault("fields")
-  valid_598068 = validateParameter(valid_598068, JString, required = false,
+  var valid_580068 = query.getOrDefault("fields")
+  valid_580068 = validateParameter(valid_580068, JString, required = false,
                                  default = nil)
-  if valid_598068 != nil:
-    section.add "fields", valid_598068
-  var valid_598069 = query.getOrDefault("quotaUser")
-  valid_598069 = validateParameter(valid_598069, JString, required = false,
+  if valid_580068 != nil:
+    section.add "fields", valid_580068
+  var valid_580069 = query.getOrDefault("quotaUser")
+  valid_580069 = validateParameter(valid_580069, JString, required = false,
                                  default = nil)
-  if valid_598069 != nil:
-    section.add "quotaUser", valid_598069
-  var valid_598070 = query.getOrDefault("alt")
-  valid_598070 = validateParameter(valid_598070, JString, required = false,
+  if valid_580069 != nil:
+    section.add "quotaUser", valid_580069
+  var valid_580070 = query.getOrDefault("alt")
+  valid_580070 = validateParameter(valid_580070, JString, required = false,
                                  default = newJString("json"))
-  if valid_598070 != nil:
-    section.add "alt", valid_598070
-  var valid_598071 = query.getOrDefault("oauth_token")
-  valid_598071 = validateParameter(valid_598071, JString, required = false,
+  if valid_580070 != nil:
+    section.add "alt", valid_580070
+  var valid_580071 = query.getOrDefault("oauth_token")
+  valid_580071 = validateParameter(valid_580071, JString, required = false,
                                  default = nil)
-  if valid_598071 != nil:
-    section.add "oauth_token", valid_598071
-  var valid_598072 = query.getOrDefault("userIp")
-  valid_598072 = validateParameter(valid_598072, JString, required = false,
+  if valid_580071 != nil:
+    section.add "oauth_token", valid_580071
+  var valid_580072 = query.getOrDefault("userIp")
+  valid_580072 = validateParameter(valid_580072, JString, required = false,
                                  default = nil)
-  if valid_598072 != nil:
-    section.add "userIp", valid_598072
-  var valid_598073 = query.getOrDefault("key")
-  valid_598073 = validateParameter(valid_598073, JString, required = false,
+  if valid_580072 != nil:
+    section.add "userIp", valid_580072
+  var valid_580073 = query.getOrDefault("key")
+  valid_580073 = validateParameter(valid_580073, JString, required = false,
                                  default = nil)
-  if valid_598073 != nil:
-    section.add "key", valid_598073
-  var valid_598074 = query.getOrDefault("prettyPrint")
-  valid_598074 = validateParameter(valid_598074, JBool, required = false,
+  if valid_580073 != nil:
+    section.add "key", valid_580073
+  var valid_580074 = query.getOrDefault("prettyPrint")
+  valid_580074 = validateParameter(valid_580074, JBool, required = false,
                                  default = newJBool(true))
-  if valid_598074 != nil:
-    section.add "prettyPrint", valid_598074
+  if valid_580074 != nil:
+    section.add "prettyPrint", valid_580074
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1372,20 +1374,20 @@ proc validate_BloggerUsersGet_598065(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_598075: Call_BloggerUsersGet_598064; path: JsonNode; query: JsonNode;
+proc call*(call_580075: Call_BloggerUsersGet_580064; path: JsonNode; query: JsonNode;
           header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Gets one user by id.
   ## 
-  let valid = call_598075.validator(path, query, header, formData, body)
-  let scheme = call_598075.pickScheme
+  let valid = call_580075.validator(path, query, header, formData, body)
+  let scheme = call_580075.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_598075.url(scheme.get, call_598075.host, call_598075.base,
-                         call_598075.route, valid.getOrDefault("path"),
+  let url = call_580075.url(scheme.get, call_580075.host, call_580075.base,
+                         call_580075.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_598075, url, valid)
+  result = hook(call_580075, url, valid)
 
-proc call*(call_598076: Call_BloggerUsersGet_598064; userId: string;
+proc call*(call_580076: Call_BloggerUsersGet_580064; userId: string;
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           oauthToken: string = ""; userIp: string = ""; key: string = "";
           prettyPrint: bool = true): Recallable =
@@ -1407,29 +1409,29 @@ proc call*(call_598076: Call_BloggerUsersGet_598064; userId: string;
   ##              : Returns response with indentations and line breaks.
   ##   userId: string (required)
   ##         : The ID of the user to get.
-  var path_598077 = newJObject()
-  var query_598078 = newJObject()
-  add(query_598078, "fields", newJString(fields))
-  add(query_598078, "quotaUser", newJString(quotaUser))
-  add(query_598078, "alt", newJString(alt))
-  add(query_598078, "oauth_token", newJString(oauthToken))
-  add(query_598078, "userIp", newJString(userIp))
-  add(query_598078, "key", newJString(key))
-  add(query_598078, "prettyPrint", newJBool(prettyPrint))
-  add(path_598077, "userId", newJString(userId))
-  result = call_598076.call(path_598077, query_598078, nil, nil, nil)
+  var path_580077 = newJObject()
+  var query_580078 = newJObject()
+  add(query_580078, "fields", newJString(fields))
+  add(query_580078, "quotaUser", newJString(quotaUser))
+  add(query_580078, "alt", newJString(alt))
+  add(query_580078, "oauth_token", newJString(oauthToken))
+  add(query_580078, "userIp", newJString(userIp))
+  add(query_580078, "key", newJString(key))
+  add(query_580078, "prettyPrint", newJBool(prettyPrint))
+  add(path_580077, "userId", newJString(userId))
+  result = call_580076.call(path_580077, query_580078, nil, nil, nil)
 
-var bloggerUsersGet* = Call_BloggerUsersGet_598064(name: "bloggerUsersGet",
+var bloggerUsersGet* = Call_BloggerUsersGet_580064(name: "bloggerUsersGet",
     meth: HttpMethod.HttpGet, host: "www.googleapis.com", route: "/users/{userId}",
-    validator: validate_BloggerUsersGet_598065, base: "/blogger/v2",
-    url: url_BloggerUsersGet_598066, schemes: {Scheme.Https})
+    validator: validate_BloggerUsersGet_580065, base: "/blogger/v2",
+    url: url_BloggerUsersGet_580066, schemes: {Scheme.Https})
 type
-  Call_BloggerUsersBlogsList_598079 = ref object of OpenApiRestCall_597408
-proc url_BloggerUsersBlogsList_598081(protocol: Scheme; host: string; base: string;
+  Call_BloggerUsersBlogsList_580079 = ref object of OpenApiRestCall_579408
+proc url_BloggerUsersBlogsList_580081(protocol: Scheme; host: string; base: string;
                                      route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "userId" in path, "`userId` is a required path parameter"
   const
@@ -1441,7 +1443,7 @@ proc url_BloggerUsersBlogsList_598081(protocol: Scheme; host: string; base: stri
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_BloggerUsersBlogsList_598080(path: JsonNode; query: JsonNode;
+proc validate_BloggerUsersBlogsList_580080(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Retrieves a list of blogs, possibly filtered.
   ## 
@@ -1452,11 +1454,11 @@ proc validate_BloggerUsersBlogsList_598080(path: JsonNode; query: JsonNode;
   ##         : ID of the user whose blogs are to be fetched. Either the word 'self' (sans quote marks) or the user's profile identifier.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `userId` field"
-  var valid_598082 = path.getOrDefault("userId")
-  valid_598082 = validateParameter(valid_598082, JString, required = true,
+  var valid_580082 = path.getOrDefault("userId")
+  valid_580082 = validateParameter(valid_580082, JString, required = true,
                                  default = nil)
-  if valid_598082 != nil:
-    section.add "userId", valid_598082
+  if valid_580082 != nil:
+    section.add "userId", valid_580082
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -1474,41 +1476,41 @@ proc validate_BloggerUsersBlogsList_598080(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_598083 = query.getOrDefault("fields")
-  valid_598083 = validateParameter(valid_598083, JString, required = false,
+  var valid_580083 = query.getOrDefault("fields")
+  valid_580083 = validateParameter(valid_580083, JString, required = false,
                                  default = nil)
-  if valid_598083 != nil:
-    section.add "fields", valid_598083
-  var valid_598084 = query.getOrDefault("quotaUser")
-  valid_598084 = validateParameter(valid_598084, JString, required = false,
+  if valid_580083 != nil:
+    section.add "fields", valid_580083
+  var valid_580084 = query.getOrDefault("quotaUser")
+  valid_580084 = validateParameter(valid_580084, JString, required = false,
                                  default = nil)
-  if valid_598084 != nil:
-    section.add "quotaUser", valid_598084
-  var valid_598085 = query.getOrDefault("alt")
-  valid_598085 = validateParameter(valid_598085, JString, required = false,
+  if valid_580084 != nil:
+    section.add "quotaUser", valid_580084
+  var valid_580085 = query.getOrDefault("alt")
+  valid_580085 = validateParameter(valid_580085, JString, required = false,
                                  default = newJString("json"))
-  if valid_598085 != nil:
-    section.add "alt", valid_598085
-  var valid_598086 = query.getOrDefault("oauth_token")
-  valid_598086 = validateParameter(valid_598086, JString, required = false,
+  if valid_580085 != nil:
+    section.add "alt", valid_580085
+  var valid_580086 = query.getOrDefault("oauth_token")
+  valid_580086 = validateParameter(valid_580086, JString, required = false,
                                  default = nil)
-  if valid_598086 != nil:
-    section.add "oauth_token", valid_598086
-  var valid_598087 = query.getOrDefault("userIp")
-  valid_598087 = validateParameter(valid_598087, JString, required = false,
+  if valid_580086 != nil:
+    section.add "oauth_token", valid_580086
+  var valid_580087 = query.getOrDefault("userIp")
+  valid_580087 = validateParameter(valid_580087, JString, required = false,
                                  default = nil)
-  if valid_598087 != nil:
-    section.add "userIp", valid_598087
-  var valid_598088 = query.getOrDefault("key")
-  valid_598088 = validateParameter(valid_598088, JString, required = false,
+  if valid_580087 != nil:
+    section.add "userIp", valid_580087
+  var valid_580088 = query.getOrDefault("key")
+  valid_580088 = validateParameter(valid_580088, JString, required = false,
                                  default = nil)
-  if valid_598088 != nil:
-    section.add "key", valid_598088
-  var valid_598089 = query.getOrDefault("prettyPrint")
-  valid_598089 = validateParameter(valid_598089, JBool, required = false,
+  if valid_580088 != nil:
+    section.add "key", valid_580088
+  var valid_580089 = query.getOrDefault("prettyPrint")
+  valid_580089 = validateParameter(valid_580089, JBool, required = false,
                                  default = newJBool(true))
-  if valid_598089 != nil:
-    section.add "prettyPrint", valid_598089
+  if valid_580089 != nil:
+    section.add "prettyPrint", valid_580089
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1517,20 +1519,20 @@ proc validate_BloggerUsersBlogsList_598080(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_598090: Call_BloggerUsersBlogsList_598079; path: JsonNode;
+proc call*(call_580090: Call_BloggerUsersBlogsList_580079; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Retrieves a list of blogs, possibly filtered.
   ## 
-  let valid = call_598090.validator(path, query, header, formData, body)
-  let scheme = call_598090.pickScheme
+  let valid = call_580090.validator(path, query, header, formData, body)
+  let scheme = call_580090.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_598090.url(scheme.get, call_598090.host, call_598090.base,
-                         call_598090.route, valid.getOrDefault("path"),
+  let url = call_580090.url(scheme.get, call_580090.host, call_580090.base,
+                         call_580090.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_598090, url, valid)
+  result = hook(call_580090, url, valid)
 
-proc call*(call_598091: Call_BloggerUsersBlogsList_598079; userId: string;
+proc call*(call_580091: Call_BloggerUsersBlogsList_580079; userId: string;
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           oauthToken: string = ""; userIp: string = ""; key: string = "";
           prettyPrint: bool = true): Recallable =
@@ -1552,26 +1554,116 @@ proc call*(call_598091: Call_BloggerUsersBlogsList_598079; userId: string;
   ##              : Returns response with indentations and line breaks.
   ##   userId: string (required)
   ##         : ID of the user whose blogs are to be fetched. Either the word 'self' (sans quote marks) or the user's profile identifier.
-  var path_598092 = newJObject()
-  var query_598093 = newJObject()
-  add(query_598093, "fields", newJString(fields))
-  add(query_598093, "quotaUser", newJString(quotaUser))
-  add(query_598093, "alt", newJString(alt))
-  add(query_598093, "oauth_token", newJString(oauthToken))
-  add(query_598093, "userIp", newJString(userIp))
-  add(query_598093, "key", newJString(key))
-  add(query_598093, "prettyPrint", newJBool(prettyPrint))
-  add(path_598092, "userId", newJString(userId))
-  result = call_598091.call(path_598092, query_598093, nil, nil, nil)
+  var path_580092 = newJObject()
+  var query_580093 = newJObject()
+  add(query_580093, "fields", newJString(fields))
+  add(query_580093, "quotaUser", newJString(quotaUser))
+  add(query_580093, "alt", newJString(alt))
+  add(query_580093, "oauth_token", newJString(oauthToken))
+  add(query_580093, "userIp", newJString(userIp))
+  add(query_580093, "key", newJString(key))
+  add(query_580093, "prettyPrint", newJBool(prettyPrint))
+  add(path_580092, "userId", newJString(userId))
+  result = call_580091.call(path_580092, query_580093, nil, nil, nil)
 
-var bloggerUsersBlogsList* = Call_BloggerUsersBlogsList_598079(
+var bloggerUsersBlogsList* = Call_BloggerUsersBlogsList_580079(
     name: "bloggerUsersBlogsList", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/users/{userId}/blogs",
-    validator: validate_BloggerUsersBlogsList_598080, base: "/blogger/v2",
-    url: url_BloggerUsersBlogsList_598081, schemes: {Scheme.Https})
+    validator: validate_BloggerUsersBlogsList_580080, base: "/blogger/v2",
+    url: url_BloggerUsersBlogsList_580081, schemes: {Scheme.Https})
 export
   rest
 
+type
+  GoogleAuth = ref object
+    endpoint*: Uri
+    token: string
+    expiry*: float64
+    issued*: float64
+    email: string
+    key: string
+    scope*: seq[string]
+    form: string
+    digest: Hash
+
+const
+  endpoint = "https://www.googleapis.com/oauth2/v4/token".parseUri
+var auth = GoogleAuth(endpoint: endpoint)
+proc hash(auth: GoogleAuth): Hash =
+  ## yield differing values for effectively different auth payloads
+  result = hash($auth.endpoint)
+  result = result !& hash(auth.email)
+  result = result !& hash(auth.key)
+  result = result !& hash(auth.scope.join(" "))
+  result = !$result
+
+proc newAuthenticator*(path: string): GoogleAuth =
+  let
+    input = readFile(path)
+    js = parseJson(input)
+  auth.email = js["client_email"].getStr
+  auth.key = js["private_key"].getStr
+  result = auth
+
+proc store(auth: var GoogleAuth; token: string; expiry: int; form: string) =
+  auth.token = token
+  auth.issued = epochTime()
+  auth.expiry = auth.issued + expiry.float64
+  auth.form = form
+  auth.digest = auth.hash
+
+proc authenticate*(fresh: float64 = -3600.0; lifetime: int = 3600): Future[bool] {.async.} =
+  ## get or refresh an authentication token; provide `fresh`
+  ## to ensure that the token won't expire in the next N seconds.
+  ## provide `lifetime` to indicate how long the token should last.
+  let clock = epochTime()
+  if auth.expiry > clock + fresh:
+    if auth.hash == auth.digest:
+      return true
+  let
+    expiry = clock.int + lifetime
+    header = JOSEHeader(alg: RS256, typ: "JWT")
+    claims = %*{"iss": auth.email, "scope": auth.scope.join(" "),
+              "aud": "https://www.googleapis.com/oauth2/v4/token", "exp": expiry,
+              "iat": clock.int}
+  var tok = JWT(header: header, claims: toClaims(claims))
+  tok.sign(auth.key)
+  let post = encodeQuery({"grant_type": "urn:ietf:params:oauth:grant-type:jwt-bearer",
+                       "assertion": $tok}, usePlus = false, omitEq = false)
+  var client = newAsyncHttpClient()
+  client.headers = newHttpHeaders({"Content-Type": "application/x-www-form-urlencoded",
+                                 "Content-Length": $post.len})
+  let response = await client.request($auth.endpoint, HttpPost, body = post)
+  if not response.code.is2xx:
+    return false
+  let body = await response.body
+  client.close
+  try:
+    let js = parseJson(body)
+    auth.store(js["access_token"].getStr, js["expires_in"].getInt,
+               js["token_type"].getStr)
+  except KeyError:
+    return false
+  except JsonParsingError:
+    return false
+  return true
+
+proc composeQueryString(query: JsonNode): string =
+  var qs: seq[KeyVal]
+  if query == nil:
+    return ""
+  for k, v in query.pairs:
+    qs.add (key: k, val: v.getStr)
+  result = encodeQuery(qs, usePlus = false, omitEq = false)
+
 method hook(call: OpenApiRestCall; url: Uri; input: JsonNode): Recallable {.base.} =
-  let headers = massageHeaders(input.getOrDefault("header"))
-  result = newRecallable(call, url, headers, input.getOrDefault("body").getStr)
+  var headers = massageHeaders(input.getOrDefault("header"))
+  let body = input.getOrDefault("body").getStr
+  if auth.scope.len == 0:
+    raise newException(ValueError, "specify authentication scopes")
+  if not waitfor authenticate(fresh = 10.0):
+    raise newException(IOError, "unable to refresh authentication token")
+  headers.add ("Authorization", auth.form & " " & auth.token)
+  headers.add ("Content-Type", "application/json")
+  headers.add ("Content-Length", $body.len)
+  result = newRecallable(call, url, headers, body = body)

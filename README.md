@@ -19,18 +19,20 @@ import asyncdispatch
 import httpclient
 import httpcore
 
-import gcplat/compute_v1 # ie. Compute API version 1
+import gcplat/firebase_v1beta1  # ie. Firebase v1beta1
+
+# setup authentication with supplied service account credentials
+var auth = newAuthenticator("/some/path/service_account.json")
+
+# add some scopes
+auth.scope.add "https://www.googleapis.com/auth/cloud-platform"
+auth.scope.add "https://www.googleapis.com/auth/logging.write"
+auth.scope.add "https://www.googleapis.com/auth/drive"
 
 let
-  # the call() gets arguments you might expect; they have sensible
-  # defaults depending upon the call, the API, whether they are
-  # required, what their types are, whether we can infer a default...
-  myProject = computeProjectsGet.call(project="my-project-id")
-for response in myProject.retried(tries=3):
-  if response.code.is2xx:
-    echo waitfor response.body
-    break
-
+  request = firebaseProjectsList.call(nil, nil, nil, nil, nil)
+  response = request.retried()
+echo waitfor response.body
 ```
 
 ## Details

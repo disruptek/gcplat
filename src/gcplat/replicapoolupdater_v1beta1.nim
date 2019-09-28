@@ -1,6 +1,7 @@
 
 import
-  json, options, hashes, uri, openapi/rest, os, uri, strutils, httpcore
+  json, options, hashes, uri, rest, os, uri, strutils, times, httpcore, httpclient,
+  asyncdispatch, jwt
 
 ## auto-generated via openapi macro
 ## title: Google Compute Engine Instance Group Updater
@@ -26,15 +27,15 @@ type
     url*: proc (protocol: Scheme; host: string; base: string; route: string;
               path: JsonNode; query: JsonNode): Uri
 
-  OpenApiRestCall_593424 = ref object of OpenApiRestCall
+  OpenApiRestCall_579424 = ref object of OpenApiRestCall
 proc hash(scheme: Scheme): Hash {.used.} =
   result = hash(ord(scheme))
 
-proc clone[T: OpenApiRestCall_593424](t: T): T {.used.} =
+proc clone[T: OpenApiRestCall_579424](t: T): T {.used.} =
   result = T(name: t.name, meth: t.meth, host: t.host, base: t.base, route: t.route,
            schemes: t.schemes, validator: t.validator, url: t.url)
 
-proc pickScheme(t: OpenApiRestCall_593424): Option[Scheme] {.used.} =
+proc pickScheme(t: OpenApiRestCall_579424): Option[Scheme] {.used.} =
   ## select a supported scheme from a set of candidates
   for scheme in Scheme.low ..
       Scheme.high:
@@ -102,14 +103,15 @@ proc hydratePath(input: JsonNode; segments: seq[PathToken]): Option[string] =
 
 const
   gcpServiceName = "replicapoolupdater"
+proc composeQueryString(query: JsonNode): string
 method hook(call: OpenApiRestCall; url: Uri; input: JsonNode): Recallable {.base.}
 type
-  Call_ReplicapoolupdaterZoneOperationsList_593692 = ref object of OpenApiRestCall_593424
-proc url_ReplicapoolupdaterZoneOperationsList_593694(protocol: Scheme;
+  Call_ReplicapoolupdaterZoneOperationsList_579692 = ref object of OpenApiRestCall_579424
+proc url_ReplicapoolupdaterZoneOperationsList_579694(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "project" in path, "`project` is a required path parameter"
   assert "zone" in path, "`zone` is a required path parameter"
@@ -124,7 +126,7 @@ proc url_ReplicapoolupdaterZoneOperationsList_593694(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_ReplicapoolupdaterZoneOperationsList_593693(path: JsonNode;
+proc validate_ReplicapoolupdaterZoneOperationsList_579693(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Retrieves the list of Operation resources contained within the specified zone.
   ## 
@@ -137,16 +139,16 @@ proc validate_ReplicapoolupdaterZoneOperationsList_593693(path: JsonNode;
   ##          : Name of the project scoping this request.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `zone` field"
-  var valid_593820 = path.getOrDefault("zone")
-  valid_593820 = validateParameter(valid_593820, JString, required = true,
+  var valid_579820 = path.getOrDefault("zone")
+  valid_579820 = validateParameter(valid_579820, JString, required = true,
                                  default = nil)
-  if valid_593820 != nil:
-    section.add "zone", valid_593820
-  var valid_593821 = path.getOrDefault("project")
-  valid_593821 = validateParameter(valid_593821, JString, required = true,
+  if valid_579820 != nil:
+    section.add "zone", valid_579820
+  var valid_579821 = path.getOrDefault("project")
+  valid_579821 = validateParameter(valid_579821, JString, required = true,
                                  default = nil)
-  if valid_593821 != nil:
-    section.add "project", valid_593821
+  if valid_579821 != nil:
+    section.add "project", valid_579821
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -170,56 +172,56 @@ proc validate_ReplicapoolupdaterZoneOperationsList_593693(path: JsonNode;
   ##   filter: JString
   ##         : Optional. Filter expression for filtering listed resources.
   section = newJObject()
-  var valid_593822 = query.getOrDefault("fields")
-  valid_593822 = validateParameter(valid_593822, JString, required = false,
+  var valid_579822 = query.getOrDefault("fields")
+  valid_579822 = validateParameter(valid_579822, JString, required = false,
                                  default = nil)
-  if valid_593822 != nil:
-    section.add "fields", valid_593822
-  var valid_593823 = query.getOrDefault("pageToken")
-  valid_593823 = validateParameter(valid_593823, JString, required = false,
+  if valid_579822 != nil:
+    section.add "fields", valid_579822
+  var valid_579823 = query.getOrDefault("pageToken")
+  valid_579823 = validateParameter(valid_579823, JString, required = false,
                                  default = nil)
-  if valid_593823 != nil:
-    section.add "pageToken", valid_593823
-  var valid_593824 = query.getOrDefault("quotaUser")
-  valid_593824 = validateParameter(valid_593824, JString, required = false,
+  if valid_579823 != nil:
+    section.add "pageToken", valid_579823
+  var valid_579824 = query.getOrDefault("quotaUser")
+  valid_579824 = validateParameter(valid_579824, JString, required = false,
                                  default = nil)
-  if valid_593824 != nil:
-    section.add "quotaUser", valid_593824
-  var valid_593838 = query.getOrDefault("alt")
-  valid_593838 = validateParameter(valid_593838, JString, required = false,
+  if valid_579824 != nil:
+    section.add "quotaUser", valid_579824
+  var valid_579838 = query.getOrDefault("alt")
+  valid_579838 = validateParameter(valid_579838, JString, required = false,
                                  default = newJString("json"))
-  if valid_593838 != nil:
-    section.add "alt", valid_593838
-  var valid_593839 = query.getOrDefault("oauth_token")
-  valid_593839 = validateParameter(valid_593839, JString, required = false,
+  if valid_579838 != nil:
+    section.add "alt", valid_579838
+  var valid_579839 = query.getOrDefault("oauth_token")
+  valid_579839 = validateParameter(valid_579839, JString, required = false,
                                  default = nil)
-  if valid_593839 != nil:
-    section.add "oauth_token", valid_593839
-  var valid_593840 = query.getOrDefault("userIp")
-  valid_593840 = validateParameter(valid_593840, JString, required = false,
+  if valid_579839 != nil:
+    section.add "oauth_token", valid_579839
+  var valid_579840 = query.getOrDefault("userIp")
+  valid_579840 = validateParameter(valid_579840, JString, required = false,
                                  default = nil)
-  if valid_593840 != nil:
-    section.add "userIp", valid_593840
-  var valid_593842 = query.getOrDefault("maxResults")
-  valid_593842 = validateParameter(valid_593842, JInt, required = false,
+  if valid_579840 != nil:
+    section.add "userIp", valid_579840
+  var valid_579842 = query.getOrDefault("maxResults")
+  valid_579842 = validateParameter(valid_579842, JInt, required = false,
                                  default = newJInt(500))
-  if valid_593842 != nil:
-    section.add "maxResults", valid_593842
-  var valid_593843 = query.getOrDefault("key")
-  valid_593843 = validateParameter(valid_593843, JString, required = false,
+  if valid_579842 != nil:
+    section.add "maxResults", valid_579842
+  var valid_579843 = query.getOrDefault("key")
+  valid_579843 = validateParameter(valid_579843, JString, required = false,
                                  default = nil)
-  if valid_593843 != nil:
-    section.add "key", valid_593843
-  var valid_593844 = query.getOrDefault("prettyPrint")
-  valid_593844 = validateParameter(valid_593844, JBool, required = false,
+  if valid_579843 != nil:
+    section.add "key", valid_579843
+  var valid_579844 = query.getOrDefault("prettyPrint")
+  valid_579844 = validateParameter(valid_579844, JBool, required = false,
                                  default = newJBool(true))
-  if valid_593844 != nil:
-    section.add "prettyPrint", valid_593844
-  var valid_593845 = query.getOrDefault("filter")
-  valid_593845 = validateParameter(valid_593845, JString, required = false,
+  if valid_579844 != nil:
+    section.add "prettyPrint", valid_579844
+  var valid_579845 = query.getOrDefault("filter")
+  valid_579845 = validateParameter(valid_579845, JString, required = false,
                                  default = nil)
-  if valid_593845 != nil:
-    section.add "filter", valid_593845
+  if valid_579845 != nil:
+    section.add "filter", valid_579845
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -228,21 +230,21 @@ proc validate_ReplicapoolupdaterZoneOperationsList_593693(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_593868: Call_ReplicapoolupdaterZoneOperationsList_593692;
+proc call*(call_579868: Call_ReplicapoolupdaterZoneOperationsList_579692;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Retrieves the list of Operation resources contained within the specified zone.
   ## 
-  let valid = call_593868.validator(path, query, header, formData, body)
-  let scheme = call_593868.pickScheme
+  let valid = call_579868.validator(path, query, header, formData, body)
+  let scheme = call_579868.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_593868.url(scheme.get, call_593868.host, call_593868.base,
-                         call_593868.route, valid.getOrDefault("path"),
+  let url = call_579868.url(scheme.get, call_579868.host, call_579868.base,
+                         call_579868.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_593868, url, valid)
+  result = hook(call_579868, url, valid)
 
-proc call*(call_593939: Call_ReplicapoolupdaterZoneOperationsList_593692;
+proc call*(call_579939: Call_ReplicapoolupdaterZoneOperationsList_579692;
           zone: string; project: string; fields: string = ""; pageToken: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; maxResults: int = 500; key: string = "";
@@ -273,35 +275,35 @@ proc call*(call_593939: Call_ReplicapoolupdaterZoneOperationsList_593692;
   ##              : Returns response with indentations and line breaks.
   ##   filter: string
   ##         : Optional. Filter expression for filtering listed resources.
-  var path_593940 = newJObject()
-  var query_593942 = newJObject()
-  add(path_593940, "zone", newJString(zone))
-  add(query_593942, "fields", newJString(fields))
-  add(query_593942, "pageToken", newJString(pageToken))
-  add(query_593942, "quotaUser", newJString(quotaUser))
-  add(query_593942, "alt", newJString(alt))
-  add(query_593942, "oauth_token", newJString(oauthToken))
-  add(query_593942, "userIp", newJString(userIp))
-  add(query_593942, "maxResults", newJInt(maxResults))
-  add(query_593942, "key", newJString(key))
-  add(path_593940, "project", newJString(project))
-  add(query_593942, "prettyPrint", newJBool(prettyPrint))
-  add(query_593942, "filter", newJString(filter))
-  result = call_593939.call(path_593940, query_593942, nil, nil, nil)
+  var path_579940 = newJObject()
+  var query_579942 = newJObject()
+  add(path_579940, "zone", newJString(zone))
+  add(query_579942, "fields", newJString(fields))
+  add(query_579942, "pageToken", newJString(pageToken))
+  add(query_579942, "quotaUser", newJString(quotaUser))
+  add(query_579942, "alt", newJString(alt))
+  add(query_579942, "oauth_token", newJString(oauthToken))
+  add(query_579942, "userIp", newJString(userIp))
+  add(query_579942, "maxResults", newJInt(maxResults))
+  add(query_579942, "key", newJString(key))
+  add(path_579940, "project", newJString(project))
+  add(query_579942, "prettyPrint", newJBool(prettyPrint))
+  add(query_579942, "filter", newJString(filter))
+  result = call_579939.call(path_579940, query_579942, nil, nil, nil)
 
-var replicapoolupdaterZoneOperationsList* = Call_ReplicapoolupdaterZoneOperationsList_593692(
+var replicapoolupdaterZoneOperationsList* = Call_ReplicapoolupdaterZoneOperationsList_579692(
     name: "replicapoolupdaterZoneOperationsList", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/{project}/zones/{zone}/operations",
-    validator: validate_ReplicapoolupdaterZoneOperationsList_593693,
+    validator: validate_ReplicapoolupdaterZoneOperationsList_579693,
     base: "/replicapoolupdater/v1beta1/projects",
-    url: url_ReplicapoolupdaterZoneOperationsList_593694, schemes: {Scheme.Https})
+    url: url_ReplicapoolupdaterZoneOperationsList_579694, schemes: {Scheme.Https})
 type
-  Call_ReplicapoolupdaterZoneOperationsGet_593981 = ref object of OpenApiRestCall_593424
-proc url_ReplicapoolupdaterZoneOperationsGet_593983(protocol: Scheme; host: string;
+  Call_ReplicapoolupdaterZoneOperationsGet_579981 = ref object of OpenApiRestCall_579424
+proc url_ReplicapoolupdaterZoneOperationsGet_579983(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "project" in path, "`project` is a required path parameter"
   assert "zone" in path, "`zone` is a required path parameter"
@@ -318,7 +320,7 @@ proc url_ReplicapoolupdaterZoneOperationsGet_593983(protocol: Scheme; host: stri
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_ReplicapoolupdaterZoneOperationsGet_593982(path: JsonNode;
+proc validate_ReplicapoolupdaterZoneOperationsGet_579982(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Retrieves the specified zone-specific operation resource.
   ## 
@@ -333,21 +335,21 @@ proc validate_ReplicapoolupdaterZoneOperationsGet_593982(path: JsonNode;
   ##          : Name of the project scoping this request.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `zone` field"
-  var valid_593984 = path.getOrDefault("zone")
-  valid_593984 = validateParameter(valid_593984, JString, required = true,
+  var valid_579984 = path.getOrDefault("zone")
+  valid_579984 = validateParameter(valid_579984, JString, required = true,
                                  default = nil)
-  if valid_593984 != nil:
-    section.add "zone", valid_593984
-  var valid_593985 = path.getOrDefault("operation")
-  valid_593985 = validateParameter(valid_593985, JString, required = true,
+  if valid_579984 != nil:
+    section.add "zone", valid_579984
+  var valid_579985 = path.getOrDefault("operation")
+  valid_579985 = validateParameter(valid_579985, JString, required = true,
                                  default = nil)
-  if valid_593985 != nil:
-    section.add "operation", valid_593985
-  var valid_593986 = path.getOrDefault("project")
-  valid_593986 = validateParameter(valid_593986, JString, required = true,
+  if valid_579985 != nil:
+    section.add "operation", valid_579985
+  var valid_579986 = path.getOrDefault("project")
+  valid_579986 = validateParameter(valid_579986, JString, required = true,
                                  default = nil)
-  if valid_593986 != nil:
-    section.add "project", valid_593986
+  if valid_579986 != nil:
+    section.add "project", valid_579986
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -365,41 +367,41 @@ proc validate_ReplicapoolupdaterZoneOperationsGet_593982(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_593987 = query.getOrDefault("fields")
-  valid_593987 = validateParameter(valid_593987, JString, required = false,
+  var valid_579987 = query.getOrDefault("fields")
+  valid_579987 = validateParameter(valid_579987, JString, required = false,
                                  default = nil)
-  if valid_593987 != nil:
-    section.add "fields", valid_593987
-  var valid_593988 = query.getOrDefault("quotaUser")
-  valid_593988 = validateParameter(valid_593988, JString, required = false,
+  if valid_579987 != nil:
+    section.add "fields", valid_579987
+  var valid_579988 = query.getOrDefault("quotaUser")
+  valid_579988 = validateParameter(valid_579988, JString, required = false,
                                  default = nil)
-  if valid_593988 != nil:
-    section.add "quotaUser", valid_593988
-  var valid_593989 = query.getOrDefault("alt")
-  valid_593989 = validateParameter(valid_593989, JString, required = false,
+  if valid_579988 != nil:
+    section.add "quotaUser", valid_579988
+  var valid_579989 = query.getOrDefault("alt")
+  valid_579989 = validateParameter(valid_579989, JString, required = false,
                                  default = newJString("json"))
-  if valid_593989 != nil:
-    section.add "alt", valid_593989
-  var valid_593990 = query.getOrDefault("oauth_token")
-  valid_593990 = validateParameter(valid_593990, JString, required = false,
+  if valid_579989 != nil:
+    section.add "alt", valid_579989
+  var valid_579990 = query.getOrDefault("oauth_token")
+  valid_579990 = validateParameter(valid_579990, JString, required = false,
                                  default = nil)
-  if valid_593990 != nil:
-    section.add "oauth_token", valid_593990
-  var valid_593991 = query.getOrDefault("userIp")
-  valid_593991 = validateParameter(valid_593991, JString, required = false,
+  if valid_579990 != nil:
+    section.add "oauth_token", valid_579990
+  var valid_579991 = query.getOrDefault("userIp")
+  valid_579991 = validateParameter(valid_579991, JString, required = false,
                                  default = nil)
-  if valid_593991 != nil:
-    section.add "userIp", valid_593991
-  var valid_593992 = query.getOrDefault("key")
-  valid_593992 = validateParameter(valid_593992, JString, required = false,
+  if valid_579991 != nil:
+    section.add "userIp", valid_579991
+  var valid_579992 = query.getOrDefault("key")
+  valid_579992 = validateParameter(valid_579992, JString, required = false,
                                  default = nil)
-  if valid_593992 != nil:
-    section.add "key", valid_593992
-  var valid_593993 = query.getOrDefault("prettyPrint")
-  valid_593993 = validateParameter(valid_593993, JBool, required = false,
+  if valid_579992 != nil:
+    section.add "key", valid_579992
+  var valid_579993 = query.getOrDefault("prettyPrint")
+  valid_579993 = validateParameter(valid_579993, JBool, required = false,
                                  default = newJBool(true))
-  if valid_593993 != nil:
-    section.add "prettyPrint", valid_593993
+  if valid_579993 != nil:
+    section.add "prettyPrint", valid_579993
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -408,21 +410,21 @@ proc validate_ReplicapoolupdaterZoneOperationsGet_593982(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_593994: Call_ReplicapoolupdaterZoneOperationsGet_593981;
+proc call*(call_579994: Call_ReplicapoolupdaterZoneOperationsGet_579981;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Retrieves the specified zone-specific operation resource.
   ## 
-  let valid = call_593994.validator(path, query, header, formData, body)
-  let scheme = call_593994.pickScheme
+  let valid = call_579994.validator(path, query, header, formData, body)
+  let scheme = call_579994.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_593994.url(scheme.get, call_593994.host, call_593994.base,
-                         call_593994.route, valid.getOrDefault("path"),
+  let url = call_579994.url(scheme.get, call_579994.host, call_579994.base,
+                         call_579994.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_593994, url, valid)
+  result = hook(call_579994, url, valid)
 
-proc call*(call_593995: Call_ReplicapoolupdaterZoneOperationsGet_593981;
+proc call*(call_579995: Call_ReplicapoolupdaterZoneOperationsGet_579981;
           zone: string; operation: string; project: string; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; key: string = ""; prettyPrint: bool = true): Recallable =
@@ -448,34 +450,34 @@ proc call*(call_593995: Call_ReplicapoolupdaterZoneOperationsGet_593981;
   ##          : Name of the project scoping this request.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_593996 = newJObject()
-  var query_593997 = newJObject()
-  add(path_593996, "zone", newJString(zone))
-  add(query_593997, "fields", newJString(fields))
-  add(query_593997, "quotaUser", newJString(quotaUser))
-  add(query_593997, "alt", newJString(alt))
-  add(path_593996, "operation", newJString(operation))
-  add(query_593997, "oauth_token", newJString(oauthToken))
-  add(query_593997, "userIp", newJString(userIp))
-  add(query_593997, "key", newJString(key))
-  add(path_593996, "project", newJString(project))
-  add(query_593997, "prettyPrint", newJBool(prettyPrint))
-  result = call_593995.call(path_593996, query_593997, nil, nil, nil)
+  var path_579996 = newJObject()
+  var query_579997 = newJObject()
+  add(path_579996, "zone", newJString(zone))
+  add(query_579997, "fields", newJString(fields))
+  add(query_579997, "quotaUser", newJString(quotaUser))
+  add(query_579997, "alt", newJString(alt))
+  add(path_579996, "operation", newJString(operation))
+  add(query_579997, "oauth_token", newJString(oauthToken))
+  add(query_579997, "userIp", newJString(userIp))
+  add(query_579997, "key", newJString(key))
+  add(path_579996, "project", newJString(project))
+  add(query_579997, "prettyPrint", newJBool(prettyPrint))
+  result = call_579995.call(path_579996, query_579997, nil, nil, nil)
 
-var replicapoolupdaterZoneOperationsGet* = Call_ReplicapoolupdaterZoneOperationsGet_593981(
+var replicapoolupdaterZoneOperationsGet* = Call_ReplicapoolupdaterZoneOperationsGet_579981(
     name: "replicapoolupdaterZoneOperationsGet", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com",
     route: "/{project}/zones/{zone}/operations/{operation}",
-    validator: validate_ReplicapoolupdaterZoneOperationsGet_593982,
+    validator: validate_ReplicapoolupdaterZoneOperationsGet_579982,
     base: "/replicapoolupdater/v1beta1/projects",
-    url: url_ReplicapoolupdaterZoneOperationsGet_593983, schemes: {Scheme.Https})
+    url: url_ReplicapoolupdaterZoneOperationsGet_579983, schemes: {Scheme.Https})
 type
-  Call_ReplicapoolupdaterRollingUpdatesInsert_594017 = ref object of OpenApiRestCall_593424
-proc url_ReplicapoolupdaterRollingUpdatesInsert_594019(protocol: Scheme;
+  Call_ReplicapoolupdaterRollingUpdatesInsert_580017 = ref object of OpenApiRestCall_579424
+proc url_ReplicapoolupdaterRollingUpdatesInsert_580019(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "project" in path, "`project` is a required path parameter"
   assert "zone" in path, "`zone` is a required path parameter"
@@ -490,7 +492,7 @@ proc url_ReplicapoolupdaterRollingUpdatesInsert_594019(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_ReplicapoolupdaterRollingUpdatesInsert_594018(path: JsonNode;
+proc validate_ReplicapoolupdaterRollingUpdatesInsert_580018(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Inserts and starts a new update.
   ## 
@@ -503,16 +505,16 @@ proc validate_ReplicapoolupdaterRollingUpdatesInsert_594018(path: JsonNode;
   ##          : The Google Developers Console project name.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `zone` field"
-  var valid_594020 = path.getOrDefault("zone")
-  valid_594020 = validateParameter(valid_594020, JString, required = true,
+  var valid_580020 = path.getOrDefault("zone")
+  valid_580020 = validateParameter(valid_580020, JString, required = true,
                                  default = nil)
-  if valid_594020 != nil:
-    section.add "zone", valid_594020
-  var valid_594021 = path.getOrDefault("project")
-  valid_594021 = validateParameter(valid_594021, JString, required = true,
+  if valid_580020 != nil:
+    section.add "zone", valid_580020
+  var valid_580021 = path.getOrDefault("project")
+  valid_580021 = validateParameter(valid_580021, JString, required = true,
                                  default = nil)
-  if valid_594021 != nil:
-    section.add "project", valid_594021
+  if valid_580021 != nil:
+    section.add "project", valid_580021
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -530,41 +532,41 @@ proc validate_ReplicapoolupdaterRollingUpdatesInsert_594018(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_594022 = query.getOrDefault("fields")
-  valid_594022 = validateParameter(valid_594022, JString, required = false,
+  var valid_580022 = query.getOrDefault("fields")
+  valid_580022 = validateParameter(valid_580022, JString, required = false,
                                  default = nil)
-  if valid_594022 != nil:
-    section.add "fields", valid_594022
-  var valid_594023 = query.getOrDefault("quotaUser")
-  valid_594023 = validateParameter(valid_594023, JString, required = false,
+  if valid_580022 != nil:
+    section.add "fields", valid_580022
+  var valid_580023 = query.getOrDefault("quotaUser")
+  valid_580023 = validateParameter(valid_580023, JString, required = false,
                                  default = nil)
-  if valid_594023 != nil:
-    section.add "quotaUser", valid_594023
-  var valid_594024 = query.getOrDefault("alt")
-  valid_594024 = validateParameter(valid_594024, JString, required = false,
+  if valid_580023 != nil:
+    section.add "quotaUser", valid_580023
+  var valid_580024 = query.getOrDefault("alt")
+  valid_580024 = validateParameter(valid_580024, JString, required = false,
                                  default = newJString("json"))
-  if valid_594024 != nil:
-    section.add "alt", valid_594024
-  var valid_594025 = query.getOrDefault("oauth_token")
-  valid_594025 = validateParameter(valid_594025, JString, required = false,
+  if valid_580024 != nil:
+    section.add "alt", valid_580024
+  var valid_580025 = query.getOrDefault("oauth_token")
+  valid_580025 = validateParameter(valid_580025, JString, required = false,
                                  default = nil)
-  if valid_594025 != nil:
-    section.add "oauth_token", valid_594025
-  var valid_594026 = query.getOrDefault("userIp")
-  valid_594026 = validateParameter(valid_594026, JString, required = false,
+  if valid_580025 != nil:
+    section.add "oauth_token", valid_580025
+  var valid_580026 = query.getOrDefault("userIp")
+  valid_580026 = validateParameter(valid_580026, JString, required = false,
                                  default = nil)
-  if valid_594026 != nil:
-    section.add "userIp", valid_594026
-  var valid_594027 = query.getOrDefault("key")
-  valid_594027 = validateParameter(valid_594027, JString, required = false,
+  if valid_580026 != nil:
+    section.add "userIp", valid_580026
+  var valid_580027 = query.getOrDefault("key")
+  valid_580027 = validateParameter(valid_580027, JString, required = false,
                                  default = nil)
-  if valid_594027 != nil:
-    section.add "key", valid_594027
-  var valid_594028 = query.getOrDefault("prettyPrint")
-  valid_594028 = validateParameter(valid_594028, JBool, required = false,
+  if valid_580027 != nil:
+    section.add "key", valid_580027
+  var valid_580028 = query.getOrDefault("prettyPrint")
+  valid_580028 = validateParameter(valid_580028, JBool, required = false,
                                  default = newJBool(true))
-  if valid_594028 != nil:
-    section.add "prettyPrint", valid_594028
+  if valid_580028 != nil:
+    section.add "prettyPrint", valid_580028
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -576,21 +578,21 @@ proc validate_ReplicapoolupdaterRollingUpdatesInsert_594018(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_594030: Call_ReplicapoolupdaterRollingUpdatesInsert_594017;
+proc call*(call_580030: Call_ReplicapoolupdaterRollingUpdatesInsert_580017;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Inserts and starts a new update.
   ## 
-  let valid = call_594030.validator(path, query, header, formData, body)
-  let scheme = call_594030.pickScheme
+  let valid = call_580030.validator(path, query, header, formData, body)
+  let scheme = call_580030.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_594030.url(scheme.get, call_594030.host, call_594030.base,
-                         call_594030.route, valid.getOrDefault("path"),
+  let url = call_580030.url(scheme.get, call_580030.host, call_580030.base,
+                         call_580030.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_594030, url, valid)
+  result = hook(call_580030, url, valid)
 
-proc call*(call_594031: Call_ReplicapoolupdaterRollingUpdatesInsert_594017;
+proc call*(call_580031: Call_ReplicapoolupdaterRollingUpdatesInsert_580017;
           zone: string; project: string; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; userIp: string = "";
           key: string = ""; body: JsonNode = nil; prettyPrint: bool = true): Recallable =
@@ -615,36 +617,36 @@ proc call*(call_594031: Call_ReplicapoolupdaterRollingUpdatesInsert_594017;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_594032 = newJObject()
-  var query_594033 = newJObject()
-  var body_594034 = newJObject()
-  add(path_594032, "zone", newJString(zone))
-  add(query_594033, "fields", newJString(fields))
-  add(query_594033, "quotaUser", newJString(quotaUser))
-  add(query_594033, "alt", newJString(alt))
-  add(query_594033, "oauth_token", newJString(oauthToken))
-  add(query_594033, "userIp", newJString(userIp))
-  add(query_594033, "key", newJString(key))
-  add(path_594032, "project", newJString(project))
+  var path_580032 = newJObject()
+  var query_580033 = newJObject()
+  var body_580034 = newJObject()
+  add(path_580032, "zone", newJString(zone))
+  add(query_580033, "fields", newJString(fields))
+  add(query_580033, "quotaUser", newJString(quotaUser))
+  add(query_580033, "alt", newJString(alt))
+  add(query_580033, "oauth_token", newJString(oauthToken))
+  add(query_580033, "userIp", newJString(userIp))
+  add(query_580033, "key", newJString(key))
+  add(path_580032, "project", newJString(project))
   if body != nil:
-    body_594034 = body
-  add(query_594033, "prettyPrint", newJBool(prettyPrint))
-  result = call_594031.call(path_594032, query_594033, nil, nil, body_594034)
+    body_580034 = body
+  add(query_580033, "prettyPrint", newJBool(prettyPrint))
+  result = call_580031.call(path_580032, query_580033, nil, nil, body_580034)
 
-var replicapoolupdaterRollingUpdatesInsert* = Call_ReplicapoolupdaterRollingUpdatesInsert_594017(
+var replicapoolupdaterRollingUpdatesInsert* = Call_ReplicapoolupdaterRollingUpdatesInsert_580017(
     name: "replicapoolupdaterRollingUpdatesInsert", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com", route: "/{project}/zones/{zone}/rollingUpdates",
-    validator: validate_ReplicapoolupdaterRollingUpdatesInsert_594018,
+    validator: validate_ReplicapoolupdaterRollingUpdatesInsert_580018,
     base: "/replicapoolupdater/v1beta1/projects",
-    url: url_ReplicapoolupdaterRollingUpdatesInsert_594019,
+    url: url_ReplicapoolupdaterRollingUpdatesInsert_580019,
     schemes: {Scheme.Https})
 type
-  Call_ReplicapoolupdaterRollingUpdatesList_593998 = ref object of OpenApiRestCall_593424
-proc url_ReplicapoolupdaterRollingUpdatesList_594000(protocol: Scheme;
+  Call_ReplicapoolupdaterRollingUpdatesList_579998 = ref object of OpenApiRestCall_579424
+proc url_ReplicapoolupdaterRollingUpdatesList_580000(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "project" in path, "`project` is a required path parameter"
   assert "zone" in path, "`zone` is a required path parameter"
@@ -659,7 +661,7 @@ proc url_ReplicapoolupdaterRollingUpdatesList_594000(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_ReplicapoolupdaterRollingUpdatesList_593999(path: JsonNode;
+proc validate_ReplicapoolupdaterRollingUpdatesList_579999(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Lists recent updates for a given managed instance group, in reverse chronological order and paginated format.
   ## 
@@ -672,16 +674,16 @@ proc validate_ReplicapoolupdaterRollingUpdatesList_593999(path: JsonNode;
   ##          : The Google Developers Console project name.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `zone` field"
-  var valid_594001 = path.getOrDefault("zone")
-  valid_594001 = validateParameter(valid_594001, JString, required = true,
+  var valid_580001 = path.getOrDefault("zone")
+  valid_580001 = validateParameter(valid_580001, JString, required = true,
                                  default = nil)
-  if valid_594001 != nil:
-    section.add "zone", valid_594001
-  var valid_594002 = path.getOrDefault("project")
-  valid_594002 = validateParameter(valid_594002, JString, required = true,
+  if valid_580001 != nil:
+    section.add "zone", valid_580001
+  var valid_580002 = path.getOrDefault("project")
+  valid_580002 = validateParameter(valid_580002, JString, required = true,
                                  default = nil)
-  if valid_594002 != nil:
-    section.add "project", valid_594002
+  if valid_580002 != nil:
+    section.add "project", valid_580002
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -705,56 +707,56 @@ proc validate_ReplicapoolupdaterRollingUpdatesList_593999(path: JsonNode;
   ##   filter: JString
   ##         : Optional. Filter expression for filtering listed resources.
   section = newJObject()
-  var valid_594003 = query.getOrDefault("fields")
-  valid_594003 = validateParameter(valid_594003, JString, required = false,
+  var valid_580003 = query.getOrDefault("fields")
+  valid_580003 = validateParameter(valid_580003, JString, required = false,
                                  default = nil)
-  if valid_594003 != nil:
-    section.add "fields", valid_594003
-  var valid_594004 = query.getOrDefault("pageToken")
-  valid_594004 = validateParameter(valid_594004, JString, required = false,
+  if valid_580003 != nil:
+    section.add "fields", valid_580003
+  var valid_580004 = query.getOrDefault("pageToken")
+  valid_580004 = validateParameter(valid_580004, JString, required = false,
                                  default = nil)
-  if valid_594004 != nil:
-    section.add "pageToken", valid_594004
-  var valid_594005 = query.getOrDefault("quotaUser")
-  valid_594005 = validateParameter(valid_594005, JString, required = false,
+  if valid_580004 != nil:
+    section.add "pageToken", valid_580004
+  var valid_580005 = query.getOrDefault("quotaUser")
+  valid_580005 = validateParameter(valid_580005, JString, required = false,
                                  default = nil)
-  if valid_594005 != nil:
-    section.add "quotaUser", valid_594005
-  var valid_594006 = query.getOrDefault("alt")
-  valid_594006 = validateParameter(valid_594006, JString, required = false,
+  if valid_580005 != nil:
+    section.add "quotaUser", valid_580005
+  var valid_580006 = query.getOrDefault("alt")
+  valid_580006 = validateParameter(valid_580006, JString, required = false,
                                  default = newJString("json"))
-  if valid_594006 != nil:
-    section.add "alt", valid_594006
-  var valid_594007 = query.getOrDefault("oauth_token")
-  valid_594007 = validateParameter(valid_594007, JString, required = false,
+  if valid_580006 != nil:
+    section.add "alt", valid_580006
+  var valid_580007 = query.getOrDefault("oauth_token")
+  valid_580007 = validateParameter(valid_580007, JString, required = false,
                                  default = nil)
-  if valid_594007 != nil:
-    section.add "oauth_token", valid_594007
-  var valid_594008 = query.getOrDefault("userIp")
-  valid_594008 = validateParameter(valid_594008, JString, required = false,
+  if valid_580007 != nil:
+    section.add "oauth_token", valid_580007
+  var valid_580008 = query.getOrDefault("userIp")
+  valid_580008 = validateParameter(valid_580008, JString, required = false,
                                  default = nil)
-  if valid_594008 != nil:
-    section.add "userIp", valid_594008
-  var valid_594009 = query.getOrDefault("maxResults")
-  valid_594009 = validateParameter(valid_594009, JInt, required = false,
+  if valid_580008 != nil:
+    section.add "userIp", valid_580008
+  var valid_580009 = query.getOrDefault("maxResults")
+  valid_580009 = validateParameter(valid_580009, JInt, required = false,
                                  default = newJInt(500))
-  if valid_594009 != nil:
-    section.add "maxResults", valid_594009
-  var valid_594010 = query.getOrDefault("key")
-  valid_594010 = validateParameter(valid_594010, JString, required = false,
+  if valid_580009 != nil:
+    section.add "maxResults", valid_580009
+  var valid_580010 = query.getOrDefault("key")
+  valid_580010 = validateParameter(valid_580010, JString, required = false,
                                  default = nil)
-  if valid_594010 != nil:
-    section.add "key", valid_594010
-  var valid_594011 = query.getOrDefault("prettyPrint")
-  valid_594011 = validateParameter(valid_594011, JBool, required = false,
+  if valid_580010 != nil:
+    section.add "key", valid_580010
+  var valid_580011 = query.getOrDefault("prettyPrint")
+  valid_580011 = validateParameter(valid_580011, JBool, required = false,
                                  default = newJBool(true))
-  if valid_594011 != nil:
-    section.add "prettyPrint", valid_594011
-  var valid_594012 = query.getOrDefault("filter")
-  valid_594012 = validateParameter(valid_594012, JString, required = false,
+  if valid_580011 != nil:
+    section.add "prettyPrint", valid_580011
+  var valid_580012 = query.getOrDefault("filter")
+  valid_580012 = validateParameter(valid_580012, JString, required = false,
                                  default = nil)
-  if valid_594012 != nil:
-    section.add "filter", valid_594012
+  if valid_580012 != nil:
+    section.add "filter", valid_580012
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -763,21 +765,21 @@ proc validate_ReplicapoolupdaterRollingUpdatesList_593999(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_594013: Call_ReplicapoolupdaterRollingUpdatesList_593998;
+proc call*(call_580013: Call_ReplicapoolupdaterRollingUpdatesList_579998;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Lists recent updates for a given managed instance group, in reverse chronological order and paginated format.
   ## 
-  let valid = call_594013.validator(path, query, header, formData, body)
-  let scheme = call_594013.pickScheme
+  let valid = call_580013.validator(path, query, header, formData, body)
+  let scheme = call_580013.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_594013.url(scheme.get, call_594013.host, call_594013.base,
-                         call_594013.route, valid.getOrDefault("path"),
+  let url = call_580013.url(scheme.get, call_580013.host, call_580013.base,
+                         call_580013.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_594013, url, valid)
+  result = hook(call_580013, url, valid)
 
-proc call*(call_594014: Call_ReplicapoolupdaterRollingUpdatesList_593998;
+proc call*(call_580014: Call_ReplicapoolupdaterRollingUpdatesList_579998;
           zone: string; project: string; fields: string = ""; pageToken: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; maxResults: int = 500; key: string = "";
@@ -808,35 +810,35 @@ proc call*(call_594014: Call_ReplicapoolupdaterRollingUpdatesList_593998;
   ##              : Returns response with indentations and line breaks.
   ##   filter: string
   ##         : Optional. Filter expression for filtering listed resources.
-  var path_594015 = newJObject()
-  var query_594016 = newJObject()
-  add(path_594015, "zone", newJString(zone))
-  add(query_594016, "fields", newJString(fields))
-  add(query_594016, "pageToken", newJString(pageToken))
-  add(query_594016, "quotaUser", newJString(quotaUser))
-  add(query_594016, "alt", newJString(alt))
-  add(query_594016, "oauth_token", newJString(oauthToken))
-  add(query_594016, "userIp", newJString(userIp))
-  add(query_594016, "maxResults", newJInt(maxResults))
-  add(query_594016, "key", newJString(key))
-  add(path_594015, "project", newJString(project))
-  add(query_594016, "prettyPrint", newJBool(prettyPrint))
-  add(query_594016, "filter", newJString(filter))
-  result = call_594014.call(path_594015, query_594016, nil, nil, nil)
+  var path_580015 = newJObject()
+  var query_580016 = newJObject()
+  add(path_580015, "zone", newJString(zone))
+  add(query_580016, "fields", newJString(fields))
+  add(query_580016, "pageToken", newJString(pageToken))
+  add(query_580016, "quotaUser", newJString(quotaUser))
+  add(query_580016, "alt", newJString(alt))
+  add(query_580016, "oauth_token", newJString(oauthToken))
+  add(query_580016, "userIp", newJString(userIp))
+  add(query_580016, "maxResults", newJInt(maxResults))
+  add(query_580016, "key", newJString(key))
+  add(path_580015, "project", newJString(project))
+  add(query_580016, "prettyPrint", newJBool(prettyPrint))
+  add(query_580016, "filter", newJString(filter))
+  result = call_580014.call(path_580015, query_580016, nil, nil, nil)
 
-var replicapoolupdaterRollingUpdatesList* = Call_ReplicapoolupdaterRollingUpdatesList_593998(
+var replicapoolupdaterRollingUpdatesList* = Call_ReplicapoolupdaterRollingUpdatesList_579998(
     name: "replicapoolupdaterRollingUpdatesList", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/{project}/zones/{zone}/rollingUpdates",
-    validator: validate_ReplicapoolupdaterRollingUpdatesList_593999,
+    validator: validate_ReplicapoolupdaterRollingUpdatesList_579999,
     base: "/replicapoolupdater/v1beta1/projects",
-    url: url_ReplicapoolupdaterRollingUpdatesList_594000, schemes: {Scheme.Https})
+    url: url_ReplicapoolupdaterRollingUpdatesList_580000, schemes: {Scheme.Https})
 type
-  Call_ReplicapoolupdaterRollingUpdatesGet_594035 = ref object of OpenApiRestCall_593424
-proc url_ReplicapoolupdaterRollingUpdatesGet_594037(protocol: Scheme; host: string;
+  Call_ReplicapoolupdaterRollingUpdatesGet_580035 = ref object of OpenApiRestCall_579424
+proc url_ReplicapoolupdaterRollingUpdatesGet_580037(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "project" in path, "`project` is a required path parameter"
   assert "zone" in path, "`zone` is a required path parameter"
@@ -853,7 +855,7 @@ proc url_ReplicapoolupdaterRollingUpdatesGet_594037(protocol: Scheme; host: stri
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_ReplicapoolupdaterRollingUpdatesGet_594036(path: JsonNode;
+proc validate_ReplicapoolupdaterRollingUpdatesGet_580036(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Returns information about an update.
   ## 
@@ -868,21 +870,21 @@ proc validate_ReplicapoolupdaterRollingUpdatesGet_594036(path: JsonNode;
   ##          : The Google Developers Console project name.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `zone` field"
-  var valid_594038 = path.getOrDefault("zone")
-  valid_594038 = validateParameter(valid_594038, JString, required = true,
+  var valid_580038 = path.getOrDefault("zone")
+  valid_580038 = validateParameter(valid_580038, JString, required = true,
                                  default = nil)
-  if valid_594038 != nil:
-    section.add "zone", valid_594038
-  var valid_594039 = path.getOrDefault("rollingUpdate")
-  valid_594039 = validateParameter(valid_594039, JString, required = true,
+  if valid_580038 != nil:
+    section.add "zone", valid_580038
+  var valid_580039 = path.getOrDefault("rollingUpdate")
+  valid_580039 = validateParameter(valid_580039, JString, required = true,
                                  default = nil)
-  if valid_594039 != nil:
-    section.add "rollingUpdate", valid_594039
-  var valid_594040 = path.getOrDefault("project")
-  valid_594040 = validateParameter(valid_594040, JString, required = true,
+  if valid_580039 != nil:
+    section.add "rollingUpdate", valid_580039
+  var valid_580040 = path.getOrDefault("project")
+  valid_580040 = validateParameter(valid_580040, JString, required = true,
                                  default = nil)
-  if valid_594040 != nil:
-    section.add "project", valid_594040
+  if valid_580040 != nil:
+    section.add "project", valid_580040
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -900,41 +902,41 @@ proc validate_ReplicapoolupdaterRollingUpdatesGet_594036(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_594041 = query.getOrDefault("fields")
-  valid_594041 = validateParameter(valid_594041, JString, required = false,
+  var valid_580041 = query.getOrDefault("fields")
+  valid_580041 = validateParameter(valid_580041, JString, required = false,
                                  default = nil)
-  if valid_594041 != nil:
-    section.add "fields", valid_594041
-  var valid_594042 = query.getOrDefault("quotaUser")
-  valid_594042 = validateParameter(valid_594042, JString, required = false,
+  if valid_580041 != nil:
+    section.add "fields", valid_580041
+  var valid_580042 = query.getOrDefault("quotaUser")
+  valid_580042 = validateParameter(valid_580042, JString, required = false,
                                  default = nil)
-  if valid_594042 != nil:
-    section.add "quotaUser", valid_594042
-  var valid_594043 = query.getOrDefault("alt")
-  valid_594043 = validateParameter(valid_594043, JString, required = false,
+  if valid_580042 != nil:
+    section.add "quotaUser", valid_580042
+  var valid_580043 = query.getOrDefault("alt")
+  valid_580043 = validateParameter(valid_580043, JString, required = false,
                                  default = newJString("json"))
-  if valid_594043 != nil:
-    section.add "alt", valid_594043
-  var valid_594044 = query.getOrDefault("oauth_token")
-  valid_594044 = validateParameter(valid_594044, JString, required = false,
+  if valid_580043 != nil:
+    section.add "alt", valid_580043
+  var valid_580044 = query.getOrDefault("oauth_token")
+  valid_580044 = validateParameter(valid_580044, JString, required = false,
                                  default = nil)
-  if valid_594044 != nil:
-    section.add "oauth_token", valid_594044
-  var valid_594045 = query.getOrDefault("userIp")
-  valid_594045 = validateParameter(valid_594045, JString, required = false,
+  if valid_580044 != nil:
+    section.add "oauth_token", valid_580044
+  var valid_580045 = query.getOrDefault("userIp")
+  valid_580045 = validateParameter(valid_580045, JString, required = false,
                                  default = nil)
-  if valid_594045 != nil:
-    section.add "userIp", valid_594045
-  var valid_594046 = query.getOrDefault("key")
-  valid_594046 = validateParameter(valid_594046, JString, required = false,
+  if valid_580045 != nil:
+    section.add "userIp", valid_580045
+  var valid_580046 = query.getOrDefault("key")
+  valid_580046 = validateParameter(valid_580046, JString, required = false,
                                  default = nil)
-  if valid_594046 != nil:
-    section.add "key", valid_594046
-  var valid_594047 = query.getOrDefault("prettyPrint")
-  valid_594047 = validateParameter(valid_594047, JBool, required = false,
+  if valid_580046 != nil:
+    section.add "key", valid_580046
+  var valid_580047 = query.getOrDefault("prettyPrint")
+  valid_580047 = validateParameter(valid_580047, JBool, required = false,
                                  default = newJBool(true))
-  if valid_594047 != nil:
-    section.add "prettyPrint", valid_594047
+  if valid_580047 != nil:
+    section.add "prettyPrint", valid_580047
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -943,21 +945,21 @@ proc validate_ReplicapoolupdaterRollingUpdatesGet_594036(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_594048: Call_ReplicapoolupdaterRollingUpdatesGet_594035;
+proc call*(call_580048: Call_ReplicapoolupdaterRollingUpdatesGet_580035;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Returns information about an update.
   ## 
-  let valid = call_594048.validator(path, query, header, formData, body)
-  let scheme = call_594048.pickScheme
+  let valid = call_580048.validator(path, query, header, formData, body)
+  let scheme = call_580048.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_594048.url(scheme.get, call_594048.host, call_594048.base,
-                         call_594048.route, valid.getOrDefault("path"),
+  let url = call_580048.url(scheme.get, call_580048.host, call_580048.base,
+                         call_580048.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_594048, url, valid)
+  result = hook(call_580048, url, valid)
 
-proc call*(call_594049: Call_ReplicapoolupdaterRollingUpdatesGet_594035;
+proc call*(call_580049: Call_ReplicapoolupdaterRollingUpdatesGet_580035;
           zone: string; rollingUpdate: string; project: string; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; key: string = ""; prettyPrint: bool = true): Recallable =
@@ -983,34 +985,34 @@ proc call*(call_594049: Call_ReplicapoolupdaterRollingUpdatesGet_594035;
   ##          : The Google Developers Console project name.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_594050 = newJObject()
-  var query_594051 = newJObject()
-  add(path_594050, "zone", newJString(zone))
-  add(query_594051, "fields", newJString(fields))
-  add(query_594051, "quotaUser", newJString(quotaUser))
-  add(query_594051, "alt", newJString(alt))
-  add(query_594051, "oauth_token", newJString(oauthToken))
-  add(query_594051, "userIp", newJString(userIp))
-  add(path_594050, "rollingUpdate", newJString(rollingUpdate))
-  add(query_594051, "key", newJString(key))
-  add(path_594050, "project", newJString(project))
-  add(query_594051, "prettyPrint", newJBool(prettyPrint))
-  result = call_594049.call(path_594050, query_594051, nil, nil, nil)
+  var path_580050 = newJObject()
+  var query_580051 = newJObject()
+  add(path_580050, "zone", newJString(zone))
+  add(query_580051, "fields", newJString(fields))
+  add(query_580051, "quotaUser", newJString(quotaUser))
+  add(query_580051, "alt", newJString(alt))
+  add(query_580051, "oauth_token", newJString(oauthToken))
+  add(query_580051, "userIp", newJString(userIp))
+  add(path_580050, "rollingUpdate", newJString(rollingUpdate))
+  add(query_580051, "key", newJString(key))
+  add(path_580050, "project", newJString(project))
+  add(query_580051, "prettyPrint", newJBool(prettyPrint))
+  result = call_580049.call(path_580050, query_580051, nil, nil, nil)
 
-var replicapoolupdaterRollingUpdatesGet* = Call_ReplicapoolupdaterRollingUpdatesGet_594035(
+var replicapoolupdaterRollingUpdatesGet* = Call_ReplicapoolupdaterRollingUpdatesGet_580035(
     name: "replicapoolupdaterRollingUpdatesGet", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com",
     route: "/{project}/zones/{zone}/rollingUpdates/{rollingUpdate}",
-    validator: validate_ReplicapoolupdaterRollingUpdatesGet_594036,
+    validator: validate_ReplicapoolupdaterRollingUpdatesGet_580036,
     base: "/replicapoolupdater/v1beta1/projects",
-    url: url_ReplicapoolupdaterRollingUpdatesGet_594037, schemes: {Scheme.Https})
+    url: url_ReplicapoolupdaterRollingUpdatesGet_580037, schemes: {Scheme.Https})
 type
-  Call_ReplicapoolupdaterRollingUpdatesCancel_594052 = ref object of OpenApiRestCall_593424
-proc url_ReplicapoolupdaterRollingUpdatesCancel_594054(protocol: Scheme;
+  Call_ReplicapoolupdaterRollingUpdatesCancel_580052 = ref object of OpenApiRestCall_579424
+proc url_ReplicapoolupdaterRollingUpdatesCancel_580054(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "project" in path, "`project` is a required path parameter"
   assert "zone" in path, "`zone` is a required path parameter"
@@ -1028,7 +1030,7 @@ proc url_ReplicapoolupdaterRollingUpdatesCancel_594054(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_ReplicapoolupdaterRollingUpdatesCancel_594053(path: JsonNode;
+proc validate_ReplicapoolupdaterRollingUpdatesCancel_580053(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Cancels an update. The update must be PAUSED before it can be cancelled. This has no effect if the update is already CANCELLED.
   ## 
@@ -1043,21 +1045,21 @@ proc validate_ReplicapoolupdaterRollingUpdatesCancel_594053(path: JsonNode;
   ##          : The Google Developers Console project name.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `zone` field"
-  var valid_594055 = path.getOrDefault("zone")
-  valid_594055 = validateParameter(valid_594055, JString, required = true,
+  var valid_580055 = path.getOrDefault("zone")
+  valid_580055 = validateParameter(valid_580055, JString, required = true,
                                  default = nil)
-  if valid_594055 != nil:
-    section.add "zone", valid_594055
-  var valid_594056 = path.getOrDefault("rollingUpdate")
-  valid_594056 = validateParameter(valid_594056, JString, required = true,
+  if valid_580055 != nil:
+    section.add "zone", valid_580055
+  var valid_580056 = path.getOrDefault("rollingUpdate")
+  valid_580056 = validateParameter(valid_580056, JString, required = true,
                                  default = nil)
-  if valid_594056 != nil:
-    section.add "rollingUpdate", valid_594056
-  var valid_594057 = path.getOrDefault("project")
-  valid_594057 = validateParameter(valid_594057, JString, required = true,
+  if valid_580056 != nil:
+    section.add "rollingUpdate", valid_580056
+  var valid_580057 = path.getOrDefault("project")
+  valid_580057 = validateParameter(valid_580057, JString, required = true,
                                  default = nil)
-  if valid_594057 != nil:
-    section.add "project", valid_594057
+  if valid_580057 != nil:
+    section.add "project", valid_580057
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -1075,41 +1077,41 @@ proc validate_ReplicapoolupdaterRollingUpdatesCancel_594053(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_594058 = query.getOrDefault("fields")
-  valid_594058 = validateParameter(valid_594058, JString, required = false,
+  var valid_580058 = query.getOrDefault("fields")
+  valid_580058 = validateParameter(valid_580058, JString, required = false,
                                  default = nil)
-  if valid_594058 != nil:
-    section.add "fields", valid_594058
-  var valid_594059 = query.getOrDefault("quotaUser")
-  valid_594059 = validateParameter(valid_594059, JString, required = false,
+  if valid_580058 != nil:
+    section.add "fields", valid_580058
+  var valid_580059 = query.getOrDefault("quotaUser")
+  valid_580059 = validateParameter(valid_580059, JString, required = false,
                                  default = nil)
-  if valid_594059 != nil:
-    section.add "quotaUser", valid_594059
-  var valid_594060 = query.getOrDefault("alt")
-  valid_594060 = validateParameter(valid_594060, JString, required = false,
+  if valid_580059 != nil:
+    section.add "quotaUser", valid_580059
+  var valid_580060 = query.getOrDefault("alt")
+  valid_580060 = validateParameter(valid_580060, JString, required = false,
                                  default = newJString("json"))
-  if valid_594060 != nil:
-    section.add "alt", valid_594060
-  var valid_594061 = query.getOrDefault("oauth_token")
-  valid_594061 = validateParameter(valid_594061, JString, required = false,
+  if valid_580060 != nil:
+    section.add "alt", valid_580060
+  var valid_580061 = query.getOrDefault("oauth_token")
+  valid_580061 = validateParameter(valid_580061, JString, required = false,
                                  default = nil)
-  if valid_594061 != nil:
-    section.add "oauth_token", valid_594061
-  var valid_594062 = query.getOrDefault("userIp")
-  valid_594062 = validateParameter(valid_594062, JString, required = false,
+  if valid_580061 != nil:
+    section.add "oauth_token", valid_580061
+  var valid_580062 = query.getOrDefault("userIp")
+  valid_580062 = validateParameter(valid_580062, JString, required = false,
                                  default = nil)
-  if valid_594062 != nil:
-    section.add "userIp", valid_594062
-  var valid_594063 = query.getOrDefault("key")
-  valid_594063 = validateParameter(valid_594063, JString, required = false,
+  if valid_580062 != nil:
+    section.add "userIp", valid_580062
+  var valid_580063 = query.getOrDefault("key")
+  valid_580063 = validateParameter(valid_580063, JString, required = false,
                                  default = nil)
-  if valid_594063 != nil:
-    section.add "key", valid_594063
-  var valid_594064 = query.getOrDefault("prettyPrint")
-  valid_594064 = validateParameter(valid_594064, JBool, required = false,
+  if valid_580063 != nil:
+    section.add "key", valid_580063
+  var valid_580064 = query.getOrDefault("prettyPrint")
+  valid_580064 = validateParameter(valid_580064, JBool, required = false,
                                  default = newJBool(true))
-  if valid_594064 != nil:
-    section.add "prettyPrint", valid_594064
+  if valid_580064 != nil:
+    section.add "prettyPrint", valid_580064
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1118,21 +1120,21 @@ proc validate_ReplicapoolupdaterRollingUpdatesCancel_594053(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_594065: Call_ReplicapoolupdaterRollingUpdatesCancel_594052;
+proc call*(call_580065: Call_ReplicapoolupdaterRollingUpdatesCancel_580052;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Cancels an update. The update must be PAUSED before it can be cancelled. This has no effect if the update is already CANCELLED.
   ## 
-  let valid = call_594065.validator(path, query, header, formData, body)
-  let scheme = call_594065.pickScheme
+  let valid = call_580065.validator(path, query, header, formData, body)
+  let scheme = call_580065.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_594065.url(scheme.get, call_594065.host, call_594065.base,
-                         call_594065.route, valid.getOrDefault("path"),
+  let url = call_580065.url(scheme.get, call_580065.host, call_580065.base,
+                         call_580065.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_594065, url, valid)
+  result = hook(call_580065, url, valid)
 
-proc call*(call_594066: Call_ReplicapoolupdaterRollingUpdatesCancel_594052;
+proc call*(call_580066: Call_ReplicapoolupdaterRollingUpdatesCancel_580052;
           zone: string; rollingUpdate: string; project: string; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; key: string = ""; prettyPrint: bool = true): Recallable =
@@ -1158,36 +1160,36 @@ proc call*(call_594066: Call_ReplicapoolupdaterRollingUpdatesCancel_594052;
   ##          : The Google Developers Console project name.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_594067 = newJObject()
-  var query_594068 = newJObject()
-  add(path_594067, "zone", newJString(zone))
-  add(query_594068, "fields", newJString(fields))
-  add(query_594068, "quotaUser", newJString(quotaUser))
-  add(query_594068, "alt", newJString(alt))
-  add(query_594068, "oauth_token", newJString(oauthToken))
-  add(query_594068, "userIp", newJString(userIp))
-  add(path_594067, "rollingUpdate", newJString(rollingUpdate))
-  add(query_594068, "key", newJString(key))
-  add(path_594067, "project", newJString(project))
-  add(query_594068, "prettyPrint", newJBool(prettyPrint))
-  result = call_594066.call(path_594067, query_594068, nil, nil, nil)
+  var path_580067 = newJObject()
+  var query_580068 = newJObject()
+  add(path_580067, "zone", newJString(zone))
+  add(query_580068, "fields", newJString(fields))
+  add(query_580068, "quotaUser", newJString(quotaUser))
+  add(query_580068, "alt", newJString(alt))
+  add(query_580068, "oauth_token", newJString(oauthToken))
+  add(query_580068, "userIp", newJString(userIp))
+  add(path_580067, "rollingUpdate", newJString(rollingUpdate))
+  add(query_580068, "key", newJString(key))
+  add(path_580067, "project", newJString(project))
+  add(query_580068, "prettyPrint", newJBool(prettyPrint))
+  result = call_580066.call(path_580067, query_580068, nil, nil, nil)
 
-var replicapoolupdaterRollingUpdatesCancel* = Call_ReplicapoolupdaterRollingUpdatesCancel_594052(
+var replicapoolupdaterRollingUpdatesCancel* = Call_ReplicapoolupdaterRollingUpdatesCancel_580052(
     name: "replicapoolupdaterRollingUpdatesCancel", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com",
     route: "/{project}/zones/{zone}/rollingUpdates/{rollingUpdate}/cancel",
-    validator: validate_ReplicapoolupdaterRollingUpdatesCancel_594053,
+    validator: validate_ReplicapoolupdaterRollingUpdatesCancel_580053,
     base: "/replicapoolupdater/v1beta1/projects",
-    url: url_ReplicapoolupdaterRollingUpdatesCancel_594054,
+    url: url_ReplicapoolupdaterRollingUpdatesCancel_580054,
     schemes: {Scheme.Https})
 type
-  Call_ReplicapoolupdaterRollingUpdatesListInstanceUpdates_594069 = ref object of OpenApiRestCall_593424
-proc url_ReplicapoolupdaterRollingUpdatesListInstanceUpdates_594071(
+  Call_ReplicapoolupdaterRollingUpdatesListInstanceUpdates_580069 = ref object of OpenApiRestCall_579424
+proc url_ReplicapoolupdaterRollingUpdatesListInstanceUpdates_580071(
     protocol: Scheme; host: string; base: string; route: string; path: JsonNode;
     query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "project" in path, "`project` is a required path parameter"
   assert "zone" in path, "`zone` is a required path parameter"
@@ -1205,7 +1207,7 @@ proc url_ReplicapoolupdaterRollingUpdatesListInstanceUpdates_594071(
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_ReplicapoolupdaterRollingUpdatesListInstanceUpdates_594070(
+proc validate_ReplicapoolupdaterRollingUpdatesListInstanceUpdates_580070(
     path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
     body: JsonNode): JsonNode =
   ## Lists the current status for each instance within a given update.
@@ -1221,21 +1223,21 @@ proc validate_ReplicapoolupdaterRollingUpdatesListInstanceUpdates_594070(
   ##          : The Google Developers Console project name.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `zone` field"
-  var valid_594072 = path.getOrDefault("zone")
-  valid_594072 = validateParameter(valid_594072, JString, required = true,
+  var valid_580072 = path.getOrDefault("zone")
+  valid_580072 = validateParameter(valid_580072, JString, required = true,
                                  default = nil)
-  if valid_594072 != nil:
-    section.add "zone", valid_594072
-  var valid_594073 = path.getOrDefault("rollingUpdate")
-  valid_594073 = validateParameter(valid_594073, JString, required = true,
+  if valid_580072 != nil:
+    section.add "zone", valid_580072
+  var valid_580073 = path.getOrDefault("rollingUpdate")
+  valid_580073 = validateParameter(valid_580073, JString, required = true,
                                  default = nil)
-  if valid_594073 != nil:
-    section.add "rollingUpdate", valid_594073
-  var valid_594074 = path.getOrDefault("project")
-  valid_594074 = validateParameter(valid_594074, JString, required = true,
+  if valid_580073 != nil:
+    section.add "rollingUpdate", valid_580073
+  var valid_580074 = path.getOrDefault("project")
+  valid_580074 = validateParameter(valid_580074, JString, required = true,
                                  default = nil)
-  if valid_594074 != nil:
-    section.add "project", valid_594074
+  if valid_580074 != nil:
+    section.add "project", valid_580074
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -1259,56 +1261,56 @@ proc validate_ReplicapoolupdaterRollingUpdatesListInstanceUpdates_594070(
   ##   filter: JString
   ##         : Optional. Filter expression for filtering listed resources.
   section = newJObject()
-  var valid_594075 = query.getOrDefault("fields")
-  valid_594075 = validateParameter(valid_594075, JString, required = false,
+  var valid_580075 = query.getOrDefault("fields")
+  valid_580075 = validateParameter(valid_580075, JString, required = false,
                                  default = nil)
-  if valid_594075 != nil:
-    section.add "fields", valid_594075
-  var valid_594076 = query.getOrDefault("pageToken")
-  valid_594076 = validateParameter(valid_594076, JString, required = false,
+  if valid_580075 != nil:
+    section.add "fields", valid_580075
+  var valid_580076 = query.getOrDefault("pageToken")
+  valid_580076 = validateParameter(valid_580076, JString, required = false,
                                  default = nil)
-  if valid_594076 != nil:
-    section.add "pageToken", valid_594076
-  var valid_594077 = query.getOrDefault("quotaUser")
-  valid_594077 = validateParameter(valid_594077, JString, required = false,
+  if valid_580076 != nil:
+    section.add "pageToken", valid_580076
+  var valid_580077 = query.getOrDefault("quotaUser")
+  valid_580077 = validateParameter(valid_580077, JString, required = false,
                                  default = nil)
-  if valid_594077 != nil:
-    section.add "quotaUser", valid_594077
-  var valid_594078 = query.getOrDefault("alt")
-  valid_594078 = validateParameter(valid_594078, JString, required = false,
+  if valid_580077 != nil:
+    section.add "quotaUser", valid_580077
+  var valid_580078 = query.getOrDefault("alt")
+  valid_580078 = validateParameter(valid_580078, JString, required = false,
                                  default = newJString("json"))
-  if valid_594078 != nil:
-    section.add "alt", valid_594078
-  var valid_594079 = query.getOrDefault("oauth_token")
-  valid_594079 = validateParameter(valid_594079, JString, required = false,
+  if valid_580078 != nil:
+    section.add "alt", valid_580078
+  var valid_580079 = query.getOrDefault("oauth_token")
+  valid_580079 = validateParameter(valid_580079, JString, required = false,
                                  default = nil)
-  if valid_594079 != nil:
-    section.add "oauth_token", valid_594079
-  var valid_594080 = query.getOrDefault("userIp")
-  valid_594080 = validateParameter(valid_594080, JString, required = false,
+  if valid_580079 != nil:
+    section.add "oauth_token", valid_580079
+  var valid_580080 = query.getOrDefault("userIp")
+  valid_580080 = validateParameter(valid_580080, JString, required = false,
                                  default = nil)
-  if valid_594080 != nil:
-    section.add "userIp", valid_594080
-  var valid_594081 = query.getOrDefault("maxResults")
-  valid_594081 = validateParameter(valid_594081, JInt, required = false,
+  if valid_580080 != nil:
+    section.add "userIp", valid_580080
+  var valid_580081 = query.getOrDefault("maxResults")
+  valid_580081 = validateParameter(valid_580081, JInt, required = false,
                                  default = newJInt(500))
-  if valid_594081 != nil:
-    section.add "maxResults", valid_594081
-  var valid_594082 = query.getOrDefault("key")
-  valid_594082 = validateParameter(valid_594082, JString, required = false,
+  if valid_580081 != nil:
+    section.add "maxResults", valid_580081
+  var valid_580082 = query.getOrDefault("key")
+  valid_580082 = validateParameter(valid_580082, JString, required = false,
                                  default = nil)
-  if valid_594082 != nil:
-    section.add "key", valid_594082
-  var valid_594083 = query.getOrDefault("prettyPrint")
-  valid_594083 = validateParameter(valid_594083, JBool, required = false,
+  if valid_580082 != nil:
+    section.add "key", valid_580082
+  var valid_580083 = query.getOrDefault("prettyPrint")
+  valid_580083 = validateParameter(valid_580083, JBool, required = false,
                                  default = newJBool(true))
-  if valid_594083 != nil:
-    section.add "prettyPrint", valid_594083
-  var valid_594084 = query.getOrDefault("filter")
-  valid_594084 = validateParameter(valid_594084, JString, required = false,
+  if valid_580083 != nil:
+    section.add "prettyPrint", valid_580083
+  var valid_580084 = query.getOrDefault("filter")
+  valid_580084 = validateParameter(valid_580084, JString, required = false,
                                  default = nil)
-  if valid_594084 != nil:
-    section.add "filter", valid_594084
+  if valid_580084 != nil:
+    section.add "filter", valid_580084
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1317,21 +1319,21 @@ proc validate_ReplicapoolupdaterRollingUpdatesListInstanceUpdates_594070(
   if body != nil:
     result.add "body", body
 
-proc call*(call_594085: Call_ReplicapoolupdaterRollingUpdatesListInstanceUpdates_594069;
+proc call*(call_580085: Call_ReplicapoolupdaterRollingUpdatesListInstanceUpdates_580069;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Lists the current status for each instance within a given update.
   ## 
-  let valid = call_594085.validator(path, query, header, formData, body)
-  let scheme = call_594085.pickScheme
+  let valid = call_580085.validator(path, query, header, formData, body)
+  let scheme = call_580085.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_594085.url(scheme.get, call_594085.host, call_594085.base,
-                         call_594085.route, valid.getOrDefault("path"),
+  let url = call_580085.url(scheme.get, call_580085.host, call_580085.base,
+                         call_580085.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_594085, url, valid)
+  result = hook(call_580085, url, valid)
 
-proc call*(call_594086: Call_ReplicapoolupdaterRollingUpdatesListInstanceUpdates_594069;
+proc call*(call_580086: Call_ReplicapoolupdaterRollingUpdatesListInstanceUpdates_580069;
           zone: string; rollingUpdate: string; project: string; fields: string = "";
           pageToken: string = ""; quotaUser: string = ""; alt: string = "json";
           oauthToken: string = ""; userIp: string = ""; maxResults: int = 500;
@@ -1364,37 +1366,37 @@ proc call*(call_594086: Call_ReplicapoolupdaterRollingUpdatesListInstanceUpdates
   ##              : Returns response with indentations and line breaks.
   ##   filter: string
   ##         : Optional. Filter expression for filtering listed resources.
-  var path_594087 = newJObject()
-  var query_594088 = newJObject()
-  add(path_594087, "zone", newJString(zone))
-  add(query_594088, "fields", newJString(fields))
-  add(query_594088, "pageToken", newJString(pageToken))
-  add(query_594088, "quotaUser", newJString(quotaUser))
-  add(query_594088, "alt", newJString(alt))
-  add(query_594088, "oauth_token", newJString(oauthToken))
-  add(query_594088, "userIp", newJString(userIp))
-  add(query_594088, "maxResults", newJInt(maxResults))
-  add(path_594087, "rollingUpdate", newJString(rollingUpdate))
-  add(query_594088, "key", newJString(key))
-  add(path_594087, "project", newJString(project))
-  add(query_594088, "prettyPrint", newJBool(prettyPrint))
-  add(query_594088, "filter", newJString(filter))
-  result = call_594086.call(path_594087, query_594088, nil, nil, nil)
+  var path_580087 = newJObject()
+  var query_580088 = newJObject()
+  add(path_580087, "zone", newJString(zone))
+  add(query_580088, "fields", newJString(fields))
+  add(query_580088, "pageToken", newJString(pageToken))
+  add(query_580088, "quotaUser", newJString(quotaUser))
+  add(query_580088, "alt", newJString(alt))
+  add(query_580088, "oauth_token", newJString(oauthToken))
+  add(query_580088, "userIp", newJString(userIp))
+  add(query_580088, "maxResults", newJInt(maxResults))
+  add(path_580087, "rollingUpdate", newJString(rollingUpdate))
+  add(query_580088, "key", newJString(key))
+  add(path_580087, "project", newJString(project))
+  add(query_580088, "prettyPrint", newJBool(prettyPrint))
+  add(query_580088, "filter", newJString(filter))
+  result = call_580086.call(path_580087, query_580088, nil, nil, nil)
 
-var replicapoolupdaterRollingUpdatesListInstanceUpdates* = Call_ReplicapoolupdaterRollingUpdatesListInstanceUpdates_594069(
+var replicapoolupdaterRollingUpdatesListInstanceUpdates* = Call_ReplicapoolupdaterRollingUpdatesListInstanceUpdates_580069(
     name: "replicapoolupdaterRollingUpdatesListInstanceUpdates",
     meth: HttpMethod.HttpGet, host: "www.googleapis.com", route: "/{project}/zones/{zone}/rollingUpdates/{rollingUpdate}/instanceUpdates",
-    validator: validate_ReplicapoolupdaterRollingUpdatesListInstanceUpdates_594070,
+    validator: validate_ReplicapoolupdaterRollingUpdatesListInstanceUpdates_580070,
     base: "/replicapoolupdater/v1beta1/projects",
-    url: url_ReplicapoolupdaterRollingUpdatesListInstanceUpdates_594071,
+    url: url_ReplicapoolupdaterRollingUpdatesListInstanceUpdates_580071,
     schemes: {Scheme.Https})
 type
-  Call_ReplicapoolupdaterRollingUpdatesPause_594089 = ref object of OpenApiRestCall_593424
-proc url_ReplicapoolupdaterRollingUpdatesPause_594091(protocol: Scheme;
+  Call_ReplicapoolupdaterRollingUpdatesPause_580089 = ref object of OpenApiRestCall_579424
+proc url_ReplicapoolupdaterRollingUpdatesPause_580091(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "project" in path, "`project` is a required path parameter"
   assert "zone" in path, "`zone` is a required path parameter"
@@ -1412,7 +1414,7 @@ proc url_ReplicapoolupdaterRollingUpdatesPause_594091(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_ReplicapoolupdaterRollingUpdatesPause_594090(path: JsonNode;
+proc validate_ReplicapoolupdaterRollingUpdatesPause_580090(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Pauses the update in state from ROLLING_FORWARD or ROLLING_BACK. Has no effect if invoked when the state of the update is PAUSED.
   ## 
@@ -1427,21 +1429,21 @@ proc validate_ReplicapoolupdaterRollingUpdatesPause_594090(path: JsonNode;
   ##          : The Google Developers Console project name.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `zone` field"
-  var valid_594092 = path.getOrDefault("zone")
-  valid_594092 = validateParameter(valid_594092, JString, required = true,
+  var valid_580092 = path.getOrDefault("zone")
+  valid_580092 = validateParameter(valid_580092, JString, required = true,
                                  default = nil)
-  if valid_594092 != nil:
-    section.add "zone", valid_594092
-  var valid_594093 = path.getOrDefault("rollingUpdate")
-  valid_594093 = validateParameter(valid_594093, JString, required = true,
+  if valid_580092 != nil:
+    section.add "zone", valid_580092
+  var valid_580093 = path.getOrDefault("rollingUpdate")
+  valid_580093 = validateParameter(valid_580093, JString, required = true,
                                  default = nil)
-  if valid_594093 != nil:
-    section.add "rollingUpdate", valid_594093
-  var valid_594094 = path.getOrDefault("project")
-  valid_594094 = validateParameter(valid_594094, JString, required = true,
+  if valid_580093 != nil:
+    section.add "rollingUpdate", valid_580093
+  var valid_580094 = path.getOrDefault("project")
+  valid_580094 = validateParameter(valid_580094, JString, required = true,
                                  default = nil)
-  if valid_594094 != nil:
-    section.add "project", valid_594094
+  if valid_580094 != nil:
+    section.add "project", valid_580094
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -1459,41 +1461,41 @@ proc validate_ReplicapoolupdaterRollingUpdatesPause_594090(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_594095 = query.getOrDefault("fields")
-  valid_594095 = validateParameter(valid_594095, JString, required = false,
+  var valid_580095 = query.getOrDefault("fields")
+  valid_580095 = validateParameter(valid_580095, JString, required = false,
                                  default = nil)
-  if valid_594095 != nil:
-    section.add "fields", valid_594095
-  var valid_594096 = query.getOrDefault("quotaUser")
-  valid_594096 = validateParameter(valid_594096, JString, required = false,
+  if valid_580095 != nil:
+    section.add "fields", valid_580095
+  var valid_580096 = query.getOrDefault("quotaUser")
+  valid_580096 = validateParameter(valid_580096, JString, required = false,
                                  default = nil)
-  if valid_594096 != nil:
-    section.add "quotaUser", valid_594096
-  var valid_594097 = query.getOrDefault("alt")
-  valid_594097 = validateParameter(valid_594097, JString, required = false,
+  if valid_580096 != nil:
+    section.add "quotaUser", valid_580096
+  var valid_580097 = query.getOrDefault("alt")
+  valid_580097 = validateParameter(valid_580097, JString, required = false,
                                  default = newJString("json"))
-  if valid_594097 != nil:
-    section.add "alt", valid_594097
-  var valid_594098 = query.getOrDefault("oauth_token")
-  valid_594098 = validateParameter(valid_594098, JString, required = false,
+  if valid_580097 != nil:
+    section.add "alt", valid_580097
+  var valid_580098 = query.getOrDefault("oauth_token")
+  valid_580098 = validateParameter(valid_580098, JString, required = false,
                                  default = nil)
-  if valid_594098 != nil:
-    section.add "oauth_token", valid_594098
-  var valid_594099 = query.getOrDefault("userIp")
-  valid_594099 = validateParameter(valid_594099, JString, required = false,
+  if valid_580098 != nil:
+    section.add "oauth_token", valid_580098
+  var valid_580099 = query.getOrDefault("userIp")
+  valid_580099 = validateParameter(valid_580099, JString, required = false,
                                  default = nil)
-  if valid_594099 != nil:
-    section.add "userIp", valid_594099
-  var valid_594100 = query.getOrDefault("key")
-  valid_594100 = validateParameter(valid_594100, JString, required = false,
+  if valid_580099 != nil:
+    section.add "userIp", valid_580099
+  var valid_580100 = query.getOrDefault("key")
+  valid_580100 = validateParameter(valid_580100, JString, required = false,
                                  default = nil)
-  if valid_594100 != nil:
-    section.add "key", valid_594100
-  var valid_594101 = query.getOrDefault("prettyPrint")
-  valid_594101 = validateParameter(valid_594101, JBool, required = false,
+  if valid_580100 != nil:
+    section.add "key", valid_580100
+  var valid_580101 = query.getOrDefault("prettyPrint")
+  valid_580101 = validateParameter(valid_580101, JBool, required = false,
                                  default = newJBool(true))
-  if valid_594101 != nil:
-    section.add "prettyPrint", valid_594101
+  if valid_580101 != nil:
+    section.add "prettyPrint", valid_580101
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1502,21 +1504,21 @@ proc validate_ReplicapoolupdaterRollingUpdatesPause_594090(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_594102: Call_ReplicapoolupdaterRollingUpdatesPause_594089;
+proc call*(call_580102: Call_ReplicapoolupdaterRollingUpdatesPause_580089;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Pauses the update in state from ROLLING_FORWARD or ROLLING_BACK. Has no effect if invoked when the state of the update is PAUSED.
   ## 
-  let valid = call_594102.validator(path, query, header, formData, body)
-  let scheme = call_594102.pickScheme
+  let valid = call_580102.validator(path, query, header, formData, body)
+  let scheme = call_580102.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_594102.url(scheme.get, call_594102.host, call_594102.base,
-                         call_594102.route, valid.getOrDefault("path"),
+  let url = call_580102.url(scheme.get, call_580102.host, call_580102.base,
+                         call_580102.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_594102, url, valid)
+  result = hook(call_580102, url, valid)
 
-proc call*(call_594103: Call_ReplicapoolupdaterRollingUpdatesPause_594089;
+proc call*(call_580103: Call_ReplicapoolupdaterRollingUpdatesPause_580089;
           zone: string; rollingUpdate: string; project: string; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; key: string = ""; prettyPrint: bool = true): Recallable =
@@ -1542,34 +1544,34 @@ proc call*(call_594103: Call_ReplicapoolupdaterRollingUpdatesPause_594089;
   ##          : The Google Developers Console project name.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_594104 = newJObject()
-  var query_594105 = newJObject()
-  add(path_594104, "zone", newJString(zone))
-  add(query_594105, "fields", newJString(fields))
-  add(query_594105, "quotaUser", newJString(quotaUser))
-  add(query_594105, "alt", newJString(alt))
-  add(query_594105, "oauth_token", newJString(oauthToken))
-  add(query_594105, "userIp", newJString(userIp))
-  add(path_594104, "rollingUpdate", newJString(rollingUpdate))
-  add(query_594105, "key", newJString(key))
-  add(path_594104, "project", newJString(project))
-  add(query_594105, "prettyPrint", newJBool(prettyPrint))
-  result = call_594103.call(path_594104, query_594105, nil, nil, nil)
+  var path_580104 = newJObject()
+  var query_580105 = newJObject()
+  add(path_580104, "zone", newJString(zone))
+  add(query_580105, "fields", newJString(fields))
+  add(query_580105, "quotaUser", newJString(quotaUser))
+  add(query_580105, "alt", newJString(alt))
+  add(query_580105, "oauth_token", newJString(oauthToken))
+  add(query_580105, "userIp", newJString(userIp))
+  add(path_580104, "rollingUpdate", newJString(rollingUpdate))
+  add(query_580105, "key", newJString(key))
+  add(path_580104, "project", newJString(project))
+  add(query_580105, "prettyPrint", newJBool(prettyPrint))
+  result = call_580103.call(path_580104, query_580105, nil, nil, nil)
 
-var replicapoolupdaterRollingUpdatesPause* = Call_ReplicapoolupdaterRollingUpdatesPause_594089(
+var replicapoolupdaterRollingUpdatesPause* = Call_ReplicapoolupdaterRollingUpdatesPause_580089(
     name: "replicapoolupdaterRollingUpdatesPause", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com",
     route: "/{project}/zones/{zone}/rollingUpdates/{rollingUpdate}/pause",
-    validator: validate_ReplicapoolupdaterRollingUpdatesPause_594090,
+    validator: validate_ReplicapoolupdaterRollingUpdatesPause_580090,
     base: "/replicapoolupdater/v1beta1/projects",
-    url: url_ReplicapoolupdaterRollingUpdatesPause_594091, schemes: {Scheme.Https})
+    url: url_ReplicapoolupdaterRollingUpdatesPause_580091, schemes: {Scheme.Https})
 type
-  Call_ReplicapoolupdaterRollingUpdatesResume_594106 = ref object of OpenApiRestCall_593424
-proc url_ReplicapoolupdaterRollingUpdatesResume_594108(protocol: Scheme;
+  Call_ReplicapoolupdaterRollingUpdatesResume_580106 = ref object of OpenApiRestCall_579424
+proc url_ReplicapoolupdaterRollingUpdatesResume_580108(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "project" in path, "`project` is a required path parameter"
   assert "zone" in path, "`zone` is a required path parameter"
@@ -1587,7 +1589,7 @@ proc url_ReplicapoolupdaterRollingUpdatesResume_594108(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_ReplicapoolupdaterRollingUpdatesResume_594107(path: JsonNode;
+proc validate_ReplicapoolupdaterRollingUpdatesResume_580107(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Continues an update in PAUSED state. Has no effect if invoked when the state of the update is ROLLED_OUT.
   ## 
@@ -1602,21 +1604,21 @@ proc validate_ReplicapoolupdaterRollingUpdatesResume_594107(path: JsonNode;
   ##          : The Google Developers Console project name.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `zone` field"
-  var valid_594109 = path.getOrDefault("zone")
-  valid_594109 = validateParameter(valid_594109, JString, required = true,
+  var valid_580109 = path.getOrDefault("zone")
+  valid_580109 = validateParameter(valid_580109, JString, required = true,
                                  default = nil)
-  if valid_594109 != nil:
-    section.add "zone", valid_594109
-  var valid_594110 = path.getOrDefault("rollingUpdate")
-  valid_594110 = validateParameter(valid_594110, JString, required = true,
+  if valid_580109 != nil:
+    section.add "zone", valid_580109
+  var valid_580110 = path.getOrDefault("rollingUpdate")
+  valid_580110 = validateParameter(valid_580110, JString, required = true,
                                  default = nil)
-  if valid_594110 != nil:
-    section.add "rollingUpdate", valid_594110
-  var valid_594111 = path.getOrDefault("project")
-  valid_594111 = validateParameter(valid_594111, JString, required = true,
+  if valid_580110 != nil:
+    section.add "rollingUpdate", valid_580110
+  var valid_580111 = path.getOrDefault("project")
+  valid_580111 = validateParameter(valid_580111, JString, required = true,
                                  default = nil)
-  if valid_594111 != nil:
-    section.add "project", valid_594111
+  if valid_580111 != nil:
+    section.add "project", valid_580111
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -1634,41 +1636,41 @@ proc validate_ReplicapoolupdaterRollingUpdatesResume_594107(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_594112 = query.getOrDefault("fields")
-  valid_594112 = validateParameter(valid_594112, JString, required = false,
+  var valid_580112 = query.getOrDefault("fields")
+  valid_580112 = validateParameter(valid_580112, JString, required = false,
                                  default = nil)
-  if valid_594112 != nil:
-    section.add "fields", valid_594112
-  var valid_594113 = query.getOrDefault("quotaUser")
-  valid_594113 = validateParameter(valid_594113, JString, required = false,
+  if valid_580112 != nil:
+    section.add "fields", valid_580112
+  var valid_580113 = query.getOrDefault("quotaUser")
+  valid_580113 = validateParameter(valid_580113, JString, required = false,
                                  default = nil)
-  if valid_594113 != nil:
-    section.add "quotaUser", valid_594113
-  var valid_594114 = query.getOrDefault("alt")
-  valid_594114 = validateParameter(valid_594114, JString, required = false,
+  if valid_580113 != nil:
+    section.add "quotaUser", valid_580113
+  var valid_580114 = query.getOrDefault("alt")
+  valid_580114 = validateParameter(valid_580114, JString, required = false,
                                  default = newJString("json"))
-  if valid_594114 != nil:
-    section.add "alt", valid_594114
-  var valid_594115 = query.getOrDefault("oauth_token")
-  valid_594115 = validateParameter(valid_594115, JString, required = false,
+  if valid_580114 != nil:
+    section.add "alt", valid_580114
+  var valid_580115 = query.getOrDefault("oauth_token")
+  valid_580115 = validateParameter(valid_580115, JString, required = false,
                                  default = nil)
-  if valid_594115 != nil:
-    section.add "oauth_token", valid_594115
-  var valid_594116 = query.getOrDefault("userIp")
-  valid_594116 = validateParameter(valid_594116, JString, required = false,
+  if valid_580115 != nil:
+    section.add "oauth_token", valid_580115
+  var valid_580116 = query.getOrDefault("userIp")
+  valid_580116 = validateParameter(valid_580116, JString, required = false,
                                  default = nil)
-  if valid_594116 != nil:
-    section.add "userIp", valid_594116
-  var valid_594117 = query.getOrDefault("key")
-  valid_594117 = validateParameter(valid_594117, JString, required = false,
+  if valid_580116 != nil:
+    section.add "userIp", valid_580116
+  var valid_580117 = query.getOrDefault("key")
+  valid_580117 = validateParameter(valid_580117, JString, required = false,
                                  default = nil)
-  if valid_594117 != nil:
-    section.add "key", valid_594117
-  var valid_594118 = query.getOrDefault("prettyPrint")
-  valid_594118 = validateParameter(valid_594118, JBool, required = false,
+  if valid_580117 != nil:
+    section.add "key", valid_580117
+  var valid_580118 = query.getOrDefault("prettyPrint")
+  valid_580118 = validateParameter(valid_580118, JBool, required = false,
                                  default = newJBool(true))
-  if valid_594118 != nil:
-    section.add "prettyPrint", valid_594118
+  if valid_580118 != nil:
+    section.add "prettyPrint", valid_580118
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1677,21 +1679,21 @@ proc validate_ReplicapoolupdaterRollingUpdatesResume_594107(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_594119: Call_ReplicapoolupdaterRollingUpdatesResume_594106;
+proc call*(call_580119: Call_ReplicapoolupdaterRollingUpdatesResume_580106;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Continues an update in PAUSED state. Has no effect if invoked when the state of the update is ROLLED_OUT.
   ## 
-  let valid = call_594119.validator(path, query, header, formData, body)
-  let scheme = call_594119.pickScheme
+  let valid = call_580119.validator(path, query, header, formData, body)
+  let scheme = call_580119.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_594119.url(scheme.get, call_594119.host, call_594119.base,
-                         call_594119.route, valid.getOrDefault("path"),
+  let url = call_580119.url(scheme.get, call_580119.host, call_580119.base,
+                         call_580119.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_594119, url, valid)
+  result = hook(call_580119, url, valid)
 
-proc call*(call_594120: Call_ReplicapoolupdaterRollingUpdatesResume_594106;
+proc call*(call_580120: Call_ReplicapoolupdaterRollingUpdatesResume_580106;
           zone: string; rollingUpdate: string; project: string; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; key: string = ""; prettyPrint: bool = true): Recallable =
@@ -1717,35 +1719,35 @@ proc call*(call_594120: Call_ReplicapoolupdaterRollingUpdatesResume_594106;
   ##          : The Google Developers Console project name.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_594121 = newJObject()
-  var query_594122 = newJObject()
-  add(path_594121, "zone", newJString(zone))
-  add(query_594122, "fields", newJString(fields))
-  add(query_594122, "quotaUser", newJString(quotaUser))
-  add(query_594122, "alt", newJString(alt))
-  add(query_594122, "oauth_token", newJString(oauthToken))
-  add(query_594122, "userIp", newJString(userIp))
-  add(path_594121, "rollingUpdate", newJString(rollingUpdate))
-  add(query_594122, "key", newJString(key))
-  add(path_594121, "project", newJString(project))
-  add(query_594122, "prettyPrint", newJBool(prettyPrint))
-  result = call_594120.call(path_594121, query_594122, nil, nil, nil)
+  var path_580121 = newJObject()
+  var query_580122 = newJObject()
+  add(path_580121, "zone", newJString(zone))
+  add(query_580122, "fields", newJString(fields))
+  add(query_580122, "quotaUser", newJString(quotaUser))
+  add(query_580122, "alt", newJString(alt))
+  add(query_580122, "oauth_token", newJString(oauthToken))
+  add(query_580122, "userIp", newJString(userIp))
+  add(path_580121, "rollingUpdate", newJString(rollingUpdate))
+  add(query_580122, "key", newJString(key))
+  add(path_580121, "project", newJString(project))
+  add(query_580122, "prettyPrint", newJBool(prettyPrint))
+  result = call_580120.call(path_580121, query_580122, nil, nil, nil)
 
-var replicapoolupdaterRollingUpdatesResume* = Call_ReplicapoolupdaterRollingUpdatesResume_594106(
+var replicapoolupdaterRollingUpdatesResume* = Call_ReplicapoolupdaterRollingUpdatesResume_580106(
     name: "replicapoolupdaterRollingUpdatesResume", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com",
     route: "/{project}/zones/{zone}/rollingUpdates/{rollingUpdate}/resume",
-    validator: validate_ReplicapoolupdaterRollingUpdatesResume_594107,
+    validator: validate_ReplicapoolupdaterRollingUpdatesResume_580107,
     base: "/replicapoolupdater/v1beta1/projects",
-    url: url_ReplicapoolupdaterRollingUpdatesResume_594108,
+    url: url_ReplicapoolupdaterRollingUpdatesResume_580108,
     schemes: {Scheme.Https})
 type
-  Call_ReplicapoolupdaterRollingUpdatesRollback_594123 = ref object of OpenApiRestCall_593424
-proc url_ReplicapoolupdaterRollingUpdatesRollback_594125(protocol: Scheme;
+  Call_ReplicapoolupdaterRollingUpdatesRollback_580123 = ref object of OpenApiRestCall_579424
+proc url_ReplicapoolupdaterRollingUpdatesRollback_580125(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
-  result.query = $queryString(query)
+  result.query = $composeQueryString(query)
   assert path != nil, "path is required to populate template"
   assert "project" in path, "`project` is a required path parameter"
   assert "zone" in path, "`zone` is a required path parameter"
@@ -1763,7 +1765,7 @@ proc url_ReplicapoolupdaterRollingUpdatesRollback_594125(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_ReplicapoolupdaterRollingUpdatesRollback_594124(path: JsonNode;
+proc validate_ReplicapoolupdaterRollingUpdatesRollback_580124(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Rolls back the update in state from ROLLING_FORWARD or PAUSED. Has no effect if invoked when the state of the update is ROLLED_BACK.
   ## 
@@ -1778,21 +1780,21 @@ proc validate_ReplicapoolupdaterRollingUpdatesRollback_594124(path: JsonNode;
   ##          : The Google Developers Console project name.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `zone` field"
-  var valid_594126 = path.getOrDefault("zone")
-  valid_594126 = validateParameter(valid_594126, JString, required = true,
+  var valid_580126 = path.getOrDefault("zone")
+  valid_580126 = validateParameter(valid_580126, JString, required = true,
                                  default = nil)
-  if valid_594126 != nil:
-    section.add "zone", valid_594126
-  var valid_594127 = path.getOrDefault("rollingUpdate")
-  valid_594127 = validateParameter(valid_594127, JString, required = true,
+  if valid_580126 != nil:
+    section.add "zone", valid_580126
+  var valid_580127 = path.getOrDefault("rollingUpdate")
+  valid_580127 = validateParameter(valid_580127, JString, required = true,
                                  default = nil)
-  if valid_594127 != nil:
-    section.add "rollingUpdate", valid_594127
-  var valid_594128 = path.getOrDefault("project")
-  valid_594128 = validateParameter(valid_594128, JString, required = true,
+  if valid_580127 != nil:
+    section.add "rollingUpdate", valid_580127
+  var valid_580128 = path.getOrDefault("project")
+  valid_580128 = validateParameter(valid_580128, JString, required = true,
                                  default = nil)
-  if valid_594128 != nil:
-    section.add "project", valid_594128
+  if valid_580128 != nil:
+    section.add "project", valid_580128
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -1810,41 +1812,41 @@ proc validate_ReplicapoolupdaterRollingUpdatesRollback_594124(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_594129 = query.getOrDefault("fields")
-  valid_594129 = validateParameter(valid_594129, JString, required = false,
+  var valid_580129 = query.getOrDefault("fields")
+  valid_580129 = validateParameter(valid_580129, JString, required = false,
                                  default = nil)
-  if valid_594129 != nil:
-    section.add "fields", valid_594129
-  var valid_594130 = query.getOrDefault("quotaUser")
-  valid_594130 = validateParameter(valid_594130, JString, required = false,
+  if valid_580129 != nil:
+    section.add "fields", valid_580129
+  var valid_580130 = query.getOrDefault("quotaUser")
+  valid_580130 = validateParameter(valid_580130, JString, required = false,
                                  default = nil)
-  if valid_594130 != nil:
-    section.add "quotaUser", valid_594130
-  var valid_594131 = query.getOrDefault("alt")
-  valid_594131 = validateParameter(valid_594131, JString, required = false,
+  if valid_580130 != nil:
+    section.add "quotaUser", valid_580130
+  var valid_580131 = query.getOrDefault("alt")
+  valid_580131 = validateParameter(valid_580131, JString, required = false,
                                  default = newJString("json"))
-  if valid_594131 != nil:
-    section.add "alt", valid_594131
-  var valid_594132 = query.getOrDefault("oauth_token")
-  valid_594132 = validateParameter(valid_594132, JString, required = false,
+  if valid_580131 != nil:
+    section.add "alt", valid_580131
+  var valid_580132 = query.getOrDefault("oauth_token")
+  valid_580132 = validateParameter(valid_580132, JString, required = false,
                                  default = nil)
-  if valid_594132 != nil:
-    section.add "oauth_token", valid_594132
-  var valid_594133 = query.getOrDefault("userIp")
-  valid_594133 = validateParameter(valid_594133, JString, required = false,
+  if valid_580132 != nil:
+    section.add "oauth_token", valid_580132
+  var valid_580133 = query.getOrDefault("userIp")
+  valid_580133 = validateParameter(valid_580133, JString, required = false,
                                  default = nil)
-  if valid_594133 != nil:
-    section.add "userIp", valid_594133
-  var valid_594134 = query.getOrDefault("key")
-  valid_594134 = validateParameter(valid_594134, JString, required = false,
+  if valid_580133 != nil:
+    section.add "userIp", valid_580133
+  var valid_580134 = query.getOrDefault("key")
+  valid_580134 = validateParameter(valid_580134, JString, required = false,
                                  default = nil)
-  if valid_594134 != nil:
-    section.add "key", valid_594134
-  var valid_594135 = query.getOrDefault("prettyPrint")
-  valid_594135 = validateParameter(valid_594135, JBool, required = false,
+  if valid_580134 != nil:
+    section.add "key", valid_580134
+  var valid_580135 = query.getOrDefault("prettyPrint")
+  valid_580135 = validateParameter(valid_580135, JBool, required = false,
                                  default = newJBool(true))
-  if valid_594135 != nil:
-    section.add "prettyPrint", valid_594135
+  if valid_580135 != nil:
+    section.add "prettyPrint", valid_580135
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1853,21 +1855,21 @@ proc validate_ReplicapoolupdaterRollingUpdatesRollback_594124(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_594136: Call_ReplicapoolupdaterRollingUpdatesRollback_594123;
+proc call*(call_580136: Call_ReplicapoolupdaterRollingUpdatesRollback_580123;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Rolls back the update in state from ROLLING_FORWARD or PAUSED. Has no effect if invoked when the state of the update is ROLLED_BACK.
   ## 
-  let valid = call_594136.validator(path, query, header, formData, body)
-  let scheme = call_594136.pickScheme
+  let valid = call_580136.validator(path, query, header, formData, body)
+  let scheme = call_580136.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_594136.url(scheme.get, call_594136.host, call_594136.base,
-                         call_594136.route, valid.getOrDefault("path"),
+  let url = call_580136.url(scheme.get, call_580136.host, call_580136.base,
+                         call_580136.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_594136, url, valid)
+  result = hook(call_580136, url, valid)
 
-proc call*(call_594137: Call_ReplicapoolupdaterRollingUpdatesRollback_594123;
+proc call*(call_580137: Call_ReplicapoolupdaterRollingUpdatesRollback_580123;
           zone: string; rollingUpdate: string; project: string; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; key: string = ""; prettyPrint: bool = true): Recallable =
@@ -1893,31 +1895,121 @@ proc call*(call_594137: Call_ReplicapoolupdaterRollingUpdatesRollback_594123;
   ##          : The Google Developers Console project name.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_594138 = newJObject()
-  var query_594139 = newJObject()
-  add(path_594138, "zone", newJString(zone))
-  add(query_594139, "fields", newJString(fields))
-  add(query_594139, "quotaUser", newJString(quotaUser))
-  add(query_594139, "alt", newJString(alt))
-  add(query_594139, "oauth_token", newJString(oauthToken))
-  add(query_594139, "userIp", newJString(userIp))
-  add(path_594138, "rollingUpdate", newJString(rollingUpdate))
-  add(query_594139, "key", newJString(key))
-  add(path_594138, "project", newJString(project))
-  add(query_594139, "prettyPrint", newJBool(prettyPrint))
-  result = call_594137.call(path_594138, query_594139, nil, nil, nil)
+  var path_580138 = newJObject()
+  var query_580139 = newJObject()
+  add(path_580138, "zone", newJString(zone))
+  add(query_580139, "fields", newJString(fields))
+  add(query_580139, "quotaUser", newJString(quotaUser))
+  add(query_580139, "alt", newJString(alt))
+  add(query_580139, "oauth_token", newJString(oauthToken))
+  add(query_580139, "userIp", newJString(userIp))
+  add(path_580138, "rollingUpdate", newJString(rollingUpdate))
+  add(query_580139, "key", newJString(key))
+  add(path_580138, "project", newJString(project))
+  add(query_580139, "prettyPrint", newJBool(prettyPrint))
+  result = call_580137.call(path_580138, query_580139, nil, nil, nil)
 
-var replicapoolupdaterRollingUpdatesRollback* = Call_ReplicapoolupdaterRollingUpdatesRollback_594123(
+var replicapoolupdaterRollingUpdatesRollback* = Call_ReplicapoolupdaterRollingUpdatesRollback_580123(
     name: "replicapoolupdaterRollingUpdatesRollback", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com",
     route: "/{project}/zones/{zone}/rollingUpdates/{rollingUpdate}/rollback",
-    validator: validate_ReplicapoolupdaterRollingUpdatesRollback_594124,
+    validator: validate_ReplicapoolupdaterRollingUpdatesRollback_580124,
     base: "/replicapoolupdater/v1beta1/projects",
-    url: url_ReplicapoolupdaterRollingUpdatesRollback_594125,
+    url: url_ReplicapoolupdaterRollingUpdatesRollback_580125,
     schemes: {Scheme.Https})
 export
   rest
 
+type
+  GoogleAuth = ref object
+    endpoint*: Uri
+    token: string
+    expiry*: float64
+    issued*: float64
+    email: string
+    key: string
+    scope*: seq[string]
+    form: string
+    digest: Hash
+
+const
+  endpoint = "https://www.googleapis.com/oauth2/v4/token".parseUri
+var auth = GoogleAuth(endpoint: endpoint)
+proc hash(auth: GoogleAuth): Hash =
+  ## yield differing values for effectively different auth payloads
+  result = hash($auth.endpoint)
+  result = result !& hash(auth.email)
+  result = result !& hash(auth.key)
+  result = result !& hash(auth.scope.join(" "))
+  result = !$result
+
+proc newAuthenticator*(path: string): GoogleAuth =
+  let
+    input = readFile(path)
+    js = parseJson(input)
+  auth.email = js["client_email"].getStr
+  auth.key = js["private_key"].getStr
+  result = auth
+
+proc store(auth: var GoogleAuth; token: string; expiry: int; form: string) =
+  auth.token = token
+  auth.issued = epochTime()
+  auth.expiry = auth.issued + expiry.float64
+  auth.form = form
+  auth.digest = auth.hash
+
+proc authenticate*(fresh: float64 = -3600.0; lifetime: int = 3600): Future[bool] {.async.} =
+  ## get or refresh an authentication token; provide `fresh`
+  ## to ensure that the token won't expire in the next N seconds.
+  ## provide `lifetime` to indicate how long the token should last.
+  let clock = epochTime()
+  if auth.expiry > clock + fresh:
+    if auth.hash == auth.digest:
+      return true
+  let
+    expiry = clock.int + lifetime
+    header = JOSEHeader(alg: RS256, typ: "JWT")
+    claims = %*{"iss": auth.email, "scope": auth.scope.join(" "),
+              "aud": "https://www.googleapis.com/oauth2/v4/token", "exp": expiry,
+              "iat": clock.int}
+  var tok = JWT(header: header, claims: toClaims(claims))
+  tok.sign(auth.key)
+  let post = encodeQuery({"grant_type": "urn:ietf:params:oauth:grant-type:jwt-bearer",
+                       "assertion": $tok}, usePlus = false, omitEq = false)
+  var client = newAsyncHttpClient()
+  client.headers = newHttpHeaders({"Content-Type": "application/x-www-form-urlencoded",
+                                 "Content-Length": $post.len})
+  let response = await client.request($auth.endpoint, HttpPost, body = post)
+  if not response.code.is2xx:
+    return false
+  let body = await response.body
+  client.close
+  try:
+    let js = parseJson(body)
+    auth.store(js["access_token"].getStr, js["expires_in"].getInt,
+               js["token_type"].getStr)
+  except KeyError:
+    return false
+  except JsonParsingError:
+    return false
+  return true
+
+proc composeQueryString(query: JsonNode): string =
+  var qs: seq[KeyVal]
+  if query == nil:
+    return ""
+  for k, v in query.pairs:
+    qs.add (key: k, val: v.getStr)
+  result = encodeQuery(qs, usePlus = false, omitEq = false)
+
 method hook(call: OpenApiRestCall; url: Uri; input: JsonNode): Recallable {.base.} =
-  let headers = massageHeaders(input.getOrDefault("header"))
-  result = newRecallable(call, url, headers, input.getOrDefault("body").getStr)
+  var headers = massageHeaders(input.getOrDefault("header"))
+  let body = input.getOrDefault("body").getStr
+  if auth.scope.len == 0:
+    raise newException(ValueError, "specify authentication scopes")
+  if not waitfor authenticate(fresh = 10.0):
+    raise newException(IOError, "unable to refresh authentication token")
+  headers.add ("Authorization", auth.form & " " & auth.token)
+  headers.add ("Content-Type", "application/json")
+  headers.add ("Content-Length", $body.len)
+  result = newRecallable(call, url, headers, body = body)
