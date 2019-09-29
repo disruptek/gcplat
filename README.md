@@ -30,7 +30,8 @@ auth.scope.add "https://www.googleapis.com/auth/logging.write"
 auth.scope.add "https://www.googleapis.com/auth/drive"
 
 let
-  request = firebaseProjectsList.call(nil, nil, nil, nil, nil)
+  request = firebaseProjectsList.call(path=nil, query=nil, header=nil,
+                                      formData=nil, body=nil)
   response = request.retried()
 echo waitfor response.body
 ```
