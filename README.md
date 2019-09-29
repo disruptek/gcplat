@@ -34,6 +34,17 @@ let
                                       formData=nil, body=nil)
   response = request.retried()
 echo waitfor response.body
+
+# you can optionally refresh your authentication token manually
+# (by default we ensure the token will last at least 10 seconds)
+
+# to make sure this token won't expire in the next 60 seconds
+let freshFor1min = waitfor authenticate(fresh = 60)
+assert freshFor1min == true
+
+# to fetch a new token that will expire in 15min
+let lasts15min = waitfor authenticate(lifetime = 15 * 60)
+assert lasts15min == true
 ```
 
 ## Details
