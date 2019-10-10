@@ -29,15 +29,15 @@ type
     url*: proc (protocol: Scheme; host: string; base: string; route: string;
               path: JsonNode; query: JsonNode): Uri
 
-  OpenApiRestCall_579424 = ref object of OpenApiRestCall
+  OpenApiRestCall_588457 = ref object of OpenApiRestCall
 proc hash(scheme: Scheme): Hash {.used.} =
   result = hash(ord(scheme))
 
-proc clone[T: OpenApiRestCall_579424](t: T): T {.used.} =
+proc clone[T: OpenApiRestCall_588457](t: T): T {.used.} =
   result = T(name: t.name, meth: t.meth, host: t.host, base: t.base, route: t.route,
            schemes: t.schemes, validator: t.validator, url: t.url)
 
-proc pickScheme(t: OpenApiRestCall_579424): Option[Scheme] {.used.} =
+proc pickScheme(t: OpenApiRestCall_588457): Option[Scheme] {.used.} =
   ## select a supported scheme from a set of candidates
   for scheme in Scheme.low ..
       Scheme.high:
@@ -74,7 +74,7 @@ type
   PathTokenKind = enum
     ConstantSegment, VariableSegment
   PathToken = tuple[kind: PathTokenKind, value: string]
-proc queryString(query: JsonNode): string =
+proc queryString(query: JsonNode): string {.used.} =
   var qs: seq[KeyVal]
   if query == nil:
     return ""
@@ -82,7 +82,7 @@ proc queryString(query: JsonNode): string =
     qs.add (key: k, val: v.getStr)
   result = encodeQuery(qs)
 
-proc hydratePath(input: JsonNode; segments: seq[PathToken]): Option[string] =
+proc hydratePath(input: JsonNode; segments: seq[PathToken]): Option[string] {.used.} =
   ## reconstitute a path with constants and variable values taken from json
   var head: string
   if segments.len == 0:
@@ -108,8 +108,8 @@ const
 proc composeQueryString(query: JsonNode): string
 method hook(call: OpenApiRestCall; url: Uri; input: JsonNode): Recallable {.base.}
 type
-  Call_PredictionHostedmodelsPredict_579693 = ref object of OpenApiRestCall_579424
-proc url_PredictionHostedmodelsPredict_579695(protocol: Scheme; host: string;
+  Call_PredictionHostedmodelsPredict_588726 = ref object of OpenApiRestCall_588457
+proc url_PredictionHostedmodelsPredict_588728(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -125,7 +125,7 @@ proc url_PredictionHostedmodelsPredict_579695(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_PredictionHostedmodelsPredict_579694(path: JsonNode; query: JsonNode;
+proc validate_PredictionHostedmodelsPredict_588727(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Submit input and request an output against a hosted model.
   ## 
@@ -137,11 +137,11 @@ proc validate_PredictionHostedmodelsPredict_579694(path: JsonNode; query: JsonNo
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `hostedModelName` field"
-  var valid_579821 = path.getOrDefault("hostedModelName")
-  valid_579821 = validateParameter(valid_579821, JString, required = true,
+  var valid_588854 = path.getOrDefault("hostedModelName")
+  valid_588854 = validateParameter(valid_588854, JString, required = true,
                                  default = nil)
-  if valid_579821 != nil:
-    section.add "hostedModelName", valid_579821
+  if valid_588854 != nil:
+    section.add "hostedModelName", valid_588854
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -159,41 +159,41 @@ proc validate_PredictionHostedmodelsPredict_579694(path: JsonNode; query: JsonNo
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_579822 = query.getOrDefault("fields")
-  valid_579822 = validateParameter(valid_579822, JString, required = false,
+  var valid_588855 = query.getOrDefault("fields")
+  valid_588855 = validateParameter(valid_588855, JString, required = false,
                                  default = nil)
-  if valid_579822 != nil:
-    section.add "fields", valid_579822
-  var valid_579823 = query.getOrDefault("quotaUser")
-  valid_579823 = validateParameter(valid_579823, JString, required = false,
+  if valid_588855 != nil:
+    section.add "fields", valid_588855
+  var valid_588856 = query.getOrDefault("quotaUser")
+  valid_588856 = validateParameter(valid_588856, JString, required = false,
                                  default = nil)
-  if valid_579823 != nil:
-    section.add "quotaUser", valid_579823
-  var valid_579837 = query.getOrDefault("alt")
-  valid_579837 = validateParameter(valid_579837, JString, required = false,
+  if valid_588856 != nil:
+    section.add "quotaUser", valid_588856
+  var valid_588870 = query.getOrDefault("alt")
+  valid_588870 = validateParameter(valid_588870, JString, required = false,
                                  default = newJString("json"))
-  if valid_579837 != nil:
-    section.add "alt", valid_579837
-  var valid_579838 = query.getOrDefault("oauth_token")
-  valid_579838 = validateParameter(valid_579838, JString, required = false,
+  if valid_588870 != nil:
+    section.add "alt", valid_588870
+  var valid_588871 = query.getOrDefault("oauth_token")
+  valid_588871 = validateParameter(valid_588871, JString, required = false,
                                  default = nil)
-  if valid_579838 != nil:
-    section.add "oauth_token", valid_579838
-  var valid_579839 = query.getOrDefault("userIp")
-  valid_579839 = validateParameter(valid_579839, JString, required = false,
+  if valid_588871 != nil:
+    section.add "oauth_token", valid_588871
+  var valid_588872 = query.getOrDefault("userIp")
+  valid_588872 = validateParameter(valid_588872, JString, required = false,
                                  default = nil)
-  if valid_579839 != nil:
-    section.add "userIp", valid_579839
-  var valid_579840 = query.getOrDefault("key")
-  valid_579840 = validateParameter(valid_579840, JString, required = false,
+  if valid_588872 != nil:
+    section.add "userIp", valid_588872
+  var valid_588873 = query.getOrDefault("key")
+  valid_588873 = validateParameter(valid_588873, JString, required = false,
                                  default = nil)
-  if valid_579840 != nil:
-    section.add "key", valid_579840
-  var valid_579841 = query.getOrDefault("prettyPrint")
-  valid_579841 = validateParameter(valid_579841, JBool, required = false,
+  if valid_588873 != nil:
+    section.add "key", valid_588873
+  var valid_588874 = query.getOrDefault("prettyPrint")
+  valid_588874 = validateParameter(valid_588874, JBool, required = false,
                                  default = newJBool(true))
-  if valid_579841 != nil:
-    section.add "prettyPrint", valid_579841
+  if valid_588874 != nil:
+    section.add "prettyPrint", valid_588874
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -205,20 +205,20 @@ proc validate_PredictionHostedmodelsPredict_579694(path: JsonNode; query: JsonNo
   if body != nil:
     result.add "body", body
 
-proc call*(call_579865: Call_PredictionHostedmodelsPredict_579693; path: JsonNode;
+proc call*(call_588898: Call_PredictionHostedmodelsPredict_588726; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Submit input and request an output against a hosted model.
   ## 
-  let valid = call_579865.validator(path, query, header, formData, body)
-  let scheme = call_579865.pickScheme
+  let valid = call_588898.validator(path, query, header, formData, body)
+  let scheme = call_588898.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_579865.url(scheme.get, call_579865.host, call_579865.base,
-                         call_579865.route, valid.getOrDefault("path"),
+  let url = call_588898.url(scheme.get, call_588898.host, call_588898.base,
+                         call_588898.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_579865, url, valid)
+  result = hook(call_588898, url, valid)
 
-proc call*(call_579936: Call_PredictionHostedmodelsPredict_579693;
+proc call*(call_588969: Call_PredictionHostedmodelsPredict_588726;
           hostedModelName: string; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; userIp: string = "";
           key: string = ""; body: JsonNode = nil; prettyPrint: bool = true): Recallable =
@@ -241,37 +241,37 @@ proc call*(call_579936: Call_PredictionHostedmodelsPredict_579693;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_579937 = newJObject()
-  var query_579939 = newJObject()
-  var body_579940 = newJObject()
-  add(path_579937, "hostedModelName", newJString(hostedModelName))
-  add(query_579939, "fields", newJString(fields))
-  add(query_579939, "quotaUser", newJString(quotaUser))
-  add(query_579939, "alt", newJString(alt))
-  add(query_579939, "oauth_token", newJString(oauthToken))
-  add(query_579939, "userIp", newJString(userIp))
-  add(query_579939, "key", newJString(key))
+  var path_588970 = newJObject()
+  var query_588972 = newJObject()
+  var body_588973 = newJObject()
+  add(path_588970, "hostedModelName", newJString(hostedModelName))
+  add(query_588972, "fields", newJString(fields))
+  add(query_588972, "quotaUser", newJString(quotaUser))
+  add(query_588972, "alt", newJString(alt))
+  add(query_588972, "oauth_token", newJString(oauthToken))
+  add(query_588972, "userIp", newJString(userIp))
+  add(query_588972, "key", newJString(key))
   if body != nil:
-    body_579940 = body
-  add(query_579939, "prettyPrint", newJBool(prettyPrint))
-  result = call_579936.call(path_579937, query_579939, nil, nil, body_579940)
+    body_588973 = body
+  add(query_588972, "prettyPrint", newJBool(prettyPrint))
+  result = call_588969.call(path_588970, query_588972, nil, nil, body_588973)
 
-var predictionHostedmodelsPredict* = Call_PredictionHostedmodelsPredict_579693(
+var predictionHostedmodelsPredict* = Call_PredictionHostedmodelsPredict_588726(
     name: "predictionHostedmodelsPredict", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com", route: "/hostedmodels/{hostedModelName}/predict",
-    validator: validate_PredictionHostedmodelsPredict_579694,
-    base: "/prediction/v1.5", url: url_PredictionHostedmodelsPredict_579695,
+    validator: validate_PredictionHostedmodelsPredict_588727,
+    base: "/prediction/v1.5", url: url_PredictionHostedmodelsPredict_588728,
     schemes: {Scheme.Https})
 type
-  Call_PredictionTrainedmodelsInsert_579979 = ref object of OpenApiRestCall_579424
-proc url_PredictionTrainedmodelsInsert_579981(protocol: Scheme; host: string;
+  Call_PredictionTrainedmodelsInsert_589012 = ref object of OpenApiRestCall_588457
+proc url_PredictionTrainedmodelsInsert_589014(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
   result.query = $composeQueryString(query)
   result.path = base & route
 
-proc validate_PredictionTrainedmodelsInsert_579980(path: JsonNode; query: JsonNode;
+proc validate_PredictionTrainedmodelsInsert_589013(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Begin training your model.
   ## 
@@ -295,41 +295,41 @@ proc validate_PredictionTrainedmodelsInsert_579980(path: JsonNode; query: JsonNo
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_579982 = query.getOrDefault("fields")
-  valid_579982 = validateParameter(valid_579982, JString, required = false,
+  var valid_589015 = query.getOrDefault("fields")
+  valid_589015 = validateParameter(valid_589015, JString, required = false,
                                  default = nil)
-  if valid_579982 != nil:
-    section.add "fields", valid_579982
-  var valid_579983 = query.getOrDefault("quotaUser")
-  valid_579983 = validateParameter(valid_579983, JString, required = false,
+  if valid_589015 != nil:
+    section.add "fields", valid_589015
+  var valid_589016 = query.getOrDefault("quotaUser")
+  valid_589016 = validateParameter(valid_589016, JString, required = false,
                                  default = nil)
-  if valid_579983 != nil:
-    section.add "quotaUser", valid_579983
-  var valid_579984 = query.getOrDefault("alt")
-  valid_579984 = validateParameter(valid_579984, JString, required = false,
+  if valid_589016 != nil:
+    section.add "quotaUser", valid_589016
+  var valid_589017 = query.getOrDefault("alt")
+  valid_589017 = validateParameter(valid_589017, JString, required = false,
                                  default = newJString("json"))
-  if valid_579984 != nil:
-    section.add "alt", valid_579984
-  var valid_579985 = query.getOrDefault("oauth_token")
-  valid_579985 = validateParameter(valid_579985, JString, required = false,
+  if valid_589017 != nil:
+    section.add "alt", valid_589017
+  var valid_589018 = query.getOrDefault("oauth_token")
+  valid_589018 = validateParameter(valid_589018, JString, required = false,
                                  default = nil)
-  if valid_579985 != nil:
-    section.add "oauth_token", valid_579985
-  var valid_579986 = query.getOrDefault("userIp")
-  valid_579986 = validateParameter(valid_579986, JString, required = false,
+  if valid_589018 != nil:
+    section.add "oauth_token", valid_589018
+  var valid_589019 = query.getOrDefault("userIp")
+  valid_589019 = validateParameter(valid_589019, JString, required = false,
                                  default = nil)
-  if valid_579986 != nil:
-    section.add "userIp", valid_579986
-  var valid_579987 = query.getOrDefault("key")
-  valid_579987 = validateParameter(valid_579987, JString, required = false,
+  if valid_589019 != nil:
+    section.add "userIp", valid_589019
+  var valid_589020 = query.getOrDefault("key")
+  valid_589020 = validateParameter(valid_589020, JString, required = false,
                                  default = nil)
-  if valid_579987 != nil:
-    section.add "key", valid_579987
-  var valid_579988 = query.getOrDefault("prettyPrint")
-  valid_579988 = validateParameter(valid_579988, JBool, required = false,
+  if valid_589020 != nil:
+    section.add "key", valid_589020
+  var valid_589021 = query.getOrDefault("prettyPrint")
+  valid_589021 = validateParameter(valid_589021, JBool, required = false,
                                  default = newJBool(true))
-  if valid_579988 != nil:
-    section.add "prettyPrint", valid_579988
+  if valid_589021 != nil:
+    section.add "prettyPrint", valid_589021
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -341,20 +341,20 @@ proc validate_PredictionTrainedmodelsInsert_579980(path: JsonNode; query: JsonNo
   if body != nil:
     result.add "body", body
 
-proc call*(call_579990: Call_PredictionTrainedmodelsInsert_579979; path: JsonNode;
+proc call*(call_589023: Call_PredictionTrainedmodelsInsert_589012; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Begin training your model.
   ## 
-  let valid = call_579990.validator(path, query, header, formData, body)
-  let scheme = call_579990.pickScheme
+  let valid = call_589023.validator(path, query, header, formData, body)
+  let scheme = call_589023.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_579990.url(scheme.get, call_579990.host, call_579990.base,
-                         call_579990.route, valid.getOrDefault("path"),
+  let url = call_589023.url(scheme.get, call_589023.host, call_589023.base,
+                         call_589023.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_579990, url, valid)
+  result = hook(call_589023, url, valid)
 
-proc call*(call_579991: Call_PredictionTrainedmodelsInsert_579979;
+proc call*(call_589024: Call_PredictionTrainedmodelsInsert_589012;
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           oauthToken: string = ""; userIp: string = ""; key: string = "";
           body: JsonNode = nil; prettyPrint: bool = true): Recallable =
@@ -375,35 +375,35 @@ proc call*(call_579991: Call_PredictionTrainedmodelsInsert_579979;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var query_579992 = newJObject()
-  var body_579993 = newJObject()
-  add(query_579992, "fields", newJString(fields))
-  add(query_579992, "quotaUser", newJString(quotaUser))
-  add(query_579992, "alt", newJString(alt))
-  add(query_579992, "oauth_token", newJString(oauthToken))
-  add(query_579992, "userIp", newJString(userIp))
-  add(query_579992, "key", newJString(key))
+  var query_589025 = newJObject()
+  var body_589026 = newJObject()
+  add(query_589025, "fields", newJString(fields))
+  add(query_589025, "quotaUser", newJString(quotaUser))
+  add(query_589025, "alt", newJString(alt))
+  add(query_589025, "oauth_token", newJString(oauthToken))
+  add(query_589025, "userIp", newJString(userIp))
+  add(query_589025, "key", newJString(key))
   if body != nil:
-    body_579993 = body
-  add(query_579992, "prettyPrint", newJBool(prettyPrint))
-  result = call_579991.call(nil, query_579992, nil, nil, body_579993)
+    body_589026 = body
+  add(query_589025, "prettyPrint", newJBool(prettyPrint))
+  result = call_589024.call(nil, query_589025, nil, nil, body_589026)
 
-var predictionTrainedmodelsInsert* = Call_PredictionTrainedmodelsInsert_579979(
+var predictionTrainedmodelsInsert* = Call_PredictionTrainedmodelsInsert_589012(
     name: "predictionTrainedmodelsInsert", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com", route: "/trainedmodels",
-    validator: validate_PredictionTrainedmodelsInsert_579980,
-    base: "/prediction/v1.5", url: url_PredictionTrainedmodelsInsert_579981,
+    validator: validate_PredictionTrainedmodelsInsert_589013,
+    base: "/prediction/v1.5", url: url_PredictionTrainedmodelsInsert_589014,
     schemes: {Scheme.Https})
 type
-  Call_PredictionTrainedmodelsList_579994 = ref object of OpenApiRestCall_579424
-proc url_PredictionTrainedmodelsList_579996(protocol: Scheme; host: string;
+  Call_PredictionTrainedmodelsList_589027 = ref object of OpenApiRestCall_588457
+proc url_PredictionTrainedmodelsList_589029(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
   result.query = $composeQueryString(query)
   result.path = base & route
 
-proc validate_PredictionTrainedmodelsList_579995(path: JsonNode; query: JsonNode;
+proc validate_PredictionTrainedmodelsList_589028(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## List available models.
   ## 
@@ -431,50 +431,50 @@ proc validate_PredictionTrainedmodelsList_579995(path: JsonNode; query: JsonNode
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_579997 = query.getOrDefault("fields")
-  valid_579997 = validateParameter(valid_579997, JString, required = false,
+  var valid_589030 = query.getOrDefault("fields")
+  valid_589030 = validateParameter(valid_589030, JString, required = false,
                                  default = nil)
-  if valid_579997 != nil:
-    section.add "fields", valid_579997
-  var valid_579998 = query.getOrDefault("pageToken")
-  valid_579998 = validateParameter(valid_579998, JString, required = false,
+  if valid_589030 != nil:
+    section.add "fields", valid_589030
+  var valid_589031 = query.getOrDefault("pageToken")
+  valid_589031 = validateParameter(valid_589031, JString, required = false,
                                  default = nil)
-  if valid_579998 != nil:
-    section.add "pageToken", valid_579998
-  var valid_579999 = query.getOrDefault("quotaUser")
-  valid_579999 = validateParameter(valid_579999, JString, required = false,
+  if valid_589031 != nil:
+    section.add "pageToken", valid_589031
+  var valid_589032 = query.getOrDefault("quotaUser")
+  valid_589032 = validateParameter(valid_589032, JString, required = false,
                                  default = nil)
-  if valid_579999 != nil:
-    section.add "quotaUser", valid_579999
-  var valid_580000 = query.getOrDefault("alt")
-  valid_580000 = validateParameter(valid_580000, JString, required = false,
+  if valid_589032 != nil:
+    section.add "quotaUser", valid_589032
+  var valid_589033 = query.getOrDefault("alt")
+  valid_589033 = validateParameter(valid_589033, JString, required = false,
                                  default = newJString("json"))
-  if valid_580000 != nil:
-    section.add "alt", valid_580000
-  var valid_580001 = query.getOrDefault("oauth_token")
-  valid_580001 = validateParameter(valid_580001, JString, required = false,
+  if valid_589033 != nil:
+    section.add "alt", valid_589033
+  var valid_589034 = query.getOrDefault("oauth_token")
+  valid_589034 = validateParameter(valid_589034, JString, required = false,
                                  default = nil)
-  if valid_580001 != nil:
-    section.add "oauth_token", valid_580001
-  var valid_580002 = query.getOrDefault("userIp")
-  valid_580002 = validateParameter(valid_580002, JString, required = false,
+  if valid_589034 != nil:
+    section.add "oauth_token", valid_589034
+  var valid_589035 = query.getOrDefault("userIp")
+  valid_589035 = validateParameter(valid_589035, JString, required = false,
                                  default = nil)
-  if valid_580002 != nil:
-    section.add "userIp", valid_580002
-  var valid_580003 = query.getOrDefault("maxResults")
-  valid_580003 = validateParameter(valid_580003, JInt, required = false, default = nil)
-  if valid_580003 != nil:
-    section.add "maxResults", valid_580003
-  var valid_580004 = query.getOrDefault("key")
-  valid_580004 = validateParameter(valid_580004, JString, required = false,
+  if valid_589035 != nil:
+    section.add "userIp", valid_589035
+  var valid_589036 = query.getOrDefault("maxResults")
+  valid_589036 = validateParameter(valid_589036, JInt, required = false, default = nil)
+  if valid_589036 != nil:
+    section.add "maxResults", valid_589036
+  var valid_589037 = query.getOrDefault("key")
+  valid_589037 = validateParameter(valid_589037, JString, required = false,
                                  default = nil)
-  if valid_580004 != nil:
-    section.add "key", valid_580004
-  var valid_580005 = query.getOrDefault("prettyPrint")
-  valid_580005 = validateParameter(valid_580005, JBool, required = false,
+  if valid_589037 != nil:
+    section.add "key", valid_589037
+  var valid_589038 = query.getOrDefault("prettyPrint")
+  valid_589038 = validateParameter(valid_589038, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580005 != nil:
-    section.add "prettyPrint", valid_580005
+  if valid_589038 != nil:
+    section.add "prettyPrint", valid_589038
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -483,20 +483,20 @@ proc validate_PredictionTrainedmodelsList_579995(path: JsonNode; query: JsonNode
   if body != nil:
     result.add "body", body
 
-proc call*(call_580006: Call_PredictionTrainedmodelsList_579994; path: JsonNode;
+proc call*(call_589039: Call_PredictionTrainedmodelsList_589027; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## List available models.
   ## 
-  let valid = call_580006.validator(path, query, header, formData, body)
-  let scheme = call_580006.pickScheme
+  let valid = call_589039.validator(path, query, header, formData, body)
+  let scheme = call_589039.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580006.url(scheme.get, call_580006.host, call_580006.base,
-                         call_580006.route, valid.getOrDefault("path"),
+  let url = call_589039.url(scheme.get, call_589039.host, call_589039.base,
+                         call_589039.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580006, url, valid)
+  result = hook(call_589039, url, valid)
 
-proc call*(call_580007: Call_PredictionTrainedmodelsList_579994;
+proc call*(call_589040: Call_PredictionTrainedmodelsList_589027;
           fields: string = ""; pageToken: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; userIp: string = "";
           maxResults: int = 0; key: string = ""; prettyPrint: bool = true): Recallable =
@@ -520,27 +520,27 @@ proc call*(call_580007: Call_PredictionTrainedmodelsList_579994;
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var query_580008 = newJObject()
-  add(query_580008, "fields", newJString(fields))
-  add(query_580008, "pageToken", newJString(pageToken))
-  add(query_580008, "quotaUser", newJString(quotaUser))
-  add(query_580008, "alt", newJString(alt))
-  add(query_580008, "oauth_token", newJString(oauthToken))
-  add(query_580008, "userIp", newJString(userIp))
-  add(query_580008, "maxResults", newJInt(maxResults))
-  add(query_580008, "key", newJString(key))
-  add(query_580008, "prettyPrint", newJBool(prettyPrint))
-  result = call_580007.call(nil, query_580008, nil, nil, nil)
+  var query_589041 = newJObject()
+  add(query_589041, "fields", newJString(fields))
+  add(query_589041, "pageToken", newJString(pageToken))
+  add(query_589041, "quotaUser", newJString(quotaUser))
+  add(query_589041, "alt", newJString(alt))
+  add(query_589041, "oauth_token", newJString(oauthToken))
+  add(query_589041, "userIp", newJString(userIp))
+  add(query_589041, "maxResults", newJInt(maxResults))
+  add(query_589041, "key", newJString(key))
+  add(query_589041, "prettyPrint", newJBool(prettyPrint))
+  result = call_589040.call(nil, query_589041, nil, nil, nil)
 
-var predictionTrainedmodelsList* = Call_PredictionTrainedmodelsList_579994(
+var predictionTrainedmodelsList* = Call_PredictionTrainedmodelsList_589027(
     name: "predictionTrainedmodelsList", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/trainedmodels/list",
-    validator: validate_PredictionTrainedmodelsList_579995,
-    base: "/prediction/v1.5", url: url_PredictionTrainedmodelsList_579996,
+    validator: validate_PredictionTrainedmodelsList_589028,
+    base: "/prediction/v1.5", url: url_PredictionTrainedmodelsList_589029,
     schemes: {Scheme.Https})
 type
-  Call_PredictionTrainedmodelsUpdate_580024 = ref object of OpenApiRestCall_579424
-proc url_PredictionTrainedmodelsUpdate_580026(protocol: Scheme; host: string;
+  Call_PredictionTrainedmodelsUpdate_589057 = ref object of OpenApiRestCall_588457
+proc url_PredictionTrainedmodelsUpdate_589059(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -555,7 +555,7 @@ proc url_PredictionTrainedmodelsUpdate_580026(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_PredictionTrainedmodelsUpdate_580025(path: JsonNode; query: JsonNode;
+proc validate_PredictionTrainedmodelsUpdate_589058(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Add new data to a trained model.
   ## 
@@ -566,11 +566,11 @@ proc validate_PredictionTrainedmodelsUpdate_580025(path: JsonNode; query: JsonNo
   ##     : The unique name for the predictive model.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `id` field"
-  var valid_580027 = path.getOrDefault("id")
-  valid_580027 = validateParameter(valid_580027, JString, required = true,
+  var valid_589060 = path.getOrDefault("id")
+  valid_589060 = validateParameter(valid_589060, JString, required = true,
                                  default = nil)
-  if valid_580027 != nil:
-    section.add "id", valid_580027
+  if valid_589060 != nil:
+    section.add "id", valid_589060
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -588,41 +588,41 @@ proc validate_PredictionTrainedmodelsUpdate_580025(path: JsonNode; query: JsonNo
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580028 = query.getOrDefault("fields")
-  valid_580028 = validateParameter(valid_580028, JString, required = false,
+  var valid_589061 = query.getOrDefault("fields")
+  valid_589061 = validateParameter(valid_589061, JString, required = false,
                                  default = nil)
-  if valid_580028 != nil:
-    section.add "fields", valid_580028
-  var valid_580029 = query.getOrDefault("quotaUser")
-  valid_580029 = validateParameter(valid_580029, JString, required = false,
+  if valid_589061 != nil:
+    section.add "fields", valid_589061
+  var valid_589062 = query.getOrDefault("quotaUser")
+  valid_589062 = validateParameter(valid_589062, JString, required = false,
                                  default = nil)
-  if valid_580029 != nil:
-    section.add "quotaUser", valid_580029
-  var valid_580030 = query.getOrDefault("alt")
-  valid_580030 = validateParameter(valid_580030, JString, required = false,
+  if valid_589062 != nil:
+    section.add "quotaUser", valid_589062
+  var valid_589063 = query.getOrDefault("alt")
+  valid_589063 = validateParameter(valid_589063, JString, required = false,
                                  default = newJString("json"))
-  if valid_580030 != nil:
-    section.add "alt", valid_580030
-  var valid_580031 = query.getOrDefault("oauth_token")
-  valid_580031 = validateParameter(valid_580031, JString, required = false,
+  if valid_589063 != nil:
+    section.add "alt", valid_589063
+  var valid_589064 = query.getOrDefault("oauth_token")
+  valid_589064 = validateParameter(valid_589064, JString, required = false,
                                  default = nil)
-  if valid_580031 != nil:
-    section.add "oauth_token", valid_580031
-  var valid_580032 = query.getOrDefault("userIp")
-  valid_580032 = validateParameter(valid_580032, JString, required = false,
+  if valid_589064 != nil:
+    section.add "oauth_token", valid_589064
+  var valid_589065 = query.getOrDefault("userIp")
+  valid_589065 = validateParameter(valid_589065, JString, required = false,
                                  default = nil)
-  if valid_580032 != nil:
-    section.add "userIp", valid_580032
-  var valid_580033 = query.getOrDefault("key")
-  valid_580033 = validateParameter(valid_580033, JString, required = false,
+  if valid_589065 != nil:
+    section.add "userIp", valid_589065
+  var valid_589066 = query.getOrDefault("key")
+  valid_589066 = validateParameter(valid_589066, JString, required = false,
                                  default = nil)
-  if valid_580033 != nil:
-    section.add "key", valid_580033
-  var valid_580034 = query.getOrDefault("prettyPrint")
-  valid_580034 = validateParameter(valid_580034, JBool, required = false,
+  if valid_589066 != nil:
+    section.add "key", valid_589066
+  var valid_589067 = query.getOrDefault("prettyPrint")
+  valid_589067 = validateParameter(valid_589067, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580034 != nil:
-    section.add "prettyPrint", valid_580034
+  if valid_589067 != nil:
+    section.add "prettyPrint", valid_589067
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -634,20 +634,20 @@ proc validate_PredictionTrainedmodelsUpdate_580025(path: JsonNode; query: JsonNo
   if body != nil:
     result.add "body", body
 
-proc call*(call_580036: Call_PredictionTrainedmodelsUpdate_580024; path: JsonNode;
+proc call*(call_589069: Call_PredictionTrainedmodelsUpdate_589057; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Add new data to a trained model.
   ## 
-  let valid = call_580036.validator(path, query, header, formData, body)
-  let scheme = call_580036.pickScheme
+  let valid = call_589069.validator(path, query, header, formData, body)
+  let scheme = call_589069.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580036.url(scheme.get, call_580036.host, call_580036.base,
-                         call_580036.route, valid.getOrDefault("path"),
+  let url = call_589069.url(scheme.get, call_589069.host, call_589069.base,
+                         call_589069.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580036, url, valid)
+  result = hook(call_589069, url, valid)
 
-proc call*(call_580037: Call_PredictionTrainedmodelsUpdate_580024; id: string;
+proc call*(call_589070: Call_PredictionTrainedmodelsUpdate_589057; id: string;
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           oauthToken: string = ""; userIp: string = ""; key: string = "";
           body: JsonNode = nil; prettyPrint: bool = true): Recallable =
@@ -670,30 +670,30 @@ proc call*(call_580037: Call_PredictionTrainedmodelsUpdate_580024; id: string;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_580038 = newJObject()
-  var query_580039 = newJObject()
-  var body_580040 = newJObject()
-  add(query_580039, "fields", newJString(fields))
-  add(query_580039, "quotaUser", newJString(quotaUser))
-  add(query_580039, "alt", newJString(alt))
-  add(query_580039, "oauth_token", newJString(oauthToken))
-  add(query_580039, "userIp", newJString(userIp))
-  add(path_580038, "id", newJString(id))
-  add(query_580039, "key", newJString(key))
+  var path_589071 = newJObject()
+  var query_589072 = newJObject()
+  var body_589073 = newJObject()
+  add(query_589072, "fields", newJString(fields))
+  add(query_589072, "quotaUser", newJString(quotaUser))
+  add(query_589072, "alt", newJString(alt))
+  add(query_589072, "oauth_token", newJString(oauthToken))
+  add(query_589072, "userIp", newJString(userIp))
+  add(path_589071, "id", newJString(id))
+  add(query_589072, "key", newJString(key))
   if body != nil:
-    body_580040 = body
-  add(query_580039, "prettyPrint", newJBool(prettyPrint))
-  result = call_580037.call(path_580038, query_580039, nil, nil, body_580040)
+    body_589073 = body
+  add(query_589072, "prettyPrint", newJBool(prettyPrint))
+  result = call_589070.call(path_589071, query_589072, nil, nil, body_589073)
 
-var predictionTrainedmodelsUpdate* = Call_PredictionTrainedmodelsUpdate_580024(
+var predictionTrainedmodelsUpdate* = Call_PredictionTrainedmodelsUpdate_589057(
     name: "predictionTrainedmodelsUpdate", meth: HttpMethod.HttpPut,
     host: "www.googleapis.com", route: "/trainedmodels/{id}",
-    validator: validate_PredictionTrainedmodelsUpdate_580025,
-    base: "/prediction/v1.5", url: url_PredictionTrainedmodelsUpdate_580026,
+    validator: validate_PredictionTrainedmodelsUpdate_589058,
+    base: "/prediction/v1.5", url: url_PredictionTrainedmodelsUpdate_589059,
     schemes: {Scheme.Https})
 type
-  Call_PredictionTrainedmodelsGet_580009 = ref object of OpenApiRestCall_579424
-proc url_PredictionTrainedmodelsGet_580011(protocol: Scheme; host: string;
+  Call_PredictionTrainedmodelsGet_589042 = ref object of OpenApiRestCall_588457
+proc url_PredictionTrainedmodelsGet_589044(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -708,7 +708,7 @@ proc url_PredictionTrainedmodelsGet_580011(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_PredictionTrainedmodelsGet_580010(path: JsonNode; query: JsonNode;
+proc validate_PredictionTrainedmodelsGet_589043(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Check training status of your model.
   ## 
@@ -719,11 +719,11 @@ proc validate_PredictionTrainedmodelsGet_580010(path: JsonNode; query: JsonNode;
   ##     : The unique name for the predictive model.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `id` field"
-  var valid_580012 = path.getOrDefault("id")
-  valid_580012 = validateParameter(valid_580012, JString, required = true,
+  var valid_589045 = path.getOrDefault("id")
+  valid_589045 = validateParameter(valid_589045, JString, required = true,
                                  default = nil)
-  if valid_580012 != nil:
-    section.add "id", valid_580012
+  if valid_589045 != nil:
+    section.add "id", valid_589045
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -741,41 +741,41 @@ proc validate_PredictionTrainedmodelsGet_580010(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580013 = query.getOrDefault("fields")
-  valid_580013 = validateParameter(valid_580013, JString, required = false,
+  var valid_589046 = query.getOrDefault("fields")
+  valid_589046 = validateParameter(valid_589046, JString, required = false,
                                  default = nil)
-  if valid_580013 != nil:
-    section.add "fields", valid_580013
-  var valid_580014 = query.getOrDefault("quotaUser")
-  valid_580014 = validateParameter(valid_580014, JString, required = false,
+  if valid_589046 != nil:
+    section.add "fields", valid_589046
+  var valid_589047 = query.getOrDefault("quotaUser")
+  valid_589047 = validateParameter(valid_589047, JString, required = false,
                                  default = nil)
-  if valid_580014 != nil:
-    section.add "quotaUser", valid_580014
-  var valid_580015 = query.getOrDefault("alt")
-  valid_580015 = validateParameter(valid_580015, JString, required = false,
+  if valid_589047 != nil:
+    section.add "quotaUser", valid_589047
+  var valid_589048 = query.getOrDefault("alt")
+  valid_589048 = validateParameter(valid_589048, JString, required = false,
                                  default = newJString("json"))
-  if valid_580015 != nil:
-    section.add "alt", valid_580015
-  var valid_580016 = query.getOrDefault("oauth_token")
-  valid_580016 = validateParameter(valid_580016, JString, required = false,
+  if valid_589048 != nil:
+    section.add "alt", valid_589048
+  var valid_589049 = query.getOrDefault("oauth_token")
+  valid_589049 = validateParameter(valid_589049, JString, required = false,
                                  default = nil)
-  if valid_580016 != nil:
-    section.add "oauth_token", valid_580016
-  var valid_580017 = query.getOrDefault("userIp")
-  valid_580017 = validateParameter(valid_580017, JString, required = false,
+  if valid_589049 != nil:
+    section.add "oauth_token", valid_589049
+  var valid_589050 = query.getOrDefault("userIp")
+  valid_589050 = validateParameter(valid_589050, JString, required = false,
                                  default = nil)
-  if valid_580017 != nil:
-    section.add "userIp", valid_580017
-  var valid_580018 = query.getOrDefault("key")
-  valid_580018 = validateParameter(valid_580018, JString, required = false,
+  if valid_589050 != nil:
+    section.add "userIp", valid_589050
+  var valid_589051 = query.getOrDefault("key")
+  valid_589051 = validateParameter(valid_589051, JString, required = false,
                                  default = nil)
-  if valid_580018 != nil:
-    section.add "key", valid_580018
-  var valid_580019 = query.getOrDefault("prettyPrint")
-  valid_580019 = validateParameter(valid_580019, JBool, required = false,
+  if valid_589051 != nil:
+    section.add "key", valid_589051
+  var valid_589052 = query.getOrDefault("prettyPrint")
+  valid_589052 = validateParameter(valid_589052, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580019 != nil:
-    section.add "prettyPrint", valid_580019
+  if valid_589052 != nil:
+    section.add "prettyPrint", valid_589052
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -784,20 +784,20 @@ proc validate_PredictionTrainedmodelsGet_580010(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580020: Call_PredictionTrainedmodelsGet_580009; path: JsonNode;
+proc call*(call_589053: Call_PredictionTrainedmodelsGet_589042; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Check training status of your model.
   ## 
-  let valid = call_580020.validator(path, query, header, formData, body)
-  let scheme = call_580020.pickScheme
+  let valid = call_589053.validator(path, query, header, formData, body)
+  let scheme = call_589053.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580020.url(scheme.get, call_580020.host, call_580020.base,
-                         call_580020.route, valid.getOrDefault("path"),
+  let url = call_589053.url(scheme.get, call_589053.host, call_589053.base,
+                         call_589053.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580020, url, valid)
+  result = hook(call_589053, url, valid)
 
-proc call*(call_580021: Call_PredictionTrainedmodelsGet_580009; id: string;
+proc call*(call_589054: Call_PredictionTrainedmodelsGet_589042; id: string;
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           oauthToken: string = ""; userIp: string = ""; key: string = "";
           prettyPrint: bool = true): Recallable =
@@ -819,27 +819,27 @@ proc call*(call_580021: Call_PredictionTrainedmodelsGet_580009; id: string;
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_580022 = newJObject()
-  var query_580023 = newJObject()
-  add(query_580023, "fields", newJString(fields))
-  add(query_580023, "quotaUser", newJString(quotaUser))
-  add(query_580023, "alt", newJString(alt))
-  add(query_580023, "oauth_token", newJString(oauthToken))
-  add(query_580023, "userIp", newJString(userIp))
-  add(path_580022, "id", newJString(id))
-  add(query_580023, "key", newJString(key))
-  add(query_580023, "prettyPrint", newJBool(prettyPrint))
-  result = call_580021.call(path_580022, query_580023, nil, nil, nil)
+  var path_589055 = newJObject()
+  var query_589056 = newJObject()
+  add(query_589056, "fields", newJString(fields))
+  add(query_589056, "quotaUser", newJString(quotaUser))
+  add(query_589056, "alt", newJString(alt))
+  add(query_589056, "oauth_token", newJString(oauthToken))
+  add(query_589056, "userIp", newJString(userIp))
+  add(path_589055, "id", newJString(id))
+  add(query_589056, "key", newJString(key))
+  add(query_589056, "prettyPrint", newJBool(prettyPrint))
+  result = call_589054.call(path_589055, query_589056, nil, nil, nil)
 
-var predictionTrainedmodelsGet* = Call_PredictionTrainedmodelsGet_580009(
+var predictionTrainedmodelsGet* = Call_PredictionTrainedmodelsGet_589042(
     name: "predictionTrainedmodelsGet", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/trainedmodels/{id}",
-    validator: validate_PredictionTrainedmodelsGet_580010,
-    base: "/prediction/v1.5", url: url_PredictionTrainedmodelsGet_580011,
+    validator: validate_PredictionTrainedmodelsGet_589043,
+    base: "/prediction/v1.5", url: url_PredictionTrainedmodelsGet_589044,
     schemes: {Scheme.Https})
 type
-  Call_PredictionTrainedmodelsDelete_580041 = ref object of OpenApiRestCall_579424
-proc url_PredictionTrainedmodelsDelete_580043(protocol: Scheme; host: string;
+  Call_PredictionTrainedmodelsDelete_589074 = ref object of OpenApiRestCall_588457
+proc url_PredictionTrainedmodelsDelete_589076(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -854,7 +854,7 @@ proc url_PredictionTrainedmodelsDelete_580043(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_PredictionTrainedmodelsDelete_580042(path: JsonNode; query: JsonNode;
+proc validate_PredictionTrainedmodelsDelete_589075(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Delete a trained model.
   ## 
@@ -865,11 +865,11 @@ proc validate_PredictionTrainedmodelsDelete_580042(path: JsonNode; query: JsonNo
   ##     : The unique name for the predictive model.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `id` field"
-  var valid_580044 = path.getOrDefault("id")
-  valid_580044 = validateParameter(valid_580044, JString, required = true,
+  var valid_589077 = path.getOrDefault("id")
+  valid_589077 = validateParameter(valid_589077, JString, required = true,
                                  default = nil)
-  if valid_580044 != nil:
-    section.add "id", valid_580044
+  if valid_589077 != nil:
+    section.add "id", valid_589077
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -887,41 +887,41 @@ proc validate_PredictionTrainedmodelsDelete_580042(path: JsonNode; query: JsonNo
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580045 = query.getOrDefault("fields")
-  valid_580045 = validateParameter(valid_580045, JString, required = false,
+  var valid_589078 = query.getOrDefault("fields")
+  valid_589078 = validateParameter(valid_589078, JString, required = false,
                                  default = nil)
-  if valid_580045 != nil:
-    section.add "fields", valid_580045
-  var valid_580046 = query.getOrDefault("quotaUser")
-  valid_580046 = validateParameter(valid_580046, JString, required = false,
+  if valid_589078 != nil:
+    section.add "fields", valid_589078
+  var valid_589079 = query.getOrDefault("quotaUser")
+  valid_589079 = validateParameter(valid_589079, JString, required = false,
                                  default = nil)
-  if valid_580046 != nil:
-    section.add "quotaUser", valid_580046
-  var valid_580047 = query.getOrDefault("alt")
-  valid_580047 = validateParameter(valid_580047, JString, required = false,
+  if valid_589079 != nil:
+    section.add "quotaUser", valid_589079
+  var valid_589080 = query.getOrDefault("alt")
+  valid_589080 = validateParameter(valid_589080, JString, required = false,
                                  default = newJString("json"))
-  if valid_580047 != nil:
-    section.add "alt", valid_580047
-  var valid_580048 = query.getOrDefault("oauth_token")
-  valid_580048 = validateParameter(valid_580048, JString, required = false,
+  if valid_589080 != nil:
+    section.add "alt", valid_589080
+  var valid_589081 = query.getOrDefault("oauth_token")
+  valid_589081 = validateParameter(valid_589081, JString, required = false,
                                  default = nil)
-  if valid_580048 != nil:
-    section.add "oauth_token", valid_580048
-  var valid_580049 = query.getOrDefault("userIp")
-  valid_580049 = validateParameter(valid_580049, JString, required = false,
+  if valid_589081 != nil:
+    section.add "oauth_token", valid_589081
+  var valid_589082 = query.getOrDefault("userIp")
+  valid_589082 = validateParameter(valid_589082, JString, required = false,
                                  default = nil)
-  if valid_580049 != nil:
-    section.add "userIp", valid_580049
-  var valid_580050 = query.getOrDefault("key")
-  valid_580050 = validateParameter(valid_580050, JString, required = false,
+  if valid_589082 != nil:
+    section.add "userIp", valid_589082
+  var valid_589083 = query.getOrDefault("key")
+  valid_589083 = validateParameter(valid_589083, JString, required = false,
                                  default = nil)
-  if valid_580050 != nil:
-    section.add "key", valid_580050
-  var valid_580051 = query.getOrDefault("prettyPrint")
-  valid_580051 = validateParameter(valid_580051, JBool, required = false,
+  if valid_589083 != nil:
+    section.add "key", valid_589083
+  var valid_589084 = query.getOrDefault("prettyPrint")
+  valid_589084 = validateParameter(valid_589084, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580051 != nil:
-    section.add "prettyPrint", valid_580051
+  if valid_589084 != nil:
+    section.add "prettyPrint", valid_589084
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -930,20 +930,20 @@ proc validate_PredictionTrainedmodelsDelete_580042(path: JsonNode; query: JsonNo
   if body != nil:
     result.add "body", body
 
-proc call*(call_580052: Call_PredictionTrainedmodelsDelete_580041; path: JsonNode;
+proc call*(call_589085: Call_PredictionTrainedmodelsDelete_589074; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Delete a trained model.
   ## 
-  let valid = call_580052.validator(path, query, header, formData, body)
-  let scheme = call_580052.pickScheme
+  let valid = call_589085.validator(path, query, header, formData, body)
+  let scheme = call_589085.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580052.url(scheme.get, call_580052.host, call_580052.base,
-                         call_580052.route, valid.getOrDefault("path"),
+  let url = call_589085.url(scheme.get, call_589085.host, call_589085.base,
+                         call_589085.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580052, url, valid)
+  result = hook(call_589085, url, valid)
 
-proc call*(call_580053: Call_PredictionTrainedmodelsDelete_580041; id: string;
+proc call*(call_589086: Call_PredictionTrainedmodelsDelete_589074; id: string;
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           oauthToken: string = ""; userIp: string = ""; key: string = "";
           prettyPrint: bool = true): Recallable =
@@ -965,27 +965,27 @@ proc call*(call_580053: Call_PredictionTrainedmodelsDelete_580041; id: string;
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_580054 = newJObject()
-  var query_580055 = newJObject()
-  add(query_580055, "fields", newJString(fields))
-  add(query_580055, "quotaUser", newJString(quotaUser))
-  add(query_580055, "alt", newJString(alt))
-  add(query_580055, "oauth_token", newJString(oauthToken))
-  add(query_580055, "userIp", newJString(userIp))
-  add(path_580054, "id", newJString(id))
-  add(query_580055, "key", newJString(key))
-  add(query_580055, "prettyPrint", newJBool(prettyPrint))
-  result = call_580053.call(path_580054, query_580055, nil, nil, nil)
+  var path_589087 = newJObject()
+  var query_589088 = newJObject()
+  add(query_589088, "fields", newJString(fields))
+  add(query_589088, "quotaUser", newJString(quotaUser))
+  add(query_589088, "alt", newJString(alt))
+  add(query_589088, "oauth_token", newJString(oauthToken))
+  add(query_589088, "userIp", newJString(userIp))
+  add(path_589087, "id", newJString(id))
+  add(query_589088, "key", newJString(key))
+  add(query_589088, "prettyPrint", newJBool(prettyPrint))
+  result = call_589086.call(path_589087, query_589088, nil, nil, nil)
 
-var predictionTrainedmodelsDelete* = Call_PredictionTrainedmodelsDelete_580041(
+var predictionTrainedmodelsDelete* = Call_PredictionTrainedmodelsDelete_589074(
     name: "predictionTrainedmodelsDelete", meth: HttpMethod.HttpDelete,
     host: "www.googleapis.com", route: "/trainedmodels/{id}",
-    validator: validate_PredictionTrainedmodelsDelete_580042,
-    base: "/prediction/v1.5", url: url_PredictionTrainedmodelsDelete_580043,
+    validator: validate_PredictionTrainedmodelsDelete_589075,
+    base: "/prediction/v1.5", url: url_PredictionTrainedmodelsDelete_589076,
     schemes: {Scheme.Https})
 type
-  Call_PredictionTrainedmodelsAnalyze_580056 = ref object of OpenApiRestCall_579424
-proc url_PredictionTrainedmodelsAnalyze_580058(protocol: Scheme; host: string;
+  Call_PredictionTrainedmodelsAnalyze_589089 = ref object of OpenApiRestCall_588457
+proc url_PredictionTrainedmodelsAnalyze_589091(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -1001,7 +1001,7 @@ proc url_PredictionTrainedmodelsAnalyze_580058(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_PredictionTrainedmodelsAnalyze_580057(path: JsonNode;
+proc validate_PredictionTrainedmodelsAnalyze_589090(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Get analysis of the model and the data the model was trained on.
   ## 
@@ -1012,11 +1012,11 @@ proc validate_PredictionTrainedmodelsAnalyze_580057(path: JsonNode;
   ##     : The unique name for the predictive model.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `id` field"
-  var valid_580059 = path.getOrDefault("id")
-  valid_580059 = validateParameter(valid_580059, JString, required = true,
+  var valid_589092 = path.getOrDefault("id")
+  valid_589092 = validateParameter(valid_589092, JString, required = true,
                                  default = nil)
-  if valid_580059 != nil:
-    section.add "id", valid_580059
+  if valid_589092 != nil:
+    section.add "id", valid_589092
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -1034,41 +1034,41 @@ proc validate_PredictionTrainedmodelsAnalyze_580057(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580060 = query.getOrDefault("fields")
-  valid_580060 = validateParameter(valid_580060, JString, required = false,
+  var valid_589093 = query.getOrDefault("fields")
+  valid_589093 = validateParameter(valid_589093, JString, required = false,
                                  default = nil)
-  if valid_580060 != nil:
-    section.add "fields", valid_580060
-  var valid_580061 = query.getOrDefault("quotaUser")
-  valid_580061 = validateParameter(valid_580061, JString, required = false,
+  if valid_589093 != nil:
+    section.add "fields", valid_589093
+  var valid_589094 = query.getOrDefault("quotaUser")
+  valid_589094 = validateParameter(valid_589094, JString, required = false,
                                  default = nil)
-  if valid_580061 != nil:
-    section.add "quotaUser", valid_580061
-  var valid_580062 = query.getOrDefault("alt")
-  valid_580062 = validateParameter(valid_580062, JString, required = false,
+  if valid_589094 != nil:
+    section.add "quotaUser", valid_589094
+  var valid_589095 = query.getOrDefault("alt")
+  valid_589095 = validateParameter(valid_589095, JString, required = false,
                                  default = newJString("json"))
-  if valid_580062 != nil:
-    section.add "alt", valid_580062
-  var valid_580063 = query.getOrDefault("oauth_token")
-  valid_580063 = validateParameter(valid_580063, JString, required = false,
+  if valid_589095 != nil:
+    section.add "alt", valid_589095
+  var valid_589096 = query.getOrDefault("oauth_token")
+  valid_589096 = validateParameter(valid_589096, JString, required = false,
                                  default = nil)
-  if valid_580063 != nil:
-    section.add "oauth_token", valid_580063
-  var valid_580064 = query.getOrDefault("userIp")
-  valid_580064 = validateParameter(valid_580064, JString, required = false,
+  if valid_589096 != nil:
+    section.add "oauth_token", valid_589096
+  var valid_589097 = query.getOrDefault("userIp")
+  valid_589097 = validateParameter(valid_589097, JString, required = false,
                                  default = nil)
-  if valid_580064 != nil:
-    section.add "userIp", valid_580064
-  var valid_580065 = query.getOrDefault("key")
-  valid_580065 = validateParameter(valid_580065, JString, required = false,
+  if valid_589097 != nil:
+    section.add "userIp", valid_589097
+  var valid_589098 = query.getOrDefault("key")
+  valid_589098 = validateParameter(valid_589098, JString, required = false,
                                  default = nil)
-  if valid_580065 != nil:
-    section.add "key", valid_580065
-  var valid_580066 = query.getOrDefault("prettyPrint")
-  valid_580066 = validateParameter(valid_580066, JBool, required = false,
+  if valid_589098 != nil:
+    section.add "key", valid_589098
+  var valid_589099 = query.getOrDefault("prettyPrint")
+  valid_589099 = validateParameter(valid_589099, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580066 != nil:
-    section.add "prettyPrint", valid_580066
+  if valid_589099 != nil:
+    section.add "prettyPrint", valid_589099
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1077,20 +1077,20 @@ proc validate_PredictionTrainedmodelsAnalyze_580057(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580067: Call_PredictionTrainedmodelsAnalyze_580056; path: JsonNode;
+proc call*(call_589100: Call_PredictionTrainedmodelsAnalyze_589089; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Get analysis of the model and the data the model was trained on.
   ## 
-  let valid = call_580067.validator(path, query, header, formData, body)
-  let scheme = call_580067.pickScheme
+  let valid = call_589100.validator(path, query, header, formData, body)
+  let scheme = call_589100.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580067.url(scheme.get, call_580067.host, call_580067.base,
-                         call_580067.route, valid.getOrDefault("path"),
+  let url = call_589100.url(scheme.get, call_589100.host, call_589100.base,
+                         call_589100.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580067, url, valid)
+  result = hook(call_589100, url, valid)
 
-proc call*(call_580068: Call_PredictionTrainedmodelsAnalyze_580056; id: string;
+proc call*(call_589101: Call_PredictionTrainedmodelsAnalyze_589089; id: string;
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           oauthToken: string = ""; userIp: string = ""; key: string = "";
           prettyPrint: bool = true): Recallable =
@@ -1112,27 +1112,27 @@ proc call*(call_580068: Call_PredictionTrainedmodelsAnalyze_580056; id: string;
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_580069 = newJObject()
-  var query_580070 = newJObject()
-  add(query_580070, "fields", newJString(fields))
-  add(query_580070, "quotaUser", newJString(quotaUser))
-  add(query_580070, "alt", newJString(alt))
-  add(query_580070, "oauth_token", newJString(oauthToken))
-  add(query_580070, "userIp", newJString(userIp))
-  add(path_580069, "id", newJString(id))
-  add(query_580070, "key", newJString(key))
-  add(query_580070, "prettyPrint", newJBool(prettyPrint))
-  result = call_580068.call(path_580069, query_580070, nil, nil, nil)
+  var path_589102 = newJObject()
+  var query_589103 = newJObject()
+  add(query_589103, "fields", newJString(fields))
+  add(query_589103, "quotaUser", newJString(quotaUser))
+  add(query_589103, "alt", newJString(alt))
+  add(query_589103, "oauth_token", newJString(oauthToken))
+  add(query_589103, "userIp", newJString(userIp))
+  add(path_589102, "id", newJString(id))
+  add(query_589103, "key", newJString(key))
+  add(query_589103, "prettyPrint", newJBool(prettyPrint))
+  result = call_589101.call(path_589102, query_589103, nil, nil, nil)
 
-var predictionTrainedmodelsAnalyze* = Call_PredictionTrainedmodelsAnalyze_580056(
+var predictionTrainedmodelsAnalyze* = Call_PredictionTrainedmodelsAnalyze_589089(
     name: "predictionTrainedmodelsAnalyze", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/trainedmodels/{id}/analyze",
-    validator: validate_PredictionTrainedmodelsAnalyze_580057,
-    base: "/prediction/v1.5", url: url_PredictionTrainedmodelsAnalyze_580058,
+    validator: validate_PredictionTrainedmodelsAnalyze_589090,
+    base: "/prediction/v1.5", url: url_PredictionTrainedmodelsAnalyze_589091,
     schemes: {Scheme.Https})
 type
-  Call_PredictionTrainedmodelsPredict_580071 = ref object of OpenApiRestCall_579424
-proc url_PredictionTrainedmodelsPredict_580073(protocol: Scheme; host: string;
+  Call_PredictionTrainedmodelsPredict_589104 = ref object of OpenApiRestCall_588457
+proc url_PredictionTrainedmodelsPredict_589106(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -1148,7 +1148,7 @@ proc url_PredictionTrainedmodelsPredict_580073(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_PredictionTrainedmodelsPredict_580072(path: JsonNode;
+proc validate_PredictionTrainedmodelsPredict_589105(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Submit model id and request a prediction.
   ## 
@@ -1159,11 +1159,11 @@ proc validate_PredictionTrainedmodelsPredict_580072(path: JsonNode;
   ##     : The unique name for the predictive model.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `id` field"
-  var valid_580074 = path.getOrDefault("id")
-  valid_580074 = validateParameter(valid_580074, JString, required = true,
+  var valid_589107 = path.getOrDefault("id")
+  valid_589107 = validateParameter(valid_589107, JString, required = true,
                                  default = nil)
-  if valid_580074 != nil:
-    section.add "id", valid_580074
+  if valid_589107 != nil:
+    section.add "id", valid_589107
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -1181,41 +1181,41 @@ proc validate_PredictionTrainedmodelsPredict_580072(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580075 = query.getOrDefault("fields")
-  valid_580075 = validateParameter(valid_580075, JString, required = false,
+  var valid_589108 = query.getOrDefault("fields")
+  valid_589108 = validateParameter(valid_589108, JString, required = false,
                                  default = nil)
-  if valid_580075 != nil:
-    section.add "fields", valid_580075
-  var valid_580076 = query.getOrDefault("quotaUser")
-  valid_580076 = validateParameter(valid_580076, JString, required = false,
+  if valid_589108 != nil:
+    section.add "fields", valid_589108
+  var valid_589109 = query.getOrDefault("quotaUser")
+  valid_589109 = validateParameter(valid_589109, JString, required = false,
                                  default = nil)
-  if valid_580076 != nil:
-    section.add "quotaUser", valid_580076
-  var valid_580077 = query.getOrDefault("alt")
-  valid_580077 = validateParameter(valid_580077, JString, required = false,
+  if valid_589109 != nil:
+    section.add "quotaUser", valid_589109
+  var valid_589110 = query.getOrDefault("alt")
+  valid_589110 = validateParameter(valid_589110, JString, required = false,
                                  default = newJString("json"))
-  if valid_580077 != nil:
-    section.add "alt", valid_580077
-  var valid_580078 = query.getOrDefault("oauth_token")
-  valid_580078 = validateParameter(valid_580078, JString, required = false,
+  if valid_589110 != nil:
+    section.add "alt", valid_589110
+  var valid_589111 = query.getOrDefault("oauth_token")
+  valid_589111 = validateParameter(valid_589111, JString, required = false,
                                  default = nil)
-  if valid_580078 != nil:
-    section.add "oauth_token", valid_580078
-  var valid_580079 = query.getOrDefault("userIp")
-  valid_580079 = validateParameter(valid_580079, JString, required = false,
+  if valid_589111 != nil:
+    section.add "oauth_token", valid_589111
+  var valid_589112 = query.getOrDefault("userIp")
+  valid_589112 = validateParameter(valid_589112, JString, required = false,
                                  default = nil)
-  if valid_580079 != nil:
-    section.add "userIp", valid_580079
-  var valid_580080 = query.getOrDefault("key")
-  valid_580080 = validateParameter(valid_580080, JString, required = false,
+  if valid_589112 != nil:
+    section.add "userIp", valid_589112
+  var valid_589113 = query.getOrDefault("key")
+  valid_589113 = validateParameter(valid_589113, JString, required = false,
                                  default = nil)
-  if valid_580080 != nil:
-    section.add "key", valid_580080
-  var valid_580081 = query.getOrDefault("prettyPrint")
-  valid_580081 = validateParameter(valid_580081, JBool, required = false,
+  if valid_589113 != nil:
+    section.add "key", valid_589113
+  var valid_589114 = query.getOrDefault("prettyPrint")
+  valid_589114 = validateParameter(valid_589114, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580081 != nil:
-    section.add "prettyPrint", valid_580081
+  if valid_589114 != nil:
+    section.add "prettyPrint", valid_589114
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1227,20 +1227,20 @@ proc validate_PredictionTrainedmodelsPredict_580072(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580083: Call_PredictionTrainedmodelsPredict_580071; path: JsonNode;
+proc call*(call_589116: Call_PredictionTrainedmodelsPredict_589104; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Submit model id and request a prediction.
   ## 
-  let valid = call_580083.validator(path, query, header, formData, body)
-  let scheme = call_580083.pickScheme
+  let valid = call_589116.validator(path, query, header, formData, body)
+  let scheme = call_589116.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580083.url(scheme.get, call_580083.host, call_580083.base,
-                         call_580083.route, valid.getOrDefault("path"),
+  let url = call_589116.url(scheme.get, call_589116.host, call_589116.base,
+                         call_589116.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580083, url, valid)
+  result = hook(call_589116, url, valid)
 
-proc call*(call_580084: Call_PredictionTrainedmodelsPredict_580071; id: string;
+proc call*(call_589117: Call_PredictionTrainedmodelsPredict_589104; id: string;
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           oauthToken: string = ""; userIp: string = ""; key: string = "";
           body: JsonNode = nil; prettyPrint: bool = true): Recallable =
@@ -1263,26 +1263,26 @@ proc call*(call_580084: Call_PredictionTrainedmodelsPredict_580071; id: string;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_580085 = newJObject()
-  var query_580086 = newJObject()
-  var body_580087 = newJObject()
-  add(query_580086, "fields", newJString(fields))
-  add(query_580086, "quotaUser", newJString(quotaUser))
-  add(query_580086, "alt", newJString(alt))
-  add(query_580086, "oauth_token", newJString(oauthToken))
-  add(query_580086, "userIp", newJString(userIp))
-  add(path_580085, "id", newJString(id))
-  add(query_580086, "key", newJString(key))
+  var path_589118 = newJObject()
+  var query_589119 = newJObject()
+  var body_589120 = newJObject()
+  add(query_589119, "fields", newJString(fields))
+  add(query_589119, "quotaUser", newJString(quotaUser))
+  add(query_589119, "alt", newJString(alt))
+  add(query_589119, "oauth_token", newJString(oauthToken))
+  add(query_589119, "userIp", newJString(userIp))
+  add(path_589118, "id", newJString(id))
+  add(query_589119, "key", newJString(key))
   if body != nil:
-    body_580087 = body
-  add(query_580086, "prettyPrint", newJBool(prettyPrint))
-  result = call_580084.call(path_580085, query_580086, nil, nil, body_580087)
+    body_589120 = body
+  add(query_589119, "prettyPrint", newJBool(prettyPrint))
+  result = call_589117.call(path_589118, query_589119, nil, nil, body_589120)
 
-var predictionTrainedmodelsPredict* = Call_PredictionTrainedmodelsPredict_580071(
+var predictionTrainedmodelsPredict* = Call_PredictionTrainedmodelsPredict_589104(
     name: "predictionTrainedmodelsPredict", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com", route: "/trainedmodels/{id}/predict",
-    validator: validate_PredictionTrainedmodelsPredict_580072,
-    base: "/prediction/v1.5", url: url_PredictionTrainedmodelsPredict_580073,
+    validator: validate_PredictionTrainedmodelsPredict_589105,
+    base: "/prediction/v1.5", url: url_PredictionTrainedmodelsPredict_589106,
     schemes: {Scheme.Https})
 export
   rest
@@ -1325,7 +1325,7 @@ proc store(auth: var GoogleAuth; token: string; expiry: int; form: string) =
   auth.form = form
   auth.digest = auth.hash
 
-proc authenticate*(fresh: float64 = -3600.0; lifetime: int = 3600): Future[bool] {.async.} =
+proc authenticate*(fresh: float64 = 3600.0; lifetime: int = 3600): Future[bool] {.async.} =
   ## get or refresh an authentication token; provide `fresh`
   ## to ensure that the token won't expire in the next N seconds.
   ## provide `lifetime` to indicate how long the token should last.

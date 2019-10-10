@@ -29,15 +29,15 @@ type
     url*: proc (protocol: Scheme; host: string; base: string; route: string;
               path: JsonNode; query: JsonNode): Uri
 
-  OpenApiRestCall_579421 = ref object of OpenApiRestCall
+  OpenApiRestCall_588450 = ref object of OpenApiRestCall
 proc hash(scheme: Scheme): Hash {.used.} =
   result = hash(ord(scheme))
 
-proc clone[T: OpenApiRestCall_579421](t: T): T {.used.} =
+proc clone[T: OpenApiRestCall_588450](t: T): T {.used.} =
   result = T(name: t.name, meth: t.meth, host: t.host, base: t.base, route: t.route,
            schemes: t.schemes, validator: t.validator, url: t.url)
 
-proc pickScheme(t: OpenApiRestCall_579421): Option[Scheme] {.used.} =
+proc pickScheme(t: OpenApiRestCall_588450): Option[Scheme] {.used.} =
   ## select a supported scheme from a set of candidates
   for scheme in Scheme.low ..
       Scheme.high:
@@ -74,7 +74,7 @@ type
   PathTokenKind = enum
     ConstantSegment, VariableSegment
   PathToken = tuple[kind: PathTokenKind, value: string]
-proc queryString(query: JsonNode): string =
+proc queryString(query: JsonNode): string {.used.} =
   var qs: seq[KeyVal]
   if query == nil:
     return ""
@@ -82,7 +82,7 @@ proc queryString(query: JsonNode): string =
     qs.add (key: k, val: v.getStr)
   result = encodeQuery(qs)
 
-proc hydratePath(input: JsonNode; segments: seq[PathToken]): Option[string] =
+proc hydratePath(input: JsonNode; segments: seq[PathToken]): Option[string] {.used.} =
   ## reconstitute a path with constants and variable values taken from json
   var head: string
   if segments.len == 0:
@@ -108,8 +108,8 @@ const
 proc composeQueryString(query: JsonNode): string
 method hook(call: OpenApiRestCall; url: Uri; input: JsonNode): Recallable {.base.}
 type
-  Call_ContentAccountsAuthinfo_579689 = ref object of OpenApiRestCall_579421
-proc url_ContentAccountsAuthinfo_579691(protocol: Scheme; host: string; base: string;
+  Call_ContentAccountsAuthinfo_588718 = ref object of OpenApiRestCall_588450
+proc url_ContentAccountsAuthinfo_588720(protocol: Scheme; host: string; base: string;
                                        route: string; path: JsonNode;
                                        query: JsonNode): Uri =
   result.scheme = $protocol
@@ -117,7 +117,7 @@ proc url_ContentAccountsAuthinfo_579691(protocol: Scheme; host: string; base: st
   result.query = $composeQueryString(query)
   result.path = base & route
 
-proc validate_ContentAccountsAuthinfo_579690(path: JsonNode; query: JsonNode;
+proc validate_ContentAccountsAuthinfo_588719(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Returns information about the authenticated user.
   ## 
@@ -141,41 +141,41 @@ proc validate_ContentAccountsAuthinfo_579690(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_579803 = query.getOrDefault("fields")
-  valid_579803 = validateParameter(valid_579803, JString, required = false,
+  var valid_588832 = query.getOrDefault("fields")
+  valid_588832 = validateParameter(valid_588832, JString, required = false,
                                  default = nil)
-  if valid_579803 != nil:
-    section.add "fields", valid_579803
-  var valid_579804 = query.getOrDefault("quotaUser")
-  valid_579804 = validateParameter(valid_579804, JString, required = false,
+  if valid_588832 != nil:
+    section.add "fields", valid_588832
+  var valid_588833 = query.getOrDefault("quotaUser")
+  valid_588833 = validateParameter(valid_588833, JString, required = false,
                                  default = nil)
-  if valid_579804 != nil:
-    section.add "quotaUser", valid_579804
-  var valid_579818 = query.getOrDefault("alt")
-  valid_579818 = validateParameter(valid_579818, JString, required = false,
+  if valid_588833 != nil:
+    section.add "quotaUser", valid_588833
+  var valid_588847 = query.getOrDefault("alt")
+  valid_588847 = validateParameter(valid_588847, JString, required = false,
                                  default = newJString("json"))
-  if valid_579818 != nil:
-    section.add "alt", valid_579818
-  var valid_579819 = query.getOrDefault("oauth_token")
-  valid_579819 = validateParameter(valid_579819, JString, required = false,
+  if valid_588847 != nil:
+    section.add "alt", valid_588847
+  var valid_588848 = query.getOrDefault("oauth_token")
+  valid_588848 = validateParameter(valid_588848, JString, required = false,
                                  default = nil)
-  if valid_579819 != nil:
-    section.add "oauth_token", valid_579819
-  var valid_579820 = query.getOrDefault("userIp")
-  valid_579820 = validateParameter(valid_579820, JString, required = false,
+  if valid_588848 != nil:
+    section.add "oauth_token", valid_588848
+  var valid_588849 = query.getOrDefault("userIp")
+  valid_588849 = validateParameter(valid_588849, JString, required = false,
                                  default = nil)
-  if valid_579820 != nil:
-    section.add "userIp", valid_579820
-  var valid_579821 = query.getOrDefault("key")
-  valid_579821 = validateParameter(valid_579821, JString, required = false,
+  if valid_588849 != nil:
+    section.add "userIp", valid_588849
+  var valid_588850 = query.getOrDefault("key")
+  valid_588850 = validateParameter(valid_588850, JString, required = false,
                                  default = nil)
-  if valid_579821 != nil:
-    section.add "key", valid_579821
-  var valid_579822 = query.getOrDefault("prettyPrint")
-  valid_579822 = validateParameter(valid_579822, JBool, required = false,
+  if valid_588850 != nil:
+    section.add "key", valid_588850
+  var valid_588851 = query.getOrDefault("prettyPrint")
+  valid_588851 = validateParameter(valid_588851, JBool, required = false,
                                  default = newJBool(true))
-  if valid_579822 != nil:
-    section.add "prettyPrint", valid_579822
+  if valid_588851 != nil:
+    section.add "prettyPrint", valid_588851
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -184,20 +184,20 @@ proc validate_ContentAccountsAuthinfo_579690(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_579845: Call_ContentAccountsAuthinfo_579689; path: JsonNode;
+proc call*(call_588874: Call_ContentAccountsAuthinfo_588718; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Returns information about the authenticated user.
   ## 
-  let valid = call_579845.validator(path, query, header, formData, body)
-  let scheme = call_579845.pickScheme
+  let valid = call_588874.validator(path, query, header, formData, body)
+  let scheme = call_588874.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_579845.url(scheme.get, call_579845.host, call_579845.base,
-                         call_579845.route, valid.getOrDefault("path"),
+  let url = call_588874.url(scheme.get, call_588874.host, call_588874.base,
+                         call_588874.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_579845, url, valid)
+  result = hook(call_588874, url, valid)
 
-proc call*(call_579916: Call_ContentAccountsAuthinfo_579689; fields: string = "";
+proc call*(call_588945: Call_ContentAccountsAuthinfo_588718; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; key: string = ""; prettyPrint: bool = true): Recallable =
   ## contentAccountsAuthinfo
@@ -216,31 +216,31 @@ proc call*(call_579916: Call_ContentAccountsAuthinfo_579689; fields: string = ""
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var query_579917 = newJObject()
-  add(query_579917, "fields", newJString(fields))
-  add(query_579917, "quotaUser", newJString(quotaUser))
-  add(query_579917, "alt", newJString(alt))
-  add(query_579917, "oauth_token", newJString(oauthToken))
-  add(query_579917, "userIp", newJString(userIp))
-  add(query_579917, "key", newJString(key))
-  add(query_579917, "prettyPrint", newJBool(prettyPrint))
-  result = call_579916.call(nil, query_579917, nil, nil, nil)
+  var query_588946 = newJObject()
+  add(query_588946, "fields", newJString(fields))
+  add(query_588946, "quotaUser", newJString(quotaUser))
+  add(query_588946, "alt", newJString(alt))
+  add(query_588946, "oauth_token", newJString(oauthToken))
+  add(query_588946, "userIp", newJString(userIp))
+  add(query_588946, "key", newJString(key))
+  add(query_588946, "prettyPrint", newJBool(prettyPrint))
+  result = call_588945.call(nil, query_588946, nil, nil, nil)
 
-var contentAccountsAuthinfo* = Call_ContentAccountsAuthinfo_579689(
+var contentAccountsAuthinfo* = Call_ContentAccountsAuthinfo_588718(
     name: "contentAccountsAuthinfo", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/accounts/authinfo",
-    validator: validate_ContentAccountsAuthinfo_579690, base: "/content/v2",
-    url: url_ContentAccountsAuthinfo_579691, schemes: {Scheme.Https})
+    validator: validate_ContentAccountsAuthinfo_588719, base: "/content/v2",
+    url: url_ContentAccountsAuthinfo_588720, schemes: {Scheme.Https})
 type
-  Call_ContentAccountsCustombatch_579957 = ref object of OpenApiRestCall_579421
-proc url_ContentAccountsCustombatch_579959(protocol: Scheme; host: string;
+  Call_ContentAccountsCustombatch_588986 = ref object of OpenApiRestCall_588450
+proc url_ContentAccountsCustombatch_588988(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
   result.query = $composeQueryString(query)
   result.path = base & route
 
-proc validate_ContentAccountsCustombatch_579958(path: JsonNode; query: JsonNode;
+proc validate_ContentAccountsCustombatch_588987(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Retrieves, inserts, updates, and deletes multiple Merchant Center (sub-)accounts in a single request.
   ## 
@@ -266,45 +266,45 @@ proc validate_ContentAccountsCustombatch_579958(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_579960 = query.getOrDefault("fields")
-  valid_579960 = validateParameter(valid_579960, JString, required = false,
+  var valid_588989 = query.getOrDefault("fields")
+  valid_588989 = validateParameter(valid_588989, JString, required = false,
                                  default = nil)
-  if valid_579960 != nil:
-    section.add "fields", valid_579960
-  var valid_579961 = query.getOrDefault("quotaUser")
-  valid_579961 = validateParameter(valid_579961, JString, required = false,
+  if valid_588989 != nil:
+    section.add "fields", valid_588989
+  var valid_588990 = query.getOrDefault("quotaUser")
+  valid_588990 = validateParameter(valid_588990, JString, required = false,
                                  default = nil)
-  if valid_579961 != nil:
-    section.add "quotaUser", valid_579961
-  var valid_579962 = query.getOrDefault("alt")
-  valid_579962 = validateParameter(valid_579962, JString, required = false,
+  if valid_588990 != nil:
+    section.add "quotaUser", valid_588990
+  var valid_588991 = query.getOrDefault("alt")
+  valid_588991 = validateParameter(valid_588991, JString, required = false,
                                  default = newJString("json"))
-  if valid_579962 != nil:
-    section.add "alt", valid_579962
-  var valid_579963 = query.getOrDefault("dryRun")
-  valid_579963 = validateParameter(valid_579963, JBool, required = false, default = nil)
-  if valid_579963 != nil:
-    section.add "dryRun", valid_579963
-  var valid_579964 = query.getOrDefault("oauth_token")
-  valid_579964 = validateParameter(valid_579964, JString, required = false,
+  if valid_588991 != nil:
+    section.add "alt", valid_588991
+  var valid_588992 = query.getOrDefault("dryRun")
+  valid_588992 = validateParameter(valid_588992, JBool, required = false, default = nil)
+  if valid_588992 != nil:
+    section.add "dryRun", valid_588992
+  var valid_588993 = query.getOrDefault("oauth_token")
+  valid_588993 = validateParameter(valid_588993, JString, required = false,
                                  default = nil)
-  if valid_579964 != nil:
-    section.add "oauth_token", valid_579964
-  var valid_579965 = query.getOrDefault("userIp")
-  valid_579965 = validateParameter(valid_579965, JString, required = false,
+  if valid_588993 != nil:
+    section.add "oauth_token", valid_588993
+  var valid_588994 = query.getOrDefault("userIp")
+  valid_588994 = validateParameter(valid_588994, JString, required = false,
                                  default = nil)
-  if valid_579965 != nil:
-    section.add "userIp", valid_579965
-  var valid_579966 = query.getOrDefault("key")
-  valid_579966 = validateParameter(valid_579966, JString, required = false,
+  if valid_588994 != nil:
+    section.add "userIp", valid_588994
+  var valid_588995 = query.getOrDefault("key")
+  valid_588995 = validateParameter(valid_588995, JString, required = false,
                                  default = nil)
-  if valid_579966 != nil:
-    section.add "key", valid_579966
-  var valid_579967 = query.getOrDefault("prettyPrint")
-  valid_579967 = validateParameter(valid_579967, JBool, required = false,
+  if valid_588995 != nil:
+    section.add "key", valid_588995
+  var valid_588996 = query.getOrDefault("prettyPrint")
+  valid_588996 = validateParameter(valid_588996, JBool, required = false,
                                  default = newJBool(true))
-  if valid_579967 != nil:
-    section.add "prettyPrint", valid_579967
+  if valid_588996 != nil:
+    section.add "prettyPrint", valid_588996
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -316,20 +316,20 @@ proc validate_ContentAccountsCustombatch_579958(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_579969: Call_ContentAccountsCustombatch_579957; path: JsonNode;
+proc call*(call_588998: Call_ContentAccountsCustombatch_588986; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Retrieves, inserts, updates, and deletes multiple Merchant Center (sub-)accounts in a single request.
   ## 
-  let valid = call_579969.validator(path, query, header, formData, body)
-  let scheme = call_579969.pickScheme
+  let valid = call_588998.validator(path, query, header, formData, body)
+  let scheme = call_588998.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_579969.url(scheme.get, call_579969.host, call_579969.base,
-                         call_579969.route, valid.getOrDefault("path"),
+  let url = call_588998.url(scheme.get, call_588998.host, call_588998.base,
+                         call_588998.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_579969, url, valid)
+  result = hook(call_588998, url, valid)
 
-proc call*(call_579970: Call_ContentAccountsCustombatch_579957;
+proc call*(call_588999: Call_ContentAccountsCustombatch_588986;
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           dryRun: bool = false; oauthToken: string = ""; userIp: string = "";
           key: string = ""; body: JsonNode = nil; prettyPrint: bool = true): Recallable =
@@ -352,35 +352,35 @@ proc call*(call_579970: Call_ContentAccountsCustombatch_579957;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var query_579971 = newJObject()
-  var body_579972 = newJObject()
-  add(query_579971, "fields", newJString(fields))
-  add(query_579971, "quotaUser", newJString(quotaUser))
-  add(query_579971, "alt", newJString(alt))
-  add(query_579971, "dryRun", newJBool(dryRun))
-  add(query_579971, "oauth_token", newJString(oauthToken))
-  add(query_579971, "userIp", newJString(userIp))
-  add(query_579971, "key", newJString(key))
+  var query_589000 = newJObject()
+  var body_589001 = newJObject()
+  add(query_589000, "fields", newJString(fields))
+  add(query_589000, "quotaUser", newJString(quotaUser))
+  add(query_589000, "alt", newJString(alt))
+  add(query_589000, "dryRun", newJBool(dryRun))
+  add(query_589000, "oauth_token", newJString(oauthToken))
+  add(query_589000, "userIp", newJString(userIp))
+  add(query_589000, "key", newJString(key))
   if body != nil:
-    body_579972 = body
-  add(query_579971, "prettyPrint", newJBool(prettyPrint))
-  result = call_579970.call(nil, query_579971, nil, nil, body_579972)
+    body_589001 = body
+  add(query_589000, "prettyPrint", newJBool(prettyPrint))
+  result = call_588999.call(nil, query_589000, nil, nil, body_589001)
 
-var contentAccountsCustombatch* = Call_ContentAccountsCustombatch_579957(
+var contentAccountsCustombatch* = Call_ContentAccountsCustombatch_588986(
     name: "contentAccountsCustombatch", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com", route: "/accounts/batch",
-    validator: validate_ContentAccountsCustombatch_579958, base: "/content/v2",
-    url: url_ContentAccountsCustombatch_579959, schemes: {Scheme.Https})
+    validator: validate_ContentAccountsCustombatch_588987, base: "/content/v2",
+    url: url_ContentAccountsCustombatch_588988, schemes: {Scheme.Https})
 type
-  Call_ContentAccountstatusesCustombatch_579973 = ref object of OpenApiRestCall_579421
-proc url_ContentAccountstatusesCustombatch_579975(protocol: Scheme; host: string;
+  Call_ContentAccountstatusesCustombatch_589002 = ref object of OpenApiRestCall_588450
+proc url_ContentAccountstatusesCustombatch_589004(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
   result.query = $composeQueryString(query)
   result.path = base & route
 
-proc validate_ContentAccountstatusesCustombatch_579974(path: JsonNode;
+proc validate_ContentAccountstatusesCustombatch_589003(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Retrieves multiple Merchant Center account statuses in a single request.
   ## 
@@ -404,41 +404,41 @@ proc validate_ContentAccountstatusesCustombatch_579974(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_579976 = query.getOrDefault("fields")
-  valid_579976 = validateParameter(valid_579976, JString, required = false,
+  var valid_589005 = query.getOrDefault("fields")
+  valid_589005 = validateParameter(valid_589005, JString, required = false,
                                  default = nil)
-  if valid_579976 != nil:
-    section.add "fields", valid_579976
-  var valid_579977 = query.getOrDefault("quotaUser")
-  valid_579977 = validateParameter(valid_579977, JString, required = false,
+  if valid_589005 != nil:
+    section.add "fields", valid_589005
+  var valid_589006 = query.getOrDefault("quotaUser")
+  valid_589006 = validateParameter(valid_589006, JString, required = false,
                                  default = nil)
-  if valid_579977 != nil:
-    section.add "quotaUser", valid_579977
-  var valid_579978 = query.getOrDefault("alt")
-  valid_579978 = validateParameter(valid_579978, JString, required = false,
+  if valid_589006 != nil:
+    section.add "quotaUser", valid_589006
+  var valid_589007 = query.getOrDefault("alt")
+  valid_589007 = validateParameter(valid_589007, JString, required = false,
                                  default = newJString("json"))
-  if valid_579978 != nil:
-    section.add "alt", valid_579978
-  var valid_579979 = query.getOrDefault("oauth_token")
-  valid_579979 = validateParameter(valid_579979, JString, required = false,
+  if valid_589007 != nil:
+    section.add "alt", valid_589007
+  var valid_589008 = query.getOrDefault("oauth_token")
+  valid_589008 = validateParameter(valid_589008, JString, required = false,
                                  default = nil)
-  if valid_579979 != nil:
-    section.add "oauth_token", valid_579979
-  var valid_579980 = query.getOrDefault("userIp")
-  valid_579980 = validateParameter(valid_579980, JString, required = false,
+  if valid_589008 != nil:
+    section.add "oauth_token", valid_589008
+  var valid_589009 = query.getOrDefault("userIp")
+  valid_589009 = validateParameter(valid_589009, JString, required = false,
                                  default = nil)
-  if valid_579980 != nil:
-    section.add "userIp", valid_579980
-  var valid_579981 = query.getOrDefault("key")
-  valid_579981 = validateParameter(valid_579981, JString, required = false,
+  if valid_589009 != nil:
+    section.add "userIp", valid_589009
+  var valid_589010 = query.getOrDefault("key")
+  valid_589010 = validateParameter(valid_589010, JString, required = false,
                                  default = nil)
-  if valid_579981 != nil:
-    section.add "key", valid_579981
-  var valid_579982 = query.getOrDefault("prettyPrint")
-  valid_579982 = validateParameter(valid_579982, JBool, required = false,
+  if valid_589010 != nil:
+    section.add "key", valid_589010
+  var valid_589011 = query.getOrDefault("prettyPrint")
+  valid_589011 = validateParameter(valid_589011, JBool, required = false,
                                  default = newJBool(true))
-  if valid_579982 != nil:
-    section.add "prettyPrint", valid_579982
+  if valid_589011 != nil:
+    section.add "prettyPrint", valid_589011
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -450,21 +450,21 @@ proc validate_ContentAccountstatusesCustombatch_579974(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_579984: Call_ContentAccountstatusesCustombatch_579973;
+proc call*(call_589013: Call_ContentAccountstatusesCustombatch_589002;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Retrieves multiple Merchant Center account statuses in a single request.
   ## 
-  let valid = call_579984.validator(path, query, header, formData, body)
-  let scheme = call_579984.pickScheme
+  let valid = call_589013.validator(path, query, header, formData, body)
+  let scheme = call_589013.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_579984.url(scheme.get, call_579984.host, call_579984.base,
-                         call_579984.route, valid.getOrDefault("path"),
+  let url = call_589013.url(scheme.get, call_589013.host, call_589013.base,
+                         call_589013.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_579984, url, valid)
+  result = hook(call_589013, url, valid)
 
-proc call*(call_579985: Call_ContentAccountstatusesCustombatch_579973;
+proc call*(call_589014: Call_ContentAccountstatusesCustombatch_589002;
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           oauthToken: string = ""; userIp: string = ""; key: string = "";
           body: JsonNode = nil; prettyPrint: bool = true): Recallable =
@@ -485,35 +485,35 @@ proc call*(call_579985: Call_ContentAccountstatusesCustombatch_579973;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var query_579986 = newJObject()
-  var body_579987 = newJObject()
-  add(query_579986, "fields", newJString(fields))
-  add(query_579986, "quotaUser", newJString(quotaUser))
-  add(query_579986, "alt", newJString(alt))
-  add(query_579986, "oauth_token", newJString(oauthToken))
-  add(query_579986, "userIp", newJString(userIp))
-  add(query_579986, "key", newJString(key))
+  var query_589015 = newJObject()
+  var body_589016 = newJObject()
+  add(query_589015, "fields", newJString(fields))
+  add(query_589015, "quotaUser", newJString(quotaUser))
+  add(query_589015, "alt", newJString(alt))
+  add(query_589015, "oauth_token", newJString(oauthToken))
+  add(query_589015, "userIp", newJString(userIp))
+  add(query_589015, "key", newJString(key))
   if body != nil:
-    body_579987 = body
-  add(query_579986, "prettyPrint", newJBool(prettyPrint))
-  result = call_579985.call(nil, query_579986, nil, nil, body_579987)
+    body_589016 = body
+  add(query_589015, "prettyPrint", newJBool(prettyPrint))
+  result = call_589014.call(nil, query_589015, nil, nil, body_589016)
 
-var contentAccountstatusesCustombatch* = Call_ContentAccountstatusesCustombatch_579973(
+var contentAccountstatusesCustombatch* = Call_ContentAccountstatusesCustombatch_589002(
     name: "contentAccountstatusesCustombatch", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com", route: "/accountstatuses/batch",
-    validator: validate_ContentAccountstatusesCustombatch_579974,
-    base: "/content/v2", url: url_ContentAccountstatusesCustombatch_579975,
+    validator: validate_ContentAccountstatusesCustombatch_589003,
+    base: "/content/v2", url: url_ContentAccountstatusesCustombatch_589004,
     schemes: {Scheme.Https})
 type
-  Call_ContentAccounttaxCustombatch_579988 = ref object of OpenApiRestCall_579421
-proc url_ContentAccounttaxCustombatch_579990(protocol: Scheme; host: string;
+  Call_ContentAccounttaxCustombatch_589017 = ref object of OpenApiRestCall_588450
+proc url_ContentAccounttaxCustombatch_589019(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
   result.query = $composeQueryString(query)
   result.path = base & route
 
-proc validate_ContentAccounttaxCustombatch_579989(path: JsonNode; query: JsonNode;
+proc validate_ContentAccounttaxCustombatch_589018(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Retrieves and updates tax settings of multiple accounts in a single request.
   ## 
@@ -539,45 +539,45 @@ proc validate_ContentAccounttaxCustombatch_579989(path: JsonNode; query: JsonNod
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_579991 = query.getOrDefault("fields")
-  valid_579991 = validateParameter(valid_579991, JString, required = false,
+  var valid_589020 = query.getOrDefault("fields")
+  valid_589020 = validateParameter(valid_589020, JString, required = false,
                                  default = nil)
-  if valid_579991 != nil:
-    section.add "fields", valid_579991
-  var valid_579992 = query.getOrDefault("quotaUser")
-  valid_579992 = validateParameter(valid_579992, JString, required = false,
+  if valid_589020 != nil:
+    section.add "fields", valid_589020
+  var valid_589021 = query.getOrDefault("quotaUser")
+  valid_589021 = validateParameter(valid_589021, JString, required = false,
                                  default = nil)
-  if valid_579992 != nil:
-    section.add "quotaUser", valid_579992
-  var valid_579993 = query.getOrDefault("alt")
-  valid_579993 = validateParameter(valid_579993, JString, required = false,
+  if valid_589021 != nil:
+    section.add "quotaUser", valid_589021
+  var valid_589022 = query.getOrDefault("alt")
+  valid_589022 = validateParameter(valid_589022, JString, required = false,
                                  default = newJString("json"))
-  if valid_579993 != nil:
-    section.add "alt", valid_579993
-  var valid_579994 = query.getOrDefault("dryRun")
-  valid_579994 = validateParameter(valid_579994, JBool, required = false, default = nil)
-  if valid_579994 != nil:
-    section.add "dryRun", valid_579994
-  var valid_579995 = query.getOrDefault("oauth_token")
-  valid_579995 = validateParameter(valid_579995, JString, required = false,
+  if valid_589022 != nil:
+    section.add "alt", valid_589022
+  var valid_589023 = query.getOrDefault("dryRun")
+  valid_589023 = validateParameter(valid_589023, JBool, required = false, default = nil)
+  if valid_589023 != nil:
+    section.add "dryRun", valid_589023
+  var valid_589024 = query.getOrDefault("oauth_token")
+  valid_589024 = validateParameter(valid_589024, JString, required = false,
                                  default = nil)
-  if valid_579995 != nil:
-    section.add "oauth_token", valid_579995
-  var valid_579996 = query.getOrDefault("userIp")
-  valid_579996 = validateParameter(valid_579996, JString, required = false,
+  if valid_589024 != nil:
+    section.add "oauth_token", valid_589024
+  var valid_589025 = query.getOrDefault("userIp")
+  valid_589025 = validateParameter(valid_589025, JString, required = false,
                                  default = nil)
-  if valid_579996 != nil:
-    section.add "userIp", valid_579996
-  var valid_579997 = query.getOrDefault("key")
-  valid_579997 = validateParameter(valid_579997, JString, required = false,
+  if valid_589025 != nil:
+    section.add "userIp", valid_589025
+  var valid_589026 = query.getOrDefault("key")
+  valid_589026 = validateParameter(valid_589026, JString, required = false,
                                  default = nil)
-  if valid_579997 != nil:
-    section.add "key", valid_579997
-  var valid_579998 = query.getOrDefault("prettyPrint")
-  valid_579998 = validateParameter(valid_579998, JBool, required = false,
+  if valid_589026 != nil:
+    section.add "key", valid_589026
+  var valid_589027 = query.getOrDefault("prettyPrint")
+  valid_589027 = validateParameter(valid_589027, JBool, required = false,
                                  default = newJBool(true))
-  if valid_579998 != nil:
-    section.add "prettyPrint", valid_579998
+  if valid_589027 != nil:
+    section.add "prettyPrint", valid_589027
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -589,20 +589,20 @@ proc validate_ContentAccounttaxCustombatch_579989(path: JsonNode; query: JsonNod
   if body != nil:
     result.add "body", body
 
-proc call*(call_580000: Call_ContentAccounttaxCustombatch_579988; path: JsonNode;
+proc call*(call_589029: Call_ContentAccounttaxCustombatch_589017; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Retrieves and updates tax settings of multiple accounts in a single request.
   ## 
-  let valid = call_580000.validator(path, query, header, formData, body)
-  let scheme = call_580000.pickScheme
+  let valid = call_589029.validator(path, query, header, formData, body)
+  let scheme = call_589029.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580000.url(scheme.get, call_580000.host, call_580000.base,
-                         call_580000.route, valid.getOrDefault("path"),
+  let url = call_589029.url(scheme.get, call_589029.host, call_589029.base,
+                         call_589029.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580000, url, valid)
+  result = hook(call_589029, url, valid)
 
-proc call*(call_580001: Call_ContentAccounttaxCustombatch_579988;
+proc call*(call_589030: Call_ContentAccounttaxCustombatch_589017;
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           dryRun: bool = false; oauthToken: string = ""; userIp: string = "";
           key: string = ""; body: JsonNode = nil; prettyPrint: bool = true): Recallable =
@@ -625,35 +625,35 @@ proc call*(call_580001: Call_ContentAccounttaxCustombatch_579988;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var query_580002 = newJObject()
-  var body_580003 = newJObject()
-  add(query_580002, "fields", newJString(fields))
-  add(query_580002, "quotaUser", newJString(quotaUser))
-  add(query_580002, "alt", newJString(alt))
-  add(query_580002, "dryRun", newJBool(dryRun))
-  add(query_580002, "oauth_token", newJString(oauthToken))
-  add(query_580002, "userIp", newJString(userIp))
-  add(query_580002, "key", newJString(key))
+  var query_589031 = newJObject()
+  var body_589032 = newJObject()
+  add(query_589031, "fields", newJString(fields))
+  add(query_589031, "quotaUser", newJString(quotaUser))
+  add(query_589031, "alt", newJString(alt))
+  add(query_589031, "dryRun", newJBool(dryRun))
+  add(query_589031, "oauth_token", newJString(oauthToken))
+  add(query_589031, "userIp", newJString(userIp))
+  add(query_589031, "key", newJString(key))
   if body != nil:
-    body_580003 = body
-  add(query_580002, "prettyPrint", newJBool(prettyPrint))
-  result = call_580001.call(nil, query_580002, nil, nil, body_580003)
+    body_589032 = body
+  add(query_589031, "prettyPrint", newJBool(prettyPrint))
+  result = call_589030.call(nil, query_589031, nil, nil, body_589032)
 
-var contentAccounttaxCustombatch* = Call_ContentAccounttaxCustombatch_579988(
+var contentAccounttaxCustombatch* = Call_ContentAccounttaxCustombatch_589017(
     name: "contentAccounttaxCustombatch", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com", route: "/accounttax/batch",
-    validator: validate_ContentAccounttaxCustombatch_579989, base: "/content/v2",
-    url: url_ContentAccounttaxCustombatch_579990, schemes: {Scheme.Https})
+    validator: validate_ContentAccounttaxCustombatch_589018, base: "/content/v2",
+    url: url_ContentAccounttaxCustombatch_589019, schemes: {Scheme.Https})
 type
-  Call_ContentDatafeedsCustombatch_580004 = ref object of OpenApiRestCall_579421
-proc url_ContentDatafeedsCustombatch_580006(protocol: Scheme; host: string;
+  Call_ContentDatafeedsCustombatch_589033 = ref object of OpenApiRestCall_588450
+proc url_ContentDatafeedsCustombatch_589035(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
   result.query = $composeQueryString(query)
   result.path = base & route
 
-proc validate_ContentDatafeedsCustombatch_580005(path: JsonNode; query: JsonNode;
+proc validate_ContentDatafeedsCustombatch_589034(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Deletes, fetches, gets, inserts and updates multiple datafeeds in a single request.
   ## 
@@ -679,45 +679,45 @@ proc validate_ContentDatafeedsCustombatch_580005(path: JsonNode; query: JsonNode
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580007 = query.getOrDefault("fields")
-  valid_580007 = validateParameter(valid_580007, JString, required = false,
+  var valid_589036 = query.getOrDefault("fields")
+  valid_589036 = validateParameter(valid_589036, JString, required = false,
                                  default = nil)
-  if valid_580007 != nil:
-    section.add "fields", valid_580007
-  var valid_580008 = query.getOrDefault("quotaUser")
-  valid_580008 = validateParameter(valid_580008, JString, required = false,
+  if valid_589036 != nil:
+    section.add "fields", valid_589036
+  var valid_589037 = query.getOrDefault("quotaUser")
+  valid_589037 = validateParameter(valid_589037, JString, required = false,
                                  default = nil)
-  if valid_580008 != nil:
-    section.add "quotaUser", valid_580008
-  var valid_580009 = query.getOrDefault("alt")
-  valid_580009 = validateParameter(valid_580009, JString, required = false,
+  if valid_589037 != nil:
+    section.add "quotaUser", valid_589037
+  var valid_589038 = query.getOrDefault("alt")
+  valid_589038 = validateParameter(valid_589038, JString, required = false,
                                  default = newJString("json"))
-  if valid_580009 != nil:
-    section.add "alt", valid_580009
-  var valid_580010 = query.getOrDefault("dryRun")
-  valid_580010 = validateParameter(valid_580010, JBool, required = false, default = nil)
-  if valid_580010 != nil:
-    section.add "dryRun", valid_580010
-  var valid_580011 = query.getOrDefault("oauth_token")
-  valid_580011 = validateParameter(valid_580011, JString, required = false,
+  if valid_589038 != nil:
+    section.add "alt", valid_589038
+  var valid_589039 = query.getOrDefault("dryRun")
+  valid_589039 = validateParameter(valid_589039, JBool, required = false, default = nil)
+  if valid_589039 != nil:
+    section.add "dryRun", valid_589039
+  var valid_589040 = query.getOrDefault("oauth_token")
+  valid_589040 = validateParameter(valid_589040, JString, required = false,
                                  default = nil)
-  if valid_580011 != nil:
-    section.add "oauth_token", valid_580011
-  var valid_580012 = query.getOrDefault("userIp")
-  valid_580012 = validateParameter(valid_580012, JString, required = false,
+  if valid_589040 != nil:
+    section.add "oauth_token", valid_589040
+  var valid_589041 = query.getOrDefault("userIp")
+  valid_589041 = validateParameter(valid_589041, JString, required = false,
                                  default = nil)
-  if valid_580012 != nil:
-    section.add "userIp", valid_580012
-  var valid_580013 = query.getOrDefault("key")
-  valid_580013 = validateParameter(valid_580013, JString, required = false,
+  if valid_589041 != nil:
+    section.add "userIp", valid_589041
+  var valid_589042 = query.getOrDefault("key")
+  valid_589042 = validateParameter(valid_589042, JString, required = false,
                                  default = nil)
-  if valid_580013 != nil:
-    section.add "key", valid_580013
-  var valid_580014 = query.getOrDefault("prettyPrint")
-  valid_580014 = validateParameter(valid_580014, JBool, required = false,
+  if valid_589042 != nil:
+    section.add "key", valid_589042
+  var valid_589043 = query.getOrDefault("prettyPrint")
+  valid_589043 = validateParameter(valid_589043, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580014 != nil:
-    section.add "prettyPrint", valid_580014
+  if valid_589043 != nil:
+    section.add "prettyPrint", valid_589043
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -729,20 +729,20 @@ proc validate_ContentDatafeedsCustombatch_580005(path: JsonNode; query: JsonNode
   if body != nil:
     result.add "body", body
 
-proc call*(call_580016: Call_ContentDatafeedsCustombatch_580004; path: JsonNode;
+proc call*(call_589045: Call_ContentDatafeedsCustombatch_589033; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Deletes, fetches, gets, inserts and updates multiple datafeeds in a single request.
   ## 
-  let valid = call_580016.validator(path, query, header, formData, body)
-  let scheme = call_580016.pickScheme
+  let valid = call_589045.validator(path, query, header, formData, body)
+  let scheme = call_589045.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580016.url(scheme.get, call_580016.host, call_580016.base,
-                         call_580016.route, valid.getOrDefault("path"),
+  let url = call_589045.url(scheme.get, call_589045.host, call_589045.base,
+                         call_589045.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580016, url, valid)
+  result = hook(call_589045, url, valid)
 
-proc call*(call_580017: Call_ContentDatafeedsCustombatch_580004;
+proc call*(call_589046: Call_ContentDatafeedsCustombatch_589033;
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           dryRun: bool = false; oauthToken: string = ""; userIp: string = "";
           key: string = ""; body: JsonNode = nil; prettyPrint: bool = true): Recallable =
@@ -765,35 +765,35 @@ proc call*(call_580017: Call_ContentDatafeedsCustombatch_580004;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var query_580018 = newJObject()
-  var body_580019 = newJObject()
-  add(query_580018, "fields", newJString(fields))
-  add(query_580018, "quotaUser", newJString(quotaUser))
-  add(query_580018, "alt", newJString(alt))
-  add(query_580018, "dryRun", newJBool(dryRun))
-  add(query_580018, "oauth_token", newJString(oauthToken))
-  add(query_580018, "userIp", newJString(userIp))
-  add(query_580018, "key", newJString(key))
+  var query_589047 = newJObject()
+  var body_589048 = newJObject()
+  add(query_589047, "fields", newJString(fields))
+  add(query_589047, "quotaUser", newJString(quotaUser))
+  add(query_589047, "alt", newJString(alt))
+  add(query_589047, "dryRun", newJBool(dryRun))
+  add(query_589047, "oauth_token", newJString(oauthToken))
+  add(query_589047, "userIp", newJString(userIp))
+  add(query_589047, "key", newJString(key))
   if body != nil:
-    body_580019 = body
-  add(query_580018, "prettyPrint", newJBool(prettyPrint))
-  result = call_580017.call(nil, query_580018, nil, nil, body_580019)
+    body_589048 = body
+  add(query_589047, "prettyPrint", newJBool(prettyPrint))
+  result = call_589046.call(nil, query_589047, nil, nil, body_589048)
 
-var contentDatafeedsCustombatch* = Call_ContentDatafeedsCustombatch_580004(
+var contentDatafeedsCustombatch* = Call_ContentDatafeedsCustombatch_589033(
     name: "contentDatafeedsCustombatch", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com", route: "/datafeeds/batch",
-    validator: validate_ContentDatafeedsCustombatch_580005, base: "/content/v2",
-    url: url_ContentDatafeedsCustombatch_580006, schemes: {Scheme.Https})
+    validator: validate_ContentDatafeedsCustombatch_589034, base: "/content/v2",
+    url: url_ContentDatafeedsCustombatch_589035, schemes: {Scheme.Https})
 type
-  Call_ContentDatafeedstatusesCustombatch_580020 = ref object of OpenApiRestCall_579421
-proc url_ContentDatafeedstatusesCustombatch_580022(protocol: Scheme; host: string;
+  Call_ContentDatafeedstatusesCustombatch_589049 = ref object of OpenApiRestCall_588450
+proc url_ContentDatafeedstatusesCustombatch_589051(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
   result.query = $composeQueryString(query)
   result.path = base & route
 
-proc validate_ContentDatafeedstatusesCustombatch_580021(path: JsonNode;
+proc validate_ContentDatafeedstatusesCustombatch_589050(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Gets multiple Merchant Center datafeed statuses in a single request.
   ## 
@@ -817,41 +817,41 @@ proc validate_ContentDatafeedstatusesCustombatch_580021(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580023 = query.getOrDefault("fields")
-  valid_580023 = validateParameter(valid_580023, JString, required = false,
+  var valid_589052 = query.getOrDefault("fields")
+  valid_589052 = validateParameter(valid_589052, JString, required = false,
                                  default = nil)
-  if valid_580023 != nil:
-    section.add "fields", valid_580023
-  var valid_580024 = query.getOrDefault("quotaUser")
-  valid_580024 = validateParameter(valid_580024, JString, required = false,
+  if valid_589052 != nil:
+    section.add "fields", valid_589052
+  var valid_589053 = query.getOrDefault("quotaUser")
+  valid_589053 = validateParameter(valid_589053, JString, required = false,
                                  default = nil)
-  if valid_580024 != nil:
-    section.add "quotaUser", valid_580024
-  var valid_580025 = query.getOrDefault("alt")
-  valid_580025 = validateParameter(valid_580025, JString, required = false,
+  if valid_589053 != nil:
+    section.add "quotaUser", valid_589053
+  var valid_589054 = query.getOrDefault("alt")
+  valid_589054 = validateParameter(valid_589054, JString, required = false,
                                  default = newJString("json"))
-  if valid_580025 != nil:
-    section.add "alt", valid_580025
-  var valid_580026 = query.getOrDefault("oauth_token")
-  valid_580026 = validateParameter(valid_580026, JString, required = false,
+  if valid_589054 != nil:
+    section.add "alt", valid_589054
+  var valid_589055 = query.getOrDefault("oauth_token")
+  valid_589055 = validateParameter(valid_589055, JString, required = false,
                                  default = nil)
-  if valid_580026 != nil:
-    section.add "oauth_token", valid_580026
-  var valid_580027 = query.getOrDefault("userIp")
-  valid_580027 = validateParameter(valid_580027, JString, required = false,
+  if valid_589055 != nil:
+    section.add "oauth_token", valid_589055
+  var valid_589056 = query.getOrDefault("userIp")
+  valid_589056 = validateParameter(valid_589056, JString, required = false,
                                  default = nil)
-  if valid_580027 != nil:
-    section.add "userIp", valid_580027
-  var valid_580028 = query.getOrDefault("key")
-  valid_580028 = validateParameter(valid_580028, JString, required = false,
+  if valid_589056 != nil:
+    section.add "userIp", valid_589056
+  var valid_589057 = query.getOrDefault("key")
+  valid_589057 = validateParameter(valid_589057, JString, required = false,
                                  default = nil)
-  if valid_580028 != nil:
-    section.add "key", valid_580028
-  var valid_580029 = query.getOrDefault("prettyPrint")
-  valid_580029 = validateParameter(valid_580029, JBool, required = false,
+  if valid_589057 != nil:
+    section.add "key", valid_589057
+  var valid_589058 = query.getOrDefault("prettyPrint")
+  valid_589058 = validateParameter(valid_589058, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580029 != nil:
-    section.add "prettyPrint", valid_580029
+  if valid_589058 != nil:
+    section.add "prettyPrint", valid_589058
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -863,21 +863,21 @@ proc validate_ContentDatafeedstatusesCustombatch_580021(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580031: Call_ContentDatafeedstatusesCustombatch_580020;
+proc call*(call_589060: Call_ContentDatafeedstatusesCustombatch_589049;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Gets multiple Merchant Center datafeed statuses in a single request.
   ## 
-  let valid = call_580031.validator(path, query, header, formData, body)
-  let scheme = call_580031.pickScheme
+  let valid = call_589060.validator(path, query, header, formData, body)
+  let scheme = call_589060.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580031.url(scheme.get, call_580031.host, call_580031.base,
-                         call_580031.route, valid.getOrDefault("path"),
+  let url = call_589060.url(scheme.get, call_589060.host, call_589060.base,
+                         call_589060.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580031, url, valid)
+  result = hook(call_589060, url, valid)
 
-proc call*(call_580032: Call_ContentDatafeedstatusesCustombatch_580020;
+proc call*(call_589061: Call_ContentDatafeedstatusesCustombatch_589049;
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           oauthToken: string = ""; userIp: string = ""; key: string = "";
           body: JsonNode = nil; prettyPrint: bool = true): Recallable =
@@ -898,35 +898,35 @@ proc call*(call_580032: Call_ContentDatafeedstatusesCustombatch_580020;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var query_580033 = newJObject()
-  var body_580034 = newJObject()
-  add(query_580033, "fields", newJString(fields))
-  add(query_580033, "quotaUser", newJString(quotaUser))
-  add(query_580033, "alt", newJString(alt))
-  add(query_580033, "oauth_token", newJString(oauthToken))
-  add(query_580033, "userIp", newJString(userIp))
-  add(query_580033, "key", newJString(key))
+  var query_589062 = newJObject()
+  var body_589063 = newJObject()
+  add(query_589062, "fields", newJString(fields))
+  add(query_589062, "quotaUser", newJString(quotaUser))
+  add(query_589062, "alt", newJString(alt))
+  add(query_589062, "oauth_token", newJString(oauthToken))
+  add(query_589062, "userIp", newJString(userIp))
+  add(query_589062, "key", newJString(key))
   if body != nil:
-    body_580034 = body
-  add(query_580033, "prettyPrint", newJBool(prettyPrint))
-  result = call_580032.call(nil, query_580033, nil, nil, body_580034)
+    body_589063 = body
+  add(query_589062, "prettyPrint", newJBool(prettyPrint))
+  result = call_589061.call(nil, query_589062, nil, nil, body_589063)
 
-var contentDatafeedstatusesCustombatch* = Call_ContentDatafeedstatusesCustombatch_580020(
+var contentDatafeedstatusesCustombatch* = Call_ContentDatafeedstatusesCustombatch_589049(
     name: "contentDatafeedstatusesCustombatch", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com", route: "/datafeedstatuses/batch",
-    validator: validate_ContentDatafeedstatusesCustombatch_580021,
-    base: "/content/v2", url: url_ContentDatafeedstatusesCustombatch_580022,
+    validator: validate_ContentDatafeedstatusesCustombatch_589050,
+    base: "/content/v2", url: url_ContentDatafeedstatusesCustombatch_589051,
     schemes: {Scheme.Https})
 type
-  Call_ContentInventoryCustombatch_580035 = ref object of OpenApiRestCall_579421
-proc url_ContentInventoryCustombatch_580037(protocol: Scheme; host: string;
+  Call_ContentInventoryCustombatch_589064 = ref object of OpenApiRestCall_588450
+proc url_ContentInventoryCustombatch_589066(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
   result.query = $composeQueryString(query)
   result.path = base & route
 
-proc validate_ContentInventoryCustombatch_580036(path: JsonNode; query: JsonNode;
+proc validate_ContentInventoryCustombatch_589065(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Updates price and availability for multiple products or stores in a single request. This operation does not update the expiration date of the products.
   ## 
@@ -952,45 +952,45 @@ proc validate_ContentInventoryCustombatch_580036(path: JsonNode; query: JsonNode
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580038 = query.getOrDefault("fields")
-  valid_580038 = validateParameter(valid_580038, JString, required = false,
+  var valid_589067 = query.getOrDefault("fields")
+  valid_589067 = validateParameter(valid_589067, JString, required = false,
                                  default = nil)
-  if valid_580038 != nil:
-    section.add "fields", valid_580038
-  var valid_580039 = query.getOrDefault("quotaUser")
-  valid_580039 = validateParameter(valid_580039, JString, required = false,
+  if valid_589067 != nil:
+    section.add "fields", valid_589067
+  var valid_589068 = query.getOrDefault("quotaUser")
+  valid_589068 = validateParameter(valid_589068, JString, required = false,
                                  default = nil)
-  if valid_580039 != nil:
-    section.add "quotaUser", valid_580039
-  var valid_580040 = query.getOrDefault("alt")
-  valid_580040 = validateParameter(valid_580040, JString, required = false,
+  if valid_589068 != nil:
+    section.add "quotaUser", valid_589068
+  var valid_589069 = query.getOrDefault("alt")
+  valid_589069 = validateParameter(valid_589069, JString, required = false,
                                  default = newJString("json"))
-  if valid_580040 != nil:
-    section.add "alt", valid_580040
-  var valid_580041 = query.getOrDefault("dryRun")
-  valid_580041 = validateParameter(valid_580041, JBool, required = false, default = nil)
-  if valid_580041 != nil:
-    section.add "dryRun", valid_580041
-  var valid_580042 = query.getOrDefault("oauth_token")
-  valid_580042 = validateParameter(valid_580042, JString, required = false,
+  if valid_589069 != nil:
+    section.add "alt", valid_589069
+  var valid_589070 = query.getOrDefault("dryRun")
+  valid_589070 = validateParameter(valid_589070, JBool, required = false, default = nil)
+  if valid_589070 != nil:
+    section.add "dryRun", valid_589070
+  var valid_589071 = query.getOrDefault("oauth_token")
+  valid_589071 = validateParameter(valid_589071, JString, required = false,
                                  default = nil)
-  if valid_580042 != nil:
-    section.add "oauth_token", valid_580042
-  var valid_580043 = query.getOrDefault("userIp")
-  valid_580043 = validateParameter(valid_580043, JString, required = false,
+  if valid_589071 != nil:
+    section.add "oauth_token", valid_589071
+  var valid_589072 = query.getOrDefault("userIp")
+  valid_589072 = validateParameter(valid_589072, JString, required = false,
                                  default = nil)
-  if valid_580043 != nil:
-    section.add "userIp", valid_580043
-  var valid_580044 = query.getOrDefault("key")
-  valid_580044 = validateParameter(valid_580044, JString, required = false,
+  if valid_589072 != nil:
+    section.add "userIp", valid_589072
+  var valid_589073 = query.getOrDefault("key")
+  valid_589073 = validateParameter(valid_589073, JString, required = false,
                                  default = nil)
-  if valid_580044 != nil:
-    section.add "key", valid_580044
-  var valid_580045 = query.getOrDefault("prettyPrint")
-  valid_580045 = validateParameter(valid_580045, JBool, required = false,
+  if valid_589073 != nil:
+    section.add "key", valid_589073
+  var valid_589074 = query.getOrDefault("prettyPrint")
+  valid_589074 = validateParameter(valid_589074, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580045 != nil:
-    section.add "prettyPrint", valid_580045
+  if valid_589074 != nil:
+    section.add "prettyPrint", valid_589074
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1002,20 +1002,20 @@ proc validate_ContentInventoryCustombatch_580036(path: JsonNode; query: JsonNode
   if body != nil:
     result.add "body", body
 
-proc call*(call_580047: Call_ContentInventoryCustombatch_580035; path: JsonNode;
+proc call*(call_589076: Call_ContentInventoryCustombatch_589064; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Updates price and availability for multiple products or stores in a single request. This operation does not update the expiration date of the products.
   ## 
-  let valid = call_580047.validator(path, query, header, formData, body)
-  let scheme = call_580047.pickScheme
+  let valid = call_589076.validator(path, query, header, formData, body)
+  let scheme = call_589076.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580047.url(scheme.get, call_580047.host, call_580047.base,
-                         call_580047.route, valid.getOrDefault("path"),
+  let url = call_589076.url(scheme.get, call_589076.host, call_589076.base,
+                         call_589076.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580047, url, valid)
+  result = hook(call_589076, url, valid)
 
-proc call*(call_580048: Call_ContentInventoryCustombatch_580035;
+proc call*(call_589077: Call_ContentInventoryCustombatch_589064;
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           dryRun: bool = false; oauthToken: string = ""; userIp: string = "";
           key: string = ""; body: JsonNode = nil; prettyPrint: bool = true): Recallable =
@@ -1038,35 +1038,35 @@ proc call*(call_580048: Call_ContentInventoryCustombatch_580035;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var query_580049 = newJObject()
-  var body_580050 = newJObject()
-  add(query_580049, "fields", newJString(fields))
-  add(query_580049, "quotaUser", newJString(quotaUser))
-  add(query_580049, "alt", newJString(alt))
-  add(query_580049, "dryRun", newJBool(dryRun))
-  add(query_580049, "oauth_token", newJString(oauthToken))
-  add(query_580049, "userIp", newJString(userIp))
-  add(query_580049, "key", newJString(key))
+  var query_589078 = newJObject()
+  var body_589079 = newJObject()
+  add(query_589078, "fields", newJString(fields))
+  add(query_589078, "quotaUser", newJString(quotaUser))
+  add(query_589078, "alt", newJString(alt))
+  add(query_589078, "dryRun", newJBool(dryRun))
+  add(query_589078, "oauth_token", newJString(oauthToken))
+  add(query_589078, "userIp", newJString(userIp))
+  add(query_589078, "key", newJString(key))
   if body != nil:
-    body_580050 = body
-  add(query_580049, "prettyPrint", newJBool(prettyPrint))
-  result = call_580048.call(nil, query_580049, nil, nil, body_580050)
+    body_589079 = body
+  add(query_589078, "prettyPrint", newJBool(prettyPrint))
+  result = call_589077.call(nil, query_589078, nil, nil, body_589079)
 
-var contentInventoryCustombatch* = Call_ContentInventoryCustombatch_580035(
+var contentInventoryCustombatch* = Call_ContentInventoryCustombatch_589064(
     name: "contentInventoryCustombatch", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com", route: "/inventory/batch",
-    validator: validate_ContentInventoryCustombatch_580036, base: "/content/v2",
-    url: url_ContentInventoryCustombatch_580037, schemes: {Scheme.Https})
+    validator: validate_ContentInventoryCustombatch_589065, base: "/content/v2",
+    url: url_ContentInventoryCustombatch_589066, schemes: {Scheme.Https})
 type
-  Call_ContentLiasettingsCustombatch_580051 = ref object of OpenApiRestCall_579421
-proc url_ContentLiasettingsCustombatch_580053(protocol: Scheme; host: string;
+  Call_ContentLiasettingsCustombatch_589080 = ref object of OpenApiRestCall_588450
+proc url_ContentLiasettingsCustombatch_589082(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
   result.query = $composeQueryString(query)
   result.path = base & route
 
-proc validate_ContentLiasettingsCustombatch_580052(path: JsonNode; query: JsonNode;
+proc validate_ContentLiasettingsCustombatch_589081(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Retrieves and/or updates the LIA settings of multiple accounts in a single request.
   ## 
@@ -1092,45 +1092,45 @@ proc validate_ContentLiasettingsCustombatch_580052(path: JsonNode; query: JsonNo
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580054 = query.getOrDefault("fields")
-  valid_580054 = validateParameter(valid_580054, JString, required = false,
+  var valid_589083 = query.getOrDefault("fields")
+  valid_589083 = validateParameter(valid_589083, JString, required = false,
                                  default = nil)
-  if valid_580054 != nil:
-    section.add "fields", valid_580054
-  var valid_580055 = query.getOrDefault("quotaUser")
-  valid_580055 = validateParameter(valid_580055, JString, required = false,
+  if valid_589083 != nil:
+    section.add "fields", valid_589083
+  var valid_589084 = query.getOrDefault("quotaUser")
+  valid_589084 = validateParameter(valid_589084, JString, required = false,
                                  default = nil)
-  if valid_580055 != nil:
-    section.add "quotaUser", valid_580055
-  var valid_580056 = query.getOrDefault("alt")
-  valid_580056 = validateParameter(valid_580056, JString, required = false,
+  if valid_589084 != nil:
+    section.add "quotaUser", valid_589084
+  var valid_589085 = query.getOrDefault("alt")
+  valid_589085 = validateParameter(valid_589085, JString, required = false,
                                  default = newJString("json"))
-  if valid_580056 != nil:
-    section.add "alt", valid_580056
-  var valid_580057 = query.getOrDefault("dryRun")
-  valid_580057 = validateParameter(valid_580057, JBool, required = false, default = nil)
-  if valid_580057 != nil:
-    section.add "dryRun", valid_580057
-  var valid_580058 = query.getOrDefault("oauth_token")
-  valid_580058 = validateParameter(valid_580058, JString, required = false,
+  if valid_589085 != nil:
+    section.add "alt", valid_589085
+  var valid_589086 = query.getOrDefault("dryRun")
+  valid_589086 = validateParameter(valid_589086, JBool, required = false, default = nil)
+  if valid_589086 != nil:
+    section.add "dryRun", valid_589086
+  var valid_589087 = query.getOrDefault("oauth_token")
+  valid_589087 = validateParameter(valid_589087, JString, required = false,
                                  default = nil)
-  if valid_580058 != nil:
-    section.add "oauth_token", valid_580058
-  var valid_580059 = query.getOrDefault("userIp")
-  valid_580059 = validateParameter(valid_580059, JString, required = false,
+  if valid_589087 != nil:
+    section.add "oauth_token", valid_589087
+  var valid_589088 = query.getOrDefault("userIp")
+  valid_589088 = validateParameter(valid_589088, JString, required = false,
                                  default = nil)
-  if valid_580059 != nil:
-    section.add "userIp", valid_580059
-  var valid_580060 = query.getOrDefault("key")
-  valid_580060 = validateParameter(valid_580060, JString, required = false,
+  if valid_589088 != nil:
+    section.add "userIp", valid_589088
+  var valid_589089 = query.getOrDefault("key")
+  valid_589089 = validateParameter(valid_589089, JString, required = false,
                                  default = nil)
-  if valid_580060 != nil:
-    section.add "key", valid_580060
-  var valid_580061 = query.getOrDefault("prettyPrint")
-  valid_580061 = validateParameter(valid_580061, JBool, required = false,
+  if valid_589089 != nil:
+    section.add "key", valid_589089
+  var valid_589090 = query.getOrDefault("prettyPrint")
+  valid_589090 = validateParameter(valid_589090, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580061 != nil:
-    section.add "prettyPrint", valid_580061
+  if valid_589090 != nil:
+    section.add "prettyPrint", valid_589090
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1142,20 +1142,20 @@ proc validate_ContentLiasettingsCustombatch_580052(path: JsonNode; query: JsonNo
   if body != nil:
     result.add "body", body
 
-proc call*(call_580063: Call_ContentLiasettingsCustombatch_580051; path: JsonNode;
+proc call*(call_589092: Call_ContentLiasettingsCustombatch_589080; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Retrieves and/or updates the LIA settings of multiple accounts in a single request.
   ## 
-  let valid = call_580063.validator(path, query, header, formData, body)
-  let scheme = call_580063.pickScheme
+  let valid = call_589092.validator(path, query, header, formData, body)
+  let scheme = call_589092.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580063.url(scheme.get, call_580063.host, call_580063.base,
-                         call_580063.route, valid.getOrDefault("path"),
+  let url = call_589092.url(scheme.get, call_589092.host, call_589092.base,
+                         call_589092.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580063, url, valid)
+  result = hook(call_589092, url, valid)
 
-proc call*(call_580064: Call_ContentLiasettingsCustombatch_580051;
+proc call*(call_589093: Call_ContentLiasettingsCustombatch_589080;
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           dryRun: bool = false; oauthToken: string = ""; userIp: string = "";
           key: string = ""; body: JsonNode = nil; prettyPrint: bool = true): Recallable =
@@ -1178,35 +1178,35 @@ proc call*(call_580064: Call_ContentLiasettingsCustombatch_580051;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var query_580065 = newJObject()
-  var body_580066 = newJObject()
-  add(query_580065, "fields", newJString(fields))
-  add(query_580065, "quotaUser", newJString(quotaUser))
-  add(query_580065, "alt", newJString(alt))
-  add(query_580065, "dryRun", newJBool(dryRun))
-  add(query_580065, "oauth_token", newJString(oauthToken))
-  add(query_580065, "userIp", newJString(userIp))
-  add(query_580065, "key", newJString(key))
+  var query_589094 = newJObject()
+  var body_589095 = newJObject()
+  add(query_589094, "fields", newJString(fields))
+  add(query_589094, "quotaUser", newJString(quotaUser))
+  add(query_589094, "alt", newJString(alt))
+  add(query_589094, "dryRun", newJBool(dryRun))
+  add(query_589094, "oauth_token", newJString(oauthToken))
+  add(query_589094, "userIp", newJString(userIp))
+  add(query_589094, "key", newJString(key))
   if body != nil:
-    body_580066 = body
-  add(query_580065, "prettyPrint", newJBool(prettyPrint))
-  result = call_580064.call(nil, query_580065, nil, nil, body_580066)
+    body_589095 = body
+  add(query_589094, "prettyPrint", newJBool(prettyPrint))
+  result = call_589093.call(nil, query_589094, nil, nil, body_589095)
 
-var contentLiasettingsCustombatch* = Call_ContentLiasettingsCustombatch_580051(
+var contentLiasettingsCustombatch* = Call_ContentLiasettingsCustombatch_589080(
     name: "contentLiasettingsCustombatch", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com", route: "/liasettings/batch",
-    validator: validate_ContentLiasettingsCustombatch_580052, base: "/content/v2",
-    url: url_ContentLiasettingsCustombatch_580053, schemes: {Scheme.Https})
+    validator: validate_ContentLiasettingsCustombatch_589081, base: "/content/v2",
+    url: url_ContentLiasettingsCustombatch_589082, schemes: {Scheme.Https})
 type
-  Call_ContentLiasettingsListposdataproviders_580067 = ref object of OpenApiRestCall_579421
-proc url_ContentLiasettingsListposdataproviders_580069(protocol: Scheme;
+  Call_ContentLiasettingsListposdataproviders_589096 = ref object of OpenApiRestCall_588450
+proc url_ContentLiasettingsListposdataproviders_589098(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
   result.query = $composeQueryString(query)
   result.path = base & route
 
-proc validate_ContentLiasettingsListposdataproviders_580068(path: JsonNode;
+proc validate_ContentLiasettingsListposdataproviders_589097(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Retrieves the list of POS data providers that have active settings for the all eiligible countries.
   ## 
@@ -1230,41 +1230,41 @@ proc validate_ContentLiasettingsListposdataproviders_580068(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580070 = query.getOrDefault("fields")
-  valid_580070 = validateParameter(valid_580070, JString, required = false,
+  var valid_589099 = query.getOrDefault("fields")
+  valid_589099 = validateParameter(valid_589099, JString, required = false,
                                  default = nil)
-  if valid_580070 != nil:
-    section.add "fields", valid_580070
-  var valid_580071 = query.getOrDefault("quotaUser")
-  valid_580071 = validateParameter(valid_580071, JString, required = false,
+  if valid_589099 != nil:
+    section.add "fields", valid_589099
+  var valid_589100 = query.getOrDefault("quotaUser")
+  valid_589100 = validateParameter(valid_589100, JString, required = false,
                                  default = nil)
-  if valid_580071 != nil:
-    section.add "quotaUser", valid_580071
-  var valid_580072 = query.getOrDefault("alt")
-  valid_580072 = validateParameter(valid_580072, JString, required = false,
+  if valid_589100 != nil:
+    section.add "quotaUser", valid_589100
+  var valid_589101 = query.getOrDefault("alt")
+  valid_589101 = validateParameter(valid_589101, JString, required = false,
                                  default = newJString("json"))
-  if valid_580072 != nil:
-    section.add "alt", valid_580072
-  var valid_580073 = query.getOrDefault("oauth_token")
-  valid_580073 = validateParameter(valid_580073, JString, required = false,
+  if valid_589101 != nil:
+    section.add "alt", valid_589101
+  var valid_589102 = query.getOrDefault("oauth_token")
+  valid_589102 = validateParameter(valid_589102, JString, required = false,
                                  default = nil)
-  if valid_580073 != nil:
-    section.add "oauth_token", valid_580073
-  var valid_580074 = query.getOrDefault("userIp")
-  valid_580074 = validateParameter(valid_580074, JString, required = false,
+  if valid_589102 != nil:
+    section.add "oauth_token", valid_589102
+  var valid_589103 = query.getOrDefault("userIp")
+  valid_589103 = validateParameter(valid_589103, JString, required = false,
                                  default = nil)
-  if valid_580074 != nil:
-    section.add "userIp", valid_580074
-  var valid_580075 = query.getOrDefault("key")
-  valid_580075 = validateParameter(valid_580075, JString, required = false,
+  if valid_589103 != nil:
+    section.add "userIp", valid_589103
+  var valid_589104 = query.getOrDefault("key")
+  valid_589104 = validateParameter(valid_589104, JString, required = false,
                                  default = nil)
-  if valid_580075 != nil:
-    section.add "key", valid_580075
-  var valid_580076 = query.getOrDefault("prettyPrint")
-  valid_580076 = validateParameter(valid_580076, JBool, required = false,
+  if valid_589104 != nil:
+    section.add "key", valid_589104
+  var valid_589105 = query.getOrDefault("prettyPrint")
+  valid_589105 = validateParameter(valid_589105, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580076 != nil:
-    section.add "prettyPrint", valid_580076
+  if valid_589105 != nil:
+    section.add "prettyPrint", valid_589105
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1273,21 +1273,21 @@ proc validate_ContentLiasettingsListposdataproviders_580068(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580077: Call_ContentLiasettingsListposdataproviders_580067;
+proc call*(call_589106: Call_ContentLiasettingsListposdataproviders_589096;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Retrieves the list of POS data providers that have active settings for the all eiligible countries.
   ## 
-  let valid = call_580077.validator(path, query, header, formData, body)
-  let scheme = call_580077.pickScheme
+  let valid = call_589106.validator(path, query, header, formData, body)
+  let scheme = call_589106.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580077.url(scheme.get, call_580077.host, call_580077.base,
-                         call_580077.route, valid.getOrDefault("path"),
+  let url = call_589106.url(scheme.get, call_589106.host, call_589106.base,
+                         call_589106.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580077, url, valid)
+  result = hook(call_589106, url, valid)
 
-proc call*(call_580078: Call_ContentLiasettingsListposdataproviders_580067;
+proc call*(call_589107: Call_ContentLiasettingsListposdataproviders_589096;
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           oauthToken: string = ""; userIp: string = ""; key: string = "";
           prettyPrint: bool = true): Recallable =
@@ -1307,25 +1307,25 @@ proc call*(call_580078: Call_ContentLiasettingsListposdataproviders_580067;
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var query_580079 = newJObject()
-  add(query_580079, "fields", newJString(fields))
-  add(query_580079, "quotaUser", newJString(quotaUser))
-  add(query_580079, "alt", newJString(alt))
-  add(query_580079, "oauth_token", newJString(oauthToken))
-  add(query_580079, "userIp", newJString(userIp))
-  add(query_580079, "key", newJString(key))
-  add(query_580079, "prettyPrint", newJBool(prettyPrint))
-  result = call_580078.call(nil, query_580079, nil, nil, nil)
+  var query_589108 = newJObject()
+  add(query_589108, "fields", newJString(fields))
+  add(query_589108, "quotaUser", newJString(quotaUser))
+  add(query_589108, "alt", newJString(alt))
+  add(query_589108, "oauth_token", newJString(oauthToken))
+  add(query_589108, "userIp", newJString(userIp))
+  add(query_589108, "key", newJString(key))
+  add(query_589108, "prettyPrint", newJBool(prettyPrint))
+  result = call_589107.call(nil, query_589108, nil, nil, nil)
 
-var contentLiasettingsListposdataproviders* = Call_ContentLiasettingsListposdataproviders_580067(
+var contentLiasettingsListposdataproviders* = Call_ContentLiasettingsListposdataproviders_589096(
     name: "contentLiasettingsListposdataproviders", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/liasettings/posdataproviders",
-    validator: validate_ContentLiasettingsListposdataproviders_580068,
-    base: "/content/v2", url: url_ContentLiasettingsListposdataproviders_580069,
+    validator: validate_ContentLiasettingsListposdataproviders_589097,
+    base: "/content/v2", url: url_ContentLiasettingsListposdataproviders_589098,
     schemes: {Scheme.Https})
 type
-  Call_ContentOrdersCustombatch_580080 = ref object of OpenApiRestCall_579421
-proc url_ContentOrdersCustombatch_580082(protocol: Scheme; host: string;
+  Call_ContentOrdersCustombatch_589109 = ref object of OpenApiRestCall_588450
+proc url_ContentOrdersCustombatch_589111(protocol: Scheme; host: string;
                                         base: string; route: string; path: JsonNode;
                                         query: JsonNode): Uri =
   result.scheme = $protocol
@@ -1333,7 +1333,7 @@ proc url_ContentOrdersCustombatch_580082(protocol: Scheme; host: string;
   result.query = $composeQueryString(query)
   result.path = base & route
 
-proc validate_ContentOrdersCustombatch_580081(path: JsonNode; query: JsonNode;
+proc validate_ContentOrdersCustombatch_589110(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Retrieves or modifies multiple orders in a single request.
   ## 
@@ -1357,41 +1357,41 @@ proc validate_ContentOrdersCustombatch_580081(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580083 = query.getOrDefault("fields")
-  valid_580083 = validateParameter(valid_580083, JString, required = false,
+  var valid_589112 = query.getOrDefault("fields")
+  valid_589112 = validateParameter(valid_589112, JString, required = false,
                                  default = nil)
-  if valid_580083 != nil:
-    section.add "fields", valid_580083
-  var valid_580084 = query.getOrDefault("quotaUser")
-  valid_580084 = validateParameter(valid_580084, JString, required = false,
+  if valid_589112 != nil:
+    section.add "fields", valid_589112
+  var valid_589113 = query.getOrDefault("quotaUser")
+  valid_589113 = validateParameter(valid_589113, JString, required = false,
                                  default = nil)
-  if valid_580084 != nil:
-    section.add "quotaUser", valid_580084
-  var valid_580085 = query.getOrDefault("alt")
-  valid_580085 = validateParameter(valid_580085, JString, required = false,
+  if valid_589113 != nil:
+    section.add "quotaUser", valid_589113
+  var valid_589114 = query.getOrDefault("alt")
+  valid_589114 = validateParameter(valid_589114, JString, required = false,
                                  default = newJString("json"))
-  if valid_580085 != nil:
-    section.add "alt", valid_580085
-  var valid_580086 = query.getOrDefault("oauth_token")
-  valid_580086 = validateParameter(valid_580086, JString, required = false,
+  if valid_589114 != nil:
+    section.add "alt", valid_589114
+  var valid_589115 = query.getOrDefault("oauth_token")
+  valid_589115 = validateParameter(valid_589115, JString, required = false,
                                  default = nil)
-  if valid_580086 != nil:
-    section.add "oauth_token", valid_580086
-  var valid_580087 = query.getOrDefault("userIp")
-  valid_580087 = validateParameter(valid_580087, JString, required = false,
+  if valid_589115 != nil:
+    section.add "oauth_token", valid_589115
+  var valid_589116 = query.getOrDefault("userIp")
+  valid_589116 = validateParameter(valid_589116, JString, required = false,
                                  default = nil)
-  if valid_580087 != nil:
-    section.add "userIp", valid_580087
-  var valid_580088 = query.getOrDefault("key")
-  valid_580088 = validateParameter(valid_580088, JString, required = false,
+  if valid_589116 != nil:
+    section.add "userIp", valid_589116
+  var valid_589117 = query.getOrDefault("key")
+  valid_589117 = validateParameter(valid_589117, JString, required = false,
                                  default = nil)
-  if valid_580088 != nil:
-    section.add "key", valid_580088
-  var valid_580089 = query.getOrDefault("prettyPrint")
-  valid_580089 = validateParameter(valid_580089, JBool, required = false,
+  if valid_589117 != nil:
+    section.add "key", valid_589117
+  var valid_589118 = query.getOrDefault("prettyPrint")
+  valid_589118 = validateParameter(valid_589118, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580089 != nil:
-    section.add "prettyPrint", valid_580089
+  if valid_589118 != nil:
+    section.add "prettyPrint", valid_589118
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1403,20 +1403,20 @@ proc validate_ContentOrdersCustombatch_580081(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580091: Call_ContentOrdersCustombatch_580080; path: JsonNode;
+proc call*(call_589120: Call_ContentOrdersCustombatch_589109; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Retrieves or modifies multiple orders in a single request.
   ## 
-  let valid = call_580091.validator(path, query, header, formData, body)
-  let scheme = call_580091.pickScheme
+  let valid = call_589120.validator(path, query, header, formData, body)
+  let scheme = call_589120.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580091.url(scheme.get, call_580091.host, call_580091.base,
-                         call_580091.route, valid.getOrDefault("path"),
+  let url = call_589120.url(scheme.get, call_589120.host, call_589120.base,
+                         call_589120.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580091, url, valid)
+  result = hook(call_589120, url, valid)
 
-proc call*(call_580092: Call_ContentOrdersCustombatch_580080; fields: string = "";
+proc call*(call_589121: Call_ContentOrdersCustombatch_589109; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; key: string = ""; body: JsonNode = nil;
           prettyPrint: bool = true): Recallable =
@@ -1437,34 +1437,34 @@ proc call*(call_580092: Call_ContentOrdersCustombatch_580080; fields: string = "
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var query_580093 = newJObject()
-  var body_580094 = newJObject()
-  add(query_580093, "fields", newJString(fields))
-  add(query_580093, "quotaUser", newJString(quotaUser))
-  add(query_580093, "alt", newJString(alt))
-  add(query_580093, "oauth_token", newJString(oauthToken))
-  add(query_580093, "userIp", newJString(userIp))
-  add(query_580093, "key", newJString(key))
+  var query_589122 = newJObject()
+  var body_589123 = newJObject()
+  add(query_589122, "fields", newJString(fields))
+  add(query_589122, "quotaUser", newJString(quotaUser))
+  add(query_589122, "alt", newJString(alt))
+  add(query_589122, "oauth_token", newJString(oauthToken))
+  add(query_589122, "userIp", newJString(userIp))
+  add(query_589122, "key", newJString(key))
   if body != nil:
-    body_580094 = body
-  add(query_580093, "prettyPrint", newJBool(prettyPrint))
-  result = call_580092.call(nil, query_580093, nil, nil, body_580094)
+    body_589123 = body
+  add(query_589122, "prettyPrint", newJBool(prettyPrint))
+  result = call_589121.call(nil, query_589122, nil, nil, body_589123)
 
-var contentOrdersCustombatch* = Call_ContentOrdersCustombatch_580080(
+var contentOrdersCustombatch* = Call_ContentOrdersCustombatch_589109(
     name: "contentOrdersCustombatch", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com", route: "/orders/batch",
-    validator: validate_ContentOrdersCustombatch_580081, base: "/content/v2",
-    url: url_ContentOrdersCustombatch_580082, schemes: {Scheme.Https})
+    validator: validate_ContentOrdersCustombatch_589110, base: "/content/v2",
+    url: url_ContentOrdersCustombatch_589111, schemes: {Scheme.Https})
 type
-  Call_ContentPosCustombatch_580095 = ref object of OpenApiRestCall_579421
-proc url_ContentPosCustombatch_580097(protocol: Scheme; host: string; base: string;
+  Call_ContentPosCustombatch_589124 = ref object of OpenApiRestCall_588450
+proc url_ContentPosCustombatch_589126(protocol: Scheme; host: string; base: string;
                                      route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
   result.query = $composeQueryString(query)
   result.path = base & route
 
-proc validate_ContentPosCustombatch_580096(path: JsonNode; query: JsonNode;
+proc validate_ContentPosCustombatch_589125(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Batches multiple POS-related calls in a single request.
   ## 
@@ -1490,45 +1490,45 @@ proc validate_ContentPosCustombatch_580096(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580098 = query.getOrDefault("fields")
-  valid_580098 = validateParameter(valid_580098, JString, required = false,
+  var valid_589127 = query.getOrDefault("fields")
+  valid_589127 = validateParameter(valid_589127, JString, required = false,
                                  default = nil)
-  if valid_580098 != nil:
-    section.add "fields", valid_580098
-  var valid_580099 = query.getOrDefault("quotaUser")
-  valid_580099 = validateParameter(valid_580099, JString, required = false,
+  if valid_589127 != nil:
+    section.add "fields", valid_589127
+  var valid_589128 = query.getOrDefault("quotaUser")
+  valid_589128 = validateParameter(valid_589128, JString, required = false,
                                  default = nil)
-  if valid_580099 != nil:
-    section.add "quotaUser", valid_580099
-  var valid_580100 = query.getOrDefault("alt")
-  valid_580100 = validateParameter(valid_580100, JString, required = false,
+  if valid_589128 != nil:
+    section.add "quotaUser", valid_589128
+  var valid_589129 = query.getOrDefault("alt")
+  valid_589129 = validateParameter(valid_589129, JString, required = false,
                                  default = newJString("json"))
-  if valid_580100 != nil:
-    section.add "alt", valid_580100
-  var valid_580101 = query.getOrDefault("dryRun")
-  valid_580101 = validateParameter(valid_580101, JBool, required = false, default = nil)
-  if valid_580101 != nil:
-    section.add "dryRun", valid_580101
-  var valid_580102 = query.getOrDefault("oauth_token")
-  valid_580102 = validateParameter(valid_580102, JString, required = false,
+  if valid_589129 != nil:
+    section.add "alt", valid_589129
+  var valid_589130 = query.getOrDefault("dryRun")
+  valid_589130 = validateParameter(valid_589130, JBool, required = false, default = nil)
+  if valid_589130 != nil:
+    section.add "dryRun", valid_589130
+  var valid_589131 = query.getOrDefault("oauth_token")
+  valid_589131 = validateParameter(valid_589131, JString, required = false,
                                  default = nil)
-  if valid_580102 != nil:
-    section.add "oauth_token", valid_580102
-  var valid_580103 = query.getOrDefault("userIp")
-  valid_580103 = validateParameter(valid_580103, JString, required = false,
+  if valid_589131 != nil:
+    section.add "oauth_token", valid_589131
+  var valid_589132 = query.getOrDefault("userIp")
+  valid_589132 = validateParameter(valid_589132, JString, required = false,
                                  default = nil)
-  if valid_580103 != nil:
-    section.add "userIp", valid_580103
-  var valid_580104 = query.getOrDefault("key")
-  valid_580104 = validateParameter(valid_580104, JString, required = false,
+  if valid_589132 != nil:
+    section.add "userIp", valid_589132
+  var valid_589133 = query.getOrDefault("key")
+  valid_589133 = validateParameter(valid_589133, JString, required = false,
                                  default = nil)
-  if valid_580104 != nil:
-    section.add "key", valid_580104
-  var valid_580105 = query.getOrDefault("prettyPrint")
-  valid_580105 = validateParameter(valid_580105, JBool, required = false,
+  if valid_589133 != nil:
+    section.add "key", valid_589133
+  var valid_589134 = query.getOrDefault("prettyPrint")
+  valid_589134 = validateParameter(valid_589134, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580105 != nil:
-    section.add "prettyPrint", valid_580105
+  if valid_589134 != nil:
+    section.add "prettyPrint", valid_589134
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1540,20 +1540,20 @@ proc validate_ContentPosCustombatch_580096(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580107: Call_ContentPosCustombatch_580095; path: JsonNode;
+proc call*(call_589136: Call_ContentPosCustombatch_589124; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Batches multiple POS-related calls in a single request.
   ## 
-  let valid = call_580107.validator(path, query, header, formData, body)
-  let scheme = call_580107.pickScheme
+  let valid = call_589136.validator(path, query, header, formData, body)
+  let scheme = call_589136.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580107.url(scheme.get, call_580107.host, call_580107.base,
-                         call_580107.route, valid.getOrDefault("path"),
+  let url = call_589136.url(scheme.get, call_589136.host, call_589136.base,
+                         call_589136.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580107, url, valid)
+  result = hook(call_589136, url, valid)
 
-proc call*(call_580108: Call_ContentPosCustombatch_580095; fields: string = "";
+proc call*(call_589137: Call_ContentPosCustombatch_589124; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; dryRun: bool = false;
           oauthToken: string = ""; userIp: string = ""; key: string = "";
           body: JsonNode = nil; prettyPrint: bool = true): Recallable =
@@ -1576,35 +1576,35 @@ proc call*(call_580108: Call_ContentPosCustombatch_580095; fields: string = "";
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var query_580109 = newJObject()
-  var body_580110 = newJObject()
-  add(query_580109, "fields", newJString(fields))
-  add(query_580109, "quotaUser", newJString(quotaUser))
-  add(query_580109, "alt", newJString(alt))
-  add(query_580109, "dryRun", newJBool(dryRun))
-  add(query_580109, "oauth_token", newJString(oauthToken))
-  add(query_580109, "userIp", newJString(userIp))
-  add(query_580109, "key", newJString(key))
+  var query_589138 = newJObject()
+  var body_589139 = newJObject()
+  add(query_589138, "fields", newJString(fields))
+  add(query_589138, "quotaUser", newJString(quotaUser))
+  add(query_589138, "alt", newJString(alt))
+  add(query_589138, "dryRun", newJBool(dryRun))
+  add(query_589138, "oauth_token", newJString(oauthToken))
+  add(query_589138, "userIp", newJString(userIp))
+  add(query_589138, "key", newJString(key))
   if body != nil:
-    body_580110 = body
-  add(query_580109, "prettyPrint", newJBool(prettyPrint))
-  result = call_580108.call(nil, query_580109, nil, nil, body_580110)
+    body_589139 = body
+  add(query_589138, "prettyPrint", newJBool(prettyPrint))
+  result = call_589137.call(nil, query_589138, nil, nil, body_589139)
 
-var contentPosCustombatch* = Call_ContentPosCustombatch_580095(
+var contentPosCustombatch* = Call_ContentPosCustombatch_589124(
     name: "contentPosCustombatch", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com", route: "/pos/batch",
-    validator: validate_ContentPosCustombatch_580096, base: "/content/v2",
-    url: url_ContentPosCustombatch_580097, schemes: {Scheme.Https})
+    validator: validate_ContentPosCustombatch_589125, base: "/content/v2",
+    url: url_ContentPosCustombatch_589126, schemes: {Scheme.Https})
 type
-  Call_ContentProductsCustombatch_580111 = ref object of OpenApiRestCall_579421
-proc url_ContentProductsCustombatch_580113(protocol: Scheme; host: string;
+  Call_ContentProductsCustombatch_589140 = ref object of OpenApiRestCall_588450
+proc url_ContentProductsCustombatch_589142(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
   result.query = $composeQueryString(query)
   result.path = base & route
 
-proc validate_ContentProductsCustombatch_580112(path: JsonNode; query: JsonNode;
+proc validate_ContentProductsCustombatch_589141(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Retrieves, inserts, and deletes multiple products in a single request.
   ## 
@@ -1630,45 +1630,45 @@ proc validate_ContentProductsCustombatch_580112(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580114 = query.getOrDefault("fields")
-  valid_580114 = validateParameter(valid_580114, JString, required = false,
+  var valid_589143 = query.getOrDefault("fields")
+  valid_589143 = validateParameter(valid_589143, JString, required = false,
                                  default = nil)
-  if valid_580114 != nil:
-    section.add "fields", valid_580114
-  var valid_580115 = query.getOrDefault("quotaUser")
-  valid_580115 = validateParameter(valid_580115, JString, required = false,
+  if valid_589143 != nil:
+    section.add "fields", valid_589143
+  var valid_589144 = query.getOrDefault("quotaUser")
+  valid_589144 = validateParameter(valid_589144, JString, required = false,
                                  default = nil)
-  if valid_580115 != nil:
-    section.add "quotaUser", valid_580115
-  var valid_580116 = query.getOrDefault("alt")
-  valid_580116 = validateParameter(valid_580116, JString, required = false,
+  if valid_589144 != nil:
+    section.add "quotaUser", valid_589144
+  var valid_589145 = query.getOrDefault("alt")
+  valid_589145 = validateParameter(valid_589145, JString, required = false,
                                  default = newJString("json"))
-  if valid_580116 != nil:
-    section.add "alt", valid_580116
-  var valid_580117 = query.getOrDefault("dryRun")
-  valid_580117 = validateParameter(valid_580117, JBool, required = false, default = nil)
-  if valid_580117 != nil:
-    section.add "dryRun", valid_580117
-  var valid_580118 = query.getOrDefault("oauth_token")
-  valid_580118 = validateParameter(valid_580118, JString, required = false,
+  if valid_589145 != nil:
+    section.add "alt", valid_589145
+  var valid_589146 = query.getOrDefault("dryRun")
+  valid_589146 = validateParameter(valid_589146, JBool, required = false, default = nil)
+  if valid_589146 != nil:
+    section.add "dryRun", valid_589146
+  var valid_589147 = query.getOrDefault("oauth_token")
+  valid_589147 = validateParameter(valid_589147, JString, required = false,
                                  default = nil)
-  if valid_580118 != nil:
-    section.add "oauth_token", valid_580118
-  var valid_580119 = query.getOrDefault("userIp")
-  valid_580119 = validateParameter(valid_580119, JString, required = false,
+  if valid_589147 != nil:
+    section.add "oauth_token", valid_589147
+  var valid_589148 = query.getOrDefault("userIp")
+  valid_589148 = validateParameter(valid_589148, JString, required = false,
                                  default = nil)
-  if valid_580119 != nil:
-    section.add "userIp", valid_580119
-  var valid_580120 = query.getOrDefault("key")
-  valid_580120 = validateParameter(valid_580120, JString, required = false,
+  if valid_589148 != nil:
+    section.add "userIp", valid_589148
+  var valid_589149 = query.getOrDefault("key")
+  valid_589149 = validateParameter(valid_589149, JString, required = false,
                                  default = nil)
-  if valid_580120 != nil:
-    section.add "key", valid_580120
-  var valid_580121 = query.getOrDefault("prettyPrint")
-  valid_580121 = validateParameter(valid_580121, JBool, required = false,
+  if valid_589149 != nil:
+    section.add "key", valid_589149
+  var valid_589150 = query.getOrDefault("prettyPrint")
+  valid_589150 = validateParameter(valid_589150, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580121 != nil:
-    section.add "prettyPrint", valid_580121
+  if valid_589150 != nil:
+    section.add "prettyPrint", valid_589150
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1680,20 +1680,20 @@ proc validate_ContentProductsCustombatch_580112(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580123: Call_ContentProductsCustombatch_580111; path: JsonNode;
+proc call*(call_589152: Call_ContentProductsCustombatch_589140; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Retrieves, inserts, and deletes multiple products in a single request.
   ## 
-  let valid = call_580123.validator(path, query, header, formData, body)
-  let scheme = call_580123.pickScheme
+  let valid = call_589152.validator(path, query, header, formData, body)
+  let scheme = call_589152.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580123.url(scheme.get, call_580123.host, call_580123.base,
-                         call_580123.route, valid.getOrDefault("path"),
+  let url = call_589152.url(scheme.get, call_589152.host, call_589152.base,
+                         call_589152.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580123, url, valid)
+  result = hook(call_589152, url, valid)
 
-proc call*(call_580124: Call_ContentProductsCustombatch_580111;
+proc call*(call_589153: Call_ContentProductsCustombatch_589140;
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           dryRun: bool = false; oauthToken: string = ""; userIp: string = "";
           key: string = ""; body: JsonNode = nil; prettyPrint: bool = true): Recallable =
@@ -1716,35 +1716,35 @@ proc call*(call_580124: Call_ContentProductsCustombatch_580111;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var query_580125 = newJObject()
-  var body_580126 = newJObject()
-  add(query_580125, "fields", newJString(fields))
-  add(query_580125, "quotaUser", newJString(quotaUser))
-  add(query_580125, "alt", newJString(alt))
-  add(query_580125, "dryRun", newJBool(dryRun))
-  add(query_580125, "oauth_token", newJString(oauthToken))
-  add(query_580125, "userIp", newJString(userIp))
-  add(query_580125, "key", newJString(key))
+  var query_589154 = newJObject()
+  var body_589155 = newJObject()
+  add(query_589154, "fields", newJString(fields))
+  add(query_589154, "quotaUser", newJString(quotaUser))
+  add(query_589154, "alt", newJString(alt))
+  add(query_589154, "dryRun", newJBool(dryRun))
+  add(query_589154, "oauth_token", newJString(oauthToken))
+  add(query_589154, "userIp", newJString(userIp))
+  add(query_589154, "key", newJString(key))
   if body != nil:
-    body_580126 = body
-  add(query_580125, "prettyPrint", newJBool(prettyPrint))
-  result = call_580124.call(nil, query_580125, nil, nil, body_580126)
+    body_589155 = body
+  add(query_589154, "prettyPrint", newJBool(prettyPrint))
+  result = call_589153.call(nil, query_589154, nil, nil, body_589155)
 
-var contentProductsCustombatch* = Call_ContentProductsCustombatch_580111(
+var contentProductsCustombatch* = Call_ContentProductsCustombatch_589140(
     name: "contentProductsCustombatch", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com", route: "/products/batch",
-    validator: validate_ContentProductsCustombatch_580112, base: "/content/v2",
-    url: url_ContentProductsCustombatch_580113, schemes: {Scheme.Https})
+    validator: validate_ContentProductsCustombatch_589141, base: "/content/v2",
+    url: url_ContentProductsCustombatch_589142, schemes: {Scheme.Https})
 type
-  Call_ContentProductstatusesCustombatch_580127 = ref object of OpenApiRestCall_579421
-proc url_ContentProductstatusesCustombatch_580129(protocol: Scheme; host: string;
+  Call_ContentProductstatusesCustombatch_589156 = ref object of OpenApiRestCall_588450
+proc url_ContentProductstatusesCustombatch_589158(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
   result.query = $composeQueryString(query)
   result.path = base & route
 
-proc validate_ContentProductstatusesCustombatch_580128(path: JsonNode;
+proc validate_ContentProductstatusesCustombatch_589157(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Gets the statuses of multiple products in a single request.
   ## 
@@ -1770,45 +1770,45 @@ proc validate_ContentProductstatusesCustombatch_580128(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580130 = query.getOrDefault("fields")
-  valid_580130 = validateParameter(valid_580130, JString, required = false,
+  var valid_589159 = query.getOrDefault("fields")
+  valid_589159 = validateParameter(valid_589159, JString, required = false,
                                  default = nil)
-  if valid_580130 != nil:
-    section.add "fields", valid_580130
-  var valid_580131 = query.getOrDefault("quotaUser")
-  valid_580131 = validateParameter(valid_580131, JString, required = false,
+  if valid_589159 != nil:
+    section.add "fields", valid_589159
+  var valid_589160 = query.getOrDefault("quotaUser")
+  valid_589160 = validateParameter(valid_589160, JString, required = false,
                                  default = nil)
-  if valid_580131 != nil:
-    section.add "quotaUser", valid_580131
-  var valid_580132 = query.getOrDefault("alt")
-  valid_580132 = validateParameter(valid_580132, JString, required = false,
+  if valid_589160 != nil:
+    section.add "quotaUser", valid_589160
+  var valid_589161 = query.getOrDefault("alt")
+  valid_589161 = validateParameter(valid_589161, JString, required = false,
                                  default = newJString("json"))
-  if valid_580132 != nil:
-    section.add "alt", valid_580132
-  var valid_580133 = query.getOrDefault("oauth_token")
-  valid_580133 = validateParameter(valid_580133, JString, required = false,
+  if valid_589161 != nil:
+    section.add "alt", valid_589161
+  var valid_589162 = query.getOrDefault("oauth_token")
+  valid_589162 = validateParameter(valid_589162, JString, required = false,
                                  default = nil)
-  if valid_580133 != nil:
-    section.add "oauth_token", valid_580133
-  var valid_580134 = query.getOrDefault("userIp")
-  valid_580134 = validateParameter(valid_580134, JString, required = false,
+  if valid_589162 != nil:
+    section.add "oauth_token", valid_589162
+  var valid_589163 = query.getOrDefault("userIp")
+  valid_589163 = validateParameter(valid_589163, JString, required = false,
                                  default = nil)
-  if valid_580134 != nil:
-    section.add "userIp", valid_580134
-  var valid_580135 = query.getOrDefault("includeAttributes")
-  valid_580135 = validateParameter(valid_580135, JBool, required = false, default = nil)
-  if valid_580135 != nil:
-    section.add "includeAttributes", valid_580135
-  var valid_580136 = query.getOrDefault("key")
-  valid_580136 = validateParameter(valid_580136, JString, required = false,
+  if valid_589163 != nil:
+    section.add "userIp", valid_589163
+  var valid_589164 = query.getOrDefault("includeAttributes")
+  valid_589164 = validateParameter(valid_589164, JBool, required = false, default = nil)
+  if valid_589164 != nil:
+    section.add "includeAttributes", valid_589164
+  var valid_589165 = query.getOrDefault("key")
+  valid_589165 = validateParameter(valid_589165, JString, required = false,
                                  default = nil)
-  if valid_580136 != nil:
-    section.add "key", valid_580136
-  var valid_580137 = query.getOrDefault("prettyPrint")
-  valid_580137 = validateParameter(valid_580137, JBool, required = false,
+  if valid_589165 != nil:
+    section.add "key", valid_589165
+  var valid_589166 = query.getOrDefault("prettyPrint")
+  valid_589166 = validateParameter(valid_589166, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580137 != nil:
-    section.add "prettyPrint", valid_580137
+  if valid_589166 != nil:
+    section.add "prettyPrint", valid_589166
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1820,21 +1820,21 @@ proc validate_ContentProductstatusesCustombatch_580128(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580139: Call_ContentProductstatusesCustombatch_580127;
+proc call*(call_589168: Call_ContentProductstatusesCustombatch_589156;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Gets the statuses of multiple products in a single request.
   ## 
-  let valid = call_580139.validator(path, query, header, formData, body)
-  let scheme = call_580139.pickScheme
+  let valid = call_589168.validator(path, query, header, formData, body)
+  let scheme = call_589168.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580139.url(scheme.get, call_580139.host, call_580139.base,
-                         call_580139.route, valid.getOrDefault("path"),
+  let url = call_589168.url(scheme.get, call_589168.host, call_589168.base,
+                         call_589168.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580139, url, valid)
+  result = hook(call_589168, url, valid)
 
-proc call*(call_580140: Call_ContentProductstatusesCustombatch_580127;
+proc call*(call_589169: Call_ContentProductstatusesCustombatch_589156;
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           oauthToken: string = ""; userIp: string = ""; includeAttributes: bool = false;
           key: string = ""; body: JsonNode = nil; prettyPrint: bool = true): Recallable =
@@ -1857,36 +1857,36 @@ proc call*(call_580140: Call_ContentProductstatusesCustombatch_580127;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var query_580141 = newJObject()
-  var body_580142 = newJObject()
-  add(query_580141, "fields", newJString(fields))
-  add(query_580141, "quotaUser", newJString(quotaUser))
-  add(query_580141, "alt", newJString(alt))
-  add(query_580141, "oauth_token", newJString(oauthToken))
-  add(query_580141, "userIp", newJString(userIp))
-  add(query_580141, "includeAttributes", newJBool(includeAttributes))
-  add(query_580141, "key", newJString(key))
+  var query_589170 = newJObject()
+  var body_589171 = newJObject()
+  add(query_589170, "fields", newJString(fields))
+  add(query_589170, "quotaUser", newJString(quotaUser))
+  add(query_589170, "alt", newJString(alt))
+  add(query_589170, "oauth_token", newJString(oauthToken))
+  add(query_589170, "userIp", newJString(userIp))
+  add(query_589170, "includeAttributes", newJBool(includeAttributes))
+  add(query_589170, "key", newJString(key))
   if body != nil:
-    body_580142 = body
-  add(query_580141, "prettyPrint", newJBool(prettyPrint))
-  result = call_580140.call(nil, query_580141, nil, nil, body_580142)
+    body_589171 = body
+  add(query_589170, "prettyPrint", newJBool(prettyPrint))
+  result = call_589169.call(nil, query_589170, nil, nil, body_589171)
 
-var contentProductstatusesCustombatch* = Call_ContentProductstatusesCustombatch_580127(
+var contentProductstatusesCustombatch* = Call_ContentProductstatusesCustombatch_589156(
     name: "contentProductstatusesCustombatch", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com", route: "/productstatuses/batch",
-    validator: validate_ContentProductstatusesCustombatch_580128,
-    base: "/content/v2", url: url_ContentProductstatusesCustombatch_580129,
+    validator: validate_ContentProductstatusesCustombatch_589157,
+    base: "/content/v2", url: url_ContentProductstatusesCustombatch_589158,
     schemes: {Scheme.Https})
 type
-  Call_ContentShippingsettingsCustombatch_580143 = ref object of OpenApiRestCall_579421
-proc url_ContentShippingsettingsCustombatch_580145(protocol: Scheme; host: string;
+  Call_ContentShippingsettingsCustombatch_589172 = ref object of OpenApiRestCall_588450
+proc url_ContentShippingsettingsCustombatch_589174(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
   result.query = $composeQueryString(query)
   result.path = base & route
 
-proc validate_ContentShippingsettingsCustombatch_580144(path: JsonNode;
+proc validate_ContentShippingsettingsCustombatch_589173(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Retrieves and updates the shipping settings of multiple accounts in a single request.
   ## 
@@ -1912,45 +1912,45 @@ proc validate_ContentShippingsettingsCustombatch_580144(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580146 = query.getOrDefault("fields")
-  valid_580146 = validateParameter(valid_580146, JString, required = false,
+  var valid_589175 = query.getOrDefault("fields")
+  valid_589175 = validateParameter(valid_589175, JString, required = false,
                                  default = nil)
-  if valid_580146 != nil:
-    section.add "fields", valid_580146
-  var valid_580147 = query.getOrDefault("quotaUser")
-  valid_580147 = validateParameter(valid_580147, JString, required = false,
+  if valid_589175 != nil:
+    section.add "fields", valid_589175
+  var valid_589176 = query.getOrDefault("quotaUser")
+  valid_589176 = validateParameter(valid_589176, JString, required = false,
                                  default = nil)
-  if valid_580147 != nil:
-    section.add "quotaUser", valid_580147
-  var valid_580148 = query.getOrDefault("alt")
-  valid_580148 = validateParameter(valid_580148, JString, required = false,
+  if valid_589176 != nil:
+    section.add "quotaUser", valid_589176
+  var valid_589177 = query.getOrDefault("alt")
+  valid_589177 = validateParameter(valid_589177, JString, required = false,
                                  default = newJString("json"))
-  if valid_580148 != nil:
-    section.add "alt", valid_580148
-  var valid_580149 = query.getOrDefault("dryRun")
-  valid_580149 = validateParameter(valid_580149, JBool, required = false, default = nil)
-  if valid_580149 != nil:
-    section.add "dryRun", valid_580149
-  var valid_580150 = query.getOrDefault("oauth_token")
-  valid_580150 = validateParameter(valid_580150, JString, required = false,
+  if valid_589177 != nil:
+    section.add "alt", valid_589177
+  var valid_589178 = query.getOrDefault("dryRun")
+  valid_589178 = validateParameter(valid_589178, JBool, required = false, default = nil)
+  if valid_589178 != nil:
+    section.add "dryRun", valid_589178
+  var valid_589179 = query.getOrDefault("oauth_token")
+  valid_589179 = validateParameter(valid_589179, JString, required = false,
                                  default = nil)
-  if valid_580150 != nil:
-    section.add "oauth_token", valid_580150
-  var valid_580151 = query.getOrDefault("userIp")
-  valid_580151 = validateParameter(valid_580151, JString, required = false,
+  if valid_589179 != nil:
+    section.add "oauth_token", valid_589179
+  var valid_589180 = query.getOrDefault("userIp")
+  valid_589180 = validateParameter(valid_589180, JString, required = false,
                                  default = nil)
-  if valid_580151 != nil:
-    section.add "userIp", valid_580151
-  var valid_580152 = query.getOrDefault("key")
-  valid_580152 = validateParameter(valid_580152, JString, required = false,
+  if valid_589180 != nil:
+    section.add "userIp", valid_589180
+  var valid_589181 = query.getOrDefault("key")
+  valid_589181 = validateParameter(valid_589181, JString, required = false,
                                  default = nil)
-  if valid_580152 != nil:
-    section.add "key", valid_580152
-  var valid_580153 = query.getOrDefault("prettyPrint")
-  valid_580153 = validateParameter(valid_580153, JBool, required = false,
+  if valid_589181 != nil:
+    section.add "key", valid_589181
+  var valid_589182 = query.getOrDefault("prettyPrint")
+  valid_589182 = validateParameter(valid_589182, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580153 != nil:
-    section.add "prettyPrint", valid_580153
+  if valid_589182 != nil:
+    section.add "prettyPrint", valid_589182
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1962,21 +1962,21 @@ proc validate_ContentShippingsettingsCustombatch_580144(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580155: Call_ContentShippingsettingsCustombatch_580143;
+proc call*(call_589184: Call_ContentShippingsettingsCustombatch_589172;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Retrieves and updates the shipping settings of multiple accounts in a single request.
   ## 
-  let valid = call_580155.validator(path, query, header, formData, body)
-  let scheme = call_580155.pickScheme
+  let valid = call_589184.validator(path, query, header, formData, body)
+  let scheme = call_589184.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580155.url(scheme.get, call_580155.host, call_580155.base,
-                         call_580155.route, valid.getOrDefault("path"),
+  let url = call_589184.url(scheme.get, call_589184.host, call_589184.base,
+                         call_589184.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580155, url, valid)
+  result = hook(call_589184, url, valid)
 
-proc call*(call_580156: Call_ContentShippingsettingsCustombatch_580143;
+proc call*(call_589185: Call_ContentShippingsettingsCustombatch_589172;
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           dryRun: bool = false; oauthToken: string = ""; userIp: string = "";
           key: string = ""; body: JsonNode = nil; prettyPrint: bool = true): Recallable =
@@ -1999,29 +1999,29 @@ proc call*(call_580156: Call_ContentShippingsettingsCustombatch_580143;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var query_580157 = newJObject()
-  var body_580158 = newJObject()
-  add(query_580157, "fields", newJString(fields))
-  add(query_580157, "quotaUser", newJString(quotaUser))
-  add(query_580157, "alt", newJString(alt))
-  add(query_580157, "dryRun", newJBool(dryRun))
-  add(query_580157, "oauth_token", newJString(oauthToken))
-  add(query_580157, "userIp", newJString(userIp))
-  add(query_580157, "key", newJString(key))
+  var query_589186 = newJObject()
+  var body_589187 = newJObject()
+  add(query_589186, "fields", newJString(fields))
+  add(query_589186, "quotaUser", newJString(quotaUser))
+  add(query_589186, "alt", newJString(alt))
+  add(query_589186, "dryRun", newJBool(dryRun))
+  add(query_589186, "oauth_token", newJString(oauthToken))
+  add(query_589186, "userIp", newJString(userIp))
+  add(query_589186, "key", newJString(key))
   if body != nil:
-    body_580158 = body
-  add(query_580157, "prettyPrint", newJBool(prettyPrint))
-  result = call_580156.call(nil, query_580157, nil, nil, body_580158)
+    body_589187 = body
+  add(query_589186, "prettyPrint", newJBool(prettyPrint))
+  result = call_589185.call(nil, query_589186, nil, nil, body_589187)
 
-var contentShippingsettingsCustombatch* = Call_ContentShippingsettingsCustombatch_580143(
+var contentShippingsettingsCustombatch* = Call_ContentShippingsettingsCustombatch_589172(
     name: "contentShippingsettingsCustombatch", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com", route: "/shippingsettings/batch",
-    validator: validate_ContentShippingsettingsCustombatch_580144,
-    base: "/content/v2", url: url_ContentShippingsettingsCustombatch_580145,
+    validator: validate_ContentShippingsettingsCustombatch_589173,
+    base: "/content/v2", url: url_ContentShippingsettingsCustombatch_589174,
     schemes: {Scheme.Https})
 type
-  Call_ContentAccountsInsert_580190 = ref object of OpenApiRestCall_579421
-proc url_ContentAccountsInsert_580192(protocol: Scheme; host: string; base: string;
+  Call_ContentAccountsInsert_589219 = ref object of OpenApiRestCall_588450
+proc url_ContentAccountsInsert_589221(protocol: Scheme; host: string; base: string;
                                      route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -2037,7 +2037,7 @@ proc url_ContentAccountsInsert_580192(protocol: Scheme; host: string; base: stri
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_ContentAccountsInsert_580191(path: JsonNode; query: JsonNode;
+proc validate_ContentAccountsInsert_589220(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Creates a Merchant Center sub-account.
   ## 
@@ -2049,11 +2049,11 @@ proc validate_ContentAccountsInsert_580191(path: JsonNode; query: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `merchantId` field"
-  var valid_580193 = path.getOrDefault("merchantId")
-  valid_580193 = validateParameter(valid_580193, JString, required = true,
+  var valid_589222 = path.getOrDefault("merchantId")
+  valid_589222 = validateParameter(valid_589222, JString, required = true,
                                  default = nil)
-  if valid_580193 != nil:
-    section.add "merchantId", valid_580193
+  if valid_589222 != nil:
+    section.add "merchantId", valid_589222
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -2073,45 +2073,45 @@ proc validate_ContentAccountsInsert_580191(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580194 = query.getOrDefault("fields")
-  valid_580194 = validateParameter(valid_580194, JString, required = false,
+  var valid_589223 = query.getOrDefault("fields")
+  valid_589223 = validateParameter(valid_589223, JString, required = false,
                                  default = nil)
-  if valid_580194 != nil:
-    section.add "fields", valid_580194
-  var valid_580195 = query.getOrDefault("quotaUser")
-  valid_580195 = validateParameter(valid_580195, JString, required = false,
+  if valid_589223 != nil:
+    section.add "fields", valid_589223
+  var valid_589224 = query.getOrDefault("quotaUser")
+  valid_589224 = validateParameter(valid_589224, JString, required = false,
                                  default = nil)
-  if valid_580195 != nil:
-    section.add "quotaUser", valid_580195
-  var valid_580196 = query.getOrDefault("alt")
-  valid_580196 = validateParameter(valid_580196, JString, required = false,
+  if valid_589224 != nil:
+    section.add "quotaUser", valid_589224
+  var valid_589225 = query.getOrDefault("alt")
+  valid_589225 = validateParameter(valid_589225, JString, required = false,
                                  default = newJString("json"))
-  if valid_580196 != nil:
-    section.add "alt", valid_580196
-  var valid_580197 = query.getOrDefault("dryRun")
-  valid_580197 = validateParameter(valid_580197, JBool, required = false, default = nil)
-  if valid_580197 != nil:
-    section.add "dryRun", valid_580197
-  var valid_580198 = query.getOrDefault("oauth_token")
-  valid_580198 = validateParameter(valid_580198, JString, required = false,
+  if valid_589225 != nil:
+    section.add "alt", valid_589225
+  var valid_589226 = query.getOrDefault("dryRun")
+  valid_589226 = validateParameter(valid_589226, JBool, required = false, default = nil)
+  if valid_589226 != nil:
+    section.add "dryRun", valid_589226
+  var valid_589227 = query.getOrDefault("oauth_token")
+  valid_589227 = validateParameter(valid_589227, JString, required = false,
                                  default = nil)
-  if valid_580198 != nil:
-    section.add "oauth_token", valid_580198
-  var valid_580199 = query.getOrDefault("userIp")
-  valid_580199 = validateParameter(valid_580199, JString, required = false,
+  if valid_589227 != nil:
+    section.add "oauth_token", valid_589227
+  var valid_589228 = query.getOrDefault("userIp")
+  valid_589228 = validateParameter(valid_589228, JString, required = false,
                                  default = nil)
-  if valid_580199 != nil:
-    section.add "userIp", valid_580199
-  var valid_580200 = query.getOrDefault("key")
-  valid_580200 = validateParameter(valid_580200, JString, required = false,
+  if valid_589228 != nil:
+    section.add "userIp", valid_589228
+  var valid_589229 = query.getOrDefault("key")
+  valid_589229 = validateParameter(valid_589229, JString, required = false,
                                  default = nil)
-  if valid_580200 != nil:
-    section.add "key", valid_580200
-  var valid_580201 = query.getOrDefault("prettyPrint")
-  valid_580201 = validateParameter(valid_580201, JBool, required = false,
+  if valid_589229 != nil:
+    section.add "key", valid_589229
+  var valid_589230 = query.getOrDefault("prettyPrint")
+  valid_589230 = validateParameter(valid_589230, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580201 != nil:
-    section.add "prettyPrint", valid_580201
+  if valid_589230 != nil:
+    section.add "prettyPrint", valid_589230
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -2123,20 +2123,20 @@ proc validate_ContentAccountsInsert_580191(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580203: Call_ContentAccountsInsert_580190; path: JsonNode;
+proc call*(call_589232: Call_ContentAccountsInsert_589219; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Creates a Merchant Center sub-account.
   ## 
-  let valid = call_580203.validator(path, query, header, formData, body)
-  let scheme = call_580203.pickScheme
+  let valid = call_589232.validator(path, query, header, formData, body)
+  let scheme = call_589232.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580203.url(scheme.get, call_580203.host, call_580203.base,
-                         call_580203.route, valid.getOrDefault("path"),
+  let url = call_589232.url(scheme.get, call_589232.host, call_589232.base,
+                         call_589232.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580203, url, valid)
+  result = hook(call_589232, url, valid)
 
-proc call*(call_580204: Call_ContentAccountsInsert_580190; merchantId: string;
+proc call*(call_589233: Call_ContentAccountsInsert_589219; merchantId: string;
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           dryRun: bool = false; oauthToken: string = ""; userIp: string = "";
           key: string = ""; body: JsonNode = nil; prettyPrint: bool = true): Recallable =
@@ -2161,30 +2161,30 @@ proc call*(call_580204: Call_ContentAccountsInsert_580190; merchantId: string;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_580205 = newJObject()
-  var query_580206 = newJObject()
-  var body_580207 = newJObject()
-  add(query_580206, "fields", newJString(fields))
-  add(query_580206, "quotaUser", newJString(quotaUser))
-  add(query_580206, "alt", newJString(alt))
-  add(query_580206, "dryRun", newJBool(dryRun))
-  add(query_580206, "oauth_token", newJString(oauthToken))
-  add(query_580206, "userIp", newJString(userIp))
-  add(query_580206, "key", newJString(key))
-  add(path_580205, "merchantId", newJString(merchantId))
+  var path_589234 = newJObject()
+  var query_589235 = newJObject()
+  var body_589236 = newJObject()
+  add(query_589235, "fields", newJString(fields))
+  add(query_589235, "quotaUser", newJString(quotaUser))
+  add(query_589235, "alt", newJString(alt))
+  add(query_589235, "dryRun", newJBool(dryRun))
+  add(query_589235, "oauth_token", newJString(oauthToken))
+  add(query_589235, "userIp", newJString(userIp))
+  add(query_589235, "key", newJString(key))
+  add(path_589234, "merchantId", newJString(merchantId))
   if body != nil:
-    body_580207 = body
-  add(query_580206, "prettyPrint", newJBool(prettyPrint))
-  result = call_580204.call(path_580205, query_580206, nil, nil, body_580207)
+    body_589236 = body
+  add(query_589235, "prettyPrint", newJBool(prettyPrint))
+  result = call_589233.call(path_589234, query_589235, nil, nil, body_589236)
 
-var contentAccountsInsert* = Call_ContentAccountsInsert_580190(
+var contentAccountsInsert* = Call_ContentAccountsInsert_589219(
     name: "contentAccountsInsert", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com", route: "/{merchantId}/accounts",
-    validator: validate_ContentAccountsInsert_580191, base: "/content/v2",
-    url: url_ContentAccountsInsert_580192, schemes: {Scheme.Https})
+    validator: validate_ContentAccountsInsert_589220, base: "/content/v2",
+    url: url_ContentAccountsInsert_589221, schemes: {Scheme.Https})
 type
-  Call_ContentAccountsList_580159 = ref object of OpenApiRestCall_579421
-proc url_ContentAccountsList_580161(protocol: Scheme; host: string; base: string;
+  Call_ContentAccountsList_589188 = ref object of OpenApiRestCall_588450
+proc url_ContentAccountsList_589190(protocol: Scheme; host: string; base: string;
                                    route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -2200,7 +2200,7 @@ proc url_ContentAccountsList_580161(protocol: Scheme; host: string; base: string
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_ContentAccountsList_580160(path: JsonNode; query: JsonNode;
+proc validate_ContentAccountsList_589189(path: JsonNode; query: JsonNode;
                                         header: JsonNode; formData: JsonNode;
                                         body: JsonNode): JsonNode =
   ## Lists the sub-accounts in your Merchant Center account.
@@ -2213,11 +2213,11 @@ proc validate_ContentAccountsList_580160(path: JsonNode; query: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `merchantId` field"
-  var valid_580176 = path.getOrDefault("merchantId")
-  valid_580176 = validateParameter(valid_580176, JString, required = true,
+  var valid_589205 = path.getOrDefault("merchantId")
+  valid_589205 = validateParameter(valid_589205, JString, required = true,
                                  default = nil)
-  if valid_580176 != nil:
-    section.add "merchantId", valid_580176
+  if valid_589205 != nil:
+    section.add "merchantId", valid_589205
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -2239,50 +2239,50 @@ proc validate_ContentAccountsList_580160(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580177 = query.getOrDefault("fields")
-  valid_580177 = validateParameter(valid_580177, JString, required = false,
+  var valid_589206 = query.getOrDefault("fields")
+  valid_589206 = validateParameter(valid_589206, JString, required = false,
                                  default = nil)
-  if valid_580177 != nil:
-    section.add "fields", valid_580177
-  var valid_580178 = query.getOrDefault("pageToken")
-  valid_580178 = validateParameter(valid_580178, JString, required = false,
+  if valid_589206 != nil:
+    section.add "fields", valid_589206
+  var valid_589207 = query.getOrDefault("pageToken")
+  valid_589207 = validateParameter(valid_589207, JString, required = false,
                                  default = nil)
-  if valid_580178 != nil:
-    section.add "pageToken", valid_580178
-  var valid_580179 = query.getOrDefault("quotaUser")
-  valid_580179 = validateParameter(valid_580179, JString, required = false,
+  if valid_589207 != nil:
+    section.add "pageToken", valid_589207
+  var valid_589208 = query.getOrDefault("quotaUser")
+  valid_589208 = validateParameter(valid_589208, JString, required = false,
                                  default = nil)
-  if valid_580179 != nil:
-    section.add "quotaUser", valid_580179
-  var valid_580180 = query.getOrDefault("alt")
-  valid_580180 = validateParameter(valid_580180, JString, required = false,
+  if valid_589208 != nil:
+    section.add "quotaUser", valid_589208
+  var valid_589209 = query.getOrDefault("alt")
+  valid_589209 = validateParameter(valid_589209, JString, required = false,
                                  default = newJString("json"))
-  if valid_580180 != nil:
-    section.add "alt", valid_580180
-  var valid_580181 = query.getOrDefault("oauth_token")
-  valid_580181 = validateParameter(valid_580181, JString, required = false,
+  if valid_589209 != nil:
+    section.add "alt", valid_589209
+  var valid_589210 = query.getOrDefault("oauth_token")
+  valid_589210 = validateParameter(valid_589210, JString, required = false,
                                  default = nil)
-  if valid_580181 != nil:
-    section.add "oauth_token", valid_580181
-  var valid_580182 = query.getOrDefault("userIp")
-  valid_580182 = validateParameter(valid_580182, JString, required = false,
+  if valid_589210 != nil:
+    section.add "oauth_token", valid_589210
+  var valid_589211 = query.getOrDefault("userIp")
+  valid_589211 = validateParameter(valid_589211, JString, required = false,
                                  default = nil)
-  if valid_580182 != nil:
-    section.add "userIp", valid_580182
-  var valid_580183 = query.getOrDefault("maxResults")
-  valid_580183 = validateParameter(valid_580183, JInt, required = false, default = nil)
-  if valid_580183 != nil:
-    section.add "maxResults", valid_580183
-  var valid_580184 = query.getOrDefault("key")
-  valid_580184 = validateParameter(valid_580184, JString, required = false,
+  if valid_589211 != nil:
+    section.add "userIp", valid_589211
+  var valid_589212 = query.getOrDefault("maxResults")
+  valid_589212 = validateParameter(valid_589212, JInt, required = false, default = nil)
+  if valid_589212 != nil:
+    section.add "maxResults", valid_589212
+  var valid_589213 = query.getOrDefault("key")
+  valid_589213 = validateParameter(valid_589213, JString, required = false,
                                  default = nil)
-  if valid_580184 != nil:
-    section.add "key", valid_580184
-  var valid_580185 = query.getOrDefault("prettyPrint")
-  valid_580185 = validateParameter(valid_580185, JBool, required = false,
+  if valid_589213 != nil:
+    section.add "key", valid_589213
+  var valid_589214 = query.getOrDefault("prettyPrint")
+  valid_589214 = validateParameter(valid_589214, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580185 != nil:
-    section.add "prettyPrint", valid_580185
+  if valid_589214 != nil:
+    section.add "prettyPrint", valid_589214
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -2291,20 +2291,20 @@ proc validate_ContentAccountsList_580160(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580186: Call_ContentAccountsList_580159; path: JsonNode;
+proc call*(call_589215: Call_ContentAccountsList_589188; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Lists the sub-accounts in your Merchant Center account.
   ## 
-  let valid = call_580186.validator(path, query, header, formData, body)
-  let scheme = call_580186.pickScheme
+  let valid = call_589215.validator(path, query, header, formData, body)
+  let scheme = call_589215.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580186.url(scheme.get, call_580186.host, call_580186.base,
-                         call_580186.route, valid.getOrDefault("path"),
+  let url = call_589215.url(scheme.get, call_589215.host, call_589215.base,
+                         call_589215.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580186, url, valid)
+  result = hook(call_589215, url, valid)
 
-proc call*(call_580187: Call_ContentAccountsList_580159; merchantId: string;
+proc call*(call_589216: Call_ContentAccountsList_589188; merchantId: string;
           fields: string = ""; pageToken: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; userIp: string = "";
           maxResults: int = 0; key: string = ""; prettyPrint: bool = true): Recallable =
@@ -2330,28 +2330,28 @@ proc call*(call_580187: Call_ContentAccountsList_580159; merchantId: string;
   ##             : The ID of the managing account. This must be a multi-client account.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_580188 = newJObject()
-  var query_580189 = newJObject()
-  add(query_580189, "fields", newJString(fields))
-  add(query_580189, "pageToken", newJString(pageToken))
-  add(query_580189, "quotaUser", newJString(quotaUser))
-  add(query_580189, "alt", newJString(alt))
-  add(query_580189, "oauth_token", newJString(oauthToken))
-  add(query_580189, "userIp", newJString(userIp))
-  add(query_580189, "maxResults", newJInt(maxResults))
-  add(query_580189, "key", newJString(key))
-  add(path_580188, "merchantId", newJString(merchantId))
-  add(query_580189, "prettyPrint", newJBool(prettyPrint))
-  result = call_580187.call(path_580188, query_580189, nil, nil, nil)
+  var path_589217 = newJObject()
+  var query_589218 = newJObject()
+  add(query_589218, "fields", newJString(fields))
+  add(query_589218, "pageToken", newJString(pageToken))
+  add(query_589218, "quotaUser", newJString(quotaUser))
+  add(query_589218, "alt", newJString(alt))
+  add(query_589218, "oauth_token", newJString(oauthToken))
+  add(query_589218, "userIp", newJString(userIp))
+  add(query_589218, "maxResults", newJInt(maxResults))
+  add(query_589218, "key", newJString(key))
+  add(path_589217, "merchantId", newJString(merchantId))
+  add(query_589218, "prettyPrint", newJBool(prettyPrint))
+  result = call_589216.call(path_589217, query_589218, nil, nil, nil)
 
-var contentAccountsList* = Call_ContentAccountsList_580159(
+var contentAccountsList* = Call_ContentAccountsList_589188(
     name: "contentAccountsList", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/{merchantId}/accounts",
-    validator: validate_ContentAccountsList_580160, base: "/content/v2",
-    url: url_ContentAccountsList_580161, schemes: {Scheme.Https})
+    validator: validate_ContentAccountsList_589189, base: "/content/v2",
+    url: url_ContentAccountsList_589190, schemes: {Scheme.Https})
 type
-  Call_ContentAccountsUpdate_580224 = ref object of OpenApiRestCall_579421
-proc url_ContentAccountsUpdate_580226(protocol: Scheme; host: string; base: string;
+  Call_ContentAccountsUpdate_589253 = ref object of OpenApiRestCall_588450
+proc url_ContentAccountsUpdate_589255(protocol: Scheme; host: string; base: string;
                                      route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -2369,7 +2369,7 @@ proc url_ContentAccountsUpdate_580226(protocol: Scheme; host: string; base: stri
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_ContentAccountsUpdate_580225(path: JsonNode; query: JsonNode;
+proc validate_ContentAccountsUpdate_589254(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Updates a Merchant Center account.
   ## 
@@ -2382,16 +2382,16 @@ proc validate_ContentAccountsUpdate_580225(path: JsonNode; query: JsonNode;
   ##             : The ID of the managing account. If this parameter is not the same as accountId, then this account must be a multi-client account and accountId must be the ID of a sub-account of this account.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `accountId` field"
-  var valid_580227 = path.getOrDefault("accountId")
-  valid_580227 = validateParameter(valid_580227, JString, required = true,
+  var valid_589256 = path.getOrDefault("accountId")
+  valid_589256 = validateParameter(valid_589256, JString, required = true,
                                  default = nil)
-  if valid_580227 != nil:
-    section.add "accountId", valid_580227
-  var valid_580228 = path.getOrDefault("merchantId")
-  valid_580228 = validateParameter(valid_580228, JString, required = true,
+  if valid_589256 != nil:
+    section.add "accountId", valid_589256
+  var valid_589257 = path.getOrDefault("merchantId")
+  valid_589257 = validateParameter(valid_589257, JString, required = true,
                                  default = nil)
-  if valid_580228 != nil:
-    section.add "merchantId", valid_580228
+  if valid_589257 != nil:
+    section.add "merchantId", valid_589257
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -2411,45 +2411,45 @@ proc validate_ContentAccountsUpdate_580225(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580229 = query.getOrDefault("fields")
-  valid_580229 = validateParameter(valid_580229, JString, required = false,
+  var valid_589258 = query.getOrDefault("fields")
+  valid_589258 = validateParameter(valid_589258, JString, required = false,
                                  default = nil)
-  if valid_580229 != nil:
-    section.add "fields", valid_580229
-  var valid_580230 = query.getOrDefault("quotaUser")
-  valid_580230 = validateParameter(valid_580230, JString, required = false,
+  if valid_589258 != nil:
+    section.add "fields", valid_589258
+  var valid_589259 = query.getOrDefault("quotaUser")
+  valid_589259 = validateParameter(valid_589259, JString, required = false,
                                  default = nil)
-  if valid_580230 != nil:
-    section.add "quotaUser", valid_580230
-  var valid_580231 = query.getOrDefault("alt")
-  valid_580231 = validateParameter(valid_580231, JString, required = false,
+  if valid_589259 != nil:
+    section.add "quotaUser", valid_589259
+  var valid_589260 = query.getOrDefault("alt")
+  valid_589260 = validateParameter(valid_589260, JString, required = false,
                                  default = newJString("json"))
-  if valid_580231 != nil:
-    section.add "alt", valid_580231
-  var valid_580232 = query.getOrDefault("dryRun")
-  valid_580232 = validateParameter(valid_580232, JBool, required = false, default = nil)
-  if valid_580232 != nil:
-    section.add "dryRun", valid_580232
-  var valid_580233 = query.getOrDefault("oauth_token")
-  valid_580233 = validateParameter(valid_580233, JString, required = false,
+  if valid_589260 != nil:
+    section.add "alt", valid_589260
+  var valid_589261 = query.getOrDefault("dryRun")
+  valid_589261 = validateParameter(valid_589261, JBool, required = false, default = nil)
+  if valid_589261 != nil:
+    section.add "dryRun", valid_589261
+  var valid_589262 = query.getOrDefault("oauth_token")
+  valid_589262 = validateParameter(valid_589262, JString, required = false,
                                  default = nil)
-  if valid_580233 != nil:
-    section.add "oauth_token", valid_580233
-  var valid_580234 = query.getOrDefault("userIp")
-  valid_580234 = validateParameter(valid_580234, JString, required = false,
+  if valid_589262 != nil:
+    section.add "oauth_token", valid_589262
+  var valid_589263 = query.getOrDefault("userIp")
+  valid_589263 = validateParameter(valid_589263, JString, required = false,
                                  default = nil)
-  if valid_580234 != nil:
-    section.add "userIp", valid_580234
-  var valid_580235 = query.getOrDefault("key")
-  valid_580235 = validateParameter(valid_580235, JString, required = false,
+  if valid_589263 != nil:
+    section.add "userIp", valid_589263
+  var valid_589264 = query.getOrDefault("key")
+  valid_589264 = validateParameter(valid_589264, JString, required = false,
                                  default = nil)
-  if valid_580235 != nil:
-    section.add "key", valid_580235
-  var valid_580236 = query.getOrDefault("prettyPrint")
-  valid_580236 = validateParameter(valid_580236, JBool, required = false,
+  if valid_589264 != nil:
+    section.add "key", valid_589264
+  var valid_589265 = query.getOrDefault("prettyPrint")
+  valid_589265 = validateParameter(valid_589265, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580236 != nil:
-    section.add "prettyPrint", valid_580236
+  if valid_589265 != nil:
+    section.add "prettyPrint", valid_589265
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -2461,20 +2461,20 @@ proc validate_ContentAccountsUpdate_580225(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580238: Call_ContentAccountsUpdate_580224; path: JsonNode;
+proc call*(call_589267: Call_ContentAccountsUpdate_589253; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Updates a Merchant Center account.
   ## 
-  let valid = call_580238.validator(path, query, header, formData, body)
-  let scheme = call_580238.pickScheme
+  let valid = call_589267.validator(path, query, header, formData, body)
+  let scheme = call_589267.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580238.url(scheme.get, call_580238.host, call_580238.base,
-                         call_580238.route, valid.getOrDefault("path"),
+  let url = call_589267.url(scheme.get, call_589267.host, call_589267.base,
+                         call_589267.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580238, url, valid)
+  result = hook(call_589267, url, valid)
 
-proc call*(call_580239: Call_ContentAccountsUpdate_580224; accountId: string;
+proc call*(call_589268: Call_ContentAccountsUpdate_589253; accountId: string;
           merchantId: string; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; dryRun: bool = false; oauthToken: string = "";
           userIp: string = ""; key: string = ""; body: JsonNode = nil;
@@ -2502,31 +2502,31 @@ proc call*(call_580239: Call_ContentAccountsUpdate_580224; accountId: string;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_580240 = newJObject()
-  var query_580241 = newJObject()
-  var body_580242 = newJObject()
-  add(query_580241, "fields", newJString(fields))
-  add(query_580241, "quotaUser", newJString(quotaUser))
-  add(query_580241, "alt", newJString(alt))
-  add(query_580241, "dryRun", newJBool(dryRun))
-  add(query_580241, "oauth_token", newJString(oauthToken))
-  add(path_580240, "accountId", newJString(accountId))
-  add(query_580241, "userIp", newJString(userIp))
-  add(query_580241, "key", newJString(key))
-  add(path_580240, "merchantId", newJString(merchantId))
+  var path_589269 = newJObject()
+  var query_589270 = newJObject()
+  var body_589271 = newJObject()
+  add(query_589270, "fields", newJString(fields))
+  add(query_589270, "quotaUser", newJString(quotaUser))
+  add(query_589270, "alt", newJString(alt))
+  add(query_589270, "dryRun", newJBool(dryRun))
+  add(query_589270, "oauth_token", newJString(oauthToken))
+  add(path_589269, "accountId", newJString(accountId))
+  add(query_589270, "userIp", newJString(userIp))
+  add(query_589270, "key", newJString(key))
+  add(path_589269, "merchantId", newJString(merchantId))
   if body != nil:
-    body_580242 = body
-  add(query_580241, "prettyPrint", newJBool(prettyPrint))
-  result = call_580239.call(path_580240, query_580241, nil, nil, body_580242)
+    body_589271 = body
+  add(query_589270, "prettyPrint", newJBool(prettyPrint))
+  result = call_589268.call(path_589269, query_589270, nil, nil, body_589271)
 
-var contentAccountsUpdate* = Call_ContentAccountsUpdate_580224(
+var contentAccountsUpdate* = Call_ContentAccountsUpdate_589253(
     name: "contentAccountsUpdate", meth: HttpMethod.HttpPut,
     host: "www.googleapis.com", route: "/{merchantId}/accounts/{accountId}",
-    validator: validate_ContentAccountsUpdate_580225, base: "/content/v2",
-    url: url_ContentAccountsUpdate_580226, schemes: {Scheme.Https})
+    validator: validate_ContentAccountsUpdate_589254, base: "/content/v2",
+    url: url_ContentAccountsUpdate_589255, schemes: {Scheme.Https})
 type
-  Call_ContentAccountsGet_580208 = ref object of OpenApiRestCall_579421
-proc url_ContentAccountsGet_580210(protocol: Scheme; host: string; base: string;
+  Call_ContentAccountsGet_589237 = ref object of OpenApiRestCall_588450
+proc url_ContentAccountsGet_589239(protocol: Scheme; host: string; base: string;
                                   route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -2544,7 +2544,7 @@ proc url_ContentAccountsGet_580210(protocol: Scheme; host: string; base: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_ContentAccountsGet_580209(path: JsonNode; query: JsonNode;
+proc validate_ContentAccountsGet_589238(path: JsonNode; query: JsonNode;
                                        header: JsonNode; formData: JsonNode;
                                        body: JsonNode): JsonNode =
   ## Retrieves a Merchant Center account.
@@ -2558,16 +2558,16 @@ proc validate_ContentAccountsGet_580209(path: JsonNode; query: JsonNode;
   ##             : The ID of the managing account. If this parameter is not the same as accountId, then this account must be a multi-client account and accountId must be the ID of a sub-account of this account.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `accountId` field"
-  var valid_580211 = path.getOrDefault("accountId")
-  valid_580211 = validateParameter(valid_580211, JString, required = true,
+  var valid_589240 = path.getOrDefault("accountId")
+  valid_589240 = validateParameter(valid_589240, JString, required = true,
                                  default = nil)
-  if valid_580211 != nil:
-    section.add "accountId", valid_580211
-  var valid_580212 = path.getOrDefault("merchantId")
-  valid_580212 = validateParameter(valid_580212, JString, required = true,
+  if valid_589240 != nil:
+    section.add "accountId", valid_589240
+  var valid_589241 = path.getOrDefault("merchantId")
+  valid_589241 = validateParameter(valid_589241, JString, required = true,
                                  default = nil)
-  if valid_580212 != nil:
-    section.add "merchantId", valid_580212
+  if valid_589241 != nil:
+    section.add "merchantId", valid_589241
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -2585,41 +2585,41 @@ proc validate_ContentAccountsGet_580209(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580213 = query.getOrDefault("fields")
-  valid_580213 = validateParameter(valid_580213, JString, required = false,
+  var valid_589242 = query.getOrDefault("fields")
+  valid_589242 = validateParameter(valid_589242, JString, required = false,
                                  default = nil)
-  if valid_580213 != nil:
-    section.add "fields", valid_580213
-  var valid_580214 = query.getOrDefault("quotaUser")
-  valid_580214 = validateParameter(valid_580214, JString, required = false,
+  if valid_589242 != nil:
+    section.add "fields", valid_589242
+  var valid_589243 = query.getOrDefault("quotaUser")
+  valid_589243 = validateParameter(valid_589243, JString, required = false,
                                  default = nil)
-  if valid_580214 != nil:
-    section.add "quotaUser", valid_580214
-  var valid_580215 = query.getOrDefault("alt")
-  valid_580215 = validateParameter(valid_580215, JString, required = false,
+  if valid_589243 != nil:
+    section.add "quotaUser", valid_589243
+  var valid_589244 = query.getOrDefault("alt")
+  valid_589244 = validateParameter(valid_589244, JString, required = false,
                                  default = newJString("json"))
-  if valid_580215 != nil:
-    section.add "alt", valid_580215
-  var valid_580216 = query.getOrDefault("oauth_token")
-  valid_580216 = validateParameter(valid_580216, JString, required = false,
+  if valid_589244 != nil:
+    section.add "alt", valid_589244
+  var valid_589245 = query.getOrDefault("oauth_token")
+  valid_589245 = validateParameter(valid_589245, JString, required = false,
                                  default = nil)
-  if valid_580216 != nil:
-    section.add "oauth_token", valid_580216
-  var valid_580217 = query.getOrDefault("userIp")
-  valid_580217 = validateParameter(valid_580217, JString, required = false,
+  if valid_589245 != nil:
+    section.add "oauth_token", valid_589245
+  var valid_589246 = query.getOrDefault("userIp")
+  valid_589246 = validateParameter(valid_589246, JString, required = false,
                                  default = nil)
-  if valid_580217 != nil:
-    section.add "userIp", valid_580217
-  var valid_580218 = query.getOrDefault("key")
-  valid_580218 = validateParameter(valid_580218, JString, required = false,
+  if valid_589246 != nil:
+    section.add "userIp", valid_589246
+  var valid_589247 = query.getOrDefault("key")
+  valid_589247 = validateParameter(valid_589247, JString, required = false,
                                  default = nil)
-  if valid_580218 != nil:
-    section.add "key", valid_580218
-  var valid_580219 = query.getOrDefault("prettyPrint")
-  valid_580219 = validateParameter(valid_580219, JBool, required = false,
+  if valid_589247 != nil:
+    section.add "key", valid_589247
+  var valid_589248 = query.getOrDefault("prettyPrint")
+  valid_589248 = validateParameter(valid_589248, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580219 != nil:
-    section.add "prettyPrint", valid_580219
+  if valid_589248 != nil:
+    section.add "prettyPrint", valid_589248
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -2628,20 +2628,20 @@ proc validate_ContentAccountsGet_580209(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580220: Call_ContentAccountsGet_580208; path: JsonNode;
+proc call*(call_589249: Call_ContentAccountsGet_589237; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Retrieves a Merchant Center account.
   ## 
-  let valid = call_580220.validator(path, query, header, formData, body)
-  let scheme = call_580220.pickScheme
+  let valid = call_589249.validator(path, query, header, formData, body)
+  let scheme = call_589249.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580220.url(scheme.get, call_580220.host, call_580220.base,
-                         call_580220.route, valid.getOrDefault("path"),
+  let url = call_589249.url(scheme.get, call_589249.host, call_589249.base,
+                         call_589249.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580220, url, valid)
+  result = hook(call_589249, url, valid)
 
-proc call*(call_580221: Call_ContentAccountsGet_580208; accountId: string;
+proc call*(call_589250: Call_ContentAccountsGet_589237; accountId: string;
           merchantId: string; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; userIp: string = "";
           key: string = ""; prettyPrint: bool = true): Recallable =
@@ -2665,27 +2665,27 @@ proc call*(call_580221: Call_ContentAccountsGet_580208; accountId: string;
   ##             : The ID of the managing account. If this parameter is not the same as accountId, then this account must be a multi-client account and accountId must be the ID of a sub-account of this account.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_580222 = newJObject()
-  var query_580223 = newJObject()
-  add(query_580223, "fields", newJString(fields))
-  add(query_580223, "quotaUser", newJString(quotaUser))
-  add(query_580223, "alt", newJString(alt))
-  add(query_580223, "oauth_token", newJString(oauthToken))
-  add(path_580222, "accountId", newJString(accountId))
-  add(query_580223, "userIp", newJString(userIp))
-  add(query_580223, "key", newJString(key))
-  add(path_580222, "merchantId", newJString(merchantId))
-  add(query_580223, "prettyPrint", newJBool(prettyPrint))
-  result = call_580221.call(path_580222, query_580223, nil, nil, nil)
+  var path_589251 = newJObject()
+  var query_589252 = newJObject()
+  add(query_589252, "fields", newJString(fields))
+  add(query_589252, "quotaUser", newJString(quotaUser))
+  add(query_589252, "alt", newJString(alt))
+  add(query_589252, "oauth_token", newJString(oauthToken))
+  add(path_589251, "accountId", newJString(accountId))
+  add(query_589252, "userIp", newJString(userIp))
+  add(query_589252, "key", newJString(key))
+  add(path_589251, "merchantId", newJString(merchantId))
+  add(query_589252, "prettyPrint", newJBool(prettyPrint))
+  result = call_589250.call(path_589251, query_589252, nil, nil, nil)
 
-var contentAccountsGet* = Call_ContentAccountsGet_580208(
+var contentAccountsGet* = Call_ContentAccountsGet_589237(
     name: "contentAccountsGet", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/{merchantId}/accounts/{accountId}",
-    validator: validate_ContentAccountsGet_580209, base: "/content/v2",
-    url: url_ContentAccountsGet_580210, schemes: {Scheme.Https})
+    validator: validate_ContentAccountsGet_589238, base: "/content/v2",
+    url: url_ContentAccountsGet_589239, schemes: {Scheme.Https})
 type
-  Call_ContentAccountsPatch_580261 = ref object of OpenApiRestCall_579421
-proc url_ContentAccountsPatch_580263(protocol: Scheme; host: string; base: string;
+  Call_ContentAccountsPatch_589290 = ref object of OpenApiRestCall_588450
+proc url_ContentAccountsPatch_589292(protocol: Scheme; host: string; base: string;
                                     route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -2703,7 +2703,7 @@ proc url_ContentAccountsPatch_580263(protocol: Scheme; host: string; base: strin
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_ContentAccountsPatch_580262(path: JsonNode; query: JsonNode;
+proc validate_ContentAccountsPatch_589291(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Updates a Merchant Center account. This method supports patch semantics.
   ## 
@@ -2716,16 +2716,16 @@ proc validate_ContentAccountsPatch_580262(path: JsonNode; query: JsonNode;
   ##             : The ID of the managing account. If this parameter is not the same as accountId, then this account must be a multi-client account and accountId must be the ID of a sub-account of this account.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `accountId` field"
-  var valid_580264 = path.getOrDefault("accountId")
-  valid_580264 = validateParameter(valid_580264, JString, required = true,
+  var valid_589293 = path.getOrDefault("accountId")
+  valid_589293 = validateParameter(valid_589293, JString, required = true,
                                  default = nil)
-  if valid_580264 != nil:
-    section.add "accountId", valid_580264
-  var valid_580265 = path.getOrDefault("merchantId")
-  valid_580265 = validateParameter(valid_580265, JString, required = true,
+  if valid_589293 != nil:
+    section.add "accountId", valid_589293
+  var valid_589294 = path.getOrDefault("merchantId")
+  valid_589294 = validateParameter(valid_589294, JString, required = true,
                                  default = nil)
-  if valid_580265 != nil:
-    section.add "merchantId", valid_580265
+  if valid_589294 != nil:
+    section.add "merchantId", valid_589294
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -2745,45 +2745,45 @@ proc validate_ContentAccountsPatch_580262(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580266 = query.getOrDefault("fields")
-  valid_580266 = validateParameter(valid_580266, JString, required = false,
+  var valid_589295 = query.getOrDefault("fields")
+  valid_589295 = validateParameter(valid_589295, JString, required = false,
                                  default = nil)
-  if valid_580266 != nil:
-    section.add "fields", valid_580266
-  var valid_580267 = query.getOrDefault("quotaUser")
-  valid_580267 = validateParameter(valid_580267, JString, required = false,
+  if valid_589295 != nil:
+    section.add "fields", valid_589295
+  var valid_589296 = query.getOrDefault("quotaUser")
+  valid_589296 = validateParameter(valid_589296, JString, required = false,
                                  default = nil)
-  if valid_580267 != nil:
-    section.add "quotaUser", valid_580267
-  var valid_580268 = query.getOrDefault("alt")
-  valid_580268 = validateParameter(valid_580268, JString, required = false,
+  if valid_589296 != nil:
+    section.add "quotaUser", valid_589296
+  var valid_589297 = query.getOrDefault("alt")
+  valid_589297 = validateParameter(valid_589297, JString, required = false,
                                  default = newJString("json"))
-  if valid_580268 != nil:
-    section.add "alt", valid_580268
-  var valid_580269 = query.getOrDefault("dryRun")
-  valid_580269 = validateParameter(valid_580269, JBool, required = false, default = nil)
-  if valid_580269 != nil:
-    section.add "dryRun", valid_580269
-  var valid_580270 = query.getOrDefault("oauth_token")
-  valid_580270 = validateParameter(valid_580270, JString, required = false,
+  if valid_589297 != nil:
+    section.add "alt", valid_589297
+  var valid_589298 = query.getOrDefault("dryRun")
+  valid_589298 = validateParameter(valid_589298, JBool, required = false, default = nil)
+  if valid_589298 != nil:
+    section.add "dryRun", valid_589298
+  var valid_589299 = query.getOrDefault("oauth_token")
+  valid_589299 = validateParameter(valid_589299, JString, required = false,
                                  default = nil)
-  if valid_580270 != nil:
-    section.add "oauth_token", valid_580270
-  var valid_580271 = query.getOrDefault("userIp")
-  valid_580271 = validateParameter(valid_580271, JString, required = false,
+  if valid_589299 != nil:
+    section.add "oauth_token", valid_589299
+  var valid_589300 = query.getOrDefault("userIp")
+  valid_589300 = validateParameter(valid_589300, JString, required = false,
                                  default = nil)
-  if valid_580271 != nil:
-    section.add "userIp", valid_580271
-  var valid_580272 = query.getOrDefault("key")
-  valid_580272 = validateParameter(valid_580272, JString, required = false,
+  if valid_589300 != nil:
+    section.add "userIp", valid_589300
+  var valid_589301 = query.getOrDefault("key")
+  valid_589301 = validateParameter(valid_589301, JString, required = false,
                                  default = nil)
-  if valid_580272 != nil:
-    section.add "key", valid_580272
-  var valid_580273 = query.getOrDefault("prettyPrint")
-  valid_580273 = validateParameter(valid_580273, JBool, required = false,
+  if valid_589301 != nil:
+    section.add "key", valid_589301
+  var valid_589302 = query.getOrDefault("prettyPrint")
+  valid_589302 = validateParameter(valid_589302, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580273 != nil:
-    section.add "prettyPrint", valid_580273
+  if valid_589302 != nil:
+    section.add "prettyPrint", valid_589302
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -2795,20 +2795,20 @@ proc validate_ContentAccountsPatch_580262(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580275: Call_ContentAccountsPatch_580261; path: JsonNode;
+proc call*(call_589304: Call_ContentAccountsPatch_589290; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Updates a Merchant Center account. This method supports patch semantics.
   ## 
-  let valid = call_580275.validator(path, query, header, formData, body)
-  let scheme = call_580275.pickScheme
+  let valid = call_589304.validator(path, query, header, formData, body)
+  let scheme = call_589304.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580275.url(scheme.get, call_580275.host, call_580275.base,
-                         call_580275.route, valid.getOrDefault("path"),
+  let url = call_589304.url(scheme.get, call_589304.host, call_589304.base,
+                         call_589304.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580275, url, valid)
+  result = hook(call_589304, url, valid)
 
-proc call*(call_580276: Call_ContentAccountsPatch_580261; accountId: string;
+proc call*(call_589305: Call_ContentAccountsPatch_589290; accountId: string;
           merchantId: string; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; dryRun: bool = false; oauthToken: string = "";
           userIp: string = ""; key: string = ""; body: JsonNode = nil;
@@ -2836,31 +2836,31 @@ proc call*(call_580276: Call_ContentAccountsPatch_580261; accountId: string;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_580277 = newJObject()
-  var query_580278 = newJObject()
-  var body_580279 = newJObject()
-  add(query_580278, "fields", newJString(fields))
-  add(query_580278, "quotaUser", newJString(quotaUser))
-  add(query_580278, "alt", newJString(alt))
-  add(query_580278, "dryRun", newJBool(dryRun))
-  add(query_580278, "oauth_token", newJString(oauthToken))
-  add(path_580277, "accountId", newJString(accountId))
-  add(query_580278, "userIp", newJString(userIp))
-  add(query_580278, "key", newJString(key))
-  add(path_580277, "merchantId", newJString(merchantId))
+  var path_589306 = newJObject()
+  var query_589307 = newJObject()
+  var body_589308 = newJObject()
+  add(query_589307, "fields", newJString(fields))
+  add(query_589307, "quotaUser", newJString(quotaUser))
+  add(query_589307, "alt", newJString(alt))
+  add(query_589307, "dryRun", newJBool(dryRun))
+  add(query_589307, "oauth_token", newJString(oauthToken))
+  add(path_589306, "accountId", newJString(accountId))
+  add(query_589307, "userIp", newJString(userIp))
+  add(query_589307, "key", newJString(key))
+  add(path_589306, "merchantId", newJString(merchantId))
   if body != nil:
-    body_580279 = body
-  add(query_580278, "prettyPrint", newJBool(prettyPrint))
-  result = call_580276.call(path_580277, query_580278, nil, nil, body_580279)
+    body_589308 = body
+  add(query_589307, "prettyPrint", newJBool(prettyPrint))
+  result = call_589305.call(path_589306, query_589307, nil, nil, body_589308)
 
-var contentAccountsPatch* = Call_ContentAccountsPatch_580261(
+var contentAccountsPatch* = Call_ContentAccountsPatch_589290(
     name: "contentAccountsPatch", meth: HttpMethod.HttpPatch,
     host: "www.googleapis.com", route: "/{merchantId}/accounts/{accountId}",
-    validator: validate_ContentAccountsPatch_580262, base: "/content/v2",
-    url: url_ContentAccountsPatch_580263, schemes: {Scheme.Https})
+    validator: validate_ContentAccountsPatch_589291, base: "/content/v2",
+    url: url_ContentAccountsPatch_589292, schemes: {Scheme.Https})
 type
-  Call_ContentAccountsDelete_580243 = ref object of OpenApiRestCall_579421
-proc url_ContentAccountsDelete_580245(protocol: Scheme; host: string; base: string;
+  Call_ContentAccountsDelete_589272 = ref object of OpenApiRestCall_588450
+proc url_ContentAccountsDelete_589274(protocol: Scheme; host: string; base: string;
                                      route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -2878,7 +2878,7 @@ proc url_ContentAccountsDelete_580245(protocol: Scheme; host: string; base: stri
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_ContentAccountsDelete_580244(path: JsonNode; query: JsonNode;
+proc validate_ContentAccountsDelete_589273(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Deletes a Merchant Center sub-account.
   ## 
@@ -2891,16 +2891,16 @@ proc validate_ContentAccountsDelete_580244(path: JsonNode; query: JsonNode;
   ##             : The ID of the managing account. This must be a multi-client account, and accountId must be the ID of a sub-account of this account.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `accountId` field"
-  var valid_580246 = path.getOrDefault("accountId")
-  valid_580246 = validateParameter(valid_580246, JString, required = true,
+  var valid_589275 = path.getOrDefault("accountId")
+  valid_589275 = validateParameter(valid_589275, JString, required = true,
                                  default = nil)
-  if valid_580246 != nil:
-    section.add "accountId", valid_580246
-  var valid_580247 = path.getOrDefault("merchantId")
-  valid_580247 = validateParameter(valid_580247, JString, required = true,
+  if valid_589275 != nil:
+    section.add "accountId", valid_589275
+  var valid_589276 = path.getOrDefault("merchantId")
+  valid_589276 = validateParameter(valid_589276, JString, required = true,
                                  default = nil)
-  if valid_580247 != nil:
-    section.add "merchantId", valid_580247
+  if valid_589276 != nil:
+    section.add "merchantId", valid_589276
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -2922,50 +2922,50 @@ proc validate_ContentAccountsDelete_580244(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580248 = query.getOrDefault("fields")
-  valid_580248 = validateParameter(valid_580248, JString, required = false,
+  var valid_589277 = query.getOrDefault("fields")
+  valid_589277 = validateParameter(valid_589277, JString, required = false,
                                  default = nil)
-  if valid_580248 != nil:
-    section.add "fields", valid_580248
-  var valid_580249 = query.getOrDefault("force")
-  valid_580249 = validateParameter(valid_580249, JBool, required = false,
+  if valid_589277 != nil:
+    section.add "fields", valid_589277
+  var valid_589278 = query.getOrDefault("force")
+  valid_589278 = validateParameter(valid_589278, JBool, required = false,
                                  default = newJBool(false))
-  if valid_580249 != nil:
-    section.add "force", valid_580249
-  var valid_580250 = query.getOrDefault("quotaUser")
-  valid_580250 = validateParameter(valid_580250, JString, required = false,
+  if valid_589278 != nil:
+    section.add "force", valid_589278
+  var valid_589279 = query.getOrDefault("quotaUser")
+  valid_589279 = validateParameter(valid_589279, JString, required = false,
                                  default = nil)
-  if valid_580250 != nil:
-    section.add "quotaUser", valid_580250
-  var valid_580251 = query.getOrDefault("alt")
-  valid_580251 = validateParameter(valid_580251, JString, required = false,
+  if valid_589279 != nil:
+    section.add "quotaUser", valid_589279
+  var valid_589280 = query.getOrDefault("alt")
+  valid_589280 = validateParameter(valid_589280, JString, required = false,
                                  default = newJString("json"))
-  if valid_580251 != nil:
-    section.add "alt", valid_580251
-  var valid_580252 = query.getOrDefault("dryRun")
-  valid_580252 = validateParameter(valid_580252, JBool, required = false, default = nil)
-  if valid_580252 != nil:
-    section.add "dryRun", valid_580252
-  var valid_580253 = query.getOrDefault("oauth_token")
-  valid_580253 = validateParameter(valid_580253, JString, required = false,
+  if valid_589280 != nil:
+    section.add "alt", valid_589280
+  var valid_589281 = query.getOrDefault("dryRun")
+  valid_589281 = validateParameter(valid_589281, JBool, required = false, default = nil)
+  if valid_589281 != nil:
+    section.add "dryRun", valid_589281
+  var valid_589282 = query.getOrDefault("oauth_token")
+  valid_589282 = validateParameter(valid_589282, JString, required = false,
                                  default = nil)
-  if valid_580253 != nil:
-    section.add "oauth_token", valid_580253
-  var valid_580254 = query.getOrDefault("userIp")
-  valid_580254 = validateParameter(valid_580254, JString, required = false,
+  if valid_589282 != nil:
+    section.add "oauth_token", valid_589282
+  var valid_589283 = query.getOrDefault("userIp")
+  valid_589283 = validateParameter(valid_589283, JString, required = false,
                                  default = nil)
-  if valid_580254 != nil:
-    section.add "userIp", valid_580254
-  var valid_580255 = query.getOrDefault("key")
-  valid_580255 = validateParameter(valid_580255, JString, required = false,
+  if valid_589283 != nil:
+    section.add "userIp", valid_589283
+  var valid_589284 = query.getOrDefault("key")
+  valid_589284 = validateParameter(valid_589284, JString, required = false,
                                  default = nil)
-  if valid_580255 != nil:
-    section.add "key", valid_580255
-  var valid_580256 = query.getOrDefault("prettyPrint")
-  valid_580256 = validateParameter(valid_580256, JBool, required = false,
+  if valid_589284 != nil:
+    section.add "key", valid_589284
+  var valid_589285 = query.getOrDefault("prettyPrint")
+  valid_589285 = validateParameter(valid_589285, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580256 != nil:
-    section.add "prettyPrint", valid_580256
+  if valid_589285 != nil:
+    section.add "prettyPrint", valid_589285
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -2974,20 +2974,20 @@ proc validate_ContentAccountsDelete_580244(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580257: Call_ContentAccountsDelete_580243; path: JsonNode;
+proc call*(call_589286: Call_ContentAccountsDelete_589272; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Deletes a Merchant Center sub-account.
   ## 
-  let valid = call_580257.validator(path, query, header, formData, body)
-  let scheme = call_580257.pickScheme
+  let valid = call_589286.validator(path, query, header, formData, body)
+  let scheme = call_589286.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580257.url(scheme.get, call_580257.host, call_580257.base,
-                         call_580257.route, valid.getOrDefault("path"),
+  let url = call_589286.url(scheme.get, call_589286.host, call_589286.base,
+                         call_589286.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580257, url, valid)
+  result = hook(call_589286, url, valid)
 
-proc call*(call_580258: Call_ContentAccountsDelete_580243; accountId: string;
+proc call*(call_589287: Call_ContentAccountsDelete_589272; accountId: string;
           merchantId: string; fields: string = ""; force: bool = false;
           quotaUser: string = ""; alt: string = "json"; dryRun: bool = false;
           oauthToken: string = ""; userIp: string = ""; key: string = "";
@@ -3016,29 +3016,29 @@ proc call*(call_580258: Call_ContentAccountsDelete_580243; accountId: string;
   ##             : The ID of the managing account. This must be a multi-client account, and accountId must be the ID of a sub-account of this account.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_580259 = newJObject()
-  var query_580260 = newJObject()
-  add(query_580260, "fields", newJString(fields))
-  add(query_580260, "force", newJBool(force))
-  add(query_580260, "quotaUser", newJString(quotaUser))
-  add(query_580260, "alt", newJString(alt))
-  add(query_580260, "dryRun", newJBool(dryRun))
-  add(query_580260, "oauth_token", newJString(oauthToken))
-  add(path_580259, "accountId", newJString(accountId))
-  add(query_580260, "userIp", newJString(userIp))
-  add(query_580260, "key", newJString(key))
-  add(path_580259, "merchantId", newJString(merchantId))
-  add(query_580260, "prettyPrint", newJBool(prettyPrint))
-  result = call_580258.call(path_580259, query_580260, nil, nil, nil)
+  var path_589288 = newJObject()
+  var query_589289 = newJObject()
+  add(query_589289, "fields", newJString(fields))
+  add(query_589289, "force", newJBool(force))
+  add(query_589289, "quotaUser", newJString(quotaUser))
+  add(query_589289, "alt", newJString(alt))
+  add(query_589289, "dryRun", newJBool(dryRun))
+  add(query_589289, "oauth_token", newJString(oauthToken))
+  add(path_589288, "accountId", newJString(accountId))
+  add(query_589289, "userIp", newJString(userIp))
+  add(query_589289, "key", newJString(key))
+  add(path_589288, "merchantId", newJString(merchantId))
+  add(query_589289, "prettyPrint", newJBool(prettyPrint))
+  result = call_589287.call(path_589288, query_589289, nil, nil, nil)
 
-var contentAccountsDelete* = Call_ContentAccountsDelete_580243(
+var contentAccountsDelete* = Call_ContentAccountsDelete_589272(
     name: "contentAccountsDelete", meth: HttpMethod.HttpDelete,
     host: "www.googleapis.com", route: "/{merchantId}/accounts/{accountId}",
-    validator: validate_ContentAccountsDelete_580244, base: "/content/v2",
-    url: url_ContentAccountsDelete_580245, schemes: {Scheme.Https})
+    validator: validate_ContentAccountsDelete_589273, base: "/content/v2",
+    url: url_ContentAccountsDelete_589274, schemes: {Scheme.Https})
 type
-  Call_ContentAccountsClaimwebsite_580280 = ref object of OpenApiRestCall_579421
-proc url_ContentAccountsClaimwebsite_580282(protocol: Scheme; host: string;
+  Call_ContentAccountsClaimwebsite_589309 = ref object of OpenApiRestCall_588450
+proc url_ContentAccountsClaimwebsite_589311(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -3057,7 +3057,7 @@ proc url_ContentAccountsClaimwebsite_580282(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_ContentAccountsClaimwebsite_580281(path: JsonNode; query: JsonNode;
+proc validate_ContentAccountsClaimwebsite_589310(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Claims the website of a Merchant Center sub-account.
   ## 
@@ -3070,16 +3070,16 @@ proc validate_ContentAccountsClaimwebsite_580281(path: JsonNode; query: JsonNode
   ##             : The ID of the managing account. If this parameter is not the same as accountId, then this account must be a multi-client account and accountId must be the ID of a sub-account of this account.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `accountId` field"
-  var valid_580283 = path.getOrDefault("accountId")
-  valid_580283 = validateParameter(valid_580283, JString, required = true,
+  var valid_589312 = path.getOrDefault("accountId")
+  valid_589312 = validateParameter(valid_589312, JString, required = true,
                                  default = nil)
-  if valid_580283 != nil:
-    section.add "accountId", valid_580283
-  var valid_580284 = path.getOrDefault("merchantId")
-  valid_580284 = validateParameter(valid_580284, JString, required = true,
+  if valid_589312 != nil:
+    section.add "accountId", valid_589312
+  var valid_589313 = path.getOrDefault("merchantId")
+  valid_589313 = validateParameter(valid_589313, JString, required = true,
                                  default = nil)
-  if valid_580284 != nil:
-    section.add "merchantId", valid_580284
+  if valid_589313 != nil:
+    section.add "merchantId", valid_589313
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -3099,45 +3099,45 @@ proc validate_ContentAccountsClaimwebsite_580281(path: JsonNode; query: JsonNode
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580285 = query.getOrDefault("fields")
-  valid_580285 = validateParameter(valid_580285, JString, required = false,
+  var valid_589314 = query.getOrDefault("fields")
+  valid_589314 = validateParameter(valid_589314, JString, required = false,
                                  default = nil)
-  if valid_580285 != nil:
-    section.add "fields", valid_580285
-  var valid_580286 = query.getOrDefault("quotaUser")
-  valid_580286 = validateParameter(valid_580286, JString, required = false,
+  if valid_589314 != nil:
+    section.add "fields", valid_589314
+  var valid_589315 = query.getOrDefault("quotaUser")
+  valid_589315 = validateParameter(valid_589315, JString, required = false,
                                  default = nil)
-  if valid_580286 != nil:
-    section.add "quotaUser", valid_580286
-  var valid_580287 = query.getOrDefault("alt")
-  valid_580287 = validateParameter(valid_580287, JString, required = false,
+  if valid_589315 != nil:
+    section.add "quotaUser", valid_589315
+  var valid_589316 = query.getOrDefault("alt")
+  valid_589316 = validateParameter(valid_589316, JString, required = false,
                                  default = newJString("json"))
-  if valid_580287 != nil:
-    section.add "alt", valid_580287
-  var valid_580288 = query.getOrDefault("oauth_token")
-  valid_580288 = validateParameter(valid_580288, JString, required = false,
+  if valid_589316 != nil:
+    section.add "alt", valid_589316
+  var valid_589317 = query.getOrDefault("oauth_token")
+  valid_589317 = validateParameter(valid_589317, JString, required = false,
                                  default = nil)
-  if valid_580288 != nil:
-    section.add "oauth_token", valid_580288
-  var valid_580289 = query.getOrDefault("userIp")
-  valid_580289 = validateParameter(valid_580289, JString, required = false,
+  if valid_589317 != nil:
+    section.add "oauth_token", valid_589317
+  var valid_589318 = query.getOrDefault("userIp")
+  valid_589318 = validateParameter(valid_589318, JString, required = false,
                                  default = nil)
-  if valid_580289 != nil:
-    section.add "userIp", valid_580289
-  var valid_580290 = query.getOrDefault("overwrite")
-  valid_580290 = validateParameter(valid_580290, JBool, required = false, default = nil)
-  if valid_580290 != nil:
-    section.add "overwrite", valid_580290
-  var valid_580291 = query.getOrDefault("key")
-  valid_580291 = validateParameter(valid_580291, JString, required = false,
+  if valid_589318 != nil:
+    section.add "userIp", valid_589318
+  var valid_589319 = query.getOrDefault("overwrite")
+  valid_589319 = validateParameter(valid_589319, JBool, required = false, default = nil)
+  if valid_589319 != nil:
+    section.add "overwrite", valid_589319
+  var valid_589320 = query.getOrDefault("key")
+  valid_589320 = validateParameter(valid_589320, JString, required = false,
                                  default = nil)
-  if valid_580291 != nil:
-    section.add "key", valid_580291
-  var valid_580292 = query.getOrDefault("prettyPrint")
-  valid_580292 = validateParameter(valid_580292, JBool, required = false,
+  if valid_589320 != nil:
+    section.add "key", valid_589320
+  var valid_589321 = query.getOrDefault("prettyPrint")
+  valid_589321 = validateParameter(valid_589321, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580292 != nil:
-    section.add "prettyPrint", valid_580292
+  if valid_589321 != nil:
+    section.add "prettyPrint", valid_589321
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -3146,20 +3146,20 @@ proc validate_ContentAccountsClaimwebsite_580281(path: JsonNode; query: JsonNode
   if body != nil:
     result.add "body", body
 
-proc call*(call_580293: Call_ContentAccountsClaimwebsite_580280; path: JsonNode;
+proc call*(call_589322: Call_ContentAccountsClaimwebsite_589309; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Claims the website of a Merchant Center sub-account.
   ## 
-  let valid = call_580293.validator(path, query, header, formData, body)
-  let scheme = call_580293.pickScheme
+  let valid = call_589322.validator(path, query, header, formData, body)
+  let scheme = call_589322.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580293.url(scheme.get, call_580293.host, call_580293.base,
-                         call_580293.route, valid.getOrDefault("path"),
+  let url = call_589322.url(scheme.get, call_589322.host, call_589322.base,
+                         call_589322.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580293, url, valid)
+  result = hook(call_589322, url, valid)
 
-proc call*(call_580294: Call_ContentAccountsClaimwebsite_580280; accountId: string;
+proc call*(call_589323: Call_ContentAccountsClaimwebsite_589309; accountId: string;
           merchantId: string; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; userIp: string = "";
           overwrite: bool = false; key: string = ""; prettyPrint: bool = true): Recallable =
@@ -3185,29 +3185,29 @@ proc call*(call_580294: Call_ContentAccountsClaimwebsite_580280; accountId: stri
   ##             : The ID of the managing account. If this parameter is not the same as accountId, then this account must be a multi-client account and accountId must be the ID of a sub-account of this account.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_580295 = newJObject()
-  var query_580296 = newJObject()
-  add(query_580296, "fields", newJString(fields))
-  add(query_580296, "quotaUser", newJString(quotaUser))
-  add(query_580296, "alt", newJString(alt))
-  add(query_580296, "oauth_token", newJString(oauthToken))
-  add(path_580295, "accountId", newJString(accountId))
-  add(query_580296, "userIp", newJString(userIp))
-  add(query_580296, "overwrite", newJBool(overwrite))
-  add(query_580296, "key", newJString(key))
-  add(path_580295, "merchantId", newJString(merchantId))
-  add(query_580296, "prettyPrint", newJBool(prettyPrint))
-  result = call_580294.call(path_580295, query_580296, nil, nil, nil)
+  var path_589324 = newJObject()
+  var query_589325 = newJObject()
+  add(query_589325, "fields", newJString(fields))
+  add(query_589325, "quotaUser", newJString(quotaUser))
+  add(query_589325, "alt", newJString(alt))
+  add(query_589325, "oauth_token", newJString(oauthToken))
+  add(path_589324, "accountId", newJString(accountId))
+  add(query_589325, "userIp", newJString(userIp))
+  add(query_589325, "overwrite", newJBool(overwrite))
+  add(query_589325, "key", newJString(key))
+  add(path_589324, "merchantId", newJString(merchantId))
+  add(query_589325, "prettyPrint", newJBool(prettyPrint))
+  result = call_589323.call(path_589324, query_589325, nil, nil, nil)
 
-var contentAccountsClaimwebsite* = Call_ContentAccountsClaimwebsite_580280(
+var contentAccountsClaimwebsite* = Call_ContentAccountsClaimwebsite_589309(
     name: "contentAccountsClaimwebsite", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com",
     route: "/{merchantId}/accounts/{accountId}/claimwebsite",
-    validator: validate_ContentAccountsClaimwebsite_580281, base: "/content/v2",
-    url: url_ContentAccountsClaimwebsite_580282, schemes: {Scheme.Https})
+    validator: validate_ContentAccountsClaimwebsite_589310, base: "/content/v2",
+    url: url_ContentAccountsClaimwebsite_589311, schemes: {Scheme.Https})
 type
-  Call_ContentAccountsLink_580297 = ref object of OpenApiRestCall_579421
-proc url_ContentAccountsLink_580299(protocol: Scheme; host: string; base: string;
+  Call_ContentAccountsLink_589326 = ref object of OpenApiRestCall_588450
+proc url_ContentAccountsLink_589328(protocol: Scheme; host: string; base: string;
                                    route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -3226,7 +3226,7 @@ proc url_ContentAccountsLink_580299(protocol: Scheme; host: string; base: string
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_ContentAccountsLink_580298(path: JsonNode; query: JsonNode;
+proc validate_ContentAccountsLink_589327(path: JsonNode; query: JsonNode;
                                         header: JsonNode; formData: JsonNode;
                                         body: JsonNode): JsonNode =
   ## Performs an action on a link between two Merchant Center accounts, namely accountId and linkedAccountId.
@@ -3240,16 +3240,16 @@ proc validate_ContentAccountsLink_580298(path: JsonNode; query: JsonNode;
   ##             : The ID of the managing account. If this parameter is not the same as accountId, then this account must be a multi-client account and accountId must be the ID of a sub-account of this account.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `accountId` field"
-  var valid_580300 = path.getOrDefault("accountId")
-  valid_580300 = validateParameter(valid_580300, JString, required = true,
+  var valid_589329 = path.getOrDefault("accountId")
+  valid_589329 = validateParameter(valid_589329, JString, required = true,
                                  default = nil)
-  if valid_580300 != nil:
-    section.add "accountId", valid_580300
-  var valid_580301 = path.getOrDefault("merchantId")
-  valid_580301 = validateParameter(valid_580301, JString, required = true,
+  if valid_589329 != nil:
+    section.add "accountId", valid_589329
+  var valid_589330 = path.getOrDefault("merchantId")
+  valid_589330 = validateParameter(valid_589330, JString, required = true,
                                  default = nil)
-  if valid_580301 != nil:
-    section.add "merchantId", valid_580301
+  if valid_589330 != nil:
+    section.add "merchantId", valid_589330
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -3267,41 +3267,41 @@ proc validate_ContentAccountsLink_580298(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580302 = query.getOrDefault("fields")
-  valid_580302 = validateParameter(valid_580302, JString, required = false,
+  var valid_589331 = query.getOrDefault("fields")
+  valid_589331 = validateParameter(valid_589331, JString, required = false,
                                  default = nil)
-  if valid_580302 != nil:
-    section.add "fields", valid_580302
-  var valid_580303 = query.getOrDefault("quotaUser")
-  valid_580303 = validateParameter(valid_580303, JString, required = false,
+  if valid_589331 != nil:
+    section.add "fields", valid_589331
+  var valid_589332 = query.getOrDefault("quotaUser")
+  valid_589332 = validateParameter(valid_589332, JString, required = false,
                                  default = nil)
-  if valid_580303 != nil:
-    section.add "quotaUser", valid_580303
-  var valid_580304 = query.getOrDefault("alt")
-  valid_580304 = validateParameter(valid_580304, JString, required = false,
+  if valid_589332 != nil:
+    section.add "quotaUser", valid_589332
+  var valid_589333 = query.getOrDefault("alt")
+  valid_589333 = validateParameter(valid_589333, JString, required = false,
                                  default = newJString("json"))
-  if valid_580304 != nil:
-    section.add "alt", valid_580304
-  var valid_580305 = query.getOrDefault("oauth_token")
-  valid_580305 = validateParameter(valid_580305, JString, required = false,
+  if valid_589333 != nil:
+    section.add "alt", valid_589333
+  var valid_589334 = query.getOrDefault("oauth_token")
+  valid_589334 = validateParameter(valid_589334, JString, required = false,
                                  default = nil)
-  if valid_580305 != nil:
-    section.add "oauth_token", valid_580305
-  var valid_580306 = query.getOrDefault("userIp")
-  valid_580306 = validateParameter(valid_580306, JString, required = false,
+  if valid_589334 != nil:
+    section.add "oauth_token", valid_589334
+  var valid_589335 = query.getOrDefault("userIp")
+  valid_589335 = validateParameter(valid_589335, JString, required = false,
                                  default = nil)
-  if valid_580306 != nil:
-    section.add "userIp", valid_580306
-  var valid_580307 = query.getOrDefault("key")
-  valid_580307 = validateParameter(valid_580307, JString, required = false,
+  if valid_589335 != nil:
+    section.add "userIp", valid_589335
+  var valid_589336 = query.getOrDefault("key")
+  valid_589336 = validateParameter(valid_589336, JString, required = false,
                                  default = nil)
-  if valid_580307 != nil:
-    section.add "key", valid_580307
-  var valid_580308 = query.getOrDefault("prettyPrint")
-  valid_580308 = validateParameter(valid_580308, JBool, required = false,
+  if valid_589336 != nil:
+    section.add "key", valid_589336
+  var valid_589337 = query.getOrDefault("prettyPrint")
+  valid_589337 = validateParameter(valid_589337, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580308 != nil:
-    section.add "prettyPrint", valid_580308
+  if valid_589337 != nil:
+    section.add "prettyPrint", valid_589337
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -3313,20 +3313,20 @@ proc validate_ContentAccountsLink_580298(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580310: Call_ContentAccountsLink_580297; path: JsonNode;
+proc call*(call_589339: Call_ContentAccountsLink_589326; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Performs an action on a link between two Merchant Center accounts, namely accountId and linkedAccountId.
   ## 
-  let valid = call_580310.validator(path, query, header, formData, body)
-  let scheme = call_580310.pickScheme
+  let valid = call_589339.validator(path, query, header, formData, body)
+  let scheme = call_589339.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580310.url(scheme.get, call_580310.host, call_580310.base,
-                         call_580310.route, valid.getOrDefault("path"),
+  let url = call_589339.url(scheme.get, call_589339.host, call_589339.base,
+                         call_589339.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580310, url, valid)
+  result = hook(call_589339, url, valid)
 
-proc call*(call_580311: Call_ContentAccountsLink_580297; accountId: string;
+proc call*(call_589340: Call_ContentAccountsLink_589326; accountId: string;
           merchantId: string; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; userIp: string = "";
           key: string = ""; body: JsonNode = nil; prettyPrint: bool = true): Recallable =
@@ -3351,30 +3351,30 @@ proc call*(call_580311: Call_ContentAccountsLink_580297; accountId: string;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_580312 = newJObject()
-  var query_580313 = newJObject()
-  var body_580314 = newJObject()
-  add(query_580313, "fields", newJString(fields))
-  add(query_580313, "quotaUser", newJString(quotaUser))
-  add(query_580313, "alt", newJString(alt))
-  add(query_580313, "oauth_token", newJString(oauthToken))
-  add(path_580312, "accountId", newJString(accountId))
-  add(query_580313, "userIp", newJString(userIp))
-  add(query_580313, "key", newJString(key))
-  add(path_580312, "merchantId", newJString(merchantId))
+  var path_589341 = newJObject()
+  var query_589342 = newJObject()
+  var body_589343 = newJObject()
+  add(query_589342, "fields", newJString(fields))
+  add(query_589342, "quotaUser", newJString(quotaUser))
+  add(query_589342, "alt", newJString(alt))
+  add(query_589342, "oauth_token", newJString(oauthToken))
+  add(path_589341, "accountId", newJString(accountId))
+  add(query_589342, "userIp", newJString(userIp))
+  add(query_589342, "key", newJString(key))
+  add(path_589341, "merchantId", newJString(merchantId))
   if body != nil:
-    body_580314 = body
-  add(query_580313, "prettyPrint", newJBool(prettyPrint))
-  result = call_580311.call(path_580312, query_580313, nil, nil, body_580314)
+    body_589343 = body
+  add(query_589342, "prettyPrint", newJBool(prettyPrint))
+  result = call_589340.call(path_589341, query_589342, nil, nil, body_589343)
 
-var contentAccountsLink* = Call_ContentAccountsLink_580297(
+var contentAccountsLink* = Call_ContentAccountsLink_589326(
     name: "contentAccountsLink", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com", route: "/{merchantId}/accounts/{accountId}/link",
-    validator: validate_ContentAccountsLink_580298, base: "/content/v2",
-    url: url_ContentAccountsLink_580299, schemes: {Scheme.Https})
+    validator: validate_ContentAccountsLink_589327, base: "/content/v2",
+    url: url_ContentAccountsLink_589328, schemes: {Scheme.Https})
 type
-  Call_ContentAccountstatusesList_580315 = ref object of OpenApiRestCall_579421
-proc url_ContentAccountstatusesList_580317(protocol: Scheme; host: string;
+  Call_ContentAccountstatusesList_589344 = ref object of OpenApiRestCall_588450
+proc url_ContentAccountstatusesList_589346(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -3390,7 +3390,7 @@ proc url_ContentAccountstatusesList_580317(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_ContentAccountstatusesList_580316(path: JsonNode; query: JsonNode;
+proc validate_ContentAccountstatusesList_589345(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Lists the statuses of the sub-accounts in your Merchant Center account.
   ## 
@@ -3402,11 +3402,11 @@ proc validate_ContentAccountstatusesList_580316(path: JsonNode; query: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `merchantId` field"
-  var valid_580318 = path.getOrDefault("merchantId")
-  valid_580318 = validateParameter(valid_580318, JString, required = true,
+  var valid_589347 = path.getOrDefault("merchantId")
+  valid_589347 = validateParameter(valid_589347, JString, required = true,
                                  default = nil)
-  if valid_580318 != nil:
-    section.add "merchantId", valid_580318
+  if valid_589347 != nil:
+    section.add "merchantId", valid_589347
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -3430,55 +3430,55 @@ proc validate_ContentAccountstatusesList_580316(path: JsonNode; query: JsonNode;
   ##   destinations: JArray
   ##               : If set, only issues for the specified destinations are returned, otherwise only issues for the Shopping destination.
   section = newJObject()
-  var valid_580319 = query.getOrDefault("fields")
-  valid_580319 = validateParameter(valid_580319, JString, required = false,
+  var valid_589348 = query.getOrDefault("fields")
+  valid_589348 = validateParameter(valid_589348, JString, required = false,
                                  default = nil)
-  if valid_580319 != nil:
-    section.add "fields", valid_580319
-  var valid_580320 = query.getOrDefault("pageToken")
-  valid_580320 = validateParameter(valid_580320, JString, required = false,
+  if valid_589348 != nil:
+    section.add "fields", valid_589348
+  var valid_589349 = query.getOrDefault("pageToken")
+  valid_589349 = validateParameter(valid_589349, JString, required = false,
                                  default = nil)
-  if valid_580320 != nil:
-    section.add "pageToken", valid_580320
-  var valid_580321 = query.getOrDefault("quotaUser")
-  valid_580321 = validateParameter(valid_580321, JString, required = false,
+  if valid_589349 != nil:
+    section.add "pageToken", valid_589349
+  var valid_589350 = query.getOrDefault("quotaUser")
+  valid_589350 = validateParameter(valid_589350, JString, required = false,
                                  default = nil)
-  if valid_580321 != nil:
-    section.add "quotaUser", valid_580321
-  var valid_580322 = query.getOrDefault("alt")
-  valid_580322 = validateParameter(valid_580322, JString, required = false,
+  if valid_589350 != nil:
+    section.add "quotaUser", valid_589350
+  var valid_589351 = query.getOrDefault("alt")
+  valid_589351 = validateParameter(valid_589351, JString, required = false,
                                  default = newJString("json"))
-  if valid_580322 != nil:
-    section.add "alt", valid_580322
-  var valid_580323 = query.getOrDefault("oauth_token")
-  valid_580323 = validateParameter(valid_580323, JString, required = false,
+  if valid_589351 != nil:
+    section.add "alt", valid_589351
+  var valid_589352 = query.getOrDefault("oauth_token")
+  valid_589352 = validateParameter(valid_589352, JString, required = false,
                                  default = nil)
-  if valid_580323 != nil:
-    section.add "oauth_token", valid_580323
-  var valid_580324 = query.getOrDefault("userIp")
-  valid_580324 = validateParameter(valid_580324, JString, required = false,
+  if valid_589352 != nil:
+    section.add "oauth_token", valid_589352
+  var valid_589353 = query.getOrDefault("userIp")
+  valid_589353 = validateParameter(valid_589353, JString, required = false,
                                  default = nil)
-  if valid_580324 != nil:
-    section.add "userIp", valid_580324
-  var valid_580325 = query.getOrDefault("maxResults")
-  valid_580325 = validateParameter(valid_580325, JInt, required = false, default = nil)
-  if valid_580325 != nil:
-    section.add "maxResults", valid_580325
-  var valid_580326 = query.getOrDefault("key")
-  valid_580326 = validateParameter(valid_580326, JString, required = false,
+  if valid_589353 != nil:
+    section.add "userIp", valid_589353
+  var valid_589354 = query.getOrDefault("maxResults")
+  valid_589354 = validateParameter(valid_589354, JInt, required = false, default = nil)
+  if valid_589354 != nil:
+    section.add "maxResults", valid_589354
+  var valid_589355 = query.getOrDefault("key")
+  valid_589355 = validateParameter(valid_589355, JString, required = false,
                                  default = nil)
-  if valid_580326 != nil:
-    section.add "key", valid_580326
-  var valid_580327 = query.getOrDefault("prettyPrint")
-  valid_580327 = validateParameter(valid_580327, JBool, required = false,
+  if valid_589355 != nil:
+    section.add "key", valid_589355
+  var valid_589356 = query.getOrDefault("prettyPrint")
+  valid_589356 = validateParameter(valid_589356, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580327 != nil:
-    section.add "prettyPrint", valid_580327
-  var valid_580328 = query.getOrDefault("destinations")
-  valid_580328 = validateParameter(valid_580328, JArray, required = false,
+  if valid_589356 != nil:
+    section.add "prettyPrint", valid_589356
+  var valid_589357 = query.getOrDefault("destinations")
+  valid_589357 = validateParameter(valid_589357, JArray, required = false,
                                  default = nil)
-  if valid_580328 != nil:
-    section.add "destinations", valid_580328
+  if valid_589357 != nil:
+    section.add "destinations", valid_589357
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -3487,20 +3487,20 @@ proc validate_ContentAccountstatusesList_580316(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580329: Call_ContentAccountstatusesList_580315; path: JsonNode;
+proc call*(call_589358: Call_ContentAccountstatusesList_589344; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Lists the statuses of the sub-accounts in your Merchant Center account.
   ## 
-  let valid = call_580329.validator(path, query, header, formData, body)
-  let scheme = call_580329.pickScheme
+  let valid = call_589358.validator(path, query, header, formData, body)
+  let scheme = call_589358.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580329.url(scheme.get, call_580329.host, call_580329.base,
-                         call_580329.route, valid.getOrDefault("path"),
+  let url = call_589358.url(scheme.get, call_589358.host, call_589358.base,
+                         call_589358.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580329, url, valid)
+  result = hook(call_589358, url, valid)
 
-proc call*(call_580330: Call_ContentAccountstatusesList_580315; merchantId: string;
+proc call*(call_589359: Call_ContentAccountstatusesList_589344; merchantId: string;
           fields: string = ""; pageToken: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; userIp: string = "";
           maxResults: int = 0; key: string = ""; prettyPrint: bool = true;
@@ -3529,30 +3529,30 @@ proc call*(call_580330: Call_ContentAccountstatusesList_580315; merchantId: stri
   ##              : Returns response with indentations and line breaks.
   ##   destinations: JArray
   ##               : If set, only issues for the specified destinations are returned, otherwise only issues for the Shopping destination.
-  var path_580331 = newJObject()
-  var query_580332 = newJObject()
-  add(query_580332, "fields", newJString(fields))
-  add(query_580332, "pageToken", newJString(pageToken))
-  add(query_580332, "quotaUser", newJString(quotaUser))
-  add(query_580332, "alt", newJString(alt))
-  add(query_580332, "oauth_token", newJString(oauthToken))
-  add(query_580332, "userIp", newJString(userIp))
-  add(query_580332, "maxResults", newJInt(maxResults))
-  add(query_580332, "key", newJString(key))
-  add(path_580331, "merchantId", newJString(merchantId))
-  add(query_580332, "prettyPrint", newJBool(prettyPrint))
+  var path_589360 = newJObject()
+  var query_589361 = newJObject()
+  add(query_589361, "fields", newJString(fields))
+  add(query_589361, "pageToken", newJString(pageToken))
+  add(query_589361, "quotaUser", newJString(quotaUser))
+  add(query_589361, "alt", newJString(alt))
+  add(query_589361, "oauth_token", newJString(oauthToken))
+  add(query_589361, "userIp", newJString(userIp))
+  add(query_589361, "maxResults", newJInt(maxResults))
+  add(query_589361, "key", newJString(key))
+  add(path_589360, "merchantId", newJString(merchantId))
+  add(query_589361, "prettyPrint", newJBool(prettyPrint))
   if destinations != nil:
-    query_580332.add "destinations", destinations
-  result = call_580330.call(path_580331, query_580332, nil, nil, nil)
+    query_589361.add "destinations", destinations
+  result = call_589359.call(path_589360, query_589361, nil, nil, nil)
 
-var contentAccountstatusesList* = Call_ContentAccountstatusesList_580315(
+var contentAccountstatusesList* = Call_ContentAccountstatusesList_589344(
     name: "contentAccountstatusesList", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/{merchantId}/accountstatuses",
-    validator: validate_ContentAccountstatusesList_580316, base: "/content/v2",
-    url: url_ContentAccountstatusesList_580317, schemes: {Scheme.Https})
+    validator: validate_ContentAccountstatusesList_589345, base: "/content/v2",
+    url: url_ContentAccountstatusesList_589346, schemes: {Scheme.Https})
 type
-  Call_ContentAccountstatusesGet_580333 = ref object of OpenApiRestCall_579421
-proc url_ContentAccountstatusesGet_580335(protocol: Scheme; host: string;
+  Call_ContentAccountstatusesGet_589362 = ref object of OpenApiRestCall_588450
+proc url_ContentAccountstatusesGet_589364(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -3570,7 +3570,7 @@ proc url_ContentAccountstatusesGet_580335(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_ContentAccountstatusesGet_580334(path: JsonNode; query: JsonNode;
+proc validate_ContentAccountstatusesGet_589363(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Retrieves the status of a Merchant Center account. No itemLevelIssues are returned for multi-client accounts.
   ## 
@@ -3583,16 +3583,16 @@ proc validate_ContentAccountstatusesGet_580334(path: JsonNode; query: JsonNode;
   ##             : The ID of the managing account. If this parameter is not the same as accountId, then this account must be a multi-client account and accountId must be the ID of a sub-account of this account.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `accountId` field"
-  var valid_580336 = path.getOrDefault("accountId")
-  valid_580336 = validateParameter(valid_580336, JString, required = true,
+  var valid_589365 = path.getOrDefault("accountId")
+  valid_589365 = validateParameter(valid_589365, JString, required = true,
                                  default = nil)
-  if valid_580336 != nil:
-    section.add "accountId", valid_580336
-  var valid_580337 = path.getOrDefault("merchantId")
-  valid_580337 = validateParameter(valid_580337, JString, required = true,
+  if valid_589365 != nil:
+    section.add "accountId", valid_589365
+  var valid_589366 = path.getOrDefault("merchantId")
+  valid_589366 = validateParameter(valid_589366, JString, required = true,
                                  default = nil)
-  if valid_580337 != nil:
-    section.add "merchantId", valid_580337
+  if valid_589366 != nil:
+    section.add "merchantId", valid_589366
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -3612,46 +3612,46 @@ proc validate_ContentAccountstatusesGet_580334(path: JsonNode; query: JsonNode;
   ##   destinations: JArray
   ##               : If set, only issues for the specified destinations are returned, otherwise only issues for the Shopping destination.
   section = newJObject()
-  var valid_580338 = query.getOrDefault("fields")
-  valid_580338 = validateParameter(valid_580338, JString, required = false,
+  var valid_589367 = query.getOrDefault("fields")
+  valid_589367 = validateParameter(valid_589367, JString, required = false,
                                  default = nil)
-  if valid_580338 != nil:
-    section.add "fields", valid_580338
-  var valid_580339 = query.getOrDefault("quotaUser")
-  valid_580339 = validateParameter(valid_580339, JString, required = false,
+  if valid_589367 != nil:
+    section.add "fields", valid_589367
+  var valid_589368 = query.getOrDefault("quotaUser")
+  valid_589368 = validateParameter(valid_589368, JString, required = false,
                                  default = nil)
-  if valid_580339 != nil:
-    section.add "quotaUser", valid_580339
-  var valid_580340 = query.getOrDefault("alt")
-  valid_580340 = validateParameter(valid_580340, JString, required = false,
+  if valid_589368 != nil:
+    section.add "quotaUser", valid_589368
+  var valid_589369 = query.getOrDefault("alt")
+  valid_589369 = validateParameter(valid_589369, JString, required = false,
                                  default = newJString("json"))
-  if valid_580340 != nil:
-    section.add "alt", valid_580340
-  var valid_580341 = query.getOrDefault("oauth_token")
-  valid_580341 = validateParameter(valid_580341, JString, required = false,
+  if valid_589369 != nil:
+    section.add "alt", valid_589369
+  var valid_589370 = query.getOrDefault("oauth_token")
+  valid_589370 = validateParameter(valid_589370, JString, required = false,
                                  default = nil)
-  if valid_580341 != nil:
-    section.add "oauth_token", valid_580341
-  var valid_580342 = query.getOrDefault("userIp")
-  valid_580342 = validateParameter(valid_580342, JString, required = false,
+  if valid_589370 != nil:
+    section.add "oauth_token", valid_589370
+  var valid_589371 = query.getOrDefault("userIp")
+  valid_589371 = validateParameter(valid_589371, JString, required = false,
                                  default = nil)
-  if valid_580342 != nil:
-    section.add "userIp", valid_580342
-  var valid_580343 = query.getOrDefault("key")
-  valid_580343 = validateParameter(valid_580343, JString, required = false,
+  if valid_589371 != nil:
+    section.add "userIp", valid_589371
+  var valid_589372 = query.getOrDefault("key")
+  valid_589372 = validateParameter(valid_589372, JString, required = false,
                                  default = nil)
-  if valid_580343 != nil:
-    section.add "key", valid_580343
-  var valid_580344 = query.getOrDefault("prettyPrint")
-  valid_580344 = validateParameter(valid_580344, JBool, required = false,
+  if valid_589372 != nil:
+    section.add "key", valid_589372
+  var valid_589373 = query.getOrDefault("prettyPrint")
+  valid_589373 = validateParameter(valid_589373, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580344 != nil:
-    section.add "prettyPrint", valid_580344
-  var valid_580345 = query.getOrDefault("destinations")
-  valid_580345 = validateParameter(valid_580345, JArray, required = false,
+  if valid_589373 != nil:
+    section.add "prettyPrint", valid_589373
+  var valid_589374 = query.getOrDefault("destinations")
+  valid_589374 = validateParameter(valid_589374, JArray, required = false,
                                  default = nil)
-  if valid_580345 != nil:
-    section.add "destinations", valid_580345
+  if valid_589374 != nil:
+    section.add "destinations", valid_589374
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -3660,20 +3660,20 @@ proc validate_ContentAccountstatusesGet_580334(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580346: Call_ContentAccountstatusesGet_580333; path: JsonNode;
+proc call*(call_589375: Call_ContentAccountstatusesGet_589362; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Retrieves the status of a Merchant Center account. No itemLevelIssues are returned for multi-client accounts.
   ## 
-  let valid = call_580346.validator(path, query, header, formData, body)
-  let scheme = call_580346.pickScheme
+  let valid = call_589375.validator(path, query, header, formData, body)
+  let scheme = call_589375.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580346.url(scheme.get, call_580346.host, call_580346.base,
-                         call_580346.route, valid.getOrDefault("path"),
+  let url = call_589375.url(scheme.get, call_589375.host, call_589375.base,
+                         call_589375.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580346, url, valid)
+  result = hook(call_589375, url, valid)
 
-proc call*(call_580347: Call_ContentAccountstatusesGet_580333; accountId: string;
+proc call*(call_589376: Call_ContentAccountstatusesGet_589362; accountId: string;
           merchantId: string; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; userIp: string = "";
           key: string = ""; prettyPrint: bool = true; destinations: JsonNode = nil): Recallable =
@@ -3699,30 +3699,30 @@ proc call*(call_580347: Call_ContentAccountstatusesGet_580333; accountId: string
   ##              : Returns response with indentations and line breaks.
   ##   destinations: JArray
   ##               : If set, only issues for the specified destinations are returned, otherwise only issues for the Shopping destination.
-  var path_580348 = newJObject()
-  var query_580349 = newJObject()
-  add(query_580349, "fields", newJString(fields))
-  add(query_580349, "quotaUser", newJString(quotaUser))
-  add(query_580349, "alt", newJString(alt))
-  add(query_580349, "oauth_token", newJString(oauthToken))
-  add(path_580348, "accountId", newJString(accountId))
-  add(query_580349, "userIp", newJString(userIp))
-  add(query_580349, "key", newJString(key))
-  add(path_580348, "merchantId", newJString(merchantId))
-  add(query_580349, "prettyPrint", newJBool(prettyPrint))
+  var path_589377 = newJObject()
+  var query_589378 = newJObject()
+  add(query_589378, "fields", newJString(fields))
+  add(query_589378, "quotaUser", newJString(quotaUser))
+  add(query_589378, "alt", newJString(alt))
+  add(query_589378, "oauth_token", newJString(oauthToken))
+  add(path_589377, "accountId", newJString(accountId))
+  add(query_589378, "userIp", newJString(userIp))
+  add(query_589378, "key", newJString(key))
+  add(path_589377, "merchantId", newJString(merchantId))
+  add(query_589378, "prettyPrint", newJBool(prettyPrint))
   if destinations != nil:
-    query_580349.add "destinations", destinations
-  result = call_580347.call(path_580348, query_580349, nil, nil, nil)
+    query_589378.add "destinations", destinations
+  result = call_589376.call(path_589377, query_589378, nil, nil, nil)
 
-var contentAccountstatusesGet* = Call_ContentAccountstatusesGet_580333(
+var contentAccountstatusesGet* = Call_ContentAccountstatusesGet_589362(
     name: "contentAccountstatusesGet", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com",
     route: "/{merchantId}/accountstatuses/{accountId}",
-    validator: validate_ContentAccountstatusesGet_580334, base: "/content/v2",
-    url: url_ContentAccountstatusesGet_580335, schemes: {Scheme.Https})
+    validator: validate_ContentAccountstatusesGet_589363, base: "/content/v2",
+    url: url_ContentAccountstatusesGet_589364, schemes: {Scheme.Https})
 type
-  Call_ContentAccounttaxList_580350 = ref object of OpenApiRestCall_579421
-proc url_ContentAccounttaxList_580352(protocol: Scheme; host: string; base: string;
+  Call_ContentAccounttaxList_589379 = ref object of OpenApiRestCall_588450
+proc url_ContentAccounttaxList_589381(protocol: Scheme; host: string; base: string;
                                      route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -3738,7 +3738,7 @@ proc url_ContentAccounttaxList_580352(protocol: Scheme; host: string; base: stri
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_ContentAccounttaxList_580351(path: JsonNode; query: JsonNode;
+proc validate_ContentAccounttaxList_589380(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Lists the tax settings of the sub-accounts in your Merchant Center account.
   ## 
@@ -3750,11 +3750,11 @@ proc validate_ContentAccounttaxList_580351(path: JsonNode; query: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `merchantId` field"
-  var valid_580353 = path.getOrDefault("merchantId")
-  valid_580353 = validateParameter(valid_580353, JString, required = true,
+  var valid_589382 = path.getOrDefault("merchantId")
+  valid_589382 = validateParameter(valid_589382, JString, required = true,
                                  default = nil)
-  if valid_580353 != nil:
-    section.add "merchantId", valid_580353
+  if valid_589382 != nil:
+    section.add "merchantId", valid_589382
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -3776,50 +3776,50 @@ proc validate_ContentAccounttaxList_580351(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580354 = query.getOrDefault("fields")
-  valid_580354 = validateParameter(valid_580354, JString, required = false,
+  var valid_589383 = query.getOrDefault("fields")
+  valid_589383 = validateParameter(valid_589383, JString, required = false,
                                  default = nil)
-  if valid_580354 != nil:
-    section.add "fields", valid_580354
-  var valid_580355 = query.getOrDefault("pageToken")
-  valid_580355 = validateParameter(valid_580355, JString, required = false,
+  if valid_589383 != nil:
+    section.add "fields", valid_589383
+  var valid_589384 = query.getOrDefault("pageToken")
+  valid_589384 = validateParameter(valid_589384, JString, required = false,
                                  default = nil)
-  if valid_580355 != nil:
-    section.add "pageToken", valid_580355
-  var valid_580356 = query.getOrDefault("quotaUser")
-  valid_580356 = validateParameter(valid_580356, JString, required = false,
+  if valid_589384 != nil:
+    section.add "pageToken", valid_589384
+  var valid_589385 = query.getOrDefault("quotaUser")
+  valid_589385 = validateParameter(valid_589385, JString, required = false,
                                  default = nil)
-  if valid_580356 != nil:
-    section.add "quotaUser", valid_580356
-  var valid_580357 = query.getOrDefault("alt")
-  valid_580357 = validateParameter(valid_580357, JString, required = false,
+  if valid_589385 != nil:
+    section.add "quotaUser", valid_589385
+  var valid_589386 = query.getOrDefault("alt")
+  valid_589386 = validateParameter(valid_589386, JString, required = false,
                                  default = newJString("json"))
-  if valid_580357 != nil:
-    section.add "alt", valid_580357
-  var valid_580358 = query.getOrDefault("oauth_token")
-  valid_580358 = validateParameter(valid_580358, JString, required = false,
+  if valid_589386 != nil:
+    section.add "alt", valid_589386
+  var valid_589387 = query.getOrDefault("oauth_token")
+  valid_589387 = validateParameter(valid_589387, JString, required = false,
                                  default = nil)
-  if valid_580358 != nil:
-    section.add "oauth_token", valid_580358
-  var valid_580359 = query.getOrDefault("userIp")
-  valid_580359 = validateParameter(valid_580359, JString, required = false,
+  if valid_589387 != nil:
+    section.add "oauth_token", valid_589387
+  var valid_589388 = query.getOrDefault("userIp")
+  valid_589388 = validateParameter(valid_589388, JString, required = false,
                                  default = nil)
-  if valid_580359 != nil:
-    section.add "userIp", valid_580359
-  var valid_580360 = query.getOrDefault("maxResults")
-  valid_580360 = validateParameter(valid_580360, JInt, required = false, default = nil)
-  if valid_580360 != nil:
-    section.add "maxResults", valid_580360
-  var valid_580361 = query.getOrDefault("key")
-  valid_580361 = validateParameter(valid_580361, JString, required = false,
+  if valid_589388 != nil:
+    section.add "userIp", valid_589388
+  var valid_589389 = query.getOrDefault("maxResults")
+  valid_589389 = validateParameter(valid_589389, JInt, required = false, default = nil)
+  if valid_589389 != nil:
+    section.add "maxResults", valid_589389
+  var valid_589390 = query.getOrDefault("key")
+  valid_589390 = validateParameter(valid_589390, JString, required = false,
                                  default = nil)
-  if valid_580361 != nil:
-    section.add "key", valid_580361
-  var valid_580362 = query.getOrDefault("prettyPrint")
-  valid_580362 = validateParameter(valid_580362, JBool, required = false,
+  if valid_589390 != nil:
+    section.add "key", valid_589390
+  var valid_589391 = query.getOrDefault("prettyPrint")
+  valid_589391 = validateParameter(valid_589391, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580362 != nil:
-    section.add "prettyPrint", valid_580362
+  if valid_589391 != nil:
+    section.add "prettyPrint", valid_589391
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -3828,20 +3828,20 @@ proc validate_ContentAccounttaxList_580351(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580363: Call_ContentAccounttaxList_580350; path: JsonNode;
+proc call*(call_589392: Call_ContentAccounttaxList_589379; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Lists the tax settings of the sub-accounts in your Merchant Center account.
   ## 
-  let valid = call_580363.validator(path, query, header, formData, body)
-  let scheme = call_580363.pickScheme
+  let valid = call_589392.validator(path, query, header, formData, body)
+  let scheme = call_589392.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580363.url(scheme.get, call_580363.host, call_580363.base,
-                         call_580363.route, valid.getOrDefault("path"),
+  let url = call_589392.url(scheme.get, call_589392.host, call_589392.base,
+                         call_589392.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580363, url, valid)
+  result = hook(call_589392, url, valid)
 
-proc call*(call_580364: Call_ContentAccounttaxList_580350; merchantId: string;
+proc call*(call_589393: Call_ContentAccounttaxList_589379; merchantId: string;
           fields: string = ""; pageToken: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; userIp: string = "";
           maxResults: int = 0; key: string = ""; prettyPrint: bool = true): Recallable =
@@ -3867,28 +3867,28 @@ proc call*(call_580364: Call_ContentAccounttaxList_580350; merchantId: string;
   ##             : The ID of the managing account. This must be a multi-client account.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_580365 = newJObject()
-  var query_580366 = newJObject()
-  add(query_580366, "fields", newJString(fields))
-  add(query_580366, "pageToken", newJString(pageToken))
-  add(query_580366, "quotaUser", newJString(quotaUser))
-  add(query_580366, "alt", newJString(alt))
-  add(query_580366, "oauth_token", newJString(oauthToken))
-  add(query_580366, "userIp", newJString(userIp))
-  add(query_580366, "maxResults", newJInt(maxResults))
-  add(query_580366, "key", newJString(key))
-  add(path_580365, "merchantId", newJString(merchantId))
-  add(query_580366, "prettyPrint", newJBool(prettyPrint))
-  result = call_580364.call(path_580365, query_580366, nil, nil, nil)
+  var path_589394 = newJObject()
+  var query_589395 = newJObject()
+  add(query_589395, "fields", newJString(fields))
+  add(query_589395, "pageToken", newJString(pageToken))
+  add(query_589395, "quotaUser", newJString(quotaUser))
+  add(query_589395, "alt", newJString(alt))
+  add(query_589395, "oauth_token", newJString(oauthToken))
+  add(query_589395, "userIp", newJString(userIp))
+  add(query_589395, "maxResults", newJInt(maxResults))
+  add(query_589395, "key", newJString(key))
+  add(path_589394, "merchantId", newJString(merchantId))
+  add(query_589395, "prettyPrint", newJBool(prettyPrint))
+  result = call_589393.call(path_589394, query_589395, nil, nil, nil)
 
-var contentAccounttaxList* = Call_ContentAccounttaxList_580350(
+var contentAccounttaxList* = Call_ContentAccounttaxList_589379(
     name: "contentAccounttaxList", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/{merchantId}/accounttax",
-    validator: validate_ContentAccounttaxList_580351, base: "/content/v2",
-    url: url_ContentAccounttaxList_580352, schemes: {Scheme.Https})
+    validator: validate_ContentAccounttaxList_589380, base: "/content/v2",
+    url: url_ContentAccounttaxList_589381, schemes: {Scheme.Https})
 type
-  Call_ContentAccounttaxUpdate_580383 = ref object of OpenApiRestCall_579421
-proc url_ContentAccounttaxUpdate_580385(protocol: Scheme; host: string; base: string;
+  Call_ContentAccounttaxUpdate_589412 = ref object of OpenApiRestCall_588450
+proc url_ContentAccounttaxUpdate_589414(protocol: Scheme; host: string; base: string;
                                        route: string; path: JsonNode;
                                        query: JsonNode): Uri =
   result.scheme = $protocol
@@ -3907,7 +3907,7 @@ proc url_ContentAccounttaxUpdate_580385(protocol: Scheme; host: string; base: st
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_ContentAccounttaxUpdate_580384(path: JsonNode; query: JsonNode;
+proc validate_ContentAccounttaxUpdate_589413(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Updates the tax settings of the account.
   ## 
@@ -3920,16 +3920,16 @@ proc validate_ContentAccounttaxUpdate_580384(path: JsonNode; query: JsonNode;
   ##             : The ID of the managing account. If this parameter is not the same as accountId, then this account must be a multi-client account and accountId must be the ID of a sub-account of this account.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `accountId` field"
-  var valid_580386 = path.getOrDefault("accountId")
-  valid_580386 = validateParameter(valid_580386, JString, required = true,
+  var valid_589415 = path.getOrDefault("accountId")
+  valid_589415 = validateParameter(valid_589415, JString, required = true,
                                  default = nil)
-  if valid_580386 != nil:
-    section.add "accountId", valid_580386
-  var valid_580387 = path.getOrDefault("merchantId")
-  valid_580387 = validateParameter(valid_580387, JString, required = true,
+  if valid_589415 != nil:
+    section.add "accountId", valid_589415
+  var valid_589416 = path.getOrDefault("merchantId")
+  valid_589416 = validateParameter(valid_589416, JString, required = true,
                                  default = nil)
-  if valid_580387 != nil:
-    section.add "merchantId", valid_580387
+  if valid_589416 != nil:
+    section.add "merchantId", valid_589416
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -3949,45 +3949,45 @@ proc validate_ContentAccounttaxUpdate_580384(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580388 = query.getOrDefault("fields")
-  valid_580388 = validateParameter(valid_580388, JString, required = false,
+  var valid_589417 = query.getOrDefault("fields")
+  valid_589417 = validateParameter(valid_589417, JString, required = false,
                                  default = nil)
-  if valid_580388 != nil:
-    section.add "fields", valid_580388
-  var valid_580389 = query.getOrDefault("quotaUser")
-  valid_580389 = validateParameter(valid_580389, JString, required = false,
+  if valid_589417 != nil:
+    section.add "fields", valid_589417
+  var valid_589418 = query.getOrDefault("quotaUser")
+  valid_589418 = validateParameter(valid_589418, JString, required = false,
                                  default = nil)
-  if valid_580389 != nil:
-    section.add "quotaUser", valid_580389
-  var valid_580390 = query.getOrDefault("alt")
-  valid_580390 = validateParameter(valid_580390, JString, required = false,
+  if valid_589418 != nil:
+    section.add "quotaUser", valid_589418
+  var valid_589419 = query.getOrDefault("alt")
+  valid_589419 = validateParameter(valid_589419, JString, required = false,
                                  default = newJString("json"))
-  if valid_580390 != nil:
-    section.add "alt", valid_580390
-  var valid_580391 = query.getOrDefault("dryRun")
-  valid_580391 = validateParameter(valid_580391, JBool, required = false, default = nil)
-  if valid_580391 != nil:
-    section.add "dryRun", valid_580391
-  var valid_580392 = query.getOrDefault("oauth_token")
-  valid_580392 = validateParameter(valid_580392, JString, required = false,
+  if valid_589419 != nil:
+    section.add "alt", valid_589419
+  var valid_589420 = query.getOrDefault("dryRun")
+  valid_589420 = validateParameter(valid_589420, JBool, required = false, default = nil)
+  if valid_589420 != nil:
+    section.add "dryRun", valid_589420
+  var valid_589421 = query.getOrDefault("oauth_token")
+  valid_589421 = validateParameter(valid_589421, JString, required = false,
                                  default = nil)
-  if valid_580392 != nil:
-    section.add "oauth_token", valid_580392
-  var valid_580393 = query.getOrDefault("userIp")
-  valid_580393 = validateParameter(valid_580393, JString, required = false,
+  if valid_589421 != nil:
+    section.add "oauth_token", valid_589421
+  var valid_589422 = query.getOrDefault("userIp")
+  valid_589422 = validateParameter(valid_589422, JString, required = false,
                                  default = nil)
-  if valid_580393 != nil:
-    section.add "userIp", valid_580393
-  var valid_580394 = query.getOrDefault("key")
-  valid_580394 = validateParameter(valid_580394, JString, required = false,
+  if valid_589422 != nil:
+    section.add "userIp", valid_589422
+  var valid_589423 = query.getOrDefault("key")
+  valid_589423 = validateParameter(valid_589423, JString, required = false,
                                  default = nil)
-  if valid_580394 != nil:
-    section.add "key", valid_580394
-  var valid_580395 = query.getOrDefault("prettyPrint")
-  valid_580395 = validateParameter(valid_580395, JBool, required = false,
+  if valid_589423 != nil:
+    section.add "key", valid_589423
+  var valid_589424 = query.getOrDefault("prettyPrint")
+  valid_589424 = validateParameter(valid_589424, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580395 != nil:
-    section.add "prettyPrint", valid_580395
+  if valid_589424 != nil:
+    section.add "prettyPrint", valid_589424
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -3999,20 +3999,20 @@ proc validate_ContentAccounttaxUpdate_580384(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580397: Call_ContentAccounttaxUpdate_580383; path: JsonNode;
+proc call*(call_589426: Call_ContentAccounttaxUpdate_589412; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Updates the tax settings of the account.
   ## 
-  let valid = call_580397.validator(path, query, header, formData, body)
-  let scheme = call_580397.pickScheme
+  let valid = call_589426.validator(path, query, header, formData, body)
+  let scheme = call_589426.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580397.url(scheme.get, call_580397.host, call_580397.base,
-                         call_580397.route, valid.getOrDefault("path"),
+  let url = call_589426.url(scheme.get, call_589426.host, call_589426.base,
+                         call_589426.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580397, url, valid)
+  result = hook(call_589426, url, valid)
 
-proc call*(call_580398: Call_ContentAccounttaxUpdate_580383; accountId: string;
+proc call*(call_589427: Call_ContentAccounttaxUpdate_589412; accountId: string;
           merchantId: string; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; dryRun: bool = false; oauthToken: string = "";
           userIp: string = ""; key: string = ""; body: JsonNode = nil;
@@ -4040,31 +4040,31 @@ proc call*(call_580398: Call_ContentAccounttaxUpdate_580383; accountId: string;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_580399 = newJObject()
-  var query_580400 = newJObject()
-  var body_580401 = newJObject()
-  add(query_580400, "fields", newJString(fields))
-  add(query_580400, "quotaUser", newJString(quotaUser))
-  add(query_580400, "alt", newJString(alt))
-  add(query_580400, "dryRun", newJBool(dryRun))
-  add(query_580400, "oauth_token", newJString(oauthToken))
-  add(path_580399, "accountId", newJString(accountId))
-  add(query_580400, "userIp", newJString(userIp))
-  add(query_580400, "key", newJString(key))
-  add(path_580399, "merchantId", newJString(merchantId))
+  var path_589428 = newJObject()
+  var query_589429 = newJObject()
+  var body_589430 = newJObject()
+  add(query_589429, "fields", newJString(fields))
+  add(query_589429, "quotaUser", newJString(quotaUser))
+  add(query_589429, "alt", newJString(alt))
+  add(query_589429, "dryRun", newJBool(dryRun))
+  add(query_589429, "oauth_token", newJString(oauthToken))
+  add(path_589428, "accountId", newJString(accountId))
+  add(query_589429, "userIp", newJString(userIp))
+  add(query_589429, "key", newJString(key))
+  add(path_589428, "merchantId", newJString(merchantId))
   if body != nil:
-    body_580401 = body
-  add(query_580400, "prettyPrint", newJBool(prettyPrint))
-  result = call_580398.call(path_580399, query_580400, nil, nil, body_580401)
+    body_589430 = body
+  add(query_589429, "prettyPrint", newJBool(prettyPrint))
+  result = call_589427.call(path_589428, query_589429, nil, nil, body_589430)
 
-var contentAccounttaxUpdate* = Call_ContentAccounttaxUpdate_580383(
+var contentAccounttaxUpdate* = Call_ContentAccounttaxUpdate_589412(
     name: "contentAccounttaxUpdate", meth: HttpMethod.HttpPut,
     host: "www.googleapis.com", route: "/{merchantId}/accounttax/{accountId}",
-    validator: validate_ContentAccounttaxUpdate_580384, base: "/content/v2",
-    url: url_ContentAccounttaxUpdate_580385, schemes: {Scheme.Https})
+    validator: validate_ContentAccounttaxUpdate_589413, base: "/content/v2",
+    url: url_ContentAccounttaxUpdate_589414, schemes: {Scheme.Https})
 type
-  Call_ContentAccounttaxGet_580367 = ref object of OpenApiRestCall_579421
-proc url_ContentAccounttaxGet_580369(protocol: Scheme; host: string; base: string;
+  Call_ContentAccounttaxGet_589396 = ref object of OpenApiRestCall_588450
+proc url_ContentAccounttaxGet_589398(protocol: Scheme; host: string; base: string;
                                     route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -4082,7 +4082,7 @@ proc url_ContentAccounttaxGet_580369(protocol: Scheme; host: string; base: strin
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_ContentAccounttaxGet_580368(path: JsonNode; query: JsonNode;
+proc validate_ContentAccounttaxGet_589397(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Retrieves the tax settings of the account.
   ## 
@@ -4095,16 +4095,16 @@ proc validate_ContentAccounttaxGet_580368(path: JsonNode; query: JsonNode;
   ##             : The ID of the managing account. If this parameter is not the same as accountId, then this account must be a multi-client account and accountId must be the ID of a sub-account of this account.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `accountId` field"
-  var valid_580370 = path.getOrDefault("accountId")
-  valid_580370 = validateParameter(valid_580370, JString, required = true,
+  var valid_589399 = path.getOrDefault("accountId")
+  valid_589399 = validateParameter(valid_589399, JString, required = true,
                                  default = nil)
-  if valid_580370 != nil:
-    section.add "accountId", valid_580370
-  var valid_580371 = path.getOrDefault("merchantId")
-  valid_580371 = validateParameter(valid_580371, JString, required = true,
+  if valid_589399 != nil:
+    section.add "accountId", valid_589399
+  var valid_589400 = path.getOrDefault("merchantId")
+  valid_589400 = validateParameter(valid_589400, JString, required = true,
                                  default = nil)
-  if valid_580371 != nil:
-    section.add "merchantId", valid_580371
+  if valid_589400 != nil:
+    section.add "merchantId", valid_589400
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -4122,41 +4122,41 @@ proc validate_ContentAccounttaxGet_580368(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580372 = query.getOrDefault("fields")
-  valid_580372 = validateParameter(valid_580372, JString, required = false,
+  var valid_589401 = query.getOrDefault("fields")
+  valid_589401 = validateParameter(valid_589401, JString, required = false,
                                  default = nil)
-  if valid_580372 != nil:
-    section.add "fields", valid_580372
-  var valid_580373 = query.getOrDefault("quotaUser")
-  valid_580373 = validateParameter(valid_580373, JString, required = false,
+  if valid_589401 != nil:
+    section.add "fields", valid_589401
+  var valid_589402 = query.getOrDefault("quotaUser")
+  valid_589402 = validateParameter(valid_589402, JString, required = false,
                                  default = nil)
-  if valid_580373 != nil:
-    section.add "quotaUser", valid_580373
-  var valid_580374 = query.getOrDefault("alt")
-  valid_580374 = validateParameter(valid_580374, JString, required = false,
+  if valid_589402 != nil:
+    section.add "quotaUser", valid_589402
+  var valid_589403 = query.getOrDefault("alt")
+  valid_589403 = validateParameter(valid_589403, JString, required = false,
                                  default = newJString("json"))
-  if valid_580374 != nil:
-    section.add "alt", valid_580374
-  var valid_580375 = query.getOrDefault("oauth_token")
-  valid_580375 = validateParameter(valid_580375, JString, required = false,
+  if valid_589403 != nil:
+    section.add "alt", valid_589403
+  var valid_589404 = query.getOrDefault("oauth_token")
+  valid_589404 = validateParameter(valid_589404, JString, required = false,
                                  default = nil)
-  if valid_580375 != nil:
-    section.add "oauth_token", valid_580375
-  var valid_580376 = query.getOrDefault("userIp")
-  valid_580376 = validateParameter(valid_580376, JString, required = false,
+  if valid_589404 != nil:
+    section.add "oauth_token", valid_589404
+  var valid_589405 = query.getOrDefault("userIp")
+  valid_589405 = validateParameter(valid_589405, JString, required = false,
                                  default = nil)
-  if valid_580376 != nil:
-    section.add "userIp", valid_580376
-  var valid_580377 = query.getOrDefault("key")
-  valid_580377 = validateParameter(valid_580377, JString, required = false,
+  if valid_589405 != nil:
+    section.add "userIp", valid_589405
+  var valid_589406 = query.getOrDefault("key")
+  valid_589406 = validateParameter(valid_589406, JString, required = false,
                                  default = nil)
-  if valid_580377 != nil:
-    section.add "key", valid_580377
-  var valid_580378 = query.getOrDefault("prettyPrint")
-  valid_580378 = validateParameter(valid_580378, JBool, required = false,
+  if valid_589406 != nil:
+    section.add "key", valid_589406
+  var valid_589407 = query.getOrDefault("prettyPrint")
+  valid_589407 = validateParameter(valid_589407, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580378 != nil:
-    section.add "prettyPrint", valid_580378
+  if valid_589407 != nil:
+    section.add "prettyPrint", valid_589407
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -4165,20 +4165,20 @@ proc validate_ContentAccounttaxGet_580368(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580379: Call_ContentAccounttaxGet_580367; path: JsonNode;
+proc call*(call_589408: Call_ContentAccounttaxGet_589396; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Retrieves the tax settings of the account.
   ## 
-  let valid = call_580379.validator(path, query, header, formData, body)
-  let scheme = call_580379.pickScheme
+  let valid = call_589408.validator(path, query, header, formData, body)
+  let scheme = call_589408.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580379.url(scheme.get, call_580379.host, call_580379.base,
-                         call_580379.route, valid.getOrDefault("path"),
+  let url = call_589408.url(scheme.get, call_589408.host, call_589408.base,
+                         call_589408.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580379, url, valid)
+  result = hook(call_589408, url, valid)
 
-proc call*(call_580380: Call_ContentAccounttaxGet_580367; accountId: string;
+proc call*(call_589409: Call_ContentAccounttaxGet_589396; accountId: string;
           merchantId: string; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; userIp: string = "";
           key: string = ""; prettyPrint: bool = true): Recallable =
@@ -4202,27 +4202,27 @@ proc call*(call_580380: Call_ContentAccounttaxGet_580367; accountId: string;
   ##             : The ID of the managing account. If this parameter is not the same as accountId, then this account must be a multi-client account and accountId must be the ID of a sub-account of this account.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_580381 = newJObject()
-  var query_580382 = newJObject()
-  add(query_580382, "fields", newJString(fields))
-  add(query_580382, "quotaUser", newJString(quotaUser))
-  add(query_580382, "alt", newJString(alt))
-  add(query_580382, "oauth_token", newJString(oauthToken))
-  add(path_580381, "accountId", newJString(accountId))
-  add(query_580382, "userIp", newJString(userIp))
-  add(query_580382, "key", newJString(key))
-  add(path_580381, "merchantId", newJString(merchantId))
-  add(query_580382, "prettyPrint", newJBool(prettyPrint))
-  result = call_580380.call(path_580381, query_580382, nil, nil, nil)
+  var path_589410 = newJObject()
+  var query_589411 = newJObject()
+  add(query_589411, "fields", newJString(fields))
+  add(query_589411, "quotaUser", newJString(quotaUser))
+  add(query_589411, "alt", newJString(alt))
+  add(query_589411, "oauth_token", newJString(oauthToken))
+  add(path_589410, "accountId", newJString(accountId))
+  add(query_589411, "userIp", newJString(userIp))
+  add(query_589411, "key", newJString(key))
+  add(path_589410, "merchantId", newJString(merchantId))
+  add(query_589411, "prettyPrint", newJBool(prettyPrint))
+  result = call_589409.call(path_589410, query_589411, nil, nil, nil)
 
-var contentAccounttaxGet* = Call_ContentAccounttaxGet_580367(
+var contentAccounttaxGet* = Call_ContentAccounttaxGet_589396(
     name: "contentAccounttaxGet", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/{merchantId}/accounttax/{accountId}",
-    validator: validate_ContentAccounttaxGet_580368, base: "/content/v2",
-    url: url_ContentAccounttaxGet_580369, schemes: {Scheme.Https})
+    validator: validate_ContentAccounttaxGet_589397, base: "/content/v2",
+    url: url_ContentAccounttaxGet_589398, schemes: {Scheme.Https})
 type
-  Call_ContentAccounttaxPatch_580402 = ref object of OpenApiRestCall_579421
-proc url_ContentAccounttaxPatch_580404(protocol: Scheme; host: string; base: string;
+  Call_ContentAccounttaxPatch_589431 = ref object of OpenApiRestCall_588450
+proc url_ContentAccounttaxPatch_589433(protocol: Scheme; host: string; base: string;
                                       route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -4240,7 +4240,7 @@ proc url_ContentAccounttaxPatch_580404(protocol: Scheme; host: string; base: str
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_ContentAccounttaxPatch_580403(path: JsonNode; query: JsonNode;
+proc validate_ContentAccounttaxPatch_589432(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Updates the tax settings of the account. This method supports patch semantics.
   ## 
@@ -4253,16 +4253,16 @@ proc validate_ContentAccounttaxPatch_580403(path: JsonNode; query: JsonNode;
   ##             : The ID of the managing account. If this parameter is not the same as accountId, then this account must be a multi-client account and accountId must be the ID of a sub-account of this account.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `accountId` field"
-  var valid_580405 = path.getOrDefault("accountId")
-  valid_580405 = validateParameter(valid_580405, JString, required = true,
+  var valid_589434 = path.getOrDefault("accountId")
+  valid_589434 = validateParameter(valid_589434, JString, required = true,
                                  default = nil)
-  if valid_580405 != nil:
-    section.add "accountId", valid_580405
-  var valid_580406 = path.getOrDefault("merchantId")
-  valid_580406 = validateParameter(valid_580406, JString, required = true,
+  if valid_589434 != nil:
+    section.add "accountId", valid_589434
+  var valid_589435 = path.getOrDefault("merchantId")
+  valid_589435 = validateParameter(valid_589435, JString, required = true,
                                  default = nil)
-  if valid_580406 != nil:
-    section.add "merchantId", valid_580406
+  if valid_589435 != nil:
+    section.add "merchantId", valid_589435
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -4282,45 +4282,45 @@ proc validate_ContentAccounttaxPatch_580403(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580407 = query.getOrDefault("fields")
-  valid_580407 = validateParameter(valid_580407, JString, required = false,
+  var valid_589436 = query.getOrDefault("fields")
+  valid_589436 = validateParameter(valid_589436, JString, required = false,
                                  default = nil)
-  if valid_580407 != nil:
-    section.add "fields", valid_580407
-  var valid_580408 = query.getOrDefault("quotaUser")
-  valid_580408 = validateParameter(valid_580408, JString, required = false,
+  if valid_589436 != nil:
+    section.add "fields", valid_589436
+  var valid_589437 = query.getOrDefault("quotaUser")
+  valid_589437 = validateParameter(valid_589437, JString, required = false,
                                  default = nil)
-  if valid_580408 != nil:
-    section.add "quotaUser", valid_580408
-  var valid_580409 = query.getOrDefault("alt")
-  valid_580409 = validateParameter(valid_580409, JString, required = false,
+  if valid_589437 != nil:
+    section.add "quotaUser", valid_589437
+  var valid_589438 = query.getOrDefault("alt")
+  valid_589438 = validateParameter(valid_589438, JString, required = false,
                                  default = newJString("json"))
-  if valid_580409 != nil:
-    section.add "alt", valid_580409
-  var valid_580410 = query.getOrDefault("dryRun")
-  valid_580410 = validateParameter(valid_580410, JBool, required = false, default = nil)
-  if valid_580410 != nil:
-    section.add "dryRun", valid_580410
-  var valid_580411 = query.getOrDefault("oauth_token")
-  valid_580411 = validateParameter(valid_580411, JString, required = false,
+  if valid_589438 != nil:
+    section.add "alt", valid_589438
+  var valid_589439 = query.getOrDefault("dryRun")
+  valid_589439 = validateParameter(valid_589439, JBool, required = false, default = nil)
+  if valid_589439 != nil:
+    section.add "dryRun", valid_589439
+  var valid_589440 = query.getOrDefault("oauth_token")
+  valid_589440 = validateParameter(valid_589440, JString, required = false,
                                  default = nil)
-  if valid_580411 != nil:
-    section.add "oauth_token", valid_580411
-  var valid_580412 = query.getOrDefault("userIp")
-  valid_580412 = validateParameter(valid_580412, JString, required = false,
+  if valid_589440 != nil:
+    section.add "oauth_token", valid_589440
+  var valid_589441 = query.getOrDefault("userIp")
+  valid_589441 = validateParameter(valid_589441, JString, required = false,
                                  default = nil)
-  if valid_580412 != nil:
-    section.add "userIp", valid_580412
-  var valid_580413 = query.getOrDefault("key")
-  valid_580413 = validateParameter(valid_580413, JString, required = false,
+  if valid_589441 != nil:
+    section.add "userIp", valid_589441
+  var valid_589442 = query.getOrDefault("key")
+  valid_589442 = validateParameter(valid_589442, JString, required = false,
                                  default = nil)
-  if valid_580413 != nil:
-    section.add "key", valid_580413
-  var valid_580414 = query.getOrDefault("prettyPrint")
-  valid_580414 = validateParameter(valid_580414, JBool, required = false,
+  if valid_589442 != nil:
+    section.add "key", valid_589442
+  var valid_589443 = query.getOrDefault("prettyPrint")
+  valid_589443 = validateParameter(valid_589443, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580414 != nil:
-    section.add "prettyPrint", valid_580414
+  if valid_589443 != nil:
+    section.add "prettyPrint", valid_589443
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -4332,20 +4332,20 @@ proc validate_ContentAccounttaxPatch_580403(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580416: Call_ContentAccounttaxPatch_580402; path: JsonNode;
+proc call*(call_589445: Call_ContentAccounttaxPatch_589431; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Updates the tax settings of the account. This method supports patch semantics.
   ## 
-  let valid = call_580416.validator(path, query, header, formData, body)
-  let scheme = call_580416.pickScheme
+  let valid = call_589445.validator(path, query, header, formData, body)
+  let scheme = call_589445.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580416.url(scheme.get, call_580416.host, call_580416.base,
-                         call_580416.route, valid.getOrDefault("path"),
+  let url = call_589445.url(scheme.get, call_589445.host, call_589445.base,
+                         call_589445.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580416, url, valid)
+  result = hook(call_589445, url, valid)
 
-proc call*(call_580417: Call_ContentAccounttaxPatch_580402; accountId: string;
+proc call*(call_589446: Call_ContentAccounttaxPatch_589431; accountId: string;
           merchantId: string; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; dryRun: bool = false; oauthToken: string = "";
           userIp: string = ""; key: string = ""; body: JsonNode = nil;
@@ -4373,31 +4373,31 @@ proc call*(call_580417: Call_ContentAccounttaxPatch_580402; accountId: string;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_580418 = newJObject()
-  var query_580419 = newJObject()
-  var body_580420 = newJObject()
-  add(query_580419, "fields", newJString(fields))
-  add(query_580419, "quotaUser", newJString(quotaUser))
-  add(query_580419, "alt", newJString(alt))
-  add(query_580419, "dryRun", newJBool(dryRun))
-  add(query_580419, "oauth_token", newJString(oauthToken))
-  add(path_580418, "accountId", newJString(accountId))
-  add(query_580419, "userIp", newJString(userIp))
-  add(query_580419, "key", newJString(key))
-  add(path_580418, "merchantId", newJString(merchantId))
+  var path_589447 = newJObject()
+  var query_589448 = newJObject()
+  var body_589449 = newJObject()
+  add(query_589448, "fields", newJString(fields))
+  add(query_589448, "quotaUser", newJString(quotaUser))
+  add(query_589448, "alt", newJString(alt))
+  add(query_589448, "dryRun", newJBool(dryRun))
+  add(query_589448, "oauth_token", newJString(oauthToken))
+  add(path_589447, "accountId", newJString(accountId))
+  add(query_589448, "userIp", newJString(userIp))
+  add(query_589448, "key", newJString(key))
+  add(path_589447, "merchantId", newJString(merchantId))
   if body != nil:
-    body_580420 = body
-  add(query_580419, "prettyPrint", newJBool(prettyPrint))
-  result = call_580417.call(path_580418, query_580419, nil, nil, body_580420)
+    body_589449 = body
+  add(query_589448, "prettyPrint", newJBool(prettyPrint))
+  result = call_589446.call(path_589447, query_589448, nil, nil, body_589449)
 
-var contentAccounttaxPatch* = Call_ContentAccounttaxPatch_580402(
+var contentAccounttaxPatch* = Call_ContentAccounttaxPatch_589431(
     name: "contentAccounttaxPatch", meth: HttpMethod.HttpPatch,
     host: "www.googleapis.com", route: "/{merchantId}/accounttax/{accountId}",
-    validator: validate_ContentAccounttaxPatch_580403, base: "/content/v2",
-    url: url_ContentAccounttaxPatch_580404, schemes: {Scheme.Https})
+    validator: validate_ContentAccounttaxPatch_589432, base: "/content/v2",
+    url: url_ContentAccounttaxPatch_589433, schemes: {Scheme.Https})
 type
-  Call_ContentDatafeedsInsert_580438 = ref object of OpenApiRestCall_579421
-proc url_ContentDatafeedsInsert_580440(protocol: Scheme; host: string; base: string;
+  Call_ContentDatafeedsInsert_589467 = ref object of OpenApiRestCall_588450
+proc url_ContentDatafeedsInsert_589469(protocol: Scheme; host: string; base: string;
                                       route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -4413,7 +4413,7 @@ proc url_ContentDatafeedsInsert_580440(protocol: Scheme; host: string; base: str
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_ContentDatafeedsInsert_580439(path: JsonNode; query: JsonNode;
+proc validate_ContentDatafeedsInsert_589468(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Registers a datafeed configuration with your Merchant Center account.
   ## 
@@ -4425,11 +4425,11 @@ proc validate_ContentDatafeedsInsert_580439(path: JsonNode; query: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `merchantId` field"
-  var valid_580441 = path.getOrDefault("merchantId")
-  valid_580441 = validateParameter(valid_580441, JString, required = true,
+  var valid_589470 = path.getOrDefault("merchantId")
+  valid_589470 = validateParameter(valid_589470, JString, required = true,
                                  default = nil)
-  if valid_580441 != nil:
-    section.add "merchantId", valid_580441
+  if valid_589470 != nil:
+    section.add "merchantId", valid_589470
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -4449,45 +4449,45 @@ proc validate_ContentDatafeedsInsert_580439(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580442 = query.getOrDefault("fields")
-  valid_580442 = validateParameter(valid_580442, JString, required = false,
+  var valid_589471 = query.getOrDefault("fields")
+  valid_589471 = validateParameter(valid_589471, JString, required = false,
                                  default = nil)
-  if valid_580442 != nil:
-    section.add "fields", valid_580442
-  var valid_580443 = query.getOrDefault("quotaUser")
-  valid_580443 = validateParameter(valid_580443, JString, required = false,
+  if valid_589471 != nil:
+    section.add "fields", valid_589471
+  var valid_589472 = query.getOrDefault("quotaUser")
+  valid_589472 = validateParameter(valid_589472, JString, required = false,
                                  default = nil)
-  if valid_580443 != nil:
-    section.add "quotaUser", valid_580443
-  var valid_580444 = query.getOrDefault("alt")
-  valid_580444 = validateParameter(valid_580444, JString, required = false,
+  if valid_589472 != nil:
+    section.add "quotaUser", valid_589472
+  var valid_589473 = query.getOrDefault("alt")
+  valid_589473 = validateParameter(valid_589473, JString, required = false,
                                  default = newJString("json"))
-  if valid_580444 != nil:
-    section.add "alt", valid_580444
-  var valid_580445 = query.getOrDefault("dryRun")
-  valid_580445 = validateParameter(valid_580445, JBool, required = false, default = nil)
-  if valid_580445 != nil:
-    section.add "dryRun", valid_580445
-  var valid_580446 = query.getOrDefault("oauth_token")
-  valid_580446 = validateParameter(valid_580446, JString, required = false,
+  if valid_589473 != nil:
+    section.add "alt", valid_589473
+  var valid_589474 = query.getOrDefault("dryRun")
+  valid_589474 = validateParameter(valid_589474, JBool, required = false, default = nil)
+  if valid_589474 != nil:
+    section.add "dryRun", valid_589474
+  var valid_589475 = query.getOrDefault("oauth_token")
+  valid_589475 = validateParameter(valid_589475, JString, required = false,
                                  default = nil)
-  if valid_580446 != nil:
-    section.add "oauth_token", valid_580446
-  var valid_580447 = query.getOrDefault("userIp")
-  valid_580447 = validateParameter(valid_580447, JString, required = false,
+  if valid_589475 != nil:
+    section.add "oauth_token", valid_589475
+  var valid_589476 = query.getOrDefault("userIp")
+  valid_589476 = validateParameter(valid_589476, JString, required = false,
                                  default = nil)
-  if valid_580447 != nil:
-    section.add "userIp", valid_580447
-  var valid_580448 = query.getOrDefault("key")
-  valid_580448 = validateParameter(valid_580448, JString, required = false,
+  if valid_589476 != nil:
+    section.add "userIp", valid_589476
+  var valid_589477 = query.getOrDefault("key")
+  valid_589477 = validateParameter(valid_589477, JString, required = false,
                                  default = nil)
-  if valid_580448 != nil:
-    section.add "key", valid_580448
-  var valid_580449 = query.getOrDefault("prettyPrint")
-  valid_580449 = validateParameter(valid_580449, JBool, required = false,
+  if valid_589477 != nil:
+    section.add "key", valid_589477
+  var valid_589478 = query.getOrDefault("prettyPrint")
+  valid_589478 = validateParameter(valid_589478, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580449 != nil:
-    section.add "prettyPrint", valid_580449
+  if valid_589478 != nil:
+    section.add "prettyPrint", valid_589478
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -4499,20 +4499,20 @@ proc validate_ContentDatafeedsInsert_580439(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580451: Call_ContentDatafeedsInsert_580438; path: JsonNode;
+proc call*(call_589480: Call_ContentDatafeedsInsert_589467; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Registers a datafeed configuration with your Merchant Center account.
   ## 
-  let valid = call_580451.validator(path, query, header, formData, body)
-  let scheme = call_580451.pickScheme
+  let valid = call_589480.validator(path, query, header, formData, body)
+  let scheme = call_589480.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580451.url(scheme.get, call_580451.host, call_580451.base,
-                         call_580451.route, valid.getOrDefault("path"),
+  let url = call_589480.url(scheme.get, call_589480.host, call_589480.base,
+                         call_589480.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580451, url, valid)
+  result = hook(call_589480, url, valid)
 
-proc call*(call_580452: Call_ContentDatafeedsInsert_580438; merchantId: string;
+proc call*(call_589481: Call_ContentDatafeedsInsert_589467; merchantId: string;
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           dryRun: bool = false; oauthToken: string = ""; userIp: string = "";
           key: string = ""; body: JsonNode = nil; prettyPrint: bool = true): Recallable =
@@ -4537,30 +4537,30 @@ proc call*(call_580452: Call_ContentDatafeedsInsert_580438; merchantId: string;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_580453 = newJObject()
-  var query_580454 = newJObject()
-  var body_580455 = newJObject()
-  add(query_580454, "fields", newJString(fields))
-  add(query_580454, "quotaUser", newJString(quotaUser))
-  add(query_580454, "alt", newJString(alt))
-  add(query_580454, "dryRun", newJBool(dryRun))
-  add(query_580454, "oauth_token", newJString(oauthToken))
-  add(query_580454, "userIp", newJString(userIp))
-  add(query_580454, "key", newJString(key))
-  add(path_580453, "merchantId", newJString(merchantId))
+  var path_589482 = newJObject()
+  var query_589483 = newJObject()
+  var body_589484 = newJObject()
+  add(query_589483, "fields", newJString(fields))
+  add(query_589483, "quotaUser", newJString(quotaUser))
+  add(query_589483, "alt", newJString(alt))
+  add(query_589483, "dryRun", newJBool(dryRun))
+  add(query_589483, "oauth_token", newJString(oauthToken))
+  add(query_589483, "userIp", newJString(userIp))
+  add(query_589483, "key", newJString(key))
+  add(path_589482, "merchantId", newJString(merchantId))
   if body != nil:
-    body_580455 = body
-  add(query_580454, "prettyPrint", newJBool(prettyPrint))
-  result = call_580452.call(path_580453, query_580454, nil, nil, body_580455)
+    body_589484 = body
+  add(query_589483, "prettyPrint", newJBool(prettyPrint))
+  result = call_589481.call(path_589482, query_589483, nil, nil, body_589484)
 
-var contentDatafeedsInsert* = Call_ContentDatafeedsInsert_580438(
+var contentDatafeedsInsert* = Call_ContentDatafeedsInsert_589467(
     name: "contentDatafeedsInsert", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com", route: "/{merchantId}/datafeeds",
-    validator: validate_ContentDatafeedsInsert_580439, base: "/content/v2",
-    url: url_ContentDatafeedsInsert_580440, schemes: {Scheme.Https})
+    validator: validate_ContentDatafeedsInsert_589468, base: "/content/v2",
+    url: url_ContentDatafeedsInsert_589469, schemes: {Scheme.Https})
 type
-  Call_ContentDatafeedsList_580421 = ref object of OpenApiRestCall_579421
-proc url_ContentDatafeedsList_580423(protocol: Scheme; host: string; base: string;
+  Call_ContentDatafeedsList_589450 = ref object of OpenApiRestCall_588450
+proc url_ContentDatafeedsList_589452(protocol: Scheme; host: string; base: string;
                                     route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -4576,7 +4576,7 @@ proc url_ContentDatafeedsList_580423(protocol: Scheme; host: string; base: strin
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_ContentDatafeedsList_580422(path: JsonNode; query: JsonNode;
+proc validate_ContentDatafeedsList_589451(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Lists the configurations for datafeeds in your Merchant Center account.
   ## 
@@ -4588,11 +4588,11 @@ proc validate_ContentDatafeedsList_580422(path: JsonNode; query: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `merchantId` field"
-  var valid_580424 = path.getOrDefault("merchantId")
-  valid_580424 = validateParameter(valid_580424, JString, required = true,
+  var valid_589453 = path.getOrDefault("merchantId")
+  valid_589453 = validateParameter(valid_589453, JString, required = true,
                                  default = nil)
-  if valid_580424 != nil:
-    section.add "merchantId", valid_580424
+  if valid_589453 != nil:
+    section.add "merchantId", valid_589453
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -4614,50 +4614,50 @@ proc validate_ContentDatafeedsList_580422(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580425 = query.getOrDefault("fields")
-  valid_580425 = validateParameter(valid_580425, JString, required = false,
+  var valid_589454 = query.getOrDefault("fields")
+  valid_589454 = validateParameter(valid_589454, JString, required = false,
                                  default = nil)
-  if valid_580425 != nil:
-    section.add "fields", valid_580425
-  var valid_580426 = query.getOrDefault("pageToken")
-  valid_580426 = validateParameter(valid_580426, JString, required = false,
+  if valid_589454 != nil:
+    section.add "fields", valid_589454
+  var valid_589455 = query.getOrDefault("pageToken")
+  valid_589455 = validateParameter(valid_589455, JString, required = false,
                                  default = nil)
-  if valid_580426 != nil:
-    section.add "pageToken", valid_580426
-  var valid_580427 = query.getOrDefault("quotaUser")
-  valid_580427 = validateParameter(valid_580427, JString, required = false,
+  if valid_589455 != nil:
+    section.add "pageToken", valid_589455
+  var valid_589456 = query.getOrDefault("quotaUser")
+  valid_589456 = validateParameter(valid_589456, JString, required = false,
                                  default = nil)
-  if valid_580427 != nil:
-    section.add "quotaUser", valid_580427
-  var valid_580428 = query.getOrDefault("alt")
-  valid_580428 = validateParameter(valid_580428, JString, required = false,
+  if valid_589456 != nil:
+    section.add "quotaUser", valid_589456
+  var valid_589457 = query.getOrDefault("alt")
+  valid_589457 = validateParameter(valid_589457, JString, required = false,
                                  default = newJString("json"))
-  if valid_580428 != nil:
-    section.add "alt", valid_580428
-  var valid_580429 = query.getOrDefault("oauth_token")
-  valid_580429 = validateParameter(valid_580429, JString, required = false,
+  if valid_589457 != nil:
+    section.add "alt", valid_589457
+  var valid_589458 = query.getOrDefault("oauth_token")
+  valid_589458 = validateParameter(valid_589458, JString, required = false,
                                  default = nil)
-  if valid_580429 != nil:
-    section.add "oauth_token", valid_580429
-  var valid_580430 = query.getOrDefault("userIp")
-  valid_580430 = validateParameter(valid_580430, JString, required = false,
+  if valid_589458 != nil:
+    section.add "oauth_token", valid_589458
+  var valid_589459 = query.getOrDefault("userIp")
+  valid_589459 = validateParameter(valid_589459, JString, required = false,
                                  default = nil)
-  if valid_580430 != nil:
-    section.add "userIp", valid_580430
-  var valid_580431 = query.getOrDefault("maxResults")
-  valid_580431 = validateParameter(valid_580431, JInt, required = false, default = nil)
-  if valid_580431 != nil:
-    section.add "maxResults", valid_580431
-  var valid_580432 = query.getOrDefault("key")
-  valid_580432 = validateParameter(valid_580432, JString, required = false,
+  if valid_589459 != nil:
+    section.add "userIp", valid_589459
+  var valid_589460 = query.getOrDefault("maxResults")
+  valid_589460 = validateParameter(valid_589460, JInt, required = false, default = nil)
+  if valid_589460 != nil:
+    section.add "maxResults", valid_589460
+  var valid_589461 = query.getOrDefault("key")
+  valid_589461 = validateParameter(valid_589461, JString, required = false,
                                  default = nil)
-  if valid_580432 != nil:
-    section.add "key", valid_580432
-  var valid_580433 = query.getOrDefault("prettyPrint")
-  valid_580433 = validateParameter(valid_580433, JBool, required = false,
+  if valid_589461 != nil:
+    section.add "key", valid_589461
+  var valid_589462 = query.getOrDefault("prettyPrint")
+  valid_589462 = validateParameter(valid_589462, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580433 != nil:
-    section.add "prettyPrint", valid_580433
+  if valid_589462 != nil:
+    section.add "prettyPrint", valid_589462
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -4666,20 +4666,20 @@ proc validate_ContentDatafeedsList_580422(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580434: Call_ContentDatafeedsList_580421; path: JsonNode;
+proc call*(call_589463: Call_ContentDatafeedsList_589450; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Lists the configurations for datafeeds in your Merchant Center account.
   ## 
-  let valid = call_580434.validator(path, query, header, formData, body)
-  let scheme = call_580434.pickScheme
+  let valid = call_589463.validator(path, query, header, formData, body)
+  let scheme = call_589463.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580434.url(scheme.get, call_580434.host, call_580434.base,
-                         call_580434.route, valid.getOrDefault("path"),
+  let url = call_589463.url(scheme.get, call_589463.host, call_589463.base,
+                         call_589463.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580434, url, valid)
+  result = hook(call_589463, url, valid)
 
-proc call*(call_580435: Call_ContentDatafeedsList_580421; merchantId: string;
+proc call*(call_589464: Call_ContentDatafeedsList_589450; merchantId: string;
           fields: string = ""; pageToken: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; userIp: string = "";
           maxResults: int = 0; key: string = ""; prettyPrint: bool = true): Recallable =
@@ -4705,28 +4705,28 @@ proc call*(call_580435: Call_ContentDatafeedsList_580421; merchantId: string;
   ##             : The ID of the account that manages the datafeeds. This account cannot be a multi-client account.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_580436 = newJObject()
-  var query_580437 = newJObject()
-  add(query_580437, "fields", newJString(fields))
-  add(query_580437, "pageToken", newJString(pageToken))
-  add(query_580437, "quotaUser", newJString(quotaUser))
-  add(query_580437, "alt", newJString(alt))
-  add(query_580437, "oauth_token", newJString(oauthToken))
-  add(query_580437, "userIp", newJString(userIp))
-  add(query_580437, "maxResults", newJInt(maxResults))
-  add(query_580437, "key", newJString(key))
-  add(path_580436, "merchantId", newJString(merchantId))
-  add(query_580437, "prettyPrint", newJBool(prettyPrint))
-  result = call_580435.call(path_580436, query_580437, nil, nil, nil)
+  var path_589465 = newJObject()
+  var query_589466 = newJObject()
+  add(query_589466, "fields", newJString(fields))
+  add(query_589466, "pageToken", newJString(pageToken))
+  add(query_589466, "quotaUser", newJString(quotaUser))
+  add(query_589466, "alt", newJString(alt))
+  add(query_589466, "oauth_token", newJString(oauthToken))
+  add(query_589466, "userIp", newJString(userIp))
+  add(query_589466, "maxResults", newJInt(maxResults))
+  add(query_589466, "key", newJString(key))
+  add(path_589465, "merchantId", newJString(merchantId))
+  add(query_589466, "prettyPrint", newJBool(prettyPrint))
+  result = call_589464.call(path_589465, query_589466, nil, nil, nil)
 
-var contentDatafeedsList* = Call_ContentDatafeedsList_580421(
+var contentDatafeedsList* = Call_ContentDatafeedsList_589450(
     name: "contentDatafeedsList", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/{merchantId}/datafeeds",
-    validator: validate_ContentDatafeedsList_580422, base: "/content/v2",
-    url: url_ContentDatafeedsList_580423, schemes: {Scheme.Https})
+    validator: validate_ContentDatafeedsList_589451, base: "/content/v2",
+    url: url_ContentDatafeedsList_589452, schemes: {Scheme.Https})
 type
-  Call_ContentDatafeedsUpdate_580472 = ref object of OpenApiRestCall_579421
-proc url_ContentDatafeedsUpdate_580474(protocol: Scheme; host: string; base: string;
+  Call_ContentDatafeedsUpdate_589501 = ref object of OpenApiRestCall_588450
+proc url_ContentDatafeedsUpdate_589503(protocol: Scheme; host: string; base: string;
                                       route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -4744,7 +4744,7 @@ proc url_ContentDatafeedsUpdate_580474(protocol: Scheme; host: string; base: str
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_ContentDatafeedsUpdate_580473(path: JsonNode; query: JsonNode;
+proc validate_ContentDatafeedsUpdate_589502(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Updates a datafeed configuration of your Merchant Center account.
   ## 
@@ -4758,16 +4758,16 @@ proc validate_ContentDatafeedsUpdate_580473(path: JsonNode; query: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `merchantId` field"
-  var valid_580475 = path.getOrDefault("merchantId")
-  valid_580475 = validateParameter(valid_580475, JString, required = true,
+  var valid_589504 = path.getOrDefault("merchantId")
+  valid_589504 = validateParameter(valid_589504, JString, required = true,
                                  default = nil)
-  if valid_580475 != nil:
-    section.add "merchantId", valid_580475
-  var valid_580476 = path.getOrDefault("datafeedId")
-  valid_580476 = validateParameter(valid_580476, JString, required = true,
+  if valid_589504 != nil:
+    section.add "merchantId", valid_589504
+  var valid_589505 = path.getOrDefault("datafeedId")
+  valid_589505 = validateParameter(valid_589505, JString, required = true,
                                  default = nil)
-  if valid_580476 != nil:
-    section.add "datafeedId", valid_580476
+  if valid_589505 != nil:
+    section.add "datafeedId", valid_589505
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -4787,45 +4787,45 @@ proc validate_ContentDatafeedsUpdate_580473(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580477 = query.getOrDefault("fields")
-  valid_580477 = validateParameter(valid_580477, JString, required = false,
+  var valid_589506 = query.getOrDefault("fields")
+  valid_589506 = validateParameter(valid_589506, JString, required = false,
                                  default = nil)
-  if valid_580477 != nil:
-    section.add "fields", valid_580477
-  var valid_580478 = query.getOrDefault("quotaUser")
-  valid_580478 = validateParameter(valid_580478, JString, required = false,
+  if valid_589506 != nil:
+    section.add "fields", valid_589506
+  var valid_589507 = query.getOrDefault("quotaUser")
+  valid_589507 = validateParameter(valid_589507, JString, required = false,
                                  default = nil)
-  if valid_580478 != nil:
-    section.add "quotaUser", valid_580478
-  var valid_580479 = query.getOrDefault("alt")
-  valid_580479 = validateParameter(valid_580479, JString, required = false,
+  if valid_589507 != nil:
+    section.add "quotaUser", valid_589507
+  var valid_589508 = query.getOrDefault("alt")
+  valid_589508 = validateParameter(valid_589508, JString, required = false,
                                  default = newJString("json"))
-  if valid_580479 != nil:
-    section.add "alt", valid_580479
-  var valid_580480 = query.getOrDefault("dryRun")
-  valid_580480 = validateParameter(valid_580480, JBool, required = false, default = nil)
-  if valid_580480 != nil:
-    section.add "dryRun", valid_580480
-  var valid_580481 = query.getOrDefault("oauth_token")
-  valid_580481 = validateParameter(valid_580481, JString, required = false,
+  if valid_589508 != nil:
+    section.add "alt", valid_589508
+  var valid_589509 = query.getOrDefault("dryRun")
+  valid_589509 = validateParameter(valid_589509, JBool, required = false, default = nil)
+  if valid_589509 != nil:
+    section.add "dryRun", valid_589509
+  var valid_589510 = query.getOrDefault("oauth_token")
+  valid_589510 = validateParameter(valid_589510, JString, required = false,
                                  default = nil)
-  if valid_580481 != nil:
-    section.add "oauth_token", valid_580481
-  var valid_580482 = query.getOrDefault("userIp")
-  valid_580482 = validateParameter(valid_580482, JString, required = false,
+  if valid_589510 != nil:
+    section.add "oauth_token", valid_589510
+  var valid_589511 = query.getOrDefault("userIp")
+  valid_589511 = validateParameter(valid_589511, JString, required = false,
                                  default = nil)
-  if valid_580482 != nil:
-    section.add "userIp", valid_580482
-  var valid_580483 = query.getOrDefault("key")
-  valid_580483 = validateParameter(valid_580483, JString, required = false,
+  if valid_589511 != nil:
+    section.add "userIp", valid_589511
+  var valid_589512 = query.getOrDefault("key")
+  valid_589512 = validateParameter(valid_589512, JString, required = false,
                                  default = nil)
-  if valid_580483 != nil:
-    section.add "key", valid_580483
-  var valid_580484 = query.getOrDefault("prettyPrint")
-  valid_580484 = validateParameter(valid_580484, JBool, required = false,
+  if valid_589512 != nil:
+    section.add "key", valid_589512
+  var valid_589513 = query.getOrDefault("prettyPrint")
+  valid_589513 = validateParameter(valid_589513, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580484 != nil:
-    section.add "prettyPrint", valid_580484
+  if valid_589513 != nil:
+    section.add "prettyPrint", valid_589513
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -4837,20 +4837,20 @@ proc validate_ContentDatafeedsUpdate_580473(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580486: Call_ContentDatafeedsUpdate_580472; path: JsonNode;
+proc call*(call_589515: Call_ContentDatafeedsUpdate_589501; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Updates a datafeed configuration of your Merchant Center account.
   ## 
-  let valid = call_580486.validator(path, query, header, formData, body)
-  let scheme = call_580486.pickScheme
+  let valid = call_589515.validator(path, query, header, formData, body)
+  let scheme = call_589515.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580486.url(scheme.get, call_580486.host, call_580486.base,
-                         call_580486.route, valid.getOrDefault("path"),
+  let url = call_589515.url(scheme.get, call_589515.host, call_589515.base,
+                         call_589515.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580486, url, valid)
+  result = hook(call_589515, url, valid)
 
-proc call*(call_580487: Call_ContentDatafeedsUpdate_580472; merchantId: string;
+proc call*(call_589516: Call_ContentDatafeedsUpdate_589501; merchantId: string;
           datafeedId: string; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; dryRun: bool = false; oauthToken: string = "";
           userIp: string = ""; key: string = ""; body: JsonNode = nil;
@@ -4878,31 +4878,31 @@ proc call*(call_580487: Call_ContentDatafeedsUpdate_580472; merchantId: string;
   ##              : Returns response with indentations and line breaks.
   ##   datafeedId: string (required)
   ##             : The ID of the datafeed.
-  var path_580488 = newJObject()
-  var query_580489 = newJObject()
-  var body_580490 = newJObject()
-  add(query_580489, "fields", newJString(fields))
-  add(query_580489, "quotaUser", newJString(quotaUser))
-  add(query_580489, "alt", newJString(alt))
-  add(query_580489, "dryRun", newJBool(dryRun))
-  add(query_580489, "oauth_token", newJString(oauthToken))
-  add(query_580489, "userIp", newJString(userIp))
-  add(query_580489, "key", newJString(key))
-  add(path_580488, "merchantId", newJString(merchantId))
+  var path_589517 = newJObject()
+  var query_589518 = newJObject()
+  var body_589519 = newJObject()
+  add(query_589518, "fields", newJString(fields))
+  add(query_589518, "quotaUser", newJString(quotaUser))
+  add(query_589518, "alt", newJString(alt))
+  add(query_589518, "dryRun", newJBool(dryRun))
+  add(query_589518, "oauth_token", newJString(oauthToken))
+  add(query_589518, "userIp", newJString(userIp))
+  add(query_589518, "key", newJString(key))
+  add(path_589517, "merchantId", newJString(merchantId))
   if body != nil:
-    body_580490 = body
-  add(query_580489, "prettyPrint", newJBool(prettyPrint))
-  add(path_580488, "datafeedId", newJString(datafeedId))
-  result = call_580487.call(path_580488, query_580489, nil, nil, body_580490)
+    body_589519 = body
+  add(query_589518, "prettyPrint", newJBool(prettyPrint))
+  add(path_589517, "datafeedId", newJString(datafeedId))
+  result = call_589516.call(path_589517, query_589518, nil, nil, body_589519)
 
-var contentDatafeedsUpdate* = Call_ContentDatafeedsUpdate_580472(
+var contentDatafeedsUpdate* = Call_ContentDatafeedsUpdate_589501(
     name: "contentDatafeedsUpdate", meth: HttpMethod.HttpPut,
     host: "www.googleapis.com", route: "/{merchantId}/datafeeds/{datafeedId}",
-    validator: validate_ContentDatafeedsUpdate_580473, base: "/content/v2",
-    url: url_ContentDatafeedsUpdate_580474, schemes: {Scheme.Https})
+    validator: validate_ContentDatafeedsUpdate_589502, base: "/content/v2",
+    url: url_ContentDatafeedsUpdate_589503, schemes: {Scheme.Https})
 type
-  Call_ContentDatafeedsGet_580456 = ref object of OpenApiRestCall_579421
-proc url_ContentDatafeedsGet_580458(protocol: Scheme; host: string; base: string;
+  Call_ContentDatafeedsGet_589485 = ref object of OpenApiRestCall_588450
+proc url_ContentDatafeedsGet_589487(protocol: Scheme; host: string; base: string;
                                    route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -4920,7 +4920,7 @@ proc url_ContentDatafeedsGet_580458(protocol: Scheme; host: string; base: string
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_ContentDatafeedsGet_580457(path: JsonNode; query: JsonNode;
+proc validate_ContentDatafeedsGet_589486(path: JsonNode; query: JsonNode;
                                         header: JsonNode; formData: JsonNode;
                                         body: JsonNode): JsonNode =
   ## Retrieves a datafeed configuration from your Merchant Center account.
@@ -4935,16 +4935,16 @@ proc validate_ContentDatafeedsGet_580457(path: JsonNode; query: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `merchantId` field"
-  var valid_580459 = path.getOrDefault("merchantId")
-  valid_580459 = validateParameter(valid_580459, JString, required = true,
+  var valid_589488 = path.getOrDefault("merchantId")
+  valid_589488 = validateParameter(valid_589488, JString, required = true,
                                  default = nil)
-  if valid_580459 != nil:
-    section.add "merchantId", valid_580459
-  var valid_580460 = path.getOrDefault("datafeedId")
-  valid_580460 = validateParameter(valid_580460, JString, required = true,
+  if valid_589488 != nil:
+    section.add "merchantId", valid_589488
+  var valid_589489 = path.getOrDefault("datafeedId")
+  valid_589489 = validateParameter(valid_589489, JString, required = true,
                                  default = nil)
-  if valid_580460 != nil:
-    section.add "datafeedId", valid_580460
+  if valid_589489 != nil:
+    section.add "datafeedId", valid_589489
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -4962,41 +4962,41 @@ proc validate_ContentDatafeedsGet_580457(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580461 = query.getOrDefault("fields")
-  valid_580461 = validateParameter(valid_580461, JString, required = false,
+  var valid_589490 = query.getOrDefault("fields")
+  valid_589490 = validateParameter(valid_589490, JString, required = false,
                                  default = nil)
-  if valid_580461 != nil:
-    section.add "fields", valid_580461
-  var valid_580462 = query.getOrDefault("quotaUser")
-  valid_580462 = validateParameter(valid_580462, JString, required = false,
+  if valid_589490 != nil:
+    section.add "fields", valid_589490
+  var valid_589491 = query.getOrDefault("quotaUser")
+  valid_589491 = validateParameter(valid_589491, JString, required = false,
                                  default = nil)
-  if valid_580462 != nil:
-    section.add "quotaUser", valid_580462
-  var valid_580463 = query.getOrDefault("alt")
-  valid_580463 = validateParameter(valid_580463, JString, required = false,
+  if valid_589491 != nil:
+    section.add "quotaUser", valid_589491
+  var valid_589492 = query.getOrDefault("alt")
+  valid_589492 = validateParameter(valid_589492, JString, required = false,
                                  default = newJString("json"))
-  if valid_580463 != nil:
-    section.add "alt", valid_580463
-  var valid_580464 = query.getOrDefault("oauth_token")
-  valid_580464 = validateParameter(valid_580464, JString, required = false,
+  if valid_589492 != nil:
+    section.add "alt", valid_589492
+  var valid_589493 = query.getOrDefault("oauth_token")
+  valid_589493 = validateParameter(valid_589493, JString, required = false,
                                  default = nil)
-  if valid_580464 != nil:
-    section.add "oauth_token", valid_580464
-  var valid_580465 = query.getOrDefault("userIp")
-  valid_580465 = validateParameter(valid_580465, JString, required = false,
+  if valid_589493 != nil:
+    section.add "oauth_token", valid_589493
+  var valid_589494 = query.getOrDefault("userIp")
+  valid_589494 = validateParameter(valid_589494, JString, required = false,
                                  default = nil)
-  if valid_580465 != nil:
-    section.add "userIp", valid_580465
-  var valid_580466 = query.getOrDefault("key")
-  valid_580466 = validateParameter(valid_580466, JString, required = false,
+  if valid_589494 != nil:
+    section.add "userIp", valid_589494
+  var valid_589495 = query.getOrDefault("key")
+  valid_589495 = validateParameter(valid_589495, JString, required = false,
                                  default = nil)
-  if valid_580466 != nil:
-    section.add "key", valid_580466
-  var valid_580467 = query.getOrDefault("prettyPrint")
-  valid_580467 = validateParameter(valid_580467, JBool, required = false,
+  if valid_589495 != nil:
+    section.add "key", valid_589495
+  var valid_589496 = query.getOrDefault("prettyPrint")
+  valid_589496 = validateParameter(valid_589496, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580467 != nil:
-    section.add "prettyPrint", valid_580467
+  if valid_589496 != nil:
+    section.add "prettyPrint", valid_589496
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -5005,20 +5005,20 @@ proc validate_ContentDatafeedsGet_580457(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580468: Call_ContentDatafeedsGet_580456; path: JsonNode;
+proc call*(call_589497: Call_ContentDatafeedsGet_589485; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Retrieves a datafeed configuration from your Merchant Center account.
   ## 
-  let valid = call_580468.validator(path, query, header, formData, body)
-  let scheme = call_580468.pickScheme
+  let valid = call_589497.validator(path, query, header, formData, body)
+  let scheme = call_589497.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580468.url(scheme.get, call_580468.host, call_580468.base,
-                         call_580468.route, valid.getOrDefault("path"),
+  let url = call_589497.url(scheme.get, call_589497.host, call_589497.base,
+                         call_589497.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580468, url, valid)
+  result = hook(call_589497, url, valid)
 
-proc call*(call_580469: Call_ContentDatafeedsGet_580456; merchantId: string;
+proc call*(call_589498: Call_ContentDatafeedsGet_589485; merchantId: string;
           datafeedId: string; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; userIp: string = "";
           key: string = ""; prettyPrint: bool = true): Recallable =
@@ -5042,27 +5042,27 @@ proc call*(call_580469: Call_ContentDatafeedsGet_580456; merchantId: string;
   ##              : Returns response with indentations and line breaks.
   ##   datafeedId: string (required)
   ##             : The ID of the datafeed.
-  var path_580470 = newJObject()
-  var query_580471 = newJObject()
-  add(query_580471, "fields", newJString(fields))
-  add(query_580471, "quotaUser", newJString(quotaUser))
-  add(query_580471, "alt", newJString(alt))
-  add(query_580471, "oauth_token", newJString(oauthToken))
-  add(query_580471, "userIp", newJString(userIp))
-  add(query_580471, "key", newJString(key))
-  add(path_580470, "merchantId", newJString(merchantId))
-  add(query_580471, "prettyPrint", newJBool(prettyPrint))
-  add(path_580470, "datafeedId", newJString(datafeedId))
-  result = call_580469.call(path_580470, query_580471, nil, nil, nil)
+  var path_589499 = newJObject()
+  var query_589500 = newJObject()
+  add(query_589500, "fields", newJString(fields))
+  add(query_589500, "quotaUser", newJString(quotaUser))
+  add(query_589500, "alt", newJString(alt))
+  add(query_589500, "oauth_token", newJString(oauthToken))
+  add(query_589500, "userIp", newJString(userIp))
+  add(query_589500, "key", newJString(key))
+  add(path_589499, "merchantId", newJString(merchantId))
+  add(query_589500, "prettyPrint", newJBool(prettyPrint))
+  add(path_589499, "datafeedId", newJString(datafeedId))
+  result = call_589498.call(path_589499, query_589500, nil, nil, nil)
 
-var contentDatafeedsGet* = Call_ContentDatafeedsGet_580456(
+var contentDatafeedsGet* = Call_ContentDatafeedsGet_589485(
     name: "contentDatafeedsGet", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/{merchantId}/datafeeds/{datafeedId}",
-    validator: validate_ContentDatafeedsGet_580457, base: "/content/v2",
-    url: url_ContentDatafeedsGet_580458, schemes: {Scheme.Https})
+    validator: validate_ContentDatafeedsGet_589486, base: "/content/v2",
+    url: url_ContentDatafeedsGet_589487, schemes: {Scheme.Https})
 type
-  Call_ContentDatafeedsPatch_580508 = ref object of OpenApiRestCall_579421
-proc url_ContentDatafeedsPatch_580510(protocol: Scheme; host: string; base: string;
+  Call_ContentDatafeedsPatch_589537 = ref object of OpenApiRestCall_588450
+proc url_ContentDatafeedsPatch_589539(protocol: Scheme; host: string; base: string;
                                      route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -5080,7 +5080,7 @@ proc url_ContentDatafeedsPatch_580510(protocol: Scheme; host: string; base: stri
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_ContentDatafeedsPatch_580509(path: JsonNode; query: JsonNode;
+proc validate_ContentDatafeedsPatch_589538(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Updates a datafeed configuration of your Merchant Center account. This method supports patch semantics.
   ## 
@@ -5094,16 +5094,16 @@ proc validate_ContentDatafeedsPatch_580509(path: JsonNode; query: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `merchantId` field"
-  var valid_580511 = path.getOrDefault("merchantId")
-  valid_580511 = validateParameter(valid_580511, JString, required = true,
+  var valid_589540 = path.getOrDefault("merchantId")
+  valid_589540 = validateParameter(valid_589540, JString, required = true,
                                  default = nil)
-  if valid_580511 != nil:
-    section.add "merchantId", valid_580511
-  var valid_580512 = path.getOrDefault("datafeedId")
-  valid_580512 = validateParameter(valid_580512, JString, required = true,
+  if valid_589540 != nil:
+    section.add "merchantId", valid_589540
+  var valid_589541 = path.getOrDefault("datafeedId")
+  valid_589541 = validateParameter(valid_589541, JString, required = true,
                                  default = nil)
-  if valid_580512 != nil:
-    section.add "datafeedId", valid_580512
+  if valid_589541 != nil:
+    section.add "datafeedId", valid_589541
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -5123,45 +5123,45 @@ proc validate_ContentDatafeedsPatch_580509(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580513 = query.getOrDefault("fields")
-  valid_580513 = validateParameter(valid_580513, JString, required = false,
+  var valid_589542 = query.getOrDefault("fields")
+  valid_589542 = validateParameter(valid_589542, JString, required = false,
                                  default = nil)
-  if valid_580513 != nil:
-    section.add "fields", valid_580513
-  var valid_580514 = query.getOrDefault("quotaUser")
-  valid_580514 = validateParameter(valid_580514, JString, required = false,
+  if valid_589542 != nil:
+    section.add "fields", valid_589542
+  var valid_589543 = query.getOrDefault("quotaUser")
+  valid_589543 = validateParameter(valid_589543, JString, required = false,
                                  default = nil)
-  if valid_580514 != nil:
-    section.add "quotaUser", valid_580514
-  var valid_580515 = query.getOrDefault("alt")
-  valid_580515 = validateParameter(valid_580515, JString, required = false,
+  if valid_589543 != nil:
+    section.add "quotaUser", valid_589543
+  var valid_589544 = query.getOrDefault("alt")
+  valid_589544 = validateParameter(valid_589544, JString, required = false,
                                  default = newJString("json"))
-  if valid_580515 != nil:
-    section.add "alt", valid_580515
-  var valid_580516 = query.getOrDefault("dryRun")
-  valid_580516 = validateParameter(valid_580516, JBool, required = false, default = nil)
-  if valid_580516 != nil:
-    section.add "dryRun", valid_580516
-  var valid_580517 = query.getOrDefault("oauth_token")
-  valid_580517 = validateParameter(valid_580517, JString, required = false,
+  if valid_589544 != nil:
+    section.add "alt", valid_589544
+  var valid_589545 = query.getOrDefault("dryRun")
+  valid_589545 = validateParameter(valid_589545, JBool, required = false, default = nil)
+  if valid_589545 != nil:
+    section.add "dryRun", valid_589545
+  var valid_589546 = query.getOrDefault("oauth_token")
+  valid_589546 = validateParameter(valid_589546, JString, required = false,
                                  default = nil)
-  if valid_580517 != nil:
-    section.add "oauth_token", valid_580517
-  var valid_580518 = query.getOrDefault("userIp")
-  valid_580518 = validateParameter(valid_580518, JString, required = false,
+  if valid_589546 != nil:
+    section.add "oauth_token", valid_589546
+  var valid_589547 = query.getOrDefault("userIp")
+  valid_589547 = validateParameter(valid_589547, JString, required = false,
                                  default = nil)
-  if valid_580518 != nil:
-    section.add "userIp", valid_580518
-  var valid_580519 = query.getOrDefault("key")
-  valid_580519 = validateParameter(valid_580519, JString, required = false,
+  if valid_589547 != nil:
+    section.add "userIp", valid_589547
+  var valid_589548 = query.getOrDefault("key")
+  valid_589548 = validateParameter(valid_589548, JString, required = false,
                                  default = nil)
-  if valid_580519 != nil:
-    section.add "key", valid_580519
-  var valid_580520 = query.getOrDefault("prettyPrint")
-  valid_580520 = validateParameter(valid_580520, JBool, required = false,
+  if valid_589548 != nil:
+    section.add "key", valid_589548
+  var valid_589549 = query.getOrDefault("prettyPrint")
+  valid_589549 = validateParameter(valid_589549, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580520 != nil:
-    section.add "prettyPrint", valid_580520
+  if valid_589549 != nil:
+    section.add "prettyPrint", valid_589549
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -5173,20 +5173,20 @@ proc validate_ContentDatafeedsPatch_580509(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580522: Call_ContentDatafeedsPatch_580508; path: JsonNode;
+proc call*(call_589551: Call_ContentDatafeedsPatch_589537; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Updates a datafeed configuration of your Merchant Center account. This method supports patch semantics.
   ## 
-  let valid = call_580522.validator(path, query, header, formData, body)
-  let scheme = call_580522.pickScheme
+  let valid = call_589551.validator(path, query, header, formData, body)
+  let scheme = call_589551.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580522.url(scheme.get, call_580522.host, call_580522.base,
-                         call_580522.route, valid.getOrDefault("path"),
+  let url = call_589551.url(scheme.get, call_589551.host, call_589551.base,
+                         call_589551.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580522, url, valid)
+  result = hook(call_589551, url, valid)
 
-proc call*(call_580523: Call_ContentDatafeedsPatch_580508; merchantId: string;
+proc call*(call_589552: Call_ContentDatafeedsPatch_589537; merchantId: string;
           datafeedId: string; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; dryRun: bool = false; oauthToken: string = "";
           userIp: string = ""; key: string = ""; body: JsonNode = nil;
@@ -5214,31 +5214,31 @@ proc call*(call_580523: Call_ContentDatafeedsPatch_580508; merchantId: string;
   ##              : Returns response with indentations and line breaks.
   ##   datafeedId: string (required)
   ##             : The ID of the datafeed.
-  var path_580524 = newJObject()
-  var query_580525 = newJObject()
-  var body_580526 = newJObject()
-  add(query_580525, "fields", newJString(fields))
-  add(query_580525, "quotaUser", newJString(quotaUser))
-  add(query_580525, "alt", newJString(alt))
-  add(query_580525, "dryRun", newJBool(dryRun))
-  add(query_580525, "oauth_token", newJString(oauthToken))
-  add(query_580525, "userIp", newJString(userIp))
-  add(query_580525, "key", newJString(key))
-  add(path_580524, "merchantId", newJString(merchantId))
+  var path_589553 = newJObject()
+  var query_589554 = newJObject()
+  var body_589555 = newJObject()
+  add(query_589554, "fields", newJString(fields))
+  add(query_589554, "quotaUser", newJString(quotaUser))
+  add(query_589554, "alt", newJString(alt))
+  add(query_589554, "dryRun", newJBool(dryRun))
+  add(query_589554, "oauth_token", newJString(oauthToken))
+  add(query_589554, "userIp", newJString(userIp))
+  add(query_589554, "key", newJString(key))
+  add(path_589553, "merchantId", newJString(merchantId))
   if body != nil:
-    body_580526 = body
-  add(query_580525, "prettyPrint", newJBool(prettyPrint))
-  add(path_580524, "datafeedId", newJString(datafeedId))
-  result = call_580523.call(path_580524, query_580525, nil, nil, body_580526)
+    body_589555 = body
+  add(query_589554, "prettyPrint", newJBool(prettyPrint))
+  add(path_589553, "datafeedId", newJString(datafeedId))
+  result = call_589552.call(path_589553, query_589554, nil, nil, body_589555)
 
-var contentDatafeedsPatch* = Call_ContentDatafeedsPatch_580508(
+var contentDatafeedsPatch* = Call_ContentDatafeedsPatch_589537(
     name: "contentDatafeedsPatch", meth: HttpMethod.HttpPatch,
     host: "www.googleapis.com", route: "/{merchantId}/datafeeds/{datafeedId}",
-    validator: validate_ContentDatafeedsPatch_580509, base: "/content/v2",
-    url: url_ContentDatafeedsPatch_580510, schemes: {Scheme.Https})
+    validator: validate_ContentDatafeedsPatch_589538, base: "/content/v2",
+    url: url_ContentDatafeedsPatch_589539, schemes: {Scheme.Https})
 type
-  Call_ContentDatafeedsDelete_580491 = ref object of OpenApiRestCall_579421
-proc url_ContentDatafeedsDelete_580493(protocol: Scheme; host: string; base: string;
+  Call_ContentDatafeedsDelete_589520 = ref object of OpenApiRestCall_588450
+proc url_ContentDatafeedsDelete_589522(protocol: Scheme; host: string; base: string;
                                       route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -5256,7 +5256,7 @@ proc url_ContentDatafeedsDelete_580493(protocol: Scheme; host: string; base: str
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_ContentDatafeedsDelete_580492(path: JsonNode; query: JsonNode;
+proc validate_ContentDatafeedsDelete_589521(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Deletes a datafeed configuration from your Merchant Center account.
   ## 
@@ -5270,16 +5270,16 @@ proc validate_ContentDatafeedsDelete_580492(path: JsonNode; query: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `merchantId` field"
-  var valid_580494 = path.getOrDefault("merchantId")
-  valid_580494 = validateParameter(valid_580494, JString, required = true,
+  var valid_589523 = path.getOrDefault("merchantId")
+  valid_589523 = validateParameter(valid_589523, JString, required = true,
                                  default = nil)
-  if valid_580494 != nil:
-    section.add "merchantId", valid_580494
-  var valid_580495 = path.getOrDefault("datafeedId")
-  valid_580495 = validateParameter(valid_580495, JString, required = true,
+  if valid_589523 != nil:
+    section.add "merchantId", valid_589523
+  var valid_589524 = path.getOrDefault("datafeedId")
+  valid_589524 = validateParameter(valid_589524, JString, required = true,
                                  default = nil)
-  if valid_580495 != nil:
-    section.add "datafeedId", valid_580495
+  if valid_589524 != nil:
+    section.add "datafeedId", valid_589524
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -5299,45 +5299,45 @@ proc validate_ContentDatafeedsDelete_580492(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580496 = query.getOrDefault("fields")
-  valid_580496 = validateParameter(valid_580496, JString, required = false,
+  var valid_589525 = query.getOrDefault("fields")
+  valid_589525 = validateParameter(valid_589525, JString, required = false,
                                  default = nil)
-  if valid_580496 != nil:
-    section.add "fields", valid_580496
-  var valid_580497 = query.getOrDefault("quotaUser")
-  valid_580497 = validateParameter(valid_580497, JString, required = false,
+  if valid_589525 != nil:
+    section.add "fields", valid_589525
+  var valid_589526 = query.getOrDefault("quotaUser")
+  valid_589526 = validateParameter(valid_589526, JString, required = false,
                                  default = nil)
-  if valid_580497 != nil:
-    section.add "quotaUser", valid_580497
-  var valid_580498 = query.getOrDefault("alt")
-  valid_580498 = validateParameter(valid_580498, JString, required = false,
+  if valid_589526 != nil:
+    section.add "quotaUser", valid_589526
+  var valid_589527 = query.getOrDefault("alt")
+  valid_589527 = validateParameter(valid_589527, JString, required = false,
                                  default = newJString("json"))
-  if valid_580498 != nil:
-    section.add "alt", valid_580498
-  var valid_580499 = query.getOrDefault("dryRun")
-  valid_580499 = validateParameter(valid_580499, JBool, required = false, default = nil)
-  if valid_580499 != nil:
-    section.add "dryRun", valid_580499
-  var valid_580500 = query.getOrDefault("oauth_token")
-  valid_580500 = validateParameter(valid_580500, JString, required = false,
+  if valid_589527 != nil:
+    section.add "alt", valid_589527
+  var valid_589528 = query.getOrDefault("dryRun")
+  valid_589528 = validateParameter(valid_589528, JBool, required = false, default = nil)
+  if valid_589528 != nil:
+    section.add "dryRun", valid_589528
+  var valid_589529 = query.getOrDefault("oauth_token")
+  valid_589529 = validateParameter(valid_589529, JString, required = false,
                                  default = nil)
-  if valid_580500 != nil:
-    section.add "oauth_token", valid_580500
-  var valid_580501 = query.getOrDefault("userIp")
-  valid_580501 = validateParameter(valid_580501, JString, required = false,
+  if valid_589529 != nil:
+    section.add "oauth_token", valid_589529
+  var valid_589530 = query.getOrDefault("userIp")
+  valid_589530 = validateParameter(valid_589530, JString, required = false,
                                  default = nil)
-  if valid_580501 != nil:
-    section.add "userIp", valid_580501
-  var valid_580502 = query.getOrDefault("key")
-  valid_580502 = validateParameter(valid_580502, JString, required = false,
+  if valid_589530 != nil:
+    section.add "userIp", valid_589530
+  var valid_589531 = query.getOrDefault("key")
+  valid_589531 = validateParameter(valid_589531, JString, required = false,
                                  default = nil)
-  if valid_580502 != nil:
-    section.add "key", valid_580502
-  var valid_580503 = query.getOrDefault("prettyPrint")
-  valid_580503 = validateParameter(valid_580503, JBool, required = false,
+  if valid_589531 != nil:
+    section.add "key", valid_589531
+  var valid_589532 = query.getOrDefault("prettyPrint")
+  valid_589532 = validateParameter(valid_589532, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580503 != nil:
-    section.add "prettyPrint", valid_580503
+  if valid_589532 != nil:
+    section.add "prettyPrint", valid_589532
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -5346,20 +5346,20 @@ proc validate_ContentDatafeedsDelete_580492(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580504: Call_ContentDatafeedsDelete_580491; path: JsonNode;
+proc call*(call_589533: Call_ContentDatafeedsDelete_589520; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Deletes a datafeed configuration from your Merchant Center account.
   ## 
-  let valid = call_580504.validator(path, query, header, formData, body)
-  let scheme = call_580504.pickScheme
+  let valid = call_589533.validator(path, query, header, formData, body)
+  let scheme = call_589533.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580504.url(scheme.get, call_580504.host, call_580504.base,
-                         call_580504.route, valid.getOrDefault("path"),
+  let url = call_589533.url(scheme.get, call_589533.host, call_589533.base,
+                         call_589533.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580504, url, valid)
+  result = hook(call_589533, url, valid)
 
-proc call*(call_580505: Call_ContentDatafeedsDelete_580491; merchantId: string;
+proc call*(call_589534: Call_ContentDatafeedsDelete_589520; merchantId: string;
           datafeedId: string; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; dryRun: bool = false; oauthToken: string = "";
           userIp: string = ""; key: string = ""; prettyPrint: bool = true): Recallable =
@@ -5385,28 +5385,28 @@ proc call*(call_580505: Call_ContentDatafeedsDelete_580491; merchantId: string;
   ##              : Returns response with indentations and line breaks.
   ##   datafeedId: string (required)
   ##             : The ID of the datafeed.
-  var path_580506 = newJObject()
-  var query_580507 = newJObject()
-  add(query_580507, "fields", newJString(fields))
-  add(query_580507, "quotaUser", newJString(quotaUser))
-  add(query_580507, "alt", newJString(alt))
-  add(query_580507, "dryRun", newJBool(dryRun))
-  add(query_580507, "oauth_token", newJString(oauthToken))
-  add(query_580507, "userIp", newJString(userIp))
-  add(query_580507, "key", newJString(key))
-  add(path_580506, "merchantId", newJString(merchantId))
-  add(query_580507, "prettyPrint", newJBool(prettyPrint))
-  add(path_580506, "datafeedId", newJString(datafeedId))
-  result = call_580505.call(path_580506, query_580507, nil, nil, nil)
+  var path_589535 = newJObject()
+  var query_589536 = newJObject()
+  add(query_589536, "fields", newJString(fields))
+  add(query_589536, "quotaUser", newJString(quotaUser))
+  add(query_589536, "alt", newJString(alt))
+  add(query_589536, "dryRun", newJBool(dryRun))
+  add(query_589536, "oauth_token", newJString(oauthToken))
+  add(query_589536, "userIp", newJString(userIp))
+  add(query_589536, "key", newJString(key))
+  add(path_589535, "merchantId", newJString(merchantId))
+  add(query_589536, "prettyPrint", newJBool(prettyPrint))
+  add(path_589535, "datafeedId", newJString(datafeedId))
+  result = call_589534.call(path_589535, query_589536, nil, nil, nil)
 
-var contentDatafeedsDelete* = Call_ContentDatafeedsDelete_580491(
+var contentDatafeedsDelete* = Call_ContentDatafeedsDelete_589520(
     name: "contentDatafeedsDelete", meth: HttpMethod.HttpDelete,
     host: "www.googleapis.com", route: "/{merchantId}/datafeeds/{datafeedId}",
-    validator: validate_ContentDatafeedsDelete_580492, base: "/content/v2",
-    url: url_ContentDatafeedsDelete_580493, schemes: {Scheme.Https})
+    validator: validate_ContentDatafeedsDelete_589521, base: "/content/v2",
+    url: url_ContentDatafeedsDelete_589522, schemes: {Scheme.Https})
 type
-  Call_ContentDatafeedsFetchnow_580527 = ref object of OpenApiRestCall_579421
-proc url_ContentDatafeedsFetchnow_580529(protocol: Scheme; host: string;
+  Call_ContentDatafeedsFetchnow_589556 = ref object of OpenApiRestCall_588450
+proc url_ContentDatafeedsFetchnow_589558(protocol: Scheme; host: string;
                                         base: string; route: string; path: JsonNode;
                                         query: JsonNode): Uri =
   result.scheme = $protocol
@@ -5426,7 +5426,7 @@ proc url_ContentDatafeedsFetchnow_580529(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_ContentDatafeedsFetchnow_580528(path: JsonNode; query: JsonNode;
+proc validate_ContentDatafeedsFetchnow_589557(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Invokes a fetch for the datafeed in your Merchant Center account.
   ## 
@@ -5440,16 +5440,16 @@ proc validate_ContentDatafeedsFetchnow_580528(path: JsonNode; query: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `merchantId` field"
-  var valid_580530 = path.getOrDefault("merchantId")
-  valid_580530 = validateParameter(valid_580530, JString, required = true,
+  var valid_589559 = path.getOrDefault("merchantId")
+  valid_589559 = validateParameter(valid_589559, JString, required = true,
                                  default = nil)
-  if valid_580530 != nil:
-    section.add "merchantId", valid_580530
-  var valid_580531 = path.getOrDefault("datafeedId")
-  valid_580531 = validateParameter(valid_580531, JString, required = true,
+  if valid_589559 != nil:
+    section.add "merchantId", valid_589559
+  var valid_589560 = path.getOrDefault("datafeedId")
+  valid_589560 = validateParameter(valid_589560, JString, required = true,
                                  default = nil)
-  if valid_580531 != nil:
-    section.add "datafeedId", valid_580531
+  if valid_589560 != nil:
+    section.add "datafeedId", valid_589560
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -5469,45 +5469,45 @@ proc validate_ContentDatafeedsFetchnow_580528(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580532 = query.getOrDefault("fields")
-  valid_580532 = validateParameter(valid_580532, JString, required = false,
+  var valid_589561 = query.getOrDefault("fields")
+  valid_589561 = validateParameter(valid_589561, JString, required = false,
                                  default = nil)
-  if valid_580532 != nil:
-    section.add "fields", valid_580532
-  var valid_580533 = query.getOrDefault("quotaUser")
-  valid_580533 = validateParameter(valid_580533, JString, required = false,
+  if valid_589561 != nil:
+    section.add "fields", valid_589561
+  var valid_589562 = query.getOrDefault("quotaUser")
+  valid_589562 = validateParameter(valid_589562, JString, required = false,
                                  default = nil)
-  if valid_580533 != nil:
-    section.add "quotaUser", valid_580533
-  var valid_580534 = query.getOrDefault("alt")
-  valid_580534 = validateParameter(valid_580534, JString, required = false,
+  if valid_589562 != nil:
+    section.add "quotaUser", valid_589562
+  var valid_589563 = query.getOrDefault("alt")
+  valid_589563 = validateParameter(valid_589563, JString, required = false,
                                  default = newJString("json"))
-  if valid_580534 != nil:
-    section.add "alt", valid_580534
-  var valid_580535 = query.getOrDefault("dryRun")
-  valid_580535 = validateParameter(valid_580535, JBool, required = false, default = nil)
-  if valid_580535 != nil:
-    section.add "dryRun", valid_580535
-  var valid_580536 = query.getOrDefault("oauth_token")
-  valid_580536 = validateParameter(valid_580536, JString, required = false,
+  if valid_589563 != nil:
+    section.add "alt", valid_589563
+  var valid_589564 = query.getOrDefault("dryRun")
+  valid_589564 = validateParameter(valid_589564, JBool, required = false, default = nil)
+  if valid_589564 != nil:
+    section.add "dryRun", valid_589564
+  var valid_589565 = query.getOrDefault("oauth_token")
+  valid_589565 = validateParameter(valid_589565, JString, required = false,
                                  default = nil)
-  if valid_580536 != nil:
-    section.add "oauth_token", valid_580536
-  var valid_580537 = query.getOrDefault("userIp")
-  valid_580537 = validateParameter(valid_580537, JString, required = false,
+  if valid_589565 != nil:
+    section.add "oauth_token", valid_589565
+  var valid_589566 = query.getOrDefault("userIp")
+  valid_589566 = validateParameter(valid_589566, JString, required = false,
                                  default = nil)
-  if valid_580537 != nil:
-    section.add "userIp", valid_580537
-  var valid_580538 = query.getOrDefault("key")
-  valid_580538 = validateParameter(valid_580538, JString, required = false,
+  if valid_589566 != nil:
+    section.add "userIp", valid_589566
+  var valid_589567 = query.getOrDefault("key")
+  valid_589567 = validateParameter(valid_589567, JString, required = false,
                                  default = nil)
-  if valid_580538 != nil:
-    section.add "key", valid_580538
-  var valid_580539 = query.getOrDefault("prettyPrint")
-  valid_580539 = validateParameter(valid_580539, JBool, required = false,
+  if valid_589567 != nil:
+    section.add "key", valid_589567
+  var valid_589568 = query.getOrDefault("prettyPrint")
+  valid_589568 = validateParameter(valid_589568, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580539 != nil:
-    section.add "prettyPrint", valid_580539
+  if valid_589568 != nil:
+    section.add "prettyPrint", valid_589568
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -5516,20 +5516,20 @@ proc validate_ContentDatafeedsFetchnow_580528(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580540: Call_ContentDatafeedsFetchnow_580527; path: JsonNode;
+proc call*(call_589569: Call_ContentDatafeedsFetchnow_589556; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Invokes a fetch for the datafeed in your Merchant Center account.
   ## 
-  let valid = call_580540.validator(path, query, header, formData, body)
-  let scheme = call_580540.pickScheme
+  let valid = call_589569.validator(path, query, header, formData, body)
+  let scheme = call_589569.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580540.url(scheme.get, call_580540.host, call_580540.base,
-                         call_580540.route, valid.getOrDefault("path"),
+  let url = call_589569.url(scheme.get, call_589569.host, call_589569.base,
+                         call_589569.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580540, url, valid)
+  result = hook(call_589569, url, valid)
 
-proc call*(call_580541: Call_ContentDatafeedsFetchnow_580527; merchantId: string;
+proc call*(call_589570: Call_ContentDatafeedsFetchnow_589556; merchantId: string;
           datafeedId: string; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; dryRun: bool = false; oauthToken: string = "";
           userIp: string = ""; key: string = ""; prettyPrint: bool = true): Recallable =
@@ -5555,29 +5555,29 @@ proc call*(call_580541: Call_ContentDatafeedsFetchnow_580527; merchantId: string
   ##              : Returns response with indentations and line breaks.
   ##   datafeedId: string (required)
   ##             : The ID of the datafeed to be fetched.
-  var path_580542 = newJObject()
-  var query_580543 = newJObject()
-  add(query_580543, "fields", newJString(fields))
-  add(query_580543, "quotaUser", newJString(quotaUser))
-  add(query_580543, "alt", newJString(alt))
-  add(query_580543, "dryRun", newJBool(dryRun))
-  add(query_580543, "oauth_token", newJString(oauthToken))
-  add(query_580543, "userIp", newJString(userIp))
-  add(query_580543, "key", newJString(key))
-  add(path_580542, "merchantId", newJString(merchantId))
-  add(query_580543, "prettyPrint", newJBool(prettyPrint))
-  add(path_580542, "datafeedId", newJString(datafeedId))
-  result = call_580541.call(path_580542, query_580543, nil, nil, nil)
+  var path_589571 = newJObject()
+  var query_589572 = newJObject()
+  add(query_589572, "fields", newJString(fields))
+  add(query_589572, "quotaUser", newJString(quotaUser))
+  add(query_589572, "alt", newJString(alt))
+  add(query_589572, "dryRun", newJBool(dryRun))
+  add(query_589572, "oauth_token", newJString(oauthToken))
+  add(query_589572, "userIp", newJString(userIp))
+  add(query_589572, "key", newJString(key))
+  add(path_589571, "merchantId", newJString(merchantId))
+  add(query_589572, "prettyPrint", newJBool(prettyPrint))
+  add(path_589571, "datafeedId", newJString(datafeedId))
+  result = call_589570.call(path_589571, query_589572, nil, nil, nil)
 
-var contentDatafeedsFetchnow* = Call_ContentDatafeedsFetchnow_580527(
+var contentDatafeedsFetchnow* = Call_ContentDatafeedsFetchnow_589556(
     name: "contentDatafeedsFetchnow", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com",
     route: "/{merchantId}/datafeeds/{datafeedId}/fetchNow",
-    validator: validate_ContentDatafeedsFetchnow_580528, base: "/content/v2",
-    url: url_ContentDatafeedsFetchnow_580529, schemes: {Scheme.Https})
+    validator: validate_ContentDatafeedsFetchnow_589557, base: "/content/v2",
+    url: url_ContentDatafeedsFetchnow_589558, schemes: {Scheme.Https})
 type
-  Call_ContentDatafeedstatusesList_580544 = ref object of OpenApiRestCall_579421
-proc url_ContentDatafeedstatusesList_580546(protocol: Scheme; host: string;
+  Call_ContentDatafeedstatusesList_589573 = ref object of OpenApiRestCall_588450
+proc url_ContentDatafeedstatusesList_589575(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -5593,7 +5593,7 @@ proc url_ContentDatafeedstatusesList_580546(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_ContentDatafeedstatusesList_580545(path: JsonNode; query: JsonNode;
+proc validate_ContentDatafeedstatusesList_589574(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Lists the statuses of the datafeeds in your Merchant Center account.
   ## 
@@ -5605,11 +5605,11 @@ proc validate_ContentDatafeedstatusesList_580545(path: JsonNode; query: JsonNode
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `merchantId` field"
-  var valid_580547 = path.getOrDefault("merchantId")
-  valid_580547 = validateParameter(valid_580547, JString, required = true,
+  var valid_589576 = path.getOrDefault("merchantId")
+  valid_589576 = validateParameter(valid_589576, JString, required = true,
                                  default = nil)
-  if valid_580547 != nil:
-    section.add "merchantId", valid_580547
+  if valid_589576 != nil:
+    section.add "merchantId", valid_589576
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -5631,50 +5631,50 @@ proc validate_ContentDatafeedstatusesList_580545(path: JsonNode; query: JsonNode
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580548 = query.getOrDefault("fields")
-  valid_580548 = validateParameter(valid_580548, JString, required = false,
+  var valid_589577 = query.getOrDefault("fields")
+  valid_589577 = validateParameter(valid_589577, JString, required = false,
                                  default = nil)
-  if valid_580548 != nil:
-    section.add "fields", valid_580548
-  var valid_580549 = query.getOrDefault("pageToken")
-  valid_580549 = validateParameter(valid_580549, JString, required = false,
+  if valid_589577 != nil:
+    section.add "fields", valid_589577
+  var valid_589578 = query.getOrDefault("pageToken")
+  valid_589578 = validateParameter(valid_589578, JString, required = false,
                                  default = nil)
-  if valid_580549 != nil:
-    section.add "pageToken", valid_580549
-  var valid_580550 = query.getOrDefault("quotaUser")
-  valid_580550 = validateParameter(valid_580550, JString, required = false,
+  if valid_589578 != nil:
+    section.add "pageToken", valid_589578
+  var valid_589579 = query.getOrDefault("quotaUser")
+  valid_589579 = validateParameter(valid_589579, JString, required = false,
                                  default = nil)
-  if valid_580550 != nil:
-    section.add "quotaUser", valid_580550
-  var valid_580551 = query.getOrDefault("alt")
-  valid_580551 = validateParameter(valid_580551, JString, required = false,
+  if valid_589579 != nil:
+    section.add "quotaUser", valid_589579
+  var valid_589580 = query.getOrDefault("alt")
+  valid_589580 = validateParameter(valid_589580, JString, required = false,
                                  default = newJString("json"))
-  if valid_580551 != nil:
-    section.add "alt", valid_580551
-  var valid_580552 = query.getOrDefault("oauth_token")
-  valid_580552 = validateParameter(valid_580552, JString, required = false,
+  if valid_589580 != nil:
+    section.add "alt", valid_589580
+  var valid_589581 = query.getOrDefault("oauth_token")
+  valid_589581 = validateParameter(valid_589581, JString, required = false,
                                  default = nil)
-  if valid_580552 != nil:
-    section.add "oauth_token", valid_580552
-  var valid_580553 = query.getOrDefault("userIp")
-  valid_580553 = validateParameter(valid_580553, JString, required = false,
+  if valid_589581 != nil:
+    section.add "oauth_token", valid_589581
+  var valid_589582 = query.getOrDefault("userIp")
+  valid_589582 = validateParameter(valid_589582, JString, required = false,
                                  default = nil)
-  if valid_580553 != nil:
-    section.add "userIp", valid_580553
-  var valid_580554 = query.getOrDefault("maxResults")
-  valid_580554 = validateParameter(valid_580554, JInt, required = false, default = nil)
-  if valid_580554 != nil:
-    section.add "maxResults", valid_580554
-  var valid_580555 = query.getOrDefault("key")
-  valid_580555 = validateParameter(valid_580555, JString, required = false,
+  if valid_589582 != nil:
+    section.add "userIp", valid_589582
+  var valid_589583 = query.getOrDefault("maxResults")
+  valid_589583 = validateParameter(valid_589583, JInt, required = false, default = nil)
+  if valid_589583 != nil:
+    section.add "maxResults", valid_589583
+  var valid_589584 = query.getOrDefault("key")
+  valid_589584 = validateParameter(valid_589584, JString, required = false,
                                  default = nil)
-  if valid_580555 != nil:
-    section.add "key", valid_580555
-  var valid_580556 = query.getOrDefault("prettyPrint")
-  valid_580556 = validateParameter(valid_580556, JBool, required = false,
+  if valid_589584 != nil:
+    section.add "key", valid_589584
+  var valid_589585 = query.getOrDefault("prettyPrint")
+  valid_589585 = validateParameter(valid_589585, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580556 != nil:
-    section.add "prettyPrint", valid_580556
+  if valid_589585 != nil:
+    section.add "prettyPrint", valid_589585
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -5683,20 +5683,20 @@ proc validate_ContentDatafeedstatusesList_580545(path: JsonNode; query: JsonNode
   if body != nil:
     result.add "body", body
 
-proc call*(call_580557: Call_ContentDatafeedstatusesList_580544; path: JsonNode;
+proc call*(call_589586: Call_ContentDatafeedstatusesList_589573; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Lists the statuses of the datafeeds in your Merchant Center account.
   ## 
-  let valid = call_580557.validator(path, query, header, formData, body)
-  let scheme = call_580557.pickScheme
+  let valid = call_589586.validator(path, query, header, formData, body)
+  let scheme = call_589586.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580557.url(scheme.get, call_580557.host, call_580557.base,
-                         call_580557.route, valid.getOrDefault("path"),
+  let url = call_589586.url(scheme.get, call_589586.host, call_589586.base,
+                         call_589586.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580557, url, valid)
+  result = hook(call_589586, url, valid)
 
-proc call*(call_580558: Call_ContentDatafeedstatusesList_580544;
+proc call*(call_589587: Call_ContentDatafeedstatusesList_589573;
           merchantId: string; fields: string = ""; pageToken: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; maxResults: int = 0; key: string = "";
@@ -5723,28 +5723,28 @@ proc call*(call_580558: Call_ContentDatafeedstatusesList_580544;
   ##             : The ID of the account that manages the datafeeds. This account cannot be a multi-client account.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_580559 = newJObject()
-  var query_580560 = newJObject()
-  add(query_580560, "fields", newJString(fields))
-  add(query_580560, "pageToken", newJString(pageToken))
-  add(query_580560, "quotaUser", newJString(quotaUser))
-  add(query_580560, "alt", newJString(alt))
-  add(query_580560, "oauth_token", newJString(oauthToken))
-  add(query_580560, "userIp", newJString(userIp))
-  add(query_580560, "maxResults", newJInt(maxResults))
-  add(query_580560, "key", newJString(key))
-  add(path_580559, "merchantId", newJString(merchantId))
-  add(query_580560, "prettyPrint", newJBool(prettyPrint))
-  result = call_580558.call(path_580559, query_580560, nil, nil, nil)
+  var path_589588 = newJObject()
+  var query_589589 = newJObject()
+  add(query_589589, "fields", newJString(fields))
+  add(query_589589, "pageToken", newJString(pageToken))
+  add(query_589589, "quotaUser", newJString(quotaUser))
+  add(query_589589, "alt", newJString(alt))
+  add(query_589589, "oauth_token", newJString(oauthToken))
+  add(query_589589, "userIp", newJString(userIp))
+  add(query_589589, "maxResults", newJInt(maxResults))
+  add(query_589589, "key", newJString(key))
+  add(path_589588, "merchantId", newJString(merchantId))
+  add(query_589589, "prettyPrint", newJBool(prettyPrint))
+  result = call_589587.call(path_589588, query_589589, nil, nil, nil)
 
-var contentDatafeedstatusesList* = Call_ContentDatafeedstatusesList_580544(
+var contentDatafeedstatusesList* = Call_ContentDatafeedstatusesList_589573(
     name: "contentDatafeedstatusesList", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/{merchantId}/datafeedstatuses",
-    validator: validate_ContentDatafeedstatusesList_580545, base: "/content/v2",
-    url: url_ContentDatafeedstatusesList_580546, schemes: {Scheme.Https})
+    validator: validate_ContentDatafeedstatusesList_589574, base: "/content/v2",
+    url: url_ContentDatafeedstatusesList_589575, schemes: {Scheme.Https})
 type
-  Call_ContentDatafeedstatusesGet_580561 = ref object of OpenApiRestCall_579421
-proc url_ContentDatafeedstatusesGet_580563(protocol: Scheme; host: string;
+  Call_ContentDatafeedstatusesGet_589590 = ref object of OpenApiRestCall_588450
+proc url_ContentDatafeedstatusesGet_589592(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -5762,7 +5762,7 @@ proc url_ContentDatafeedstatusesGet_580563(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_ContentDatafeedstatusesGet_580562(path: JsonNode; query: JsonNode;
+proc validate_ContentDatafeedstatusesGet_589591(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Retrieves the status of a datafeed from your Merchant Center account.
   ## 
@@ -5776,16 +5776,16 @@ proc validate_ContentDatafeedstatusesGet_580562(path: JsonNode; query: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `merchantId` field"
-  var valid_580564 = path.getOrDefault("merchantId")
-  valid_580564 = validateParameter(valid_580564, JString, required = true,
+  var valid_589593 = path.getOrDefault("merchantId")
+  valid_589593 = validateParameter(valid_589593, JString, required = true,
                                  default = nil)
-  if valid_580564 != nil:
-    section.add "merchantId", valid_580564
-  var valid_580565 = path.getOrDefault("datafeedId")
-  valid_580565 = validateParameter(valid_580565, JString, required = true,
+  if valid_589593 != nil:
+    section.add "merchantId", valid_589593
+  var valid_589594 = path.getOrDefault("datafeedId")
+  valid_589594 = validateParameter(valid_589594, JString, required = true,
                                  default = nil)
-  if valid_580565 != nil:
-    section.add "datafeedId", valid_580565
+  if valid_589594 != nil:
+    section.add "datafeedId", valid_589594
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -5807,51 +5807,51 @@ proc validate_ContentDatafeedstatusesGet_580562(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580566 = query.getOrDefault("fields")
-  valid_580566 = validateParameter(valid_580566, JString, required = false,
+  var valid_589595 = query.getOrDefault("fields")
+  valid_589595 = validateParameter(valid_589595, JString, required = false,
                                  default = nil)
-  if valid_580566 != nil:
-    section.add "fields", valid_580566
-  var valid_580567 = query.getOrDefault("country")
-  valid_580567 = validateParameter(valid_580567, JString, required = false,
+  if valid_589595 != nil:
+    section.add "fields", valid_589595
+  var valid_589596 = query.getOrDefault("country")
+  valid_589596 = validateParameter(valid_589596, JString, required = false,
                                  default = nil)
-  if valid_580567 != nil:
-    section.add "country", valid_580567
-  var valid_580568 = query.getOrDefault("quotaUser")
-  valid_580568 = validateParameter(valid_580568, JString, required = false,
+  if valid_589596 != nil:
+    section.add "country", valid_589596
+  var valid_589597 = query.getOrDefault("quotaUser")
+  valid_589597 = validateParameter(valid_589597, JString, required = false,
                                  default = nil)
-  if valid_580568 != nil:
-    section.add "quotaUser", valid_580568
-  var valid_580569 = query.getOrDefault("alt")
-  valid_580569 = validateParameter(valid_580569, JString, required = false,
+  if valid_589597 != nil:
+    section.add "quotaUser", valid_589597
+  var valid_589598 = query.getOrDefault("alt")
+  valid_589598 = validateParameter(valid_589598, JString, required = false,
                                  default = newJString("json"))
-  if valid_580569 != nil:
-    section.add "alt", valid_580569
-  var valid_580570 = query.getOrDefault("language")
-  valid_580570 = validateParameter(valid_580570, JString, required = false,
+  if valid_589598 != nil:
+    section.add "alt", valid_589598
+  var valid_589599 = query.getOrDefault("language")
+  valid_589599 = validateParameter(valid_589599, JString, required = false,
                                  default = nil)
-  if valid_580570 != nil:
-    section.add "language", valid_580570
-  var valid_580571 = query.getOrDefault("oauth_token")
-  valid_580571 = validateParameter(valid_580571, JString, required = false,
+  if valid_589599 != nil:
+    section.add "language", valid_589599
+  var valid_589600 = query.getOrDefault("oauth_token")
+  valid_589600 = validateParameter(valid_589600, JString, required = false,
                                  default = nil)
-  if valid_580571 != nil:
-    section.add "oauth_token", valid_580571
-  var valid_580572 = query.getOrDefault("userIp")
-  valid_580572 = validateParameter(valid_580572, JString, required = false,
+  if valid_589600 != nil:
+    section.add "oauth_token", valid_589600
+  var valid_589601 = query.getOrDefault("userIp")
+  valid_589601 = validateParameter(valid_589601, JString, required = false,
                                  default = nil)
-  if valid_580572 != nil:
-    section.add "userIp", valid_580572
-  var valid_580573 = query.getOrDefault("key")
-  valid_580573 = validateParameter(valid_580573, JString, required = false,
+  if valid_589601 != nil:
+    section.add "userIp", valid_589601
+  var valid_589602 = query.getOrDefault("key")
+  valid_589602 = validateParameter(valid_589602, JString, required = false,
                                  default = nil)
-  if valid_580573 != nil:
-    section.add "key", valid_580573
-  var valid_580574 = query.getOrDefault("prettyPrint")
-  valid_580574 = validateParameter(valid_580574, JBool, required = false,
+  if valid_589602 != nil:
+    section.add "key", valid_589602
+  var valid_589603 = query.getOrDefault("prettyPrint")
+  valid_589603 = validateParameter(valid_589603, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580574 != nil:
-    section.add "prettyPrint", valid_580574
+  if valid_589603 != nil:
+    section.add "prettyPrint", valid_589603
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -5860,20 +5860,20 @@ proc validate_ContentDatafeedstatusesGet_580562(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580575: Call_ContentDatafeedstatusesGet_580561; path: JsonNode;
+proc call*(call_589604: Call_ContentDatafeedstatusesGet_589590; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Retrieves the status of a datafeed from your Merchant Center account.
   ## 
-  let valid = call_580575.validator(path, query, header, formData, body)
-  let scheme = call_580575.pickScheme
+  let valid = call_589604.validator(path, query, header, formData, body)
+  let scheme = call_589604.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580575.url(scheme.get, call_580575.host, call_580575.base,
-                         call_580575.route, valid.getOrDefault("path"),
+  let url = call_589604.url(scheme.get, call_589604.host, call_589604.base,
+                         call_589604.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580575, url, valid)
+  result = hook(call_589604, url, valid)
 
-proc call*(call_580576: Call_ContentDatafeedstatusesGet_580561; merchantId: string;
+proc call*(call_589605: Call_ContentDatafeedstatusesGet_589590; merchantId: string;
           datafeedId: string; fields: string = ""; country: string = "";
           quotaUser: string = ""; alt: string = "json"; language: string = "";
           oauthToken: string = ""; userIp: string = ""; key: string = "";
@@ -5902,30 +5902,30 @@ proc call*(call_580576: Call_ContentDatafeedstatusesGet_580561; merchantId: stri
   ##              : Returns response with indentations and line breaks.
   ##   datafeedId: string (required)
   ##             : The ID of the datafeed.
-  var path_580577 = newJObject()
-  var query_580578 = newJObject()
-  add(query_580578, "fields", newJString(fields))
-  add(query_580578, "country", newJString(country))
-  add(query_580578, "quotaUser", newJString(quotaUser))
-  add(query_580578, "alt", newJString(alt))
-  add(query_580578, "language", newJString(language))
-  add(query_580578, "oauth_token", newJString(oauthToken))
-  add(query_580578, "userIp", newJString(userIp))
-  add(query_580578, "key", newJString(key))
-  add(path_580577, "merchantId", newJString(merchantId))
-  add(query_580578, "prettyPrint", newJBool(prettyPrint))
-  add(path_580577, "datafeedId", newJString(datafeedId))
-  result = call_580576.call(path_580577, query_580578, nil, nil, nil)
+  var path_589606 = newJObject()
+  var query_589607 = newJObject()
+  add(query_589607, "fields", newJString(fields))
+  add(query_589607, "country", newJString(country))
+  add(query_589607, "quotaUser", newJString(quotaUser))
+  add(query_589607, "alt", newJString(alt))
+  add(query_589607, "language", newJString(language))
+  add(query_589607, "oauth_token", newJString(oauthToken))
+  add(query_589607, "userIp", newJString(userIp))
+  add(query_589607, "key", newJString(key))
+  add(path_589606, "merchantId", newJString(merchantId))
+  add(query_589607, "prettyPrint", newJBool(prettyPrint))
+  add(path_589606, "datafeedId", newJString(datafeedId))
+  result = call_589605.call(path_589606, query_589607, nil, nil, nil)
 
-var contentDatafeedstatusesGet* = Call_ContentDatafeedstatusesGet_580561(
+var contentDatafeedstatusesGet* = Call_ContentDatafeedstatusesGet_589590(
     name: "contentDatafeedstatusesGet", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com",
     route: "/{merchantId}/datafeedstatuses/{datafeedId}",
-    validator: validate_ContentDatafeedstatusesGet_580562, base: "/content/v2",
-    url: url_ContentDatafeedstatusesGet_580563, schemes: {Scheme.Https})
+    validator: validate_ContentDatafeedstatusesGet_589591, base: "/content/v2",
+    url: url_ContentDatafeedstatusesGet_589592, schemes: {Scheme.Https})
 type
-  Call_ContentInventorySet_580579 = ref object of OpenApiRestCall_579421
-proc url_ContentInventorySet_580581(protocol: Scheme; host: string; base: string;
+  Call_ContentInventorySet_589608 = ref object of OpenApiRestCall_588450
+proc url_ContentInventorySet_589610(protocol: Scheme; host: string; base: string;
                                    route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -5946,7 +5946,7 @@ proc url_ContentInventorySet_580581(protocol: Scheme; host: string; base: string
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_ContentInventorySet_580580(path: JsonNode; query: JsonNode;
+proc validate_ContentInventorySet_589609(path: JsonNode; query: JsonNode;
                                         header: JsonNode; formData: JsonNode;
                                         body: JsonNode): JsonNode =
   ## Updates price and availability of a product in your Merchant Center account.
@@ -5962,21 +5962,21 @@ proc validate_ContentInventorySet_580580(path: JsonNode; query: JsonNode;
   ##            : The REST ID of the product for which to update price and availability.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `storeCode` field"
-  var valid_580582 = path.getOrDefault("storeCode")
-  valid_580582 = validateParameter(valid_580582, JString, required = true,
+  var valid_589611 = path.getOrDefault("storeCode")
+  valid_589611 = validateParameter(valid_589611, JString, required = true,
                                  default = nil)
-  if valid_580582 != nil:
-    section.add "storeCode", valid_580582
-  var valid_580583 = path.getOrDefault("merchantId")
-  valid_580583 = validateParameter(valid_580583, JString, required = true,
+  if valid_589611 != nil:
+    section.add "storeCode", valid_589611
+  var valid_589612 = path.getOrDefault("merchantId")
+  valid_589612 = validateParameter(valid_589612, JString, required = true,
                                  default = nil)
-  if valid_580583 != nil:
-    section.add "merchantId", valid_580583
-  var valid_580584 = path.getOrDefault("productId")
-  valid_580584 = validateParameter(valid_580584, JString, required = true,
+  if valid_589612 != nil:
+    section.add "merchantId", valid_589612
+  var valid_589613 = path.getOrDefault("productId")
+  valid_589613 = validateParameter(valid_589613, JString, required = true,
                                  default = nil)
-  if valid_580584 != nil:
-    section.add "productId", valid_580584
+  if valid_589613 != nil:
+    section.add "productId", valid_589613
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -5996,45 +5996,45 @@ proc validate_ContentInventorySet_580580(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580585 = query.getOrDefault("fields")
-  valid_580585 = validateParameter(valid_580585, JString, required = false,
+  var valid_589614 = query.getOrDefault("fields")
+  valid_589614 = validateParameter(valid_589614, JString, required = false,
                                  default = nil)
-  if valid_580585 != nil:
-    section.add "fields", valid_580585
-  var valid_580586 = query.getOrDefault("quotaUser")
-  valid_580586 = validateParameter(valid_580586, JString, required = false,
+  if valid_589614 != nil:
+    section.add "fields", valid_589614
+  var valid_589615 = query.getOrDefault("quotaUser")
+  valid_589615 = validateParameter(valid_589615, JString, required = false,
                                  default = nil)
-  if valid_580586 != nil:
-    section.add "quotaUser", valid_580586
-  var valid_580587 = query.getOrDefault("alt")
-  valid_580587 = validateParameter(valid_580587, JString, required = false,
+  if valid_589615 != nil:
+    section.add "quotaUser", valid_589615
+  var valid_589616 = query.getOrDefault("alt")
+  valid_589616 = validateParameter(valid_589616, JString, required = false,
                                  default = newJString("json"))
-  if valid_580587 != nil:
-    section.add "alt", valid_580587
-  var valid_580588 = query.getOrDefault("dryRun")
-  valid_580588 = validateParameter(valid_580588, JBool, required = false, default = nil)
-  if valid_580588 != nil:
-    section.add "dryRun", valid_580588
-  var valid_580589 = query.getOrDefault("oauth_token")
-  valid_580589 = validateParameter(valid_580589, JString, required = false,
+  if valid_589616 != nil:
+    section.add "alt", valid_589616
+  var valid_589617 = query.getOrDefault("dryRun")
+  valid_589617 = validateParameter(valid_589617, JBool, required = false, default = nil)
+  if valid_589617 != nil:
+    section.add "dryRun", valid_589617
+  var valid_589618 = query.getOrDefault("oauth_token")
+  valid_589618 = validateParameter(valid_589618, JString, required = false,
                                  default = nil)
-  if valid_580589 != nil:
-    section.add "oauth_token", valid_580589
-  var valid_580590 = query.getOrDefault("userIp")
-  valid_580590 = validateParameter(valid_580590, JString, required = false,
+  if valid_589618 != nil:
+    section.add "oauth_token", valid_589618
+  var valid_589619 = query.getOrDefault("userIp")
+  valid_589619 = validateParameter(valid_589619, JString, required = false,
                                  default = nil)
-  if valid_580590 != nil:
-    section.add "userIp", valid_580590
-  var valid_580591 = query.getOrDefault("key")
-  valid_580591 = validateParameter(valid_580591, JString, required = false,
+  if valid_589619 != nil:
+    section.add "userIp", valid_589619
+  var valid_589620 = query.getOrDefault("key")
+  valid_589620 = validateParameter(valid_589620, JString, required = false,
                                  default = nil)
-  if valid_580591 != nil:
-    section.add "key", valid_580591
-  var valid_580592 = query.getOrDefault("prettyPrint")
-  valid_580592 = validateParameter(valid_580592, JBool, required = false,
+  if valid_589620 != nil:
+    section.add "key", valid_589620
+  var valid_589621 = query.getOrDefault("prettyPrint")
+  valid_589621 = validateParameter(valid_589621, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580592 != nil:
-    section.add "prettyPrint", valid_580592
+  if valid_589621 != nil:
+    section.add "prettyPrint", valid_589621
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -6046,20 +6046,20 @@ proc validate_ContentInventorySet_580580(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580594: Call_ContentInventorySet_580579; path: JsonNode;
+proc call*(call_589623: Call_ContentInventorySet_589608; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Updates price and availability of a product in your Merchant Center account.
   ## 
-  let valid = call_580594.validator(path, query, header, formData, body)
-  let scheme = call_580594.pickScheme
+  let valid = call_589623.validator(path, query, header, formData, body)
+  let scheme = call_589623.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580594.url(scheme.get, call_580594.host, call_580594.base,
-                         call_580594.route, valid.getOrDefault("path"),
+  let url = call_589623.url(scheme.get, call_589623.host, call_589623.base,
+                         call_589623.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580594, url, valid)
+  result = hook(call_589623, url, valid)
 
-proc call*(call_580595: Call_ContentInventorySet_580579; storeCode: string;
+proc call*(call_589624: Call_ContentInventorySet_589608; storeCode: string;
           merchantId: string; productId: string; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; dryRun: bool = false;
           oauthToken: string = ""; userIp: string = ""; key: string = "";
@@ -6089,33 +6089,33 @@ proc call*(call_580595: Call_ContentInventorySet_580579; storeCode: string;
   ##              : Returns response with indentations and line breaks.
   ##   productId: string (required)
   ##            : The REST ID of the product for which to update price and availability.
-  var path_580596 = newJObject()
-  var query_580597 = newJObject()
-  var body_580598 = newJObject()
-  add(query_580597, "fields", newJString(fields))
-  add(query_580597, "quotaUser", newJString(quotaUser))
-  add(query_580597, "alt", newJString(alt))
-  add(query_580597, "dryRun", newJBool(dryRun))
-  add(query_580597, "oauth_token", newJString(oauthToken))
-  add(path_580596, "storeCode", newJString(storeCode))
-  add(query_580597, "userIp", newJString(userIp))
-  add(query_580597, "key", newJString(key))
-  add(path_580596, "merchantId", newJString(merchantId))
+  var path_589625 = newJObject()
+  var query_589626 = newJObject()
+  var body_589627 = newJObject()
+  add(query_589626, "fields", newJString(fields))
+  add(query_589626, "quotaUser", newJString(quotaUser))
+  add(query_589626, "alt", newJString(alt))
+  add(query_589626, "dryRun", newJBool(dryRun))
+  add(query_589626, "oauth_token", newJString(oauthToken))
+  add(path_589625, "storeCode", newJString(storeCode))
+  add(query_589626, "userIp", newJString(userIp))
+  add(query_589626, "key", newJString(key))
+  add(path_589625, "merchantId", newJString(merchantId))
   if body != nil:
-    body_580598 = body
-  add(query_580597, "prettyPrint", newJBool(prettyPrint))
-  add(path_580596, "productId", newJString(productId))
-  result = call_580595.call(path_580596, query_580597, nil, nil, body_580598)
+    body_589627 = body
+  add(query_589626, "prettyPrint", newJBool(prettyPrint))
+  add(path_589625, "productId", newJString(productId))
+  result = call_589624.call(path_589625, query_589626, nil, nil, body_589627)
 
-var contentInventorySet* = Call_ContentInventorySet_580579(
+var contentInventorySet* = Call_ContentInventorySet_589608(
     name: "contentInventorySet", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com",
     route: "/{merchantId}/inventory/{storeCode}/products/{productId}",
-    validator: validate_ContentInventorySet_580580, base: "/content/v2",
-    url: url_ContentInventorySet_580581, schemes: {Scheme.Https})
+    validator: validate_ContentInventorySet_589609, base: "/content/v2",
+    url: url_ContentInventorySet_589610, schemes: {Scheme.Https})
 type
-  Call_ContentLiasettingsList_580599 = ref object of OpenApiRestCall_579421
-proc url_ContentLiasettingsList_580601(protocol: Scheme; host: string; base: string;
+  Call_ContentLiasettingsList_589628 = ref object of OpenApiRestCall_588450
+proc url_ContentLiasettingsList_589630(protocol: Scheme; host: string; base: string;
                                       route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -6131,7 +6131,7 @@ proc url_ContentLiasettingsList_580601(protocol: Scheme; host: string; base: str
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_ContentLiasettingsList_580600(path: JsonNode; query: JsonNode;
+proc validate_ContentLiasettingsList_589629(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Lists the LIA settings of the sub-accounts in your Merchant Center account.
   ## 
@@ -6143,11 +6143,11 @@ proc validate_ContentLiasettingsList_580600(path: JsonNode; query: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `merchantId` field"
-  var valid_580602 = path.getOrDefault("merchantId")
-  valid_580602 = validateParameter(valid_580602, JString, required = true,
+  var valid_589631 = path.getOrDefault("merchantId")
+  valid_589631 = validateParameter(valid_589631, JString, required = true,
                                  default = nil)
-  if valid_580602 != nil:
-    section.add "merchantId", valid_580602
+  if valid_589631 != nil:
+    section.add "merchantId", valid_589631
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -6169,50 +6169,50 @@ proc validate_ContentLiasettingsList_580600(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580603 = query.getOrDefault("fields")
-  valid_580603 = validateParameter(valid_580603, JString, required = false,
+  var valid_589632 = query.getOrDefault("fields")
+  valid_589632 = validateParameter(valid_589632, JString, required = false,
                                  default = nil)
-  if valid_580603 != nil:
-    section.add "fields", valid_580603
-  var valid_580604 = query.getOrDefault("pageToken")
-  valid_580604 = validateParameter(valid_580604, JString, required = false,
+  if valid_589632 != nil:
+    section.add "fields", valid_589632
+  var valid_589633 = query.getOrDefault("pageToken")
+  valid_589633 = validateParameter(valid_589633, JString, required = false,
                                  default = nil)
-  if valid_580604 != nil:
-    section.add "pageToken", valid_580604
-  var valid_580605 = query.getOrDefault("quotaUser")
-  valid_580605 = validateParameter(valid_580605, JString, required = false,
+  if valid_589633 != nil:
+    section.add "pageToken", valid_589633
+  var valid_589634 = query.getOrDefault("quotaUser")
+  valid_589634 = validateParameter(valid_589634, JString, required = false,
                                  default = nil)
-  if valid_580605 != nil:
-    section.add "quotaUser", valid_580605
-  var valid_580606 = query.getOrDefault("alt")
-  valid_580606 = validateParameter(valid_580606, JString, required = false,
+  if valid_589634 != nil:
+    section.add "quotaUser", valid_589634
+  var valid_589635 = query.getOrDefault("alt")
+  valid_589635 = validateParameter(valid_589635, JString, required = false,
                                  default = newJString("json"))
-  if valid_580606 != nil:
-    section.add "alt", valid_580606
-  var valid_580607 = query.getOrDefault("oauth_token")
-  valid_580607 = validateParameter(valid_580607, JString, required = false,
+  if valid_589635 != nil:
+    section.add "alt", valid_589635
+  var valid_589636 = query.getOrDefault("oauth_token")
+  valid_589636 = validateParameter(valid_589636, JString, required = false,
                                  default = nil)
-  if valid_580607 != nil:
-    section.add "oauth_token", valid_580607
-  var valid_580608 = query.getOrDefault("userIp")
-  valid_580608 = validateParameter(valid_580608, JString, required = false,
+  if valid_589636 != nil:
+    section.add "oauth_token", valid_589636
+  var valid_589637 = query.getOrDefault("userIp")
+  valid_589637 = validateParameter(valid_589637, JString, required = false,
                                  default = nil)
-  if valid_580608 != nil:
-    section.add "userIp", valid_580608
-  var valid_580609 = query.getOrDefault("maxResults")
-  valid_580609 = validateParameter(valid_580609, JInt, required = false, default = nil)
-  if valid_580609 != nil:
-    section.add "maxResults", valid_580609
-  var valid_580610 = query.getOrDefault("key")
-  valid_580610 = validateParameter(valid_580610, JString, required = false,
+  if valid_589637 != nil:
+    section.add "userIp", valid_589637
+  var valid_589638 = query.getOrDefault("maxResults")
+  valid_589638 = validateParameter(valid_589638, JInt, required = false, default = nil)
+  if valid_589638 != nil:
+    section.add "maxResults", valid_589638
+  var valid_589639 = query.getOrDefault("key")
+  valid_589639 = validateParameter(valid_589639, JString, required = false,
                                  default = nil)
-  if valid_580610 != nil:
-    section.add "key", valid_580610
-  var valid_580611 = query.getOrDefault("prettyPrint")
-  valid_580611 = validateParameter(valid_580611, JBool, required = false,
+  if valid_589639 != nil:
+    section.add "key", valid_589639
+  var valid_589640 = query.getOrDefault("prettyPrint")
+  valid_589640 = validateParameter(valid_589640, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580611 != nil:
-    section.add "prettyPrint", valid_580611
+  if valid_589640 != nil:
+    section.add "prettyPrint", valid_589640
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -6221,20 +6221,20 @@ proc validate_ContentLiasettingsList_580600(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580612: Call_ContentLiasettingsList_580599; path: JsonNode;
+proc call*(call_589641: Call_ContentLiasettingsList_589628; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Lists the LIA settings of the sub-accounts in your Merchant Center account.
   ## 
-  let valid = call_580612.validator(path, query, header, formData, body)
-  let scheme = call_580612.pickScheme
+  let valid = call_589641.validator(path, query, header, formData, body)
+  let scheme = call_589641.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580612.url(scheme.get, call_580612.host, call_580612.base,
-                         call_580612.route, valid.getOrDefault("path"),
+  let url = call_589641.url(scheme.get, call_589641.host, call_589641.base,
+                         call_589641.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580612, url, valid)
+  result = hook(call_589641, url, valid)
 
-proc call*(call_580613: Call_ContentLiasettingsList_580599; merchantId: string;
+proc call*(call_589642: Call_ContentLiasettingsList_589628; merchantId: string;
           fields: string = ""; pageToken: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; userIp: string = "";
           maxResults: int = 0; key: string = ""; prettyPrint: bool = true): Recallable =
@@ -6260,28 +6260,28 @@ proc call*(call_580613: Call_ContentLiasettingsList_580599; merchantId: string;
   ##             : The ID of the managing account. This must be a multi-client account.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_580614 = newJObject()
-  var query_580615 = newJObject()
-  add(query_580615, "fields", newJString(fields))
-  add(query_580615, "pageToken", newJString(pageToken))
-  add(query_580615, "quotaUser", newJString(quotaUser))
-  add(query_580615, "alt", newJString(alt))
-  add(query_580615, "oauth_token", newJString(oauthToken))
-  add(query_580615, "userIp", newJString(userIp))
-  add(query_580615, "maxResults", newJInt(maxResults))
-  add(query_580615, "key", newJString(key))
-  add(path_580614, "merchantId", newJString(merchantId))
-  add(query_580615, "prettyPrint", newJBool(prettyPrint))
-  result = call_580613.call(path_580614, query_580615, nil, nil, nil)
+  var path_589643 = newJObject()
+  var query_589644 = newJObject()
+  add(query_589644, "fields", newJString(fields))
+  add(query_589644, "pageToken", newJString(pageToken))
+  add(query_589644, "quotaUser", newJString(quotaUser))
+  add(query_589644, "alt", newJString(alt))
+  add(query_589644, "oauth_token", newJString(oauthToken))
+  add(query_589644, "userIp", newJString(userIp))
+  add(query_589644, "maxResults", newJInt(maxResults))
+  add(query_589644, "key", newJString(key))
+  add(path_589643, "merchantId", newJString(merchantId))
+  add(query_589644, "prettyPrint", newJBool(prettyPrint))
+  result = call_589642.call(path_589643, query_589644, nil, nil, nil)
 
-var contentLiasettingsList* = Call_ContentLiasettingsList_580599(
+var contentLiasettingsList* = Call_ContentLiasettingsList_589628(
     name: "contentLiasettingsList", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/{merchantId}/liasettings",
-    validator: validate_ContentLiasettingsList_580600, base: "/content/v2",
-    url: url_ContentLiasettingsList_580601, schemes: {Scheme.Https})
+    validator: validate_ContentLiasettingsList_589629, base: "/content/v2",
+    url: url_ContentLiasettingsList_589630, schemes: {Scheme.Https})
 type
-  Call_ContentLiasettingsUpdate_580632 = ref object of OpenApiRestCall_579421
-proc url_ContentLiasettingsUpdate_580634(protocol: Scheme; host: string;
+  Call_ContentLiasettingsUpdate_589661 = ref object of OpenApiRestCall_588450
+proc url_ContentLiasettingsUpdate_589663(protocol: Scheme; host: string;
                                         base: string; route: string; path: JsonNode;
                                         query: JsonNode): Uri =
   result.scheme = $protocol
@@ -6300,7 +6300,7 @@ proc url_ContentLiasettingsUpdate_580634(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_ContentLiasettingsUpdate_580633(path: JsonNode; query: JsonNode;
+proc validate_ContentLiasettingsUpdate_589662(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Updates the LIA settings of the account.
   ## 
@@ -6313,16 +6313,16 @@ proc validate_ContentLiasettingsUpdate_580633(path: JsonNode; query: JsonNode;
   ##             : The ID of the managing account. If this parameter is not the same as accountId, then this account must be a multi-client account and accountId must be the ID of a sub-account of this account.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `accountId` field"
-  var valid_580635 = path.getOrDefault("accountId")
-  valid_580635 = validateParameter(valid_580635, JString, required = true,
+  var valid_589664 = path.getOrDefault("accountId")
+  valid_589664 = validateParameter(valid_589664, JString, required = true,
                                  default = nil)
-  if valid_580635 != nil:
-    section.add "accountId", valid_580635
-  var valid_580636 = path.getOrDefault("merchantId")
-  valid_580636 = validateParameter(valid_580636, JString, required = true,
+  if valid_589664 != nil:
+    section.add "accountId", valid_589664
+  var valid_589665 = path.getOrDefault("merchantId")
+  valid_589665 = validateParameter(valid_589665, JString, required = true,
                                  default = nil)
-  if valid_580636 != nil:
-    section.add "merchantId", valid_580636
+  if valid_589665 != nil:
+    section.add "merchantId", valid_589665
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -6342,45 +6342,45 @@ proc validate_ContentLiasettingsUpdate_580633(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580637 = query.getOrDefault("fields")
-  valid_580637 = validateParameter(valid_580637, JString, required = false,
+  var valid_589666 = query.getOrDefault("fields")
+  valid_589666 = validateParameter(valid_589666, JString, required = false,
                                  default = nil)
-  if valid_580637 != nil:
-    section.add "fields", valid_580637
-  var valid_580638 = query.getOrDefault("quotaUser")
-  valid_580638 = validateParameter(valid_580638, JString, required = false,
+  if valid_589666 != nil:
+    section.add "fields", valid_589666
+  var valid_589667 = query.getOrDefault("quotaUser")
+  valid_589667 = validateParameter(valid_589667, JString, required = false,
                                  default = nil)
-  if valid_580638 != nil:
-    section.add "quotaUser", valid_580638
-  var valid_580639 = query.getOrDefault("alt")
-  valid_580639 = validateParameter(valid_580639, JString, required = false,
+  if valid_589667 != nil:
+    section.add "quotaUser", valid_589667
+  var valid_589668 = query.getOrDefault("alt")
+  valid_589668 = validateParameter(valid_589668, JString, required = false,
                                  default = newJString("json"))
-  if valid_580639 != nil:
-    section.add "alt", valid_580639
-  var valid_580640 = query.getOrDefault("dryRun")
-  valid_580640 = validateParameter(valid_580640, JBool, required = false, default = nil)
-  if valid_580640 != nil:
-    section.add "dryRun", valid_580640
-  var valid_580641 = query.getOrDefault("oauth_token")
-  valid_580641 = validateParameter(valid_580641, JString, required = false,
+  if valid_589668 != nil:
+    section.add "alt", valid_589668
+  var valid_589669 = query.getOrDefault("dryRun")
+  valid_589669 = validateParameter(valid_589669, JBool, required = false, default = nil)
+  if valid_589669 != nil:
+    section.add "dryRun", valid_589669
+  var valid_589670 = query.getOrDefault("oauth_token")
+  valid_589670 = validateParameter(valid_589670, JString, required = false,
                                  default = nil)
-  if valid_580641 != nil:
-    section.add "oauth_token", valid_580641
-  var valid_580642 = query.getOrDefault("userIp")
-  valid_580642 = validateParameter(valid_580642, JString, required = false,
+  if valid_589670 != nil:
+    section.add "oauth_token", valid_589670
+  var valid_589671 = query.getOrDefault("userIp")
+  valid_589671 = validateParameter(valid_589671, JString, required = false,
                                  default = nil)
-  if valid_580642 != nil:
-    section.add "userIp", valid_580642
-  var valid_580643 = query.getOrDefault("key")
-  valid_580643 = validateParameter(valid_580643, JString, required = false,
+  if valid_589671 != nil:
+    section.add "userIp", valid_589671
+  var valid_589672 = query.getOrDefault("key")
+  valid_589672 = validateParameter(valid_589672, JString, required = false,
                                  default = nil)
-  if valid_580643 != nil:
-    section.add "key", valid_580643
-  var valid_580644 = query.getOrDefault("prettyPrint")
-  valid_580644 = validateParameter(valid_580644, JBool, required = false,
+  if valid_589672 != nil:
+    section.add "key", valid_589672
+  var valid_589673 = query.getOrDefault("prettyPrint")
+  valid_589673 = validateParameter(valid_589673, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580644 != nil:
-    section.add "prettyPrint", valid_580644
+  if valid_589673 != nil:
+    section.add "prettyPrint", valid_589673
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -6392,20 +6392,20 @@ proc validate_ContentLiasettingsUpdate_580633(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580646: Call_ContentLiasettingsUpdate_580632; path: JsonNode;
+proc call*(call_589675: Call_ContentLiasettingsUpdate_589661; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Updates the LIA settings of the account.
   ## 
-  let valid = call_580646.validator(path, query, header, formData, body)
-  let scheme = call_580646.pickScheme
+  let valid = call_589675.validator(path, query, header, formData, body)
+  let scheme = call_589675.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580646.url(scheme.get, call_580646.host, call_580646.base,
-                         call_580646.route, valid.getOrDefault("path"),
+  let url = call_589675.url(scheme.get, call_589675.host, call_589675.base,
+                         call_589675.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580646, url, valid)
+  result = hook(call_589675, url, valid)
 
-proc call*(call_580647: Call_ContentLiasettingsUpdate_580632; accountId: string;
+proc call*(call_589676: Call_ContentLiasettingsUpdate_589661; accountId: string;
           merchantId: string; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; dryRun: bool = false; oauthToken: string = "";
           userIp: string = ""; key: string = ""; body: JsonNode = nil;
@@ -6433,31 +6433,31 @@ proc call*(call_580647: Call_ContentLiasettingsUpdate_580632; accountId: string;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_580648 = newJObject()
-  var query_580649 = newJObject()
-  var body_580650 = newJObject()
-  add(query_580649, "fields", newJString(fields))
-  add(query_580649, "quotaUser", newJString(quotaUser))
-  add(query_580649, "alt", newJString(alt))
-  add(query_580649, "dryRun", newJBool(dryRun))
-  add(query_580649, "oauth_token", newJString(oauthToken))
-  add(path_580648, "accountId", newJString(accountId))
-  add(query_580649, "userIp", newJString(userIp))
-  add(query_580649, "key", newJString(key))
-  add(path_580648, "merchantId", newJString(merchantId))
+  var path_589677 = newJObject()
+  var query_589678 = newJObject()
+  var body_589679 = newJObject()
+  add(query_589678, "fields", newJString(fields))
+  add(query_589678, "quotaUser", newJString(quotaUser))
+  add(query_589678, "alt", newJString(alt))
+  add(query_589678, "dryRun", newJBool(dryRun))
+  add(query_589678, "oauth_token", newJString(oauthToken))
+  add(path_589677, "accountId", newJString(accountId))
+  add(query_589678, "userIp", newJString(userIp))
+  add(query_589678, "key", newJString(key))
+  add(path_589677, "merchantId", newJString(merchantId))
   if body != nil:
-    body_580650 = body
-  add(query_580649, "prettyPrint", newJBool(prettyPrint))
-  result = call_580647.call(path_580648, query_580649, nil, nil, body_580650)
+    body_589679 = body
+  add(query_589678, "prettyPrint", newJBool(prettyPrint))
+  result = call_589676.call(path_589677, query_589678, nil, nil, body_589679)
 
-var contentLiasettingsUpdate* = Call_ContentLiasettingsUpdate_580632(
+var contentLiasettingsUpdate* = Call_ContentLiasettingsUpdate_589661(
     name: "contentLiasettingsUpdate", meth: HttpMethod.HttpPut,
     host: "www.googleapis.com", route: "/{merchantId}/liasettings/{accountId}",
-    validator: validate_ContentLiasettingsUpdate_580633, base: "/content/v2",
-    url: url_ContentLiasettingsUpdate_580634, schemes: {Scheme.Https})
+    validator: validate_ContentLiasettingsUpdate_589662, base: "/content/v2",
+    url: url_ContentLiasettingsUpdate_589663, schemes: {Scheme.Https})
 type
-  Call_ContentLiasettingsGet_580616 = ref object of OpenApiRestCall_579421
-proc url_ContentLiasettingsGet_580618(protocol: Scheme; host: string; base: string;
+  Call_ContentLiasettingsGet_589645 = ref object of OpenApiRestCall_588450
+proc url_ContentLiasettingsGet_589647(protocol: Scheme; host: string; base: string;
                                      route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -6475,7 +6475,7 @@ proc url_ContentLiasettingsGet_580618(protocol: Scheme; host: string; base: stri
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_ContentLiasettingsGet_580617(path: JsonNode; query: JsonNode;
+proc validate_ContentLiasettingsGet_589646(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Retrieves the LIA settings of the account.
   ## 
@@ -6488,16 +6488,16 @@ proc validate_ContentLiasettingsGet_580617(path: JsonNode; query: JsonNode;
   ##             : The ID of the managing account. If this parameter is not the same as accountId, then this account must be a multi-client account and accountId must be the ID of a sub-account of this account.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `accountId` field"
-  var valid_580619 = path.getOrDefault("accountId")
-  valid_580619 = validateParameter(valid_580619, JString, required = true,
+  var valid_589648 = path.getOrDefault("accountId")
+  valid_589648 = validateParameter(valid_589648, JString, required = true,
                                  default = nil)
-  if valid_580619 != nil:
-    section.add "accountId", valid_580619
-  var valid_580620 = path.getOrDefault("merchantId")
-  valid_580620 = validateParameter(valid_580620, JString, required = true,
+  if valid_589648 != nil:
+    section.add "accountId", valid_589648
+  var valid_589649 = path.getOrDefault("merchantId")
+  valid_589649 = validateParameter(valid_589649, JString, required = true,
                                  default = nil)
-  if valid_580620 != nil:
-    section.add "merchantId", valid_580620
+  if valid_589649 != nil:
+    section.add "merchantId", valid_589649
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -6515,41 +6515,41 @@ proc validate_ContentLiasettingsGet_580617(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580621 = query.getOrDefault("fields")
-  valid_580621 = validateParameter(valid_580621, JString, required = false,
+  var valid_589650 = query.getOrDefault("fields")
+  valid_589650 = validateParameter(valid_589650, JString, required = false,
                                  default = nil)
-  if valid_580621 != nil:
-    section.add "fields", valid_580621
-  var valid_580622 = query.getOrDefault("quotaUser")
-  valid_580622 = validateParameter(valid_580622, JString, required = false,
+  if valid_589650 != nil:
+    section.add "fields", valid_589650
+  var valid_589651 = query.getOrDefault("quotaUser")
+  valid_589651 = validateParameter(valid_589651, JString, required = false,
                                  default = nil)
-  if valid_580622 != nil:
-    section.add "quotaUser", valid_580622
-  var valid_580623 = query.getOrDefault("alt")
-  valid_580623 = validateParameter(valid_580623, JString, required = false,
+  if valid_589651 != nil:
+    section.add "quotaUser", valid_589651
+  var valid_589652 = query.getOrDefault("alt")
+  valid_589652 = validateParameter(valid_589652, JString, required = false,
                                  default = newJString("json"))
-  if valid_580623 != nil:
-    section.add "alt", valid_580623
-  var valid_580624 = query.getOrDefault("oauth_token")
-  valid_580624 = validateParameter(valid_580624, JString, required = false,
+  if valid_589652 != nil:
+    section.add "alt", valid_589652
+  var valid_589653 = query.getOrDefault("oauth_token")
+  valid_589653 = validateParameter(valid_589653, JString, required = false,
                                  default = nil)
-  if valid_580624 != nil:
-    section.add "oauth_token", valid_580624
-  var valid_580625 = query.getOrDefault("userIp")
-  valid_580625 = validateParameter(valid_580625, JString, required = false,
+  if valid_589653 != nil:
+    section.add "oauth_token", valid_589653
+  var valid_589654 = query.getOrDefault("userIp")
+  valid_589654 = validateParameter(valid_589654, JString, required = false,
                                  default = nil)
-  if valid_580625 != nil:
-    section.add "userIp", valid_580625
-  var valid_580626 = query.getOrDefault("key")
-  valid_580626 = validateParameter(valid_580626, JString, required = false,
+  if valid_589654 != nil:
+    section.add "userIp", valid_589654
+  var valid_589655 = query.getOrDefault("key")
+  valid_589655 = validateParameter(valid_589655, JString, required = false,
                                  default = nil)
-  if valid_580626 != nil:
-    section.add "key", valid_580626
-  var valid_580627 = query.getOrDefault("prettyPrint")
-  valid_580627 = validateParameter(valid_580627, JBool, required = false,
+  if valid_589655 != nil:
+    section.add "key", valid_589655
+  var valid_589656 = query.getOrDefault("prettyPrint")
+  valid_589656 = validateParameter(valid_589656, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580627 != nil:
-    section.add "prettyPrint", valid_580627
+  if valid_589656 != nil:
+    section.add "prettyPrint", valid_589656
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -6558,20 +6558,20 @@ proc validate_ContentLiasettingsGet_580617(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580628: Call_ContentLiasettingsGet_580616; path: JsonNode;
+proc call*(call_589657: Call_ContentLiasettingsGet_589645; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Retrieves the LIA settings of the account.
   ## 
-  let valid = call_580628.validator(path, query, header, formData, body)
-  let scheme = call_580628.pickScheme
+  let valid = call_589657.validator(path, query, header, formData, body)
+  let scheme = call_589657.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580628.url(scheme.get, call_580628.host, call_580628.base,
-                         call_580628.route, valid.getOrDefault("path"),
+  let url = call_589657.url(scheme.get, call_589657.host, call_589657.base,
+                         call_589657.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580628, url, valid)
+  result = hook(call_589657, url, valid)
 
-proc call*(call_580629: Call_ContentLiasettingsGet_580616; accountId: string;
+proc call*(call_589658: Call_ContentLiasettingsGet_589645; accountId: string;
           merchantId: string; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; userIp: string = "";
           key: string = ""; prettyPrint: bool = true): Recallable =
@@ -6595,27 +6595,27 @@ proc call*(call_580629: Call_ContentLiasettingsGet_580616; accountId: string;
   ##             : The ID of the managing account. If this parameter is not the same as accountId, then this account must be a multi-client account and accountId must be the ID of a sub-account of this account.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_580630 = newJObject()
-  var query_580631 = newJObject()
-  add(query_580631, "fields", newJString(fields))
-  add(query_580631, "quotaUser", newJString(quotaUser))
-  add(query_580631, "alt", newJString(alt))
-  add(query_580631, "oauth_token", newJString(oauthToken))
-  add(path_580630, "accountId", newJString(accountId))
-  add(query_580631, "userIp", newJString(userIp))
-  add(query_580631, "key", newJString(key))
-  add(path_580630, "merchantId", newJString(merchantId))
-  add(query_580631, "prettyPrint", newJBool(prettyPrint))
-  result = call_580629.call(path_580630, query_580631, nil, nil, nil)
+  var path_589659 = newJObject()
+  var query_589660 = newJObject()
+  add(query_589660, "fields", newJString(fields))
+  add(query_589660, "quotaUser", newJString(quotaUser))
+  add(query_589660, "alt", newJString(alt))
+  add(query_589660, "oauth_token", newJString(oauthToken))
+  add(path_589659, "accountId", newJString(accountId))
+  add(query_589660, "userIp", newJString(userIp))
+  add(query_589660, "key", newJString(key))
+  add(path_589659, "merchantId", newJString(merchantId))
+  add(query_589660, "prettyPrint", newJBool(prettyPrint))
+  result = call_589658.call(path_589659, query_589660, nil, nil, nil)
 
-var contentLiasettingsGet* = Call_ContentLiasettingsGet_580616(
+var contentLiasettingsGet* = Call_ContentLiasettingsGet_589645(
     name: "contentLiasettingsGet", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/{merchantId}/liasettings/{accountId}",
-    validator: validate_ContentLiasettingsGet_580617, base: "/content/v2",
-    url: url_ContentLiasettingsGet_580618, schemes: {Scheme.Https})
+    validator: validate_ContentLiasettingsGet_589646, base: "/content/v2",
+    url: url_ContentLiasettingsGet_589647, schemes: {Scheme.Https})
 type
-  Call_ContentLiasettingsPatch_580651 = ref object of OpenApiRestCall_579421
-proc url_ContentLiasettingsPatch_580653(protocol: Scheme; host: string; base: string;
+  Call_ContentLiasettingsPatch_589680 = ref object of OpenApiRestCall_588450
+proc url_ContentLiasettingsPatch_589682(protocol: Scheme; host: string; base: string;
                                        route: string; path: JsonNode;
                                        query: JsonNode): Uri =
   result.scheme = $protocol
@@ -6634,7 +6634,7 @@ proc url_ContentLiasettingsPatch_580653(protocol: Scheme; host: string; base: st
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_ContentLiasettingsPatch_580652(path: JsonNode; query: JsonNode;
+proc validate_ContentLiasettingsPatch_589681(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Updates the LIA settings of the account. This method supports patch semantics.
   ## 
@@ -6647,16 +6647,16 @@ proc validate_ContentLiasettingsPatch_580652(path: JsonNode; query: JsonNode;
   ##             : The ID of the managing account. If this parameter is not the same as accountId, then this account must be a multi-client account and accountId must be the ID of a sub-account of this account.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `accountId` field"
-  var valid_580654 = path.getOrDefault("accountId")
-  valid_580654 = validateParameter(valid_580654, JString, required = true,
+  var valid_589683 = path.getOrDefault("accountId")
+  valid_589683 = validateParameter(valid_589683, JString, required = true,
                                  default = nil)
-  if valid_580654 != nil:
-    section.add "accountId", valid_580654
-  var valid_580655 = path.getOrDefault("merchantId")
-  valid_580655 = validateParameter(valid_580655, JString, required = true,
+  if valid_589683 != nil:
+    section.add "accountId", valid_589683
+  var valid_589684 = path.getOrDefault("merchantId")
+  valid_589684 = validateParameter(valid_589684, JString, required = true,
                                  default = nil)
-  if valid_580655 != nil:
-    section.add "merchantId", valid_580655
+  if valid_589684 != nil:
+    section.add "merchantId", valid_589684
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -6676,45 +6676,45 @@ proc validate_ContentLiasettingsPatch_580652(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580656 = query.getOrDefault("fields")
-  valid_580656 = validateParameter(valid_580656, JString, required = false,
+  var valid_589685 = query.getOrDefault("fields")
+  valid_589685 = validateParameter(valid_589685, JString, required = false,
                                  default = nil)
-  if valid_580656 != nil:
-    section.add "fields", valid_580656
-  var valid_580657 = query.getOrDefault("quotaUser")
-  valid_580657 = validateParameter(valid_580657, JString, required = false,
+  if valid_589685 != nil:
+    section.add "fields", valid_589685
+  var valid_589686 = query.getOrDefault("quotaUser")
+  valid_589686 = validateParameter(valid_589686, JString, required = false,
                                  default = nil)
-  if valid_580657 != nil:
-    section.add "quotaUser", valid_580657
-  var valid_580658 = query.getOrDefault("alt")
-  valid_580658 = validateParameter(valid_580658, JString, required = false,
+  if valid_589686 != nil:
+    section.add "quotaUser", valid_589686
+  var valid_589687 = query.getOrDefault("alt")
+  valid_589687 = validateParameter(valid_589687, JString, required = false,
                                  default = newJString("json"))
-  if valid_580658 != nil:
-    section.add "alt", valid_580658
-  var valid_580659 = query.getOrDefault("dryRun")
-  valid_580659 = validateParameter(valid_580659, JBool, required = false, default = nil)
-  if valid_580659 != nil:
-    section.add "dryRun", valid_580659
-  var valid_580660 = query.getOrDefault("oauth_token")
-  valid_580660 = validateParameter(valid_580660, JString, required = false,
+  if valid_589687 != nil:
+    section.add "alt", valid_589687
+  var valid_589688 = query.getOrDefault("dryRun")
+  valid_589688 = validateParameter(valid_589688, JBool, required = false, default = nil)
+  if valid_589688 != nil:
+    section.add "dryRun", valid_589688
+  var valid_589689 = query.getOrDefault("oauth_token")
+  valid_589689 = validateParameter(valid_589689, JString, required = false,
                                  default = nil)
-  if valid_580660 != nil:
-    section.add "oauth_token", valid_580660
-  var valid_580661 = query.getOrDefault("userIp")
-  valid_580661 = validateParameter(valid_580661, JString, required = false,
+  if valid_589689 != nil:
+    section.add "oauth_token", valid_589689
+  var valid_589690 = query.getOrDefault("userIp")
+  valid_589690 = validateParameter(valid_589690, JString, required = false,
                                  default = nil)
-  if valid_580661 != nil:
-    section.add "userIp", valid_580661
-  var valid_580662 = query.getOrDefault("key")
-  valid_580662 = validateParameter(valid_580662, JString, required = false,
+  if valid_589690 != nil:
+    section.add "userIp", valid_589690
+  var valid_589691 = query.getOrDefault("key")
+  valid_589691 = validateParameter(valid_589691, JString, required = false,
                                  default = nil)
-  if valid_580662 != nil:
-    section.add "key", valid_580662
-  var valid_580663 = query.getOrDefault("prettyPrint")
-  valid_580663 = validateParameter(valid_580663, JBool, required = false,
+  if valid_589691 != nil:
+    section.add "key", valid_589691
+  var valid_589692 = query.getOrDefault("prettyPrint")
+  valid_589692 = validateParameter(valid_589692, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580663 != nil:
-    section.add "prettyPrint", valid_580663
+  if valid_589692 != nil:
+    section.add "prettyPrint", valid_589692
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -6726,20 +6726,20 @@ proc validate_ContentLiasettingsPatch_580652(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580665: Call_ContentLiasettingsPatch_580651; path: JsonNode;
+proc call*(call_589694: Call_ContentLiasettingsPatch_589680; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Updates the LIA settings of the account. This method supports patch semantics.
   ## 
-  let valid = call_580665.validator(path, query, header, formData, body)
-  let scheme = call_580665.pickScheme
+  let valid = call_589694.validator(path, query, header, formData, body)
+  let scheme = call_589694.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580665.url(scheme.get, call_580665.host, call_580665.base,
-                         call_580665.route, valid.getOrDefault("path"),
+  let url = call_589694.url(scheme.get, call_589694.host, call_589694.base,
+                         call_589694.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580665, url, valid)
+  result = hook(call_589694, url, valid)
 
-proc call*(call_580666: Call_ContentLiasettingsPatch_580651; accountId: string;
+proc call*(call_589695: Call_ContentLiasettingsPatch_589680; accountId: string;
           merchantId: string; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; dryRun: bool = false; oauthToken: string = "";
           userIp: string = ""; key: string = ""; body: JsonNode = nil;
@@ -6767,31 +6767,31 @@ proc call*(call_580666: Call_ContentLiasettingsPatch_580651; accountId: string;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_580667 = newJObject()
-  var query_580668 = newJObject()
-  var body_580669 = newJObject()
-  add(query_580668, "fields", newJString(fields))
-  add(query_580668, "quotaUser", newJString(quotaUser))
-  add(query_580668, "alt", newJString(alt))
-  add(query_580668, "dryRun", newJBool(dryRun))
-  add(query_580668, "oauth_token", newJString(oauthToken))
-  add(path_580667, "accountId", newJString(accountId))
-  add(query_580668, "userIp", newJString(userIp))
-  add(query_580668, "key", newJString(key))
-  add(path_580667, "merchantId", newJString(merchantId))
+  var path_589696 = newJObject()
+  var query_589697 = newJObject()
+  var body_589698 = newJObject()
+  add(query_589697, "fields", newJString(fields))
+  add(query_589697, "quotaUser", newJString(quotaUser))
+  add(query_589697, "alt", newJString(alt))
+  add(query_589697, "dryRun", newJBool(dryRun))
+  add(query_589697, "oauth_token", newJString(oauthToken))
+  add(path_589696, "accountId", newJString(accountId))
+  add(query_589697, "userIp", newJString(userIp))
+  add(query_589697, "key", newJString(key))
+  add(path_589696, "merchantId", newJString(merchantId))
   if body != nil:
-    body_580669 = body
-  add(query_580668, "prettyPrint", newJBool(prettyPrint))
-  result = call_580666.call(path_580667, query_580668, nil, nil, body_580669)
+    body_589698 = body
+  add(query_589697, "prettyPrint", newJBool(prettyPrint))
+  result = call_589695.call(path_589696, query_589697, nil, nil, body_589698)
 
-var contentLiasettingsPatch* = Call_ContentLiasettingsPatch_580651(
+var contentLiasettingsPatch* = Call_ContentLiasettingsPatch_589680(
     name: "contentLiasettingsPatch", meth: HttpMethod.HttpPatch,
     host: "www.googleapis.com", route: "/{merchantId}/liasettings/{accountId}",
-    validator: validate_ContentLiasettingsPatch_580652, base: "/content/v2",
-    url: url_ContentLiasettingsPatch_580653, schemes: {Scheme.Https})
+    validator: validate_ContentLiasettingsPatch_589681, base: "/content/v2",
+    url: url_ContentLiasettingsPatch_589682, schemes: {Scheme.Https})
 type
-  Call_ContentLiasettingsGetaccessiblegmbaccounts_580670 = ref object of OpenApiRestCall_579421
-proc url_ContentLiasettingsGetaccessiblegmbaccounts_580672(protocol: Scheme;
+  Call_ContentLiasettingsGetaccessiblegmbaccounts_589699 = ref object of OpenApiRestCall_588450
+proc url_ContentLiasettingsGetaccessiblegmbaccounts_589701(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -6810,7 +6810,7 @@ proc url_ContentLiasettingsGetaccessiblegmbaccounts_580672(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_ContentLiasettingsGetaccessiblegmbaccounts_580671(path: JsonNode;
+proc validate_ContentLiasettingsGetaccessiblegmbaccounts_589700(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Retrieves the list of accessible Google My Business accounts.
   ## 
@@ -6823,16 +6823,16 @@ proc validate_ContentLiasettingsGetaccessiblegmbaccounts_580671(path: JsonNode;
   ##             : The ID of the managing account. If this parameter is not the same as accountId, then this account must be a multi-client account and accountId must be the ID of a sub-account of this account.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `accountId` field"
-  var valid_580673 = path.getOrDefault("accountId")
-  valid_580673 = validateParameter(valid_580673, JString, required = true,
+  var valid_589702 = path.getOrDefault("accountId")
+  valid_589702 = validateParameter(valid_589702, JString, required = true,
                                  default = nil)
-  if valid_580673 != nil:
-    section.add "accountId", valid_580673
-  var valid_580674 = path.getOrDefault("merchantId")
-  valid_580674 = validateParameter(valid_580674, JString, required = true,
+  if valid_589702 != nil:
+    section.add "accountId", valid_589702
+  var valid_589703 = path.getOrDefault("merchantId")
+  valid_589703 = validateParameter(valid_589703, JString, required = true,
                                  default = nil)
-  if valid_580674 != nil:
-    section.add "merchantId", valid_580674
+  if valid_589703 != nil:
+    section.add "merchantId", valid_589703
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -6850,41 +6850,41 @@ proc validate_ContentLiasettingsGetaccessiblegmbaccounts_580671(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580675 = query.getOrDefault("fields")
-  valid_580675 = validateParameter(valid_580675, JString, required = false,
+  var valid_589704 = query.getOrDefault("fields")
+  valid_589704 = validateParameter(valid_589704, JString, required = false,
                                  default = nil)
-  if valid_580675 != nil:
-    section.add "fields", valid_580675
-  var valid_580676 = query.getOrDefault("quotaUser")
-  valid_580676 = validateParameter(valid_580676, JString, required = false,
+  if valid_589704 != nil:
+    section.add "fields", valid_589704
+  var valid_589705 = query.getOrDefault("quotaUser")
+  valid_589705 = validateParameter(valid_589705, JString, required = false,
                                  default = nil)
-  if valid_580676 != nil:
-    section.add "quotaUser", valid_580676
-  var valid_580677 = query.getOrDefault("alt")
-  valid_580677 = validateParameter(valid_580677, JString, required = false,
+  if valid_589705 != nil:
+    section.add "quotaUser", valid_589705
+  var valid_589706 = query.getOrDefault("alt")
+  valid_589706 = validateParameter(valid_589706, JString, required = false,
                                  default = newJString("json"))
-  if valid_580677 != nil:
-    section.add "alt", valid_580677
-  var valid_580678 = query.getOrDefault("oauth_token")
-  valid_580678 = validateParameter(valid_580678, JString, required = false,
+  if valid_589706 != nil:
+    section.add "alt", valid_589706
+  var valid_589707 = query.getOrDefault("oauth_token")
+  valid_589707 = validateParameter(valid_589707, JString, required = false,
                                  default = nil)
-  if valid_580678 != nil:
-    section.add "oauth_token", valid_580678
-  var valid_580679 = query.getOrDefault("userIp")
-  valid_580679 = validateParameter(valid_580679, JString, required = false,
+  if valid_589707 != nil:
+    section.add "oauth_token", valid_589707
+  var valid_589708 = query.getOrDefault("userIp")
+  valid_589708 = validateParameter(valid_589708, JString, required = false,
                                  default = nil)
-  if valid_580679 != nil:
-    section.add "userIp", valid_580679
-  var valid_580680 = query.getOrDefault("key")
-  valid_580680 = validateParameter(valid_580680, JString, required = false,
+  if valid_589708 != nil:
+    section.add "userIp", valid_589708
+  var valid_589709 = query.getOrDefault("key")
+  valid_589709 = validateParameter(valid_589709, JString, required = false,
                                  default = nil)
-  if valid_580680 != nil:
-    section.add "key", valid_580680
-  var valid_580681 = query.getOrDefault("prettyPrint")
-  valid_580681 = validateParameter(valid_580681, JBool, required = false,
+  if valid_589709 != nil:
+    section.add "key", valid_589709
+  var valid_589710 = query.getOrDefault("prettyPrint")
+  valid_589710 = validateParameter(valid_589710, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580681 != nil:
-    section.add "prettyPrint", valid_580681
+  if valid_589710 != nil:
+    section.add "prettyPrint", valid_589710
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -6893,21 +6893,21 @@ proc validate_ContentLiasettingsGetaccessiblegmbaccounts_580671(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580682: Call_ContentLiasettingsGetaccessiblegmbaccounts_580670;
+proc call*(call_589711: Call_ContentLiasettingsGetaccessiblegmbaccounts_589699;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Retrieves the list of accessible Google My Business accounts.
   ## 
-  let valid = call_580682.validator(path, query, header, formData, body)
-  let scheme = call_580682.pickScheme
+  let valid = call_589711.validator(path, query, header, formData, body)
+  let scheme = call_589711.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580682.url(scheme.get, call_580682.host, call_580682.base,
-                         call_580682.route, valid.getOrDefault("path"),
+  let url = call_589711.url(scheme.get, call_589711.host, call_589711.base,
+                         call_589711.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580682, url, valid)
+  result = hook(call_589711, url, valid)
 
-proc call*(call_580683: Call_ContentLiasettingsGetaccessiblegmbaccounts_580670;
+proc call*(call_589712: Call_ContentLiasettingsGetaccessiblegmbaccounts_589699;
           accountId: string; merchantId: string; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; key: string = ""; prettyPrint: bool = true): Recallable =
@@ -6931,29 +6931,29 @@ proc call*(call_580683: Call_ContentLiasettingsGetaccessiblegmbaccounts_580670;
   ##             : The ID of the managing account. If this parameter is not the same as accountId, then this account must be a multi-client account and accountId must be the ID of a sub-account of this account.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_580684 = newJObject()
-  var query_580685 = newJObject()
-  add(query_580685, "fields", newJString(fields))
-  add(query_580685, "quotaUser", newJString(quotaUser))
-  add(query_580685, "alt", newJString(alt))
-  add(query_580685, "oauth_token", newJString(oauthToken))
-  add(path_580684, "accountId", newJString(accountId))
-  add(query_580685, "userIp", newJString(userIp))
-  add(query_580685, "key", newJString(key))
-  add(path_580684, "merchantId", newJString(merchantId))
-  add(query_580685, "prettyPrint", newJBool(prettyPrint))
-  result = call_580683.call(path_580684, query_580685, nil, nil, nil)
+  var path_589713 = newJObject()
+  var query_589714 = newJObject()
+  add(query_589714, "fields", newJString(fields))
+  add(query_589714, "quotaUser", newJString(quotaUser))
+  add(query_589714, "alt", newJString(alt))
+  add(query_589714, "oauth_token", newJString(oauthToken))
+  add(path_589713, "accountId", newJString(accountId))
+  add(query_589714, "userIp", newJString(userIp))
+  add(query_589714, "key", newJString(key))
+  add(path_589713, "merchantId", newJString(merchantId))
+  add(query_589714, "prettyPrint", newJBool(prettyPrint))
+  result = call_589712.call(path_589713, query_589714, nil, nil, nil)
 
-var contentLiasettingsGetaccessiblegmbaccounts* = Call_ContentLiasettingsGetaccessiblegmbaccounts_580670(
+var contentLiasettingsGetaccessiblegmbaccounts* = Call_ContentLiasettingsGetaccessiblegmbaccounts_589699(
     name: "contentLiasettingsGetaccessiblegmbaccounts", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com",
     route: "/{merchantId}/liasettings/{accountId}/accessiblegmbaccounts",
-    validator: validate_ContentLiasettingsGetaccessiblegmbaccounts_580671,
-    base: "/content/v2", url: url_ContentLiasettingsGetaccessiblegmbaccounts_580672,
+    validator: validate_ContentLiasettingsGetaccessiblegmbaccounts_589700,
+    base: "/content/v2", url: url_ContentLiasettingsGetaccessiblegmbaccounts_589701,
     schemes: {Scheme.Https})
 type
-  Call_ContentLiasettingsRequestgmbaccess_580686 = ref object of OpenApiRestCall_579421
-proc url_ContentLiasettingsRequestgmbaccess_580688(protocol: Scheme; host: string;
+  Call_ContentLiasettingsRequestgmbaccess_589715 = ref object of OpenApiRestCall_588450
+proc url_ContentLiasettingsRequestgmbaccess_589717(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -6972,7 +6972,7 @@ proc url_ContentLiasettingsRequestgmbaccess_580688(protocol: Scheme; host: strin
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_ContentLiasettingsRequestgmbaccess_580687(path: JsonNode;
+proc validate_ContentLiasettingsRequestgmbaccess_589716(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Requests access to a specified Google My Business account.
   ## 
@@ -6985,16 +6985,16 @@ proc validate_ContentLiasettingsRequestgmbaccess_580687(path: JsonNode;
   ##             : The ID of the managing account. If this parameter is not the same as accountId, then this account must be a multi-client account and accountId must be the ID of a sub-account of this account.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `accountId` field"
-  var valid_580689 = path.getOrDefault("accountId")
-  valid_580689 = validateParameter(valid_580689, JString, required = true,
+  var valid_589718 = path.getOrDefault("accountId")
+  valid_589718 = validateParameter(valid_589718, JString, required = true,
                                  default = nil)
-  if valid_580689 != nil:
-    section.add "accountId", valid_580689
-  var valid_580690 = path.getOrDefault("merchantId")
-  valid_580690 = validateParameter(valid_580690, JString, required = true,
+  if valid_589718 != nil:
+    section.add "accountId", valid_589718
+  var valid_589719 = path.getOrDefault("merchantId")
+  valid_589719 = validateParameter(valid_589719, JString, required = true,
                                  default = nil)
-  if valid_580690 != nil:
-    section.add "merchantId", valid_580690
+  if valid_589719 != nil:
+    section.add "merchantId", valid_589719
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -7014,48 +7014,48 @@ proc validate_ContentLiasettingsRequestgmbaccess_580687(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580691 = query.getOrDefault("fields")
-  valid_580691 = validateParameter(valid_580691, JString, required = false,
+  var valid_589720 = query.getOrDefault("fields")
+  valid_589720 = validateParameter(valid_589720, JString, required = false,
                                  default = nil)
-  if valid_580691 != nil:
-    section.add "fields", valid_580691
-  var valid_580692 = query.getOrDefault("quotaUser")
-  valid_580692 = validateParameter(valid_580692, JString, required = false,
+  if valid_589720 != nil:
+    section.add "fields", valid_589720
+  var valid_589721 = query.getOrDefault("quotaUser")
+  valid_589721 = validateParameter(valid_589721, JString, required = false,
                                  default = nil)
-  if valid_580692 != nil:
-    section.add "quotaUser", valid_580692
-  var valid_580693 = query.getOrDefault("alt")
-  valid_580693 = validateParameter(valid_580693, JString, required = false,
+  if valid_589721 != nil:
+    section.add "quotaUser", valid_589721
+  var valid_589722 = query.getOrDefault("alt")
+  valid_589722 = validateParameter(valid_589722, JString, required = false,
                                  default = newJString("json"))
-  if valid_580693 != nil:
-    section.add "alt", valid_580693
-  var valid_580694 = query.getOrDefault("oauth_token")
-  valid_580694 = validateParameter(valid_580694, JString, required = false,
+  if valid_589722 != nil:
+    section.add "alt", valid_589722
+  var valid_589723 = query.getOrDefault("oauth_token")
+  valid_589723 = validateParameter(valid_589723, JString, required = false,
                                  default = nil)
-  if valid_580694 != nil:
-    section.add "oauth_token", valid_580694
-  var valid_580695 = query.getOrDefault("userIp")
-  valid_580695 = validateParameter(valid_580695, JString, required = false,
+  if valid_589723 != nil:
+    section.add "oauth_token", valid_589723
+  var valid_589724 = query.getOrDefault("userIp")
+  valid_589724 = validateParameter(valid_589724, JString, required = false,
                                  default = nil)
-  if valid_580695 != nil:
-    section.add "userIp", valid_580695
-  var valid_580696 = query.getOrDefault("key")
-  valid_580696 = validateParameter(valid_580696, JString, required = false,
+  if valid_589724 != nil:
+    section.add "userIp", valid_589724
+  var valid_589725 = query.getOrDefault("key")
+  valid_589725 = validateParameter(valid_589725, JString, required = false,
                                  default = nil)
-  if valid_580696 != nil:
-    section.add "key", valid_580696
+  if valid_589725 != nil:
+    section.add "key", valid_589725
   assert query != nil,
         "query argument is necessary due to required `gmbEmail` field"
-  var valid_580697 = query.getOrDefault("gmbEmail")
-  valid_580697 = validateParameter(valid_580697, JString, required = true,
+  var valid_589726 = query.getOrDefault("gmbEmail")
+  valid_589726 = validateParameter(valid_589726, JString, required = true,
                                  default = nil)
-  if valid_580697 != nil:
-    section.add "gmbEmail", valid_580697
-  var valid_580698 = query.getOrDefault("prettyPrint")
-  valid_580698 = validateParameter(valid_580698, JBool, required = false,
+  if valid_589726 != nil:
+    section.add "gmbEmail", valid_589726
+  var valid_589727 = query.getOrDefault("prettyPrint")
+  valid_589727 = validateParameter(valid_589727, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580698 != nil:
-    section.add "prettyPrint", valid_580698
+  if valid_589727 != nil:
+    section.add "prettyPrint", valid_589727
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -7064,21 +7064,21 @@ proc validate_ContentLiasettingsRequestgmbaccess_580687(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580699: Call_ContentLiasettingsRequestgmbaccess_580686;
+proc call*(call_589728: Call_ContentLiasettingsRequestgmbaccess_589715;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Requests access to a specified Google My Business account.
   ## 
-  let valid = call_580699.validator(path, query, header, formData, body)
-  let scheme = call_580699.pickScheme
+  let valid = call_589728.validator(path, query, header, formData, body)
+  let scheme = call_589728.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580699.url(scheme.get, call_580699.host, call_580699.base,
-                         call_580699.route, valid.getOrDefault("path"),
+  let url = call_589728.url(scheme.get, call_589728.host, call_589728.base,
+                         call_589728.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580699, url, valid)
+  result = hook(call_589728, url, valid)
 
-proc call*(call_580700: Call_ContentLiasettingsRequestgmbaccess_580686;
+proc call*(call_589729: Call_ContentLiasettingsRequestgmbaccess_589715;
           accountId: string; gmbEmail: string; merchantId: string;
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           oauthToken: string = ""; userIp: string = ""; key: string = "";
@@ -7105,30 +7105,30 @@ proc call*(call_580700: Call_ContentLiasettingsRequestgmbaccess_580686;
   ##             : The ID of the managing account. If this parameter is not the same as accountId, then this account must be a multi-client account and accountId must be the ID of a sub-account of this account.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_580701 = newJObject()
-  var query_580702 = newJObject()
-  add(query_580702, "fields", newJString(fields))
-  add(query_580702, "quotaUser", newJString(quotaUser))
-  add(query_580702, "alt", newJString(alt))
-  add(query_580702, "oauth_token", newJString(oauthToken))
-  add(path_580701, "accountId", newJString(accountId))
-  add(query_580702, "userIp", newJString(userIp))
-  add(query_580702, "key", newJString(key))
-  add(query_580702, "gmbEmail", newJString(gmbEmail))
-  add(path_580701, "merchantId", newJString(merchantId))
-  add(query_580702, "prettyPrint", newJBool(prettyPrint))
-  result = call_580700.call(path_580701, query_580702, nil, nil, nil)
+  var path_589730 = newJObject()
+  var query_589731 = newJObject()
+  add(query_589731, "fields", newJString(fields))
+  add(query_589731, "quotaUser", newJString(quotaUser))
+  add(query_589731, "alt", newJString(alt))
+  add(query_589731, "oauth_token", newJString(oauthToken))
+  add(path_589730, "accountId", newJString(accountId))
+  add(query_589731, "userIp", newJString(userIp))
+  add(query_589731, "key", newJString(key))
+  add(query_589731, "gmbEmail", newJString(gmbEmail))
+  add(path_589730, "merchantId", newJString(merchantId))
+  add(query_589731, "prettyPrint", newJBool(prettyPrint))
+  result = call_589729.call(path_589730, query_589731, nil, nil, nil)
 
-var contentLiasettingsRequestgmbaccess* = Call_ContentLiasettingsRequestgmbaccess_580686(
+var contentLiasettingsRequestgmbaccess* = Call_ContentLiasettingsRequestgmbaccess_589715(
     name: "contentLiasettingsRequestgmbaccess", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com",
     route: "/{merchantId}/liasettings/{accountId}/requestgmbaccess",
-    validator: validate_ContentLiasettingsRequestgmbaccess_580687,
-    base: "/content/v2", url: url_ContentLiasettingsRequestgmbaccess_580688,
+    validator: validate_ContentLiasettingsRequestgmbaccess_589716,
+    base: "/content/v2", url: url_ContentLiasettingsRequestgmbaccess_589717,
     schemes: {Scheme.Https})
 type
-  Call_ContentLiasettingsRequestinventoryverification_580703 = ref object of OpenApiRestCall_579421
-proc url_ContentLiasettingsRequestinventoryverification_580705(protocol: Scheme;
+  Call_ContentLiasettingsRequestinventoryverification_589732 = ref object of OpenApiRestCall_588450
+proc url_ContentLiasettingsRequestinventoryverification_589734(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -7149,7 +7149,7 @@ proc url_ContentLiasettingsRequestinventoryverification_580705(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_ContentLiasettingsRequestinventoryverification_580704(
+proc validate_ContentLiasettingsRequestinventoryverification_589733(
     path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
     body: JsonNode): JsonNode =
   ## Requests inventory validation for the specified country.
@@ -7165,21 +7165,21 @@ proc validate_ContentLiasettingsRequestinventoryverification_580704(
   ##             : The ID of the managing account. If this parameter is not the same as accountId, then this account must be a multi-client account and accountId must be the ID of a sub-account of this account.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `country` field"
-  var valid_580706 = path.getOrDefault("country")
-  valid_580706 = validateParameter(valid_580706, JString, required = true,
+  var valid_589735 = path.getOrDefault("country")
+  valid_589735 = validateParameter(valid_589735, JString, required = true,
                                  default = nil)
-  if valid_580706 != nil:
-    section.add "country", valid_580706
-  var valid_580707 = path.getOrDefault("accountId")
-  valid_580707 = validateParameter(valid_580707, JString, required = true,
+  if valid_589735 != nil:
+    section.add "country", valid_589735
+  var valid_589736 = path.getOrDefault("accountId")
+  valid_589736 = validateParameter(valid_589736, JString, required = true,
                                  default = nil)
-  if valid_580707 != nil:
-    section.add "accountId", valid_580707
-  var valid_580708 = path.getOrDefault("merchantId")
-  valid_580708 = validateParameter(valid_580708, JString, required = true,
+  if valid_589736 != nil:
+    section.add "accountId", valid_589736
+  var valid_589737 = path.getOrDefault("merchantId")
+  valid_589737 = validateParameter(valid_589737, JString, required = true,
                                  default = nil)
-  if valid_580708 != nil:
-    section.add "merchantId", valid_580708
+  if valid_589737 != nil:
+    section.add "merchantId", valid_589737
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -7197,41 +7197,41 @@ proc validate_ContentLiasettingsRequestinventoryverification_580704(
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580709 = query.getOrDefault("fields")
-  valid_580709 = validateParameter(valid_580709, JString, required = false,
+  var valid_589738 = query.getOrDefault("fields")
+  valid_589738 = validateParameter(valid_589738, JString, required = false,
                                  default = nil)
-  if valid_580709 != nil:
-    section.add "fields", valid_580709
-  var valid_580710 = query.getOrDefault("quotaUser")
-  valid_580710 = validateParameter(valid_580710, JString, required = false,
+  if valid_589738 != nil:
+    section.add "fields", valid_589738
+  var valid_589739 = query.getOrDefault("quotaUser")
+  valid_589739 = validateParameter(valid_589739, JString, required = false,
                                  default = nil)
-  if valid_580710 != nil:
-    section.add "quotaUser", valid_580710
-  var valid_580711 = query.getOrDefault("alt")
-  valid_580711 = validateParameter(valid_580711, JString, required = false,
+  if valid_589739 != nil:
+    section.add "quotaUser", valid_589739
+  var valid_589740 = query.getOrDefault("alt")
+  valid_589740 = validateParameter(valid_589740, JString, required = false,
                                  default = newJString("json"))
-  if valid_580711 != nil:
-    section.add "alt", valid_580711
-  var valid_580712 = query.getOrDefault("oauth_token")
-  valid_580712 = validateParameter(valid_580712, JString, required = false,
+  if valid_589740 != nil:
+    section.add "alt", valid_589740
+  var valid_589741 = query.getOrDefault("oauth_token")
+  valid_589741 = validateParameter(valid_589741, JString, required = false,
                                  default = nil)
-  if valid_580712 != nil:
-    section.add "oauth_token", valid_580712
-  var valid_580713 = query.getOrDefault("userIp")
-  valid_580713 = validateParameter(valid_580713, JString, required = false,
+  if valid_589741 != nil:
+    section.add "oauth_token", valid_589741
+  var valid_589742 = query.getOrDefault("userIp")
+  valid_589742 = validateParameter(valid_589742, JString, required = false,
                                  default = nil)
-  if valid_580713 != nil:
-    section.add "userIp", valid_580713
-  var valid_580714 = query.getOrDefault("key")
-  valid_580714 = validateParameter(valid_580714, JString, required = false,
+  if valid_589742 != nil:
+    section.add "userIp", valid_589742
+  var valid_589743 = query.getOrDefault("key")
+  valid_589743 = validateParameter(valid_589743, JString, required = false,
                                  default = nil)
-  if valid_580714 != nil:
-    section.add "key", valid_580714
-  var valid_580715 = query.getOrDefault("prettyPrint")
-  valid_580715 = validateParameter(valid_580715, JBool, required = false,
+  if valid_589743 != nil:
+    section.add "key", valid_589743
+  var valid_589744 = query.getOrDefault("prettyPrint")
+  valid_589744 = validateParameter(valid_589744, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580715 != nil:
-    section.add "prettyPrint", valid_580715
+  if valid_589744 != nil:
+    section.add "prettyPrint", valid_589744
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -7240,21 +7240,21 @@ proc validate_ContentLiasettingsRequestinventoryverification_580704(
   if body != nil:
     result.add "body", body
 
-proc call*(call_580716: Call_ContentLiasettingsRequestinventoryverification_580703;
+proc call*(call_589745: Call_ContentLiasettingsRequestinventoryverification_589732;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Requests inventory validation for the specified country.
   ## 
-  let valid = call_580716.validator(path, query, header, formData, body)
-  let scheme = call_580716.pickScheme
+  let valid = call_589745.validator(path, query, header, formData, body)
+  let scheme = call_589745.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580716.url(scheme.get, call_580716.host, call_580716.base,
-                         call_580716.route, valid.getOrDefault("path"),
+  let url = call_589745.url(scheme.get, call_589745.host, call_589745.base,
+                         call_589745.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580716, url, valid)
+  result = hook(call_589745, url, valid)
 
-proc call*(call_580717: Call_ContentLiasettingsRequestinventoryverification_580703;
+proc call*(call_589746: Call_ContentLiasettingsRequestinventoryverification_589732;
           country: string; accountId: string; merchantId: string; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; key: string = ""; prettyPrint: bool = true): Recallable =
@@ -7280,29 +7280,29 @@ proc call*(call_580717: Call_ContentLiasettingsRequestinventoryverification_5807
   ##             : The ID of the managing account. If this parameter is not the same as accountId, then this account must be a multi-client account and accountId must be the ID of a sub-account of this account.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_580718 = newJObject()
-  var query_580719 = newJObject()
-  add(query_580719, "fields", newJString(fields))
-  add(query_580719, "quotaUser", newJString(quotaUser))
-  add(query_580719, "alt", newJString(alt))
-  add(path_580718, "country", newJString(country))
-  add(query_580719, "oauth_token", newJString(oauthToken))
-  add(path_580718, "accountId", newJString(accountId))
-  add(query_580719, "userIp", newJString(userIp))
-  add(query_580719, "key", newJString(key))
-  add(path_580718, "merchantId", newJString(merchantId))
-  add(query_580719, "prettyPrint", newJBool(prettyPrint))
-  result = call_580717.call(path_580718, query_580719, nil, nil, nil)
+  var path_589747 = newJObject()
+  var query_589748 = newJObject()
+  add(query_589748, "fields", newJString(fields))
+  add(query_589748, "quotaUser", newJString(quotaUser))
+  add(query_589748, "alt", newJString(alt))
+  add(path_589747, "country", newJString(country))
+  add(query_589748, "oauth_token", newJString(oauthToken))
+  add(path_589747, "accountId", newJString(accountId))
+  add(query_589748, "userIp", newJString(userIp))
+  add(query_589748, "key", newJString(key))
+  add(path_589747, "merchantId", newJString(merchantId))
+  add(query_589748, "prettyPrint", newJBool(prettyPrint))
+  result = call_589746.call(path_589747, query_589748, nil, nil, nil)
 
-var contentLiasettingsRequestinventoryverification* = Call_ContentLiasettingsRequestinventoryverification_580703(
+var contentLiasettingsRequestinventoryverification* = Call_ContentLiasettingsRequestinventoryverification_589732(
     name: "contentLiasettingsRequestinventoryverification",
     meth: HttpMethod.HttpPost, host: "www.googleapis.com", route: "/{merchantId}/liasettings/{accountId}/requestinventoryverification/{country}",
-    validator: validate_ContentLiasettingsRequestinventoryverification_580704,
-    base: "/content/v2", url: url_ContentLiasettingsRequestinventoryverification_580705,
+    validator: validate_ContentLiasettingsRequestinventoryverification_589733,
+    base: "/content/v2", url: url_ContentLiasettingsRequestinventoryverification_589734,
     schemes: {Scheme.Https})
 type
-  Call_ContentLiasettingsSetinventoryverificationcontact_580720 = ref object of OpenApiRestCall_579421
-proc url_ContentLiasettingsSetinventoryverificationcontact_580722(
+  Call_ContentLiasettingsSetinventoryverificationcontact_589749 = ref object of OpenApiRestCall_588450
+proc url_ContentLiasettingsSetinventoryverificationcontact_589751(
     protocol: Scheme; host: string; base: string; route: string; path: JsonNode;
     query: JsonNode): Uri =
   result.scheme = $protocol
@@ -7322,7 +7322,7 @@ proc url_ContentLiasettingsSetinventoryverificationcontact_580722(
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_ContentLiasettingsSetinventoryverificationcontact_580721(
+proc validate_ContentLiasettingsSetinventoryverificationcontact_589750(
     path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
     body: JsonNode): JsonNode =
   ## Sets the inventory verification contract for the specified country.
@@ -7336,16 +7336,16 @@ proc validate_ContentLiasettingsSetinventoryverificationcontact_580721(
   ##             : The ID of the managing account. If this parameter is not the same as accountId, then this account must be a multi-client account and accountId must be the ID of a sub-account of this account.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `accountId` field"
-  var valid_580723 = path.getOrDefault("accountId")
-  valid_580723 = validateParameter(valid_580723, JString, required = true,
+  var valid_589752 = path.getOrDefault("accountId")
+  valid_589752 = validateParameter(valid_589752, JString, required = true,
                                  default = nil)
-  if valid_580723 != nil:
-    section.add "accountId", valid_580723
-  var valid_580724 = path.getOrDefault("merchantId")
-  valid_580724 = validateParameter(valid_580724, JString, required = true,
+  if valid_589752 != nil:
+    section.add "accountId", valid_589752
+  var valid_589753 = path.getOrDefault("merchantId")
+  valid_589753 = validateParameter(valid_589753, JString, required = true,
                                  default = nil)
-  if valid_580724 != nil:
-    section.add "merchantId", valid_580724
+  if valid_589753 != nil:
+    section.add "merchantId", valid_589753
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -7371,62 +7371,62 @@ proc validate_ContentLiasettingsSetinventoryverificationcontact_580721(
   ##   contactEmail: JString (required)
   ##               : The email of the inventory verification contact.
   section = newJObject()
-  var valid_580725 = query.getOrDefault("fields")
-  valid_580725 = validateParameter(valid_580725, JString, required = false,
+  var valid_589754 = query.getOrDefault("fields")
+  valid_589754 = validateParameter(valid_589754, JString, required = false,
                                  default = nil)
-  if valid_580725 != nil:
-    section.add "fields", valid_580725
+  if valid_589754 != nil:
+    section.add "fields", valid_589754
   assert query != nil, "query argument is necessary due to required `country` field"
-  var valid_580726 = query.getOrDefault("country")
-  valid_580726 = validateParameter(valid_580726, JString, required = true,
+  var valid_589755 = query.getOrDefault("country")
+  valid_589755 = validateParameter(valid_589755, JString, required = true,
                                  default = nil)
-  if valid_580726 != nil:
-    section.add "country", valid_580726
-  var valid_580727 = query.getOrDefault("quotaUser")
-  valid_580727 = validateParameter(valid_580727, JString, required = false,
+  if valid_589755 != nil:
+    section.add "country", valid_589755
+  var valid_589756 = query.getOrDefault("quotaUser")
+  valid_589756 = validateParameter(valid_589756, JString, required = false,
                                  default = nil)
-  if valid_580727 != nil:
-    section.add "quotaUser", valid_580727
-  var valid_580728 = query.getOrDefault("alt")
-  valid_580728 = validateParameter(valid_580728, JString, required = false,
+  if valid_589756 != nil:
+    section.add "quotaUser", valid_589756
+  var valid_589757 = query.getOrDefault("alt")
+  valid_589757 = validateParameter(valid_589757, JString, required = false,
                                  default = newJString("json"))
-  if valid_580728 != nil:
-    section.add "alt", valid_580728
-  var valid_580729 = query.getOrDefault("contactName")
-  valid_580729 = validateParameter(valid_580729, JString, required = true,
+  if valid_589757 != nil:
+    section.add "alt", valid_589757
+  var valid_589758 = query.getOrDefault("contactName")
+  valid_589758 = validateParameter(valid_589758, JString, required = true,
                                  default = nil)
-  if valid_580729 != nil:
-    section.add "contactName", valid_580729
-  var valid_580730 = query.getOrDefault("language")
-  valid_580730 = validateParameter(valid_580730, JString, required = true,
+  if valid_589758 != nil:
+    section.add "contactName", valid_589758
+  var valid_589759 = query.getOrDefault("language")
+  valid_589759 = validateParameter(valid_589759, JString, required = true,
                                  default = nil)
-  if valid_580730 != nil:
-    section.add "language", valid_580730
-  var valid_580731 = query.getOrDefault("oauth_token")
-  valid_580731 = validateParameter(valid_580731, JString, required = false,
+  if valid_589759 != nil:
+    section.add "language", valid_589759
+  var valid_589760 = query.getOrDefault("oauth_token")
+  valid_589760 = validateParameter(valid_589760, JString, required = false,
                                  default = nil)
-  if valid_580731 != nil:
-    section.add "oauth_token", valid_580731
-  var valid_580732 = query.getOrDefault("userIp")
-  valid_580732 = validateParameter(valid_580732, JString, required = false,
+  if valid_589760 != nil:
+    section.add "oauth_token", valid_589760
+  var valid_589761 = query.getOrDefault("userIp")
+  valid_589761 = validateParameter(valid_589761, JString, required = false,
                                  default = nil)
-  if valid_580732 != nil:
-    section.add "userIp", valid_580732
-  var valid_580733 = query.getOrDefault("key")
-  valid_580733 = validateParameter(valid_580733, JString, required = false,
+  if valid_589761 != nil:
+    section.add "userIp", valid_589761
+  var valid_589762 = query.getOrDefault("key")
+  valid_589762 = validateParameter(valid_589762, JString, required = false,
                                  default = nil)
-  if valid_580733 != nil:
-    section.add "key", valid_580733
-  var valid_580734 = query.getOrDefault("prettyPrint")
-  valid_580734 = validateParameter(valid_580734, JBool, required = false,
+  if valid_589762 != nil:
+    section.add "key", valid_589762
+  var valid_589763 = query.getOrDefault("prettyPrint")
+  valid_589763 = validateParameter(valid_589763, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580734 != nil:
-    section.add "prettyPrint", valid_580734
-  var valid_580735 = query.getOrDefault("contactEmail")
-  valid_580735 = validateParameter(valid_580735, JString, required = true,
+  if valid_589763 != nil:
+    section.add "prettyPrint", valid_589763
+  var valid_589764 = query.getOrDefault("contactEmail")
+  valid_589764 = validateParameter(valid_589764, JString, required = true,
                                  default = nil)
-  if valid_580735 != nil:
-    section.add "contactEmail", valid_580735
+  if valid_589764 != nil:
+    section.add "contactEmail", valid_589764
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -7435,21 +7435,21 @@ proc validate_ContentLiasettingsSetinventoryverificationcontact_580721(
   if body != nil:
     result.add "body", body
 
-proc call*(call_580736: Call_ContentLiasettingsSetinventoryverificationcontact_580720;
+proc call*(call_589765: Call_ContentLiasettingsSetinventoryverificationcontact_589749;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Sets the inventory verification contract for the specified country.
   ## 
-  let valid = call_580736.validator(path, query, header, formData, body)
-  let scheme = call_580736.pickScheme
+  let valid = call_589765.validator(path, query, header, formData, body)
+  let scheme = call_589765.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580736.url(scheme.get, call_580736.host, call_580736.base,
-                         call_580736.route, valid.getOrDefault("path"),
+  let url = call_589765.url(scheme.get, call_589765.host, call_589765.base,
+                         call_589765.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580736, url, valid)
+  result = hook(call_589765, url, valid)
 
-proc call*(call_580737: Call_ContentLiasettingsSetinventoryverificationcontact_580720;
+proc call*(call_589766: Call_ContentLiasettingsSetinventoryverificationcontact_589749;
           country: string; contactName: string; language: string; accountId: string;
           merchantId: string; contactEmail: string; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
@@ -7482,33 +7482,33 @@ proc call*(call_580737: Call_ContentLiasettingsSetinventoryverificationcontact_5
   ##              : Returns response with indentations and line breaks.
   ##   contactEmail: string (required)
   ##               : The email of the inventory verification contact.
-  var path_580738 = newJObject()
-  var query_580739 = newJObject()
-  add(query_580739, "fields", newJString(fields))
-  add(query_580739, "country", newJString(country))
-  add(query_580739, "quotaUser", newJString(quotaUser))
-  add(query_580739, "alt", newJString(alt))
-  add(query_580739, "contactName", newJString(contactName))
-  add(query_580739, "language", newJString(language))
-  add(query_580739, "oauth_token", newJString(oauthToken))
-  add(path_580738, "accountId", newJString(accountId))
-  add(query_580739, "userIp", newJString(userIp))
-  add(query_580739, "key", newJString(key))
-  add(path_580738, "merchantId", newJString(merchantId))
-  add(query_580739, "prettyPrint", newJBool(prettyPrint))
-  add(query_580739, "contactEmail", newJString(contactEmail))
-  result = call_580737.call(path_580738, query_580739, nil, nil, nil)
+  var path_589767 = newJObject()
+  var query_589768 = newJObject()
+  add(query_589768, "fields", newJString(fields))
+  add(query_589768, "country", newJString(country))
+  add(query_589768, "quotaUser", newJString(quotaUser))
+  add(query_589768, "alt", newJString(alt))
+  add(query_589768, "contactName", newJString(contactName))
+  add(query_589768, "language", newJString(language))
+  add(query_589768, "oauth_token", newJString(oauthToken))
+  add(path_589767, "accountId", newJString(accountId))
+  add(query_589768, "userIp", newJString(userIp))
+  add(query_589768, "key", newJString(key))
+  add(path_589767, "merchantId", newJString(merchantId))
+  add(query_589768, "prettyPrint", newJBool(prettyPrint))
+  add(query_589768, "contactEmail", newJString(contactEmail))
+  result = call_589766.call(path_589767, query_589768, nil, nil, nil)
 
-var contentLiasettingsSetinventoryverificationcontact* = Call_ContentLiasettingsSetinventoryverificationcontact_580720(
+var contentLiasettingsSetinventoryverificationcontact* = Call_ContentLiasettingsSetinventoryverificationcontact_589749(
     name: "contentLiasettingsSetinventoryverificationcontact",
     meth: HttpMethod.HttpPost, host: "www.googleapis.com", route: "/{merchantId}/liasettings/{accountId}/setinventoryverificationcontact",
-    validator: validate_ContentLiasettingsSetinventoryverificationcontact_580721,
+    validator: validate_ContentLiasettingsSetinventoryverificationcontact_589750,
     base: "/content/v2",
-    url: url_ContentLiasettingsSetinventoryverificationcontact_580722,
+    url: url_ContentLiasettingsSetinventoryverificationcontact_589751,
     schemes: {Scheme.Https})
 type
-  Call_ContentLiasettingsSetposdataprovider_580740 = ref object of OpenApiRestCall_579421
-proc url_ContentLiasettingsSetposdataprovider_580742(protocol: Scheme;
+  Call_ContentLiasettingsSetposdataprovider_589769 = ref object of OpenApiRestCall_588450
+proc url_ContentLiasettingsSetposdataprovider_589771(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -7527,7 +7527,7 @@ proc url_ContentLiasettingsSetposdataprovider_580742(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_ContentLiasettingsSetposdataprovider_580741(path: JsonNode;
+proc validate_ContentLiasettingsSetposdataprovider_589770(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Sets the POS data provider for the specified country.
   ## 
@@ -7540,16 +7540,16 @@ proc validate_ContentLiasettingsSetposdataprovider_580741(path: JsonNode;
   ##             : The ID of the managing account. If this parameter is not the same as accountId, then this account must be a multi-client account and accountId must be the ID of a sub-account of this account.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `accountId` field"
-  var valid_580743 = path.getOrDefault("accountId")
-  valid_580743 = validateParameter(valid_580743, JString, required = true,
+  var valid_589772 = path.getOrDefault("accountId")
+  valid_589772 = validateParameter(valid_589772, JString, required = true,
                                  default = nil)
-  if valid_580743 != nil:
-    section.add "accountId", valid_580743
-  var valid_580744 = path.getOrDefault("merchantId")
-  valid_580744 = validateParameter(valid_580744, JString, required = true,
+  if valid_589772 != nil:
+    section.add "accountId", valid_589772
+  var valid_589773 = path.getOrDefault("merchantId")
+  valid_589773 = validateParameter(valid_589773, JString, required = true,
                                  default = nil)
-  if valid_580744 != nil:
-    section.add "merchantId", valid_580744
+  if valid_589773 != nil:
+    section.add "merchantId", valid_589773
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -7573,57 +7573,57 @@ proc validate_ContentLiasettingsSetposdataprovider_580741(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580745 = query.getOrDefault("fields")
-  valid_580745 = validateParameter(valid_580745, JString, required = false,
+  var valid_589774 = query.getOrDefault("fields")
+  valid_589774 = validateParameter(valid_589774, JString, required = false,
                                  default = nil)
-  if valid_580745 != nil:
-    section.add "fields", valid_580745
+  if valid_589774 != nil:
+    section.add "fields", valid_589774
   assert query != nil, "query argument is necessary due to required `country` field"
-  var valid_580746 = query.getOrDefault("country")
-  valid_580746 = validateParameter(valid_580746, JString, required = true,
+  var valid_589775 = query.getOrDefault("country")
+  valid_589775 = validateParameter(valid_589775, JString, required = true,
                                  default = nil)
-  if valid_580746 != nil:
-    section.add "country", valid_580746
-  var valid_580747 = query.getOrDefault("quotaUser")
-  valid_580747 = validateParameter(valid_580747, JString, required = false,
+  if valid_589775 != nil:
+    section.add "country", valid_589775
+  var valid_589776 = query.getOrDefault("quotaUser")
+  valid_589776 = validateParameter(valid_589776, JString, required = false,
                                  default = nil)
-  if valid_580747 != nil:
-    section.add "quotaUser", valid_580747
-  var valid_580748 = query.getOrDefault("alt")
-  valid_580748 = validateParameter(valid_580748, JString, required = false,
+  if valid_589776 != nil:
+    section.add "quotaUser", valid_589776
+  var valid_589777 = query.getOrDefault("alt")
+  valid_589777 = validateParameter(valid_589777, JString, required = false,
                                  default = newJString("json"))
-  if valid_580748 != nil:
-    section.add "alt", valid_580748
-  var valid_580749 = query.getOrDefault("oauth_token")
-  valid_580749 = validateParameter(valid_580749, JString, required = false,
+  if valid_589777 != nil:
+    section.add "alt", valid_589777
+  var valid_589778 = query.getOrDefault("oauth_token")
+  valid_589778 = validateParameter(valid_589778, JString, required = false,
                                  default = nil)
-  if valid_580749 != nil:
-    section.add "oauth_token", valid_580749
-  var valid_580750 = query.getOrDefault("userIp")
-  valid_580750 = validateParameter(valid_580750, JString, required = false,
+  if valid_589778 != nil:
+    section.add "oauth_token", valid_589778
+  var valid_589779 = query.getOrDefault("userIp")
+  valid_589779 = validateParameter(valid_589779, JString, required = false,
                                  default = nil)
-  if valid_580750 != nil:
-    section.add "userIp", valid_580750
-  var valid_580751 = query.getOrDefault("posExternalAccountId")
-  valid_580751 = validateParameter(valid_580751, JString, required = false,
+  if valid_589779 != nil:
+    section.add "userIp", valid_589779
+  var valid_589780 = query.getOrDefault("posExternalAccountId")
+  valid_589780 = validateParameter(valid_589780, JString, required = false,
                                  default = nil)
-  if valid_580751 != nil:
-    section.add "posExternalAccountId", valid_580751
-  var valid_580752 = query.getOrDefault("key")
-  valid_580752 = validateParameter(valid_580752, JString, required = false,
+  if valid_589780 != nil:
+    section.add "posExternalAccountId", valid_589780
+  var valid_589781 = query.getOrDefault("key")
+  valid_589781 = validateParameter(valid_589781, JString, required = false,
                                  default = nil)
-  if valid_580752 != nil:
-    section.add "key", valid_580752
-  var valid_580753 = query.getOrDefault("posDataProviderId")
-  valid_580753 = validateParameter(valid_580753, JString, required = false,
+  if valid_589781 != nil:
+    section.add "key", valid_589781
+  var valid_589782 = query.getOrDefault("posDataProviderId")
+  valid_589782 = validateParameter(valid_589782, JString, required = false,
                                  default = nil)
-  if valid_580753 != nil:
-    section.add "posDataProviderId", valid_580753
-  var valid_580754 = query.getOrDefault("prettyPrint")
-  valid_580754 = validateParameter(valid_580754, JBool, required = false,
+  if valid_589782 != nil:
+    section.add "posDataProviderId", valid_589782
+  var valid_589783 = query.getOrDefault("prettyPrint")
+  valid_589783 = validateParameter(valid_589783, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580754 != nil:
-    section.add "prettyPrint", valid_580754
+  if valid_589783 != nil:
+    section.add "prettyPrint", valid_589783
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -7632,21 +7632,21 @@ proc validate_ContentLiasettingsSetposdataprovider_580741(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580755: Call_ContentLiasettingsSetposdataprovider_580740;
+proc call*(call_589784: Call_ContentLiasettingsSetposdataprovider_589769;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Sets the POS data provider for the specified country.
   ## 
-  let valid = call_580755.validator(path, query, header, formData, body)
-  let scheme = call_580755.pickScheme
+  let valid = call_589784.validator(path, query, header, formData, body)
+  let scheme = call_589784.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580755.url(scheme.get, call_580755.host, call_580755.base,
-                         call_580755.route, valid.getOrDefault("path"),
+  let url = call_589784.url(scheme.get, call_589784.host, call_589784.base,
+                         call_589784.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580755, url, valid)
+  result = hook(call_589784, url, valid)
 
-proc call*(call_580756: Call_ContentLiasettingsSetposdataprovider_580740;
+proc call*(call_589785: Call_ContentLiasettingsSetposdataprovider_589769;
           country: string; accountId: string; merchantId: string; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; posExternalAccountId: string = ""; key: string = "";
@@ -7677,32 +7677,32 @@ proc call*(call_580756: Call_ContentLiasettingsSetposdataprovider_580740;
   ##             : The ID of the managing account. If this parameter is not the same as accountId, then this account must be a multi-client account and accountId must be the ID of a sub-account of this account.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_580757 = newJObject()
-  var query_580758 = newJObject()
-  add(query_580758, "fields", newJString(fields))
-  add(query_580758, "country", newJString(country))
-  add(query_580758, "quotaUser", newJString(quotaUser))
-  add(query_580758, "alt", newJString(alt))
-  add(query_580758, "oauth_token", newJString(oauthToken))
-  add(path_580757, "accountId", newJString(accountId))
-  add(query_580758, "userIp", newJString(userIp))
-  add(query_580758, "posExternalAccountId", newJString(posExternalAccountId))
-  add(query_580758, "key", newJString(key))
-  add(query_580758, "posDataProviderId", newJString(posDataProviderId))
-  add(path_580757, "merchantId", newJString(merchantId))
-  add(query_580758, "prettyPrint", newJBool(prettyPrint))
-  result = call_580756.call(path_580757, query_580758, nil, nil, nil)
+  var path_589786 = newJObject()
+  var query_589787 = newJObject()
+  add(query_589787, "fields", newJString(fields))
+  add(query_589787, "country", newJString(country))
+  add(query_589787, "quotaUser", newJString(quotaUser))
+  add(query_589787, "alt", newJString(alt))
+  add(query_589787, "oauth_token", newJString(oauthToken))
+  add(path_589786, "accountId", newJString(accountId))
+  add(query_589787, "userIp", newJString(userIp))
+  add(query_589787, "posExternalAccountId", newJString(posExternalAccountId))
+  add(query_589787, "key", newJString(key))
+  add(query_589787, "posDataProviderId", newJString(posDataProviderId))
+  add(path_589786, "merchantId", newJString(merchantId))
+  add(query_589787, "prettyPrint", newJBool(prettyPrint))
+  result = call_589785.call(path_589786, query_589787, nil, nil, nil)
 
-var contentLiasettingsSetposdataprovider* = Call_ContentLiasettingsSetposdataprovider_580740(
+var contentLiasettingsSetposdataprovider* = Call_ContentLiasettingsSetposdataprovider_589769(
     name: "contentLiasettingsSetposdataprovider", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com",
     route: "/{merchantId}/liasettings/{accountId}/setposdataprovider",
-    validator: validate_ContentLiasettingsSetposdataprovider_580741,
-    base: "/content/v2", url: url_ContentLiasettingsSetposdataprovider_580742,
+    validator: validate_ContentLiasettingsSetposdataprovider_589770,
+    base: "/content/v2", url: url_ContentLiasettingsSetposdataprovider_589771,
     schemes: {Scheme.Https})
 type
-  Call_ContentOrderinvoicesCreatechargeinvoice_580759 = ref object of OpenApiRestCall_579421
-proc url_ContentOrderinvoicesCreatechargeinvoice_580761(protocol: Scheme;
+  Call_ContentOrderinvoicesCreatechargeinvoice_589788 = ref object of OpenApiRestCall_588450
+proc url_ContentOrderinvoicesCreatechargeinvoice_589790(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -7721,7 +7721,7 @@ proc url_ContentOrderinvoicesCreatechargeinvoice_580761(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_ContentOrderinvoicesCreatechargeinvoice_580760(path: JsonNode;
+proc validate_ContentOrderinvoicesCreatechargeinvoice_589789(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Creates a charge invoice for a shipment group, and triggers a charge capture for orderinvoice enabled orders.
   ## 
@@ -7734,16 +7734,16 @@ proc validate_ContentOrderinvoicesCreatechargeinvoice_580760(path: JsonNode;
   ##             : The ID of the account that manages the order. This cannot be a multi-client account.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `orderId` field"
-  var valid_580762 = path.getOrDefault("orderId")
-  valid_580762 = validateParameter(valid_580762, JString, required = true,
+  var valid_589791 = path.getOrDefault("orderId")
+  valid_589791 = validateParameter(valid_589791, JString, required = true,
                                  default = nil)
-  if valid_580762 != nil:
-    section.add "orderId", valid_580762
-  var valid_580763 = path.getOrDefault("merchantId")
-  valid_580763 = validateParameter(valid_580763, JString, required = true,
+  if valid_589791 != nil:
+    section.add "orderId", valid_589791
+  var valid_589792 = path.getOrDefault("merchantId")
+  valid_589792 = validateParameter(valid_589792, JString, required = true,
                                  default = nil)
-  if valid_580763 != nil:
-    section.add "merchantId", valid_580763
+  if valid_589792 != nil:
+    section.add "merchantId", valid_589792
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -7761,41 +7761,41 @@ proc validate_ContentOrderinvoicesCreatechargeinvoice_580760(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580764 = query.getOrDefault("fields")
-  valid_580764 = validateParameter(valid_580764, JString, required = false,
+  var valid_589793 = query.getOrDefault("fields")
+  valid_589793 = validateParameter(valid_589793, JString, required = false,
                                  default = nil)
-  if valid_580764 != nil:
-    section.add "fields", valid_580764
-  var valid_580765 = query.getOrDefault("quotaUser")
-  valid_580765 = validateParameter(valid_580765, JString, required = false,
+  if valid_589793 != nil:
+    section.add "fields", valid_589793
+  var valid_589794 = query.getOrDefault("quotaUser")
+  valid_589794 = validateParameter(valid_589794, JString, required = false,
                                  default = nil)
-  if valid_580765 != nil:
-    section.add "quotaUser", valid_580765
-  var valid_580766 = query.getOrDefault("alt")
-  valid_580766 = validateParameter(valid_580766, JString, required = false,
+  if valid_589794 != nil:
+    section.add "quotaUser", valid_589794
+  var valid_589795 = query.getOrDefault("alt")
+  valid_589795 = validateParameter(valid_589795, JString, required = false,
                                  default = newJString("json"))
-  if valid_580766 != nil:
-    section.add "alt", valid_580766
-  var valid_580767 = query.getOrDefault("oauth_token")
-  valid_580767 = validateParameter(valid_580767, JString, required = false,
+  if valid_589795 != nil:
+    section.add "alt", valid_589795
+  var valid_589796 = query.getOrDefault("oauth_token")
+  valid_589796 = validateParameter(valid_589796, JString, required = false,
                                  default = nil)
-  if valid_580767 != nil:
-    section.add "oauth_token", valid_580767
-  var valid_580768 = query.getOrDefault("userIp")
-  valid_580768 = validateParameter(valid_580768, JString, required = false,
+  if valid_589796 != nil:
+    section.add "oauth_token", valid_589796
+  var valid_589797 = query.getOrDefault("userIp")
+  valid_589797 = validateParameter(valid_589797, JString, required = false,
                                  default = nil)
-  if valid_580768 != nil:
-    section.add "userIp", valid_580768
-  var valid_580769 = query.getOrDefault("key")
-  valid_580769 = validateParameter(valid_580769, JString, required = false,
+  if valid_589797 != nil:
+    section.add "userIp", valid_589797
+  var valid_589798 = query.getOrDefault("key")
+  valid_589798 = validateParameter(valid_589798, JString, required = false,
                                  default = nil)
-  if valid_580769 != nil:
-    section.add "key", valid_580769
-  var valid_580770 = query.getOrDefault("prettyPrint")
-  valid_580770 = validateParameter(valid_580770, JBool, required = false,
+  if valid_589798 != nil:
+    section.add "key", valid_589798
+  var valid_589799 = query.getOrDefault("prettyPrint")
+  valid_589799 = validateParameter(valid_589799, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580770 != nil:
-    section.add "prettyPrint", valid_580770
+  if valid_589799 != nil:
+    section.add "prettyPrint", valid_589799
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -7807,21 +7807,21 @@ proc validate_ContentOrderinvoicesCreatechargeinvoice_580760(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580772: Call_ContentOrderinvoicesCreatechargeinvoice_580759;
+proc call*(call_589801: Call_ContentOrderinvoicesCreatechargeinvoice_589788;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Creates a charge invoice for a shipment group, and triggers a charge capture for orderinvoice enabled orders.
   ## 
-  let valid = call_580772.validator(path, query, header, formData, body)
-  let scheme = call_580772.pickScheme
+  let valid = call_589801.validator(path, query, header, formData, body)
+  let scheme = call_589801.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580772.url(scheme.get, call_580772.host, call_580772.base,
-                         call_580772.route, valid.getOrDefault("path"),
+  let url = call_589801.url(scheme.get, call_589801.host, call_589801.base,
+                         call_589801.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580772, url, valid)
+  result = hook(call_589801, url, valid)
 
-proc call*(call_580773: Call_ContentOrderinvoicesCreatechargeinvoice_580759;
+proc call*(call_589802: Call_ContentOrderinvoicesCreatechargeinvoice_589788;
           orderId: string; merchantId: string; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; key: string = ""; body: JsonNode = nil;
@@ -7847,32 +7847,32 @@ proc call*(call_580773: Call_ContentOrderinvoicesCreatechargeinvoice_580759;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_580774 = newJObject()
-  var query_580775 = newJObject()
-  var body_580776 = newJObject()
-  add(query_580775, "fields", newJString(fields))
-  add(query_580775, "quotaUser", newJString(quotaUser))
-  add(query_580775, "alt", newJString(alt))
-  add(query_580775, "oauth_token", newJString(oauthToken))
-  add(query_580775, "userIp", newJString(userIp))
-  add(path_580774, "orderId", newJString(orderId))
-  add(query_580775, "key", newJString(key))
-  add(path_580774, "merchantId", newJString(merchantId))
+  var path_589803 = newJObject()
+  var query_589804 = newJObject()
+  var body_589805 = newJObject()
+  add(query_589804, "fields", newJString(fields))
+  add(query_589804, "quotaUser", newJString(quotaUser))
+  add(query_589804, "alt", newJString(alt))
+  add(query_589804, "oauth_token", newJString(oauthToken))
+  add(query_589804, "userIp", newJString(userIp))
+  add(path_589803, "orderId", newJString(orderId))
+  add(query_589804, "key", newJString(key))
+  add(path_589803, "merchantId", newJString(merchantId))
   if body != nil:
-    body_580776 = body
-  add(query_580775, "prettyPrint", newJBool(prettyPrint))
-  result = call_580773.call(path_580774, query_580775, nil, nil, body_580776)
+    body_589805 = body
+  add(query_589804, "prettyPrint", newJBool(prettyPrint))
+  result = call_589802.call(path_589803, query_589804, nil, nil, body_589805)
 
-var contentOrderinvoicesCreatechargeinvoice* = Call_ContentOrderinvoicesCreatechargeinvoice_580759(
+var contentOrderinvoicesCreatechargeinvoice* = Call_ContentOrderinvoicesCreatechargeinvoice_589788(
     name: "contentOrderinvoicesCreatechargeinvoice", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com",
     route: "/{merchantId}/orderinvoices/{orderId}/createChargeInvoice",
-    validator: validate_ContentOrderinvoicesCreatechargeinvoice_580760,
-    base: "/content/v2", url: url_ContentOrderinvoicesCreatechargeinvoice_580761,
+    validator: validate_ContentOrderinvoicesCreatechargeinvoice_589789,
+    base: "/content/v2", url: url_ContentOrderinvoicesCreatechargeinvoice_589790,
     schemes: {Scheme.Https})
 type
-  Call_ContentOrderinvoicesCreaterefundinvoice_580777 = ref object of OpenApiRestCall_579421
-proc url_ContentOrderinvoicesCreaterefundinvoice_580779(protocol: Scheme;
+  Call_ContentOrderinvoicesCreaterefundinvoice_589806 = ref object of OpenApiRestCall_588450
+proc url_ContentOrderinvoicesCreaterefundinvoice_589808(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -7891,7 +7891,7 @@ proc url_ContentOrderinvoicesCreaterefundinvoice_580779(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_ContentOrderinvoicesCreaterefundinvoice_580778(path: JsonNode;
+proc validate_ContentOrderinvoicesCreaterefundinvoice_589807(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Creates a refund invoice for one or more shipment groups, and triggers a refund for orderinvoice enabled orders. This can only be used for line items that have previously been charged using createChargeInvoice. All amounts (except for the summary) are incremental with respect to the previous invoice.
   ## 
@@ -7904,16 +7904,16 @@ proc validate_ContentOrderinvoicesCreaterefundinvoice_580778(path: JsonNode;
   ##             : The ID of the account that manages the order. This cannot be a multi-client account.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `orderId` field"
-  var valid_580780 = path.getOrDefault("orderId")
-  valid_580780 = validateParameter(valid_580780, JString, required = true,
+  var valid_589809 = path.getOrDefault("orderId")
+  valid_589809 = validateParameter(valid_589809, JString, required = true,
                                  default = nil)
-  if valid_580780 != nil:
-    section.add "orderId", valid_580780
-  var valid_580781 = path.getOrDefault("merchantId")
-  valid_580781 = validateParameter(valid_580781, JString, required = true,
+  if valid_589809 != nil:
+    section.add "orderId", valid_589809
+  var valid_589810 = path.getOrDefault("merchantId")
+  valid_589810 = validateParameter(valid_589810, JString, required = true,
                                  default = nil)
-  if valid_580781 != nil:
-    section.add "merchantId", valid_580781
+  if valid_589810 != nil:
+    section.add "merchantId", valid_589810
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -7931,41 +7931,41 @@ proc validate_ContentOrderinvoicesCreaterefundinvoice_580778(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580782 = query.getOrDefault("fields")
-  valid_580782 = validateParameter(valid_580782, JString, required = false,
+  var valid_589811 = query.getOrDefault("fields")
+  valid_589811 = validateParameter(valid_589811, JString, required = false,
                                  default = nil)
-  if valid_580782 != nil:
-    section.add "fields", valid_580782
-  var valid_580783 = query.getOrDefault("quotaUser")
-  valid_580783 = validateParameter(valid_580783, JString, required = false,
+  if valid_589811 != nil:
+    section.add "fields", valid_589811
+  var valid_589812 = query.getOrDefault("quotaUser")
+  valid_589812 = validateParameter(valid_589812, JString, required = false,
                                  default = nil)
-  if valid_580783 != nil:
-    section.add "quotaUser", valid_580783
-  var valid_580784 = query.getOrDefault("alt")
-  valid_580784 = validateParameter(valid_580784, JString, required = false,
+  if valid_589812 != nil:
+    section.add "quotaUser", valid_589812
+  var valid_589813 = query.getOrDefault("alt")
+  valid_589813 = validateParameter(valid_589813, JString, required = false,
                                  default = newJString("json"))
-  if valid_580784 != nil:
-    section.add "alt", valid_580784
-  var valid_580785 = query.getOrDefault("oauth_token")
-  valid_580785 = validateParameter(valid_580785, JString, required = false,
+  if valid_589813 != nil:
+    section.add "alt", valid_589813
+  var valid_589814 = query.getOrDefault("oauth_token")
+  valid_589814 = validateParameter(valid_589814, JString, required = false,
                                  default = nil)
-  if valid_580785 != nil:
-    section.add "oauth_token", valid_580785
-  var valid_580786 = query.getOrDefault("userIp")
-  valid_580786 = validateParameter(valid_580786, JString, required = false,
+  if valid_589814 != nil:
+    section.add "oauth_token", valid_589814
+  var valid_589815 = query.getOrDefault("userIp")
+  valid_589815 = validateParameter(valid_589815, JString, required = false,
                                  default = nil)
-  if valid_580786 != nil:
-    section.add "userIp", valid_580786
-  var valid_580787 = query.getOrDefault("key")
-  valid_580787 = validateParameter(valid_580787, JString, required = false,
+  if valid_589815 != nil:
+    section.add "userIp", valid_589815
+  var valid_589816 = query.getOrDefault("key")
+  valid_589816 = validateParameter(valid_589816, JString, required = false,
                                  default = nil)
-  if valid_580787 != nil:
-    section.add "key", valid_580787
-  var valid_580788 = query.getOrDefault("prettyPrint")
-  valid_580788 = validateParameter(valid_580788, JBool, required = false,
+  if valid_589816 != nil:
+    section.add "key", valid_589816
+  var valid_589817 = query.getOrDefault("prettyPrint")
+  valid_589817 = validateParameter(valid_589817, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580788 != nil:
-    section.add "prettyPrint", valid_580788
+  if valid_589817 != nil:
+    section.add "prettyPrint", valid_589817
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -7977,21 +7977,21 @@ proc validate_ContentOrderinvoicesCreaterefundinvoice_580778(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580790: Call_ContentOrderinvoicesCreaterefundinvoice_580777;
+proc call*(call_589819: Call_ContentOrderinvoicesCreaterefundinvoice_589806;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Creates a refund invoice for one or more shipment groups, and triggers a refund for orderinvoice enabled orders. This can only be used for line items that have previously been charged using createChargeInvoice. All amounts (except for the summary) are incremental with respect to the previous invoice.
   ## 
-  let valid = call_580790.validator(path, query, header, formData, body)
-  let scheme = call_580790.pickScheme
+  let valid = call_589819.validator(path, query, header, formData, body)
+  let scheme = call_589819.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580790.url(scheme.get, call_580790.host, call_580790.base,
-                         call_580790.route, valid.getOrDefault("path"),
+  let url = call_589819.url(scheme.get, call_589819.host, call_589819.base,
+                         call_589819.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580790, url, valid)
+  result = hook(call_589819, url, valid)
 
-proc call*(call_580791: Call_ContentOrderinvoicesCreaterefundinvoice_580777;
+proc call*(call_589820: Call_ContentOrderinvoicesCreaterefundinvoice_589806;
           orderId: string; merchantId: string; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; key: string = ""; body: JsonNode = nil;
@@ -8017,32 +8017,32 @@ proc call*(call_580791: Call_ContentOrderinvoicesCreaterefundinvoice_580777;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_580792 = newJObject()
-  var query_580793 = newJObject()
-  var body_580794 = newJObject()
-  add(query_580793, "fields", newJString(fields))
-  add(query_580793, "quotaUser", newJString(quotaUser))
-  add(query_580793, "alt", newJString(alt))
-  add(query_580793, "oauth_token", newJString(oauthToken))
-  add(query_580793, "userIp", newJString(userIp))
-  add(path_580792, "orderId", newJString(orderId))
-  add(query_580793, "key", newJString(key))
-  add(path_580792, "merchantId", newJString(merchantId))
+  var path_589821 = newJObject()
+  var query_589822 = newJObject()
+  var body_589823 = newJObject()
+  add(query_589822, "fields", newJString(fields))
+  add(query_589822, "quotaUser", newJString(quotaUser))
+  add(query_589822, "alt", newJString(alt))
+  add(query_589822, "oauth_token", newJString(oauthToken))
+  add(query_589822, "userIp", newJString(userIp))
+  add(path_589821, "orderId", newJString(orderId))
+  add(query_589822, "key", newJString(key))
+  add(path_589821, "merchantId", newJString(merchantId))
   if body != nil:
-    body_580794 = body
-  add(query_580793, "prettyPrint", newJBool(prettyPrint))
-  result = call_580791.call(path_580792, query_580793, nil, nil, body_580794)
+    body_589823 = body
+  add(query_589822, "prettyPrint", newJBool(prettyPrint))
+  result = call_589820.call(path_589821, query_589822, nil, nil, body_589823)
 
-var contentOrderinvoicesCreaterefundinvoice* = Call_ContentOrderinvoicesCreaterefundinvoice_580777(
+var contentOrderinvoicesCreaterefundinvoice* = Call_ContentOrderinvoicesCreaterefundinvoice_589806(
     name: "contentOrderinvoicesCreaterefundinvoice", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com",
     route: "/{merchantId}/orderinvoices/{orderId}/createRefundInvoice",
-    validator: validate_ContentOrderinvoicesCreaterefundinvoice_580778,
-    base: "/content/v2", url: url_ContentOrderinvoicesCreaterefundinvoice_580779,
+    validator: validate_ContentOrderinvoicesCreaterefundinvoice_589807,
+    base: "/content/v2", url: url_ContentOrderinvoicesCreaterefundinvoice_589808,
     schemes: {Scheme.Https})
 type
-  Call_ContentOrderpaymentsNotifyauthapproved_580795 = ref object of OpenApiRestCall_579421
-proc url_ContentOrderpaymentsNotifyauthapproved_580797(protocol: Scheme;
+  Call_ContentOrderpaymentsNotifyauthapproved_589824 = ref object of OpenApiRestCall_588450
+proc url_ContentOrderpaymentsNotifyauthapproved_589826(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -8061,7 +8061,7 @@ proc url_ContentOrderpaymentsNotifyauthapproved_580797(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_ContentOrderpaymentsNotifyauthapproved_580796(path: JsonNode;
+proc validate_ContentOrderpaymentsNotifyauthapproved_589825(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Notify about successfully authorizing user's payment method for a given amount.
   ## 
@@ -8074,16 +8074,16 @@ proc validate_ContentOrderpaymentsNotifyauthapproved_580796(path: JsonNode;
   ##             : The ID of the account that manages the order. This cannot be a multi-client account.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `orderId` field"
-  var valid_580798 = path.getOrDefault("orderId")
-  valid_580798 = validateParameter(valid_580798, JString, required = true,
+  var valid_589827 = path.getOrDefault("orderId")
+  valid_589827 = validateParameter(valid_589827, JString, required = true,
                                  default = nil)
-  if valid_580798 != nil:
-    section.add "orderId", valid_580798
-  var valid_580799 = path.getOrDefault("merchantId")
-  valid_580799 = validateParameter(valid_580799, JString, required = true,
+  if valid_589827 != nil:
+    section.add "orderId", valid_589827
+  var valid_589828 = path.getOrDefault("merchantId")
+  valid_589828 = validateParameter(valid_589828, JString, required = true,
                                  default = nil)
-  if valid_580799 != nil:
-    section.add "merchantId", valid_580799
+  if valid_589828 != nil:
+    section.add "merchantId", valid_589828
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -8101,41 +8101,41 @@ proc validate_ContentOrderpaymentsNotifyauthapproved_580796(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580800 = query.getOrDefault("fields")
-  valid_580800 = validateParameter(valid_580800, JString, required = false,
+  var valid_589829 = query.getOrDefault("fields")
+  valid_589829 = validateParameter(valid_589829, JString, required = false,
                                  default = nil)
-  if valid_580800 != nil:
-    section.add "fields", valid_580800
-  var valid_580801 = query.getOrDefault("quotaUser")
-  valid_580801 = validateParameter(valid_580801, JString, required = false,
+  if valid_589829 != nil:
+    section.add "fields", valid_589829
+  var valid_589830 = query.getOrDefault("quotaUser")
+  valid_589830 = validateParameter(valid_589830, JString, required = false,
                                  default = nil)
-  if valid_580801 != nil:
-    section.add "quotaUser", valid_580801
-  var valid_580802 = query.getOrDefault("alt")
-  valid_580802 = validateParameter(valid_580802, JString, required = false,
+  if valid_589830 != nil:
+    section.add "quotaUser", valid_589830
+  var valid_589831 = query.getOrDefault("alt")
+  valid_589831 = validateParameter(valid_589831, JString, required = false,
                                  default = newJString("json"))
-  if valid_580802 != nil:
-    section.add "alt", valid_580802
-  var valid_580803 = query.getOrDefault("oauth_token")
-  valid_580803 = validateParameter(valid_580803, JString, required = false,
+  if valid_589831 != nil:
+    section.add "alt", valid_589831
+  var valid_589832 = query.getOrDefault("oauth_token")
+  valid_589832 = validateParameter(valid_589832, JString, required = false,
                                  default = nil)
-  if valid_580803 != nil:
-    section.add "oauth_token", valid_580803
-  var valid_580804 = query.getOrDefault("userIp")
-  valid_580804 = validateParameter(valid_580804, JString, required = false,
+  if valid_589832 != nil:
+    section.add "oauth_token", valid_589832
+  var valid_589833 = query.getOrDefault("userIp")
+  valid_589833 = validateParameter(valid_589833, JString, required = false,
                                  default = nil)
-  if valid_580804 != nil:
-    section.add "userIp", valid_580804
-  var valid_580805 = query.getOrDefault("key")
-  valid_580805 = validateParameter(valid_580805, JString, required = false,
+  if valid_589833 != nil:
+    section.add "userIp", valid_589833
+  var valid_589834 = query.getOrDefault("key")
+  valid_589834 = validateParameter(valid_589834, JString, required = false,
                                  default = nil)
-  if valid_580805 != nil:
-    section.add "key", valid_580805
-  var valid_580806 = query.getOrDefault("prettyPrint")
-  valid_580806 = validateParameter(valid_580806, JBool, required = false,
+  if valid_589834 != nil:
+    section.add "key", valid_589834
+  var valid_589835 = query.getOrDefault("prettyPrint")
+  valid_589835 = validateParameter(valid_589835, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580806 != nil:
-    section.add "prettyPrint", valid_580806
+  if valid_589835 != nil:
+    section.add "prettyPrint", valid_589835
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -8147,21 +8147,21 @@ proc validate_ContentOrderpaymentsNotifyauthapproved_580796(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580808: Call_ContentOrderpaymentsNotifyauthapproved_580795;
+proc call*(call_589837: Call_ContentOrderpaymentsNotifyauthapproved_589824;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Notify about successfully authorizing user's payment method for a given amount.
   ## 
-  let valid = call_580808.validator(path, query, header, formData, body)
-  let scheme = call_580808.pickScheme
+  let valid = call_589837.validator(path, query, header, formData, body)
+  let scheme = call_589837.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580808.url(scheme.get, call_580808.host, call_580808.base,
-                         call_580808.route, valid.getOrDefault("path"),
+  let url = call_589837.url(scheme.get, call_589837.host, call_589837.base,
+                         call_589837.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580808, url, valid)
+  result = hook(call_589837, url, valid)
 
-proc call*(call_580809: Call_ContentOrderpaymentsNotifyauthapproved_580795;
+proc call*(call_589838: Call_ContentOrderpaymentsNotifyauthapproved_589824;
           orderId: string; merchantId: string; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; key: string = ""; body: JsonNode = nil;
@@ -8187,32 +8187,32 @@ proc call*(call_580809: Call_ContentOrderpaymentsNotifyauthapproved_580795;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_580810 = newJObject()
-  var query_580811 = newJObject()
-  var body_580812 = newJObject()
-  add(query_580811, "fields", newJString(fields))
-  add(query_580811, "quotaUser", newJString(quotaUser))
-  add(query_580811, "alt", newJString(alt))
-  add(query_580811, "oauth_token", newJString(oauthToken))
-  add(query_580811, "userIp", newJString(userIp))
-  add(path_580810, "orderId", newJString(orderId))
-  add(query_580811, "key", newJString(key))
-  add(path_580810, "merchantId", newJString(merchantId))
+  var path_589839 = newJObject()
+  var query_589840 = newJObject()
+  var body_589841 = newJObject()
+  add(query_589840, "fields", newJString(fields))
+  add(query_589840, "quotaUser", newJString(quotaUser))
+  add(query_589840, "alt", newJString(alt))
+  add(query_589840, "oauth_token", newJString(oauthToken))
+  add(query_589840, "userIp", newJString(userIp))
+  add(path_589839, "orderId", newJString(orderId))
+  add(query_589840, "key", newJString(key))
+  add(path_589839, "merchantId", newJString(merchantId))
   if body != nil:
-    body_580812 = body
-  add(query_580811, "prettyPrint", newJBool(prettyPrint))
-  result = call_580809.call(path_580810, query_580811, nil, nil, body_580812)
+    body_589841 = body
+  add(query_589840, "prettyPrint", newJBool(prettyPrint))
+  result = call_589838.call(path_589839, query_589840, nil, nil, body_589841)
 
-var contentOrderpaymentsNotifyauthapproved* = Call_ContentOrderpaymentsNotifyauthapproved_580795(
+var contentOrderpaymentsNotifyauthapproved* = Call_ContentOrderpaymentsNotifyauthapproved_589824(
     name: "contentOrderpaymentsNotifyauthapproved", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com",
     route: "/{merchantId}/orderpayments/{orderId}/notifyAuthApproved",
-    validator: validate_ContentOrderpaymentsNotifyauthapproved_580796,
-    base: "/content/v2", url: url_ContentOrderpaymentsNotifyauthapproved_580797,
+    validator: validate_ContentOrderpaymentsNotifyauthapproved_589825,
+    base: "/content/v2", url: url_ContentOrderpaymentsNotifyauthapproved_589826,
     schemes: {Scheme.Https})
 type
-  Call_ContentOrderpaymentsNotifyauthdeclined_580813 = ref object of OpenApiRestCall_579421
-proc url_ContentOrderpaymentsNotifyauthdeclined_580815(protocol: Scheme;
+  Call_ContentOrderpaymentsNotifyauthdeclined_589842 = ref object of OpenApiRestCall_588450
+proc url_ContentOrderpaymentsNotifyauthdeclined_589844(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -8231,7 +8231,7 @@ proc url_ContentOrderpaymentsNotifyauthdeclined_580815(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_ContentOrderpaymentsNotifyauthdeclined_580814(path: JsonNode;
+proc validate_ContentOrderpaymentsNotifyauthdeclined_589843(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Notify about failure to authorize user's payment method.
   ## 
@@ -8244,16 +8244,16 @@ proc validate_ContentOrderpaymentsNotifyauthdeclined_580814(path: JsonNode;
   ##             : The ID of the account that manages the order. This cannot be a multi-client account.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `orderId` field"
-  var valid_580816 = path.getOrDefault("orderId")
-  valid_580816 = validateParameter(valid_580816, JString, required = true,
+  var valid_589845 = path.getOrDefault("orderId")
+  valid_589845 = validateParameter(valid_589845, JString, required = true,
                                  default = nil)
-  if valid_580816 != nil:
-    section.add "orderId", valid_580816
-  var valid_580817 = path.getOrDefault("merchantId")
-  valid_580817 = validateParameter(valid_580817, JString, required = true,
+  if valid_589845 != nil:
+    section.add "orderId", valid_589845
+  var valid_589846 = path.getOrDefault("merchantId")
+  valid_589846 = validateParameter(valid_589846, JString, required = true,
                                  default = nil)
-  if valid_580817 != nil:
-    section.add "merchantId", valid_580817
+  if valid_589846 != nil:
+    section.add "merchantId", valid_589846
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -8271,41 +8271,41 @@ proc validate_ContentOrderpaymentsNotifyauthdeclined_580814(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580818 = query.getOrDefault("fields")
-  valid_580818 = validateParameter(valid_580818, JString, required = false,
+  var valid_589847 = query.getOrDefault("fields")
+  valid_589847 = validateParameter(valid_589847, JString, required = false,
                                  default = nil)
-  if valid_580818 != nil:
-    section.add "fields", valid_580818
-  var valid_580819 = query.getOrDefault("quotaUser")
-  valid_580819 = validateParameter(valid_580819, JString, required = false,
+  if valid_589847 != nil:
+    section.add "fields", valid_589847
+  var valid_589848 = query.getOrDefault("quotaUser")
+  valid_589848 = validateParameter(valid_589848, JString, required = false,
                                  default = nil)
-  if valid_580819 != nil:
-    section.add "quotaUser", valid_580819
-  var valid_580820 = query.getOrDefault("alt")
-  valid_580820 = validateParameter(valid_580820, JString, required = false,
+  if valid_589848 != nil:
+    section.add "quotaUser", valid_589848
+  var valid_589849 = query.getOrDefault("alt")
+  valid_589849 = validateParameter(valid_589849, JString, required = false,
                                  default = newJString("json"))
-  if valid_580820 != nil:
-    section.add "alt", valid_580820
-  var valid_580821 = query.getOrDefault("oauth_token")
-  valid_580821 = validateParameter(valid_580821, JString, required = false,
+  if valid_589849 != nil:
+    section.add "alt", valid_589849
+  var valid_589850 = query.getOrDefault("oauth_token")
+  valid_589850 = validateParameter(valid_589850, JString, required = false,
                                  default = nil)
-  if valid_580821 != nil:
-    section.add "oauth_token", valid_580821
-  var valid_580822 = query.getOrDefault("userIp")
-  valid_580822 = validateParameter(valid_580822, JString, required = false,
+  if valid_589850 != nil:
+    section.add "oauth_token", valid_589850
+  var valid_589851 = query.getOrDefault("userIp")
+  valid_589851 = validateParameter(valid_589851, JString, required = false,
                                  default = nil)
-  if valid_580822 != nil:
-    section.add "userIp", valid_580822
-  var valid_580823 = query.getOrDefault("key")
-  valid_580823 = validateParameter(valid_580823, JString, required = false,
+  if valid_589851 != nil:
+    section.add "userIp", valid_589851
+  var valid_589852 = query.getOrDefault("key")
+  valid_589852 = validateParameter(valid_589852, JString, required = false,
                                  default = nil)
-  if valid_580823 != nil:
-    section.add "key", valid_580823
-  var valid_580824 = query.getOrDefault("prettyPrint")
-  valid_580824 = validateParameter(valid_580824, JBool, required = false,
+  if valid_589852 != nil:
+    section.add "key", valid_589852
+  var valid_589853 = query.getOrDefault("prettyPrint")
+  valid_589853 = validateParameter(valid_589853, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580824 != nil:
-    section.add "prettyPrint", valid_580824
+  if valid_589853 != nil:
+    section.add "prettyPrint", valid_589853
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -8317,21 +8317,21 @@ proc validate_ContentOrderpaymentsNotifyauthdeclined_580814(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580826: Call_ContentOrderpaymentsNotifyauthdeclined_580813;
+proc call*(call_589855: Call_ContentOrderpaymentsNotifyauthdeclined_589842;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Notify about failure to authorize user's payment method.
   ## 
-  let valid = call_580826.validator(path, query, header, formData, body)
-  let scheme = call_580826.pickScheme
+  let valid = call_589855.validator(path, query, header, formData, body)
+  let scheme = call_589855.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580826.url(scheme.get, call_580826.host, call_580826.base,
-                         call_580826.route, valid.getOrDefault("path"),
+  let url = call_589855.url(scheme.get, call_589855.host, call_589855.base,
+                         call_589855.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580826, url, valid)
+  result = hook(call_589855, url, valid)
 
-proc call*(call_580827: Call_ContentOrderpaymentsNotifyauthdeclined_580813;
+proc call*(call_589856: Call_ContentOrderpaymentsNotifyauthdeclined_589842;
           orderId: string; merchantId: string; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; key: string = ""; body: JsonNode = nil;
@@ -8357,32 +8357,32 @@ proc call*(call_580827: Call_ContentOrderpaymentsNotifyauthdeclined_580813;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_580828 = newJObject()
-  var query_580829 = newJObject()
-  var body_580830 = newJObject()
-  add(query_580829, "fields", newJString(fields))
-  add(query_580829, "quotaUser", newJString(quotaUser))
-  add(query_580829, "alt", newJString(alt))
-  add(query_580829, "oauth_token", newJString(oauthToken))
-  add(query_580829, "userIp", newJString(userIp))
-  add(path_580828, "orderId", newJString(orderId))
-  add(query_580829, "key", newJString(key))
-  add(path_580828, "merchantId", newJString(merchantId))
+  var path_589857 = newJObject()
+  var query_589858 = newJObject()
+  var body_589859 = newJObject()
+  add(query_589858, "fields", newJString(fields))
+  add(query_589858, "quotaUser", newJString(quotaUser))
+  add(query_589858, "alt", newJString(alt))
+  add(query_589858, "oauth_token", newJString(oauthToken))
+  add(query_589858, "userIp", newJString(userIp))
+  add(path_589857, "orderId", newJString(orderId))
+  add(query_589858, "key", newJString(key))
+  add(path_589857, "merchantId", newJString(merchantId))
   if body != nil:
-    body_580830 = body
-  add(query_580829, "prettyPrint", newJBool(prettyPrint))
-  result = call_580827.call(path_580828, query_580829, nil, nil, body_580830)
+    body_589859 = body
+  add(query_589858, "prettyPrint", newJBool(prettyPrint))
+  result = call_589856.call(path_589857, query_589858, nil, nil, body_589859)
 
-var contentOrderpaymentsNotifyauthdeclined* = Call_ContentOrderpaymentsNotifyauthdeclined_580813(
+var contentOrderpaymentsNotifyauthdeclined* = Call_ContentOrderpaymentsNotifyauthdeclined_589842(
     name: "contentOrderpaymentsNotifyauthdeclined", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com",
     route: "/{merchantId}/orderpayments/{orderId}/notifyAuthDeclined",
-    validator: validate_ContentOrderpaymentsNotifyauthdeclined_580814,
-    base: "/content/v2", url: url_ContentOrderpaymentsNotifyauthdeclined_580815,
+    validator: validate_ContentOrderpaymentsNotifyauthdeclined_589843,
+    base: "/content/v2", url: url_ContentOrderpaymentsNotifyauthdeclined_589844,
     schemes: {Scheme.Https})
 type
-  Call_ContentOrderpaymentsNotifycharge_580831 = ref object of OpenApiRestCall_579421
-proc url_ContentOrderpaymentsNotifycharge_580833(protocol: Scheme; host: string;
+  Call_ContentOrderpaymentsNotifycharge_589860 = ref object of OpenApiRestCall_588450
+proc url_ContentOrderpaymentsNotifycharge_589862(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -8401,7 +8401,7 @@ proc url_ContentOrderpaymentsNotifycharge_580833(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_ContentOrderpaymentsNotifycharge_580832(path: JsonNode;
+proc validate_ContentOrderpaymentsNotifycharge_589861(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Notify about charge on user's selected payments method.
   ## 
@@ -8414,16 +8414,16 @@ proc validate_ContentOrderpaymentsNotifycharge_580832(path: JsonNode;
   ##             : The ID of the account that manages the order. This cannot be a multi-client account.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `orderId` field"
-  var valid_580834 = path.getOrDefault("orderId")
-  valid_580834 = validateParameter(valid_580834, JString, required = true,
+  var valid_589863 = path.getOrDefault("orderId")
+  valid_589863 = validateParameter(valid_589863, JString, required = true,
                                  default = nil)
-  if valid_580834 != nil:
-    section.add "orderId", valid_580834
-  var valid_580835 = path.getOrDefault("merchantId")
-  valid_580835 = validateParameter(valid_580835, JString, required = true,
+  if valid_589863 != nil:
+    section.add "orderId", valid_589863
+  var valid_589864 = path.getOrDefault("merchantId")
+  valid_589864 = validateParameter(valid_589864, JString, required = true,
                                  default = nil)
-  if valid_580835 != nil:
-    section.add "merchantId", valid_580835
+  if valid_589864 != nil:
+    section.add "merchantId", valid_589864
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -8441,41 +8441,41 @@ proc validate_ContentOrderpaymentsNotifycharge_580832(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580836 = query.getOrDefault("fields")
-  valid_580836 = validateParameter(valid_580836, JString, required = false,
+  var valid_589865 = query.getOrDefault("fields")
+  valid_589865 = validateParameter(valid_589865, JString, required = false,
                                  default = nil)
-  if valid_580836 != nil:
-    section.add "fields", valid_580836
-  var valid_580837 = query.getOrDefault("quotaUser")
-  valid_580837 = validateParameter(valid_580837, JString, required = false,
+  if valid_589865 != nil:
+    section.add "fields", valid_589865
+  var valid_589866 = query.getOrDefault("quotaUser")
+  valid_589866 = validateParameter(valid_589866, JString, required = false,
                                  default = nil)
-  if valid_580837 != nil:
-    section.add "quotaUser", valid_580837
-  var valid_580838 = query.getOrDefault("alt")
-  valid_580838 = validateParameter(valid_580838, JString, required = false,
+  if valid_589866 != nil:
+    section.add "quotaUser", valid_589866
+  var valid_589867 = query.getOrDefault("alt")
+  valid_589867 = validateParameter(valid_589867, JString, required = false,
                                  default = newJString("json"))
-  if valid_580838 != nil:
-    section.add "alt", valid_580838
-  var valid_580839 = query.getOrDefault("oauth_token")
-  valid_580839 = validateParameter(valid_580839, JString, required = false,
+  if valid_589867 != nil:
+    section.add "alt", valid_589867
+  var valid_589868 = query.getOrDefault("oauth_token")
+  valid_589868 = validateParameter(valid_589868, JString, required = false,
                                  default = nil)
-  if valid_580839 != nil:
-    section.add "oauth_token", valid_580839
-  var valid_580840 = query.getOrDefault("userIp")
-  valid_580840 = validateParameter(valid_580840, JString, required = false,
+  if valid_589868 != nil:
+    section.add "oauth_token", valid_589868
+  var valid_589869 = query.getOrDefault("userIp")
+  valid_589869 = validateParameter(valid_589869, JString, required = false,
                                  default = nil)
-  if valid_580840 != nil:
-    section.add "userIp", valid_580840
-  var valid_580841 = query.getOrDefault("key")
-  valid_580841 = validateParameter(valid_580841, JString, required = false,
+  if valid_589869 != nil:
+    section.add "userIp", valid_589869
+  var valid_589870 = query.getOrDefault("key")
+  valid_589870 = validateParameter(valid_589870, JString, required = false,
                                  default = nil)
-  if valid_580841 != nil:
-    section.add "key", valid_580841
-  var valid_580842 = query.getOrDefault("prettyPrint")
-  valid_580842 = validateParameter(valid_580842, JBool, required = false,
+  if valid_589870 != nil:
+    section.add "key", valid_589870
+  var valid_589871 = query.getOrDefault("prettyPrint")
+  valid_589871 = validateParameter(valid_589871, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580842 != nil:
-    section.add "prettyPrint", valid_580842
+  if valid_589871 != nil:
+    section.add "prettyPrint", valid_589871
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -8487,21 +8487,21 @@ proc validate_ContentOrderpaymentsNotifycharge_580832(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580844: Call_ContentOrderpaymentsNotifycharge_580831;
+proc call*(call_589873: Call_ContentOrderpaymentsNotifycharge_589860;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Notify about charge on user's selected payments method.
   ## 
-  let valid = call_580844.validator(path, query, header, formData, body)
-  let scheme = call_580844.pickScheme
+  let valid = call_589873.validator(path, query, header, formData, body)
+  let scheme = call_589873.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580844.url(scheme.get, call_580844.host, call_580844.base,
-                         call_580844.route, valid.getOrDefault("path"),
+  let url = call_589873.url(scheme.get, call_589873.host, call_589873.base,
+                         call_589873.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580844, url, valid)
+  result = hook(call_589873, url, valid)
 
-proc call*(call_580845: Call_ContentOrderpaymentsNotifycharge_580831;
+proc call*(call_589874: Call_ContentOrderpaymentsNotifycharge_589860;
           orderId: string; merchantId: string; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; key: string = ""; body: JsonNode = nil;
@@ -8527,32 +8527,32 @@ proc call*(call_580845: Call_ContentOrderpaymentsNotifycharge_580831;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_580846 = newJObject()
-  var query_580847 = newJObject()
-  var body_580848 = newJObject()
-  add(query_580847, "fields", newJString(fields))
-  add(query_580847, "quotaUser", newJString(quotaUser))
-  add(query_580847, "alt", newJString(alt))
-  add(query_580847, "oauth_token", newJString(oauthToken))
-  add(query_580847, "userIp", newJString(userIp))
-  add(path_580846, "orderId", newJString(orderId))
-  add(query_580847, "key", newJString(key))
-  add(path_580846, "merchantId", newJString(merchantId))
+  var path_589875 = newJObject()
+  var query_589876 = newJObject()
+  var body_589877 = newJObject()
+  add(query_589876, "fields", newJString(fields))
+  add(query_589876, "quotaUser", newJString(quotaUser))
+  add(query_589876, "alt", newJString(alt))
+  add(query_589876, "oauth_token", newJString(oauthToken))
+  add(query_589876, "userIp", newJString(userIp))
+  add(path_589875, "orderId", newJString(orderId))
+  add(query_589876, "key", newJString(key))
+  add(path_589875, "merchantId", newJString(merchantId))
   if body != nil:
-    body_580848 = body
-  add(query_580847, "prettyPrint", newJBool(prettyPrint))
-  result = call_580845.call(path_580846, query_580847, nil, nil, body_580848)
+    body_589877 = body
+  add(query_589876, "prettyPrint", newJBool(prettyPrint))
+  result = call_589874.call(path_589875, query_589876, nil, nil, body_589877)
 
-var contentOrderpaymentsNotifycharge* = Call_ContentOrderpaymentsNotifycharge_580831(
+var contentOrderpaymentsNotifycharge* = Call_ContentOrderpaymentsNotifycharge_589860(
     name: "contentOrderpaymentsNotifycharge", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com",
     route: "/{merchantId}/orderpayments/{orderId}/notifyCharge",
-    validator: validate_ContentOrderpaymentsNotifycharge_580832,
-    base: "/content/v2", url: url_ContentOrderpaymentsNotifycharge_580833,
+    validator: validate_ContentOrderpaymentsNotifycharge_589861,
+    base: "/content/v2", url: url_ContentOrderpaymentsNotifycharge_589862,
     schemes: {Scheme.Https})
 type
-  Call_ContentOrderpaymentsNotifyrefund_580849 = ref object of OpenApiRestCall_579421
-proc url_ContentOrderpaymentsNotifyrefund_580851(protocol: Scheme; host: string;
+  Call_ContentOrderpaymentsNotifyrefund_589878 = ref object of OpenApiRestCall_588450
+proc url_ContentOrderpaymentsNotifyrefund_589880(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -8571,7 +8571,7 @@ proc url_ContentOrderpaymentsNotifyrefund_580851(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_ContentOrderpaymentsNotifyrefund_580850(path: JsonNode;
+proc validate_ContentOrderpaymentsNotifyrefund_589879(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Notify about refund on user's selected payments method.
   ## 
@@ -8584,16 +8584,16 @@ proc validate_ContentOrderpaymentsNotifyrefund_580850(path: JsonNode;
   ##             : The ID of the account that manages the order. This cannot be a multi-client account.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `orderId` field"
-  var valid_580852 = path.getOrDefault("orderId")
-  valid_580852 = validateParameter(valid_580852, JString, required = true,
+  var valid_589881 = path.getOrDefault("orderId")
+  valid_589881 = validateParameter(valid_589881, JString, required = true,
                                  default = nil)
-  if valid_580852 != nil:
-    section.add "orderId", valid_580852
-  var valid_580853 = path.getOrDefault("merchantId")
-  valid_580853 = validateParameter(valid_580853, JString, required = true,
+  if valid_589881 != nil:
+    section.add "orderId", valid_589881
+  var valid_589882 = path.getOrDefault("merchantId")
+  valid_589882 = validateParameter(valid_589882, JString, required = true,
                                  default = nil)
-  if valid_580853 != nil:
-    section.add "merchantId", valid_580853
+  if valid_589882 != nil:
+    section.add "merchantId", valid_589882
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -8611,41 +8611,41 @@ proc validate_ContentOrderpaymentsNotifyrefund_580850(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580854 = query.getOrDefault("fields")
-  valid_580854 = validateParameter(valid_580854, JString, required = false,
+  var valid_589883 = query.getOrDefault("fields")
+  valid_589883 = validateParameter(valid_589883, JString, required = false,
                                  default = nil)
-  if valid_580854 != nil:
-    section.add "fields", valid_580854
-  var valid_580855 = query.getOrDefault("quotaUser")
-  valid_580855 = validateParameter(valid_580855, JString, required = false,
+  if valid_589883 != nil:
+    section.add "fields", valid_589883
+  var valid_589884 = query.getOrDefault("quotaUser")
+  valid_589884 = validateParameter(valid_589884, JString, required = false,
                                  default = nil)
-  if valid_580855 != nil:
-    section.add "quotaUser", valid_580855
-  var valid_580856 = query.getOrDefault("alt")
-  valid_580856 = validateParameter(valid_580856, JString, required = false,
+  if valid_589884 != nil:
+    section.add "quotaUser", valid_589884
+  var valid_589885 = query.getOrDefault("alt")
+  valid_589885 = validateParameter(valid_589885, JString, required = false,
                                  default = newJString("json"))
-  if valid_580856 != nil:
-    section.add "alt", valid_580856
-  var valid_580857 = query.getOrDefault("oauth_token")
-  valid_580857 = validateParameter(valid_580857, JString, required = false,
+  if valid_589885 != nil:
+    section.add "alt", valid_589885
+  var valid_589886 = query.getOrDefault("oauth_token")
+  valid_589886 = validateParameter(valid_589886, JString, required = false,
                                  default = nil)
-  if valid_580857 != nil:
-    section.add "oauth_token", valid_580857
-  var valid_580858 = query.getOrDefault("userIp")
-  valid_580858 = validateParameter(valid_580858, JString, required = false,
+  if valid_589886 != nil:
+    section.add "oauth_token", valid_589886
+  var valid_589887 = query.getOrDefault("userIp")
+  valid_589887 = validateParameter(valid_589887, JString, required = false,
                                  default = nil)
-  if valid_580858 != nil:
-    section.add "userIp", valid_580858
-  var valid_580859 = query.getOrDefault("key")
-  valid_580859 = validateParameter(valid_580859, JString, required = false,
+  if valid_589887 != nil:
+    section.add "userIp", valid_589887
+  var valid_589888 = query.getOrDefault("key")
+  valid_589888 = validateParameter(valid_589888, JString, required = false,
                                  default = nil)
-  if valid_580859 != nil:
-    section.add "key", valid_580859
-  var valid_580860 = query.getOrDefault("prettyPrint")
-  valid_580860 = validateParameter(valid_580860, JBool, required = false,
+  if valid_589888 != nil:
+    section.add "key", valid_589888
+  var valid_589889 = query.getOrDefault("prettyPrint")
+  valid_589889 = validateParameter(valid_589889, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580860 != nil:
-    section.add "prettyPrint", valid_580860
+  if valid_589889 != nil:
+    section.add "prettyPrint", valid_589889
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -8657,21 +8657,21 @@ proc validate_ContentOrderpaymentsNotifyrefund_580850(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580862: Call_ContentOrderpaymentsNotifyrefund_580849;
+proc call*(call_589891: Call_ContentOrderpaymentsNotifyrefund_589878;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Notify about refund on user's selected payments method.
   ## 
-  let valid = call_580862.validator(path, query, header, formData, body)
-  let scheme = call_580862.pickScheme
+  let valid = call_589891.validator(path, query, header, formData, body)
+  let scheme = call_589891.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580862.url(scheme.get, call_580862.host, call_580862.base,
-                         call_580862.route, valid.getOrDefault("path"),
+  let url = call_589891.url(scheme.get, call_589891.host, call_589891.base,
+                         call_589891.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580862, url, valid)
+  result = hook(call_589891, url, valid)
 
-proc call*(call_580863: Call_ContentOrderpaymentsNotifyrefund_580849;
+proc call*(call_589892: Call_ContentOrderpaymentsNotifyrefund_589878;
           orderId: string; merchantId: string; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; key: string = ""; body: JsonNode = nil;
@@ -8697,32 +8697,32 @@ proc call*(call_580863: Call_ContentOrderpaymentsNotifyrefund_580849;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_580864 = newJObject()
-  var query_580865 = newJObject()
-  var body_580866 = newJObject()
-  add(query_580865, "fields", newJString(fields))
-  add(query_580865, "quotaUser", newJString(quotaUser))
-  add(query_580865, "alt", newJString(alt))
-  add(query_580865, "oauth_token", newJString(oauthToken))
-  add(query_580865, "userIp", newJString(userIp))
-  add(path_580864, "orderId", newJString(orderId))
-  add(query_580865, "key", newJString(key))
-  add(path_580864, "merchantId", newJString(merchantId))
+  var path_589893 = newJObject()
+  var query_589894 = newJObject()
+  var body_589895 = newJObject()
+  add(query_589894, "fields", newJString(fields))
+  add(query_589894, "quotaUser", newJString(quotaUser))
+  add(query_589894, "alt", newJString(alt))
+  add(query_589894, "oauth_token", newJString(oauthToken))
+  add(query_589894, "userIp", newJString(userIp))
+  add(path_589893, "orderId", newJString(orderId))
+  add(query_589894, "key", newJString(key))
+  add(path_589893, "merchantId", newJString(merchantId))
   if body != nil:
-    body_580866 = body
-  add(query_580865, "prettyPrint", newJBool(prettyPrint))
-  result = call_580863.call(path_580864, query_580865, nil, nil, body_580866)
+    body_589895 = body
+  add(query_589894, "prettyPrint", newJBool(prettyPrint))
+  result = call_589892.call(path_589893, query_589894, nil, nil, body_589895)
 
-var contentOrderpaymentsNotifyrefund* = Call_ContentOrderpaymentsNotifyrefund_580849(
+var contentOrderpaymentsNotifyrefund* = Call_ContentOrderpaymentsNotifyrefund_589878(
     name: "contentOrderpaymentsNotifyrefund", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com",
     route: "/{merchantId}/orderpayments/{orderId}/notifyRefund",
-    validator: validate_ContentOrderpaymentsNotifyrefund_580850,
-    base: "/content/v2", url: url_ContentOrderpaymentsNotifyrefund_580851,
+    validator: validate_ContentOrderpaymentsNotifyrefund_589879,
+    base: "/content/v2", url: url_ContentOrderpaymentsNotifyrefund_589880,
     schemes: {Scheme.Https})
 type
-  Call_ContentOrderreportsListdisbursements_580867 = ref object of OpenApiRestCall_579421
-proc url_ContentOrderreportsListdisbursements_580869(protocol: Scheme;
+  Call_ContentOrderreportsListdisbursements_589896 = ref object of OpenApiRestCall_588450
+proc url_ContentOrderreportsListdisbursements_589898(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -8738,7 +8738,7 @@ proc url_ContentOrderreportsListdisbursements_580869(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_ContentOrderreportsListdisbursements_580868(path: JsonNode;
+proc validate_ContentOrderreportsListdisbursements_589897(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Retrieves a report for disbursements from your Merchant Center account.
   ## 
@@ -8750,11 +8750,11 @@ proc validate_ContentOrderreportsListdisbursements_580868(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `merchantId` field"
-  var valid_580870 = path.getOrDefault("merchantId")
-  valid_580870 = validateParameter(valid_580870, JString, required = true,
+  var valid_589899 = path.getOrDefault("merchantId")
+  valid_589899 = validateParameter(valid_589899, JString, required = true,
                                  default = nil)
-  if valid_580870 != nil:
-    section.add "merchantId", valid_580870
+  if valid_589899 != nil:
+    section.add "merchantId", valid_589899
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -8780,61 +8780,61 @@ proc validate_ContentOrderreportsListdisbursements_580868(path: JsonNode;
   ##   disbursementEndDate: JString
   ##                      : The last date which disbursements occurred. In ISO 8601 format. Default: current date.
   section = newJObject()
-  var valid_580871 = query.getOrDefault("fields")
-  valid_580871 = validateParameter(valid_580871, JString, required = false,
+  var valid_589900 = query.getOrDefault("fields")
+  valid_589900 = validateParameter(valid_589900, JString, required = false,
                                  default = nil)
-  if valid_580871 != nil:
-    section.add "fields", valid_580871
-  var valid_580872 = query.getOrDefault("pageToken")
-  valid_580872 = validateParameter(valid_580872, JString, required = false,
+  if valid_589900 != nil:
+    section.add "fields", valid_589900
+  var valid_589901 = query.getOrDefault("pageToken")
+  valid_589901 = validateParameter(valid_589901, JString, required = false,
                                  default = nil)
-  if valid_580872 != nil:
-    section.add "pageToken", valid_580872
-  var valid_580873 = query.getOrDefault("quotaUser")
-  valid_580873 = validateParameter(valid_580873, JString, required = false,
+  if valid_589901 != nil:
+    section.add "pageToken", valid_589901
+  var valid_589902 = query.getOrDefault("quotaUser")
+  valid_589902 = validateParameter(valid_589902, JString, required = false,
                                  default = nil)
-  if valid_580873 != nil:
-    section.add "quotaUser", valid_580873
-  var valid_580874 = query.getOrDefault("alt")
-  valid_580874 = validateParameter(valid_580874, JString, required = false,
+  if valid_589902 != nil:
+    section.add "quotaUser", valid_589902
+  var valid_589903 = query.getOrDefault("alt")
+  valid_589903 = validateParameter(valid_589903, JString, required = false,
                                  default = newJString("json"))
-  if valid_580874 != nil:
-    section.add "alt", valid_580874
-  var valid_580875 = query.getOrDefault("oauth_token")
-  valid_580875 = validateParameter(valid_580875, JString, required = false,
+  if valid_589903 != nil:
+    section.add "alt", valid_589903
+  var valid_589904 = query.getOrDefault("oauth_token")
+  valid_589904 = validateParameter(valid_589904, JString, required = false,
                                  default = nil)
-  if valid_580875 != nil:
-    section.add "oauth_token", valid_580875
-  var valid_580876 = query.getOrDefault("userIp")
-  valid_580876 = validateParameter(valid_580876, JString, required = false,
+  if valid_589904 != nil:
+    section.add "oauth_token", valid_589904
+  var valid_589905 = query.getOrDefault("userIp")
+  valid_589905 = validateParameter(valid_589905, JString, required = false,
                                  default = nil)
-  if valid_580876 != nil:
-    section.add "userIp", valid_580876
-  var valid_580877 = query.getOrDefault("maxResults")
-  valid_580877 = validateParameter(valid_580877, JInt, required = false, default = nil)
-  if valid_580877 != nil:
-    section.add "maxResults", valid_580877
-  var valid_580878 = query.getOrDefault("key")
-  valid_580878 = validateParameter(valid_580878, JString, required = false,
+  if valid_589905 != nil:
+    section.add "userIp", valid_589905
+  var valid_589906 = query.getOrDefault("maxResults")
+  valid_589906 = validateParameter(valid_589906, JInt, required = false, default = nil)
+  if valid_589906 != nil:
+    section.add "maxResults", valid_589906
+  var valid_589907 = query.getOrDefault("key")
+  valid_589907 = validateParameter(valid_589907, JString, required = false,
                                  default = nil)
-  if valid_580878 != nil:
-    section.add "key", valid_580878
-  var valid_580879 = query.getOrDefault("prettyPrint")
-  valid_580879 = validateParameter(valid_580879, JBool, required = false,
+  if valid_589907 != nil:
+    section.add "key", valid_589907
+  var valid_589908 = query.getOrDefault("prettyPrint")
+  valid_589908 = validateParameter(valid_589908, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580879 != nil:
-    section.add "prettyPrint", valid_580879
+  if valid_589908 != nil:
+    section.add "prettyPrint", valid_589908
   assert query != nil, "query argument is necessary due to required `disbursementStartDate` field"
-  var valid_580880 = query.getOrDefault("disbursementStartDate")
-  valid_580880 = validateParameter(valid_580880, JString, required = true,
+  var valid_589909 = query.getOrDefault("disbursementStartDate")
+  valid_589909 = validateParameter(valid_589909, JString, required = true,
                                  default = nil)
-  if valid_580880 != nil:
-    section.add "disbursementStartDate", valid_580880
-  var valid_580881 = query.getOrDefault("disbursementEndDate")
-  valid_580881 = validateParameter(valid_580881, JString, required = false,
+  if valid_589909 != nil:
+    section.add "disbursementStartDate", valid_589909
+  var valid_589910 = query.getOrDefault("disbursementEndDate")
+  valid_589910 = validateParameter(valid_589910, JString, required = false,
                                  default = nil)
-  if valid_580881 != nil:
-    section.add "disbursementEndDate", valid_580881
+  if valid_589910 != nil:
+    section.add "disbursementEndDate", valid_589910
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -8843,21 +8843,21 @@ proc validate_ContentOrderreportsListdisbursements_580868(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580882: Call_ContentOrderreportsListdisbursements_580867;
+proc call*(call_589911: Call_ContentOrderreportsListdisbursements_589896;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Retrieves a report for disbursements from your Merchant Center account.
   ## 
-  let valid = call_580882.validator(path, query, header, formData, body)
-  let scheme = call_580882.pickScheme
+  let valid = call_589911.validator(path, query, header, formData, body)
+  let scheme = call_589911.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580882.url(scheme.get, call_580882.host, call_580882.base,
-                         call_580882.route, valid.getOrDefault("path"),
+  let url = call_589911.url(scheme.get, call_589911.host, call_589911.base,
+                         call_589911.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580882, url, valid)
+  result = hook(call_589911, url, valid)
 
-proc call*(call_580883: Call_ContentOrderreportsListdisbursements_580867;
+proc call*(call_589912: Call_ContentOrderreportsListdisbursements_589896;
           merchantId: string; disbursementStartDate: string; fields: string = "";
           pageToken: string = ""; quotaUser: string = ""; alt: string = "json";
           oauthToken: string = ""; userIp: string = ""; maxResults: int = 0;
@@ -8888,31 +8888,31 @@ proc call*(call_580883: Call_ContentOrderreportsListdisbursements_580867;
   ##                        : The first date which disbursements occurred. In ISO 8601 format.
   ##   disbursementEndDate: string
   ##                      : The last date which disbursements occurred. In ISO 8601 format. Default: current date.
-  var path_580884 = newJObject()
-  var query_580885 = newJObject()
-  add(query_580885, "fields", newJString(fields))
-  add(query_580885, "pageToken", newJString(pageToken))
-  add(query_580885, "quotaUser", newJString(quotaUser))
-  add(query_580885, "alt", newJString(alt))
-  add(query_580885, "oauth_token", newJString(oauthToken))
-  add(query_580885, "userIp", newJString(userIp))
-  add(query_580885, "maxResults", newJInt(maxResults))
-  add(query_580885, "key", newJString(key))
-  add(path_580884, "merchantId", newJString(merchantId))
-  add(query_580885, "prettyPrint", newJBool(prettyPrint))
-  add(query_580885, "disbursementStartDate", newJString(disbursementStartDate))
-  add(query_580885, "disbursementEndDate", newJString(disbursementEndDate))
-  result = call_580883.call(path_580884, query_580885, nil, nil, nil)
+  var path_589913 = newJObject()
+  var query_589914 = newJObject()
+  add(query_589914, "fields", newJString(fields))
+  add(query_589914, "pageToken", newJString(pageToken))
+  add(query_589914, "quotaUser", newJString(quotaUser))
+  add(query_589914, "alt", newJString(alt))
+  add(query_589914, "oauth_token", newJString(oauthToken))
+  add(query_589914, "userIp", newJString(userIp))
+  add(query_589914, "maxResults", newJInt(maxResults))
+  add(query_589914, "key", newJString(key))
+  add(path_589913, "merchantId", newJString(merchantId))
+  add(query_589914, "prettyPrint", newJBool(prettyPrint))
+  add(query_589914, "disbursementStartDate", newJString(disbursementStartDate))
+  add(query_589914, "disbursementEndDate", newJString(disbursementEndDate))
+  result = call_589912.call(path_589913, query_589914, nil, nil, nil)
 
-var contentOrderreportsListdisbursements* = Call_ContentOrderreportsListdisbursements_580867(
+var contentOrderreportsListdisbursements* = Call_ContentOrderreportsListdisbursements_589896(
     name: "contentOrderreportsListdisbursements", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/{merchantId}/orderreports/disbursements",
-    validator: validate_ContentOrderreportsListdisbursements_580868,
-    base: "/content/v2", url: url_ContentOrderreportsListdisbursements_580869,
+    validator: validate_ContentOrderreportsListdisbursements_589897,
+    base: "/content/v2", url: url_ContentOrderreportsListdisbursements_589898,
     schemes: {Scheme.Https})
 type
-  Call_ContentOrderreportsListtransactions_580886 = ref object of OpenApiRestCall_579421
-proc url_ContentOrderreportsListtransactions_580888(protocol: Scheme; host: string;
+  Call_ContentOrderreportsListtransactions_589915 = ref object of OpenApiRestCall_588450
+proc url_ContentOrderreportsListtransactions_589917(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -8931,7 +8931,7 @@ proc url_ContentOrderreportsListtransactions_580888(protocol: Scheme; host: stri
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_ContentOrderreportsListtransactions_580887(path: JsonNode;
+proc validate_ContentOrderreportsListtransactions_589916(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Retrieves a list of transactions for a disbursement from your Merchant Center account.
   ## 
@@ -8945,16 +8945,16 @@ proc validate_ContentOrderreportsListtransactions_580887(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `merchantId` field"
-  var valid_580889 = path.getOrDefault("merchantId")
-  valid_580889 = validateParameter(valid_580889, JString, required = true,
+  var valid_589918 = path.getOrDefault("merchantId")
+  valid_589918 = validateParameter(valid_589918, JString, required = true,
                                  default = nil)
-  if valid_580889 != nil:
-    section.add "merchantId", valid_580889
-  var valid_580890 = path.getOrDefault("disbursementId")
-  valid_580890 = validateParameter(valid_580890, JString, required = true,
+  if valid_589918 != nil:
+    section.add "merchantId", valid_589918
+  var valid_589919 = path.getOrDefault("disbursementId")
+  valid_589919 = validateParameter(valid_589919, JString, required = true,
                                  default = nil)
-  if valid_580890 != nil:
-    section.add "disbursementId", valid_580890
+  if valid_589919 != nil:
+    section.add "disbursementId", valid_589919
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -8980,61 +8980,61 @@ proc validate_ContentOrderreportsListtransactions_580887(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580891 = query.getOrDefault("fields")
-  valid_580891 = validateParameter(valid_580891, JString, required = false,
+  var valid_589920 = query.getOrDefault("fields")
+  valid_589920 = validateParameter(valid_589920, JString, required = false,
                                  default = nil)
-  if valid_580891 != nil:
-    section.add "fields", valid_580891
-  var valid_580892 = query.getOrDefault("pageToken")
-  valid_580892 = validateParameter(valid_580892, JString, required = false,
+  if valid_589920 != nil:
+    section.add "fields", valid_589920
+  var valid_589921 = query.getOrDefault("pageToken")
+  valid_589921 = validateParameter(valid_589921, JString, required = false,
                                  default = nil)
-  if valid_580892 != nil:
-    section.add "pageToken", valid_580892
-  var valid_580893 = query.getOrDefault("quotaUser")
-  valid_580893 = validateParameter(valid_580893, JString, required = false,
+  if valid_589921 != nil:
+    section.add "pageToken", valid_589921
+  var valid_589922 = query.getOrDefault("quotaUser")
+  valid_589922 = validateParameter(valid_589922, JString, required = false,
                                  default = nil)
-  if valid_580893 != nil:
-    section.add "quotaUser", valid_580893
-  var valid_580894 = query.getOrDefault("alt")
-  valid_580894 = validateParameter(valid_580894, JString, required = false,
+  if valid_589922 != nil:
+    section.add "quotaUser", valid_589922
+  var valid_589923 = query.getOrDefault("alt")
+  valid_589923 = validateParameter(valid_589923, JString, required = false,
                                  default = newJString("json"))
-  if valid_580894 != nil:
-    section.add "alt", valid_580894
-  var valid_580895 = query.getOrDefault("transactionEndDate")
-  valid_580895 = validateParameter(valid_580895, JString, required = false,
+  if valid_589923 != nil:
+    section.add "alt", valid_589923
+  var valid_589924 = query.getOrDefault("transactionEndDate")
+  valid_589924 = validateParameter(valid_589924, JString, required = false,
                                  default = nil)
-  if valid_580895 != nil:
-    section.add "transactionEndDate", valid_580895
-  var valid_580896 = query.getOrDefault("oauth_token")
-  valid_580896 = validateParameter(valid_580896, JString, required = false,
+  if valid_589924 != nil:
+    section.add "transactionEndDate", valid_589924
+  var valid_589925 = query.getOrDefault("oauth_token")
+  valid_589925 = validateParameter(valid_589925, JString, required = false,
                                  default = nil)
-  if valid_580896 != nil:
-    section.add "oauth_token", valid_580896
-  var valid_580897 = query.getOrDefault("userIp")
-  valid_580897 = validateParameter(valid_580897, JString, required = false,
+  if valid_589925 != nil:
+    section.add "oauth_token", valid_589925
+  var valid_589926 = query.getOrDefault("userIp")
+  valid_589926 = validateParameter(valid_589926, JString, required = false,
                                  default = nil)
-  if valid_580897 != nil:
-    section.add "userIp", valid_580897
-  var valid_580898 = query.getOrDefault("maxResults")
-  valid_580898 = validateParameter(valid_580898, JInt, required = false, default = nil)
-  if valid_580898 != nil:
-    section.add "maxResults", valid_580898
+  if valid_589926 != nil:
+    section.add "userIp", valid_589926
+  var valid_589927 = query.getOrDefault("maxResults")
+  valid_589927 = validateParameter(valid_589927, JInt, required = false, default = nil)
+  if valid_589927 != nil:
+    section.add "maxResults", valid_589927
   assert query != nil, "query argument is necessary due to required `transactionStartDate` field"
-  var valid_580899 = query.getOrDefault("transactionStartDate")
-  valid_580899 = validateParameter(valid_580899, JString, required = true,
+  var valid_589928 = query.getOrDefault("transactionStartDate")
+  valid_589928 = validateParameter(valid_589928, JString, required = true,
                                  default = nil)
-  if valid_580899 != nil:
-    section.add "transactionStartDate", valid_580899
-  var valid_580900 = query.getOrDefault("key")
-  valid_580900 = validateParameter(valid_580900, JString, required = false,
+  if valid_589928 != nil:
+    section.add "transactionStartDate", valid_589928
+  var valid_589929 = query.getOrDefault("key")
+  valid_589929 = validateParameter(valid_589929, JString, required = false,
                                  default = nil)
-  if valid_580900 != nil:
-    section.add "key", valid_580900
-  var valid_580901 = query.getOrDefault("prettyPrint")
-  valid_580901 = validateParameter(valid_580901, JBool, required = false,
+  if valid_589929 != nil:
+    section.add "key", valid_589929
+  var valid_589930 = query.getOrDefault("prettyPrint")
+  valid_589930 = validateParameter(valid_589930, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580901 != nil:
-    section.add "prettyPrint", valid_580901
+  if valid_589930 != nil:
+    section.add "prettyPrint", valid_589930
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -9043,21 +9043,21 @@ proc validate_ContentOrderreportsListtransactions_580887(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580902: Call_ContentOrderreportsListtransactions_580886;
+proc call*(call_589931: Call_ContentOrderreportsListtransactions_589915;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Retrieves a list of transactions for a disbursement from your Merchant Center account.
   ## 
-  let valid = call_580902.validator(path, query, header, formData, body)
-  let scheme = call_580902.pickScheme
+  let valid = call_589931.validator(path, query, header, formData, body)
+  let scheme = call_589931.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580902.url(scheme.get, call_580902.host, call_580902.base,
-                         call_580902.route, valid.getOrDefault("path"),
+  let url = call_589931.url(scheme.get, call_589931.host, call_589931.base,
+                         call_589931.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580902, url, valid)
+  result = hook(call_589931, url, valid)
 
-proc call*(call_580903: Call_ContentOrderreportsListtransactions_580886;
+proc call*(call_589932: Call_ContentOrderreportsListtransactions_589915;
           transactionStartDate: string; merchantId: string; disbursementId: string;
           fields: string = ""; pageToken: string = ""; quotaUser: string = "";
           alt: string = "json"; transactionEndDate: string = "";
@@ -9091,32 +9091,32 @@ proc call*(call_580903: Call_ContentOrderreportsListtransactions_580886;
   ##                 : The Google-provided ID of the disbursement (found in Wallet).
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_580904 = newJObject()
-  var query_580905 = newJObject()
-  add(query_580905, "fields", newJString(fields))
-  add(query_580905, "pageToken", newJString(pageToken))
-  add(query_580905, "quotaUser", newJString(quotaUser))
-  add(query_580905, "alt", newJString(alt))
-  add(query_580905, "transactionEndDate", newJString(transactionEndDate))
-  add(query_580905, "oauth_token", newJString(oauthToken))
-  add(query_580905, "userIp", newJString(userIp))
-  add(query_580905, "maxResults", newJInt(maxResults))
-  add(query_580905, "transactionStartDate", newJString(transactionStartDate))
-  add(query_580905, "key", newJString(key))
-  add(path_580904, "merchantId", newJString(merchantId))
-  add(path_580904, "disbursementId", newJString(disbursementId))
-  add(query_580905, "prettyPrint", newJBool(prettyPrint))
-  result = call_580903.call(path_580904, query_580905, nil, nil, nil)
+  var path_589933 = newJObject()
+  var query_589934 = newJObject()
+  add(query_589934, "fields", newJString(fields))
+  add(query_589934, "pageToken", newJString(pageToken))
+  add(query_589934, "quotaUser", newJString(quotaUser))
+  add(query_589934, "alt", newJString(alt))
+  add(query_589934, "transactionEndDate", newJString(transactionEndDate))
+  add(query_589934, "oauth_token", newJString(oauthToken))
+  add(query_589934, "userIp", newJString(userIp))
+  add(query_589934, "maxResults", newJInt(maxResults))
+  add(query_589934, "transactionStartDate", newJString(transactionStartDate))
+  add(query_589934, "key", newJString(key))
+  add(path_589933, "merchantId", newJString(merchantId))
+  add(path_589933, "disbursementId", newJString(disbursementId))
+  add(query_589934, "prettyPrint", newJBool(prettyPrint))
+  result = call_589932.call(path_589933, query_589934, nil, nil, nil)
 
-var contentOrderreportsListtransactions* = Call_ContentOrderreportsListtransactions_580886(
+var contentOrderreportsListtransactions* = Call_ContentOrderreportsListtransactions_589915(
     name: "contentOrderreportsListtransactions", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/{merchantId}/orderreports/disbursements/{disbursementId}/transactions",
-    validator: validate_ContentOrderreportsListtransactions_580887,
-    base: "/content/v2", url: url_ContentOrderreportsListtransactions_580888,
+    validator: validate_ContentOrderreportsListtransactions_589916,
+    base: "/content/v2", url: url_ContentOrderreportsListtransactions_589917,
     schemes: {Scheme.Https})
 type
-  Call_ContentOrderreturnsList_580906 = ref object of OpenApiRestCall_579421
-proc url_ContentOrderreturnsList_580908(protocol: Scheme; host: string; base: string;
+  Call_ContentOrderreturnsList_589935 = ref object of OpenApiRestCall_588450
+proc url_ContentOrderreturnsList_589937(protocol: Scheme; host: string; base: string;
                                        route: string; path: JsonNode;
                                        query: JsonNode): Uri =
   result.scheme = $protocol
@@ -9133,7 +9133,7 @@ proc url_ContentOrderreturnsList_580908(protocol: Scheme; host: string; base: st
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_ContentOrderreturnsList_580907(path: JsonNode; query: JsonNode;
+proc validate_ContentOrderreturnsList_589936(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Lists order returns in your Merchant Center account.
   ## 
@@ -9145,11 +9145,11 @@ proc validate_ContentOrderreturnsList_580907(path: JsonNode; query: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `merchantId` field"
-  var valid_580909 = path.getOrDefault("merchantId")
-  valid_580909 = validateParameter(valid_580909, JString, required = true,
+  var valid_589938 = path.getOrDefault("merchantId")
+  valid_589938 = validateParameter(valid_589938, JString, required = true,
                                  default = nil)
-  if valid_580909 != nil:
-    section.add "merchantId", valid_580909
+  if valid_589938 != nil:
+    section.add "merchantId", valid_589938
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -9177,65 +9177,65 @@ proc validate_ContentOrderreturnsList_580907(path: JsonNode; query: JsonNode;
   ##   createdStartDate: JString
   ##                   : Obtains order returns created after this date (inclusively), in ISO 8601 format.
   section = newJObject()
-  var valid_580910 = query.getOrDefault("fields")
-  valid_580910 = validateParameter(valid_580910, JString, required = false,
+  var valid_589939 = query.getOrDefault("fields")
+  valid_589939 = validateParameter(valid_589939, JString, required = false,
                                  default = nil)
-  if valid_580910 != nil:
-    section.add "fields", valid_580910
-  var valid_580911 = query.getOrDefault("pageToken")
-  valid_580911 = validateParameter(valid_580911, JString, required = false,
+  if valid_589939 != nil:
+    section.add "fields", valid_589939
+  var valid_589940 = query.getOrDefault("pageToken")
+  valid_589940 = validateParameter(valid_589940, JString, required = false,
                                  default = nil)
-  if valid_580911 != nil:
-    section.add "pageToken", valid_580911
-  var valid_580912 = query.getOrDefault("quotaUser")
-  valid_580912 = validateParameter(valid_580912, JString, required = false,
+  if valid_589940 != nil:
+    section.add "pageToken", valid_589940
+  var valid_589941 = query.getOrDefault("quotaUser")
+  valid_589941 = validateParameter(valid_589941, JString, required = false,
                                  default = nil)
-  if valid_580912 != nil:
-    section.add "quotaUser", valid_580912
-  var valid_580913 = query.getOrDefault("alt")
-  valid_580913 = validateParameter(valid_580913, JString, required = false,
+  if valid_589941 != nil:
+    section.add "quotaUser", valid_589941
+  var valid_589942 = query.getOrDefault("alt")
+  valid_589942 = validateParameter(valid_589942, JString, required = false,
                                  default = newJString("json"))
-  if valid_580913 != nil:
-    section.add "alt", valid_580913
-  var valid_580914 = query.getOrDefault("oauth_token")
-  valid_580914 = validateParameter(valid_580914, JString, required = false,
+  if valid_589942 != nil:
+    section.add "alt", valid_589942
+  var valid_589943 = query.getOrDefault("oauth_token")
+  valid_589943 = validateParameter(valid_589943, JString, required = false,
                                  default = nil)
-  if valid_580914 != nil:
-    section.add "oauth_token", valid_580914
-  var valid_580915 = query.getOrDefault("userIp")
-  valid_580915 = validateParameter(valid_580915, JString, required = false,
+  if valid_589943 != nil:
+    section.add "oauth_token", valid_589943
+  var valid_589944 = query.getOrDefault("userIp")
+  valid_589944 = validateParameter(valid_589944, JString, required = false,
                                  default = nil)
-  if valid_580915 != nil:
-    section.add "userIp", valid_580915
-  var valid_580916 = query.getOrDefault("maxResults")
-  valid_580916 = validateParameter(valid_580916, JInt, required = false, default = nil)
-  if valid_580916 != nil:
-    section.add "maxResults", valid_580916
-  var valid_580917 = query.getOrDefault("orderBy")
-  valid_580917 = validateParameter(valid_580917, JString, required = false,
+  if valid_589944 != nil:
+    section.add "userIp", valid_589944
+  var valid_589945 = query.getOrDefault("maxResults")
+  valid_589945 = validateParameter(valid_589945, JInt, required = false, default = nil)
+  if valid_589945 != nil:
+    section.add "maxResults", valid_589945
+  var valid_589946 = query.getOrDefault("orderBy")
+  valid_589946 = validateParameter(valid_589946, JString, required = false,
                                  default = newJString("returnCreationTimeAsc"))
-  if valid_580917 != nil:
-    section.add "orderBy", valid_580917
-  var valid_580918 = query.getOrDefault("key")
-  valid_580918 = validateParameter(valid_580918, JString, required = false,
+  if valid_589946 != nil:
+    section.add "orderBy", valid_589946
+  var valid_589947 = query.getOrDefault("key")
+  valid_589947 = validateParameter(valid_589947, JString, required = false,
                                  default = nil)
-  if valid_580918 != nil:
-    section.add "key", valid_580918
-  var valid_580919 = query.getOrDefault("createdEndDate")
-  valid_580919 = validateParameter(valid_580919, JString, required = false,
+  if valid_589947 != nil:
+    section.add "key", valid_589947
+  var valid_589948 = query.getOrDefault("createdEndDate")
+  valid_589948 = validateParameter(valid_589948, JString, required = false,
                                  default = nil)
-  if valid_580919 != nil:
-    section.add "createdEndDate", valid_580919
-  var valid_580920 = query.getOrDefault("prettyPrint")
-  valid_580920 = validateParameter(valid_580920, JBool, required = false,
+  if valid_589948 != nil:
+    section.add "createdEndDate", valid_589948
+  var valid_589949 = query.getOrDefault("prettyPrint")
+  valid_589949 = validateParameter(valid_589949, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580920 != nil:
-    section.add "prettyPrint", valid_580920
-  var valid_580921 = query.getOrDefault("createdStartDate")
-  valid_580921 = validateParameter(valid_580921, JString, required = false,
+  if valid_589949 != nil:
+    section.add "prettyPrint", valid_589949
+  var valid_589950 = query.getOrDefault("createdStartDate")
+  valid_589950 = validateParameter(valid_589950, JString, required = false,
                                  default = nil)
-  if valid_580921 != nil:
-    section.add "createdStartDate", valid_580921
+  if valid_589950 != nil:
+    section.add "createdStartDate", valid_589950
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -9244,20 +9244,20 @@ proc validate_ContentOrderreturnsList_580907(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580922: Call_ContentOrderreturnsList_580906; path: JsonNode;
+proc call*(call_589951: Call_ContentOrderreturnsList_589935; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Lists order returns in your Merchant Center account.
   ## 
-  let valid = call_580922.validator(path, query, header, formData, body)
-  let scheme = call_580922.pickScheme
+  let valid = call_589951.validator(path, query, header, formData, body)
+  let scheme = call_589951.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580922.url(scheme.get, call_580922.host, call_580922.base,
-                         call_580922.route, valid.getOrDefault("path"),
+  let url = call_589951.url(scheme.get, call_589951.host, call_589951.base,
+                         call_589951.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580922, url, valid)
+  result = hook(call_589951, url, valid)
 
-proc call*(call_580923: Call_ContentOrderreturnsList_580906; merchantId: string;
+proc call*(call_589952: Call_ContentOrderreturnsList_589935; merchantId: string;
           fields: string = ""; pageToken: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; userIp: string = "";
           maxResults: int = 0; orderBy: string = "returnCreationTimeAsc";
@@ -9291,31 +9291,31 @@ proc call*(call_580923: Call_ContentOrderreturnsList_580906; merchantId: string;
   ##              : Returns response with indentations and line breaks.
   ##   createdStartDate: string
   ##                   : Obtains order returns created after this date (inclusively), in ISO 8601 format.
-  var path_580924 = newJObject()
-  var query_580925 = newJObject()
-  add(query_580925, "fields", newJString(fields))
-  add(query_580925, "pageToken", newJString(pageToken))
-  add(query_580925, "quotaUser", newJString(quotaUser))
-  add(query_580925, "alt", newJString(alt))
-  add(query_580925, "oauth_token", newJString(oauthToken))
-  add(query_580925, "userIp", newJString(userIp))
-  add(query_580925, "maxResults", newJInt(maxResults))
-  add(query_580925, "orderBy", newJString(orderBy))
-  add(query_580925, "key", newJString(key))
-  add(query_580925, "createdEndDate", newJString(createdEndDate))
-  add(path_580924, "merchantId", newJString(merchantId))
-  add(query_580925, "prettyPrint", newJBool(prettyPrint))
-  add(query_580925, "createdStartDate", newJString(createdStartDate))
-  result = call_580923.call(path_580924, query_580925, nil, nil, nil)
+  var path_589953 = newJObject()
+  var query_589954 = newJObject()
+  add(query_589954, "fields", newJString(fields))
+  add(query_589954, "pageToken", newJString(pageToken))
+  add(query_589954, "quotaUser", newJString(quotaUser))
+  add(query_589954, "alt", newJString(alt))
+  add(query_589954, "oauth_token", newJString(oauthToken))
+  add(query_589954, "userIp", newJString(userIp))
+  add(query_589954, "maxResults", newJInt(maxResults))
+  add(query_589954, "orderBy", newJString(orderBy))
+  add(query_589954, "key", newJString(key))
+  add(query_589954, "createdEndDate", newJString(createdEndDate))
+  add(path_589953, "merchantId", newJString(merchantId))
+  add(query_589954, "prettyPrint", newJBool(prettyPrint))
+  add(query_589954, "createdStartDate", newJString(createdStartDate))
+  result = call_589952.call(path_589953, query_589954, nil, nil, nil)
 
-var contentOrderreturnsList* = Call_ContentOrderreturnsList_580906(
+var contentOrderreturnsList* = Call_ContentOrderreturnsList_589935(
     name: "contentOrderreturnsList", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/{merchantId}/orderreturns",
-    validator: validate_ContentOrderreturnsList_580907, base: "/content/v2",
-    url: url_ContentOrderreturnsList_580908, schemes: {Scheme.Https})
+    validator: validate_ContentOrderreturnsList_589936, base: "/content/v2",
+    url: url_ContentOrderreturnsList_589937, schemes: {Scheme.Https})
 type
-  Call_ContentOrderreturnsGet_580926 = ref object of OpenApiRestCall_579421
-proc url_ContentOrderreturnsGet_580928(protocol: Scheme; host: string; base: string;
+  Call_ContentOrderreturnsGet_589955 = ref object of OpenApiRestCall_588450
+proc url_ContentOrderreturnsGet_589957(protocol: Scheme; host: string; base: string;
                                       route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -9333,7 +9333,7 @@ proc url_ContentOrderreturnsGet_580928(protocol: Scheme; host: string; base: str
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_ContentOrderreturnsGet_580927(path: JsonNode; query: JsonNode;
+proc validate_ContentOrderreturnsGet_589956(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Retrieves an order return from your Merchant Center account.
   ## 
@@ -9346,16 +9346,16 @@ proc validate_ContentOrderreturnsGet_580927(path: JsonNode; query: JsonNode;
   ##             : The ID of the account that manages the order. This cannot be a multi-client account.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `returnId` field"
-  var valid_580929 = path.getOrDefault("returnId")
-  valid_580929 = validateParameter(valid_580929, JString, required = true,
+  var valid_589958 = path.getOrDefault("returnId")
+  valid_589958 = validateParameter(valid_589958, JString, required = true,
                                  default = nil)
-  if valid_580929 != nil:
-    section.add "returnId", valid_580929
-  var valid_580930 = path.getOrDefault("merchantId")
-  valid_580930 = validateParameter(valid_580930, JString, required = true,
+  if valid_589958 != nil:
+    section.add "returnId", valid_589958
+  var valid_589959 = path.getOrDefault("merchantId")
+  valid_589959 = validateParameter(valid_589959, JString, required = true,
                                  default = nil)
-  if valid_580930 != nil:
-    section.add "merchantId", valid_580930
+  if valid_589959 != nil:
+    section.add "merchantId", valid_589959
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -9373,41 +9373,41 @@ proc validate_ContentOrderreturnsGet_580927(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580931 = query.getOrDefault("fields")
-  valid_580931 = validateParameter(valid_580931, JString, required = false,
+  var valid_589960 = query.getOrDefault("fields")
+  valid_589960 = validateParameter(valid_589960, JString, required = false,
                                  default = nil)
-  if valid_580931 != nil:
-    section.add "fields", valid_580931
-  var valid_580932 = query.getOrDefault("quotaUser")
-  valid_580932 = validateParameter(valid_580932, JString, required = false,
+  if valid_589960 != nil:
+    section.add "fields", valid_589960
+  var valid_589961 = query.getOrDefault("quotaUser")
+  valid_589961 = validateParameter(valid_589961, JString, required = false,
                                  default = nil)
-  if valid_580932 != nil:
-    section.add "quotaUser", valid_580932
-  var valid_580933 = query.getOrDefault("alt")
-  valid_580933 = validateParameter(valid_580933, JString, required = false,
+  if valid_589961 != nil:
+    section.add "quotaUser", valid_589961
+  var valid_589962 = query.getOrDefault("alt")
+  valid_589962 = validateParameter(valid_589962, JString, required = false,
                                  default = newJString("json"))
-  if valid_580933 != nil:
-    section.add "alt", valid_580933
-  var valid_580934 = query.getOrDefault("oauth_token")
-  valid_580934 = validateParameter(valid_580934, JString, required = false,
+  if valid_589962 != nil:
+    section.add "alt", valid_589962
+  var valid_589963 = query.getOrDefault("oauth_token")
+  valid_589963 = validateParameter(valid_589963, JString, required = false,
                                  default = nil)
-  if valid_580934 != nil:
-    section.add "oauth_token", valid_580934
-  var valid_580935 = query.getOrDefault("userIp")
-  valid_580935 = validateParameter(valid_580935, JString, required = false,
+  if valid_589963 != nil:
+    section.add "oauth_token", valid_589963
+  var valid_589964 = query.getOrDefault("userIp")
+  valid_589964 = validateParameter(valid_589964, JString, required = false,
                                  default = nil)
-  if valid_580935 != nil:
-    section.add "userIp", valid_580935
-  var valid_580936 = query.getOrDefault("key")
-  valid_580936 = validateParameter(valid_580936, JString, required = false,
+  if valid_589964 != nil:
+    section.add "userIp", valid_589964
+  var valid_589965 = query.getOrDefault("key")
+  valid_589965 = validateParameter(valid_589965, JString, required = false,
                                  default = nil)
-  if valid_580936 != nil:
-    section.add "key", valid_580936
-  var valid_580937 = query.getOrDefault("prettyPrint")
-  valid_580937 = validateParameter(valid_580937, JBool, required = false,
+  if valid_589965 != nil:
+    section.add "key", valid_589965
+  var valid_589966 = query.getOrDefault("prettyPrint")
+  valid_589966 = validateParameter(valid_589966, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580937 != nil:
-    section.add "prettyPrint", valid_580937
+  if valid_589966 != nil:
+    section.add "prettyPrint", valid_589966
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -9416,20 +9416,20 @@ proc validate_ContentOrderreturnsGet_580927(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580938: Call_ContentOrderreturnsGet_580926; path: JsonNode;
+proc call*(call_589967: Call_ContentOrderreturnsGet_589955; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Retrieves an order return from your Merchant Center account.
   ## 
-  let valid = call_580938.validator(path, query, header, formData, body)
-  let scheme = call_580938.pickScheme
+  let valid = call_589967.validator(path, query, header, formData, body)
+  let scheme = call_589967.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580938.url(scheme.get, call_580938.host, call_580938.base,
-                         call_580938.route, valid.getOrDefault("path"),
+  let url = call_589967.url(scheme.get, call_589967.host, call_589967.base,
+                         call_589967.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580938, url, valid)
+  result = hook(call_589967, url, valid)
 
-proc call*(call_580939: Call_ContentOrderreturnsGet_580926; returnId: string;
+proc call*(call_589968: Call_ContentOrderreturnsGet_589955; returnId: string;
           merchantId: string; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; userIp: string = "";
           key: string = ""; prettyPrint: bool = true): Recallable =
@@ -9453,27 +9453,27 @@ proc call*(call_580939: Call_ContentOrderreturnsGet_580926; returnId: string;
   ##             : The ID of the account that manages the order. This cannot be a multi-client account.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_580940 = newJObject()
-  var query_580941 = newJObject()
-  add(query_580941, "fields", newJString(fields))
-  add(query_580941, "quotaUser", newJString(quotaUser))
-  add(path_580940, "returnId", newJString(returnId))
-  add(query_580941, "alt", newJString(alt))
-  add(query_580941, "oauth_token", newJString(oauthToken))
-  add(query_580941, "userIp", newJString(userIp))
-  add(query_580941, "key", newJString(key))
-  add(path_580940, "merchantId", newJString(merchantId))
-  add(query_580941, "prettyPrint", newJBool(prettyPrint))
-  result = call_580939.call(path_580940, query_580941, nil, nil, nil)
+  var path_589969 = newJObject()
+  var query_589970 = newJObject()
+  add(query_589970, "fields", newJString(fields))
+  add(query_589970, "quotaUser", newJString(quotaUser))
+  add(path_589969, "returnId", newJString(returnId))
+  add(query_589970, "alt", newJString(alt))
+  add(query_589970, "oauth_token", newJString(oauthToken))
+  add(query_589970, "userIp", newJString(userIp))
+  add(query_589970, "key", newJString(key))
+  add(path_589969, "merchantId", newJString(merchantId))
+  add(query_589970, "prettyPrint", newJBool(prettyPrint))
+  result = call_589968.call(path_589969, query_589970, nil, nil, nil)
 
-var contentOrderreturnsGet* = Call_ContentOrderreturnsGet_580926(
+var contentOrderreturnsGet* = Call_ContentOrderreturnsGet_589955(
     name: "contentOrderreturnsGet", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/{merchantId}/orderreturns/{returnId}",
-    validator: validate_ContentOrderreturnsGet_580927, base: "/content/v2",
-    url: url_ContentOrderreturnsGet_580928, schemes: {Scheme.Https})
+    validator: validate_ContentOrderreturnsGet_589956, base: "/content/v2",
+    url: url_ContentOrderreturnsGet_589957, schemes: {Scheme.Https})
 type
-  Call_ContentOrdersList_580942 = ref object of OpenApiRestCall_579421
-proc url_ContentOrdersList_580944(protocol: Scheme; host: string; base: string;
+  Call_ContentOrdersList_589971 = ref object of OpenApiRestCall_588450
+proc url_ContentOrdersList_589973(protocol: Scheme; host: string; base: string;
                                  route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -9489,7 +9489,7 @@ proc url_ContentOrdersList_580944(protocol: Scheme; host: string; base: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_ContentOrdersList_580943(path: JsonNode; query: JsonNode;
+proc validate_ContentOrdersList_589972(path: JsonNode; query: JsonNode;
                                       header: JsonNode; formData: JsonNode;
                                       body: JsonNode): JsonNode =
   ## Lists the orders in your Merchant Center account.
@@ -9502,11 +9502,11 @@ proc validate_ContentOrdersList_580943(path: JsonNode; query: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `merchantId` field"
-  var valid_580945 = path.getOrDefault("merchantId")
-  valid_580945 = validateParameter(valid_580945, JString, required = true,
+  var valid_589974 = path.getOrDefault("merchantId")
+  valid_589974 = validateParameter(valid_589974, JString, required = true,
                                  default = nil)
-  if valid_580945 != nil:
-    section.add "merchantId", valid_580945
+  if valid_589974 != nil:
+    section.add "merchantId", valid_589974
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -9543,74 +9543,74 @@ proc validate_ContentOrdersList_580943(path: JsonNode; query: JsonNode;
   ##   statuses: JArray
   ##           : Obtains orders that match any of the specified statuses. Please note that active is a shortcut for pendingShipment and partiallyShipped, and completed is a shortcut for shipped, partiallyDelivered, delivered, partiallyReturned, returned, and canceled.
   section = newJObject()
-  var valid_580946 = query.getOrDefault("fields")
-  valid_580946 = validateParameter(valid_580946, JString, required = false,
+  var valid_589975 = query.getOrDefault("fields")
+  valid_589975 = validateParameter(valid_589975, JString, required = false,
                                  default = nil)
-  if valid_580946 != nil:
-    section.add "fields", valid_580946
-  var valid_580947 = query.getOrDefault("pageToken")
-  valid_580947 = validateParameter(valid_580947, JString, required = false,
+  if valid_589975 != nil:
+    section.add "fields", valid_589975
+  var valid_589976 = query.getOrDefault("pageToken")
+  valid_589976 = validateParameter(valid_589976, JString, required = false,
                                  default = nil)
-  if valid_580947 != nil:
-    section.add "pageToken", valid_580947
-  var valid_580948 = query.getOrDefault("quotaUser")
-  valid_580948 = validateParameter(valid_580948, JString, required = false,
+  if valid_589976 != nil:
+    section.add "pageToken", valid_589976
+  var valid_589977 = query.getOrDefault("quotaUser")
+  valid_589977 = validateParameter(valid_589977, JString, required = false,
                                  default = nil)
-  if valid_580948 != nil:
-    section.add "quotaUser", valid_580948
-  var valid_580949 = query.getOrDefault("alt")
-  valid_580949 = validateParameter(valid_580949, JString, required = false,
+  if valid_589977 != nil:
+    section.add "quotaUser", valid_589977
+  var valid_589978 = query.getOrDefault("alt")
+  valid_589978 = validateParameter(valid_589978, JString, required = false,
                                  default = newJString("json"))
-  if valid_580949 != nil:
-    section.add "alt", valid_580949
-  var valid_580950 = query.getOrDefault("placedDateStart")
-  valid_580950 = validateParameter(valid_580950, JString, required = false,
+  if valid_589978 != nil:
+    section.add "alt", valid_589978
+  var valid_589979 = query.getOrDefault("placedDateStart")
+  valid_589979 = validateParameter(valid_589979, JString, required = false,
                                  default = nil)
-  if valid_580950 != nil:
-    section.add "placedDateStart", valid_580950
-  var valid_580951 = query.getOrDefault("oauth_token")
-  valid_580951 = validateParameter(valid_580951, JString, required = false,
+  if valid_589979 != nil:
+    section.add "placedDateStart", valid_589979
+  var valid_589980 = query.getOrDefault("oauth_token")
+  valid_589980 = validateParameter(valid_589980, JString, required = false,
                                  default = nil)
-  if valid_580951 != nil:
-    section.add "oauth_token", valid_580951
-  var valid_580952 = query.getOrDefault("userIp")
-  valid_580952 = validateParameter(valid_580952, JString, required = false,
+  if valid_589980 != nil:
+    section.add "oauth_token", valid_589980
+  var valid_589981 = query.getOrDefault("userIp")
+  valid_589981 = validateParameter(valid_589981, JString, required = false,
                                  default = nil)
-  if valid_580952 != nil:
-    section.add "userIp", valid_580952
-  var valid_580953 = query.getOrDefault("maxResults")
-  valid_580953 = validateParameter(valid_580953, JInt, required = false, default = nil)
-  if valid_580953 != nil:
-    section.add "maxResults", valid_580953
-  var valid_580954 = query.getOrDefault("orderBy")
-  valid_580954 = validateParameter(valid_580954, JString, required = false,
+  if valid_589981 != nil:
+    section.add "userIp", valid_589981
+  var valid_589982 = query.getOrDefault("maxResults")
+  valid_589982 = validateParameter(valid_589982, JInt, required = false, default = nil)
+  if valid_589982 != nil:
+    section.add "maxResults", valid_589982
+  var valid_589983 = query.getOrDefault("orderBy")
+  valid_589983 = validateParameter(valid_589983, JString, required = false,
                                  default = nil)
-  if valid_580954 != nil:
-    section.add "orderBy", valid_580954
-  var valid_580955 = query.getOrDefault("placedDateEnd")
-  valid_580955 = validateParameter(valid_580955, JString, required = false,
+  if valid_589983 != nil:
+    section.add "orderBy", valid_589983
+  var valid_589984 = query.getOrDefault("placedDateEnd")
+  valid_589984 = validateParameter(valid_589984, JString, required = false,
                                  default = nil)
-  if valid_580955 != nil:
-    section.add "placedDateEnd", valid_580955
-  var valid_580956 = query.getOrDefault("key")
-  valid_580956 = validateParameter(valid_580956, JString, required = false,
+  if valid_589984 != nil:
+    section.add "placedDateEnd", valid_589984
+  var valid_589985 = query.getOrDefault("key")
+  valid_589985 = validateParameter(valid_589985, JString, required = false,
                                  default = nil)
-  if valid_580956 != nil:
-    section.add "key", valid_580956
-  var valid_580957 = query.getOrDefault("acknowledged")
-  valid_580957 = validateParameter(valid_580957, JBool, required = false, default = nil)
-  if valid_580957 != nil:
-    section.add "acknowledged", valid_580957
-  var valid_580958 = query.getOrDefault("prettyPrint")
-  valid_580958 = validateParameter(valid_580958, JBool, required = false,
+  if valid_589985 != nil:
+    section.add "key", valid_589985
+  var valid_589986 = query.getOrDefault("acknowledged")
+  valid_589986 = validateParameter(valid_589986, JBool, required = false, default = nil)
+  if valid_589986 != nil:
+    section.add "acknowledged", valid_589986
+  var valid_589987 = query.getOrDefault("prettyPrint")
+  valid_589987 = validateParameter(valid_589987, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580958 != nil:
-    section.add "prettyPrint", valid_580958
-  var valid_580959 = query.getOrDefault("statuses")
-  valid_580959 = validateParameter(valid_580959, JArray, required = false,
+  if valid_589987 != nil:
+    section.add "prettyPrint", valid_589987
+  var valid_589988 = query.getOrDefault("statuses")
+  valid_589988 = validateParameter(valid_589988, JArray, required = false,
                                  default = nil)
-  if valid_580959 != nil:
-    section.add "statuses", valid_580959
+  if valid_589988 != nil:
+    section.add "statuses", valid_589988
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -9619,20 +9619,20 @@ proc validate_ContentOrdersList_580943(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580960: Call_ContentOrdersList_580942; path: JsonNode;
+proc call*(call_589989: Call_ContentOrdersList_589971; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Lists the orders in your Merchant Center account.
   ## 
-  let valid = call_580960.validator(path, query, header, formData, body)
-  let scheme = call_580960.pickScheme
+  let valid = call_589989.validator(path, query, header, formData, body)
+  let scheme = call_589989.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580960.url(scheme.get, call_580960.host, call_580960.base,
-                         call_580960.route, valid.getOrDefault("path"),
+  let url = call_589989.url(scheme.get, call_589989.host, call_589989.base,
+                         call_589989.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580960, url, valid)
+  result = hook(call_589989, url, valid)
 
-proc call*(call_580961: Call_ContentOrdersList_580942; merchantId: string;
+proc call*(call_589990: Call_ContentOrdersList_589971; merchantId: string;
           fields: string = ""; pageToken: string = ""; quotaUser: string = "";
           alt: string = "json"; placedDateStart: string = ""; oauthToken: string = "";
           userIp: string = ""; maxResults: int = 0; orderBy: string = "";
@@ -9675,33 +9675,33 @@ proc call*(call_580961: Call_ContentOrdersList_580942; merchantId: string;
   ##              : Returns response with indentations and line breaks.
   ##   statuses: JArray
   ##           : Obtains orders that match any of the specified statuses. Please note that active is a shortcut for pendingShipment and partiallyShipped, and completed is a shortcut for shipped, partiallyDelivered, delivered, partiallyReturned, returned, and canceled.
-  var path_580962 = newJObject()
-  var query_580963 = newJObject()
-  add(query_580963, "fields", newJString(fields))
-  add(query_580963, "pageToken", newJString(pageToken))
-  add(query_580963, "quotaUser", newJString(quotaUser))
-  add(query_580963, "alt", newJString(alt))
-  add(query_580963, "placedDateStart", newJString(placedDateStart))
-  add(query_580963, "oauth_token", newJString(oauthToken))
-  add(query_580963, "userIp", newJString(userIp))
-  add(query_580963, "maxResults", newJInt(maxResults))
-  add(query_580963, "orderBy", newJString(orderBy))
-  add(query_580963, "placedDateEnd", newJString(placedDateEnd))
-  add(query_580963, "key", newJString(key))
-  add(path_580962, "merchantId", newJString(merchantId))
-  add(query_580963, "acknowledged", newJBool(acknowledged))
-  add(query_580963, "prettyPrint", newJBool(prettyPrint))
+  var path_589991 = newJObject()
+  var query_589992 = newJObject()
+  add(query_589992, "fields", newJString(fields))
+  add(query_589992, "pageToken", newJString(pageToken))
+  add(query_589992, "quotaUser", newJString(quotaUser))
+  add(query_589992, "alt", newJString(alt))
+  add(query_589992, "placedDateStart", newJString(placedDateStart))
+  add(query_589992, "oauth_token", newJString(oauthToken))
+  add(query_589992, "userIp", newJString(userIp))
+  add(query_589992, "maxResults", newJInt(maxResults))
+  add(query_589992, "orderBy", newJString(orderBy))
+  add(query_589992, "placedDateEnd", newJString(placedDateEnd))
+  add(query_589992, "key", newJString(key))
+  add(path_589991, "merchantId", newJString(merchantId))
+  add(query_589992, "acknowledged", newJBool(acknowledged))
+  add(query_589992, "prettyPrint", newJBool(prettyPrint))
   if statuses != nil:
-    query_580963.add "statuses", statuses
-  result = call_580961.call(path_580962, query_580963, nil, nil, nil)
+    query_589992.add "statuses", statuses
+  result = call_589990.call(path_589991, query_589992, nil, nil, nil)
 
-var contentOrdersList* = Call_ContentOrdersList_580942(name: "contentOrdersList",
+var contentOrdersList* = Call_ContentOrdersList_589971(name: "contentOrdersList",
     meth: HttpMethod.HttpGet, host: "www.googleapis.com",
-    route: "/{merchantId}/orders", validator: validate_ContentOrdersList_580943,
-    base: "/content/v2", url: url_ContentOrdersList_580944, schemes: {Scheme.Https})
+    route: "/{merchantId}/orders", validator: validate_ContentOrdersList_589972,
+    base: "/content/v2", url: url_ContentOrdersList_589973, schemes: {Scheme.Https})
 type
-  Call_ContentOrdersGet_580964 = ref object of OpenApiRestCall_579421
-proc url_ContentOrdersGet_580966(protocol: Scheme; host: string; base: string;
+  Call_ContentOrdersGet_589993 = ref object of OpenApiRestCall_588450
+proc url_ContentOrdersGet_589995(protocol: Scheme; host: string; base: string;
                                 route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -9719,7 +9719,7 @@ proc url_ContentOrdersGet_580966(protocol: Scheme; host: string; base: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_ContentOrdersGet_580965(path: JsonNode; query: JsonNode;
+proc validate_ContentOrdersGet_589994(path: JsonNode; query: JsonNode;
                                      header: JsonNode; formData: JsonNode;
                                      body: JsonNode): JsonNode =
   ## Retrieves an order from your Merchant Center account.
@@ -9733,16 +9733,16 @@ proc validate_ContentOrdersGet_580965(path: JsonNode; query: JsonNode;
   ##             : The ID of the account that manages the order. This cannot be a multi-client account.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `orderId` field"
-  var valid_580967 = path.getOrDefault("orderId")
-  valid_580967 = validateParameter(valid_580967, JString, required = true,
+  var valid_589996 = path.getOrDefault("orderId")
+  valid_589996 = validateParameter(valid_589996, JString, required = true,
                                  default = nil)
-  if valid_580967 != nil:
-    section.add "orderId", valid_580967
-  var valid_580968 = path.getOrDefault("merchantId")
-  valid_580968 = validateParameter(valid_580968, JString, required = true,
+  if valid_589996 != nil:
+    section.add "orderId", valid_589996
+  var valid_589997 = path.getOrDefault("merchantId")
+  valid_589997 = validateParameter(valid_589997, JString, required = true,
                                  default = nil)
-  if valid_580968 != nil:
-    section.add "merchantId", valid_580968
+  if valid_589997 != nil:
+    section.add "merchantId", valid_589997
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -9760,41 +9760,41 @@ proc validate_ContentOrdersGet_580965(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580969 = query.getOrDefault("fields")
-  valid_580969 = validateParameter(valid_580969, JString, required = false,
+  var valid_589998 = query.getOrDefault("fields")
+  valid_589998 = validateParameter(valid_589998, JString, required = false,
                                  default = nil)
-  if valid_580969 != nil:
-    section.add "fields", valid_580969
-  var valid_580970 = query.getOrDefault("quotaUser")
-  valid_580970 = validateParameter(valid_580970, JString, required = false,
+  if valid_589998 != nil:
+    section.add "fields", valid_589998
+  var valid_589999 = query.getOrDefault("quotaUser")
+  valid_589999 = validateParameter(valid_589999, JString, required = false,
                                  default = nil)
-  if valid_580970 != nil:
-    section.add "quotaUser", valid_580970
-  var valid_580971 = query.getOrDefault("alt")
-  valid_580971 = validateParameter(valid_580971, JString, required = false,
+  if valid_589999 != nil:
+    section.add "quotaUser", valid_589999
+  var valid_590000 = query.getOrDefault("alt")
+  valid_590000 = validateParameter(valid_590000, JString, required = false,
                                  default = newJString("json"))
-  if valid_580971 != nil:
-    section.add "alt", valid_580971
-  var valid_580972 = query.getOrDefault("oauth_token")
-  valid_580972 = validateParameter(valid_580972, JString, required = false,
+  if valid_590000 != nil:
+    section.add "alt", valid_590000
+  var valid_590001 = query.getOrDefault("oauth_token")
+  valid_590001 = validateParameter(valid_590001, JString, required = false,
                                  default = nil)
-  if valid_580972 != nil:
-    section.add "oauth_token", valid_580972
-  var valid_580973 = query.getOrDefault("userIp")
-  valid_580973 = validateParameter(valid_580973, JString, required = false,
+  if valid_590001 != nil:
+    section.add "oauth_token", valid_590001
+  var valid_590002 = query.getOrDefault("userIp")
+  valid_590002 = validateParameter(valid_590002, JString, required = false,
                                  default = nil)
-  if valid_580973 != nil:
-    section.add "userIp", valid_580973
-  var valid_580974 = query.getOrDefault("key")
-  valid_580974 = validateParameter(valid_580974, JString, required = false,
+  if valid_590002 != nil:
+    section.add "userIp", valid_590002
+  var valid_590003 = query.getOrDefault("key")
+  valid_590003 = validateParameter(valid_590003, JString, required = false,
                                  default = nil)
-  if valid_580974 != nil:
-    section.add "key", valid_580974
-  var valid_580975 = query.getOrDefault("prettyPrint")
-  valid_580975 = validateParameter(valid_580975, JBool, required = false,
+  if valid_590003 != nil:
+    section.add "key", valid_590003
+  var valid_590004 = query.getOrDefault("prettyPrint")
+  valid_590004 = validateParameter(valid_590004, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580975 != nil:
-    section.add "prettyPrint", valid_580975
+  if valid_590004 != nil:
+    section.add "prettyPrint", valid_590004
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -9803,20 +9803,20 @@ proc validate_ContentOrdersGet_580965(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580976: Call_ContentOrdersGet_580964; path: JsonNode;
+proc call*(call_590005: Call_ContentOrdersGet_589993; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Retrieves an order from your Merchant Center account.
   ## 
-  let valid = call_580976.validator(path, query, header, formData, body)
-  let scheme = call_580976.pickScheme
+  let valid = call_590005.validator(path, query, header, formData, body)
+  let scheme = call_590005.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580976.url(scheme.get, call_580976.host, call_580976.base,
-                         call_580976.route, valid.getOrDefault("path"),
+  let url = call_590005.url(scheme.get, call_590005.host, call_590005.base,
+                         call_590005.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580976, url, valid)
+  result = hook(call_590005, url, valid)
 
-proc call*(call_580977: Call_ContentOrdersGet_580964; orderId: string;
+proc call*(call_590006: Call_ContentOrdersGet_589993; orderId: string;
           merchantId: string; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; userIp: string = "";
           key: string = ""; prettyPrint: bool = true): Recallable =
@@ -9840,26 +9840,26 @@ proc call*(call_580977: Call_ContentOrdersGet_580964; orderId: string;
   ##             : The ID of the account that manages the order. This cannot be a multi-client account.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_580978 = newJObject()
-  var query_580979 = newJObject()
-  add(query_580979, "fields", newJString(fields))
-  add(query_580979, "quotaUser", newJString(quotaUser))
-  add(query_580979, "alt", newJString(alt))
-  add(query_580979, "oauth_token", newJString(oauthToken))
-  add(query_580979, "userIp", newJString(userIp))
-  add(path_580978, "orderId", newJString(orderId))
-  add(query_580979, "key", newJString(key))
-  add(path_580978, "merchantId", newJString(merchantId))
-  add(query_580979, "prettyPrint", newJBool(prettyPrint))
-  result = call_580977.call(path_580978, query_580979, nil, nil, nil)
+  var path_590007 = newJObject()
+  var query_590008 = newJObject()
+  add(query_590008, "fields", newJString(fields))
+  add(query_590008, "quotaUser", newJString(quotaUser))
+  add(query_590008, "alt", newJString(alt))
+  add(query_590008, "oauth_token", newJString(oauthToken))
+  add(query_590008, "userIp", newJString(userIp))
+  add(path_590007, "orderId", newJString(orderId))
+  add(query_590008, "key", newJString(key))
+  add(path_590007, "merchantId", newJString(merchantId))
+  add(query_590008, "prettyPrint", newJBool(prettyPrint))
+  result = call_590006.call(path_590007, query_590008, nil, nil, nil)
 
-var contentOrdersGet* = Call_ContentOrdersGet_580964(name: "contentOrdersGet",
+var contentOrdersGet* = Call_ContentOrdersGet_589993(name: "contentOrdersGet",
     meth: HttpMethod.HttpGet, host: "www.googleapis.com",
-    route: "/{merchantId}/orders/{orderId}", validator: validate_ContentOrdersGet_580965,
-    base: "/content/v2", url: url_ContentOrdersGet_580966, schemes: {Scheme.Https})
+    route: "/{merchantId}/orders/{orderId}", validator: validate_ContentOrdersGet_589994,
+    base: "/content/v2", url: url_ContentOrdersGet_589995, schemes: {Scheme.Https})
 type
-  Call_ContentOrdersAcknowledge_580980 = ref object of OpenApiRestCall_579421
-proc url_ContentOrdersAcknowledge_580982(protocol: Scheme; host: string;
+  Call_ContentOrdersAcknowledge_590009 = ref object of OpenApiRestCall_588450
+proc url_ContentOrdersAcknowledge_590011(protocol: Scheme; host: string;
                                         base: string; route: string; path: JsonNode;
                                         query: JsonNode): Uri =
   result.scheme = $protocol
@@ -9879,7 +9879,7 @@ proc url_ContentOrdersAcknowledge_580982(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_ContentOrdersAcknowledge_580981(path: JsonNode; query: JsonNode;
+proc validate_ContentOrdersAcknowledge_590010(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Marks an order as acknowledged.
   ## 
@@ -9892,16 +9892,16 @@ proc validate_ContentOrdersAcknowledge_580981(path: JsonNode; query: JsonNode;
   ##             : The ID of the account that manages the order. This cannot be a multi-client account.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `orderId` field"
-  var valid_580983 = path.getOrDefault("orderId")
-  valid_580983 = validateParameter(valid_580983, JString, required = true,
+  var valid_590012 = path.getOrDefault("orderId")
+  valid_590012 = validateParameter(valid_590012, JString, required = true,
                                  default = nil)
-  if valid_580983 != nil:
-    section.add "orderId", valid_580983
-  var valid_580984 = path.getOrDefault("merchantId")
-  valid_580984 = validateParameter(valid_580984, JString, required = true,
+  if valid_590012 != nil:
+    section.add "orderId", valid_590012
+  var valid_590013 = path.getOrDefault("merchantId")
+  valid_590013 = validateParameter(valid_590013, JString, required = true,
                                  default = nil)
-  if valid_580984 != nil:
-    section.add "merchantId", valid_580984
+  if valid_590013 != nil:
+    section.add "merchantId", valid_590013
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -9919,41 +9919,41 @@ proc validate_ContentOrdersAcknowledge_580981(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580985 = query.getOrDefault("fields")
-  valid_580985 = validateParameter(valid_580985, JString, required = false,
+  var valid_590014 = query.getOrDefault("fields")
+  valid_590014 = validateParameter(valid_590014, JString, required = false,
                                  default = nil)
-  if valid_580985 != nil:
-    section.add "fields", valid_580985
-  var valid_580986 = query.getOrDefault("quotaUser")
-  valid_580986 = validateParameter(valid_580986, JString, required = false,
+  if valid_590014 != nil:
+    section.add "fields", valid_590014
+  var valid_590015 = query.getOrDefault("quotaUser")
+  valid_590015 = validateParameter(valid_590015, JString, required = false,
                                  default = nil)
-  if valid_580986 != nil:
-    section.add "quotaUser", valid_580986
-  var valid_580987 = query.getOrDefault("alt")
-  valid_580987 = validateParameter(valid_580987, JString, required = false,
+  if valid_590015 != nil:
+    section.add "quotaUser", valid_590015
+  var valid_590016 = query.getOrDefault("alt")
+  valid_590016 = validateParameter(valid_590016, JString, required = false,
                                  default = newJString("json"))
-  if valid_580987 != nil:
-    section.add "alt", valid_580987
-  var valid_580988 = query.getOrDefault("oauth_token")
-  valid_580988 = validateParameter(valid_580988, JString, required = false,
+  if valid_590016 != nil:
+    section.add "alt", valid_590016
+  var valid_590017 = query.getOrDefault("oauth_token")
+  valid_590017 = validateParameter(valid_590017, JString, required = false,
                                  default = nil)
-  if valid_580988 != nil:
-    section.add "oauth_token", valid_580988
-  var valid_580989 = query.getOrDefault("userIp")
-  valid_580989 = validateParameter(valid_580989, JString, required = false,
+  if valid_590017 != nil:
+    section.add "oauth_token", valid_590017
+  var valid_590018 = query.getOrDefault("userIp")
+  valid_590018 = validateParameter(valid_590018, JString, required = false,
                                  default = nil)
-  if valid_580989 != nil:
-    section.add "userIp", valid_580989
-  var valid_580990 = query.getOrDefault("key")
-  valid_580990 = validateParameter(valid_580990, JString, required = false,
+  if valid_590018 != nil:
+    section.add "userIp", valid_590018
+  var valid_590019 = query.getOrDefault("key")
+  valid_590019 = validateParameter(valid_590019, JString, required = false,
                                  default = nil)
-  if valid_580990 != nil:
-    section.add "key", valid_580990
-  var valid_580991 = query.getOrDefault("prettyPrint")
-  valid_580991 = validateParameter(valid_580991, JBool, required = false,
+  if valid_590019 != nil:
+    section.add "key", valid_590019
+  var valid_590020 = query.getOrDefault("prettyPrint")
+  valid_590020 = validateParameter(valid_590020, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580991 != nil:
-    section.add "prettyPrint", valid_580991
+  if valid_590020 != nil:
+    section.add "prettyPrint", valid_590020
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -9965,20 +9965,20 @@ proc validate_ContentOrdersAcknowledge_580981(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580993: Call_ContentOrdersAcknowledge_580980; path: JsonNode;
+proc call*(call_590022: Call_ContentOrdersAcknowledge_590009; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Marks an order as acknowledged.
   ## 
-  let valid = call_580993.validator(path, query, header, formData, body)
-  let scheme = call_580993.pickScheme
+  let valid = call_590022.validator(path, query, header, formData, body)
+  let scheme = call_590022.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580993.url(scheme.get, call_580993.host, call_580993.base,
-                         call_580993.route, valid.getOrDefault("path"),
+  let url = call_590022.url(scheme.get, call_590022.host, call_590022.base,
+                         call_590022.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580993, url, valid)
+  result = hook(call_590022, url, valid)
 
-proc call*(call_580994: Call_ContentOrdersAcknowledge_580980; orderId: string;
+proc call*(call_590023: Call_ContentOrdersAcknowledge_590009; orderId: string;
           merchantId: string; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; userIp: string = "";
           key: string = ""; body: JsonNode = nil; prettyPrint: bool = true): Recallable =
@@ -10003,31 +10003,31 @@ proc call*(call_580994: Call_ContentOrdersAcknowledge_580980; orderId: string;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_580995 = newJObject()
-  var query_580996 = newJObject()
-  var body_580997 = newJObject()
-  add(query_580996, "fields", newJString(fields))
-  add(query_580996, "quotaUser", newJString(quotaUser))
-  add(query_580996, "alt", newJString(alt))
-  add(query_580996, "oauth_token", newJString(oauthToken))
-  add(query_580996, "userIp", newJString(userIp))
-  add(path_580995, "orderId", newJString(orderId))
-  add(query_580996, "key", newJString(key))
-  add(path_580995, "merchantId", newJString(merchantId))
+  var path_590024 = newJObject()
+  var query_590025 = newJObject()
+  var body_590026 = newJObject()
+  add(query_590025, "fields", newJString(fields))
+  add(query_590025, "quotaUser", newJString(quotaUser))
+  add(query_590025, "alt", newJString(alt))
+  add(query_590025, "oauth_token", newJString(oauthToken))
+  add(query_590025, "userIp", newJString(userIp))
+  add(path_590024, "orderId", newJString(orderId))
+  add(query_590025, "key", newJString(key))
+  add(path_590024, "merchantId", newJString(merchantId))
   if body != nil:
-    body_580997 = body
-  add(query_580996, "prettyPrint", newJBool(prettyPrint))
-  result = call_580994.call(path_580995, query_580996, nil, nil, body_580997)
+    body_590026 = body
+  add(query_590025, "prettyPrint", newJBool(prettyPrint))
+  result = call_590023.call(path_590024, query_590025, nil, nil, body_590026)
 
-var contentOrdersAcknowledge* = Call_ContentOrdersAcknowledge_580980(
+var contentOrdersAcknowledge* = Call_ContentOrdersAcknowledge_590009(
     name: "contentOrdersAcknowledge", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com",
     route: "/{merchantId}/orders/{orderId}/acknowledge",
-    validator: validate_ContentOrdersAcknowledge_580981, base: "/content/v2",
-    url: url_ContentOrdersAcknowledge_580982, schemes: {Scheme.Https})
+    validator: validate_ContentOrdersAcknowledge_590010, base: "/content/v2",
+    url: url_ContentOrdersAcknowledge_590011, schemes: {Scheme.Https})
 type
-  Call_ContentOrdersCancel_580998 = ref object of OpenApiRestCall_579421
-proc url_ContentOrdersCancel_581000(protocol: Scheme; host: string; base: string;
+  Call_ContentOrdersCancel_590027 = ref object of OpenApiRestCall_588450
+proc url_ContentOrdersCancel_590029(protocol: Scheme; host: string; base: string;
                                    route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -10046,7 +10046,7 @@ proc url_ContentOrdersCancel_581000(protocol: Scheme; host: string; base: string
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_ContentOrdersCancel_580999(path: JsonNode; query: JsonNode;
+proc validate_ContentOrdersCancel_590028(path: JsonNode; query: JsonNode;
                                         header: JsonNode; formData: JsonNode;
                                         body: JsonNode): JsonNode =
   ## Cancels all line items in an order, making a full refund.
@@ -10060,16 +10060,16 @@ proc validate_ContentOrdersCancel_580999(path: JsonNode; query: JsonNode;
   ##             : The ID of the account that manages the order. This cannot be a multi-client account.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `orderId` field"
-  var valid_581001 = path.getOrDefault("orderId")
-  valid_581001 = validateParameter(valid_581001, JString, required = true,
+  var valid_590030 = path.getOrDefault("orderId")
+  valid_590030 = validateParameter(valid_590030, JString, required = true,
                                  default = nil)
-  if valid_581001 != nil:
-    section.add "orderId", valid_581001
-  var valid_581002 = path.getOrDefault("merchantId")
-  valid_581002 = validateParameter(valid_581002, JString, required = true,
+  if valid_590030 != nil:
+    section.add "orderId", valid_590030
+  var valid_590031 = path.getOrDefault("merchantId")
+  valid_590031 = validateParameter(valid_590031, JString, required = true,
                                  default = nil)
-  if valid_581002 != nil:
-    section.add "merchantId", valid_581002
+  if valid_590031 != nil:
+    section.add "merchantId", valid_590031
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -10087,41 +10087,41 @@ proc validate_ContentOrdersCancel_580999(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_581003 = query.getOrDefault("fields")
-  valid_581003 = validateParameter(valid_581003, JString, required = false,
+  var valid_590032 = query.getOrDefault("fields")
+  valid_590032 = validateParameter(valid_590032, JString, required = false,
                                  default = nil)
-  if valid_581003 != nil:
-    section.add "fields", valid_581003
-  var valid_581004 = query.getOrDefault("quotaUser")
-  valid_581004 = validateParameter(valid_581004, JString, required = false,
+  if valid_590032 != nil:
+    section.add "fields", valid_590032
+  var valid_590033 = query.getOrDefault("quotaUser")
+  valid_590033 = validateParameter(valid_590033, JString, required = false,
                                  default = nil)
-  if valid_581004 != nil:
-    section.add "quotaUser", valid_581004
-  var valid_581005 = query.getOrDefault("alt")
-  valid_581005 = validateParameter(valid_581005, JString, required = false,
+  if valid_590033 != nil:
+    section.add "quotaUser", valid_590033
+  var valid_590034 = query.getOrDefault("alt")
+  valid_590034 = validateParameter(valid_590034, JString, required = false,
                                  default = newJString("json"))
-  if valid_581005 != nil:
-    section.add "alt", valid_581005
-  var valid_581006 = query.getOrDefault("oauth_token")
-  valid_581006 = validateParameter(valid_581006, JString, required = false,
+  if valid_590034 != nil:
+    section.add "alt", valid_590034
+  var valid_590035 = query.getOrDefault("oauth_token")
+  valid_590035 = validateParameter(valid_590035, JString, required = false,
                                  default = nil)
-  if valid_581006 != nil:
-    section.add "oauth_token", valid_581006
-  var valid_581007 = query.getOrDefault("userIp")
-  valid_581007 = validateParameter(valid_581007, JString, required = false,
+  if valid_590035 != nil:
+    section.add "oauth_token", valid_590035
+  var valid_590036 = query.getOrDefault("userIp")
+  valid_590036 = validateParameter(valid_590036, JString, required = false,
                                  default = nil)
-  if valid_581007 != nil:
-    section.add "userIp", valid_581007
-  var valid_581008 = query.getOrDefault("key")
-  valid_581008 = validateParameter(valid_581008, JString, required = false,
+  if valid_590036 != nil:
+    section.add "userIp", valid_590036
+  var valid_590037 = query.getOrDefault("key")
+  valid_590037 = validateParameter(valid_590037, JString, required = false,
                                  default = nil)
-  if valid_581008 != nil:
-    section.add "key", valid_581008
-  var valid_581009 = query.getOrDefault("prettyPrint")
-  valid_581009 = validateParameter(valid_581009, JBool, required = false,
+  if valid_590037 != nil:
+    section.add "key", valid_590037
+  var valid_590038 = query.getOrDefault("prettyPrint")
+  valid_590038 = validateParameter(valid_590038, JBool, required = false,
                                  default = newJBool(true))
-  if valid_581009 != nil:
-    section.add "prettyPrint", valid_581009
+  if valid_590038 != nil:
+    section.add "prettyPrint", valid_590038
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -10133,20 +10133,20 @@ proc validate_ContentOrdersCancel_580999(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_581011: Call_ContentOrdersCancel_580998; path: JsonNode;
+proc call*(call_590040: Call_ContentOrdersCancel_590027; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Cancels all line items in an order, making a full refund.
   ## 
-  let valid = call_581011.validator(path, query, header, formData, body)
-  let scheme = call_581011.pickScheme
+  let valid = call_590040.validator(path, query, header, formData, body)
+  let scheme = call_590040.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_581011.url(scheme.get, call_581011.host, call_581011.base,
-                         call_581011.route, valid.getOrDefault("path"),
+  let url = call_590040.url(scheme.get, call_590040.host, call_590040.base,
+                         call_590040.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_581011, url, valid)
+  result = hook(call_590040, url, valid)
 
-proc call*(call_581012: Call_ContentOrdersCancel_580998; orderId: string;
+proc call*(call_590041: Call_ContentOrdersCancel_590027; orderId: string;
           merchantId: string; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; userIp: string = "";
           key: string = ""; body: JsonNode = nil; prettyPrint: bool = true): Recallable =
@@ -10171,30 +10171,30 @@ proc call*(call_581012: Call_ContentOrdersCancel_580998; orderId: string;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_581013 = newJObject()
-  var query_581014 = newJObject()
-  var body_581015 = newJObject()
-  add(query_581014, "fields", newJString(fields))
-  add(query_581014, "quotaUser", newJString(quotaUser))
-  add(query_581014, "alt", newJString(alt))
-  add(query_581014, "oauth_token", newJString(oauthToken))
-  add(query_581014, "userIp", newJString(userIp))
-  add(path_581013, "orderId", newJString(orderId))
-  add(query_581014, "key", newJString(key))
-  add(path_581013, "merchantId", newJString(merchantId))
+  var path_590042 = newJObject()
+  var query_590043 = newJObject()
+  var body_590044 = newJObject()
+  add(query_590043, "fields", newJString(fields))
+  add(query_590043, "quotaUser", newJString(quotaUser))
+  add(query_590043, "alt", newJString(alt))
+  add(query_590043, "oauth_token", newJString(oauthToken))
+  add(query_590043, "userIp", newJString(userIp))
+  add(path_590042, "orderId", newJString(orderId))
+  add(query_590043, "key", newJString(key))
+  add(path_590042, "merchantId", newJString(merchantId))
   if body != nil:
-    body_581015 = body
-  add(query_581014, "prettyPrint", newJBool(prettyPrint))
-  result = call_581012.call(path_581013, query_581014, nil, nil, body_581015)
+    body_590044 = body
+  add(query_590043, "prettyPrint", newJBool(prettyPrint))
+  result = call_590041.call(path_590042, query_590043, nil, nil, body_590044)
 
-var contentOrdersCancel* = Call_ContentOrdersCancel_580998(
+var contentOrdersCancel* = Call_ContentOrdersCancel_590027(
     name: "contentOrdersCancel", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com", route: "/{merchantId}/orders/{orderId}/cancel",
-    validator: validate_ContentOrdersCancel_580999, base: "/content/v2",
-    url: url_ContentOrdersCancel_581000, schemes: {Scheme.Https})
+    validator: validate_ContentOrdersCancel_590028, base: "/content/v2",
+    url: url_ContentOrdersCancel_590029, schemes: {Scheme.Https})
 type
-  Call_ContentOrdersCancellineitem_581016 = ref object of OpenApiRestCall_579421
-proc url_ContentOrdersCancellineitem_581018(protocol: Scheme; host: string;
+  Call_ContentOrdersCancellineitem_590045 = ref object of OpenApiRestCall_588450
+proc url_ContentOrdersCancellineitem_590047(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -10213,7 +10213,7 @@ proc url_ContentOrdersCancellineitem_581018(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_ContentOrdersCancellineitem_581017(path: JsonNode; query: JsonNode;
+proc validate_ContentOrdersCancellineitem_590046(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Cancels a line item, making a full refund.
   ## 
@@ -10226,16 +10226,16 @@ proc validate_ContentOrdersCancellineitem_581017(path: JsonNode; query: JsonNode
   ##             : The ID of the account that manages the order. This cannot be a multi-client account.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `orderId` field"
-  var valid_581019 = path.getOrDefault("orderId")
-  valid_581019 = validateParameter(valid_581019, JString, required = true,
+  var valid_590048 = path.getOrDefault("orderId")
+  valid_590048 = validateParameter(valid_590048, JString, required = true,
                                  default = nil)
-  if valid_581019 != nil:
-    section.add "orderId", valid_581019
-  var valid_581020 = path.getOrDefault("merchantId")
-  valid_581020 = validateParameter(valid_581020, JString, required = true,
+  if valid_590048 != nil:
+    section.add "orderId", valid_590048
+  var valid_590049 = path.getOrDefault("merchantId")
+  valid_590049 = validateParameter(valid_590049, JString, required = true,
                                  default = nil)
-  if valid_581020 != nil:
-    section.add "merchantId", valid_581020
+  if valid_590049 != nil:
+    section.add "merchantId", valid_590049
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -10253,41 +10253,41 @@ proc validate_ContentOrdersCancellineitem_581017(path: JsonNode; query: JsonNode
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_581021 = query.getOrDefault("fields")
-  valid_581021 = validateParameter(valid_581021, JString, required = false,
+  var valid_590050 = query.getOrDefault("fields")
+  valid_590050 = validateParameter(valid_590050, JString, required = false,
                                  default = nil)
-  if valid_581021 != nil:
-    section.add "fields", valid_581021
-  var valid_581022 = query.getOrDefault("quotaUser")
-  valid_581022 = validateParameter(valid_581022, JString, required = false,
+  if valid_590050 != nil:
+    section.add "fields", valid_590050
+  var valid_590051 = query.getOrDefault("quotaUser")
+  valid_590051 = validateParameter(valid_590051, JString, required = false,
                                  default = nil)
-  if valid_581022 != nil:
-    section.add "quotaUser", valid_581022
-  var valid_581023 = query.getOrDefault("alt")
-  valid_581023 = validateParameter(valid_581023, JString, required = false,
+  if valid_590051 != nil:
+    section.add "quotaUser", valid_590051
+  var valid_590052 = query.getOrDefault("alt")
+  valid_590052 = validateParameter(valid_590052, JString, required = false,
                                  default = newJString("json"))
-  if valid_581023 != nil:
-    section.add "alt", valid_581023
-  var valid_581024 = query.getOrDefault("oauth_token")
-  valid_581024 = validateParameter(valid_581024, JString, required = false,
+  if valid_590052 != nil:
+    section.add "alt", valid_590052
+  var valid_590053 = query.getOrDefault("oauth_token")
+  valid_590053 = validateParameter(valid_590053, JString, required = false,
                                  default = nil)
-  if valid_581024 != nil:
-    section.add "oauth_token", valid_581024
-  var valid_581025 = query.getOrDefault("userIp")
-  valid_581025 = validateParameter(valid_581025, JString, required = false,
+  if valid_590053 != nil:
+    section.add "oauth_token", valid_590053
+  var valid_590054 = query.getOrDefault("userIp")
+  valid_590054 = validateParameter(valid_590054, JString, required = false,
                                  default = nil)
-  if valid_581025 != nil:
-    section.add "userIp", valid_581025
-  var valid_581026 = query.getOrDefault("key")
-  valid_581026 = validateParameter(valid_581026, JString, required = false,
+  if valid_590054 != nil:
+    section.add "userIp", valid_590054
+  var valid_590055 = query.getOrDefault("key")
+  valid_590055 = validateParameter(valid_590055, JString, required = false,
                                  default = nil)
-  if valid_581026 != nil:
-    section.add "key", valid_581026
-  var valid_581027 = query.getOrDefault("prettyPrint")
-  valid_581027 = validateParameter(valid_581027, JBool, required = false,
+  if valid_590055 != nil:
+    section.add "key", valid_590055
+  var valid_590056 = query.getOrDefault("prettyPrint")
+  valid_590056 = validateParameter(valid_590056, JBool, required = false,
                                  default = newJBool(true))
-  if valid_581027 != nil:
-    section.add "prettyPrint", valid_581027
+  if valid_590056 != nil:
+    section.add "prettyPrint", valid_590056
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -10299,20 +10299,20 @@ proc validate_ContentOrdersCancellineitem_581017(path: JsonNode; query: JsonNode
   if body != nil:
     result.add "body", body
 
-proc call*(call_581029: Call_ContentOrdersCancellineitem_581016; path: JsonNode;
+proc call*(call_590058: Call_ContentOrdersCancellineitem_590045; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Cancels a line item, making a full refund.
   ## 
-  let valid = call_581029.validator(path, query, header, formData, body)
-  let scheme = call_581029.pickScheme
+  let valid = call_590058.validator(path, query, header, formData, body)
+  let scheme = call_590058.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_581029.url(scheme.get, call_581029.host, call_581029.base,
-                         call_581029.route, valid.getOrDefault("path"),
+  let url = call_590058.url(scheme.get, call_590058.host, call_590058.base,
+                         call_590058.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_581029, url, valid)
+  result = hook(call_590058, url, valid)
 
-proc call*(call_581030: Call_ContentOrdersCancellineitem_581016; orderId: string;
+proc call*(call_590059: Call_ContentOrdersCancellineitem_590045; orderId: string;
           merchantId: string; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; userIp: string = "";
           key: string = ""; body: JsonNode = nil; prettyPrint: bool = true): Recallable =
@@ -10337,31 +10337,31 @@ proc call*(call_581030: Call_ContentOrdersCancellineitem_581016; orderId: string
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_581031 = newJObject()
-  var query_581032 = newJObject()
-  var body_581033 = newJObject()
-  add(query_581032, "fields", newJString(fields))
-  add(query_581032, "quotaUser", newJString(quotaUser))
-  add(query_581032, "alt", newJString(alt))
-  add(query_581032, "oauth_token", newJString(oauthToken))
-  add(query_581032, "userIp", newJString(userIp))
-  add(path_581031, "orderId", newJString(orderId))
-  add(query_581032, "key", newJString(key))
-  add(path_581031, "merchantId", newJString(merchantId))
+  var path_590060 = newJObject()
+  var query_590061 = newJObject()
+  var body_590062 = newJObject()
+  add(query_590061, "fields", newJString(fields))
+  add(query_590061, "quotaUser", newJString(quotaUser))
+  add(query_590061, "alt", newJString(alt))
+  add(query_590061, "oauth_token", newJString(oauthToken))
+  add(query_590061, "userIp", newJString(userIp))
+  add(path_590060, "orderId", newJString(orderId))
+  add(query_590061, "key", newJString(key))
+  add(path_590060, "merchantId", newJString(merchantId))
   if body != nil:
-    body_581033 = body
-  add(query_581032, "prettyPrint", newJBool(prettyPrint))
-  result = call_581030.call(path_581031, query_581032, nil, nil, body_581033)
+    body_590062 = body
+  add(query_590061, "prettyPrint", newJBool(prettyPrint))
+  result = call_590059.call(path_590060, query_590061, nil, nil, body_590062)
 
-var contentOrdersCancellineitem* = Call_ContentOrdersCancellineitem_581016(
+var contentOrdersCancellineitem* = Call_ContentOrdersCancellineitem_590045(
     name: "contentOrdersCancellineitem", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com",
     route: "/{merchantId}/orders/{orderId}/cancelLineItem",
-    validator: validate_ContentOrdersCancellineitem_581017, base: "/content/v2",
-    url: url_ContentOrdersCancellineitem_581018, schemes: {Scheme.Https})
+    validator: validate_ContentOrdersCancellineitem_590046, base: "/content/v2",
+    url: url_ContentOrdersCancellineitem_590047, schemes: {Scheme.Https})
 type
-  Call_ContentOrdersInstorerefundlineitem_581034 = ref object of OpenApiRestCall_579421
-proc url_ContentOrdersInstorerefundlineitem_581036(protocol: Scheme; host: string;
+  Call_ContentOrdersInstorerefundlineitem_590063 = ref object of OpenApiRestCall_588450
+proc url_ContentOrdersInstorerefundlineitem_590065(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -10380,7 +10380,7 @@ proc url_ContentOrdersInstorerefundlineitem_581036(protocol: Scheme; host: strin
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_ContentOrdersInstorerefundlineitem_581035(path: JsonNode;
+proc validate_ContentOrdersInstorerefundlineitem_590064(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Deprecated. Notifies that item return and refund was handled directly by merchant outside of Google payments processing (e.g. cash refund done in store).
   ## Note: We recommend calling the returnrefundlineitem method to refund in-store returns. We will issue the refund directly to the customer. This helps to prevent possible differences arising between merchant and Google transaction records. We also recommend having the point of sale system communicate with Google to ensure that customers do not receive a double refund by first refunding via Google then via an in-store return.
@@ -10394,16 +10394,16 @@ proc validate_ContentOrdersInstorerefundlineitem_581035(path: JsonNode;
   ##             : The ID of the account that manages the order. This cannot be a multi-client account.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `orderId` field"
-  var valid_581037 = path.getOrDefault("orderId")
-  valid_581037 = validateParameter(valid_581037, JString, required = true,
+  var valid_590066 = path.getOrDefault("orderId")
+  valid_590066 = validateParameter(valid_590066, JString, required = true,
                                  default = nil)
-  if valid_581037 != nil:
-    section.add "orderId", valid_581037
-  var valid_581038 = path.getOrDefault("merchantId")
-  valid_581038 = validateParameter(valid_581038, JString, required = true,
+  if valid_590066 != nil:
+    section.add "orderId", valid_590066
+  var valid_590067 = path.getOrDefault("merchantId")
+  valid_590067 = validateParameter(valid_590067, JString, required = true,
                                  default = nil)
-  if valid_581038 != nil:
-    section.add "merchantId", valid_581038
+  if valid_590067 != nil:
+    section.add "merchantId", valid_590067
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -10421,41 +10421,41 @@ proc validate_ContentOrdersInstorerefundlineitem_581035(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_581039 = query.getOrDefault("fields")
-  valid_581039 = validateParameter(valid_581039, JString, required = false,
+  var valid_590068 = query.getOrDefault("fields")
+  valid_590068 = validateParameter(valid_590068, JString, required = false,
                                  default = nil)
-  if valid_581039 != nil:
-    section.add "fields", valid_581039
-  var valid_581040 = query.getOrDefault("quotaUser")
-  valid_581040 = validateParameter(valid_581040, JString, required = false,
+  if valid_590068 != nil:
+    section.add "fields", valid_590068
+  var valid_590069 = query.getOrDefault("quotaUser")
+  valid_590069 = validateParameter(valid_590069, JString, required = false,
                                  default = nil)
-  if valid_581040 != nil:
-    section.add "quotaUser", valid_581040
-  var valid_581041 = query.getOrDefault("alt")
-  valid_581041 = validateParameter(valid_581041, JString, required = false,
+  if valid_590069 != nil:
+    section.add "quotaUser", valid_590069
+  var valid_590070 = query.getOrDefault("alt")
+  valid_590070 = validateParameter(valid_590070, JString, required = false,
                                  default = newJString("json"))
-  if valid_581041 != nil:
-    section.add "alt", valid_581041
-  var valid_581042 = query.getOrDefault("oauth_token")
-  valid_581042 = validateParameter(valid_581042, JString, required = false,
+  if valid_590070 != nil:
+    section.add "alt", valid_590070
+  var valid_590071 = query.getOrDefault("oauth_token")
+  valid_590071 = validateParameter(valid_590071, JString, required = false,
                                  default = nil)
-  if valid_581042 != nil:
-    section.add "oauth_token", valid_581042
-  var valid_581043 = query.getOrDefault("userIp")
-  valid_581043 = validateParameter(valid_581043, JString, required = false,
+  if valid_590071 != nil:
+    section.add "oauth_token", valid_590071
+  var valid_590072 = query.getOrDefault("userIp")
+  valid_590072 = validateParameter(valid_590072, JString, required = false,
                                  default = nil)
-  if valid_581043 != nil:
-    section.add "userIp", valid_581043
-  var valid_581044 = query.getOrDefault("key")
-  valid_581044 = validateParameter(valid_581044, JString, required = false,
+  if valid_590072 != nil:
+    section.add "userIp", valid_590072
+  var valid_590073 = query.getOrDefault("key")
+  valid_590073 = validateParameter(valid_590073, JString, required = false,
                                  default = nil)
-  if valid_581044 != nil:
-    section.add "key", valid_581044
-  var valid_581045 = query.getOrDefault("prettyPrint")
-  valid_581045 = validateParameter(valid_581045, JBool, required = false,
+  if valid_590073 != nil:
+    section.add "key", valid_590073
+  var valid_590074 = query.getOrDefault("prettyPrint")
+  valid_590074 = validateParameter(valid_590074, JBool, required = false,
                                  default = newJBool(true))
-  if valid_581045 != nil:
-    section.add "prettyPrint", valid_581045
+  if valid_590074 != nil:
+    section.add "prettyPrint", valid_590074
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -10467,22 +10467,22 @@ proc validate_ContentOrdersInstorerefundlineitem_581035(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_581047: Call_ContentOrdersInstorerefundlineitem_581034;
+proc call*(call_590076: Call_ContentOrdersInstorerefundlineitem_590063;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Deprecated. Notifies that item return and refund was handled directly by merchant outside of Google payments processing (e.g. cash refund done in store).
   ## Note: We recommend calling the returnrefundlineitem method to refund in-store returns. We will issue the refund directly to the customer. This helps to prevent possible differences arising between merchant and Google transaction records. We also recommend having the point of sale system communicate with Google to ensure that customers do not receive a double refund by first refunding via Google then via an in-store return.
   ## 
-  let valid = call_581047.validator(path, query, header, formData, body)
-  let scheme = call_581047.pickScheme
+  let valid = call_590076.validator(path, query, header, formData, body)
+  let scheme = call_590076.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_581047.url(scheme.get, call_581047.host, call_581047.base,
-                         call_581047.route, valid.getOrDefault("path"),
+  let url = call_590076.url(scheme.get, call_590076.host, call_590076.base,
+                         call_590076.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_581047, url, valid)
+  result = hook(call_590076, url, valid)
 
-proc call*(call_581048: Call_ContentOrdersInstorerefundlineitem_581034;
+proc call*(call_590077: Call_ContentOrdersInstorerefundlineitem_590063;
           orderId: string; merchantId: string; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; key: string = ""; body: JsonNode = nil;
@@ -10509,32 +10509,32 @@ proc call*(call_581048: Call_ContentOrdersInstorerefundlineitem_581034;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_581049 = newJObject()
-  var query_581050 = newJObject()
-  var body_581051 = newJObject()
-  add(query_581050, "fields", newJString(fields))
-  add(query_581050, "quotaUser", newJString(quotaUser))
-  add(query_581050, "alt", newJString(alt))
-  add(query_581050, "oauth_token", newJString(oauthToken))
-  add(query_581050, "userIp", newJString(userIp))
-  add(path_581049, "orderId", newJString(orderId))
-  add(query_581050, "key", newJString(key))
-  add(path_581049, "merchantId", newJString(merchantId))
+  var path_590078 = newJObject()
+  var query_590079 = newJObject()
+  var body_590080 = newJObject()
+  add(query_590079, "fields", newJString(fields))
+  add(query_590079, "quotaUser", newJString(quotaUser))
+  add(query_590079, "alt", newJString(alt))
+  add(query_590079, "oauth_token", newJString(oauthToken))
+  add(query_590079, "userIp", newJString(userIp))
+  add(path_590078, "orderId", newJString(orderId))
+  add(query_590079, "key", newJString(key))
+  add(path_590078, "merchantId", newJString(merchantId))
   if body != nil:
-    body_581051 = body
-  add(query_581050, "prettyPrint", newJBool(prettyPrint))
-  result = call_581048.call(path_581049, query_581050, nil, nil, body_581051)
+    body_590080 = body
+  add(query_590079, "prettyPrint", newJBool(prettyPrint))
+  result = call_590077.call(path_590078, query_590079, nil, nil, body_590080)
 
-var contentOrdersInstorerefundlineitem* = Call_ContentOrdersInstorerefundlineitem_581034(
+var contentOrdersInstorerefundlineitem* = Call_ContentOrdersInstorerefundlineitem_590063(
     name: "contentOrdersInstorerefundlineitem", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com",
     route: "/{merchantId}/orders/{orderId}/inStoreRefundLineItem",
-    validator: validate_ContentOrdersInstorerefundlineitem_581035,
-    base: "/content/v2", url: url_ContentOrdersInstorerefundlineitem_581036,
+    validator: validate_ContentOrdersInstorerefundlineitem_590064,
+    base: "/content/v2", url: url_ContentOrdersInstorerefundlineitem_590065,
     schemes: {Scheme.Https})
 type
-  Call_ContentOrdersRefund_581052 = ref object of OpenApiRestCall_579421
-proc url_ContentOrdersRefund_581054(protocol: Scheme; host: string; base: string;
+  Call_ContentOrdersRefund_590081 = ref object of OpenApiRestCall_588450
+proc url_ContentOrdersRefund_590083(protocol: Scheme; host: string; base: string;
                                    route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -10553,7 +10553,7 @@ proc url_ContentOrdersRefund_581054(protocol: Scheme; host: string; base: string
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_ContentOrdersRefund_581053(path: JsonNode; query: JsonNode;
+proc validate_ContentOrdersRefund_590082(path: JsonNode; query: JsonNode;
                                         header: JsonNode; formData: JsonNode;
                                         body: JsonNode): JsonNode =
   ## Deprecated, please use returnRefundLineItem instead.
@@ -10567,16 +10567,16 @@ proc validate_ContentOrdersRefund_581053(path: JsonNode; query: JsonNode;
   ##             : The ID of the account that manages the order. This cannot be a multi-client account.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `orderId` field"
-  var valid_581055 = path.getOrDefault("orderId")
-  valid_581055 = validateParameter(valid_581055, JString, required = true,
+  var valid_590084 = path.getOrDefault("orderId")
+  valid_590084 = validateParameter(valid_590084, JString, required = true,
                                  default = nil)
-  if valid_581055 != nil:
-    section.add "orderId", valid_581055
-  var valid_581056 = path.getOrDefault("merchantId")
-  valid_581056 = validateParameter(valid_581056, JString, required = true,
+  if valid_590084 != nil:
+    section.add "orderId", valid_590084
+  var valid_590085 = path.getOrDefault("merchantId")
+  valid_590085 = validateParameter(valid_590085, JString, required = true,
                                  default = nil)
-  if valid_581056 != nil:
-    section.add "merchantId", valid_581056
+  if valid_590085 != nil:
+    section.add "merchantId", valid_590085
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -10594,41 +10594,41 @@ proc validate_ContentOrdersRefund_581053(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_581057 = query.getOrDefault("fields")
-  valid_581057 = validateParameter(valid_581057, JString, required = false,
+  var valid_590086 = query.getOrDefault("fields")
+  valid_590086 = validateParameter(valid_590086, JString, required = false,
                                  default = nil)
-  if valid_581057 != nil:
-    section.add "fields", valid_581057
-  var valid_581058 = query.getOrDefault("quotaUser")
-  valid_581058 = validateParameter(valid_581058, JString, required = false,
+  if valid_590086 != nil:
+    section.add "fields", valid_590086
+  var valid_590087 = query.getOrDefault("quotaUser")
+  valid_590087 = validateParameter(valid_590087, JString, required = false,
                                  default = nil)
-  if valid_581058 != nil:
-    section.add "quotaUser", valid_581058
-  var valid_581059 = query.getOrDefault("alt")
-  valid_581059 = validateParameter(valid_581059, JString, required = false,
+  if valid_590087 != nil:
+    section.add "quotaUser", valid_590087
+  var valid_590088 = query.getOrDefault("alt")
+  valid_590088 = validateParameter(valid_590088, JString, required = false,
                                  default = newJString("json"))
-  if valid_581059 != nil:
-    section.add "alt", valid_581059
-  var valid_581060 = query.getOrDefault("oauth_token")
-  valid_581060 = validateParameter(valid_581060, JString, required = false,
+  if valid_590088 != nil:
+    section.add "alt", valid_590088
+  var valid_590089 = query.getOrDefault("oauth_token")
+  valid_590089 = validateParameter(valid_590089, JString, required = false,
                                  default = nil)
-  if valid_581060 != nil:
-    section.add "oauth_token", valid_581060
-  var valid_581061 = query.getOrDefault("userIp")
-  valid_581061 = validateParameter(valid_581061, JString, required = false,
+  if valid_590089 != nil:
+    section.add "oauth_token", valid_590089
+  var valid_590090 = query.getOrDefault("userIp")
+  valid_590090 = validateParameter(valid_590090, JString, required = false,
                                  default = nil)
-  if valid_581061 != nil:
-    section.add "userIp", valid_581061
-  var valid_581062 = query.getOrDefault("key")
-  valid_581062 = validateParameter(valid_581062, JString, required = false,
+  if valid_590090 != nil:
+    section.add "userIp", valid_590090
+  var valid_590091 = query.getOrDefault("key")
+  valid_590091 = validateParameter(valid_590091, JString, required = false,
                                  default = nil)
-  if valid_581062 != nil:
-    section.add "key", valid_581062
-  var valid_581063 = query.getOrDefault("prettyPrint")
-  valid_581063 = validateParameter(valid_581063, JBool, required = false,
+  if valid_590091 != nil:
+    section.add "key", valid_590091
+  var valid_590092 = query.getOrDefault("prettyPrint")
+  valid_590092 = validateParameter(valid_590092, JBool, required = false,
                                  default = newJBool(true))
-  if valid_581063 != nil:
-    section.add "prettyPrint", valid_581063
+  if valid_590092 != nil:
+    section.add "prettyPrint", valid_590092
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -10640,20 +10640,20 @@ proc validate_ContentOrdersRefund_581053(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_581065: Call_ContentOrdersRefund_581052; path: JsonNode;
+proc call*(call_590094: Call_ContentOrdersRefund_590081; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Deprecated, please use returnRefundLineItem instead.
   ## 
-  let valid = call_581065.validator(path, query, header, formData, body)
-  let scheme = call_581065.pickScheme
+  let valid = call_590094.validator(path, query, header, formData, body)
+  let scheme = call_590094.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_581065.url(scheme.get, call_581065.host, call_581065.base,
-                         call_581065.route, valid.getOrDefault("path"),
+  let url = call_590094.url(scheme.get, call_590094.host, call_590094.base,
+                         call_590094.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_581065, url, valid)
+  result = hook(call_590094, url, valid)
 
-proc call*(call_581066: Call_ContentOrdersRefund_581052; orderId: string;
+proc call*(call_590095: Call_ContentOrdersRefund_590081; orderId: string;
           merchantId: string; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; userIp: string = "";
           key: string = ""; body: JsonNode = nil; prettyPrint: bool = true): Recallable =
@@ -10678,30 +10678,30 @@ proc call*(call_581066: Call_ContentOrdersRefund_581052; orderId: string;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_581067 = newJObject()
-  var query_581068 = newJObject()
-  var body_581069 = newJObject()
-  add(query_581068, "fields", newJString(fields))
-  add(query_581068, "quotaUser", newJString(quotaUser))
-  add(query_581068, "alt", newJString(alt))
-  add(query_581068, "oauth_token", newJString(oauthToken))
-  add(query_581068, "userIp", newJString(userIp))
-  add(path_581067, "orderId", newJString(orderId))
-  add(query_581068, "key", newJString(key))
-  add(path_581067, "merchantId", newJString(merchantId))
+  var path_590096 = newJObject()
+  var query_590097 = newJObject()
+  var body_590098 = newJObject()
+  add(query_590097, "fields", newJString(fields))
+  add(query_590097, "quotaUser", newJString(quotaUser))
+  add(query_590097, "alt", newJString(alt))
+  add(query_590097, "oauth_token", newJString(oauthToken))
+  add(query_590097, "userIp", newJString(userIp))
+  add(path_590096, "orderId", newJString(orderId))
+  add(query_590097, "key", newJString(key))
+  add(path_590096, "merchantId", newJString(merchantId))
   if body != nil:
-    body_581069 = body
-  add(query_581068, "prettyPrint", newJBool(prettyPrint))
-  result = call_581066.call(path_581067, query_581068, nil, nil, body_581069)
+    body_590098 = body
+  add(query_590097, "prettyPrint", newJBool(prettyPrint))
+  result = call_590095.call(path_590096, query_590097, nil, nil, body_590098)
 
-var contentOrdersRefund* = Call_ContentOrdersRefund_581052(
+var contentOrdersRefund* = Call_ContentOrdersRefund_590081(
     name: "contentOrdersRefund", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com", route: "/{merchantId}/orders/{orderId}/refund",
-    validator: validate_ContentOrdersRefund_581053, base: "/content/v2",
-    url: url_ContentOrdersRefund_581054, schemes: {Scheme.Https})
+    validator: validate_ContentOrdersRefund_590082, base: "/content/v2",
+    url: url_ContentOrdersRefund_590083, schemes: {Scheme.Https})
 type
-  Call_ContentOrdersRejectreturnlineitem_581070 = ref object of OpenApiRestCall_579421
-proc url_ContentOrdersRejectreturnlineitem_581072(protocol: Scheme; host: string;
+  Call_ContentOrdersRejectreturnlineitem_590099 = ref object of OpenApiRestCall_588450
+proc url_ContentOrdersRejectreturnlineitem_590101(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -10720,7 +10720,7 @@ proc url_ContentOrdersRejectreturnlineitem_581072(protocol: Scheme; host: string
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_ContentOrdersRejectreturnlineitem_581071(path: JsonNode;
+proc validate_ContentOrdersRejectreturnlineitem_590100(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Rejects return on an line item.
   ## 
@@ -10733,16 +10733,16 @@ proc validate_ContentOrdersRejectreturnlineitem_581071(path: JsonNode;
   ##             : The ID of the account that manages the order. This cannot be a multi-client account.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `orderId` field"
-  var valid_581073 = path.getOrDefault("orderId")
-  valid_581073 = validateParameter(valid_581073, JString, required = true,
+  var valid_590102 = path.getOrDefault("orderId")
+  valid_590102 = validateParameter(valid_590102, JString, required = true,
                                  default = nil)
-  if valid_581073 != nil:
-    section.add "orderId", valid_581073
-  var valid_581074 = path.getOrDefault("merchantId")
-  valid_581074 = validateParameter(valid_581074, JString, required = true,
+  if valid_590102 != nil:
+    section.add "orderId", valid_590102
+  var valid_590103 = path.getOrDefault("merchantId")
+  valid_590103 = validateParameter(valid_590103, JString, required = true,
                                  default = nil)
-  if valid_581074 != nil:
-    section.add "merchantId", valid_581074
+  if valid_590103 != nil:
+    section.add "merchantId", valid_590103
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -10760,41 +10760,41 @@ proc validate_ContentOrdersRejectreturnlineitem_581071(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_581075 = query.getOrDefault("fields")
-  valid_581075 = validateParameter(valid_581075, JString, required = false,
+  var valid_590104 = query.getOrDefault("fields")
+  valid_590104 = validateParameter(valid_590104, JString, required = false,
                                  default = nil)
-  if valid_581075 != nil:
-    section.add "fields", valid_581075
-  var valid_581076 = query.getOrDefault("quotaUser")
-  valid_581076 = validateParameter(valid_581076, JString, required = false,
+  if valid_590104 != nil:
+    section.add "fields", valid_590104
+  var valid_590105 = query.getOrDefault("quotaUser")
+  valid_590105 = validateParameter(valid_590105, JString, required = false,
                                  default = nil)
-  if valid_581076 != nil:
-    section.add "quotaUser", valid_581076
-  var valid_581077 = query.getOrDefault("alt")
-  valid_581077 = validateParameter(valid_581077, JString, required = false,
+  if valid_590105 != nil:
+    section.add "quotaUser", valid_590105
+  var valid_590106 = query.getOrDefault("alt")
+  valid_590106 = validateParameter(valid_590106, JString, required = false,
                                  default = newJString("json"))
-  if valid_581077 != nil:
-    section.add "alt", valid_581077
-  var valid_581078 = query.getOrDefault("oauth_token")
-  valid_581078 = validateParameter(valid_581078, JString, required = false,
+  if valid_590106 != nil:
+    section.add "alt", valid_590106
+  var valid_590107 = query.getOrDefault("oauth_token")
+  valid_590107 = validateParameter(valid_590107, JString, required = false,
                                  default = nil)
-  if valid_581078 != nil:
-    section.add "oauth_token", valid_581078
-  var valid_581079 = query.getOrDefault("userIp")
-  valid_581079 = validateParameter(valid_581079, JString, required = false,
+  if valid_590107 != nil:
+    section.add "oauth_token", valid_590107
+  var valid_590108 = query.getOrDefault("userIp")
+  valid_590108 = validateParameter(valid_590108, JString, required = false,
                                  default = nil)
-  if valid_581079 != nil:
-    section.add "userIp", valid_581079
-  var valid_581080 = query.getOrDefault("key")
-  valid_581080 = validateParameter(valid_581080, JString, required = false,
+  if valid_590108 != nil:
+    section.add "userIp", valid_590108
+  var valid_590109 = query.getOrDefault("key")
+  valid_590109 = validateParameter(valid_590109, JString, required = false,
                                  default = nil)
-  if valid_581080 != nil:
-    section.add "key", valid_581080
-  var valid_581081 = query.getOrDefault("prettyPrint")
-  valid_581081 = validateParameter(valid_581081, JBool, required = false,
+  if valid_590109 != nil:
+    section.add "key", valid_590109
+  var valid_590110 = query.getOrDefault("prettyPrint")
+  valid_590110 = validateParameter(valid_590110, JBool, required = false,
                                  default = newJBool(true))
-  if valid_581081 != nil:
-    section.add "prettyPrint", valid_581081
+  if valid_590110 != nil:
+    section.add "prettyPrint", valid_590110
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -10806,21 +10806,21 @@ proc validate_ContentOrdersRejectreturnlineitem_581071(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_581083: Call_ContentOrdersRejectreturnlineitem_581070;
+proc call*(call_590112: Call_ContentOrdersRejectreturnlineitem_590099;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Rejects return on an line item.
   ## 
-  let valid = call_581083.validator(path, query, header, formData, body)
-  let scheme = call_581083.pickScheme
+  let valid = call_590112.validator(path, query, header, formData, body)
+  let scheme = call_590112.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_581083.url(scheme.get, call_581083.host, call_581083.base,
-                         call_581083.route, valid.getOrDefault("path"),
+  let url = call_590112.url(scheme.get, call_590112.host, call_590112.base,
+                         call_590112.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_581083, url, valid)
+  result = hook(call_590112, url, valid)
 
-proc call*(call_581084: Call_ContentOrdersRejectreturnlineitem_581070;
+proc call*(call_590113: Call_ContentOrdersRejectreturnlineitem_590099;
           orderId: string; merchantId: string; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; key: string = ""; body: JsonNode = nil;
@@ -10846,32 +10846,32 @@ proc call*(call_581084: Call_ContentOrdersRejectreturnlineitem_581070;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_581085 = newJObject()
-  var query_581086 = newJObject()
-  var body_581087 = newJObject()
-  add(query_581086, "fields", newJString(fields))
-  add(query_581086, "quotaUser", newJString(quotaUser))
-  add(query_581086, "alt", newJString(alt))
-  add(query_581086, "oauth_token", newJString(oauthToken))
-  add(query_581086, "userIp", newJString(userIp))
-  add(path_581085, "orderId", newJString(orderId))
-  add(query_581086, "key", newJString(key))
-  add(path_581085, "merchantId", newJString(merchantId))
+  var path_590114 = newJObject()
+  var query_590115 = newJObject()
+  var body_590116 = newJObject()
+  add(query_590115, "fields", newJString(fields))
+  add(query_590115, "quotaUser", newJString(quotaUser))
+  add(query_590115, "alt", newJString(alt))
+  add(query_590115, "oauth_token", newJString(oauthToken))
+  add(query_590115, "userIp", newJString(userIp))
+  add(path_590114, "orderId", newJString(orderId))
+  add(query_590115, "key", newJString(key))
+  add(path_590114, "merchantId", newJString(merchantId))
   if body != nil:
-    body_581087 = body
-  add(query_581086, "prettyPrint", newJBool(prettyPrint))
-  result = call_581084.call(path_581085, query_581086, nil, nil, body_581087)
+    body_590116 = body
+  add(query_590115, "prettyPrint", newJBool(prettyPrint))
+  result = call_590113.call(path_590114, query_590115, nil, nil, body_590116)
 
-var contentOrdersRejectreturnlineitem* = Call_ContentOrdersRejectreturnlineitem_581070(
+var contentOrdersRejectreturnlineitem* = Call_ContentOrdersRejectreturnlineitem_590099(
     name: "contentOrdersRejectreturnlineitem", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com",
     route: "/{merchantId}/orders/{orderId}/rejectReturnLineItem",
-    validator: validate_ContentOrdersRejectreturnlineitem_581071,
-    base: "/content/v2", url: url_ContentOrdersRejectreturnlineitem_581072,
+    validator: validate_ContentOrdersRejectreturnlineitem_590100,
+    base: "/content/v2", url: url_ContentOrdersRejectreturnlineitem_590101,
     schemes: {Scheme.Https})
 type
-  Call_ContentOrdersReturnlineitem_581088 = ref object of OpenApiRestCall_579421
-proc url_ContentOrdersReturnlineitem_581090(protocol: Scheme; host: string;
+  Call_ContentOrdersReturnlineitem_590117 = ref object of OpenApiRestCall_588450
+proc url_ContentOrdersReturnlineitem_590119(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -10890,7 +10890,7 @@ proc url_ContentOrdersReturnlineitem_581090(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_ContentOrdersReturnlineitem_581089(path: JsonNode; query: JsonNode;
+proc validate_ContentOrdersReturnlineitem_590118(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Returns a line item.
   ## 
@@ -10903,16 +10903,16 @@ proc validate_ContentOrdersReturnlineitem_581089(path: JsonNode; query: JsonNode
   ##             : The ID of the account that manages the order. This cannot be a multi-client account.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `orderId` field"
-  var valid_581091 = path.getOrDefault("orderId")
-  valid_581091 = validateParameter(valid_581091, JString, required = true,
+  var valid_590120 = path.getOrDefault("orderId")
+  valid_590120 = validateParameter(valid_590120, JString, required = true,
                                  default = nil)
-  if valid_581091 != nil:
-    section.add "orderId", valid_581091
-  var valid_581092 = path.getOrDefault("merchantId")
-  valid_581092 = validateParameter(valid_581092, JString, required = true,
+  if valid_590120 != nil:
+    section.add "orderId", valid_590120
+  var valid_590121 = path.getOrDefault("merchantId")
+  valid_590121 = validateParameter(valid_590121, JString, required = true,
                                  default = nil)
-  if valid_581092 != nil:
-    section.add "merchantId", valid_581092
+  if valid_590121 != nil:
+    section.add "merchantId", valid_590121
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -10930,41 +10930,41 @@ proc validate_ContentOrdersReturnlineitem_581089(path: JsonNode; query: JsonNode
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_581093 = query.getOrDefault("fields")
-  valid_581093 = validateParameter(valid_581093, JString, required = false,
+  var valid_590122 = query.getOrDefault("fields")
+  valid_590122 = validateParameter(valid_590122, JString, required = false,
                                  default = nil)
-  if valid_581093 != nil:
-    section.add "fields", valid_581093
-  var valid_581094 = query.getOrDefault("quotaUser")
-  valid_581094 = validateParameter(valid_581094, JString, required = false,
+  if valid_590122 != nil:
+    section.add "fields", valid_590122
+  var valid_590123 = query.getOrDefault("quotaUser")
+  valid_590123 = validateParameter(valid_590123, JString, required = false,
                                  default = nil)
-  if valid_581094 != nil:
-    section.add "quotaUser", valid_581094
-  var valid_581095 = query.getOrDefault("alt")
-  valid_581095 = validateParameter(valid_581095, JString, required = false,
+  if valid_590123 != nil:
+    section.add "quotaUser", valid_590123
+  var valid_590124 = query.getOrDefault("alt")
+  valid_590124 = validateParameter(valid_590124, JString, required = false,
                                  default = newJString("json"))
-  if valid_581095 != nil:
-    section.add "alt", valid_581095
-  var valid_581096 = query.getOrDefault("oauth_token")
-  valid_581096 = validateParameter(valid_581096, JString, required = false,
+  if valid_590124 != nil:
+    section.add "alt", valid_590124
+  var valid_590125 = query.getOrDefault("oauth_token")
+  valid_590125 = validateParameter(valid_590125, JString, required = false,
                                  default = nil)
-  if valid_581096 != nil:
-    section.add "oauth_token", valid_581096
-  var valid_581097 = query.getOrDefault("userIp")
-  valid_581097 = validateParameter(valid_581097, JString, required = false,
+  if valid_590125 != nil:
+    section.add "oauth_token", valid_590125
+  var valid_590126 = query.getOrDefault("userIp")
+  valid_590126 = validateParameter(valid_590126, JString, required = false,
                                  default = nil)
-  if valid_581097 != nil:
-    section.add "userIp", valid_581097
-  var valid_581098 = query.getOrDefault("key")
-  valid_581098 = validateParameter(valid_581098, JString, required = false,
+  if valid_590126 != nil:
+    section.add "userIp", valid_590126
+  var valid_590127 = query.getOrDefault("key")
+  valid_590127 = validateParameter(valid_590127, JString, required = false,
                                  default = nil)
-  if valid_581098 != nil:
-    section.add "key", valid_581098
-  var valid_581099 = query.getOrDefault("prettyPrint")
-  valid_581099 = validateParameter(valid_581099, JBool, required = false,
+  if valid_590127 != nil:
+    section.add "key", valid_590127
+  var valid_590128 = query.getOrDefault("prettyPrint")
+  valid_590128 = validateParameter(valid_590128, JBool, required = false,
                                  default = newJBool(true))
-  if valid_581099 != nil:
-    section.add "prettyPrint", valid_581099
+  if valid_590128 != nil:
+    section.add "prettyPrint", valid_590128
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -10976,20 +10976,20 @@ proc validate_ContentOrdersReturnlineitem_581089(path: JsonNode; query: JsonNode
   if body != nil:
     result.add "body", body
 
-proc call*(call_581101: Call_ContentOrdersReturnlineitem_581088; path: JsonNode;
+proc call*(call_590130: Call_ContentOrdersReturnlineitem_590117; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Returns a line item.
   ## 
-  let valid = call_581101.validator(path, query, header, formData, body)
-  let scheme = call_581101.pickScheme
+  let valid = call_590130.validator(path, query, header, formData, body)
+  let scheme = call_590130.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_581101.url(scheme.get, call_581101.host, call_581101.base,
-                         call_581101.route, valid.getOrDefault("path"),
+  let url = call_590130.url(scheme.get, call_590130.host, call_590130.base,
+                         call_590130.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_581101, url, valid)
+  result = hook(call_590130, url, valid)
 
-proc call*(call_581102: Call_ContentOrdersReturnlineitem_581088; orderId: string;
+proc call*(call_590131: Call_ContentOrdersReturnlineitem_590117; orderId: string;
           merchantId: string; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; userIp: string = "";
           key: string = ""; body: JsonNode = nil; prettyPrint: bool = true): Recallable =
@@ -11014,31 +11014,31 @@ proc call*(call_581102: Call_ContentOrdersReturnlineitem_581088; orderId: string
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_581103 = newJObject()
-  var query_581104 = newJObject()
-  var body_581105 = newJObject()
-  add(query_581104, "fields", newJString(fields))
-  add(query_581104, "quotaUser", newJString(quotaUser))
-  add(query_581104, "alt", newJString(alt))
-  add(query_581104, "oauth_token", newJString(oauthToken))
-  add(query_581104, "userIp", newJString(userIp))
-  add(path_581103, "orderId", newJString(orderId))
-  add(query_581104, "key", newJString(key))
-  add(path_581103, "merchantId", newJString(merchantId))
+  var path_590132 = newJObject()
+  var query_590133 = newJObject()
+  var body_590134 = newJObject()
+  add(query_590133, "fields", newJString(fields))
+  add(query_590133, "quotaUser", newJString(quotaUser))
+  add(query_590133, "alt", newJString(alt))
+  add(query_590133, "oauth_token", newJString(oauthToken))
+  add(query_590133, "userIp", newJString(userIp))
+  add(path_590132, "orderId", newJString(orderId))
+  add(query_590133, "key", newJString(key))
+  add(path_590132, "merchantId", newJString(merchantId))
   if body != nil:
-    body_581105 = body
-  add(query_581104, "prettyPrint", newJBool(prettyPrint))
-  result = call_581102.call(path_581103, query_581104, nil, nil, body_581105)
+    body_590134 = body
+  add(query_590133, "prettyPrint", newJBool(prettyPrint))
+  result = call_590131.call(path_590132, query_590133, nil, nil, body_590134)
 
-var contentOrdersReturnlineitem* = Call_ContentOrdersReturnlineitem_581088(
+var contentOrdersReturnlineitem* = Call_ContentOrdersReturnlineitem_590117(
     name: "contentOrdersReturnlineitem", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com",
     route: "/{merchantId}/orders/{orderId}/returnLineItem",
-    validator: validate_ContentOrdersReturnlineitem_581089, base: "/content/v2",
-    url: url_ContentOrdersReturnlineitem_581090, schemes: {Scheme.Https})
+    validator: validate_ContentOrdersReturnlineitem_590118, base: "/content/v2",
+    url: url_ContentOrdersReturnlineitem_590119, schemes: {Scheme.Https})
 type
-  Call_ContentOrdersReturnrefundlineitem_581106 = ref object of OpenApiRestCall_579421
-proc url_ContentOrdersReturnrefundlineitem_581108(protocol: Scheme; host: string;
+  Call_ContentOrdersReturnrefundlineitem_590135 = ref object of OpenApiRestCall_588450
+proc url_ContentOrdersReturnrefundlineitem_590137(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -11057,7 +11057,7 @@ proc url_ContentOrdersReturnrefundlineitem_581108(protocol: Scheme; host: string
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_ContentOrdersReturnrefundlineitem_581107(path: JsonNode;
+proc validate_ContentOrdersReturnrefundlineitem_590136(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Returns and refunds a line item. Note that this method can only be called on fully shipped orders.
   ## 
@@ -11070,16 +11070,16 @@ proc validate_ContentOrdersReturnrefundlineitem_581107(path: JsonNode;
   ##             : The ID of the account that manages the order. This cannot be a multi-client account.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `orderId` field"
-  var valid_581109 = path.getOrDefault("orderId")
-  valid_581109 = validateParameter(valid_581109, JString, required = true,
+  var valid_590138 = path.getOrDefault("orderId")
+  valid_590138 = validateParameter(valid_590138, JString, required = true,
                                  default = nil)
-  if valid_581109 != nil:
-    section.add "orderId", valid_581109
-  var valid_581110 = path.getOrDefault("merchantId")
-  valid_581110 = validateParameter(valid_581110, JString, required = true,
+  if valid_590138 != nil:
+    section.add "orderId", valid_590138
+  var valid_590139 = path.getOrDefault("merchantId")
+  valid_590139 = validateParameter(valid_590139, JString, required = true,
                                  default = nil)
-  if valid_581110 != nil:
-    section.add "merchantId", valid_581110
+  if valid_590139 != nil:
+    section.add "merchantId", valid_590139
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -11097,41 +11097,41 @@ proc validate_ContentOrdersReturnrefundlineitem_581107(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_581111 = query.getOrDefault("fields")
-  valid_581111 = validateParameter(valid_581111, JString, required = false,
+  var valid_590140 = query.getOrDefault("fields")
+  valid_590140 = validateParameter(valid_590140, JString, required = false,
                                  default = nil)
-  if valid_581111 != nil:
-    section.add "fields", valid_581111
-  var valid_581112 = query.getOrDefault("quotaUser")
-  valid_581112 = validateParameter(valid_581112, JString, required = false,
+  if valid_590140 != nil:
+    section.add "fields", valid_590140
+  var valid_590141 = query.getOrDefault("quotaUser")
+  valid_590141 = validateParameter(valid_590141, JString, required = false,
                                  default = nil)
-  if valid_581112 != nil:
-    section.add "quotaUser", valid_581112
-  var valid_581113 = query.getOrDefault("alt")
-  valid_581113 = validateParameter(valid_581113, JString, required = false,
+  if valid_590141 != nil:
+    section.add "quotaUser", valid_590141
+  var valid_590142 = query.getOrDefault("alt")
+  valid_590142 = validateParameter(valid_590142, JString, required = false,
                                  default = newJString("json"))
-  if valid_581113 != nil:
-    section.add "alt", valid_581113
-  var valid_581114 = query.getOrDefault("oauth_token")
-  valid_581114 = validateParameter(valid_581114, JString, required = false,
+  if valid_590142 != nil:
+    section.add "alt", valid_590142
+  var valid_590143 = query.getOrDefault("oauth_token")
+  valid_590143 = validateParameter(valid_590143, JString, required = false,
                                  default = nil)
-  if valid_581114 != nil:
-    section.add "oauth_token", valid_581114
-  var valid_581115 = query.getOrDefault("userIp")
-  valid_581115 = validateParameter(valid_581115, JString, required = false,
+  if valid_590143 != nil:
+    section.add "oauth_token", valid_590143
+  var valid_590144 = query.getOrDefault("userIp")
+  valid_590144 = validateParameter(valid_590144, JString, required = false,
                                  default = nil)
-  if valid_581115 != nil:
-    section.add "userIp", valid_581115
-  var valid_581116 = query.getOrDefault("key")
-  valid_581116 = validateParameter(valid_581116, JString, required = false,
+  if valid_590144 != nil:
+    section.add "userIp", valid_590144
+  var valid_590145 = query.getOrDefault("key")
+  valid_590145 = validateParameter(valid_590145, JString, required = false,
                                  default = nil)
-  if valid_581116 != nil:
-    section.add "key", valid_581116
-  var valid_581117 = query.getOrDefault("prettyPrint")
-  valid_581117 = validateParameter(valid_581117, JBool, required = false,
+  if valid_590145 != nil:
+    section.add "key", valid_590145
+  var valid_590146 = query.getOrDefault("prettyPrint")
+  valid_590146 = validateParameter(valid_590146, JBool, required = false,
                                  default = newJBool(true))
-  if valid_581117 != nil:
-    section.add "prettyPrint", valid_581117
+  if valid_590146 != nil:
+    section.add "prettyPrint", valid_590146
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -11143,21 +11143,21 @@ proc validate_ContentOrdersReturnrefundlineitem_581107(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_581119: Call_ContentOrdersReturnrefundlineitem_581106;
+proc call*(call_590148: Call_ContentOrdersReturnrefundlineitem_590135;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Returns and refunds a line item. Note that this method can only be called on fully shipped orders.
   ## 
-  let valid = call_581119.validator(path, query, header, formData, body)
-  let scheme = call_581119.pickScheme
+  let valid = call_590148.validator(path, query, header, formData, body)
+  let scheme = call_590148.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_581119.url(scheme.get, call_581119.host, call_581119.base,
-                         call_581119.route, valid.getOrDefault("path"),
+  let url = call_590148.url(scheme.get, call_590148.host, call_590148.base,
+                         call_590148.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_581119, url, valid)
+  result = hook(call_590148, url, valid)
 
-proc call*(call_581120: Call_ContentOrdersReturnrefundlineitem_581106;
+proc call*(call_590149: Call_ContentOrdersReturnrefundlineitem_590135;
           orderId: string; merchantId: string; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; key: string = ""; body: JsonNode = nil;
@@ -11183,32 +11183,32 @@ proc call*(call_581120: Call_ContentOrdersReturnrefundlineitem_581106;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_581121 = newJObject()
-  var query_581122 = newJObject()
-  var body_581123 = newJObject()
-  add(query_581122, "fields", newJString(fields))
-  add(query_581122, "quotaUser", newJString(quotaUser))
-  add(query_581122, "alt", newJString(alt))
-  add(query_581122, "oauth_token", newJString(oauthToken))
-  add(query_581122, "userIp", newJString(userIp))
-  add(path_581121, "orderId", newJString(orderId))
-  add(query_581122, "key", newJString(key))
-  add(path_581121, "merchantId", newJString(merchantId))
+  var path_590150 = newJObject()
+  var query_590151 = newJObject()
+  var body_590152 = newJObject()
+  add(query_590151, "fields", newJString(fields))
+  add(query_590151, "quotaUser", newJString(quotaUser))
+  add(query_590151, "alt", newJString(alt))
+  add(query_590151, "oauth_token", newJString(oauthToken))
+  add(query_590151, "userIp", newJString(userIp))
+  add(path_590150, "orderId", newJString(orderId))
+  add(query_590151, "key", newJString(key))
+  add(path_590150, "merchantId", newJString(merchantId))
   if body != nil:
-    body_581123 = body
-  add(query_581122, "prettyPrint", newJBool(prettyPrint))
-  result = call_581120.call(path_581121, query_581122, nil, nil, body_581123)
+    body_590152 = body
+  add(query_590151, "prettyPrint", newJBool(prettyPrint))
+  result = call_590149.call(path_590150, query_590151, nil, nil, body_590152)
 
-var contentOrdersReturnrefundlineitem* = Call_ContentOrdersReturnrefundlineitem_581106(
+var contentOrdersReturnrefundlineitem* = Call_ContentOrdersReturnrefundlineitem_590135(
     name: "contentOrdersReturnrefundlineitem", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com",
     route: "/{merchantId}/orders/{orderId}/returnRefundLineItem",
-    validator: validate_ContentOrdersReturnrefundlineitem_581107,
-    base: "/content/v2", url: url_ContentOrdersReturnrefundlineitem_581108,
+    validator: validate_ContentOrdersReturnrefundlineitem_590136,
+    base: "/content/v2", url: url_ContentOrdersReturnrefundlineitem_590137,
     schemes: {Scheme.Https})
 type
-  Call_ContentOrdersSetlineitemmetadata_581124 = ref object of OpenApiRestCall_579421
-proc url_ContentOrdersSetlineitemmetadata_581126(protocol: Scheme; host: string;
+  Call_ContentOrdersSetlineitemmetadata_590153 = ref object of OpenApiRestCall_588450
+proc url_ContentOrdersSetlineitemmetadata_590155(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -11227,7 +11227,7 @@ proc url_ContentOrdersSetlineitemmetadata_581126(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_ContentOrdersSetlineitemmetadata_581125(path: JsonNode;
+proc validate_ContentOrdersSetlineitemmetadata_590154(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Sets (or overrides if it already exists) merchant provided annotations in the form of key-value pairs. A common use case would be to supply us with additional structured information about a line item that cannot be provided via other methods. Submitted key-value pairs can be retrieved as part of the orders resource.
   ## 
@@ -11240,16 +11240,16 @@ proc validate_ContentOrdersSetlineitemmetadata_581125(path: JsonNode;
   ##             : The ID of the account that manages the order. This cannot be a multi-client account.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `orderId` field"
-  var valid_581127 = path.getOrDefault("orderId")
-  valid_581127 = validateParameter(valid_581127, JString, required = true,
+  var valid_590156 = path.getOrDefault("orderId")
+  valid_590156 = validateParameter(valid_590156, JString, required = true,
                                  default = nil)
-  if valid_581127 != nil:
-    section.add "orderId", valid_581127
-  var valid_581128 = path.getOrDefault("merchantId")
-  valid_581128 = validateParameter(valid_581128, JString, required = true,
+  if valid_590156 != nil:
+    section.add "orderId", valid_590156
+  var valid_590157 = path.getOrDefault("merchantId")
+  valid_590157 = validateParameter(valid_590157, JString, required = true,
                                  default = nil)
-  if valid_581128 != nil:
-    section.add "merchantId", valid_581128
+  if valid_590157 != nil:
+    section.add "merchantId", valid_590157
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -11267,41 +11267,41 @@ proc validate_ContentOrdersSetlineitemmetadata_581125(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_581129 = query.getOrDefault("fields")
-  valid_581129 = validateParameter(valid_581129, JString, required = false,
+  var valid_590158 = query.getOrDefault("fields")
+  valid_590158 = validateParameter(valid_590158, JString, required = false,
                                  default = nil)
-  if valid_581129 != nil:
-    section.add "fields", valid_581129
-  var valid_581130 = query.getOrDefault("quotaUser")
-  valid_581130 = validateParameter(valid_581130, JString, required = false,
+  if valid_590158 != nil:
+    section.add "fields", valid_590158
+  var valid_590159 = query.getOrDefault("quotaUser")
+  valid_590159 = validateParameter(valid_590159, JString, required = false,
                                  default = nil)
-  if valid_581130 != nil:
-    section.add "quotaUser", valid_581130
-  var valid_581131 = query.getOrDefault("alt")
-  valid_581131 = validateParameter(valid_581131, JString, required = false,
+  if valid_590159 != nil:
+    section.add "quotaUser", valid_590159
+  var valid_590160 = query.getOrDefault("alt")
+  valid_590160 = validateParameter(valid_590160, JString, required = false,
                                  default = newJString("json"))
-  if valid_581131 != nil:
-    section.add "alt", valid_581131
-  var valid_581132 = query.getOrDefault("oauth_token")
-  valid_581132 = validateParameter(valid_581132, JString, required = false,
+  if valid_590160 != nil:
+    section.add "alt", valid_590160
+  var valid_590161 = query.getOrDefault("oauth_token")
+  valid_590161 = validateParameter(valid_590161, JString, required = false,
                                  default = nil)
-  if valid_581132 != nil:
-    section.add "oauth_token", valid_581132
-  var valid_581133 = query.getOrDefault("userIp")
-  valid_581133 = validateParameter(valid_581133, JString, required = false,
+  if valid_590161 != nil:
+    section.add "oauth_token", valid_590161
+  var valid_590162 = query.getOrDefault("userIp")
+  valid_590162 = validateParameter(valid_590162, JString, required = false,
                                  default = nil)
-  if valid_581133 != nil:
-    section.add "userIp", valid_581133
-  var valid_581134 = query.getOrDefault("key")
-  valid_581134 = validateParameter(valid_581134, JString, required = false,
+  if valid_590162 != nil:
+    section.add "userIp", valid_590162
+  var valid_590163 = query.getOrDefault("key")
+  valid_590163 = validateParameter(valid_590163, JString, required = false,
                                  default = nil)
-  if valid_581134 != nil:
-    section.add "key", valid_581134
-  var valid_581135 = query.getOrDefault("prettyPrint")
-  valid_581135 = validateParameter(valid_581135, JBool, required = false,
+  if valid_590163 != nil:
+    section.add "key", valid_590163
+  var valid_590164 = query.getOrDefault("prettyPrint")
+  valid_590164 = validateParameter(valid_590164, JBool, required = false,
                                  default = newJBool(true))
-  if valid_581135 != nil:
-    section.add "prettyPrint", valid_581135
+  if valid_590164 != nil:
+    section.add "prettyPrint", valid_590164
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -11313,21 +11313,21 @@ proc validate_ContentOrdersSetlineitemmetadata_581125(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_581137: Call_ContentOrdersSetlineitemmetadata_581124;
+proc call*(call_590166: Call_ContentOrdersSetlineitemmetadata_590153;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Sets (or overrides if it already exists) merchant provided annotations in the form of key-value pairs. A common use case would be to supply us with additional structured information about a line item that cannot be provided via other methods. Submitted key-value pairs can be retrieved as part of the orders resource.
   ## 
-  let valid = call_581137.validator(path, query, header, formData, body)
-  let scheme = call_581137.pickScheme
+  let valid = call_590166.validator(path, query, header, formData, body)
+  let scheme = call_590166.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_581137.url(scheme.get, call_581137.host, call_581137.base,
-                         call_581137.route, valid.getOrDefault("path"),
+  let url = call_590166.url(scheme.get, call_590166.host, call_590166.base,
+                         call_590166.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_581137, url, valid)
+  result = hook(call_590166, url, valid)
 
-proc call*(call_581138: Call_ContentOrdersSetlineitemmetadata_581124;
+proc call*(call_590167: Call_ContentOrdersSetlineitemmetadata_590153;
           orderId: string; merchantId: string; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; key: string = ""; body: JsonNode = nil;
@@ -11353,32 +11353,32 @@ proc call*(call_581138: Call_ContentOrdersSetlineitemmetadata_581124;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_581139 = newJObject()
-  var query_581140 = newJObject()
-  var body_581141 = newJObject()
-  add(query_581140, "fields", newJString(fields))
-  add(query_581140, "quotaUser", newJString(quotaUser))
-  add(query_581140, "alt", newJString(alt))
-  add(query_581140, "oauth_token", newJString(oauthToken))
-  add(query_581140, "userIp", newJString(userIp))
-  add(path_581139, "orderId", newJString(orderId))
-  add(query_581140, "key", newJString(key))
-  add(path_581139, "merchantId", newJString(merchantId))
+  var path_590168 = newJObject()
+  var query_590169 = newJObject()
+  var body_590170 = newJObject()
+  add(query_590169, "fields", newJString(fields))
+  add(query_590169, "quotaUser", newJString(quotaUser))
+  add(query_590169, "alt", newJString(alt))
+  add(query_590169, "oauth_token", newJString(oauthToken))
+  add(query_590169, "userIp", newJString(userIp))
+  add(path_590168, "orderId", newJString(orderId))
+  add(query_590169, "key", newJString(key))
+  add(path_590168, "merchantId", newJString(merchantId))
   if body != nil:
-    body_581141 = body
-  add(query_581140, "prettyPrint", newJBool(prettyPrint))
-  result = call_581138.call(path_581139, query_581140, nil, nil, body_581141)
+    body_590170 = body
+  add(query_590169, "prettyPrint", newJBool(prettyPrint))
+  result = call_590167.call(path_590168, query_590169, nil, nil, body_590170)
 
-var contentOrdersSetlineitemmetadata* = Call_ContentOrdersSetlineitemmetadata_581124(
+var contentOrdersSetlineitemmetadata* = Call_ContentOrdersSetlineitemmetadata_590153(
     name: "contentOrdersSetlineitemmetadata", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com",
     route: "/{merchantId}/orders/{orderId}/setLineItemMetadata",
-    validator: validate_ContentOrdersSetlineitemmetadata_581125,
-    base: "/content/v2", url: url_ContentOrdersSetlineitemmetadata_581126,
+    validator: validate_ContentOrdersSetlineitemmetadata_590154,
+    base: "/content/v2", url: url_ContentOrdersSetlineitemmetadata_590155,
     schemes: {Scheme.Https})
 type
-  Call_ContentOrdersShiplineitems_581142 = ref object of OpenApiRestCall_579421
-proc url_ContentOrdersShiplineitems_581144(protocol: Scheme; host: string;
+  Call_ContentOrdersShiplineitems_590171 = ref object of OpenApiRestCall_588450
+proc url_ContentOrdersShiplineitems_590173(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -11397,7 +11397,7 @@ proc url_ContentOrdersShiplineitems_581144(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_ContentOrdersShiplineitems_581143(path: JsonNode; query: JsonNode;
+proc validate_ContentOrdersShiplineitems_590172(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Marks line item(s) as shipped.
   ## 
@@ -11410,16 +11410,16 @@ proc validate_ContentOrdersShiplineitems_581143(path: JsonNode; query: JsonNode;
   ##             : The ID of the account that manages the order. This cannot be a multi-client account.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `orderId` field"
-  var valid_581145 = path.getOrDefault("orderId")
-  valid_581145 = validateParameter(valid_581145, JString, required = true,
+  var valid_590174 = path.getOrDefault("orderId")
+  valid_590174 = validateParameter(valid_590174, JString, required = true,
                                  default = nil)
-  if valid_581145 != nil:
-    section.add "orderId", valid_581145
-  var valid_581146 = path.getOrDefault("merchantId")
-  valid_581146 = validateParameter(valid_581146, JString, required = true,
+  if valid_590174 != nil:
+    section.add "orderId", valid_590174
+  var valid_590175 = path.getOrDefault("merchantId")
+  valid_590175 = validateParameter(valid_590175, JString, required = true,
                                  default = nil)
-  if valid_581146 != nil:
-    section.add "merchantId", valid_581146
+  if valid_590175 != nil:
+    section.add "merchantId", valid_590175
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -11437,41 +11437,41 @@ proc validate_ContentOrdersShiplineitems_581143(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_581147 = query.getOrDefault("fields")
-  valid_581147 = validateParameter(valid_581147, JString, required = false,
+  var valid_590176 = query.getOrDefault("fields")
+  valid_590176 = validateParameter(valid_590176, JString, required = false,
                                  default = nil)
-  if valid_581147 != nil:
-    section.add "fields", valid_581147
-  var valid_581148 = query.getOrDefault("quotaUser")
-  valid_581148 = validateParameter(valid_581148, JString, required = false,
+  if valid_590176 != nil:
+    section.add "fields", valid_590176
+  var valid_590177 = query.getOrDefault("quotaUser")
+  valid_590177 = validateParameter(valid_590177, JString, required = false,
                                  default = nil)
-  if valid_581148 != nil:
-    section.add "quotaUser", valid_581148
-  var valid_581149 = query.getOrDefault("alt")
-  valid_581149 = validateParameter(valid_581149, JString, required = false,
+  if valid_590177 != nil:
+    section.add "quotaUser", valid_590177
+  var valid_590178 = query.getOrDefault("alt")
+  valid_590178 = validateParameter(valid_590178, JString, required = false,
                                  default = newJString("json"))
-  if valid_581149 != nil:
-    section.add "alt", valid_581149
-  var valid_581150 = query.getOrDefault("oauth_token")
-  valid_581150 = validateParameter(valid_581150, JString, required = false,
+  if valid_590178 != nil:
+    section.add "alt", valid_590178
+  var valid_590179 = query.getOrDefault("oauth_token")
+  valid_590179 = validateParameter(valid_590179, JString, required = false,
                                  default = nil)
-  if valid_581150 != nil:
-    section.add "oauth_token", valid_581150
-  var valid_581151 = query.getOrDefault("userIp")
-  valid_581151 = validateParameter(valid_581151, JString, required = false,
+  if valid_590179 != nil:
+    section.add "oauth_token", valid_590179
+  var valid_590180 = query.getOrDefault("userIp")
+  valid_590180 = validateParameter(valid_590180, JString, required = false,
                                  default = nil)
-  if valid_581151 != nil:
-    section.add "userIp", valid_581151
-  var valid_581152 = query.getOrDefault("key")
-  valid_581152 = validateParameter(valid_581152, JString, required = false,
+  if valid_590180 != nil:
+    section.add "userIp", valid_590180
+  var valid_590181 = query.getOrDefault("key")
+  valid_590181 = validateParameter(valid_590181, JString, required = false,
                                  default = nil)
-  if valid_581152 != nil:
-    section.add "key", valid_581152
-  var valid_581153 = query.getOrDefault("prettyPrint")
-  valid_581153 = validateParameter(valid_581153, JBool, required = false,
+  if valid_590181 != nil:
+    section.add "key", valid_590181
+  var valid_590182 = query.getOrDefault("prettyPrint")
+  valid_590182 = validateParameter(valid_590182, JBool, required = false,
                                  default = newJBool(true))
-  if valid_581153 != nil:
-    section.add "prettyPrint", valid_581153
+  if valid_590182 != nil:
+    section.add "prettyPrint", valid_590182
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -11483,20 +11483,20 @@ proc validate_ContentOrdersShiplineitems_581143(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_581155: Call_ContentOrdersShiplineitems_581142; path: JsonNode;
+proc call*(call_590184: Call_ContentOrdersShiplineitems_590171; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Marks line item(s) as shipped.
   ## 
-  let valid = call_581155.validator(path, query, header, formData, body)
-  let scheme = call_581155.pickScheme
+  let valid = call_590184.validator(path, query, header, formData, body)
+  let scheme = call_590184.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_581155.url(scheme.get, call_581155.host, call_581155.base,
-                         call_581155.route, valid.getOrDefault("path"),
+  let url = call_590184.url(scheme.get, call_590184.host, call_590184.base,
+                         call_590184.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_581155, url, valid)
+  result = hook(call_590184, url, valid)
 
-proc call*(call_581156: Call_ContentOrdersShiplineitems_581142; orderId: string;
+proc call*(call_590185: Call_ContentOrdersShiplineitems_590171; orderId: string;
           merchantId: string; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; userIp: string = "";
           key: string = ""; body: JsonNode = nil; prettyPrint: bool = true): Recallable =
@@ -11521,31 +11521,31 @@ proc call*(call_581156: Call_ContentOrdersShiplineitems_581142; orderId: string;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_581157 = newJObject()
-  var query_581158 = newJObject()
-  var body_581159 = newJObject()
-  add(query_581158, "fields", newJString(fields))
-  add(query_581158, "quotaUser", newJString(quotaUser))
-  add(query_581158, "alt", newJString(alt))
-  add(query_581158, "oauth_token", newJString(oauthToken))
-  add(query_581158, "userIp", newJString(userIp))
-  add(path_581157, "orderId", newJString(orderId))
-  add(query_581158, "key", newJString(key))
-  add(path_581157, "merchantId", newJString(merchantId))
+  var path_590186 = newJObject()
+  var query_590187 = newJObject()
+  var body_590188 = newJObject()
+  add(query_590187, "fields", newJString(fields))
+  add(query_590187, "quotaUser", newJString(quotaUser))
+  add(query_590187, "alt", newJString(alt))
+  add(query_590187, "oauth_token", newJString(oauthToken))
+  add(query_590187, "userIp", newJString(userIp))
+  add(path_590186, "orderId", newJString(orderId))
+  add(query_590187, "key", newJString(key))
+  add(path_590186, "merchantId", newJString(merchantId))
   if body != nil:
-    body_581159 = body
-  add(query_581158, "prettyPrint", newJBool(prettyPrint))
-  result = call_581156.call(path_581157, query_581158, nil, nil, body_581159)
+    body_590188 = body
+  add(query_590187, "prettyPrint", newJBool(prettyPrint))
+  result = call_590185.call(path_590186, query_590187, nil, nil, body_590188)
 
-var contentOrdersShiplineitems* = Call_ContentOrdersShiplineitems_581142(
+var contentOrdersShiplineitems* = Call_ContentOrdersShiplineitems_590171(
     name: "contentOrdersShiplineitems", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com",
     route: "/{merchantId}/orders/{orderId}/shipLineItems",
-    validator: validate_ContentOrdersShiplineitems_581143, base: "/content/v2",
-    url: url_ContentOrdersShiplineitems_581144, schemes: {Scheme.Https})
+    validator: validate_ContentOrdersShiplineitems_590172, base: "/content/v2",
+    url: url_ContentOrdersShiplineitems_590173, schemes: {Scheme.Https})
 type
-  Call_ContentOrdersCreatetestreturn_581160 = ref object of OpenApiRestCall_579421
-proc url_ContentOrdersCreatetestreturn_581162(protocol: Scheme; host: string;
+  Call_ContentOrdersCreatetestreturn_590189 = ref object of OpenApiRestCall_588450
+proc url_ContentOrdersCreatetestreturn_590191(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -11564,7 +11564,7 @@ proc url_ContentOrdersCreatetestreturn_581162(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_ContentOrdersCreatetestreturn_581161(path: JsonNode; query: JsonNode;
+proc validate_ContentOrdersCreatetestreturn_590190(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Sandbox only. Creates a test return.
   ## 
@@ -11577,16 +11577,16 @@ proc validate_ContentOrdersCreatetestreturn_581161(path: JsonNode; query: JsonNo
   ##             : The ID of the account that manages the order. This cannot be a multi-client account.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `orderId` field"
-  var valid_581163 = path.getOrDefault("orderId")
-  valid_581163 = validateParameter(valid_581163, JString, required = true,
+  var valid_590192 = path.getOrDefault("orderId")
+  valid_590192 = validateParameter(valid_590192, JString, required = true,
                                  default = nil)
-  if valid_581163 != nil:
-    section.add "orderId", valid_581163
-  var valid_581164 = path.getOrDefault("merchantId")
-  valid_581164 = validateParameter(valid_581164, JString, required = true,
+  if valid_590192 != nil:
+    section.add "orderId", valid_590192
+  var valid_590193 = path.getOrDefault("merchantId")
+  valid_590193 = validateParameter(valid_590193, JString, required = true,
                                  default = nil)
-  if valid_581164 != nil:
-    section.add "merchantId", valid_581164
+  if valid_590193 != nil:
+    section.add "merchantId", valid_590193
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -11604,41 +11604,41 @@ proc validate_ContentOrdersCreatetestreturn_581161(path: JsonNode; query: JsonNo
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_581165 = query.getOrDefault("fields")
-  valid_581165 = validateParameter(valid_581165, JString, required = false,
+  var valid_590194 = query.getOrDefault("fields")
+  valid_590194 = validateParameter(valid_590194, JString, required = false,
                                  default = nil)
-  if valid_581165 != nil:
-    section.add "fields", valid_581165
-  var valid_581166 = query.getOrDefault("quotaUser")
-  valid_581166 = validateParameter(valid_581166, JString, required = false,
+  if valid_590194 != nil:
+    section.add "fields", valid_590194
+  var valid_590195 = query.getOrDefault("quotaUser")
+  valid_590195 = validateParameter(valid_590195, JString, required = false,
                                  default = nil)
-  if valid_581166 != nil:
-    section.add "quotaUser", valid_581166
-  var valid_581167 = query.getOrDefault("alt")
-  valid_581167 = validateParameter(valid_581167, JString, required = false,
+  if valid_590195 != nil:
+    section.add "quotaUser", valid_590195
+  var valid_590196 = query.getOrDefault("alt")
+  valid_590196 = validateParameter(valid_590196, JString, required = false,
                                  default = newJString("json"))
-  if valid_581167 != nil:
-    section.add "alt", valid_581167
-  var valid_581168 = query.getOrDefault("oauth_token")
-  valid_581168 = validateParameter(valid_581168, JString, required = false,
+  if valid_590196 != nil:
+    section.add "alt", valid_590196
+  var valid_590197 = query.getOrDefault("oauth_token")
+  valid_590197 = validateParameter(valid_590197, JString, required = false,
                                  default = nil)
-  if valid_581168 != nil:
-    section.add "oauth_token", valid_581168
-  var valid_581169 = query.getOrDefault("userIp")
-  valid_581169 = validateParameter(valid_581169, JString, required = false,
+  if valid_590197 != nil:
+    section.add "oauth_token", valid_590197
+  var valid_590198 = query.getOrDefault("userIp")
+  valid_590198 = validateParameter(valid_590198, JString, required = false,
                                  default = nil)
-  if valid_581169 != nil:
-    section.add "userIp", valid_581169
-  var valid_581170 = query.getOrDefault("key")
-  valid_581170 = validateParameter(valid_581170, JString, required = false,
+  if valid_590198 != nil:
+    section.add "userIp", valid_590198
+  var valid_590199 = query.getOrDefault("key")
+  valid_590199 = validateParameter(valid_590199, JString, required = false,
                                  default = nil)
-  if valid_581170 != nil:
-    section.add "key", valid_581170
-  var valid_581171 = query.getOrDefault("prettyPrint")
-  valid_581171 = validateParameter(valid_581171, JBool, required = false,
+  if valid_590199 != nil:
+    section.add "key", valid_590199
+  var valid_590200 = query.getOrDefault("prettyPrint")
+  valid_590200 = validateParameter(valid_590200, JBool, required = false,
                                  default = newJBool(true))
-  if valid_581171 != nil:
-    section.add "prettyPrint", valid_581171
+  if valid_590200 != nil:
+    section.add "prettyPrint", valid_590200
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -11650,20 +11650,20 @@ proc validate_ContentOrdersCreatetestreturn_581161(path: JsonNode; query: JsonNo
   if body != nil:
     result.add "body", body
 
-proc call*(call_581173: Call_ContentOrdersCreatetestreturn_581160; path: JsonNode;
+proc call*(call_590202: Call_ContentOrdersCreatetestreturn_590189; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Sandbox only. Creates a test return.
   ## 
-  let valid = call_581173.validator(path, query, header, formData, body)
-  let scheme = call_581173.pickScheme
+  let valid = call_590202.validator(path, query, header, formData, body)
+  let scheme = call_590202.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_581173.url(scheme.get, call_581173.host, call_581173.base,
-                         call_581173.route, valid.getOrDefault("path"),
+  let url = call_590202.url(scheme.get, call_590202.host, call_590202.base,
+                         call_590202.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_581173, url, valid)
+  result = hook(call_590202, url, valid)
 
-proc call*(call_581174: Call_ContentOrdersCreatetestreturn_581160; orderId: string;
+proc call*(call_590203: Call_ContentOrdersCreatetestreturn_590189; orderId: string;
           merchantId: string; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; userIp: string = "";
           key: string = ""; body: JsonNode = nil; prettyPrint: bool = true): Recallable =
@@ -11688,31 +11688,31 @@ proc call*(call_581174: Call_ContentOrdersCreatetestreturn_581160; orderId: stri
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_581175 = newJObject()
-  var query_581176 = newJObject()
-  var body_581177 = newJObject()
-  add(query_581176, "fields", newJString(fields))
-  add(query_581176, "quotaUser", newJString(quotaUser))
-  add(query_581176, "alt", newJString(alt))
-  add(query_581176, "oauth_token", newJString(oauthToken))
-  add(query_581176, "userIp", newJString(userIp))
-  add(path_581175, "orderId", newJString(orderId))
-  add(query_581176, "key", newJString(key))
-  add(path_581175, "merchantId", newJString(merchantId))
+  var path_590204 = newJObject()
+  var query_590205 = newJObject()
+  var body_590206 = newJObject()
+  add(query_590205, "fields", newJString(fields))
+  add(query_590205, "quotaUser", newJString(quotaUser))
+  add(query_590205, "alt", newJString(alt))
+  add(query_590205, "oauth_token", newJString(oauthToken))
+  add(query_590205, "userIp", newJString(userIp))
+  add(path_590204, "orderId", newJString(orderId))
+  add(query_590205, "key", newJString(key))
+  add(path_590204, "merchantId", newJString(merchantId))
   if body != nil:
-    body_581177 = body
-  add(query_581176, "prettyPrint", newJBool(prettyPrint))
-  result = call_581174.call(path_581175, query_581176, nil, nil, body_581177)
+    body_590206 = body
+  add(query_590205, "prettyPrint", newJBool(prettyPrint))
+  result = call_590203.call(path_590204, query_590205, nil, nil, body_590206)
 
-var contentOrdersCreatetestreturn* = Call_ContentOrdersCreatetestreturn_581160(
+var contentOrdersCreatetestreturn* = Call_ContentOrdersCreatetestreturn_590189(
     name: "contentOrdersCreatetestreturn", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com",
     route: "/{merchantId}/orders/{orderId}/testreturn",
-    validator: validate_ContentOrdersCreatetestreturn_581161, base: "/content/v2",
-    url: url_ContentOrdersCreatetestreturn_581162, schemes: {Scheme.Https})
+    validator: validate_ContentOrdersCreatetestreturn_590190, base: "/content/v2",
+    url: url_ContentOrdersCreatetestreturn_590191, schemes: {Scheme.Https})
 type
-  Call_ContentOrdersUpdatelineitemshippingdetails_581178 = ref object of OpenApiRestCall_579421
-proc url_ContentOrdersUpdatelineitemshippingdetails_581180(protocol: Scheme;
+  Call_ContentOrdersUpdatelineitemshippingdetails_590207 = ref object of OpenApiRestCall_588450
+proc url_ContentOrdersUpdatelineitemshippingdetails_590209(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -11731,7 +11731,7 @@ proc url_ContentOrdersUpdatelineitemshippingdetails_581180(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_ContentOrdersUpdatelineitemshippingdetails_581179(path: JsonNode;
+proc validate_ContentOrdersUpdatelineitemshippingdetails_590208(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Updates ship by and delivery by dates for a line item.
   ## 
@@ -11744,16 +11744,16 @@ proc validate_ContentOrdersUpdatelineitemshippingdetails_581179(path: JsonNode;
   ##             : The ID of the account that manages the order. This cannot be a multi-client account.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `orderId` field"
-  var valid_581181 = path.getOrDefault("orderId")
-  valid_581181 = validateParameter(valid_581181, JString, required = true,
+  var valid_590210 = path.getOrDefault("orderId")
+  valid_590210 = validateParameter(valid_590210, JString, required = true,
                                  default = nil)
-  if valid_581181 != nil:
-    section.add "orderId", valid_581181
-  var valid_581182 = path.getOrDefault("merchantId")
-  valid_581182 = validateParameter(valid_581182, JString, required = true,
+  if valid_590210 != nil:
+    section.add "orderId", valid_590210
+  var valid_590211 = path.getOrDefault("merchantId")
+  valid_590211 = validateParameter(valid_590211, JString, required = true,
                                  default = nil)
-  if valid_581182 != nil:
-    section.add "merchantId", valid_581182
+  if valid_590211 != nil:
+    section.add "merchantId", valid_590211
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -11771,41 +11771,41 @@ proc validate_ContentOrdersUpdatelineitemshippingdetails_581179(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_581183 = query.getOrDefault("fields")
-  valid_581183 = validateParameter(valid_581183, JString, required = false,
+  var valid_590212 = query.getOrDefault("fields")
+  valid_590212 = validateParameter(valid_590212, JString, required = false,
                                  default = nil)
-  if valid_581183 != nil:
-    section.add "fields", valid_581183
-  var valid_581184 = query.getOrDefault("quotaUser")
-  valid_581184 = validateParameter(valid_581184, JString, required = false,
+  if valid_590212 != nil:
+    section.add "fields", valid_590212
+  var valid_590213 = query.getOrDefault("quotaUser")
+  valid_590213 = validateParameter(valid_590213, JString, required = false,
                                  default = nil)
-  if valid_581184 != nil:
-    section.add "quotaUser", valid_581184
-  var valid_581185 = query.getOrDefault("alt")
-  valid_581185 = validateParameter(valid_581185, JString, required = false,
+  if valid_590213 != nil:
+    section.add "quotaUser", valid_590213
+  var valid_590214 = query.getOrDefault("alt")
+  valid_590214 = validateParameter(valid_590214, JString, required = false,
                                  default = newJString("json"))
-  if valid_581185 != nil:
-    section.add "alt", valid_581185
-  var valid_581186 = query.getOrDefault("oauth_token")
-  valid_581186 = validateParameter(valid_581186, JString, required = false,
+  if valid_590214 != nil:
+    section.add "alt", valid_590214
+  var valid_590215 = query.getOrDefault("oauth_token")
+  valid_590215 = validateParameter(valid_590215, JString, required = false,
                                  default = nil)
-  if valid_581186 != nil:
-    section.add "oauth_token", valid_581186
-  var valid_581187 = query.getOrDefault("userIp")
-  valid_581187 = validateParameter(valid_581187, JString, required = false,
+  if valid_590215 != nil:
+    section.add "oauth_token", valid_590215
+  var valid_590216 = query.getOrDefault("userIp")
+  valid_590216 = validateParameter(valid_590216, JString, required = false,
                                  default = nil)
-  if valid_581187 != nil:
-    section.add "userIp", valid_581187
-  var valid_581188 = query.getOrDefault("key")
-  valid_581188 = validateParameter(valid_581188, JString, required = false,
+  if valid_590216 != nil:
+    section.add "userIp", valid_590216
+  var valid_590217 = query.getOrDefault("key")
+  valid_590217 = validateParameter(valid_590217, JString, required = false,
                                  default = nil)
-  if valid_581188 != nil:
-    section.add "key", valid_581188
-  var valid_581189 = query.getOrDefault("prettyPrint")
-  valid_581189 = validateParameter(valid_581189, JBool, required = false,
+  if valid_590217 != nil:
+    section.add "key", valid_590217
+  var valid_590218 = query.getOrDefault("prettyPrint")
+  valid_590218 = validateParameter(valid_590218, JBool, required = false,
                                  default = newJBool(true))
-  if valid_581189 != nil:
-    section.add "prettyPrint", valid_581189
+  if valid_590218 != nil:
+    section.add "prettyPrint", valid_590218
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -11817,21 +11817,21 @@ proc validate_ContentOrdersUpdatelineitemshippingdetails_581179(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_581191: Call_ContentOrdersUpdatelineitemshippingdetails_581178;
+proc call*(call_590220: Call_ContentOrdersUpdatelineitemshippingdetails_590207;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Updates ship by and delivery by dates for a line item.
   ## 
-  let valid = call_581191.validator(path, query, header, formData, body)
-  let scheme = call_581191.pickScheme
+  let valid = call_590220.validator(path, query, header, formData, body)
+  let scheme = call_590220.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_581191.url(scheme.get, call_581191.host, call_581191.base,
-                         call_581191.route, valid.getOrDefault("path"),
+  let url = call_590220.url(scheme.get, call_590220.host, call_590220.base,
+                         call_590220.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_581191, url, valid)
+  result = hook(call_590220, url, valid)
 
-proc call*(call_581192: Call_ContentOrdersUpdatelineitemshippingdetails_581178;
+proc call*(call_590221: Call_ContentOrdersUpdatelineitemshippingdetails_590207;
           orderId: string; merchantId: string; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; key: string = ""; body: JsonNode = nil;
@@ -11857,32 +11857,32 @@ proc call*(call_581192: Call_ContentOrdersUpdatelineitemshippingdetails_581178;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_581193 = newJObject()
-  var query_581194 = newJObject()
-  var body_581195 = newJObject()
-  add(query_581194, "fields", newJString(fields))
-  add(query_581194, "quotaUser", newJString(quotaUser))
-  add(query_581194, "alt", newJString(alt))
-  add(query_581194, "oauth_token", newJString(oauthToken))
-  add(query_581194, "userIp", newJString(userIp))
-  add(path_581193, "orderId", newJString(orderId))
-  add(query_581194, "key", newJString(key))
-  add(path_581193, "merchantId", newJString(merchantId))
+  var path_590222 = newJObject()
+  var query_590223 = newJObject()
+  var body_590224 = newJObject()
+  add(query_590223, "fields", newJString(fields))
+  add(query_590223, "quotaUser", newJString(quotaUser))
+  add(query_590223, "alt", newJString(alt))
+  add(query_590223, "oauth_token", newJString(oauthToken))
+  add(query_590223, "userIp", newJString(userIp))
+  add(path_590222, "orderId", newJString(orderId))
+  add(query_590223, "key", newJString(key))
+  add(path_590222, "merchantId", newJString(merchantId))
   if body != nil:
-    body_581195 = body
-  add(query_581194, "prettyPrint", newJBool(prettyPrint))
-  result = call_581192.call(path_581193, query_581194, nil, nil, body_581195)
+    body_590224 = body
+  add(query_590223, "prettyPrint", newJBool(prettyPrint))
+  result = call_590221.call(path_590222, query_590223, nil, nil, body_590224)
 
-var contentOrdersUpdatelineitemshippingdetails* = Call_ContentOrdersUpdatelineitemshippingdetails_581178(
+var contentOrdersUpdatelineitemshippingdetails* = Call_ContentOrdersUpdatelineitemshippingdetails_590207(
     name: "contentOrdersUpdatelineitemshippingdetails", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com",
     route: "/{merchantId}/orders/{orderId}/updateLineItemShippingDetails",
-    validator: validate_ContentOrdersUpdatelineitemshippingdetails_581179,
-    base: "/content/v2", url: url_ContentOrdersUpdatelineitemshippingdetails_581180,
+    validator: validate_ContentOrdersUpdatelineitemshippingdetails_590208,
+    base: "/content/v2", url: url_ContentOrdersUpdatelineitemshippingdetails_590209,
     schemes: {Scheme.Https})
 type
-  Call_ContentOrdersUpdatemerchantorderid_581196 = ref object of OpenApiRestCall_579421
-proc url_ContentOrdersUpdatemerchantorderid_581198(protocol: Scheme; host: string;
+  Call_ContentOrdersUpdatemerchantorderid_590225 = ref object of OpenApiRestCall_588450
+proc url_ContentOrdersUpdatemerchantorderid_590227(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -11901,7 +11901,7 @@ proc url_ContentOrdersUpdatemerchantorderid_581198(protocol: Scheme; host: strin
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_ContentOrdersUpdatemerchantorderid_581197(path: JsonNode;
+proc validate_ContentOrdersUpdatemerchantorderid_590226(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Updates the merchant order ID for a given order.
   ## 
@@ -11914,16 +11914,16 @@ proc validate_ContentOrdersUpdatemerchantorderid_581197(path: JsonNode;
   ##             : The ID of the account that manages the order. This cannot be a multi-client account.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `orderId` field"
-  var valid_581199 = path.getOrDefault("orderId")
-  valid_581199 = validateParameter(valid_581199, JString, required = true,
+  var valid_590228 = path.getOrDefault("orderId")
+  valid_590228 = validateParameter(valid_590228, JString, required = true,
                                  default = nil)
-  if valid_581199 != nil:
-    section.add "orderId", valid_581199
-  var valid_581200 = path.getOrDefault("merchantId")
-  valid_581200 = validateParameter(valid_581200, JString, required = true,
+  if valid_590228 != nil:
+    section.add "orderId", valid_590228
+  var valid_590229 = path.getOrDefault("merchantId")
+  valid_590229 = validateParameter(valid_590229, JString, required = true,
                                  default = nil)
-  if valid_581200 != nil:
-    section.add "merchantId", valid_581200
+  if valid_590229 != nil:
+    section.add "merchantId", valid_590229
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -11941,41 +11941,41 @@ proc validate_ContentOrdersUpdatemerchantorderid_581197(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_581201 = query.getOrDefault("fields")
-  valid_581201 = validateParameter(valid_581201, JString, required = false,
+  var valid_590230 = query.getOrDefault("fields")
+  valid_590230 = validateParameter(valid_590230, JString, required = false,
                                  default = nil)
-  if valid_581201 != nil:
-    section.add "fields", valid_581201
-  var valid_581202 = query.getOrDefault("quotaUser")
-  valid_581202 = validateParameter(valid_581202, JString, required = false,
+  if valid_590230 != nil:
+    section.add "fields", valid_590230
+  var valid_590231 = query.getOrDefault("quotaUser")
+  valid_590231 = validateParameter(valid_590231, JString, required = false,
                                  default = nil)
-  if valid_581202 != nil:
-    section.add "quotaUser", valid_581202
-  var valid_581203 = query.getOrDefault("alt")
-  valid_581203 = validateParameter(valid_581203, JString, required = false,
+  if valid_590231 != nil:
+    section.add "quotaUser", valid_590231
+  var valid_590232 = query.getOrDefault("alt")
+  valid_590232 = validateParameter(valid_590232, JString, required = false,
                                  default = newJString("json"))
-  if valid_581203 != nil:
-    section.add "alt", valid_581203
-  var valid_581204 = query.getOrDefault("oauth_token")
-  valid_581204 = validateParameter(valid_581204, JString, required = false,
+  if valid_590232 != nil:
+    section.add "alt", valid_590232
+  var valid_590233 = query.getOrDefault("oauth_token")
+  valid_590233 = validateParameter(valid_590233, JString, required = false,
                                  default = nil)
-  if valid_581204 != nil:
-    section.add "oauth_token", valid_581204
-  var valid_581205 = query.getOrDefault("userIp")
-  valid_581205 = validateParameter(valid_581205, JString, required = false,
+  if valid_590233 != nil:
+    section.add "oauth_token", valid_590233
+  var valid_590234 = query.getOrDefault("userIp")
+  valid_590234 = validateParameter(valid_590234, JString, required = false,
                                  default = nil)
-  if valid_581205 != nil:
-    section.add "userIp", valid_581205
-  var valid_581206 = query.getOrDefault("key")
-  valid_581206 = validateParameter(valid_581206, JString, required = false,
+  if valid_590234 != nil:
+    section.add "userIp", valid_590234
+  var valid_590235 = query.getOrDefault("key")
+  valid_590235 = validateParameter(valid_590235, JString, required = false,
                                  default = nil)
-  if valid_581206 != nil:
-    section.add "key", valid_581206
-  var valid_581207 = query.getOrDefault("prettyPrint")
-  valid_581207 = validateParameter(valid_581207, JBool, required = false,
+  if valid_590235 != nil:
+    section.add "key", valid_590235
+  var valid_590236 = query.getOrDefault("prettyPrint")
+  valid_590236 = validateParameter(valid_590236, JBool, required = false,
                                  default = newJBool(true))
-  if valid_581207 != nil:
-    section.add "prettyPrint", valid_581207
+  if valid_590236 != nil:
+    section.add "prettyPrint", valid_590236
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -11987,21 +11987,21 @@ proc validate_ContentOrdersUpdatemerchantorderid_581197(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_581209: Call_ContentOrdersUpdatemerchantorderid_581196;
+proc call*(call_590238: Call_ContentOrdersUpdatemerchantorderid_590225;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Updates the merchant order ID for a given order.
   ## 
-  let valid = call_581209.validator(path, query, header, formData, body)
-  let scheme = call_581209.pickScheme
+  let valid = call_590238.validator(path, query, header, formData, body)
+  let scheme = call_590238.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_581209.url(scheme.get, call_581209.host, call_581209.base,
-                         call_581209.route, valid.getOrDefault("path"),
+  let url = call_590238.url(scheme.get, call_590238.host, call_590238.base,
+                         call_590238.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_581209, url, valid)
+  result = hook(call_590238, url, valid)
 
-proc call*(call_581210: Call_ContentOrdersUpdatemerchantorderid_581196;
+proc call*(call_590239: Call_ContentOrdersUpdatemerchantorderid_590225;
           orderId: string; merchantId: string; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; key: string = ""; body: JsonNode = nil;
@@ -12027,32 +12027,32 @@ proc call*(call_581210: Call_ContentOrdersUpdatemerchantorderid_581196;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_581211 = newJObject()
-  var query_581212 = newJObject()
-  var body_581213 = newJObject()
-  add(query_581212, "fields", newJString(fields))
-  add(query_581212, "quotaUser", newJString(quotaUser))
-  add(query_581212, "alt", newJString(alt))
-  add(query_581212, "oauth_token", newJString(oauthToken))
-  add(query_581212, "userIp", newJString(userIp))
-  add(path_581211, "orderId", newJString(orderId))
-  add(query_581212, "key", newJString(key))
-  add(path_581211, "merchantId", newJString(merchantId))
+  var path_590240 = newJObject()
+  var query_590241 = newJObject()
+  var body_590242 = newJObject()
+  add(query_590241, "fields", newJString(fields))
+  add(query_590241, "quotaUser", newJString(quotaUser))
+  add(query_590241, "alt", newJString(alt))
+  add(query_590241, "oauth_token", newJString(oauthToken))
+  add(query_590241, "userIp", newJString(userIp))
+  add(path_590240, "orderId", newJString(orderId))
+  add(query_590241, "key", newJString(key))
+  add(path_590240, "merchantId", newJString(merchantId))
   if body != nil:
-    body_581213 = body
-  add(query_581212, "prettyPrint", newJBool(prettyPrint))
-  result = call_581210.call(path_581211, query_581212, nil, nil, body_581213)
+    body_590242 = body
+  add(query_590241, "prettyPrint", newJBool(prettyPrint))
+  result = call_590239.call(path_590240, query_590241, nil, nil, body_590242)
 
-var contentOrdersUpdatemerchantorderid* = Call_ContentOrdersUpdatemerchantorderid_581196(
+var contentOrdersUpdatemerchantorderid* = Call_ContentOrdersUpdatemerchantorderid_590225(
     name: "contentOrdersUpdatemerchantorderid", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com",
     route: "/{merchantId}/orders/{orderId}/updateMerchantOrderId",
-    validator: validate_ContentOrdersUpdatemerchantorderid_581197,
-    base: "/content/v2", url: url_ContentOrdersUpdatemerchantorderid_581198,
+    validator: validate_ContentOrdersUpdatemerchantorderid_590226,
+    base: "/content/v2", url: url_ContentOrdersUpdatemerchantorderid_590227,
     schemes: {Scheme.Https})
 type
-  Call_ContentOrdersUpdateshipment_581214 = ref object of OpenApiRestCall_579421
-proc url_ContentOrdersUpdateshipment_581216(protocol: Scheme; host: string;
+  Call_ContentOrdersUpdateshipment_590243 = ref object of OpenApiRestCall_588450
+proc url_ContentOrdersUpdateshipment_590245(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -12071,7 +12071,7 @@ proc url_ContentOrdersUpdateshipment_581216(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_ContentOrdersUpdateshipment_581215(path: JsonNode; query: JsonNode;
+proc validate_ContentOrdersUpdateshipment_590244(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Updates a shipment's status, carrier, and/or tracking ID.
   ## 
@@ -12084,16 +12084,16 @@ proc validate_ContentOrdersUpdateshipment_581215(path: JsonNode; query: JsonNode
   ##             : The ID of the account that manages the order. This cannot be a multi-client account.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `orderId` field"
-  var valid_581217 = path.getOrDefault("orderId")
-  valid_581217 = validateParameter(valid_581217, JString, required = true,
+  var valid_590246 = path.getOrDefault("orderId")
+  valid_590246 = validateParameter(valid_590246, JString, required = true,
                                  default = nil)
-  if valid_581217 != nil:
-    section.add "orderId", valid_581217
-  var valid_581218 = path.getOrDefault("merchantId")
-  valid_581218 = validateParameter(valid_581218, JString, required = true,
+  if valid_590246 != nil:
+    section.add "orderId", valid_590246
+  var valid_590247 = path.getOrDefault("merchantId")
+  valid_590247 = validateParameter(valid_590247, JString, required = true,
                                  default = nil)
-  if valid_581218 != nil:
-    section.add "merchantId", valid_581218
+  if valid_590247 != nil:
+    section.add "merchantId", valid_590247
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -12111,41 +12111,41 @@ proc validate_ContentOrdersUpdateshipment_581215(path: JsonNode; query: JsonNode
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_581219 = query.getOrDefault("fields")
-  valid_581219 = validateParameter(valid_581219, JString, required = false,
+  var valid_590248 = query.getOrDefault("fields")
+  valid_590248 = validateParameter(valid_590248, JString, required = false,
                                  default = nil)
-  if valid_581219 != nil:
-    section.add "fields", valid_581219
-  var valid_581220 = query.getOrDefault("quotaUser")
-  valid_581220 = validateParameter(valid_581220, JString, required = false,
+  if valid_590248 != nil:
+    section.add "fields", valid_590248
+  var valid_590249 = query.getOrDefault("quotaUser")
+  valid_590249 = validateParameter(valid_590249, JString, required = false,
                                  default = nil)
-  if valid_581220 != nil:
-    section.add "quotaUser", valid_581220
-  var valid_581221 = query.getOrDefault("alt")
-  valid_581221 = validateParameter(valid_581221, JString, required = false,
+  if valid_590249 != nil:
+    section.add "quotaUser", valid_590249
+  var valid_590250 = query.getOrDefault("alt")
+  valid_590250 = validateParameter(valid_590250, JString, required = false,
                                  default = newJString("json"))
-  if valid_581221 != nil:
-    section.add "alt", valid_581221
-  var valid_581222 = query.getOrDefault("oauth_token")
-  valid_581222 = validateParameter(valid_581222, JString, required = false,
+  if valid_590250 != nil:
+    section.add "alt", valid_590250
+  var valid_590251 = query.getOrDefault("oauth_token")
+  valid_590251 = validateParameter(valid_590251, JString, required = false,
                                  default = nil)
-  if valid_581222 != nil:
-    section.add "oauth_token", valid_581222
-  var valid_581223 = query.getOrDefault("userIp")
-  valid_581223 = validateParameter(valid_581223, JString, required = false,
+  if valid_590251 != nil:
+    section.add "oauth_token", valid_590251
+  var valid_590252 = query.getOrDefault("userIp")
+  valid_590252 = validateParameter(valid_590252, JString, required = false,
                                  default = nil)
-  if valid_581223 != nil:
-    section.add "userIp", valid_581223
-  var valid_581224 = query.getOrDefault("key")
-  valid_581224 = validateParameter(valid_581224, JString, required = false,
+  if valid_590252 != nil:
+    section.add "userIp", valid_590252
+  var valid_590253 = query.getOrDefault("key")
+  valid_590253 = validateParameter(valid_590253, JString, required = false,
                                  default = nil)
-  if valid_581224 != nil:
-    section.add "key", valid_581224
-  var valid_581225 = query.getOrDefault("prettyPrint")
-  valid_581225 = validateParameter(valid_581225, JBool, required = false,
+  if valid_590253 != nil:
+    section.add "key", valid_590253
+  var valid_590254 = query.getOrDefault("prettyPrint")
+  valid_590254 = validateParameter(valid_590254, JBool, required = false,
                                  default = newJBool(true))
-  if valid_581225 != nil:
-    section.add "prettyPrint", valid_581225
+  if valid_590254 != nil:
+    section.add "prettyPrint", valid_590254
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -12157,20 +12157,20 @@ proc validate_ContentOrdersUpdateshipment_581215(path: JsonNode; query: JsonNode
   if body != nil:
     result.add "body", body
 
-proc call*(call_581227: Call_ContentOrdersUpdateshipment_581214; path: JsonNode;
+proc call*(call_590256: Call_ContentOrdersUpdateshipment_590243; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Updates a shipment's status, carrier, and/or tracking ID.
   ## 
-  let valid = call_581227.validator(path, query, header, formData, body)
-  let scheme = call_581227.pickScheme
+  let valid = call_590256.validator(path, query, header, formData, body)
+  let scheme = call_590256.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_581227.url(scheme.get, call_581227.host, call_581227.base,
-                         call_581227.route, valid.getOrDefault("path"),
+  let url = call_590256.url(scheme.get, call_590256.host, call_590256.base,
+                         call_590256.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_581227, url, valid)
+  result = hook(call_590256, url, valid)
 
-proc call*(call_581228: Call_ContentOrdersUpdateshipment_581214; orderId: string;
+proc call*(call_590257: Call_ContentOrdersUpdateshipment_590243; orderId: string;
           merchantId: string; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; userIp: string = "";
           key: string = ""; body: JsonNode = nil; prettyPrint: bool = true): Recallable =
@@ -12195,31 +12195,31 @@ proc call*(call_581228: Call_ContentOrdersUpdateshipment_581214; orderId: string
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_581229 = newJObject()
-  var query_581230 = newJObject()
-  var body_581231 = newJObject()
-  add(query_581230, "fields", newJString(fields))
-  add(query_581230, "quotaUser", newJString(quotaUser))
-  add(query_581230, "alt", newJString(alt))
-  add(query_581230, "oauth_token", newJString(oauthToken))
-  add(query_581230, "userIp", newJString(userIp))
-  add(path_581229, "orderId", newJString(orderId))
-  add(query_581230, "key", newJString(key))
-  add(path_581229, "merchantId", newJString(merchantId))
+  var path_590258 = newJObject()
+  var query_590259 = newJObject()
+  var body_590260 = newJObject()
+  add(query_590259, "fields", newJString(fields))
+  add(query_590259, "quotaUser", newJString(quotaUser))
+  add(query_590259, "alt", newJString(alt))
+  add(query_590259, "oauth_token", newJString(oauthToken))
+  add(query_590259, "userIp", newJString(userIp))
+  add(path_590258, "orderId", newJString(orderId))
+  add(query_590259, "key", newJString(key))
+  add(path_590258, "merchantId", newJString(merchantId))
   if body != nil:
-    body_581231 = body
-  add(query_581230, "prettyPrint", newJBool(prettyPrint))
-  result = call_581228.call(path_581229, query_581230, nil, nil, body_581231)
+    body_590260 = body
+  add(query_590259, "prettyPrint", newJBool(prettyPrint))
+  result = call_590257.call(path_590258, query_590259, nil, nil, body_590260)
 
-var contentOrdersUpdateshipment* = Call_ContentOrdersUpdateshipment_581214(
+var contentOrdersUpdateshipment* = Call_ContentOrdersUpdateshipment_590243(
     name: "contentOrdersUpdateshipment", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com",
     route: "/{merchantId}/orders/{orderId}/updateShipment",
-    validator: validate_ContentOrdersUpdateshipment_581215, base: "/content/v2",
-    url: url_ContentOrdersUpdateshipment_581216, schemes: {Scheme.Https})
+    validator: validate_ContentOrdersUpdateshipment_590244, base: "/content/v2",
+    url: url_ContentOrdersUpdateshipment_590245, schemes: {Scheme.Https})
 type
-  Call_ContentOrdersGetbymerchantorderid_581232 = ref object of OpenApiRestCall_579421
-proc url_ContentOrdersGetbymerchantorderid_581234(protocol: Scheme; host: string;
+  Call_ContentOrdersGetbymerchantorderid_590261 = ref object of OpenApiRestCall_588450
+proc url_ContentOrdersGetbymerchantorderid_590263(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -12237,7 +12237,7 @@ proc url_ContentOrdersGetbymerchantorderid_581234(protocol: Scheme; host: string
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_ContentOrdersGetbymerchantorderid_581233(path: JsonNode;
+proc validate_ContentOrdersGetbymerchantorderid_590262(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Retrieves an order using merchant order ID.
   ## 
@@ -12251,16 +12251,16 @@ proc validate_ContentOrdersGetbymerchantorderid_581233(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `merchantOrderId` field"
-  var valid_581235 = path.getOrDefault("merchantOrderId")
-  valid_581235 = validateParameter(valid_581235, JString, required = true,
+  var valid_590264 = path.getOrDefault("merchantOrderId")
+  valid_590264 = validateParameter(valid_590264, JString, required = true,
                                  default = nil)
-  if valid_581235 != nil:
-    section.add "merchantOrderId", valid_581235
-  var valid_581236 = path.getOrDefault("merchantId")
-  valid_581236 = validateParameter(valid_581236, JString, required = true,
+  if valid_590264 != nil:
+    section.add "merchantOrderId", valid_590264
+  var valid_590265 = path.getOrDefault("merchantId")
+  valid_590265 = validateParameter(valid_590265, JString, required = true,
                                  default = nil)
-  if valid_581236 != nil:
-    section.add "merchantId", valid_581236
+  if valid_590265 != nil:
+    section.add "merchantId", valid_590265
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -12278,41 +12278,41 @@ proc validate_ContentOrdersGetbymerchantorderid_581233(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_581237 = query.getOrDefault("fields")
-  valid_581237 = validateParameter(valid_581237, JString, required = false,
+  var valid_590266 = query.getOrDefault("fields")
+  valid_590266 = validateParameter(valid_590266, JString, required = false,
                                  default = nil)
-  if valid_581237 != nil:
-    section.add "fields", valid_581237
-  var valid_581238 = query.getOrDefault("quotaUser")
-  valid_581238 = validateParameter(valid_581238, JString, required = false,
+  if valid_590266 != nil:
+    section.add "fields", valid_590266
+  var valid_590267 = query.getOrDefault("quotaUser")
+  valid_590267 = validateParameter(valid_590267, JString, required = false,
                                  default = nil)
-  if valid_581238 != nil:
-    section.add "quotaUser", valid_581238
-  var valid_581239 = query.getOrDefault("alt")
-  valid_581239 = validateParameter(valid_581239, JString, required = false,
+  if valid_590267 != nil:
+    section.add "quotaUser", valid_590267
+  var valid_590268 = query.getOrDefault("alt")
+  valid_590268 = validateParameter(valid_590268, JString, required = false,
                                  default = newJString("json"))
-  if valid_581239 != nil:
-    section.add "alt", valid_581239
-  var valid_581240 = query.getOrDefault("oauth_token")
-  valid_581240 = validateParameter(valid_581240, JString, required = false,
+  if valid_590268 != nil:
+    section.add "alt", valid_590268
+  var valid_590269 = query.getOrDefault("oauth_token")
+  valid_590269 = validateParameter(valid_590269, JString, required = false,
                                  default = nil)
-  if valid_581240 != nil:
-    section.add "oauth_token", valid_581240
-  var valid_581241 = query.getOrDefault("userIp")
-  valid_581241 = validateParameter(valid_581241, JString, required = false,
+  if valid_590269 != nil:
+    section.add "oauth_token", valid_590269
+  var valid_590270 = query.getOrDefault("userIp")
+  valid_590270 = validateParameter(valid_590270, JString, required = false,
                                  default = nil)
-  if valid_581241 != nil:
-    section.add "userIp", valid_581241
-  var valid_581242 = query.getOrDefault("key")
-  valid_581242 = validateParameter(valid_581242, JString, required = false,
+  if valid_590270 != nil:
+    section.add "userIp", valid_590270
+  var valid_590271 = query.getOrDefault("key")
+  valid_590271 = validateParameter(valid_590271, JString, required = false,
                                  default = nil)
-  if valid_581242 != nil:
-    section.add "key", valid_581242
-  var valid_581243 = query.getOrDefault("prettyPrint")
-  valid_581243 = validateParameter(valid_581243, JBool, required = false,
+  if valid_590271 != nil:
+    section.add "key", valid_590271
+  var valid_590272 = query.getOrDefault("prettyPrint")
+  valid_590272 = validateParameter(valid_590272, JBool, required = false,
                                  default = newJBool(true))
-  if valid_581243 != nil:
-    section.add "prettyPrint", valid_581243
+  if valid_590272 != nil:
+    section.add "prettyPrint", valid_590272
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -12321,21 +12321,21 @@ proc validate_ContentOrdersGetbymerchantorderid_581233(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_581244: Call_ContentOrdersGetbymerchantorderid_581232;
+proc call*(call_590273: Call_ContentOrdersGetbymerchantorderid_590261;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Retrieves an order using merchant order ID.
   ## 
-  let valid = call_581244.validator(path, query, header, formData, body)
-  let scheme = call_581244.pickScheme
+  let valid = call_590273.validator(path, query, header, formData, body)
+  let scheme = call_590273.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_581244.url(scheme.get, call_581244.host, call_581244.base,
-                         call_581244.route, valid.getOrDefault("path"),
+  let url = call_590273.url(scheme.get, call_590273.host, call_590273.base,
+                         call_590273.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_581244, url, valid)
+  result = hook(call_590273, url, valid)
 
-proc call*(call_581245: Call_ContentOrdersGetbymerchantorderid_581232;
+proc call*(call_590274: Call_ContentOrdersGetbymerchantorderid_590261;
           merchantOrderId: string; merchantId: string; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; key: string = ""; prettyPrint: bool = true): Recallable =
@@ -12359,29 +12359,29 @@ proc call*(call_581245: Call_ContentOrdersGetbymerchantorderid_581232;
   ##             : The ID of the account that manages the order. This cannot be a multi-client account.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_581246 = newJObject()
-  var query_581247 = newJObject()
-  add(query_581247, "fields", newJString(fields))
-  add(query_581247, "quotaUser", newJString(quotaUser))
-  add(query_581247, "alt", newJString(alt))
-  add(query_581247, "oauth_token", newJString(oauthToken))
-  add(query_581247, "userIp", newJString(userIp))
-  add(query_581247, "key", newJString(key))
-  add(path_581246, "merchantOrderId", newJString(merchantOrderId))
-  add(path_581246, "merchantId", newJString(merchantId))
-  add(query_581247, "prettyPrint", newJBool(prettyPrint))
-  result = call_581245.call(path_581246, query_581247, nil, nil, nil)
+  var path_590275 = newJObject()
+  var query_590276 = newJObject()
+  add(query_590276, "fields", newJString(fields))
+  add(query_590276, "quotaUser", newJString(quotaUser))
+  add(query_590276, "alt", newJString(alt))
+  add(query_590276, "oauth_token", newJString(oauthToken))
+  add(query_590276, "userIp", newJString(userIp))
+  add(query_590276, "key", newJString(key))
+  add(path_590275, "merchantOrderId", newJString(merchantOrderId))
+  add(path_590275, "merchantId", newJString(merchantId))
+  add(query_590276, "prettyPrint", newJBool(prettyPrint))
+  result = call_590274.call(path_590275, query_590276, nil, nil, nil)
 
-var contentOrdersGetbymerchantorderid* = Call_ContentOrdersGetbymerchantorderid_581232(
+var contentOrdersGetbymerchantorderid* = Call_ContentOrdersGetbymerchantorderid_590261(
     name: "contentOrdersGetbymerchantorderid", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com",
     route: "/{merchantId}/ordersbymerchantid/{merchantOrderId}",
-    validator: validate_ContentOrdersGetbymerchantorderid_581233,
-    base: "/content/v2", url: url_ContentOrdersGetbymerchantorderid_581234,
+    validator: validate_ContentOrdersGetbymerchantorderid_590262,
+    base: "/content/v2", url: url_ContentOrdersGetbymerchantorderid_590263,
     schemes: {Scheme.Https})
 type
-  Call_ContentPosInventory_581248 = ref object of OpenApiRestCall_579421
-proc url_ContentPosInventory_581250(protocol: Scheme; host: string; base: string;
+  Call_ContentPosInventory_590277 = ref object of OpenApiRestCall_588450
+proc url_ContentPosInventory_590279(protocol: Scheme; host: string; base: string;
                                    route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -12401,7 +12401,7 @@ proc url_ContentPosInventory_581250(protocol: Scheme; host: string; base: string
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_ContentPosInventory_581249(path: JsonNode; query: JsonNode;
+proc validate_ContentPosInventory_590278(path: JsonNode; query: JsonNode;
                                         header: JsonNode; formData: JsonNode;
                                         body: JsonNode): JsonNode =
   ## Submit inventory for the given merchant.
@@ -12416,16 +12416,16 @@ proc validate_ContentPosInventory_581249(path: JsonNode; query: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `targetMerchantId` field"
-  var valid_581251 = path.getOrDefault("targetMerchantId")
-  valid_581251 = validateParameter(valid_581251, JString, required = true,
+  var valid_590280 = path.getOrDefault("targetMerchantId")
+  valid_590280 = validateParameter(valid_590280, JString, required = true,
                                  default = nil)
-  if valid_581251 != nil:
-    section.add "targetMerchantId", valid_581251
-  var valid_581252 = path.getOrDefault("merchantId")
-  valid_581252 = validateParameter(valid_581252, JString, required = true,
+  if valid_590280 != nil:
+    section.add "targetMerchantId", valid_590280
+  var valid_590281 = path.getOrDefault("merchantId")
+  valid_590281 = validateParameter(valid_590281, JString, required = true,
                                  default = nil)
-  if valid_581252 != nil:
-    section.add "merchantId", valid_581252
+  if valid_590281 != nil:
+    section.add "merchantId", valid_590281
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -12445,45 +12445,45 @@ proc validate_ContentPosInventory_581249(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_581253 = query.getOrDefault("fields")
-  valid_581253 = validateParameter(valid_581253, JString, required = false,
+  var valid_590282 = query.getOrDefault("fields")
+  valid_590282 = validateParameter(valid_590282, JString, required = false,
                                  default = nil)
-  if valid_581253 != nil:
-    section.add "fields", valid_581253
-  var valid_581254 = query.getOrDefault("quotaUser")
-  valid_581254 = validateParameter(valid_581254, JString, required = false,
+  if valid_590282 != nil:
+    section.add "fields", valid_590282
+  var valid_590283 = query.getOrDefault("quotaUser")
+  valid_590283 = validateParameter(valid_590283, JString, required = false,
                                  default = nil)
-  if valid_581254 != nil:
-    section.add "quotaUser", valid_581254
-  var valid_581255 = query.getOrDefault("alt")
-  valid_581255 = validateParameter(valid_581255, JString, required = false,
+  if valid_590283 != nil:
+    section.add "quotaUser", valid_590283
+  var valid_590284 = query.getOrDefault("alt")
+  valid_590284 = validateParameter(valid_590284, JString, required = false,
                                  default = newJString("json"))
-  if valid_581255 != nil:
-    section.add "alt", valid_581255
-  var valid_581256 = query.getOrDefault("dryRun")
-  valid_581256 = validateParameter(valid_581256, JBool, required = false, default = nil)
-  if valid_581256 != nil:
-    section.add "dryRun", valid_581256
-  var valid_581257 = query.getOrDefault("oauth_token")
-  valid_581257 = validateParameter(valid_581257, JString, required = false,
+  if valid_590284 != nil:
+    section.add "alt", valid_590284
+  var valid_590285 = query.getOrDefault("dryRun")
+  valid_590285 = validateParameter(valid_590285, JBool, required = false, default = nil)
+  if valid_590285 != nil:
+    section.add "dryRun", valid_590285
+  var valid_590286 = query.getOrDefault("oauth_token")
+  valid_590286 = validateParameter(valid_590286, JString, required = false,
                                  default = nil)
-  if valid_581257 != nil:
-    section.add "oauth_token", valid_581257
-  var valid_581258 = query.getOrDefault("userIp")
-  valid_581258 = validateParameter(valid_581258, JString, required = false,
+  if valid_590286 != nil:
+    section.add "oauth_token", valid_590286
+  var valid_590287 = query.getOrDefault("userIp")
+  valid_590287 = validateParameter(valid_590287, JString, required = false,
                                  default = nil)
-  if valid_581258 != nil:
-    section.add "userIp", valid_581258
-  var valid_581259 = query.getOrDefault("key")
-  valid_581259 = validateParameter(valid_581259, JString, required = false,
+  if valid_590287 != nil:
+    section.add "userIp", valid_590287
+  var valid_590288 = query.getOrDefault("key")
+  valid_590288 = validateParameter(valid_590288, JString, required = false,
                                  default = nil)
-  if valid_581259 != nil:
-    section.add "key", valid_581259
-  var valid_581260 = query.getOrDefault("prettyPrint")
-  valid_581260 = validateParameter(valid_581260, JBool, required = false,
+  if valid_590288 != nil:
+    section.add "key", valid_590288
+  var valid_590289 = query.getOrDefault("prettyPrint")
+  valid_590289 = validateParameter(valid_590289, JBool, required = false,
                                  default = newJBool(true))
-  if valid_581260 != nil:
-    section.add "prettyPrint", valid_581260
+  if valid_590289 != nil:
+    section.add "prettyPrint", valid_590289
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -12495,20 +12495,20 @@ proc validate_ContentPosInventory_581249(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_581262: Call_ContentPosInventory_581248; path: JsonNode;
+proc call*(call_590291: Call_ContentPosInventory_590277; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Submit inventory for the given merchant.
   ## 
-  let valid = call_581262.validator(path, query, header, formData, body)
-  let scheme = call_581262.pickScheme
+  let valid = call_590291.validator(path, query, header, formData, body)
+  let scheme = call_590291.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_581262.url(scheme.get, call_581262.host, call_581262.base,
-                         call_581262.route, valid.getOrDefault("path"),
+  let url = call_590291.url(scheme.get, call_590291.host, call_590291.base,
+                         call_590291.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_581262, url, valid)
+  result = hook(call_590291, url, valid)
 
-proc call*(call_581263: Call_ContentPosInventory_581248; targetMerchantId: string;
+proc call*(call_590292: Call_ContentPosInventory_590277; targetMerchantId: string;
           merchantId: string; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; dryRun: bool = false; oauthToken: string = "";
           userIp: string = ""; key: string = ""; body: JsonNode = nil;
@@ -12536,32 +12536,32 @@ proc call*(call_581263: Call_ContentPosInventory_581248; targetMerchantId: strin
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_581264 = newJObject()
-  var query_581265 = newJObject()
-  var body_581266 = newJObject()
-  add(query_581265, "fields", newJString(fields))
-  add(query_581265, "quotaUser", newJString(quotaUser))
-  add(query_581265, "alt", newJString(alt))
-  add(query_581265, "dryRun", newJBool(dryRun))
-  add(path_581264, "targetMerchantId", newJString(targetMerchantId))
-  add(query_581265, "oauth_token", newJString(oauthToken))
-  add(query_581265, "userIp", newJString(userIp))
-  add(query_581265, "key", newJString(key))
-  add(path_581264, "merchantId", newJString(merchantId))
+  var path_590293 = newJObject()
+  var query_590294 = newJObject()
+  var body_590295 = newJObject()
+  add(query_590294, "fields", newJString(fields))
+  add(query_590294, "quotaUser", newJString(quotaUser))
+  add(query_590294, "alt", newJString(alt))
+  add(query_590294, "dryRun", newJBool(dryRun))
+  add(path_590293, "targetMerchantId", newJString(targetMerchantId))
+  add(query_590294, "oauth_token", newJString(oauthToken))
+  add(query_590294, "userIp", newJString(userIp))
+  add(query_590294, "key", newJString(key))
+  add(path_590293, "merchantId", newJString(merchantId))
   if body != nil:
-    body_581266 = body
-  add(query_581265, "prettyPrint", newJBool(prettyPrint))
-  result = call_581263.call(path_581264, query_581265, nil, nil, body_581266)
+    body_590295 = body
+  add(query_590294, "prettyPrint", newJBool(prettyPrint))
+  result = call_590292.call(path_590293, query_590294, nil, nil, body_590295)
 
-var contentPosInventory* = Call_ContentPosInventory_581248(
+var contentPosInventory* = Call_ContentPosInventory_590277(
     name: "contentPosInventory", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com",
     route: "/{merchantId}/pos/{targetMerchantId}/inventory",
-    validator: validate_ContentPosInventory_581249, base: "/content/v2",
-    url: url_ContentPosInventory_581250, schemes: {Scheme.Https})
+    validator: validate_ContentPosInventory_590278, base: "/content/v2",
+    url: url_ContentPosInventory_590279, schemes: {Scheme.Https})
 type
-  Call_ContentPosSale_581267 = ref object of OpenApiRestCall_579421
-proc url_ContentPosSale_581269(protocol: Scheme; host: string; base: string;
+  Call_ContentPosSale_590296 = ref object of OpenApiRestCall_588450
+proc url_ContentPosSale_590298(protocol: Scheme; host: string; base: string;
                               route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -12581,7 +12581,7 @@ proc url_ContentPosSale_581269(protocol: Scheme; host: string; base: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_ContentPosSale_581268(path: JsonNode; query: JsonNode;
+proc validate_ContentPosSale_590297(path: JsonNode; query: JsonNode;
                                    header: JsonNode; formData: JsonNode;
                                    body: JsonNode): JsonNode =
   ## Submit a sale event for the given merchant.
@@ -12596,16 +12596,16 @@ proc validate_ContentPosSale_581268(path: JsonNode; query: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `targetMerchantId` field"
-  var valid_581270 = path.getOrDefault("targetMerchantId")
-  valid_581270 = validateParameter(valid_581270, JString, required = true,
+  var valid_590299 = path.getOrDefault("targetMerchantId")
+  valid_590299 = validateParameter(valid_590299, JString, required = true,
                                  default = nil)
-  if valid_581270 != nil:
-    section.add "targetMerchantId", valid_581270
-  var valid_581271 = path.getOrDefault("merchantId")
-  valid_581271 = validateParameter(valid_581271, JString, required = true,
+  if valid_590299 != nil:
+    section.add "targetMerchantId", valid_590299
+  var valid_590300 = path.getOrDefault("merchantId")
+  valid_590300 = validateParameter(valid_590300, JString, required = true,
                                  default = nil)
-  if valid_581271 != nil:
-    section.add "merchantId", valid_581271
+  if valid_590300 != nil:
+    section.add "merchantId", valid_590300
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -12625,45 +12625,45 @@ proc validate_ContentPosSale_581268(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_581272 = query.getOrDefault("fields")
-  valid_581272 = validateParameter(valid_581272, JString, required = false,
+  var valid_590301 = query.getOrDefault("fields")
+  valid_590301 = validateParameter(valid_590301, JString, required = false,
                                  default = nil)
-  if valid_581272 != nil:
-    section.add "fields", valid_581272
-  var valid_581273 = query.getOrDefault("quotaUser")
-  valid_581273 = validateParameter(valid_581273, JString, required = false,
+  if valid_590301 != nil:
+    section.add "fields", valid_590301
+  var valid_590302 = query.getOrDefault("quotaUser")
+  valid_590302 = validateParameter(valid_590302, JString, required = false,
                                  default = nil)
-  if valid_581273 != nil:
-    section.add "quotaUser", valid_581273
-  var valid_581274 = query.getOrDefault("alt")
-  valid_581274 = validateParameter(valid_581274, JString, required = false,
+  if valid_590302 != nil:
+    section.add "quotaUser", valid_590302
+  var valid_590303 = query.getOrDefault("alt")
+  valid_590303 = validateParameter(valid_590303, JString, required = false,
                                  default = newJString("json"))
-  if valid_581274 != nil:
-    section.add "alt", valid_581274
-  var valid_581275 = query.getOrDefault("dryRun")
-  valid_581275 = validateParameter(valid_581275, JBool, required = false, default = nil)
-  if valid_581275 != nil:
-    section.add "dryRun", valid_581275
-  var valid_581276 = query.getOrDefault("oauth_token")
-  valid_581276 = validateParameter(valid_581276, JString, required = false,
+  if valid_590303 != nil:
+    section.add "alt", valid_590303
+  var valid_590304 = query.getOrDefault("dryRun")
+  valid_590304 = validateParameter(valid_590304, JBool, required = false, default = nil)
+  if valid_590304 != nil:
+    section.add "dryRun", valid_590304
+  var valid_590305 = query.getOrDefault("oauth_token")
+  valid_590305 = validateParameter(valid_590305, JString, required = false,
                                  default = nil)
-  if valid_581276 != nil:
-    section.add "oauth_token", valid_581276
-  var valid_581277 = query.getOrDefault("userIp")
-  valid_581277 = validateParameter(valid_581277, JString, required = false,
+  if valid_590305 != nil:
+    section.add "oauth_token", valid_590305
+  var valid_590306 = query.getOrDefault("userIp")
+  valid_590306 = validateParameter(valid_590306, JString, required = false,
                                  default = nil)
-  if valid_581277 != nil:
-    section.add "userIp", valid_581277
-  var valid_581278 = query.getOrDefault("key")
-  valid_581278 = validateParameter(valid_581278, JString, required = false,
+  if valid_590306 != nil:
+    section.add "userIp", valid_590306
+  var valid_590307 = query.getOrDefault("key")
+  valid_590307 = validateParameter(valid_590307, JString, required = false,
                                  default = nil)
-  if valid_581278 != nil:
-    section.add "key", valid_581278
-  var valid_581279 = query.getOrDefault("prettyPrint")
-  valid_581279 = validateParameter(valid_581279, JBool, required = false,
+  if valid_590307 != nil:
+    section.add "key", valid_590307
+  var valid_590308 = query.getOrDefault("prettyPrint")
+  valid_590308 = validateParameter(valid_590308, JBool, required = false,
                                  default = newJBool(true))
-  if valid_581279 != nil:
-    section.add "prettyPrint", valid_581279
+  if valid_590308 != nil:
+    section.add "prettyPrint", valid_590308
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -12675,20 +12675,20 @@ proc validate_ContentPosSale_581268(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_581281: Call_ContentPosSale_581267; path: JsonNode; query: JsonNode;
+proc call*(call_590310: Call_ContentPosSale_590296; path: JsonNode; query: JsonNode;
           header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Submit a sale event for the given merchant.
   ## 
-  let valid = call_581281.validator(path, query, header, formData, body)
-  let scheme = call_581281.pickScheme
+  let valid = call_590310.validator(path, query, header, formData, body)
+  let scheme = call_590310.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_581281.url(scheme.get, call_581281.host, call_581281.base,
-                         call_581281.route, valid.getOrDefault("path"),
+  let url = call_590310.url(scheme.get, call_590310.host, call_590310.base,
+                         call_590310.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_581281, url, valid)
+  result = hook(call_590310, url, valid)
 
-proc call*(call_581282: Call_ContentPosSale_581267; targetMerchantId: string;
+proc call*(call_590311: Call_ContentPosSale_590296; targetMerchantId: string;
           merchantId: string; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; dryRun: bool = false; oauthToken: string = "";
           userIp: string = ""; key: string = ""; body: JsonNode = nil;
@@ -12716,31 +12716,31 @@ proc call*(call_581282: Call_ContentPosSale_581267; targetMerchantId: string;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_581283 = newJObject()
-  var query_581284 = newJObject()
-  var body_581285 = newJObject()
-  add(query_581284, "fields", newJString(fields))
-  add(query_581284, "quotaUser", newJString(quotaUser))
-  add(query_581284, "alt", newJString(alt))
-  add(query_581284, "dryRun", newJBool(dryRun))
-  add(path_581283, "targetMerchantId", newJString(targetMerchantId))
-  add(query_581284, "oauth_token", newJString(oauthToken))
-  add(query_581284, "userIp", newJString(userIp))
-  add(query_581284, "key", newJString(key))
-  add(path_581283, "merchantId", newJString(merchantId))
+  var path_590312 = newJObject()
+  var query_590313 = newJObject()
+  var body_590314 = newJObject()
+  add(query_590313, "fields", newJString(fields))
+  add(query_590313, "quotaUser", newJString(quotaUser))
+  add(query_590313, "alt", newJString(alt))
+  add(query_590313, "dryRun", newJBool(dryRun))
+  add(path_590312, "targetMerchantId", newJString(targetMerchantId))
+  add(query_590313, "oauth_token", newJString(oauthToken))
+  add(query_590313, "userIp", newJString(userIp))
+  add(query_590313, "key", newJString(key))
+  add(path_590312, "merchantId", newJString(merchantId))
   if body != nil:
-    body_581285 = body
-  add(query_581284, "prettyPrint", newJBool(prettyPrint))
-  result = call_581282.call(path_581283, query_581284, nil, nil, body_581285)
+    body_590314 = body
+  add(query_590313, "prettyPrint", newJBool(prettyPrint))
+  result = call_590311.call(path_590312, query_590313, nil, nil, body_590314)
 
-var contentPosSale* = Call_ContentPosSale_581267(name: "contentPosSale",
+var contentPosSale* = Call_ContentPosSale_590296(name: "contentPosSale",
     meth: HttpMethod.HttpPost, host: "www.googleapis.com",
     route: "/{merchantId}/pos/{targetMerchantId}/sale",
-    validator: validate_ContentPosSale_581268, base: "/content/v2",
-    url: url_ContentPosSale_581269, schemes: {Scheme.Https})
+    validator: validate_ContentPosSale_590297, base: "/content/v2",
+    url: url_ContentPosSale_590298, schemes: {Scheme.Https})
 type
-  Call_ContentPosInsert_581302 = ref object of OpenApiRestCall_579421
-proc url_ContentPosInsert_581304(protocol: Scheme; host: string; base: string;
+  Call_ContentPosInsert_590331 = ref object of OpenApiRestCall_588450
+proc url_ContentPosInsert_590333(protocol: Scheme; host: string; base: string;
                                 route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -12760,7 +12760,7 @@ proc url_ContentPosInsert_581304(protocol: Scheme; host: string; base: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_ContentPosInsert_581303(path: JsonNode; query: JsonNode;
+proc validate_ContentPosInsert_590332(path: JsonNode; query: JsonNode;
                                      header: JsonNode; formData: JsonNode;
                                      body: JsonNode): JsonNode =
   ## Creates a store for the given merchant.
@@ -12775,16 +12775,16 @@ proc validate_ContentPosInsert_581303(path: JsonNode; query: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `targetMerchantId` field"
-  var valid_581305 = path.getOrDefault("targetMerchantId")
-  valid_581305 = validateParameter(valid_581305, JString, required = true,
+  var valid_590334 = path.getOrDefault("targetMerchantId")
+  valid_590334 = validateParameter(valid_590334, JString, required = true,
                                  default = nil)
-  if valid_581305 != nil:
-    section.add "targetMerchantId", valid_581305
-  var valid_581306 = path.getOrDefault("merchantId")
-  valid_581306 = validateParameter(valid_581306, JString, required = true,
+  if valid_590334 != nil:
+    section.add "targetMerchantId", valid_590334
+  var valid_590335 = path.getOrDefault("merchantId")
+  valid_590335 = validateParameter(valid_590335, JString, required = true,
                                  default = nil)
-  if valid_581306 != nil:
-    section.add "merchantId", valid_581306
+  if valid_590335 != nil:
+    section.add "merchantId", valid_590335
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -12804,45 +12804,45 @@ proc validate_ContentPosInsert_581303(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_581307 = query.getOrDefault("fields")
-  valid_581307 = validateParameter(valid_581307, JString, required = false,
+  var valid_590336 = query.getOrDefault("fields")
+  valid_590336 = validateParameter(valid_590336, JString, required = false,
                                  default = nil)
-  if valid_581307 != nil:
-    section.add "fields", valid_581307
-  var valid_581308 = query.getOrDefault("quotaUser")
-  valid_581308 = validateParameter(valid_581308, JString, required = false,
+  if valid_590336 != nil:
+    section.add "fields", valid_590336
+  var valid_590337 = query.getOrDefault("quotaUser")
+  valid_590337 = validateParameter(valid_590337, JString, required = false,
                                  default = nil)
-  if valid_581308 != nil:
-    section.add "quotaUser", valid_581308
-  var valid_581309 = query.getOrDefault("alt")
-  valid_581309 = validateParameter(valid_581309, JString, required = false,
+  if valid_590337 != nil:
+    section.add "quotaUser", valid_590337
+  var valid_590338 = query.getOrDefault("alt")
+  valid_590338 = validateParameter(valid_590338, JString, required = false,
                                  default = newJString("json"))
-  if valid_581309 != nil:
-    section.add "alt", valid_581309
-  var valid_581310 = query.getOrDefault("dryRun")
-  valid_581310 = validateParameter(valid_581310, JBool, required = false, default = nil)
-  if valid_581310 != nil:
-    section.add "dryRun", valid_581310
-  var valid_581311 = query.getOrDefault("oauth_token")
-  valid_581311 = validateParameter(valid_581311, JString, required = false,
+  if valid_590338 != nil:
+    section.add "alt", valid_590338
+  var valid_590339 = query.getOrDefault("dryRun")
+  valid_590339 = validateParameter(valid_590339, JBool, required = false, default = nil)
+  if valid_590339 != nil:
+    section.add "dryRun", valid_590339
+  var valid_590340 = query.getOrDefault("oauth_token")
+  valid_590340 = validateParameter(valid_590340, JString, required = false,
                                  default = nil)
-  if valid_581311 != nil:
-    section.add "oauth_token", valid_581311
-  var valid_581312 = query.getOrDefault("userIp")
-  valid_581312 = validateParameter(valid_581312, JString, required = false,
+  if valid_590340 != nil:
+    section.add "oauth_token", valid_590340
+  var valid_590341 = query.getOrDefault("userIp")
+  valid_590341 = validateParameter(valid_590341, JString, required = false,
                                  default = nil)
-  if valid_581312 != nil:
-    section.add "userIp", valid_581312
-  var valid_581313 = query.getOrDefault("key")
-  valid_581313 = validateParameter(valid_581313, JString, required = false,
+  if valid_590341 != nil:
+    section.add "userIp", valid_590341
+  var valid_590342 = query.getOrDefault("key")
+  valid_590342 = validateParameter(valid_590342, JString, required = false,
                                  default = nil)
-  if valid_581313 != nil:
-    section.add "key", valid_581313
-  var valid_581314 = query.getOrDefault("prettyPrint")
-  valid_581314 = validateParameter(valid_581314, JBool, required = false,
+  if valid_590342 != nil:
+    section.add "key", valid_590342
+  var valid_590343 = query.getOrDefault("prettyPrint")
+  valid_590343 = validateParameter(valid_590343, JBool, required = false,
                                  default = newJBool(true))
-  if valid_581314 != nil:
-    section.add "prettyPrint", valid_581314
+  if valid_590343 != nil:
+    section.add "prettyPrint", valid_590343
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -12854,20 +12854,20 @@ proc validate_ContentPosInsert_581303(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_581316: Call_ContentPosInsert_581302; path: JsonNode;
+proc call*(call_590345: Call_ContentPosInsert_590331; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Creates a store for the given merchant.
   ## 
-  let valid = call_581316.validator(path, query, header, formData, body)
-  let scheme = call_581316.pickScheme
+  let valid = call_590345.validator(path, query, header, formData, body)
+  let scheme = call_590345.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_581316.url(scheme.get, call_581316.host, call_581316.base,
-                         call_581316.route, valid.getOrDefault("path"),
+  let url = call_590345.url(scheme.get, call_590345.host, call_590345.base,
+                         call_590345.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_581316, url, valid)
+  result = hook(call_590345, url, valid)
 
-proc call*(call_581317: Call_ContentPosInsert_581302; targetMerchantId: string;
+proc call*(call_590346: Call_ContentPosInsert_590331; targetMerchantId: string;
           merchantId: string; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; dryRun: bool = false; oauthToken: string = "";
           userIp: string = ""; key: string = ""; body: JsonNode = nil;
@@ -12895,31 +12895,31 @@ proc call*(call_581317: Call_ContentPosInsert_581302; targetMerchantId: string;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_581318 = newJObject()
-  var query_581319 = newJObject()
-  var body_581320 = newJObject()
-  add(query_581319, "fields", newJString(fields))
-  add(query_581319, "quotaUser", newJString(quotaUser))
-  add(query_581319, "alt", newJString(alt))
-  add(query_581319, "dryRun", newJBool(dryRun))
-  add(path_581318, "targetMerchantId", newJString(targetMerchantId))
-  add(query_581319, "oauth_token", newJString(oauthToken))
-  add(query_581319, "userIp", newJString(userIp))
-  add(query_581319, "key", newJString(key))
-  add(path_581318, "merchantId", newJString(merchantId))
+  var path_590347 = newJObject()
+  var query_590348 = newJObject()
+  var body_590349 = newJObject()
+  add(query_590348, "fields", newJString(fields))
+  add(query_590348, "quotaUser", newJString(quotaUser))
+  add(query_590348, "alt", newJString(alt))
+  add(query_590348, "dryRun", newJBool(dryRun))
+  add(path_590347, "targetMerchantId", newJString(targetMerchantId))
+  add(query_590348, "oauth_token", newJString(oauthToken))
+  add(query_590348, "userIp", newJString(userIp))
+  add(query_590348, "key", newJString(key))
+  add(path_590347, "merchantId", newJString(merchantId))
   if body != nil:
-    body_581320 = body
-  add(query_581319, "prettyPrint", newJBool(prettyPrint))
-  result = call_581317.call(path_581318, query_581319, nil, nil, body_581320)
+    body_590349 = body
+  add(query_590348, "prettyPrint", newJBool(prettyPrint))
+  result = call_590346.call(path_590347, query_590348, nil, nil, body_590349)
 
-var contentPosInsert* = Call_ContentPosInsert_581302(name: "contentPosInsert",
+var contentPosInsert* = Call_ContentPosInsert_590331(name: "contentPosInsert",
     meth: HttpMethod.HttpPost, host: "www.googleapis.com",
     route: "/{merchantId}/pos/{targetMerchantId}/store",
-    validator: validate_ContentPosInsert_581303, base: "/content/v2",
-    url: url_ContentPosInsert_581304, schemes: {Scheme.Https})
+    validator: validate_ContentPosInsert_590332, base: "/content/v2",
+    url: url_ContentPosInsert_590333, schemes: {Scheme.Https})
 type
-  Call_ContentPosList_581286 = ref object of OpenApiRestCall_579421
-proc url_ContentPosList_581288(protocol: Scheme; host: string; base: string;
+  Call_ContentPosList_590315 = ref object of OpenApiRestCall_588450
+proc url_ContentPosList_590317(protocol: Scheme; host: string; base: string;
                               route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -12939,7 +12939,7 @@ proc url_ContentPosList_581288(protocol: Scheme; host: string; base: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_ContentPosList_581287(path: JsonNode; query: JsonNode;
+proc validate_ContentPosList_590316(path: JsonNode; query: JsonNode;
                                    header: JsonNode; formData: JsonNode;
                                    body: JsonNode): JsonNode =
   ## Lists the stores of the target merchant.
@@ -12954,16 +12954,16 @@ proc validate_ContentPosList_581287(path: JsonNode; query: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `targetMerchantId` field"
-  var valid_581289 = path.getOrDefault("targetMerchantId")
-  valid_581289 = validateParameter(valid_581289, JString, required = true,
+  var valid_590318 = path.getOrDefault("targetMerchantId")
+  valid_590318 = validateParameter(valid_590318, JString, required = true,
                                  default = nil)
-  if valid_581289 != nil:
-    section.add "targetMerchantId", valid_581289
-  var valid_581290 = path.getOrDefault("merchantId")
-  valid_581290 = validateParameter(valid_581290, JString, required = true,
+  if valid_590318 != nil:
+    section.add "targetMerchantId", valid_590318
+  var valid_590319 = path.getOrDefault("merchantId")
+  valid_590319 = validateParameter(valid_590319, JString, required = true,
                                  default = nil)
-  if valid_581290 != nil:
-    section.add "merchantId", valid_581290
+  if valid_590319 != nil:
+    section.add "merchantId", valid_590319
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -12981,41 +12981,41 @@ proc validate_ContentPosList_581287(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_581291 = query.getOrDefault("fields")
-  valid_581291 = validateParameter(valid_581291, JString, required = false,
+  var valid_590320 = query.getOrDefault("fields")
+  valid_590320 = validateParameter(valid_590320, JString, required = false,
                                  default = nil)
-  if valid_581291 != nil:
-    section.add "fields", valid_581291
-  var valid_581292 = query.getOrDefault("quotaUser")
-  valid_581292 = validateParameter(valid_581292, JString, required = false,
+  if valid_590320 != nil:
+    section.add "fields", valid_590320
+  var valid_590321 = query.getOrDefault("quotaUser")
+  valid_590321 = validateParameter(valid_590321, JString, required = false,
                                  default = nil)
-  if valid_581292 != nil:
-    section.add "quotaUser", valid_581292
-  var valid_581293 = query.getOrDefault("alt")
-  valid_581293 = validateParameter(valid_581293, JString, required = false,
+  if valid_590321 != nil:
+    section.add "quotaUser", valid_590321
+  var valid_590322 = query.getOrDefault("alt")
+  valid_590322 = validateParameter(valid_590322, JString, required = false,
                                  default = newJString("json"))
-  if valid_581293 != nil:
-    section.add "alt", valid_581293
-  var valid_581294 = query.getOrDefault("oauth_token")
-  valid_581294 = validateParameter(valid_581294, JString, required = false,
+  if valid_590322 != nil:
+    section.add "alt", valid_590322
+  var valid_590323 = query.getOrDefault("oauth_token")
+  valid_590323 = validateParameter(valid_590323, JString, required = false,
                                  default = nil)
-  if valid_581294 != nil:
-    section.add "oauth_token", valid_581294
-  var valid_581295 = query.getOrDefault("userIp")
-  valid_581295 = validateParameter(valid_581295, JString, required = false,
+  if valid_590323 != nil:
+    section.add "oauth_token", valid_590323
+  var valid_590324 = query.getOrDefault("userIp")
+  valid_590324 = validateParameter(valid_590324, JString, required = false,
                                  default = nil)
-  if valid_581295 != nil:
-    section.add "userIp", valid_581295
-  var valid_581296 = query.getOrDefault("key")
-  valid_581296 = validateParameter(valid_581296, JString, required = false,
+  if valid_590324 != nil:
+    section.add "userIp", valid_590324
+  var valid_590325 = query.getOrDefault("key")
+  valid_590325 = validateParameter(valid_590325, JString, required = false,
                                  default = nil)
-  if valid_581296 != nil:
-    section.add "key", valid_581296
-  var valid_581297 = query.getOrDefault("prettyPrint")
-  valid_581297 = validateParameter(valid_581297, JBool, required = false,
+  if valid_590325 != nil:
+    section.add "key", valid_590325
+  var valid_590326 = query.getOrDefault("prettyPrint")
+  valid_590326 = validateParameter(valid_590326, JBool, required = false,
                                  default = newJBool(true))
-  if valid_581297 != nil:
-    section.add "prettyPrint", valid_581297
+  if valid_590326 != nil:
+    section.add "prettyPrint", valid_590326
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -13024,20 +13024,20 @@ proc validate_ContentPosList_581287(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_581298: Call_ContentPosList_581286; path: JsonNode; query: JsonNode;
+proc call*(call_590327: Call_ContentPosList_590315; path: JsonNode; query: JsonNode;
           header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Lists the stores of the target merchant.
   ## 
-  let valid = call_581298.validator(path, query, header, formData, body)
-  let scheme = call_581298.pickScheme
+  let valid = call_590327.validator(path, query, header, formData, body)
+  let scheme = call_590327.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_581298.url(scheme.get, call_581298.host, call_581298.base,
-                         call_581298.route, valid.getOrDefault("path"),
+  let url = call_590327.url(scheme.get, call_590327.host, call_590327.base,
+                         call_590327.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_581298, url, valid)
+  result = hook(call_590327, url, valid)
 
-proc call*(call_581299: Call_ContentPosList_581286; targetMerchantId: string;
+proc call*(call_590328: Call_ContentPosList_590315; targetMerchantId: string;
           merchantId: string; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; userIp: string = "";
           key: string = ""; prettyPrint: bool = true): Recallable =
@@ -13061,27 +13061,27 @@ proc call*(call_581299: Call_ContentPosList_581286; targetMerchantId: string;
   ##             : The ID of the POS or inventory data provider.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_581300 = newJObject()
-  var query_581301 = newJObject()
-  add(query_581301, "fields", newJString(fields))
-  add(query_581301, "quotaUser", newJString(quotaUser))
-  add(query_581301, "alt", newJString(alt))
-  add(path_581300, "targetMerchantId", newJString(targetMerchantId))
-  add(query_581301, "oauth_token", newJString(oauthToken))
-  add(query_581301, "userIp", newJString(userIp))
-  add(query_581301, "key", newJString(key))
-  add(path_581300, "merchantId", newJString(merchantId))
-  add(query_581301, "prettyPrint", newJBool(prettyPrint))
-  result = call_581299.call(path_581300, query_581301, nil, nil, nil)
+  var path_590329 = newJObject()
+  var query_590330 = newJObject()
+  add(query_590330, "fields", newJString(fields))
+  add(query_590330, "quotaUser", newJString(quotaUser))
+  add(query_590330, "alt", newJString(alt))
+  add(path_590329, "targetMerchantId", newJString(targetMerchantId))
+  add(query_590330, "oauth_token", newJString(oauthToken))
+  add(query_590330, "userIp", newJString(userIp))
+  add(query_590330, "key", newJString(key))
+  add(path_590329, "merchantId", newJString(merchantId))
+  add(query_590330, "prettyPrint", newJBool(prettyPrint))
+  result = call_590328.call(path_590329, query_590330, nil, nil, nil)
 
-var contentPosList* = Call_ContentPosList_581286(name: "contentPosList",
+var contentPosList* = Call_ContentPosList_590315(name: "contentPosList",
     meth: HttpMethod.HttpGet, host: "www.googleapis.com",
     route: "/{merchantId}/pos/{targetMerchantId}/store",
-    validator: validate_ContentPosList_581287, base: "/content/v2",
-    url: url_ContentPosList_581288, schemes: {Scheme.Https})
+    validator: validate_ContentPosList_590316, base: "/content/v2",
+    url: url_ContentPosList_590317, schemes: {Scheme.Https})
 type
-  Call_ContentPosGet_581321 = ref object of OpenApiRestCall_579421
-proc url_ContentPosGet_581323(protocol: Scheme; host: string; base: string;
+  Call_ContentPosGet_590350 = ref object of OpenApiRestCall_588450
+proc url_ContentPosGet_590352(protocol: Scheme; host: string; base: string;
                              route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -13103,7 +13103,7 @@ proc url_ContentPosGet_581323(protocol: Scheme; host: string; base: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_ContentPosGet_581322(path: JsonNode; query: JsonNode; header: JsonNode;
+proc validate_ContentPosGet_590351(path: JsonNode; query: JsonNode; header: JsonNode;
                                   formData: JsonNode; body: JsonNode): JsonNode =
   ## Retrieves information about the given store.
   ## 
@@ -13119,21 +13119,21 @@ proc validate_ContentPosGet_581322(path: JsonNode; query: JsonNode; header: Json
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `targetMerchantId` field"
-  var valid_581324 = path.getOrDefault("targetMerchantId")
-  valid_581324 = validateParameter(valid_581324, JString, required = true,
+  var valid_590353 = path.getOrDefault("targetMerchantId")
+  valid_590353 = validateParameter(valid_590353, JString, required = true,
                                  default = nil)
-  if valid_581324 != nil:
-    section.add "targetMerchantId", valid_581324
-  var valid_581325 = path.getOrDefault("storeCode")
-  valid_581325 = validateParameter(valid_581325, JString, required = true,
+  if valid_590353 != nil:
+    section.add "targetMerchantId", valid_590353
+  var valid_590354 = path.getOrDefault("storeCode")
+  valid_590354 = validateParameter(valid_590354, JString, required = true,
                                  default = nil)
-  if valid_581325 != nil:
-    section.add "storeCode", valid_581325
-  var valid_581326 = path.getOrDefault("merchantId")
-  valid_581326 = validateParameter(valid_581326, JString, required = true,
+  if valid_590354 != nil:
+    section.add "storeCode", valid_590354
+  var valid_590355 = path.getOrDefault("merchantId")
+  valid_590355 = validateParameter(valid_590355, JString, required = true,
                                  default = nil)
-  if valid_581326 != nil:
-    section.add "merchantId", valid_581326
+  if valid_590355 != nil:
+    section.add "merchantId", valid_590355
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -13151,41 +13151,41 @@ proc validate_ContentPosGet_581322(path: JsonNode; query: JsonNode; header: Json
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_581327 = query.getOrDefault("fields")
-  valid_581327 = validateParameter(valid_581327, JString, required = false,
+  var valid_590356 = query.getOrDefault("fields")
+  valid_590356 = validateParameter(valid_590356, JString, required = false,
                                  default = nil)
-  if valid_581327 != nil:
-    section.add "fields", valid_581327
-  var valid_581328 = query.getOrDefault("quotaUser")
-  valid_581328 = validateParameter(valid_581328, JString, required = false,
+  if valid_590356 != nil:
+    section.add "fields", valid_590356
+  var valid_590357 = query.getOrDefault("quotaUser")
+  valid_590357 = validateParameter(valid_590357, JString, required = false,
                                  default = nil)
-  if valid_581328 != nil:
-    section.add "quotaUser", valid_581328
-  var valid_581329 = query.getOrDefault("alt")
-  valid_581329 = validateParameter(valid_581329, JString, required = false,
+  if valid_590357 != nil:
+    section.add "quotaUser", valid_590357
+  var valid_590358 = query.getOrDefault("alt")
+  valid_590358 = validateParameter(valid_590358, JString, required = false,
                                  default = newJString("json"))
-  if valid_581329 != nil:
-    section.add "alt", valid_581329
-  var valid_581330 = query.getOrDefault("oauth_token")
-  valid_581330 = validateParameter(valid_581330, JString, required = false,
+  if valid_590358 != nil:
+    section.add "alt", valid_590358
+  var valid_590359 = query.getOrDefault("oauth_token")
+  valid_590359 = validateParameter(valid_590359, JString, required = false,
                                  default = nil)
-  if valid_581330 != nil:
-    section.add "oauth_token", valid_581330
-  var valid_581331 = query.getOrDefault("userIp")
-  valid_581331 = validateParameter(valid_581331, JString, required = false,
+  if valid_590359 != nil:
+    section.add "oauth_token", valid_590359
+  var valid_590360 = query.getOrDefault("userIp")
+  valid_590360 = validateParameter(valid_590360, JString, required = false,
                                  default = nil)
-  if valid_581331 != nil:
-    section.add "userIp", valid_581331
-  var valid_581332 = query.getOrDefault("key")
-  valid_581332 = validateParameter(valid_581332, JString, required = false,
+  if valid_590360 != nil:
+    section.add "userIp", valid_590360
+  var valid_590361 = query.getOrDefault("key")
+  valid_590361 = validateParameter(valid_590361, JString, required = false,
                                  default = nil)
-  if valid_581332 != nil:
-    section.add "key", valid_581332
-  var valid_581333 = query.getOrDefault("prettyPrint")
-  valid_581333 = validateParameter(valid_581333, JBool, required = false,
+  if valid_590361 != nil:
+    section.add "key", valid_590361
+  var valid_590362 = query.getOrDefault("prettyPrint")
+  valid_590362 = validateParameter(valid_590362, JBool, required = false,
                                  default = newJBool(true))
-  if valid_581333 != nil:
-    section.add "prettyPrint", valid_581333
+  if valid_590362 != nil:
+    section.add "prettyPrint", valid_590362
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -13194,20 +13194,20 @@ proc validate_ContentPosGet_581322(path: JsonNode; query: JsonNode; header: Json
   if body != nil:
     result.add "body", body
 
-proc call*(call_581334: Call_ContentPosGet_581321; path: JsonNode; query: JsonNode;
+proc call*(call_590363: Call_ContentPosGet_590350; path: JsonNode; query: JsonNode;
           header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Retrieves information about the given store.
   ## 
-  let valid = call_581334.validator(path, query, header, formData, body)
-  let scheme = call_581334.pickScheme
+  let valid = call_590363.validator(path, query, header, formData, body)
+  let scheme = call_590363.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_581334.url(scheme.get, call_581334.host, call_581334.base,
-                         call_581334.route, valid.getOrDefault("path"),
+  let url = call_590363.url(scheme.get, call_590363.host, call_590363.base,
+                         call_590363.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_581334, url, valid)
+  result = hook(call_590363, url, valid)
 
-proc call*(call_581335: Call_ContentPosGet_581321; targetMerchantId: string;
+proc call*(call_590364: Call_ContentPosGet_590350; targetMerchantId: string;
           storeCode: string; merchantId: string; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; key: string = ""; prettyPrint: bool = true): Recallable =
@@ -13233,28 +13233,28 @@ proc call*(call_581335: Call_ContentPosGet_581321; targetMerchantId: string;
   ##             : The ID of the POS or inventory data provider.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_581336 = newJObject()
-  var query_581337 = newJObject()
-  add(query_581337, "fields", newJString(fields))
-  add(query_581337, "quotaUser", newJString(quotaUser))
-  add(query_581337, "alt", newJString(alt))
-  add(path_581336, "targetMerchantId", newJString(targetMerchantId))
-  add(query_581337, "oauth_token", newJString(oauthToken))
-  add(path_581336, "storeCode", newJString(storeCode))
-  add(query_581337, "userIp", newJString(userIp))
-  add(query_581337, "key", newJString(key))
-  add(path_581336, "merchantId", newJString(merchantId))
-  add(query_581337, "prettyPrint", newJBool(prettyPrint))
-  result = call_581335.call(path_581336, query_581337, nil, nil, nil)
+  var path_590365 = newJObject()
+  var query_590366 = newJObject()
+  add(query_590366, "fields", newJString(fields))
+  add(query_590366, "quotaUser", newJString(quotaUser))
+  add(query_590366, "alt", newJString(alt))
+  add(path_590365, "targetMerchantId", newJString(targetMerchantId))
+  add(query_590366, "oauth_token", newJString(oauthToken))
+  add(path_590365, "storeCode", newJString(storeCode))
+  add(query_590366, "userIp", newJString(userIp))
+  add(query_590366, "key", newJString(key))
+  add(path_590365, "merchantId", newJString(merchantId))
+  add(query_590366, "prettyPrint", newJBool(prettyPrint))
+  result = call_590364.call(path_590365, query_590366, nil, nil, nil)
 
-var contentPosGet* = Call_ContentPosGet_581321(name: "contentPosGet",
+var contentPosGet* = Call_ContentPosGet_590350(name: "contentPosGet",
     meth: HttpMethod.HttpGet, host: "www.googleapis.com",
     route: "/{merchantId}/pos/{targetMerchantId}/store/{storeCode}",
-    validator: validate_ContentPosGet_581322, base: "/content/v2",
-    url: url_ContentPosGet_581323, schemes: {Scheme.Https})
+    validator: validate_ContentPosGet_590351, base: "/content/v2",
+    url: url_ContentPosGet_590352, schemes: {Scheme.Https})
 type
-  Call_ContentPosDelete_581338 = ref object of OpenApiRestCall_579421
-proc url_ContentPosDelete_581340(protocol: Scheme; host: string; base: string;
+  Call_ContentPosDelete_590367 = ref object of OpenApiRestCall_588450
+proc url_ContentPosDelete_590369(protocol: Scheme; host: string; base: string;
                                 route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -13276,7 +13276,7 @@ proc url_ContentPosDelete_581340(protocol: Scheme; host: string; base: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_ContentPosDelete_581339(path: JsonNode; query: JsonNode;
+proc validate_ContentPosDelete_590368(path: JsonNode; query: JsonNode;
                                      header: JsonNode; formData: JsonNode;
                                      body: JsonNode): JsonNode =
   ## Deletes a store for the given merchant.
@@ -13293,21 +13293,21 @@ proc validate_ContentPosDelete_581339(path: JsonNode; query: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `targetMerchantId` field"
-  var valid_581341 = path.getOrDefault("targetMerchantId")
-  valid_581341 = validateParameter(valid_581341, JString, required = true,
+  var valid_590370 = path.getOrDefault("targetMerchantId")
+  valid_590370 = validateParameter(valid_590370, JString, required = true,
                                  default = nil)
-  if valid_581341 != nil:
-    section.add "targetMerchantId", valid_581341
-  var valid_581342 = path.getOrDefault("storeCode")
-  valid_581342 = validateParameter(valid_581342, JString, required = true,
+  if valid_590370 != nil:
+    section.add "targetMerchantId", valid_590370
+  var valid_590371 = path.getOrDefault("storeCode")
+  valid_590371 = validateParameter(valid_590371, JString, required = true,
                                  default = nil)
-  if valid_581342 != nil:
-    section.add "storeCode", valid_581342
-  var valid_581343 = path.getOrDefault("merchantId")
-  valid_581343 = validateParameter(valid_581343, JString, required = true,
+  if valid_590371 != nil:
+    section.add "storeCode", valid_590371
+  var valid_590372 = path.getOrDefault("merchantId")
+  valid_590372 = validateParameter(valid_590372, JString, required = true,
                                  default = nil)
-  if valid_581343 != nil:
-    section.add "merchantId", valid_581343
+  if valid_590372 != nil:
+    section.add "merchantId", valid_590372
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -13327,45 +13327,45 @@ proc validate_ContentPosDelete_581339(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_581344 = query.getOrDefault("fields")
-  valid_581344 = validateParameter(valid_581344, JString, required = false,
+  var valid_590373 = query.getOrDefault("fields")
+  valid_590373 = validateParameter(valid_590373, JString, required = false,
                                  default = nil)
-  if valid_581344 != nil:
-    section.add "fields", valid_581344
-  var valid_581345 = query.getOrDefault("quotaUser")
-  valid_581345 = validateParameter(valid_581345, JString, required = false,
+  if valid_590373 != nil:
+    section.add "fields", valid_590373
+  var valid_590374 = query.getOrDefault("quotaUser")
+  valid_590374 = validateParameter(valid_590374, JString, required = false,
                                  default = nil)
-  if valid_581345 != nil:
-    section.add "quotaUser", valid_581345
-  var valid_581346 = query.getOrDefault("alt")
-  valid_581346 = validateParameter(valid_581346, JString, required = false,
+  if valid_590374 != nil:
+    section.add "quotaUser", valid_590374
+  var valid_590375 = query.getOrDefault("alt")
+  valid_590375 = validateParameter(valid_590375, JString, required = false,
                                  default = newJString("json"))
-  if valid_581346 != nil:
-    section.add "alt", valid_581346
-  var valid_581347 = query.getOrDefault("dryRun")
-  valid_581347 = validateParameter(valid_581347, JBool, required = false, default = nil)
-  if valid_581347 != nil:
-    section.add "dryRun", valid_581347
-  var valid_581348 = query.getOrDefault("oauth_token")
-  valid_581348 = validateParameter(valid_581348, JString, required = false,
+  if valid_590375 != nil:
+    section.add "alt", valid_590375
+  var valid_590376 = query.getOrDefault("dryRun")
+  valid_590376 = validateParameter(valid_590376, JBool, required = false, default = nil)
+  if valid_590376 != nil:
+    section.add "dryRun", valid_590376
+  var valid_590377 = query.getOrDefault("oauth_token")
+  valid_590377 = validateParameter(valid_590377, JString, required = false,
                                  default = nil)
-  if valid_581348 != nil:
-    section.add "oauth_token", valid_581348
-  var valid_581349 = query.getOrDefault("userIp")
-  valid_581349 = validateParameter(valid_581349, JString, required = false,
+  if valid_590377 != nil:
+    section.add "oauth_token", valid_590377
+  var valid_590378 = query.getOrDefault("userIp")
+  valid_590378 = validateParameter(valid_590378, JString, required = false,
                                  default = nil)
-  if valid_581349 != nil:
-    section.add "userIp", valid_581349
-  var valid_581350 = query.getOrDefault("key")
-  valid_581350 = validateParameter(valid_581350, JString, required = false,
+  if valid_590378 != nil:
+    section.add "userIp", valid_590378
+  var valid_590379 = query.getOrDefault("key")
+  valid_590379 = validateParameter(valid_590379, JString, required = false,
                                  default = nil)
-  if valid_581350 != nil:
-    section.add "key", valid_581350
-  var valid_581351 = query.getOrDefault("prettyPrint")
-  valid_581351 = validateParameter(valid_581351, JBool, required = false,
+  if valid_590379 != nil:
+    section.add "key", valid_590379
+  var valid_590380 = query.getOrDefault("prettyPrint")
+  valid_590380 = validateParameter(valid_590380, JBool, required = false,
                                  default = newJBool(true))
-  if valid_581351 != nil:
-    section.add "prettyPrint", valid_581351
+  if valid_590380 != nil:
+    section.add "prettyPrint", valid_590380
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -13374,20 +13374,20 @@ proc validate_ContentPosDelete_581339(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_581352: Call_ContentPosDelete_581338; path: JsonNode;
+proc call*(call_590381: Call_ContentPosDelete_590367; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Deletes a store for the given merchant.
   ## 
-  let valid = call_581352.validator(path, query, header, formData, body)
-  let scheme = call_581352.pickScheme
+  let valid = call_590381.validator(path, query, header, formData, body)
+  let scheme = call_590381.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_581352.url(scheme.get, call_581352.host, call_581352.base,
-                         call_581352.route, valid.getOrDefault("path"),
+  let url = call_590381.url(scheme.get, call_590381.host, call_590381.base,
+                         call_590381.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_581352, url, valid)
+  result = hook(call_590381, url, valid)
 
-proc call*(call_581353: Call_ContentPosDelete_581338; targetMerchantId: string;
+proc call*(call_590382: Call_ContentPosDelete_590367; targetMerchantId: string;
           storeCode: string; merchantId: string; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; dryRun: bool = false;
           oauthToken: string = ""; userIp: string = ""; key: string = "";
@@ -13416,29 +13416,29 @@ proc call*(call_581353: Call_ContentPosDelete_581338; targetMerchantId: string;
   ##             : The ID of the POS or inventory data provider.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_581354 = newJObject()
-  var query_581355 = newJObject()
-  add(query_581355, "fields", newJString(fields))
-  add(query_581355, "quotaUser", newJString(quotaUser))
-  add(query_581355, "alt", newJString(alt))
-  add(query_581355, "dryRun", newJBool(dryRun))
-  add(path_581354, "targetMerchantId", newJString(targetMerchantId))
-  add(query_581355, "oauth_token", newJString(oauthToken))
-  add(path_581354, "storeCode", newJString(storeCode))
-  add(query_581355, "userIp", newJString(userIp))
-  add(query_581355, "key", newJString(key))
-  add(path_581354, "merchantId", newJString(merchantId))
-  add(query_581355, "prettyPrint", newJBool(prettyPrint))
-  result = call_581353.call(path_581354, query_581355, nil, nil, nil)
+  var path_590383 = newJObject()
+  var query_590384 = newJObject()
+  add(query_590384, "fields", newJString(fields))
+  add(query_590384, "quotaUser", newJString(quotaUser))
+  add(query_590384, "alt", newJString(alt))
+  add(query_590384, "dryRun", newJBool(dryRun))
+  add(path_590383, "targetMerchantId", newJString(targetMerchantId))
+  add(query_590384, "oauth_token", newJString(oauthToken))
+  add(path_590383, "storeCode", newJString(storeCode))
+  add(query_590384, "userIp", newJString(userIp))
+  add(query_590384, "key", newJString(key))
+  add(path_590383, "merchantId", newJString(merchantId))
+  add(query_590384, "prettyPrint", newJBool(prettyPrint))
+  result = call_590382.call(path_590383, query_590384, nil, nil, nil)
 
-var contentPosDelete* = Call_ContentPosDelete_581338(name: "contentPosDelete",
+var contentPosDelete* = Call_ContentPosDelete_590367(name: "contentPosDelete",
     meth: HttpMethod.HttpDelete, host: "www.googleapis.com",
     route: "/{merchantId}/pos/{targetMerchantId}/store/{storeCode}",
-    validator: validate_ContentPosDelete_581339, base: "/content/v2",
-    url: url_ContentPosDelete_581340, schemes: {Scheme.Https})
+    validator: validate_ContentPosDelete_590368, base: "/content/v2",
+    url: url_ContentPosDelete_590369, schemes: {Scheme.Https})
 type
-  Call_ContentProductsInsert_581374 = ref object of OpenApiRestCall_579421
-proc url_ContentProductsInsert_581376(protocol: Scheme; host: string; base: string;
+  Call_ContentProductsInsert_590403 = ref object of OpenApiRestCall_588450
+proc url_ContentProductsInsert_590405(protocol: Scheme; host: string; base: string;
                                      route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -13454,7 +13454,7 @@ proc url_ContentProductsInsert_581376(protocol: Scheme; host: string; base: stri
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_ContentProductsInsert_581375(path: JsonNode; query: JsonNode;
+proc validate_ContentProductsInsert_590404(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Uploads a product to your Merchant Center account. If an item with the same channel, contentLanguage, offerId, and targetCountry already exists, this method updates that entry.
   ## 
@@ -13466,11 +13466,11 @@ proc validate_ContentProductsInsert_581375(path: JsonNode; query: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `merchantId` field"
-  var valid_581377 = path.getOrDefault("merchantId")
-  valid_581377 = validateParameter(valid_581377, JString, required = true,
+  var valid_590406 = path.getOrDefault("merchantId")
+  valid_590406 = validateParameter(valid_590406, JString, required = true,
                                  default = nil)
-  if valid_581377 != nil:
-    section.add "merchantId", valid_581377
+  if valid_590406 != nil:
+    section.add "merchantId", valid_590406
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -13490,45 +13490,45 @@ proc validate_ContentProductsInsert_581375(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_581378 = query.getOrDefault("fields")
-  valid_581378 = validateParameter(valid_581378, JString, required = false,
+  var valid_590407 = query.getOrDefault("fields")
+  valid_590407 = validateParameter(valid_590407, JString, required = false,
                                  default = nil)
-  if valid_581378 != nil:
-    section.add "fields", valid_581378
-  var valid_581379 = query.getOrDefault("quotaUser")
-  valid_581379 = validateParameter(valid_581379, JString, required = false,
+  if valid_590407 != nil:
+    section.add "fields", valid_590407
+  var valid_590408 = query.getOrDefault("quotaUser")
+  valid_590408 = validateParameter(valid_590408, JString, required = false,
                                  default = nil)
-  if valid_581379 != nil:
-    section.add "quotaUser", valid_581379
-  var valid_581380 = query.getOrDefault("alt")
-  valid_581380 = validateParameter(valid_581380, JString, required = false,
+  if valid_590408 != nil:
+    section.add "quotaUser", valid_590408
+  var valid_590409 = query.getOrDefault("alt")
+  valid_590409 = validateParameter(valid_590409, JString, required = false,
                                  default = newJString("json"))
-  if valid_581380 != nil:
-    section.add "alt", valid_581380
-  var valid_581381 = query.getOrDefault("dryRun")
-  valid_581381 = validateParameter(valid_581381, JBool, required = false, default = nil)
-  if valid_581381 != nil:
-    section.add "dryRun", valid_581381
-  var valid_581382 = query.getOrDefault("oauth_token")
-  valid_581382 = validateParameter(valid_581382, JString, required = false,
+  if valid_590409 != nil:
+    section.add "alt", valid_590409
+  var valid_590410 = query.getOrDefault("dryRun")
+  valid_590410 = validateParameter(valid_590410, JBool, required = false, default = nil)
+  if valid_590410 != nil:
+    section.add "dryRun", valid_590410
+  var valid_590411 = query.getOrDefault("oauth_token")
+  valid_590411 = validateParameter(valid_590411, JString, required = false,
                                  default = nil)
-  if valid_581382 != nil:
-    section.add "oauth_token", valid_581382
-  var valid_581383 = query.getOrDefault("userIp")
-  valid_581383 = validateParameter(valid_581383, JString, required = false,
+  if valid_590411 != nil:
+    section.add "oauth_token", valid_590411
+  var valid_590412 = query.getOrDefault("userIp")
+  valid_590412 = validateParameter(valid_590412, JString, required = false,
                                  default = nil)
-  if valid_581383 != nil:
-    section.add "userIp", valid_581383
-  var valid_581384 = query.getOrDefault("key")
-  valid_581384 = validateParameter(valid_581384, JString, required = false,
+  if valid_590412 != nil:
+    section.add "userIp", valid_590412
+  var valid_590413 = query.getOrDefault("key")
+  valid_590413 = validateParameter(valid_590413, JString, required = false,
                                  default = nil)
-  if valid_581384 != nil:
-    section.add "key", valid_581384
-  var valid_581385 = query.getOrDefault("prettyPrint")
-  valid_581385 = validateParameter(valid_581385, JBool, required = false,
+  if valid_590413 != nil:
+    section.add "key", valid_590413
+  var valid_590414 = query.getOrDefault("prettyPrint")
+  valid_590414 = validateParameter(valid_590414, JBool, required = false,
                                  default = newJBool(true))
-  if valid_581385 != nil:
-    section.add "prettyPrint", valid_581385
+  if valid_590414 != nil:
+    section.add "prettyPrint", valid_590414
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -13540,20 +13540,20 @@ proc validate_ContentProductsInsert_581375(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_581387: Call_ContentProductsInsert_581374; path: JsonNode;
+proc call*(call_590416: Call_ContentProductsInsert_590403; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Uploads a product to your Merchant Center account. If an item with the same channel, contentLanguage, offerId, and targetCountry already exists, this method updates that entry.
   ## 
-  let valid = call_581387.validator(path, query, header, formData, body)
-  let scheme = call_581387.pickScheme
+  let valid = call_590416.validator(path, query, header, formData, body)
+  let scheme = call_590416.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_581387.url(scheme.get, call_581387.host, call_581387.base,
-                         call_581387.route, valid.getOrDefault("path"),
+  let url = call_590416.url(scheme.get, call_590416.host, call_590416.base,
+                         call_590416.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_581387, url, valid)
+  result = hook(call_590416, url, valid)
 
-proc call*(call_581388: Call_ContentProductsInsert_581374; merchantId: string;
+proc call*(call_590417: Call_ContentProductsInsert_590403; merchantId: string;
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           dryRun: bool = false; oauthToken: string = ""; userIp: string = "";
           key: string = ""; body: JsonNode = nil; prettyPrint: bool = true): Recallable =
@@ -13578,30 +13578,30 @@ proc call*(call_581388: Call_ContentProductsInsert_581374; merchantId: string;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_581389 = newJObject()
-  var query_581390 = newJObject()
-  var body_581391 = newJObject()
-  add(query_581390, "fields", newJString(fields))
-  add(query_581390, "quotaUser", newJString(quotaUser))
-  add(query_581390, "alt", newJString(alt))
-  add(query_581390, "dryRun", newJBool(dryRun))
-  add(query_581390, "oauth_token", newJString(oauthToken))
-  add(query_581390, "userIp", newJString(userIp))
-  add(query_581390, "key", newJString(key))
-  add(path_581389, "merchantId", newJString(merchantId))
+  var path_590418 = newJObject()
+  var query_590419 = newJObject()
+  var body_590420 = newJObject()
+  add(query_590419, "fields", newJString(fields))
+  add(query_590419, "quotaUser", newJString(quotaUser))
+  add(query_590419, "alt", newJString(alt))
+  add(query_590419, "dryRun", newJBool(dryRun))
+  add(query_590419, "oauth_token", newJString(oauthToken))
+  add(query_590419, "userIp", newJString(userIp))
+  add(query_590419, "key", newJString(key))
+  add(path_590418, "merchantId", newJString(merchantId))
   if body != nil:
-    body_581391 = body
-  add(query_581390, "prettyPrint", newJBool(prettyPrint))
-  result = call_581388.call(path_581389, query_581390, nil, nil, body_581391)
+    body_590420 = body
+  add(query_590419, "prettyPrint", newJBool(prettyPrint))
+  result = call_590417.call(path_590418, query_590419, nil, nil, body_590420)
 
-var contentProductsInsert* = Call_ContentProductsInsert_581374(
+var contentProductsInsert* = Call_ContentProductsInsert_590403(
     name: "contentProductsInsert", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com", route: "/{merchantId}/products",
-    validator: validate_ContentProductsInsert_581375, base: "/content/v2",
-    url: url_ContentProductsInsert_581376, schemes: {Scheme.Https})
+    validator: validate_ContentProductsInsert_590404, base: "/content/v2",
+    url: url_ContentProductsInsert_590405, schemes: {Scheme.Https})
 type
-  Call_ContentProductsList_581356 = ref object of OpenApiRestCall_579421
-proc url_ContentProductsList_581358(protocol: Scheme; host: string; base: string;
+  Call_ContentProductsList_590385 = ref object of OpenApiRestCall_588450
+proc url_ContentProductsList_590387(protocol: Scheme; host: string; base: string;
                                    route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -13617,7 +13617,7 @@ proc url_ContentProductsList_581358(protocol: Scheme; host: string; base: string
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_ContentProductsList_581357(path: JsonNode; query: JsonNode;
+proc validate_ContentProductsList_590386(path: JsonNode; query: JsonNode;
                                         header: JsonNode; formData: JsonNode;
                                         body: JsonNode): JsonNode =
   ## Lists the products in your Merchant Center account.
@@ -13630,11 +13630,11 @@ proc validate_ContentProductsList_581357(path: JsonNode; query: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `merchantId` field"
-  var valid_581359 = path.getOrDefault("merchantId")
-  valid_581359 = validateParameter(valid_581359, JString, required = true,
+  var valid_590388 = path.getOrDefault("merchantId")
+  valid_590388 = validateParameter(valid_590388, JString, required = true,
                                  default = nil)
-  if valid_581359 != nil:
-    section.add "merchantId", valid_581359
+  if valid_590388 != nil:
+    section.add "merchantId", valid_590388
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -13658,54 +13658,54 @@ proc validate_ContentProductsList_581357(path: JsonNode; query: JsonNode;
   ##   includeInvalidInsertedItems: JBool
   ##                              : Flag to include the invalid inserted items in the result of the list request. By default the invalid items are not shown (the default value is false).
   section = newJObject()
-  var valid_581360 = query.getOrDefault("fields")
-  valid_581360 = validateParameter(valid_581360, JString, required = false,
+  var valid_590389 = query.getOrDefault("fields")
+  valid_590389 = validateParameter(valid_590389, JString, required = false,
                                  default = nil)
-  if valid_581360 != nil:
-    section.add "fields", valid_581360
-  var valid_581361 = query.getOrDefault("pageToken")
-  valid_581361 = validateParameter(valid_581361, JString, required = false,
+  if valid_590389 != nil:
+    section.add "fields", valid_590389
+  var valid_590390 = query.getOrDefault("pageToken")
+  valid_590390 = validateParameter(valid_590390, JString, required = false,
                                  default = nil)
-  if valid_581361 != nil:
-    section.add "pageToken", valid_581361
-  var valid_581362 = query.getOrDefault("quotaUser")
-  valid_581362 = validateParameter(valid_581362, JString, required = false,
+  if valid_590390 != nil:
+    section.add "pageToken", valid_590390
+  var valid_590391 = query.getOrDefault("quotaUser")
+  valid_590391 = validateParameter(valid_590391, JString, required = false,
                                  default = nil)
-  if valid_581362 != nil:
-    section.add "quotaUser", valid_581362
-  var valid_581363 = query.getOrDefault("alt")
-  valid_581363 = validateParameter(valid_581363, JString, required = false,
+  if valid_590391 != nil:
+    section.add "quotaUser", valid_590391
+  var valid_590392 = query.getOrDefault("alt")
+  valid_590392 = validateParameter(valid_590392, JString, required = false,
                                  default = newJString("json"))
-  if valid_581363 != nil:
-    section.add "alt", valid_581363
-  var valid_581364 = query.getOrDefault("oauth_token")
-  valid_581364 = validateParameter(valid_581364, JString, required = false,
+  if valid_590392 != nil:
+    section.add "alt", valid_590392
+  var valid_590393 = query.getOrDefault("oauth_token")
+  valid_590393 = validateParameter(valid_590393, JString, required = false,
                                  default = nil)
-  if valid_581364 != nil:
-    section.add "oauth_token", valid_581364
-  var valid_581365 = query.getOrDefault("userIp")
-  valid_581365 = validateParameter(valid_581365, JString, required = false,
+  if valid_590393 != nil:
+    section.add "oauth_token", valid_590393
+  var valid_590394 = query.getOrDefault("userIp")
+  valid_590394 = validateParameter(valid_590394, JString, required = false,
                                  default = nil)
-  if valid_581365 != nil:
-    section.add "userIp", valid_581365
-  var valid_581366 = query.getOrDefault("maxResults")
-  valid_581366 = validateParameter(valid_581366, JInt, required = false, default = nil)
-  if valid_581366 != nil:
-    section.add "maxResults", valid_581366
-  var valid_581367 = query.getOrDefault("key")
-  valid_581367 = validateParameter(valid_581367, JString, required = false,
+  if valid_590394 != nil:
+    section.add "userIp", valid_590394
+  var valid_590395 = query.getOrDefault("maxResults")
+  valid_590395 = validateParameter(valid_590395, JInt, required = false, default = nil)
+  if valid_590395 != nil:
+    section.add "maxResults", valid_590395
+  var valid_590396 = query.getOrDefault("key")
+  valid_590396 = validateParameter(valid_590396, JString, required = false,
                                  default = nil)
-  if valid_581367 != nil:
-    section.add "key", valid_581367
-  var valid_581368 = query.getOrDefault("prettyPrint")
-  valid_581368 = validateParameter(valid_581368, JBool, required = false,
+  if valid_590396 != nil:
+    section.add "key", valid_590396
+  var valid_590397 = query.getOrDefault("prettyPrint")
+  valid_590397 = validateParameter(valid_590397, JBool, required = false,
                                  default = newJBool(true))
-  if valid_581368 != nil:
-    section.add "prettyPrint", valid_581368
-  var valid_581369 = query.getOrDefault("includeInvalidInsertedItems")
-  valid_581369 = validateParameter(valid_581369, JBool, required = false, default = nil)
-  if valid_581369 != nil:
-    section.add "includeInvalidInsertedItems", valid_581369
+  if valid_590397 != nil:
+    section.add "prettyPrint", valid_590397
+  var valid_590398 = query.getOrDefault("includeInvalidInsertedItems")
+  valid_590398 = validateParameter(valid_590398, JBool, required = false, default = nil)
+  if valid_590398 != nil:
+    section.add "includeInvalidInsertedItems", valid_590398
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -13714,20 +13714,20 @@ proc validate_ContentProductsList_581357(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_581370: Call_ContentProductsList_581356; path: JsonNode;
+proc call*(call_590399: Call_ContentProductsList_590385; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Lists the products in your Merchant Center account.
   ## 
-  let valid = call_581370.validator(path, query, header, formData, body)
-  let scheme = call_581370.pickScheme
+  let valid = call_590399.validator(path, query, header, formData, body)
+  let scheme = call_590399.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_581370.url(scheme.get, call_581370.host, call_581370.base,
-                         call_581370.route, valid.getOrDefault("path"),
+  let url = call_590399.url(scheme.get, call_590399.host, call_590399.base,
+                         call_590399.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_581370, url, valid)
+  result = hook(call_590399, url, valid)
 
-proc call*(call_581371: Call_ContentProductsList_581356; merchantId: string;
+proc call*(call_590400: Call_ContentProductsList_590385; merchantId: string;
           fields: string = ""; pageToken: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; userIp: string = "";
           maxResults: int = 0; key: string = ""; prettyPrint: bool = true;
@@ -13756,30 +13756,30 @@ proc call*(call_581371: Call_ContentProductsList_581356; merchantId: string;
   ##              : Returns response with indentations and line breaks.
   ##   includeInvalidInsertedItems: bool
   ##                              : Flag to include the invalid inserted items in the result of the list request. By default the invalid items are not shown (the default value is false).
-  var path_581372 = newJObject()
-  var query_581373 = newJObject()
-  add(query_581373, "fields", newJString(fields))
-  add(query_581373, "pageToken", newJString(pageToken))
-  add(query_581373, "quotaUser", newJString(quotaUser))
-  add(query_581373, "alt", newJString(alt))
-  add(query_581373, "oauth_token", newJString(oauthToken))
-  add(query_581373, "userIp", newJString(userIp))
-  add(query_581373, "maxResults", newJInt(maxResults))
-  add(query_581373, "key", newJString(key))
-  add(path_581372, "merchantId", newJString(merchantId))
-  add(query_581373, "prettyPrint", newJBool(prettyPrint))
-  add(query_581373, "includeInvalidInsertedItems",
+  var path_590401 = newJObject()
+  var query_590402 = newJObject()
+  add(query_590402, "fields", newJString(fields))
+  add(query_590402, "pageToken", newJString(pageToken))
+  add(query_590402, "quotaUser", newJString(quotaUser))
+  add(query_590402, "alt", newJString(alt))
+  add(query_590402, "oauth_token", newJString(oauthToken))
+  add(query_590402, "userIp", newJString(userIp))
+  add(query_590402, "maxResults", newJInt(maxResults))
+  add(query_590402, "key", newJString(key))
+  add(path_590401, "merchantId", newJString(merchantId))
+  add(query_590402, "prettyPrint", newJBool(prettyPrint))
+  add(query_590402, "includeInvalidInsertedItems",
       newJBool(includeInvalidInsertedItems))
-  result = call_581371.call(path_581372, query_581373, nil, nil, nil)
+  result = call_590400.call(path_590401, query_590402, nil, nil, nil)
 
-var contentProductsList* = Call_ContentProductsList_581356(
+var contentProductsList* = Call_ContentProductsList_590385(
     name: "contentProductsList", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/{merchantId}/products",
-    validator: validate_ContentProductsList_581357, base: "/content/v2",
-    url: url_ContentProductsList_581358, schemes: {Scheme.Https})
+    validator: validate_ContentProductsList_590386, base: "/content/v2",
+    url: url_ContentProductsList_590387, schemes: {Scheme.Https})
 type
-  Call_ContentProductsGet_581392 = ref object of OpenApiRestCall_579421
-proc url_ContentProductsGet_581394(protocol: Scheme; host: string; base: string;
+  Call_ContentProductsGet_590421 = ref object of OpenApiRestCall_588450
+proc url_ContentProductsGet_590423(protocol: Scheme; host: string; base: string;
                                   route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -13797,7 +13797,7 @@ proc url_ContentProductsGet_581394(protocol: Scheme; host: string; base: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_ContentProductsGet_581393(path: JsonNode; query: JsonNode;
+proc validate_ContentProductsGet_590422(path: JsonNode; query: JsonNode;
                                        header: JsonNode; formData: JsonNode;
                                        body: JsonNode): JsonNode =
   ## Retrieves a product from your Merchant Center account.
@@ -13812,16 +13812,16 @@ proc validate_ContentProductsGet_581393(path: JsonNode; query: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `merchantId` field"
-  var valid_581395 = path.getOrDefault("merchantId")
-  valid_581395 = validateParameter(valid_581395, JString, required = true,
+  var valid_590424 = path.getOrDefault("merchantId")
+  valid_590424 = validateParameter(valid_590424, JString, required = true,
                                  default = nil)
-  if valid_581395 != nil:
-    section.add "merchantId", valid_581395
-  var valid_581396 = path.getOrDefault("productId")
-  valid_581396 = validateParameter(valid_581396, JString, required = true,
+  if valid_590424 != nil:
+    section.add "merchantId", valid_590424
+  var valid_590425 = path.getOrDefault("productId")
+  valid_590425 = validateParameter(valid_590425, JString, required = true,
                                  default = nil)
-  if valid_581396 != nil:
-    section.add "productId", valid_581396
+  if valid_590425 != nil:
+    section.add "productId", valid_590425
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -13839,41 +13839,41 @@ proc validate_ContentProductsGet_581393(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_581397 = query.getOrDefault("fields")
-  valid_581397 = validateParameter(valid_581397, JString, required = false,
+  var valid_590426 = query.getOrDefault("fields")
+  valid_590426 = validateParameter(valid_590426, JString, required = false,
                                  default = nil)
-  if valid_581397 != nil:
-    section.add "fields", valid_581397
-  var valid_581398 = query.getOrDefault("quotaUser")
-  valid_581398 = validateParameter(valid_581398, JString, required = false,
+  if valid_590426 != nil:
+    section.add "fields", valid_590426
+  var valid_590427 = query.getOrDefault("quotaUser")
+  valid_590427 = validateParameter(valid_590427, JString, required = false,
                                  default = nil)
-  if valid_581398 != nil:
-    section.add "quotaUser", valid_581398
-  var valid_581399 = query.getOrDefault("alt")
-  valid_581399 = validateParameter(valid_581399, JString, required = false,
+  if valid_590427 != nil:
+    section.add "quotaUser", valid_590427
+  var valid_590428 = query.getOrDefault("alt")
+  valid_590428 = validateParameter(valid_590428, JString, required = false,
                                  default = newJString("json"))
-  if valid_581399 != nil:
-    section.add "alt", valid_581399
-  var valid_581400 = query.getOrDefault("oauth_token")
-  valid_581400 = validateParameter(valid_581400, JString, required = false,
+  if valid_590428 != nil:
+    section.add "alt", valid_590428
+  var valid_590429 = query.getOrDefault("oauth_token")
+  valid_590429 = validateParameter(valid_590429, JString, required = false,
                                  default = nil)
-  if valid_581400 != nil:
-    section.add "oauth_token", valid_581400
-  var valid_581401 = query.getOrDefault("userIp")
-  valid_581401 = validateParameter(valid_581401, JString, required = false,
+  if valid_590429 != nil:
+    section.add "oauth_token", valid_590429
+  var valid_590430 = query.getOrDefault("userIp")
+  valid_590430 = validateParameter(valid_590430, JString, required = false,
                                  default = nil)
-  if valid_581401 != nil:
-    section.add "userIp", valid_581401
-  var valid_581402 = query.getOrDefault("key")
-  valid_581402 = validateParameter(valid_581402, JString, required = false,
+  if valid_590430 != nil:
+    section.add "userIp", valid_590430
+  var valid_590431 = query.getOrDefault("key")
+  valid_590431 = validateParameter(valid_590431, JString, required = false,
                                  default = nil)
-  if valid_581402 != nil:
-    section.add "key", valid_581402
-  var valid_581403 = query.getOrDefault("prettyPrint")
-  valid_581403 = validateParameter(valid_581403, JBool, required = false,
+  if valid_590431 != nil:
+    section.add "key", valid_590431
+  var valid_590432 = query.getOrDefault("prettyPrint")
+  valid_590432 = validateParameter(valid_590432, JBool, required = false,
                                  default = newJBool(true))
-  if valid_581403 != nil:
-    section.add "prettyPrint", valid_581403
+  if valid_590432 != nil:
+    section.add "prettyPrint", valid_590432
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -13882,20 +13882,20 @@ proc validate_ContentProductsGet_581393(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_581404: Call_ContentProductsGet_581392; path: JsonNode;
+proc call*(call_590433: Call_ContentProductsGet_590421; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Retrieves a product from your Merchant Center account.
   ## 
-  let valid = call_581404.validator(path, query, header, formData, body)
-  let scheme = call_581404.pickScheme
+  let valid = call_590433.validator(path, query, header, formData, body)
+  let scheme = call_590433.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_581404.url(scheme.get, call_581404.host, call_581404.base,
-                         call_581404.route, valid.getOrDefault("path"),
+  let url = call_590433.url(scheme.get, call_590433.host, call_590433.base,
+                         call_590433.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_581404, url, valid)
+  result = hook(call_590433, url, valid)
 
-proc call*(call_581405: Call_ContentProductsGet_581392; merchantId: string;
+proc call*(call_590434: Call_ContentProductsGet_590421; merchantId: string;
           productId: string; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; userIp: string = "";
           key: string = ""; prettyPrint: bool = true): Recallable =
@@ -13919,27 +13919,27 @@ proc call*(call_581405: Call_ContentProductsGet_581392; merchantId: string;
   ##            : The REST ID of the product.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_581406 = newJObject()
-  var query_581407 = newJObject()
-  add(query_581407, "fields", newJString(fields))
-  add(query_581407, "quotaUser", newJString(quotaUser))
-  add(query_581407, "alt", newJString(alt))
-  add(query_581407, "oauth_token", newJString(oauthToken))
-  add(query_581407, "userIp", newJString(userIp))
-  add(query_581407, "key", newJString(key))
-  add(path_581406, "merchantId", newJString(merchantId))
-  add(path_581406, "productId", newJString(productId))
-  add(query_581407, "prettyPrint", newJBool(prettyPrint))
-  result = call_581405.call(path_581406, query_581407, nil, nil, nil)
+  var path_590435 = newJObject()
+  var query_590436 = newJObject()
+  add(query_590436, "fields", newJString(fields))
+  add(query_590436, "quotaUser", newJString(quotaUser))
+  add(query_590436, "alt", newJString(alt))
+  add(query_590436, "oauth_token", newJString(oauthToken))
+  add(query_590436, "userIp", newJString(userIp))
+  add(query_590436, "key", newJString(key))
+  add(path_590435, "merchantId", newJString(merchantId))
+  add(path_590435, "productId", newJString(productId))
+  add(query_590436, "prettyPrint", newJBool(prettyPrint))
+  result = call_590434.call(path_590435, query_590436, nil, nil, nil)
 
-var contentProductsGet* = Call_ContentProductsGet_581392(
+var contentProductsGet* = Call_ContentProductsGet_590421(
     name: "contentProductsGet", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/{merchantId}/products/{productId}",
-    validator: validate_ContentProductsGet_581393, base: "/content/v2",
-    url: url_ContentProductsGet_581394, schemes: {Scheme.Https})
+    validator: validate_ContentProductsGet_590422, base: "/content/v2",
+    url: url_ContentProductsGet_590423, schemes: {Scheme.Https})
 type
-  Call_ContentProductsDelete_581408 = ref object of OpenApiRestCall_579421
-proc url_ContentProductsDelete_581410(protocol: Scheme; host: string; base: string;
+  Call_ContentProductsDelete_590437 = ref object of OpenApiRestCall_588450
+proc url_ContentProductsDelete_590439(protocol: Scheme; host: string; base: string;
                                      route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -13957,7 +13957,7 @@ proc url_ContentProductsDelete_581410(protocol: Scheme; host: string; base: stri
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_ContentProductsDelete_581409(path: JsonNode; query: JsonNode;
+proc validate_ContentProductsDelete_590438(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Deletes a product from your Merchant Center account.
   ## 
@@ -13971,16 +13971,16 @@ proc validate_ContentProductsDelete_581409(path: JsonNode; query: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `merchantId` field"
-  var valid_581411 = path.getOrDefault("merchantId")
-  valid_581411 = validateParameter(valid_581411, JString, required = true,
+  var valid_590440 = path.getOrDefault("merchantId")
+  valid_590440 = validateParameter(valid_590440, JString, required = true,
                                  default = nil)
-  if valid_581411 != nil:
-    section.add "merchantId", valid_581411
-  var valid_581412 = path.getOrDefault("productId")
-  valid_581412 = validateParameter(valid_581412, JString, required = true,
+  if valid_590440 != nil:
+    section.add "merchantId", valid_590440
+  var valid_590441 = path.getOrDefault("productId")
+  valid_590441 = validateParameter(valid_590441, JString, required = true,
                                  default = nil)
-  if valid_581412 != nil:
-    section.add "productId", valid_581412
+  if valid_590441 != nil:
+    section.add "productId", valid_590441
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -14000,45 +14000,45 @@ proc validate_ContentProductsDelete_581409(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_581413 = query.getOrDefault("fields")
-  valid_581413 = validateParameter(valid_581413, JString, required = false,
+  var valid_590442 = query.getOrDefault("fields")
+  valid_590442 = validateParameter(valid_590442, JString, required = false,
                                  default = nil)
-  if valid_581413 != nil:
-    section.add "fields", valid_581413
-  var valid_581414 = query.getOrDefault("quotaUser")
-  valid_581414 = validateParameter(valid_581414, JString, required = false,
+  if valid_590442 != nil:
+    section.add "fields", valid_590442
+  var valid_590443 = query.getOrDefault("quotaUser")
+  valid_590443 = validateParameter(valid_590443, JString, required = false,
                                  default = nil)
-  if valid_581414 != nil:
-    section.add "quotaUser", valid_581414
-  var valid_581415 = query.getOrDefault("alt")
-  valid_581415 = validateParameter(valid_581415, JString, required = false,
+  if valid_590443 != nil:
+    section.add "quotaUser", valid_590443
+  var valid_590444 = query.getOrDefault("alt")
+  valid_590444 = validateParameter(valid_590444, JString, required = false,
                                  default = newJString("json"))
-  if valid_581415 != nil:
-    section.add "alt", valid_581415
-  var valid_581416 = query.getOrDefault("dryRun")
-  valid_581416 = validateParameter(valid_581416, JBool, required = false, default = nil)
-  if valid_581416 != nil:
-    section.add "dryRun", valid_581416
-  var valid_581417 = query.getOrDefault("oauth_token")
-  valid_581417 = validateParameter(valid_581417, JString, required = false,
+  if valid_590444 != nil:
+    section.add "alt", valid_590444
+  var valid_590445 = query.getOrDefault("dryRun")
+  valid_590445 = validateParameter(valid_590445, JBool, required = false, default = nil)
+  if valid_590445 != nil:
+    section.add "dryRun", valid_590445
+  var valid_590446 = query.getOrDefault("oauth_token")
+  valid_590446 = validateParameter(valid_590446, JString, required = false,
                                  default = nil)
-  if valid_581417 != nil:
-    section.add "oauth_token", valid_581417
-  var valid_581418 = query.getOrDefault("userIp")
-  valid_581418 = validateParameter(valid_581418, JString, required = false,
+  if valid_590446 != nil:
+    section.add "oauth_token", valid_590446
+  var valid_590447 = query.getOrDefault("userIp")
+  valid_590447 = validateParameter(valid_590447, JString, required = false,
                                  default = nil)
-  if valid_581418 != nil:
-    section.add "userIp", valid_581418
-  var valid_581419 = query.getOrDefault("key")
-  valid_581419 = validateParameter(valid_581419, JString, required = false,
+  if valid_590447 != nil:
+    section.add "userIp", valid_590447
+  var valid_590448 = query.getOrDefault("key")
+  valid_590448 = validateParameter(valid_590448, JString, required = false,
                                  default = nil)
-  if valid_581419 != nil:
-    section.add "key", valid_581419
-  var valid_581420 = query.getOrDefault("prettyPrint")
-  valid_581420 = validateParameter(valid_581420, JBool, required = false,
+  if valid_590448 != nil:
+    section.add "key", valid_590448
+  var valid_590449 = query.getOrDefault("prettyPrint")
+  valid_590449 = validateParameter(valid_590449, JBool, required = false,
                                  default = newJBool(true))
-  if valid_581420 != nil:
-    section.add "prettyPrint", valid_581420
+  if valid_590449 != nil:
+    section.add "prettyPrint", valid_590449
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -14047,20 +14047,20 @@ proc validate_ContentProductsDelete_581409(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_581421: Call_ContentProductsDelete_581408; path: JsonNode;
+proc call*(call_590450: Call_ContentProductsDelete_590437; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Deletes a product from your Merchant Center account.
   ## 
-  let valid = call_581421.validator(path, query, header, formData, body)
-  let scheme = call_581421.pickScheme
+  let valid = call_590450.validator(path, query, header, formData, body)
+  let scheme = call_590450.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_581421.url(scheme.get, call_581421.host, call_581421.base,
-                         call_581421.route, valid.getOrDefault("path"),
+  let url = call_590450.url(scheme.get, call_590450.host, call_590450.base,
+                         call_590450.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_581421, url, valid)
+  result = hook(call_590450, url, valid)
 
-proc call*(call_581422: Call_ContentProductsDelete_581408; merchantId: string;
+proc call*(call_590451: Call_ContentProductsDelete_590437; merchantId: string;
           productId: string; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; dryRun: bool = false; oauthToken: string = "";
           userIp: string = ""; key: string = ""; prettyPrint: bool = true): Recallable =
@@ -14086,28 +14086,28 @@ proc call*(call_581422: Call_ContentProductsDelete_581408; merchantId: string;
   ##            : The REST ID of the product.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_581423 = newJObject()
-  var query_581424 = newJObject()
-  add(query_581424, "fields", newJString(fields))
-  add(query_581424, "quotaUser", newJString(quotaUser))
-  add(query_581424, "alt", newJString(alt))
-  add(query_581424, "dryRun", newJBool(dryRun))
-  add(query_581424, "oauth_token", newJString(oauthToken))
-  add(query_581424, "userIp", newJString(userIp))
-  add(query_581424, "key", newJString(key))
-  add(path_581423, "merchantId", newJString(merchantId))
-  add(path_581423, "productId", newJString(productId))
-  add(query_581424, "prettyPrint", newJBool(prettyPrint))
-  result = call_581422.call(path_581423, query_581424, nil, nil, nil)
+  var path_590452 = newJObject()
+  var query_590453 = newJObject()
+  add(query_590453, "fields", newJString(fields))
+  add(query_590453, "quotaUser", newJString(quotaUser))
+  add(query_590453, "alt", newJString(alt))
+  add(query_590453, "dryRun", newJBool(dryRun))
+  add(query_590453, "oauth_token", newJString(oauthToken))
+  add(query_590453, "userIp", newJString(userIp))
+  add(query_590453, "key", newJString(key))
+  add(path_590452, "merchantId", newJString(merchantId))
+  add(path_590452, "productId", newJString(productId))
+  add(query_590453, "prettyPrint", newJBool(prettyPrint))
+  result = call_590451.call(path_590452, query_590453, nil, nil, nil)
 
-var contentProductsDelete* = Call_ContentProductsDelete_581408(
+var contentProductsDelete* = Call_ContentProductsDelete_590437(
     name: "contentProductsDelete", meth: HttpMethod.HttpDelete,
     host: "www.googleapis.com", route: "/{merchantId}/products/{productId}",
-    validator: validate_ContentProductsDelete_581409, base: "/content/v2",
-    url: url_ContentProductsDelete_581410, schemes: {Scheme.Https})
+    validator: validate_ContentProductsDelete_590438, base: "/content/v2",
+    url: url_ContentProductsDelete_590439, schemes: {Scheme.Https})
 type
-  Call_ContentProductstatusesList_581425 = ref object of OpenApiRestCall_579421
-proc url_ContentProductstatusesList_581427(protocol: Scheme; host: string;
+  Call_ContentProductstatusesList_590454 = ref object of OpenApiRestCall_588450
+proc url_ContentProductstatusesList_590456(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -14123,7 +14123,7 @@ proc url_ContentProductstatusesList_581427(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_ContentProductstatusesList_581426(path: JsonNode; query: JsonNode;
+proc validate_ContentProductstatusesList_590455(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Lists the statuses of the products in your Merchant Center account.
   ## 
@@ -14135,11 +14135,11 @@ proc validate_ContentProductstatusesList_581426(path: JsonNode; query: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `merchantId` field"
-  var valid_581428 = path.getOrDefault("merchantId")
-  valid_581428 = validateParameter(valid_581428, JString, required = true,
+  var valid_590457 = path.getOrDefault("merchantId")
+  valid_590457 = validateParameter(valid_590457, JString, required = true,
                                  default = nil)
-  if valid_581428 != nil:
-    section.add "merchantId", valid_581428
+  if valid_590457 != nil:
+    section.add "merchantId", valid_590457
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -14167,63 +14167,63 @@ proc validate_ContentProductstatusesList_581426(path: JsonNode; query: JsonNode;
   ##   includeInvalidInsertedItems: JBool
   ##                              : Flag to include the invalid inserted items in the result of the list request. By default the invalid items are not shown (the default value is false).
   section = newJObject()
-  var valid_581429 = query.getOrDefault("fields")
-  valid_581429 = validateParameter(valid_581429, JString, required = false,
+  var valid_590458 = query.getOrDefault("fields")
+  valid_590458 = validateParameter(valid_590458, JString, required = false,
                                  default = nil)
-  if valid_581429 != nil:
-    section.add "fields", valid_581429
-  var valid_581430 = query.getOrDefault("pageToken")
-  valid_581430 = validateParameter(valid_581430, JString, required = false,
+  if valid_590458 != nil:
+    section.add "fields", valid_590458
+  var valid_590459 = query.getOrDefault("pageToken")
+  valid_590459 = validateParameter(valid_590459, JString, required = false,
                                  default = nil)
-  if valid_581430 != nil:
-    section.add "pageToken", valid_581430
-  var valid_581431 = query.getOrDefault("quotaUser")
-  valid_581431 = validateParameter(valid_581431, JString, required = false,
+  if valid_590459 != nil:
+    section.add "pageToken", valid_590459
+  var valid_590460 = query.getOrDefault("quotaUser")
+  valid_590460 = validateParameter(valid_590460, JString, required = false,
                                  default = nil)
-  if valid_581431 != nil:
-    section.add "quotaUser", valid_581431
-  var valid_581432 = query.getOrDefault("alt")
-  valid_581432 = validateParameter(valid_581432, JString, required = false,
+  if valid_590460 != nil:
+    section.add "quotaUser", valid_590460
+  var valid_590461 = query.getOrDefault("alt")
+  valid_590461 = validateParameter(valid_590461, JString, required = false,
                                  default = newJString("json"))
-  if valid_581432 != nil:
-    section.add "alt", valid_581432
-  var valid_581433 = query.getOrDefault("oauth_token")
-  valid_581433 = validateParameter(valid_581433, JString, required = false,
+  if valid_590461 != nil:
+    section.add "alt", valid_590461
+  var valid_590462 = query.getOrDefault("oauth_token")
+  valid_590462 = validateParameter(valid_590462, JString, required = false,
                                  default = nil)
-  if valid_581433 != nil:
-    section.add "oauth_token", valid_581433
-  var valid_581434 = query.getOrDefault("userIp")
-  valid_581434 = validateParameter(valid_581434, JString, required = false,
+  if valid_590462 != nil:
+    section.add "oauth_token", valid_590462
+  var valid_590463 = query.getOrDefault("userIp")
+  valid_590463 = validateParameter(valid_590463, JString, required = false,
                                  default = nil)
-  if valid_581434 != nil:
-    section.add "userIp", valid_581434
-  var valid_581435 = query.getOrDefault("maxResults")
-  valid_581435 = validateParameter(valid_581435, JInt, required = false, default = nil)
-  if valid_581435 != nil:
-    section.add "maxResults", valid_581435
-  var valid_581436 = query.getOrDefault("includeAttributes")
-  valid_581436 = validateParameter(valid_581436, JBool, required = false, default = nil)
-  if valid_581436 != nil:
-    section.add "includeAttributes", valid_581436
-  var valid_581437 = query.getOrDefault("key")
-  valid_581437 = validateParameter(valid_581437, JString, required = false,
+  if valid_590463 != nil:
+    section.add "userIp", valid_590463
+  var valid_590464 = query.getOrDefault("maxResults")
+  valid_590464 = validateParameter(valid_590464, JInt, required = false, default = nil)
+  if valid_590464 != nil:
+    section.add "maxResults", valid_590464
+  var valid_590465 = query.getOrDefault("includeAttributes")
+  valid_590465 = validateParameter(valid_590465, JBool, required = false, default = nil)
+  if valid_590465 != nil:
+    section.add "includeAttributes", valid_590465
+  var valid_590466 = query.getOrDefault("key")
+  valid_590466 = validateParameter(valid_590466, JString, required = false,
                                  default = nil)
-  if valid_581437 != nil:
-    section.add "key", valid_581437
-  var valid_581438 = query.getOrDefault("prettyPrint")
-  valid_581438 = validateParameter(valid_581438, JBool, required = false,
+  if valid_590466 != nil:
+    section.add "key", valid_590466
+  var valid_590467 = query.getOrDefault("prettyPrint")
+  valid_590467 = validateParameter(valid_590467, JBool, required = false,
                                  default = newJBool(true))
-  if valid_581438 != nil:
-    section.add "prettyPrint", valid_581438
-  var valid_581439 = query.getOrDefault("destinations")
-  valid_581439 = validateParameter(valid_581439, JArray, required = false,
+  if valid_590467 != nil:
+    section.add "prettyPrint", valid_590467
+  var valid_590468 = query.getOrDefault("destinations")
+  valid_590468 = validateParameter(valid_590468, JArray, required = false,
                                  default = nil)
-  if valid_581439 != nil:
-    section.add "destinations", valid_581439
-  var valid_581440 = query.getOrDefault("includeInvalidInsertedItems")
-  valid_581440 = validateParameter(valid_581440, JBool, required = false, default = nil)
-  if valid_581440 != nil:
-    section.add "includeInvalidInsertedItems", valid_581440
+  if valid_590468 != nil:
+    section.add "destinations", valid_590468
+  var valid_590469 = query.getOrDefault("includeInvalidInsertedItems")
+  valid_590469 = validateParameter(valid_590469, JBool, required = false, default = nil)
+  if valid_590469 != nil:
+    section.add "includeInvalidInsertedItems", valid_590469
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -14232,20 +14232,20 @@ proc validate_ContentProductstatusesList_581426(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_581441: Call_ContentProductstatusesList_581425; path: JsonNode;
+proc call*(call_590470: Call_ContentProductstatusesList_590454; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Lists the statuses of the products in your Merchant Center account.
   ## 
-  let valid = call_581441.validator(path, query, header, formData, body)
-  let scheme = call_581441.pickScheme
+  let valid = call_590470.validator(path, query, header, formData, body)
+  let scheme = call_590470.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_581441.url(scheme.get, call_581441.host, call_581441.base,
-                         call_581441.route, valid.getOrDefault("path"),
+  let url = call_590470.url(scheme.get, call_590470.host, call_590470.base,
+                         call_590470.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_581441, url, valid)
+  result = hook(call_590470, url, valid)
 
-proc call*(call_581442: Call_ContentProductstatusesList_581425; merchantId: string;
+proc call*(call_590471: Call_ContentProductstatusesList_590454; merchantId: string;
           fields: string = ""; pageToken: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; userIp: string = "";
           maxResults: int = 0; includeAttributes: bool = false; key: string = "";
@@ -14279,33 +14279,33 @@ proc call*(call_581442: Call_ContentProductstatusesList_581425; merchantId: stri
   ##               : If set, only issues for the specified destinations are returned, otherwise only issues for the Shopping destination.
   ##   includeInvalidInsertedItems: bool
   ##                              : Flag to include the invalid inserted items in the result of the list request. By default the invalid items are not shown (the default value is false).
-  var path_581443 = newJObject()
-  var query_581444 = newJObject()
-  add(query_581444, "fields", newJString(fields))
-  add(query_581444, "pageToken", newJString(pageToken))
-  add(query_581444, "quotaUser", newJString(quotaUser))
-  add(query_581444, "alt", newJString(alt))
-  add(query_581444, "oauth_token", newJString(oauthToken))
-  add(query_581444, "userIp", newJString(userIp))
-  add(query_581444, "maxResults", newJInt(maxResults))
-  add(query_581444, "includeAttributes", newJBool(includeAttributes))
-  add(query_581444, "key", newJString(key))
-  add(path_581443, "merchantId", newJString(merchantId))
-  add(query_581444, "prettyPrint", newJBool(prettyPrint))
+  var path_590472 = newJObject()
+  var query_590473 = newJObject()
+  add(query_590473, "fields", newJString(fields))
+  add(query_590473, "pageToken", newJString(pageToken))
+  add(query_590473, "quotaUser", newJString(quotaUser))
+  add(query_590473, "alt", newJString(alt))
+  add(query_590473, "oauth_token", newJString(oauthToken))
+  add(query_590473, "userIp", newJString(userIp))
+  add(query_590473, "maxResults", newJInt(maxResults))
+  add(query_590473, "includeAttributes", newJBool(includeAttributes))
+  add(query_590473, "key", newJString(key))
+  add(path_590472, "merchantId", newJString(merchantId))
+  add(query_590473, "prettyPrint", newJBool(prettyPrint))
   if destinations != nil:
-    query_581444.add "destinations", destinations
-  add(query_581444, "includeInvalidInsertedItems",
+    query_590473.add "destinations", destinations
+  add(query_590473, "includeInvalidInsertedItems",
       newJBool(includeInvalidInsertedItems))
-  result = call_581442.call(path_581443, query_581444, nil, nil, nil)
+  result = call_590471.call(path_590472, query_590473, nil, nil, nil)
 
-var contentProductstatusesList* = Call_ContentProductstatusesList_581425(
+var contentProductstatusesList* = Call_ContentProductstatusesList_590454(
     name: "contentProductstatusesList", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/{merchantId}/productstatuses",
-    validator: validate_ContentProductstatusesList_581426, base: "/content/v2",
-    url: url_ContentProductstatusesList_581427, schemes: {Scheme.Https})
+    validator: validate_ContentProductstatusesList_590455, base: "/content/v2",
+    url: url_ContentProductstatusesList_590456, schemes: {Scheme.Https})
 type
-  Call_ContentProductstatusesGet_581445 = ref object of OpenApiRestCall_579421
-proc url_ContentProductstatusesGet_581447(protocol: Scheme; host: string;
+  Call_ContentProductstatusesGet_590474 = ref object of OpenApiRestCall_588450
+proc url_ContentProductstatusesGet_590476(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -14323,7 +14323,7 @@ proc url_ContentProductstatusesGet_581447(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_ContentProductstatusesGet_581446(path: JsonNode; query: JsonNode;
+proc validate_ContentProductstatusesGet_590475(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Gets the status of a product from your Merchant Center account.
   ## 
@@ -14337,16 +14337,16 @@ proc validate_ContentProductstatusesGet_581446(path: JsonNode; query: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `merchantId` field"
-  var valid_581448 = path.getOrDefault("merchantId")
-  valid_581448 = validateParameter(valid_581448, JString, required = true,
+  var valid_590477 = path.getOrDefault("merchantId")
+  valid_590477 = validateParameter(valid_590477, JString, required = true,
                                  default = nil)
-  if valid_581448 != nil:
-    section.add "merchantId", valid_581448
-  var valid_581449 = path.getOrDefault("productId")
-  valid_581449 = validateParameter(valid_581449, JString, required = true,
+  if valid_590477 != nil:
+    section.add "merchantId", valid_590477
+  var valid_590478 = path.getOrDefault("productId")
+  valid_590478 = validateParameter(valid_590478, JString, required = true,
                                  default = nil)
-  if valid_581449 != nil:
-    section.add "productId", valid_581449
+  if valid_590478 != nil:
+    section.add "productId", valid_590478
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -14368,50 +14368,50 @@ proc validate_ContentProductstatusesGet_581446(path: JsonNode; query: JsonNode;
   ##   destinations: JArray
   ##               : If set, only issues for the specified destinations are returned, otherwise only issues for the Shopping destination.
   section = newJObject()
-  var valid_581450 = query.getOrDefault("fields")
-  valid_581450 = validateParameter(valid_581450, JString, required = false,
+  var valid_590479 = query.getOrDefault("fields")
+  valid_590479 = validateParameter(valid_590479, JString, required = false,
                                  default = nil)
-  if valid_581450 != nil:
-    section.add "fields", valid_581450
-  var valid_581451 = query.getOrDefault("quotaUser")
-  valid_581451 = validateParameter(valid_581451, JString, required = false,
+  if valid_590479 != nil:
+    section.add "fields", valid_590479
+  var valid_590480 = query.getOrDefault("quotaUser")
+  valid_590480 = validateParameter(valid_590480, JString, required = false,
                                  default = nil)
-  if valid_581451 != nil:
-    section.add "quotaUser", valid_581451
-  var valid_581452 = query.getOrDefault("alt")
-  valid_581452 = validateParameter(valid_581452, JString, required = false,
+  if valid_590480 != nil:
+    section.add "quotaUser", valid_590480
+  var valid_590481 = query.getOrDefault("alt")
+  valid_590481 = validateParameter(valid_590481, JString, required = false,
                                  default = newJString("json"))
-  if valid_581452 != nil:
-    section.add "alt", valid_581452
-  var valid_581453 = query.getOrDefault("oauth_token")
-  valid_581453 = validateParameter(valid_581453, JString, required = false,
+  if valid_590481 != nil:
+    section.add "alt", valid_590481
+  var valid_590482 = query.getOrDefault("oauth_token")
+  valid_590482 = validateParameter(valid_590482, JString, required = false,
                                  default = nil)
-  if valid_581453 != nil:
-    section.add "oauth_token", valid_581453
-  var valid_581454 = query.getOrDefault("userIp")
-  valid_581454 = validateParameter(valid_581454, JString, required = false,
+  if valid_590482 != nil:
+    section.add "oauth_token", valid_590482
+  var valid_590483 = query.getOrDefault("userIp")
+  valid_590483 = validateParameter(valid_590483, JString, required = false,
                                  default = nil)
-  if valid_581454 != nil:
-    section.add "userIp", valid_581454
-  var valid_581455 = query.getOrDefault("includeAttributes")
-  valid_581455 = validateParameter(valid_581455, JBool, required = false, default = nil)
-  if valid_581455 != nil:
-    section.add "includeAttributes", valid_581455
-  var valid_581456 = query.getOrDefault("key")
-  valid_581456 = validateParameter(valid_581456, JString, required = false,
+  if valid_590483 != nil:
+    section.add "userIp", valid_590483
+  var valid_590484 = query.getOrDefault("includeAttributes")
+  valid_590484 = validateParameter(valid_590484, JBool, required = false, default = nil)
+  if valid_590484 != nil:
+    section.add "includeAttributes", valid_590484
+  var valid_590485 = query.getOrDefault("key")
+  valid_590485 = validateParameter(valid_590485, JString, required = false,
                                  default = nil)
-  if valid_581456 != nil:
-    section.add "key", valid_581456
-  var valid_581457 = query.getOrDefault("prettyPrint")
-  valid_581457 = validateParameter(valid_581457, JBool, required = false,
+  if valid_590485 != nil:
+    section.add "key", valid_590485
+  var valid_590486 = query.getOrDefault("prettyPrint")
+  valid_590486 = validateParameter(valid_590486, JBool, required = false,
                                  default = newJBool(true))
-  if valid_581457 != nil:
-    section.add "prettyPrint", valid_581457
-  var valid_581458 = query.getOrDefault("destinations")
-  valid_581458 = validateParameter(valid_581458, JArray, required = false,
+  if valid_590486 != nil:
+    section.add "prettyPrint", valid_590486
+  var valid_590487 = query.getOrDefault("destinations")
+  valid_590487 = validateParameter(valid_590487, JArray, required = false,
                                  default = nil)
-  if valid_581458 != nil:
-    section.add "destinations", valid_581458
+  if valid_590487 != nil:
+    section.add "destinations", valid_590487
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -14420,20 +14420,20 @@ proc validate_ContentProductstatusesGet_581446(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_581459: Call_ContentProductstatusesGet_581445; path: JsonNode;
+proc call*(call_590488: Call_ContentProductstatusesGet_590474; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Gets the status of a product from your Merchant Center account.
   ## 
-  let valid = call_581459.validator(path, query, header, formData, body)
-  let scheme = call_581459.pickScheme
+  let valid = call_590488.validator(path, query, header, formData, body)
+  let scheme = call_590488.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_581459.url(scheme.get, call_581459.host, call_581459.base,
-                         call_581459.route, valid.getOrDefault("path"),
+  let url = call_590488.url(scheme.get, call_590488.host, call_590488.base,
+                         call_590488.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_581459, url, valid)
+  result = hook(call_590488, url, valid)
 
-proc call*(call_581460: Call_ContentProductstatusesGet_581445; merchantId: string;
+proc call*(call_590489: Call_ContentProductstatusesGet_590474; merchantId: string;
           productId: string; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; userIp: string = "";
           includeAttributes: bool = false; key: string = ""; prettyPrint: bool = true;
@@ -14462,31 +14462,31 @@ proc call*(call_581460: Call_ContentProductstatusesGet_581445; merchantId: strin
   ##              : Returns response with indentations and line breaks.
   ##   destinations: JArray
   ##               : If set, only issues for the specified destinations are returned, otherwise only issues for the Shopping destination.
-  var path_581461 = newJObject()
-  var query_581462 = newJObject()
-  add(query_581462, "fields", newJString(fields))
-  add(query_581462, "quotaUser", newJString(quotaUser))
-  add(query_581462, "alt", newJString(alt))
-  add(query_581462, "oauth_token", newJString(oauthToken))
-  add(query_581462, "userIp", newJString(userIp))
-  add(query_581462, "includeAttributes", newJBool(includeAttributes))
-  add(query_581462, "key", newJString(key))
-  add(path_581461, "merchantId", newJString(merchantId))
-  add(path_581461, "productId", newJString(productId))
-  add(query_581462, "prettyPrint", newJBool(prettyPrint))
+  var path_590490 = newJObject()
+  var query_590491 = newJObject()
+  add(query_590491, "fields", newJString(fields))
+  add(query_590491, "quotaUser", newJString(quotaUser))
+  add(query_590491, "alt", newJString(alt))
+  add(query_590491, "oauth_token", newJString(oauthToken))
+  add(query_590491, "userIp", newJString(userIp))
+  add(query_590491, "includeAttributes", newJBool(includeAttributes))
+  add(query_590491, "key", newJString(key))
+  add(path_590490, "merchantId", newJString(merchantId))
+  add(path_590490, "productId", newJString(productId))
+  add(query_590491, "prettyPrint", newJBool(prettyPrint))
   if destinations != nil:
-    query_581462.add "destinations", destinations
-  result = call_581460.call(path_581461, query_581462, nil, nil, nil)
+    query_590491.add "destinations", destinations
+  result = call_590489.call(path_590490, query_590491, nil, nil, nil)
 
-var contentProductstatusesGet* = Call_ContentProductstatusesGet_581445(
+var contentProductstatusesGet* = Call_ContentProductstatusesGet_590474(
     name: "contentProductstatusesGet", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com",
     route: "/{merchantId}/productstatuses/{productId}",
-    validator: validate_ContentProductstatusesGet_581446, base: "/content/v2",
-    url: url_ContentProductstatusesGet_581447, schemes: {Scheme.Https})
+    validator: validate_ContentProductstatusesGet_590475, base: "/content/v2",
+    url: url_ContentProductstatusesGet_590476, schemes: {Scheme.Https})
 type
-  Call_ContentShippingsettingsList_581463 = ref object of OpenApiRestCall_579421
-proc url_ContentShippingsettingsList_581465(protocol: Scheme; host: string;
+  Call_ContentShippingsettingsList_590492 = ref object of OpenApiRestCall_588450
+proc url_ContentShippingsettingsList_590494(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -14502,7 +14502,7 @@ proc url_ContentShippingsettingsList_581465(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_ContentShippingsettingsList_581464(path: JsonNode; query: JsonNode;
+proc validate_ContentShippingsettingsList_590493(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Lists the shipping settings of the sub-accounts in your Merchant Center account.
   ## 
@@ -14514,11 +14514,11 @@ proc validate_ContentShippingsettingsList_581464(path: JsonNode; query: JsonNode
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `merchantId` field"
-  var valid_581466 = path.getOrDefault("merchantId")
-  valid_581466 = validateParameter(valid_581466, JString, required = true,
+  var valid_590495 = path.getOrDefault("merchantId")
+  valid_590495 = validateParameter(valid_590495, JString, required = true,
                                  default = nil)
-  if valid_581466 != nil:
-    section.add "merchantId", valid_581466
+  if valid_590495 != nil:
+    section.add "merchantId", valid_590495
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -14540,50 +14540,50 @@ proc validate_ContentShippingsettingsList_581464(path: JsonNode; query: JsonNode
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_581467 = query.getOrDefault("fields")
-  valid_581467 = validateParameter(valid_581467, JString, required = false,
+  var valid_590496 = query.getOrDefault("fields")
+  valid_590496 = validateParameter(valid_590496, JString, required = false,
                                  default = nil)
-  if valid_581467 != nil:
-    section.add "fields", valid_581467
-  var valid_581468 = query.getOrDefault("pageToken")
-  valid_581468 = validateParameter(valid_581468, JString, required = false,
+  if valid_590496 != nil:
+    section.add "fields", valid_590496
+  var valid_590497 = query.getOrDefault("pageToken")
+  valid_590497 = validateParameter(valid_590497, JString, required = false,
                                  default = nil)
-  if valid_581468 != nil:
-    section.add "pageToken", valid_581468
-  var valid_581469 = query.getOrDefault("quotaUser")
-  valid_581469 = validateParameter(valid_581469, JString, required = false,
+  if valid_590497 != nil:
+    section.add "pageToken", valid_590497
+  var valid_590498 = query.getOrDefault("quotaUser")
+  valid_590498 = validateParameter(valid_590498, JString, required = false,
                                  default = nil)
-  if valid_581469 != nil:
-    section.add "quotaUser", valid_581469
-  var valid_581470 = query.getOrDefault("alt")
-  valid_581470 = validateParameter(valid_581470, JString, required = false,
+  if valid_590498 != nil:
+    section.add "quotaUser", valid_590498
+  var valid_590499 = query.getOrDefault("alt")
+  valid_590499 = validateParameter(valid_590499, JString, required = false,
                                  default = newJString("json"))
-  if valid_581470 != nil:
-    section.add "alt", valid_581470
-  var valid_581471 = query.getOrDefault("oauth_token")
-  valid_581471 = validateParameter(valid_581471, JString, required = false,
+  if valid_590499 != nil:
+    section.add "alt", valid_590499
+  var valid_590500 = query.getOrDefault("oauth_token")
+  valid_590500 = validateParameter(valid_590500, JString, required = false,
                                  default = nil)
-  if valid_581471 != nil:
-    section.add "oauth_token", valid_581471
-  var valid_581472 = query.getOrDefault("userIp")
-  valid_581472 = validateParameter(valid_581472, JString, required = false,
+  if valid_590500 != nil:
+    section.add "oauth_token", valid_590500
+  var valid_590501 = query.getOrDefault("userIp")
+  valid_590501 = validateParameter(valid_590501, JString, required = false,
                                  default = nil)
-  if valid_581472 != nil:
-    section.add "userIp", valid_581472
-  var valid_581473 = query.getOrDefault("maxResults")
-  valid_581473 = validateParameter(valid_581473, JInt, required = false, default = nil)
-  if valid_581473 != nil:
-    section.add "maxResults", valid_581473
-  var valid_581474 = query.getOrDefault("key")
-  valid_581474 = validateParameter(valid_581474, JString, required = false,
+  if valid_590501 != nil:
+    section.add "userIp", valid_590501
+  var valid_590502 = query.getOrDefault("maxResults")
+  valid_590502 = validateParameter(valid_590502, JInt, required = false, default = nil)
+  if valid_590502 != nil:
+    section.add "maxResults", valid_590502
+  var valid_590503 = query.getOrDefault("key")
+  valid_590503 = validateParameter(valid_590503, JString, required = false,
                                  default = nil)
-  if valid_581474 != nil:
-    section.add "key", valid_581474
-  var valid_581475 = query.getOrDefault("prettyPrint")
-  valid_581475 = validateParameter(valid_581475, JBool, required = false,
+  if valid_590503 != nil:
+    section.add "key", valid_590503
+  var valid_590504 = query.getOrDefault("prettyPrint")
+  valid_590504 = validateParameter(valid_590504, JBool, required = false,
                                  default = newJBool(true))
-  if valid_581475 != nil:
-    section.add "prettyPrint", valid_581475
+  if valid_590504 != nil:
+    section.add "prettyPrint", valid_590504
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -14592,20 +14592,20 @@ proc validate_ContentShippingsettingsList_581464(path: JsonNode; query: JsonNode
   if body != nil:
     result.add "body", body
 
-proc call*(call_581476: Call_ContentShippingsettingsList_581463; path: JsonNode;
+proc call*(call_590505: Call_ContentShippingsettingsList_590492; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Lists the shipping settings of the sub-accounts in your Merchant Center account.
   ## 
-  let valid = call_581476.validator(path, query, header, formData, body)
-  let scheme = call_581476.pickScheme
+  let valid = call_590505.validator(path, query, header, formData, body)
+  let scheme = call_590505.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_581476.url(scheme.get, call_581476.host, call_581476.base,
-                         call_581476.route, valid.getOrDefault("path"),
+  let url = call_590505.url(scheme.get, call_590505.host, call_590505.base,
+                         call_590505.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_581476, url, valid)
+  result = hook(call_590505, url, valid)
 
-proc call*(call_581477: Call_ContentShippingsettingsList_581463;
+proc call*(call_590506: Call_ContentShippingsettingsList_590492;
           merchantId: string; fields: string = ""; pageToken: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; maxResults: int = 0; key: string = "";
@@ -14632,28 +14632,28 @@ proc call*(call_581477: Call_ContentShippingsettingsList_581463;
   ##             : The ID of the managing account. This must be a multi-client account.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_581478 = newJObject()
-  var query_581479 = newJObject()
-  add(query_581479, "fields", newJString(fields))
-  add(query_581479, "pageToken", newJString(pageToken))
-  add(query_581479, "quotaUser", newJString(quotaUser))
-  add(query_581479, "alt", newJString(alt))
-  add(query_581479, "oauth_token", newJString(oauthToken))
-  add(query_581479, "userIp", newJString(userIp))
-  add(query_581479, "maxResults", newJInt(maxResults))
-  add(query_581479, "key", newJString(key))
-  add(path_581478, "merchantId", newJString(merchantId))
-  add(query_581479, "prettyPrint", newJBool(prettyPrint))
-  result = call_581477.call(path_581478, query_581479, nil, nil, nil)
+  var path_590507 = newJObject()
+  var query_590508 = newJObject()
+  add(query_590508, "fields", newJString(fields))
+  add(query_590508, "pageToken", newJString(pageToken))
+  add(query_590508, "quotaUser", newJString(quotaUser))
+  add(query_590508, "alt", newJString(alt))
+  add(query_590508, "oauth_token", newJString(oauthToken))
+  add(query_590508, "userIp", newJString(userIp))
+  add(query_590508, "maxResults", newJInt(maxResults))
+  add(query_590508, "key", newJString(key))
+  add(path_590507, "merchantId", newJString(merchantId))
+  add(query_590508, "prettyPrint", newJBool(prettyPrint))
+  result = call_590506.call(path_590507, query_590508, nil, nil, nil)
 
-var contentShippingsettingsList* = Call_ContentShippingsettingsList_581463(
+var contentShippingsettingsList* = Call_ContentShippingsettingsList_590492(
     name: "contentShippingsettingsList", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/{merchantId}/shippingsettings",
-    validator: validate_ContentShippingsettingsList_581464, base: "/content/v2",
-    url: url_ContentShippingsettingsList_581465, schemes: {Scheme.Https})
+    validator: validate_ContentShippingsettingsList_590493, base: "/content/v2",
+    url: url_ContentShippingsettingsList_590494, schemes: {Scheme.Https})
 type
-  Call_ContentShippingsettingsUpdate_581496 = ref object of OpenApiRestCall_579421
-proc url_ContentShippingsettingsUpdate_581498(protocol: Scheme; host: string;
+  Call_ContentShippingsettingsUpdate_590525 = ref object of OpenApiRestCall_588450
+proc url_ContentShippingsettingsUpdate_590527(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -14671,7 +14671,7 @@ proc url_ContentShippingsettingsUpdate_581498(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_ContentShippingsettingsUpdate_581497(path: JsonNode; query: JsonNode;
+proc validate_ContentShippingsettingsUpdate_590526(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Updates the shipping settings of the account.
   ## 
@@ -14684,16 +14684,16 @@ proc validate_ContentShippingsettingsUpdate_581497(path: JsonNode; query: JsonNo
   ##             : The ID of the managing account. If this parameter is not the same as accountId, then this account must be a multi-client account and accountId must be the ID of a sub-account of this account.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `accountId` field"
-  var valid_581499 = path.getOrDefault("accountId")
-  valid_581499 = validateParameter(valid_581499, JString, required = true,
+  var valid_590528 = path.getOrDefault("accountId")
+  valid_590528 = validateParameter(valid_590528, JString, required = true,
                                  default = nil)
-  if valid_581499 != nil:
-    section.add "accountId", valid_581499
-  var valid_581500 = path.getOrDefault("merchantId")
-  valid_581500 = validateParameter(valid_581500, JString, required = true,
+  if valid_590528 != nil:
+    section.add "accountId", valid_590528
+  var valid_590529 = path.getOrDefault("merchantId")
+  valid_590529 = validateParameter(valid_590529, JString, required = true,
                                  default = nil)
-  if valid_581500 != nil:
-    section.add "merchantId", valid_581500
+  if valid_590529 != nil:
+    section.add "merchantId", valid_590529
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -14713,45 +14713,45 @@ proc validate_ContentShippingsettingsUpdate_581497(path: JsonNode; query: JsonNo
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_581501 = query.getOrDefault("fields")
-  valid_581501 = validateParameter(valid_581501, JString, required = false,
+  var valid_590530 = query.getOrDefault("fields")
+  valid_590530 = validateParameter(valid_590530, JString, required = false,
                                  default = nil)
-  if valid_581501 != nil:
-    section.add "fields", valid_581501
-  var valid_581502 = query.getOrDefault("quotaUser")
-  valid_581502 = validateParameter(valid_581502, JString, required = false,
+  if valid_590530 != nil:
+    section.add "fields", valid_590530
+  var valid_590531 = query.getOrDefault("quotaUser")
+  valid_590531 = validateParameter(valid_590531, JString, required = false,
                                  default = nil)
-  if valid_581502 != nil:
-    section.add "quotaUser", valid_581502
-  var valid_581503 = query.getOrDefault("alt")
-  valid_581503 = validateParameter(valid_581503, JString, required = false,
+  if valid_590531 != nil:
+    section.add "quotaUser", valid_590531
+  var valid_590532 = query.getOrDefault("alt")
+  valid_590532 = validateParameter(valid_590532, JString, required = false,
                                  default = newJString("json"))
-  if valid_581503 != nil:
-    section.add "alt", valid_581503
-  var valid_581504 = query.getOrDefault("dryRun")
-  valid_581504 = validateParameter(valid_581504, JBool, required = false, default = nil)
-  if valid_581504 != nil:
-    section.add "dryRun", valid_581504
-  var valid_581505 = query.getOrDefault("oauth_token")
-  valid_581505 = validateParameter(valid_581505, JString, required = false,
+  if valid_590532 != nil:
+    section.add "alt", valid_590532
+  var valid_590533 = query.getOrDefault("dryRun")
+  valid_590533 = validateParameter(valid_590533, JBool, required = false, default = nil)
+  if valid_590533 != nil:
+    section.add "dryRun", valid_590533
+  var valid_590534 = query.getOrDefault("oauth_token")
+  valid_590534 = validateParameter(valid_590534, JString, required = false,
                                  default = nil)
-  if valid_581505 != nil:
-    section.add "oauth_token", valid_581505
-  var valid_581506 = query.getOrDefault("userIp")
-  valid_581506 = validateParameter(valid_581506, JString, required = false,
+  if valid_590534 != nil:
+    section.add "oauth_token", valid_590534
+  var valid_590535 = query.getOrDefault("userIp")
+  valid_590535 = validateParameter(valid_590535, JString, required = false,
                                  default = nil)
-  if valid_581506 != nil:
-    section.add "userIp", valid_581506
-  var valid_581507 = query.getOrDefault("key")
-  valid_581507 = validateParameter(valid_581507, JString, required = false,
+  if valid_590535 != nil:
+    section.add "userIp", valid_590535
+  var valid_590536 = query.getOrDefault("key")
+  valid_590536 = validateParameter(valid_590536, JString, required = false,
                                  default = nil)
-  if valid_581507 != nil:
-    section.add "key", valid_581507
-  var valid_581508 = query.getOrDefault("prettyPrint")
-  valid_581508 = validateParameter(valid_581508, JBool, required = false,
+  if valid_590536 != nil:
+    section.add "key", valid_590536
+  var valid_590537 = query.getOrDefault("prettyPrint")
+  valid_590537 = validateParameter(valid_590537, JBool, required = false,
                                  default = newJBool(true))
-  if valid_581508 != nil:
-    section.add "prettyPrint", valid_581508
+  if valid_590537 != nil:
+    section.add "prettyPrint", valid_590537
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -14763,20 +14763,20 @@ proc validate_ContentShippingsettingsUpdate_581497(path: JsonNode; query: JsonNo
   if body != nil:
     result.add "body", body
 
-proc call*(call_581510: Call_ContentShippingsettingsUpdate_581496; path: JsonNode;
+proc call*(call_590539: Call_ContentShippingsettingsUpdate_590525; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Updates the shipping settings of the account.
   ## 
-  let valid = call_581510.validator(path, query, header, formData, body)
-  let scheme = call_581510.pickScheme
+  let valid = call_590539.validator(path, query, header, formData, body)
+  let scheme = call_590539.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_581510.url(scheme.get, call_581510.host, call_581510.base,
-                         call_581510.route, valid.getOrDefault("path"),
+  let url = call_590539.url(scheme.get, call_590539.host, call_590539.base,
+                         call_590539.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_581510, url, valid)
+  result = hook(call_590539, url, valid)
 
-proc call*(call_581511: Call_ContentShippingsettingsUpdate_581496;
+proc call*(call_590540: Call_ContentShippingsettingsUpdate_590525;
           accountId: string; merchantId: string; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; dryRun: bool = false;
           oauthToken: string = ""; userIp: string = ""; key: string = "";
@@ -14804,32 +14804,32 @@ proc call*(call_581511: Call_ContentShippingsettingsUpdate_581496;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_581512 = newJObject()
-  var query_581513 = newJObject()
-  var body_581514 = newJObject()
-  add(query_581513, "fields", newJString(fields))
-  add(query_581513, "quotaUser", newJString(quotaUser))
-  add(query_581513, "alt", newJString(alt))
-  add(query_581513, "dryRun", newJBool(dryRun))
-  add(query_581513, "oauth_token", newJString(oauthToken))
-  add(path_581512, "accountId", newJString(accountId))
-  add(query_581513, "userIp", newJString(userIp))
-  add(query_581513, "key", newJString(key))
-  add(path_581512, "merchantId", newJString(merchantId))
+  var path_590541 = newJObject()
+  var query_590542 = newJObject()
+  var body_590543 = newJObject()
+  add(query_590542, "fields", newJString(fields))
+  add(query_590542, "quotaUser", newJString(quotaUser))
+  add(query_590542, "alt", newJString(alt))
+  add(query_590542, "dryRun", newJBool(dryRun))
+  add(query_590542, "oauth_token", newJString(oauthToken))
+  add(path_590541, "accountId", newJString(accountId))
+  add(query_590542, "userIp", newJString(userIp))
+  add(query_590542, "key", newJString(key))
+  add(path_590541, "merchantId", newJString(merchantId))
   if body != nil:
-    body_581514 = body
-  add(query_581513, "prettyPrint", newJBool(prettyPrint))
-  result = call_581511.call(path_581512, query_581513, nil, nil, body_581514)
+    body_590543 = body
+  add(query_590542, "prettyPrint", newJBool(prettyPrint))
+  result = call_590540.call(path_590541, query_590542, nil, nil, body_590543)
 
-var contentShippingsettingsUpdate* = Call_ContentShippingsettingsUpdate_581496(
+var contentShippingsettingsUpdate* = Call_ContentShippingsettingsUpdate_590525(
     name: "contentShippingsettingsUpdate", meth: HttpMethod.HttpPut,
     host: "www.googleapis.com",
     route: "/{merchantId}/shippingsettings/{accountId}",
-    validator: validate_ContentShippingsettingsUpdate_581497, base: "/content/v2",
-    url: url_ContentShippingsettingsUpdate_581498, schemes: {Scheme.Https})
+    validator: validate_ContentShippingsettingsUpdate_590526, base: "/content/v2",
+    url: url_ContentShippingsettingsUpdate_590527, schemes: {Scheme.Https})
 type
-  Call_ContentShippingsettingsGet_581480 = ref object of OpenApiRestCall_579421
-proc url_ContentShippingsettingsGet_581482(protocol: Scheme; host: string;
+  Call_ContentShippingsettingsGet_590509 = ref object of OpenApiRestCall_588450
+proc url_ContentShippingsettingsGet_590511(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -14847,7 +14847,7 @@ proc url_ContentShippingsettingsGet_581482(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_ContentShippingsettingsGet_581481(path: JsonNode; query: JsonNode;
+proc validate_ContentShippingsettingsGet_590510(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Retrieves the shipping settings of the account.
   ## 
@@ -14860,16 +14860,16 @@ proc validate_ContentShippingsettingsGet_581481(path: JsonNode; query: JsonNode;
   ##             : The ID of the managing account. If this parameter is not the same as accountId, then this account must be a multi-client account and accountId must be the ID of a sub-account of this account.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `accountId` field"
-  var valid_581483 = path.getOrDefault("accountId")
-  valid_581483 = validateParameter(valid_581483, JString, required = true,
+  var valid_590512 = path.getOrDefault("accountId")
+  valid_590512 = validateParameter(valid_590512, JString, required = true,
                                  default = nil)
-  if valid_581483 != nil:
-    section.add "accountId", valid_581483
-  var valid_581484 = path.getOrDefault("merchantId")
-  valid_581484 = validateParameter(valid_581484, JString, required = true,
+  if valid_590512 != nil:
+    section.add "accountId", valid_590512
+  var valid_590513 = path.getOrDefault("merchantId")
+  valid_590513 = validateParameter(valid_590513, JString, required = true,
                                  default = nil)
-  if valid_581484 != nil:
-    section.add "merchantId", valid_581484
+  if valid_590513 != nil:
+    section.add "merchantId", valid_590513
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -14887,41 +14887,41 @@ proc validate_ContentShippingsettingsGet_581481(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_581485 = query.getOrDefault("fields")
-  valid_581485 = validateParameter(valid_581485, JString, required = false,
+  var valid_590514 = query.getOrDefault("fields")
+  valid_590514 = validateParameter(valid_590514, JString, required = false,
                                  default = nil)
-  if valid_581485 != nil:
-    section.add "fields", valid_581485
-  var valid_581486 = query.getOrDefault("quotaUser")
-  valid_581486 = validateParameter(valid_581486, JString, required = false,
+  if valid_590514 != nil:
+    section.add "fields", valid_590514
+  var valid_590515 = query.getOrDefault("quotaUser")
+  valid_590515 = validateParameter(valid_590515, JString, required = false,
                                  default = nil)
-  if valid_581486 != nil:
-    section.add "quotaUser", valid_581486
-  var valid_581487 = query.getOrDefault("alt")
-  valid_581487 = validateParameter(valid_581487, JString, required = false,
+  if valid_590515 != nil:
+    section.add "quotaUser", valid_590515
+  var valid_590516 = query.getOrDefault("alt")
+  valid_590516 = validateParameter(valid_590516, JString, required = false,
                                  default = newJString("json"))
-  if valid_581487 != nil:
-    section.add "alt", valid_581487
-  var valid_581488 = query.getOrDefault("oauth_token")
-  valid_581488 = validateParameter(valid_581488, JString, required = false,
+  if valid_590516 != nil:
+    section.add "alt", valid_590516
+  var valid_590517 = query.getOrDefault("oauth_token")
+  valid_590517 = validateParameter(valid_590517, JString, required = false,
                                  default = nil)
-  if valid_581488 != nil:
-    section.add "oauth_token", valid_581488
-  var valid_581489 = query.getOrDefault("userIp")
-  valid_581489 = validateParameter(valid_581489, JString, required = false,
+  if valid_590517 != nil:
+    section.add "oauth_token", valid_590517
+  var valid_590518 = query.getOrDefault("userIp")
+  valid_590518 = validateParameter(valid_590518, JString, required = false,
                                  default = nil)
-  if valid_581489 != nil:
-    section.add "userIp", valid_581489
-  var valid_581490 = query.getOrDefault("key")
-  valid_581490 = validateParameter(valid_581490, JString, required = false,
+  if valid_590518 != nil:
+    section.add "userIp", valid_590518
+  var valid_590519 = query.getOrDefault("key")
+  valid_590519 = validateParameter(valid_590519, JString, required = false,
                                  default = nil)
-  if valid_581490 != nil:
-    section.add "key", valid_581490
-  var valid_581491 = query.getOrDefault("prettyPrint")
-  valid_581491 = validateParameter(valid_581491, JBool, required = false,
+  if valid_590519 != nil:
+    section.add "key", valid_590519
+  var valid_590520 = query.getOrDefault("prettyPrint")
+  valid_590520 = validateParameter(valid_590520, JBool, required = false,
                                  default = newJBool(true))
-  if valid_581491 != nil:
-    section.add "prettyPrint", valid_581491
+  if valid_590520 != nil:
+    section.add "prettyPrint", valid_590520
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -14930,20 +14930,20 @@ proc validate_ContentShippingsettingsGet_581481(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_581492: Call_ContentShippingsettingsGet_581480; path: JsonNode;
+proc call*(call_590521: Call_ContentShippingsettingsGet_590509; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Retrieves the shipping settings of the account.
   ## 
-  let valid = call_581492.validator(path, query, header, formData, body)
-  let scheme = call_581492.pickScheme
+  let valid = call_590521.validator(path, query, header, formData, body)
+  let scheme = call_590521.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_581492.url(scheme.get, call_581492.host, call_581492.base,
-                         call_581492.route, valid.getOrDefault("path"),
+  let url = call_590521.url(scheme.get, call_590521.host, call_590521.base,
+                         call_590521.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_581492, url, valid)
+  result = hook(call_590521, url, valid)
 
-proc call*(call_581493: Call_ContentShippingsettingsGet_581480; accountId: string;
+proc call*(call_590522: Call_ContentShippingsettingsGet_590509; accountId: string;
           merchantId: string; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; userIp: string = "";
           key: string = ""; prettyPrint: bool = true): Recallable =
@@ -14967,28 +14967,28 @@ proc call*(call_581493: Call_ContentShippingsettingsGet_581480; accountId: strin
   ##             : The ID of the managing account. If this parameter is not the same as accountId, then this account must be a multi-client account and accountId must be the ID of a sub-account of this account.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_581494 = newJObject()
-  var query_581495 = newJObject()
-  add(query_581495, "fields", newJString(fields))
-  add(query_581495, "quotaUser", newJString(quotaUser))
-  add(query_581495, "alt", newJString(alt))
-  add(query_581495, "oauth_token", newJString(oauthToken))
-  add(path_581494, "accountId", newJString(accountId))
-  add(query_581495, "userIp", newJString(userIp))
-  add(query_581495, "key", newJString(key))
-  add(path_581494, "merchantId", newJString(merchantId))
-  add(query_581495, "prettyPrint", newJBool(prettyPrint))
-  result = call_581493.call(path_581494, query_581495, nil, nil, nil)
+  var path_590523 = newJObject()
+  var query_590524 = newJObject()
+  add(query_590524, "fields", newJString(fields))
+  add(query_590524, "quotaUser", newJString(quotaUser))
+  add(query_590524, "alt", newJString(alt))
+  add(query_590524, "oauth_token", newJString(oauthToken))
+  add(path_590523, "accountId", newJString(accountId))
+  add(query_590524, "userIp", newJString(userIp))
+  add(query_590524, "key", newJString(key))
+  add(path_590523, "merchantId", newJString(merchantId))
+  add(query_590524, "prettyPrint", newJBool(prettyPrint))
+  result = call_590522.call(path_590523, query_590524, nil, nil, nil)
 
-var contentShippingsettingsGet* = Call_ContentShippingsettingsGet_581480(
+var contentShippingsettingsGet* = Call_ContentShippingsettingsGet_590509(
     name: "contentShippingsettingsGet", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com",
     route: "/{merchantId}/shippingsettings/{accountId}",
-    validator: validate_ContentShippingsettingsGet_581481, base: "/content/v2",
-    url: url_ContentShippingsettingsGet_581482, schemes: {Scheme.Https})
+    validator: validate_ContentShippingsettingsGet_590510, base: "/content/v2",
+    url: url_ContentShippingsettingsGet_590511, schemes: {Scheme.Https})
 type
-  Call_ContentShippingsettingsPatch_581515 = ref object of OpenApiRestCall_579421
-proc url_ContentShippingsettingsPatch_581517(protocol: Scheme; host: string;
+  Call_ContentShippingsettingsPatch_590544 = ref object of OpenApiRestCall_588450
+proc url_ContentShippingsettingsPatch_590546(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -15006,7 +15006,7 @@ proc url_ContentShippingsettingsPatch_581517(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_ContentShippingsettingsPatch_581516(path: JsonNode; query: JsonNode;
+proc validate_ContentShippingsettingsPatch_590545(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Updates the shipping settings of the account. This method supports patch semantics.
   ## 
@@ -15019,16 +15019,16 @@ proc validate_ContentShippingsettingsPatch_581516(path: JsonNode; query: JsonNod
   ##             : The ID of the managing account. If this parameter is not the same as accountId, then this account must be a multi-client account and accountId must be the ID of a sub-account of this account.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `accountId` field"
-  var valid_581518 = path.getOrDefault("accountId")
-  valid_581518 = validateParameter(valid_581518, JString, required = true,
+  var valid_590547 = path.getOrDefault("accountId")
+  valid_590547 = validateParameter(valid_590547, JString, required = true,
                                  default = nil)
-  if valid_581518 != nil:
-    section.add "accountId", valid_581518
-  var valid_581519 = path.getOrDefault("merchantId")
-  valid_581519 = validateParameter(valid_581519, JString, required = true,
+  if valid_590547 != nil:
+    section.add "accountId", valid_590547
+  var valid_590548 = path.getOrDefault("merchantId")
+  valid_590548 = validateParameter(valid_590548, JString, required = true,
                                  default = nil)
-  if valid_581519 != nil:
-    section.add "merchantId", valid_581519
+  if valid_590548 != nil:
+    section.add "merchantId", valid_590548
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -15048,45 +15048,45 @@ proc validate_ContentShippingsettingsPatch_581516(path: JsonNode; query: JsonNod
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_581520 = query.getOrDefault("fields")
-  valid_581520 = validateParameter(valid_581520, JString, required = false,
+  var valid_590549 = query.getOrDefault("fields")
+  valid_590549 = validateParameter(valid_590549, JString, required = false,
                                  default = nil)
-  if valid_581520 != nil:
-    section.add "fields", valid_581520
-  var valid_581521 = query.getOrDefault("quotaUser")
-  valid_581521 = validateParameter(valid_581521, JString, required = false,
+  if valid_590549 != nil:
+    section.add "fields", valid_590549
+  var valid_590550 = query.getOrDefault("quotaUser")
+  valid_590550 = validateParameter(valid_590550, JString, required = false,
                                  default = nil)
-  if valid_581521 != nil:
-    section.add "quotaUser", valid_581521
-  var valid_581522 = query.getOrDefault("alt")
-  valid_581522 = validateParameter(valid_581522, JString, required = false,
+  if valid_590550 != nil:
+    section.add "quotaUser", valid_590550
+  var valid_590551 = query.getOrDefault("alt")
+  valid_590551 = validateParameter(valid_590551, JString, required = false,
                                  default = newJString("json"))
-  if valid_581522 != nil:
-    section.add "alt", valid_581522
-  var valid_581523 = query.getOrDefault("dryRun")
-  valid_581523 = validateParameter(valid_581523, JBool, required = false, default = nil)
-  if valid_581523 != nil:
-    section.add "dryRun", valid_581523
-  var valid_581524 = query.getOrDefault("oauth_token")
-  valid_581524 = validateParameter(valid_581524, JString, required = false,
+  if valid_590551 != nil:
+    section.add "alt", valid_590551
+  var valid_590552 = query.getOrDefault("dryRun")
+  valid_590552 = validateParameter(valid_590552, JBool, required = false, default = nil)
+  if valid_590552 != nil:
+    section.add "dryRun", valid_590552
+  var valid_590553 = query.getOrDefault("oauth_token")
+  valid_590553 = validateParameter(valid_590553, JString, required = false,
                                  default = nil)
-  if valid_581524 != nil:
-    section.add "oauth_token", valid_581524
-  var valid_581525 = query.getOrDefault("userIp")
-  valid_581525 = validateParameter(valid_581525, JString, required = false,
+  if valid_590553 != nil:
+    section.add "oauth_token", valid_590553
+  var valid_590554 = query.getOrDefault("userIp")
+  valid_590554 = validateParameter(valid_590554, JString, required = false,
                                  default = nil)
-  if valid_581525 != nil:
-    section.add "userIp", valid_581525
-  var valid_581526 = query.getOrDefault("key")
-  valid_581526 = validateParameter(valid_581526, JString, required = false,
+  if valid_590554 != nil:
+    section.add "userIp", valid_590554
+  var valid_590555 = query.getOrDefault("key")
+  valid_590555 = validateParameter(valid_590555, JString, required = false,
                                  default = nil)
-  if valid_581526 != nil:
-    section.add "key", valid_581526
-  var valid_581527 = query.getOrDefault("prettyPrint")
-  valid_581527 = validateParameter(valid_581527, JBool, required = false,
+  if valid_590555 != nil:
+    section.add "key", valid_590555
+  var valid_590556 = query.getOrDefault("prettyPrint")
+  valid_590556 = validateParameter(valid_590556, JBool, required = false,
                                  default = newJBool(true))
-  if valid_581527 != nil:
-    section.add "prettyPrint", valid_581527
+  if valid_590556 != nil:
+    section.add "prettyPrint", valid_590556
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -15098,20 +15098,20 @@ proc validate_ContentShippingsettingsPatch_581516(path: JsonNode; query: JsonNod
   if body != nil:
     result.add "body", body
 
-proc call*(call_581529: Call_ContentShippingsettingsPatch_581515; path: JsonNode;
+proc call*(call_590558: Call_ContentShippingsettingsPatch_590544; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Updates the shipping settings of the account. This method supports patch semantics.
   ## 
-  let valid = call_581529.validator(path, query, header, formData, body)
-  let scheme = call_581529.pickScheme
+  let valid = call_590558.validator(path, query, header, formData, body)
+  let scheme = call_590558.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_581529.url(scheme.get, call_581529.host, call_581529.base,
-                         call_581529.route, valid.getOrDefault("path"),
+  let url = call_590558.url(scheme.get, call_590558.host, call_590558.base,
+                         call_590558.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_581529, url, valid)
+  result = hook(call_590558, url, valid)
 
-proc call*(call_581530: Call_ContentShippingsettingsPatch_581515;
+proc call*(call_590559: Call_ContentShippingsettingsPatch_590544;
           accountId: string; merchantId: string; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; dryRun: bool = false;
           oauthToken: string = ""; userIp: string = ""; key: string = "";
@@ -15139,32 +15139,32 @@ proc call*(call_581530: Call_ContentShippingsettingsPatch_581515;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_581531 = newJObject()
-  var query_581532 = newJObject()
-  var body_581533 = newJObject()
-  add(query_581532, "fields", newJString(fields))
-  add(query_581532, "quotaUser", newJString(quotaUser))
-  add(query_581532, "alt", newJString(alt))
-  add(query_581532, "dryRun", newJBool(dryRun))
-  add(query_581532, "oauth_token", newJString(oauthToken))
-  add(path_581531, "accountId", newJString(accountId))
-  add(query_581532, "userIp", newJString(userIp))
-  add(query_581532, "key", newJString(key))
-  add(path_581531, "merchantId", newJString(merchantId))
+  var path_590560 = newJObject()
+  var query_590561 = newJObject()
+  var body_590562 = newJObject()
+  add(query_590561, "fields", newJString(fields))
+  add(query_590561, "quotaUser", newJString(quotaUser))
+  add(query_590561, "alt", newJString(alt))
+  add(query_590561, "dryRun", newJBool(dryRun))
+  add(query_590561, "oauth_token", newJString(oauthToken))
+  add(path_590560, "accountId", newJString(accountId))
+  add(query_590561, "userIp", newJString(userIp))
+  add(query_590561, "key", newJString(key))
+  add(path_590560, "merchantId", newJString(merchantId))
   if body != nil:
-    body_581533 = body
-  add(query_581532, "prettyPrint", newJBool(prettyPrint))
-  result = call_581530.call(path_581531, query_581532, nil, nil, body_581533)
+    body_590562 = body
+  add(query_590561, "prettyPrint", newJBool(prettyPrint))
+  result = call_590559.call(path_590560, query_590561, nil, nil, body_590562)
 
-var contentShippingsettingsPatch* = Call_ContentShippingsettingsPatch_581515(
+var contentShippingsettingsPatch* = Call_ContentShippingsettingsPatch_590544(
     name: "contentShippingsettingsPatch", meth: HttpMethod.HttpPatch,
     host: "www.googleapis.com",
     route: "/{merchantId}/shippingsettings/{accountId}",
-    validator: validate_ContentShippingsettingsPatch_581516, base: "/content/v2",
-    url: url_ContentShippingsettingsPatch_581517, schemes: {Scheme.Https})
+    validator: validate_ContentShippingsettingsPatch_590545, base: "/content/v2",
+    url: url_ContentShippingsettingsPatch_590546, schemes: {Scheme.Https})
 type
-  Call_ContentShippingsettingsGetsupportedcarriers_581534 = ref object of OpenApiRestCall_579421
-proc url_ContentShippingsettingsGetsupportedcarriers_581536(protocol: Scheme;
+  Call_ContentShippingsettingsGetsupportedcarriers_590563 = ref object of OpenApiRestCall_588450
+proc url_ContentShippingsettingsGetsupportedcarriers_590565(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -15180,7 +15180,7 @@ proc url_ContentShippingsettingsGetsupportedcarriers_581536(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_ContentShippingsettingsGetsupportedcarriers_581535(path: JsonNode;
+proc validate_ContentShippingsettingsGetsupportedcarriers_590564(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Retrieves supported carriers and carrier services for an account.
   ## 
@@ -15192,11 +15192,11 @@ proc validate_ContentShippingsettingsGetsupportedcarriers_581535(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `merchantId` field"
-  var valid_581537 = path.getOrDefault("merchantId")
-  valid_581537 = validateParameter(valid_581537, JString, required = true,
+  var valid_590566 = path.getOrDefault("merchantId")
+  valid_590566 = validateParameter(valid_590566, JString, required = true,
                                  default = nil)
-  if valid_581537 != nil:
-    section.add "merchantId", valid_581537
+  if valid_590566 != nil:
+    section.add "merchantId", valid_590566
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -15214,41 +15214,41 @@ proc validate_ContentShippingsettingsGetsupportedcarriers_581535(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_581538 = query.getOrDefault("fields")
-  valid_581538 = validateParameter(valid_581538, JString, required = false,
+  var valid_590567 = query.getOrDefault("fields")
+  valid_590567 = validateParameter(valid_590567, JString, required = false,
                                  default = nil)
-  if valid_581538 != nil:
-    section.add "fields", valid_581538
-  var valid_581539 = query.getOrDefault("quotaUser")
-  valid_581539 = validateParameter(valid_581539, JString, required = false,
+  if valid_590567 != nil:
+    section.add "fields", valid_590567
+  var valid_590568 = query.getOrDefault("quotaUser")
+  valid_590568 = validateParameter(valid_590568, JString, required = false,
                                  default = nil)
-  if valid_581539 != nil:
-    section.add "quotaUser", valid_581539
-  var valid_581540 = query.getOrDefault("alt")
-  valid_581540 = validateParameter(valid_581540, JString, required = false,
+  if valid_590568 != nil:
+    section.add "quotaUser", valid_590568
+  var valid_590569 = query.getOrDefault("alt")
+  valid_590569 = validateParameter(valid_590569, JString, required = false,
                                  default = newJString("json"))
-  if valid_581540 != nil:
-    section.add "alt", valid_581540
-  var valid_581541 = query.getOrDefault("oauth_token")
-  valid_581541 = validateParameter(valid_581541, JString, required = false,
+  if valid_590569 != nil:
+    section.add "alt", valid_590569
+  var valid_590570 = query.getOrDefault("oauth_token")
+  valid_590570 = validateParameter(valid_590570, JString, required = false,
                                  default = nil)
-  if valid_581541 != nil:
-    section.add "oauth_token", valid_581541
-  var valid_581542 = query.getOrDefault("userIp")
-  valid_581542 = validateParameter(valid_581542, JString, required = false,
+  if valid_590570 != nil:
+    section.add "oauth_token", valid_590570
+  var valid_590571 = query.getOrDefault("userIp")
+  valid_590571 = validateParameter(valid_590571, JString, required = false,
                                  default = nil)
-  if valid_581542 != nil:
-    section.add "userIp", valid_581542
-  var valid_581543 = query.getOrDefault("key")
-  valid_581543 = validateParameter(valid_581543, JString, required = false,
+  if valid_590571 != nil:
+    section.add "userIp", valid_590571
+  var valid_590572 = query.getOrDefault("key")
+  valid_590572 = validateParameter(valid_590572, JString, required = false,
                                  default = nil)
-  if valid_581543 != nil:
-    section.add "key", valid_581543
-  var valid_581544 = query.getOrDefault("prettyPrint")
-  valid_581544 = validateParameter(valid_581544, JBool, required = false,
+  if valid_590572 != nil:
+    section.add "key", valid_590572
+  var valid_590573 = query.getOrDefault("prettyPrint")
+  valid_590573 = validateParameter(valid_590573, JBool, required = false,
                                  default = newJBool(true))
-  if valid_581544 != nil:
-    section.add "prettyPrint", valid_581544
+  if valid_590573 != nil:
+    section.add "prettyPrint", valid_590573
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -15257,21 +15257,21 @@ proc validate_ContentShippingsettingsGetsupportedcarriers_581535(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_581545: Call_ContentShippingsettingsGetsupportedcarriers_581534;
+proc call*(call_590574: Call_ContentShippingsettingsGetsupportedcarriers_590563;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Retrieves supported carriers and carrier services for an account.
   ## 
-  let valid = call_581545.validator(path, query, header, formData, body)
-  let scheme = call_581545.pickScheme
+  let valid = call_590574.validator(path, query, header, formData, body)
+  let scheme = call_590574.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_581545.url(scheme.get, call_581545.host, call_581545.base,
-                         call_581545.route, valid.getOrDefault("path"),
+  let url = call_590574.url(scheme.get, call_590574.host, call_590574.base,
+                         call_590574.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_581545, url, valid)
+  result = hook(call_590574, url, valid)
 
-proc call*(call_581546: Call_ContentShippingsettingsGetsupportedcarriers_581534;
+proc call*(call_590575: Call_ContentShippingsettingsGetsupportedcarriers_590563;
           merchantId: string; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; userIp: string = "";
           key: string = ""; prettyPrint: bool = true): Recallable =
@@ -15293,27 +15293,27 @@ proc call*(call_581546: Call_ContentShippingsettingsGetsupportedcarriers_581534;
   ##             : The ID of the account for which to retrieve the supported carriers.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_581547 = newJObject()
-  var query_581548 = newJObject()
-  add(query_581548, "fields", newJString(fields))
-  add(query_581548, "quotaUser", newJString(quotaUser))
-  add(query_581548, "alt", newJString(alt))
-  add(query_581548, "oauth_token", newJString(oauthToken))
-  add(query_581548, "userIp", newJString(userIp))
-  add(query_581548, "key", newJString(key))
-  add(path_581547, "merchantId", newJString(merchantId))
-  add(query_581548, "prettyPrint", newJBool(prettyPrint))
-  result = call_581546.call(path_581547, query_581548, nil, nil, nil)
+  var path_590576 = newJObject()
+  var query_590577 = newJObject()
+  add(query_590577, "fields", newJString(fields))
+  add(query_590577, "quotaUser", newJString(quotaUser))
+  add(query_590577, "alt", newJString(alt))
+  add(query_590577, "oauth_token", newJString(oauthToken))
+  add(query_590577, "userIp", newJString(userIp))
+  add(query_590577, "key", newJString(key))
+  add(path_590576, "merchantId", newJString(merchantId))
+  add(query_590577, "prettyPrint", newJBool(prettyPrint))
+  result = call_590575.call(path_590576, query_590577, nil, nil, nil)
 
-var contentShippingsettingsGetsupportedcarriers* = Call_ContentShippingsettingsGetsupportedcarriers_581534(
+var contentShippingsettingsGetsupportedcarriers* = Call_ContentShippingsettingsGetsupportedcarriers_590563(
     name: "contentShippingsettingsGetsupportedcarriers", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/{merchantId}/supportedCarriers",
-    validator: validate_ContentShippingsettingsGetsupportedcarriers_581535,
-    base: "/content/v2", url: url_ContentShippingsettingsGetsupportedcarriers_581536,
+    validator: validate_ContentShippingsettingsGetsupportedcarriers_590564,
+    base: "/content/v2", url: url_ContentShippingsettingsGetsupportedcarriers_590565,
     schemes: {Scheme.Https})
 type
-  Call_ContentShippingsettingsGetsupportedholidays_581549 = ref object of OpenApiRestCall_579421
-proc url_ContentShippingsettingsGetsupportedholidays_581551(protocol: Scheme;
+  Call_ContentShippingsettingsGetsupportedholidays_590578 = ref object of OpenApiRestCall_588450
+proc url_ContentShippingsettingsGetsupportedholidays_590580(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -15329,7 +15329,7 @@ proc url_ContentShippingsettingsGetsupportedholidays_581551(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_ContentShippingsettingsGetsupportedholidays_581550(path: JsonNode;
+proc validate_ContentShippingsettingsGetsupportedholidays_590579(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Retrieves supported holidays for an account.
   ## 
@@ -15341,11 +15341,11 @@ proc validate_ContentShippingsettingsGetsupportedholidays_581550(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `merchantId` field"
-  var valid_581552 = path.getOrDefault("merchantId")
-  valid_581552 = validateParameter(valid_581552, JString, required = true,
+  var valid_590581 = path.getOrDefault("merchantId")
+  valid_590581 = validateParameter(valid_590581, JString, required = true,
                                  default = nil)
-  if valid_581552 != nil:
-    section.add "merchantId", valid_581552
+  if valid_590581 != nil:
+    section.add "merchantId", valid_590581
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -15363,41 +15363,41 @@ proc validate_ContentShippingsettingsGetsupportedholidays_581550(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_581553 = query.getOrDefault("fields")
-  valid_581553 = validateParameter(valid_581553, JString, required = false,
+  var valid_590582 = query.getOrDefault("fields")
+  valid_590582 = validateParameter(valid_590582, JString, required = false,
                                  default = nil)
-  if valid_581553 != nil:
-    section.add "fields", valid_581553
-  var valid_581554 = query.getOrDefault("quotaUser")
-  valid_581554 = validateParameter(valid_581554, JString, required = false,
+  if valid_590582 != nil:
+    section.add "fields", valid_590582
+  var valid_590583 = query.getOrDefault("quotaUser")
+  valid_590583 = validateParameter(valid_590583, JString, required = false,
                                  default = nil)
-  if valid_581554 != nil:
-    section.add "quotaUser", valid_581554
-  var valid_581555 = query.getOrDefault("alt")
-  valid_581555 = validateParameter(valid_581555, JString, required = false,
+  if valid_590583 != nil:
+    section.add "quotaUser", valid_590583
+  var valid_590584 = query.getOrDefault("alt")
+  valid_590584 = validateParameter(valid_590584, JString, required = false,
                                  default = newJString("json"))
-  if valid_581555 != nil:
-    section.add "alt", valid_581555
-  var valid_581556 = query.getOrDefault("oauth_token")
-  valid_581556 = validateParameter(valid_581556, JString, required = false,
+  if valid_590584 != nil:
+    section.add "alt", valid_590584
+  var valid_590585 = query.getOrDefault("oauth_token")
+  valid_590585 = validateParameter(valid_590585, JString, required = false,
                                  default = nil)
-  if valid_581556 != nil:
-    section.add "oauth_token", valid_581556
-  var valid_581557 = query.getOrDefault("userIp")
-  valid_581557 = validateParameter(valid_581557, JString, required = false,
+  if valid_590585 != nil:
+    section.add "oauth_token", valid_590585
+  var valid_590586 = query.getOrDefault("userIp")
+  valid_590586 = validateParameter(valid_590586, JString, required = false,
                                  default = nil)
-  if valid_581557 != nil:
-    section.add "userIp", valid_581557
-  var valid_581558 = query.getOrDefault("key")
-  valid_581558 = validateParameter(valid_581558, JString, required = false,
+  if valid_590586 != nil:
+    section.add "userIp", valid_590586
+  var valid_590587 = query.getOrDefault("key")
+  valid_590587 = validateParameter(valid_590587, JString, required = false,
                                  default = nil)
-  if valid_581558 != nil:
-    section.add "key", valid_581558
-  var valid_581559 = query.getOrDefault("prettyPrint")
-  valid_581559 = validateParameter(valid_581559, JBool, required = false,
+  if valid_590587 != nil:
+    section.add "key", valid_590587
+  var valid_590588 = query.getOrDefault("prettyPrint")
+  valid_590588 = validateParameter(valid_590588, JBool, required = false,
                                  default = newJBool(true))
-  if valid_581559 != nil:
-    section.add "prettyPrint", valid_581559
+  if valid_590588 != nil:
+    section.add "prettyPrint", valid_590588
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -15406,21 +15406,21 @@ proc validate_ContentShippingsettingsGetsupportedholidays_581550(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_581560: Call_ContentShippingsettingsGetsupportedholidays_581549;
+proc call*(call_590589: Call_ContentShippingsettingsGetsupportedholidays_590578;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Retrieves supported holidays for an account.
   ## 
-  let valid = call_581560.validator(path, query, header, formData, body)
-  let scheme = call_581560.pickScheme
+  let valid = call_590589.validator(path, query, header, formData, body)
+  let scheme = call_590589.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_581560.url(scheme.get, call_581560.host, call_581560.base,
-                         call_581560.route, valid.getOrDefault("path"),
+  let url = call_590589.url(scheme.get, call_590589.host, call_590589.base,
+                         call_590589.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_581560, url, valid)
+  result = hook(call_590589, url, valid)
 
-proc call*(call_581561: Call_ContentShippingsettingsGetsupportedholidays_581549;
+proc call*(call_590590: Call_ContentShippingsettingsGetsupportedholidays_590578;
           merchantId: string; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; userIp: string = "";
           key: string = ""; prettyPrint: bool = true): Recallable =
@@ -15442,27 +15442,27 @@ proc call*(call_581561: Call_ContentShippingsettingsGetsupportedholidays_581549;
   ##             : The ID of the account for which to retrieve the supported holidays.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_581562 = newJObject()
-  var query_581563 = newJObject()
-  add(query_581563, "fields", newJString(fields))
-  add(query_581563, "quotaUser", newJString(quotaUser))
-  add(query_581563, "alt", newJString(alt))
-  add(query_581563, "oauth_token", newJString(oauthToken))
-  add(query_581563, "userIp", newJString(userIp))
-  add(query_581563, "key", newJString(key))
-  add(path_581562, "merchantId", newJString(merchantId))
-  add(query_581563, "prettyPrint", newJBool(prettyPrint))
-  result = call_581561.call(path_581562, query_581563, nil, nil, nil)
+  var path_590591 = newJObject()
+  var query_590592 = newJObject()
+  add(query_590592, "fields", newJString(fields))
+  add(query_590592, "quotaUser", newJString(quotaUser))
+  add(query_590592, "alt", newJString(alt))
+  add(query_590592, "oauth_token", newJString(oauthToken))
+  add(query_590592, "userIp", newJString(userIp))
+  add(query_590592, "key", newJString(key))
+  add(path_590591, "merchantId", newJString(merchantId))
+  add(query_590592, "prettyPrint", newJBool(prettyPrint))
+  result = call_590590.call(path_590591, query_590592, nil, nil, nil)
 
-var contentShippingsettingsGetsupportedholidays* = Call_ContentShippingsettingsGetsupportedholidays_581549(
+var contentShippingsettingsGetsupportedholidays* = Call_ContentShippingsettingsGetsupportedholidays_590578(
     name: "contentShippingsettingsGetsupportedholidays", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/{merchantId}/supportedHolidays",
-    validator: validate_ContentShippingsettingsGetsupportedholidays_581550,
-    base: "/content/v2", url: url_ContentShippingsettingsGetsupportedholidays_581551,
+    validator: validate_ContentShippingsettingsGetsupportedholidays_590579,
+    base: "/content/v2", url: url_ContentShippingsettingsGetsupportedholidays_590580,
     schemes: {Scheme.Https})
 type
-  Call_ContentOrdersCreatetestorder_581564 = ref object of OpenApiRestCall_579421
-proc url_ContentOrdersCreatetestorder_581566(protocol: Scheme; host: string;
+  Call_ContentOrdersCreatetestorder_590593 = ref object of OpenApiRestCall_588450
+proc url_ContentOrdersCreatetestorder_590595(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -15478,7 +15478,7 @@ proc url_ContentOrdersCreatetestorder_581566(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_ContentOrdersCreatetestorder_581565(path: JsonNode; query: JsonNode;
+proc validate_ContentOrdersCreatetestorder_590594(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Sandbox only. Creates a test order.
   ## 
@@ -15490,11 +15490,11 @@ proc validate_ContentOrdersCreatetestorder_581565(path: JsonNode; query: JsonNod
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `merchantId` field"
-  var valid_581567 = path.getOrDefault("merchantId")
-  valid_581567 = validateParameter(valid_581567, JString, required = true,
+  var valid_590596 = path.getOrDefault("merchantId")
+  valid_590596 = validateParameter(valid_590596, JString, required = true,
                                  default = nil)
-  if valid_581567 != nil:
-    section.add "merchantId", valid_581567
+  if valid_590596 != nil:
+    section.add "merchantId", valid_590596
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -15512,41 +15512,41 @@ proc validate_ContentOrdersCreatetestorder_581565(path: JsonNode; query: JsonNod
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_581568 = query.getOrDefault("fields")
-  valid_581568 = validateParameter(valid_581568, JString, required = false,
+  var valid_590597 = query.getOrDefault("fields")
+  valid_590597 = validateParameter(valid_590597, JString, required = false,
                                  default = nil)
-  if valid_581568 != nil:
-    section.add "fields", valid_581568
-  var valid_581569 = query.getOrDefault("quotaUser")
-  valid_581569 = validateParameter(valid_581569, JString, required = false,
+  if valid_590597 != nil:
+    section.add "fields", valid_590597
+  var valid_590598 = query.getOrDefault("quotaUser")
+  valid_590598 = validateParameter(valid_590598, JString, required = false,
                                  default = nil)
-  if valid_581569 != nil:
-    section.add "quotaUser", valid_581569
-  var valid_581570 = query.getOrDefault("alt")
-  valid_581570 = validateParameter(valid_581570, JString, required = false,
+  if valid_590598 != nil:
+    section.add "quotaUser", valid_590598
+  var valid_590599 = query.getOrDefault("alt")
+  valid_590599 = validateParameter(valid_590599, JString, required = false,
                                  default = newJString("json"))
-  if valid_581570 != nil:
-    section.add "alt", valid_581570
-  var valid_581571 = query.getOrDefault("oauth_token")
-  valid_581571 = validateParameter(valid_581571, JString, required = false,
+  if valid_590599 != nil:
+    section.add "alt", valid_590599
+  var valid_590600 = query.getOrDefault("oauth_token")
+  valid_590600 = validateParameter(valid_590600, JString, required = false,
                                  default = nil)
-  if valid_581571 != nil:
-    section.add "oauth_token", valid_581571
-  var valid_581572 = query.getOrDefault("userIp")
-  valid_581572 = validateParameter(valid_581572, JString, required = false,
+  if valid_590600 != nil:
+    section.add "oauth_token", valid_590600
+  var valid_590601 = query.getOrDefault("userIp")
+  valid_590601 = validateParameter(valid_590601, JString, required = false,
                                  default = nil)
-  if valid_581572 != nil:
-    section.add "userIp", valid_581572
-  var valid_581573 = query.getOrDefault("key")
-  valid_581573 = validateParameter(valid_581573, JString, required = false,
+  if valid_590601 != nil:
+    section.add "userIp", valid_590601
+  var valid_590602 = query.getOrDefault("key")
+  valid_590602 = validateParameter(valid_590602, JString, required = false,
                                  default = nil)
-  if valid_581573 != nil:
-    section.add "key", valid_581573
-  var valid_581574 = query.getOrDefault("prettyPrint")
-  valid_581574 = validateParameter(valid_581574, JBool, required = false,
+  if valid_590602 != nil:
+    section.add "key", valid_590602
+  var valid_590603 = query.getOrDefault("prettyPrint")
+  valid_590603 = validateParameter(valid_590603, JBool, required = false,
                                  default = newJBool(true))
-  if valid_581574 != nil:
-    section.add "prettyPrint", valid_581574
+  if valid_590603 != nil:
+    section.add "prettyPrint", valid_590603
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -15558,20 +15558,20 @@ proc validate_ContentOrdersCreatetestorder_581565(path: JsonNode; query: JsonNod
   if body != nil:
     result.add "body", body
 
-proc call*(call_581576: Call_ContentOrdersCreatetestorder_581564; path: JsonNode;
+proc call*(call_590605: Call_ContentOrdersCreatetestorder_590593; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Sandbox only. Creates a test order.
   ## 
-  let valid = call_581576.validator(path, query, header, formData, body)
-  let scheme = call_581576.pickScheme
+  let valid = call_590605.validator(path, query, header, formData, body)
+  let scheme = call_590605.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_581576.url(scheme.get, call_581576.host, call_581576.base,
-                         call_581576.route, valid.getOrDefault("path"),
+  let url = call_590605.url(scheme.get, call_590605.host, call_590605.base,
+                         call_590605.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_581576, url, valid)
+  result = hook(call_590605, url, valid)
 
-proc call*(call_581577: Call_ContentOrdersCreatetestorder_581564;
+proc call*(call_590606: Call_ContentOrdersCreatetestorder_590593;
           merchantId: string; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; userIp: string = "";
           key: string = ""; body: JsonNode = nil; prettyPrint: bool = true): Recallable =
@@ -15594,29 +15594,29 @@ proc call*(call_581577: Call_ContentOrdersCreatetestorder_581564;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_581578 = newJObject()
-  var query_581579 = newJObject()
-  var body_581580 = newJObject()
-  add(query_581579, "fields", newJString(fields))
-  add(query_581579, "quotaUser", newJString(quotaUser))
-  add(query_581579, "alt", newJString(alt))
-  add(query_581579, "oauth_token", newJString(oauthToken))
-  add(query_581579, "userIp", newJString(userIp))
-  add(query_581579, "key", newJString(key))
-  add(path_581578, "merchantId", newJString(merchantId))
+  var path_590607 = newJObject()
+  var query_590608 = newJObject()
+  var body_590609 = newJObject()
+  add(query_590608, "fields", newJString(fields))
+  add(query_590608, "quotaUser", newJString(quotaUser))
+  add(query_590608, "alt", newJString(alt))
+  add(query_590608, "oauth_token", newJString(oauthToken))
+  add(query_590608, "userIp", newJString(userIp))
+  add(query_590608, "key", newJString(key))
+  add(path_590607, "merchantId", newJString(merchantId))
   if body != nil:
-    body_581580 = body
-  add(query_581579, "prettyPrint", newJBool(prettyPrint))
-  result = call_581577.call(path_581578, query_581579, nil, nil, body_581580)
+    body_590609 = body
+  add(query_590608, "prettyPrint", newJBool(prettyPrint))
+  result = call_590606.call(path_590607, query_590608, nil, nil, body_590609)
 
-var contentOrdersCreatetestorder* = Call_ContentOrdersCreatetestorder_581564(
+var contentOrdersCreatetestorder* = Call_ContentOrdersCreatetestorder_590593(
     name: "contentOrdersCreatetestorder", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com", route: "/{merchantId}/testorders",
-    validator: validate_ContentOrdersCreatetestorder_581565, base: "/content/v2",
-    url: url_ContentOrdersCreatetestorder_581566, schemes: {Scheme.Https})
+    validator: validate_ContentOrdersCreatetestorder_590594, base: "/content/v2",
+    url: url_ContentOrdersCreatetestorder_590595, schemes: {Scheme.Https})
 type
-  Call_ContentOrdersAdvancetestorder_581581 = ref object of OpenApiRestCall_579421
-proc url_ContentOrdersAdvancetestorder_581583(protocol: Scheme; host: string;
+  Call_ContentOrdersAdvancetestorder_590610 = ref object of OpenApiRestCall_588450
+proc url_ContentOrdersAdvancetestorder_590612(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -15635,7 +15635,7 @@ proc url_ContentOrdersAdvancetestorder_581583(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_ContentOrdersAdvancetestorder_581582(path: JsonNode; query: JsonNode;
+proc validate_ContentOrdersAdvancetestorder_590611(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Sandbox only. Moves a test order from state "inProgress" to state "pendingShipment".
   ## 
@@ -15648,16 +15648,16 @@ proc validate_ContentOrdersAdvancetestorder_581582(path: JsonNode; query: JsonNo
   ##             : The ID of the account that manages the order. This cannot be a multi-client account.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `orderId` field"
-  var valid_581584 = path.getOrDefault("orderId")
-  valid_581584 = validateParameter(valid_581584, JString, required = true,
+  var valid_590613 = path.getOrDefault("orderId")
+  valid_590613 = validateParameter(valid_590613, JString, required = true,
                                  default = nil)
-  if valid_581584 != nil:
-    section.add "orderId", valid_581584
-  var valid_581585 = path.getOrDefault("merchantId")
-  valid_581585 = validateParameter(valid_581585, JString, required = true,
+  if valid_590613 != nil:
+    section.add "orderId", valid_590613
+  var valid_590614 = path.getOrDefault("merchantId")
+  valid_590614 = validateParameter(valid_590614, JString, required = true,
                                  default = nil)
-  if valid_581585 != nil:
-    section.add "merchantId", valid_581585
+  if valid_590614 != nil:
+    section.add "merchantId", valid_590614
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -15675,41 +15675,41 @@ proc validate_ContentOrdersAdvancetestorder_581582(path: JsonNode; query: JsonNo
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_581586 = query.getOrDefault("fields")
-  valid_581586 = validateParameter(valid_581586, JString, required = false,
+  var valid_590615 = query.getOrDefault("fields")
+  valid_590615 = validateParameter(valid_590615, JString, required = false,
                                  default = nil)
-  if valid_581586 != nil:
-    section.add "fields", valid_581586
-  var valid_581587 = query.getOrDefault("quotaUser")
-  valid_581587 = validateParameter(valid_581587, JString, required = false,
+  if valid_590615 != nil:
+    section.add "fields", valid_590615
+  var valid_590616 = query.getOrDefault("quotaUser")
+  valid_590616 = validateParameter(valid_590616, JString, required = false,
                                  default = nil)
-  if valid_581587 != nil:
-    section.add "quotaUser", valid_581587
-  var valid_581588 = query.getOrDefault("alt")
-  valid_581588 = validateParameter(valid_581588, JString, required = false,
+  if valid_590616 != nil:
+    section.add "quotaUser", valid_590616
+  var valid_590617 = query.getOrDefault("alt")
+  valid_590617 = validateParameter(valid_590617, JString, required = false,
                                  default = newJString("json"))
-  if valid_581588 != nil:
-    section.add "alt", valid_581588
-  var valid_581589 = query.getOrDefault("oauth_token")
-  valid_581589 = validateParameter(valid_581589, JString, required = false,
+  if valid_590617 != nil:
+    section.add "alt", valid_590617
+  var valid_590618 = query.getOrDefault("oauth_token")
+  valid_590618 = validateParameter(valid_590618, JString, required = false,
                                  default = nil)
-  if valid_581589 != nil:
-    section.add "oauth_token", valid_581589
-  var valid_581590 = query.getOrDefault("userIp")
-  valid_581590 = validateParameter(valid_581590, JString, required = false,
+  if valid_590618 != nil:
+    section.add "oauth_token", valid_590618
+  var valid_590619 = query.getOrDefault("userIp")
+  valid_590619 = validateParameter(valid_590619, JString, required = false,
                                  default = nil)
-  if valid_581590 != nil:
-    section.add "userIp", valid_581590
-  var valid_581591 = query.getOrDefault("key")
-  valid_581591 = validateParameter(valid_581591, JString, required = false,
+  if valid_590619 != nil:
+    section.add "userIp", valid_590619
+  var valid_590620 = query.getOrDefault("key")
+  valid_590620 = validateParameter(valid_590620, JString, required = false,
                                  default = nil)
-  if valid_581591 != nil:
-    section.add "key", valid_581591
-  var valid_581592 = query.getOrDefault("prettyPrint")
-  valid_581592 = validateParameter(valid_581592, JBool, required = false,
+  if valid_590620 != nil:
+    section.add "key", valid_590620
+  var valid_590621 = query.getOrDefault("prettyPrint")
+  valid_590621 = validateParameter(valid_590621, JBool, required = false,
                                  default = newJBool(true))
-  if valid_581592 != nil:
-    section.add "prettyPrint", valid_581592
+  if valid_590621 != nil:
+    section.add "prettyPrint", valid_590621
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -15718,20 +15718,20 @@ proc validate_ContentOrdersAdvancetestorder_581582(path: JsonNode; query: JsonNo
   if body != nil:
     result.add "body", body
 
-proc call*(call_581593: Call_ContentOrdersAdvancetestorder_581581; path: JsonNode;
+proc call*(call_590622: Call_ContentOrdersAdvancetestorder_590610; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Sandbox only. Moves a test order from state "inProgress" to state "pendingShipment".
   ## 
-  let valid = call_581593.validator(path, query, header, formData, body)
-  let scheme = call_581593.pickScheme
+  let valid = call_590622.validator(path, query, header, formData, body)
+  let scheme = call_590622.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_581593.url(scheme.get, call_581593.host, call_581593.base,
-                         call_581593.route, valid.getOrDefault("path"),
+  let url = call_590622.url(scheme.get, call_590622.host, call_590622.base,
+                         call_590622.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_581593, url, valid)
+  result = hook(call_590622, url, valid)
 
-proc call*(call_581594: Call_ContentOrdersAdvancetestorder_581581; orderId: string;
+proc call*(call_590623: Call_ContentOrdersAdvancetestorder_590610; orderId: string;
           merchantId: string; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; userIp: string = "";
           key: string = ""; prettyPrint: bool = true): Recallable =
@@ -15755,28 +15755,28 @@ proc call*(call_581594: Call_ContentOrdersAdvancetestorder_581581; orderId: stri
   ##             : The ID of the account that manages the order. This cannot be a multi-client account.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_581595 = newJObject()
-  var query_581596 = newJObject()
-  add(query_581596, "fields", newJString(fields))
-  add(query_581596, "quotaUser", newJString(quotaUser))
-  add(query_581596, "alt", newJString(alt))
-  add(query_581596, "oauth_token", newJString(oauthToken))
-  add(query_581596, "userIp", newJString(userIp))
-  add(path_581595, "orderId", newJString(orderId))
-  add(query_581596, "key", newJString(key))
-  add(path_581595, "merchantId", newJString(merchantId))
-  add(query_581596, "prettyPrint", newJBool(prettyPrint))
-  result = call_581594.call(path_581595, query_581596, nil, nil, nil)
+  var path_590624 = newJObject()
+  var query_590625 = newJObject()
+  add(query_590625, "fields", newJString(fields))
+  add(query_590625, "quotaUser", newJString(quotaUser))
+  add(query_590625, "alt", newJString(alt))
+  add(query_590625, "oauth_token", newJString(oauthToken))
+  add(query_590625, "userIp", newJString(userIp))
+  add(path_590624, "orderId", newJString(orderId))
+  add(query_590625, "key", newJString(key))
+  add(path_590624, "merchantId", newJString(merchantId))
+  add(query_590625, "prettyPrint", newJBool(prettyPrint))
+  result = call_590623.call(path_590624, query_590625, nil, nil, nil)
 
-var contentOrdersAdvancetestorder* = Call_ContentOrdersAdvancetestorder_581581(
+var contentOrdersAdvancetestorder* = Call_ContentOrdersAdvancetestorder_590610(
     name: "contentOrdersAdvancetestorder", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com",
     route: "/{merchantId}/testorders/{orderId}/advance",
-    validator: validate_ContentOrdersAdvancetestorder_581582, base: "/content/v2",
-    url: url_ContentOrdersAdvancetestorder_581583, schemes: {Scheme.Https})
+    validator: validate_ContentOrdersAdvancetestorder_590611, base: "/content/v2",
+    url: url_ContentOrdersAdvancetestorder_590612, schemes: {Scheme.Https})
 type
-  Call_ContentOrdersCanceltestorderbycustomer_581597 = ref object of OpenApiRestCall_579421
-proc url_ContentOrdersCanceltestorderbycustomer_581599(protocol: Scheme;
+  Call_ContentOrdersCanceltestorderbycustomer_590626 = ref object of OpenApiRestCall_588450
+proc url_ContentOrdersCanceltestorderbycustomer_590628(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -15795,7 +15795,7 @@ proc url_ContentOrdersCanceltestorderbycustomer_581599(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_ContentOrdersCanceltestorderbycustomer_581598(path: JsonNode;
+proc validate_ContentOrdersCanceltestorderbycustomer_590627(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Sandbox only. Cancels a test order for customer-initiated cancellation.
   ## 
@@ -15808,16 +15808,16 @@ proc validate_ContentOrdersCanceltestorderbycustomer_581598(path: JsonNode;
   ##             : The ID of the account that manages the order. This cannot be a multi-client account.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `orderId` field"
-  var valid_581600 = path.getOrDefault("orderId")
-  valid_581600 = validateParameter(valid_581600, JString, required = true,
+  var valid_590629 = path.getOrDefault("orderId")
+  valid_590629 = validateParameter(valid_590629, JString, required = true,
                                  default = nil)
-  if valid_581600 != nil:
-    section.add "orderId", valid_581600
-  var valid_581601 = path.getOrDefault("merchantId")
-  valid_581601 = validateParameter(valid_581601, JString, required = true,
+  if valid_590629 != nil:
+    section.add "orderId", valid_590629
+  var valid_590630 = path.getOrDefault("merchantId")
+  valid_590630 = validateParameter(valid_590630, JString, required = true,
                                  default = nil)
-  if valid_581601 != nil:
-    section.add "merchantId", valid_581601
+  if valid_590630 != nil:
+    section.add "merchantId", valid_590630
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -15835,41 +15835,41 @@ proc validate_ContentOrdersCanceltestorderbycustomer_581598(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_581602 = query.getOrDefault("fields")
-  valid_581602 = validateParameter(valid_581602, JString, required = false,
+  var valid_590631 = query.getOrDefault("fields")
+  valid_590631 = validateParameter(valid_590631, JString, required = false,
                                  default = nil)
-  if valid_581602 != nil:
-    section.add "fields", valid_581602
-  var valid_581603 = query.getOrDefault("quotaUser")
-  valid_581603 = validateParameter(valid_581603, JString, required = false,
+  if valid_590631 != nil:
+    section.add "fields", valid_590631
+  var valid_590632 = query.getOrDefault("quotaUser")
+  valid_590632 = validateParameter(valid_590632, JString, required = false,
                                  default = nil)
-  if valid_581603 != nil:
-    section.add "quotaUser", valid_581603
-  var valid_581604 = query.getOrDefault("alt")
-  valid_581604 = validateParameter(valid_581604, JString, required = false,
+  if valid_590632 != nil:
+    section.add "quotaUser", valid_590632
+  var valid_590633 = query.getOrDefault("alt")
+  valid_590633 = validateParameter(valid_590633, JString, required = false,
                                  default = newJString("json"))
-  if valid_581604 != nil:
-    section.add "alt", valid_581604
-  var valid_581605 = query.getOrDefault("oauth_token")
-  valid_581605 = validateParameter(valid_581605, JString, required = false,
+  if valid_590633 != nil:
+    section.add "alt", valid_590633
+  var valid_590634 = query.getOrDefault("oauth_token")
+  valid_590634 = validateParameter(valid_590634, JString, required = false,
                                  default = nil)
-  if valid_581605 != nil:
-    section.add "oauth_token", valid_581605
-  var valid_581606 = query.getOrDefault("userIp")
-  valid_581606 = validateParameter(valid_581606, JString, required = false,
+  if valid_590634 != nil:
+    section.add "oauth_token", valid_590634
+  var valid_590635 = query.getOrDefault("userIp")
+  valid_590635 = validateParameter(valid_590635, JString, required = false,
                                  default = nil)
-  if valid_581606 != nil:
-    section.add "userIp", valid_581606
-  var valid_581607 = query.getOrDefault("key")
-  valid_581607 = validateParameter(valid_581607, JString, required = false,
+  if valid_590635 != nil:
+    section.add "userIp", valid_590635
+  var valid_590636 = query.getOrDefault("key")
+  valid_590636 = validateParameter(valid_590636, JString, required = false,
                                  default = nil)
-  if valid_581607 != nil:
-    section.add "key", valid_581607
-  var valid_581608 = query.getOrDefault("prettyPrint")
-  valid_581608 = validateParameter(valid_581608, JBool, required = false,
+  if valid_590636 != nil:
+    section.add "key", valid_590636
+  var valid_590637 = query.getOrDefault("prettyPrint")
+  valid_590637 = validateParameter(valid_590637, JBool, required = false,
                                  default = newJBool(true))
-  if valid_581608 != nil:
-    section.add "prettyPrint", valid_581608
+  if valid_590637 != nil:
+    section.add "prettyPrint", valid_590637
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -15881,21 +15881,21 @@ proc validate_ContentOrdersCanceltestorderbycustomer_581598(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_581610: Call_ContentOrdersCanceltestorderbycustomer_581597;
+proc call*(call_590639: Call_ContentOrdersCanceltestorderbycustomer_590626;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Sandbox only. Cancels a test order for customer-initiated cancellation.
   ## 
-  let valid = call_581610.validator(path, query, header, formData, body)
-  let scheme = call_581610.pickScheme
+  let valid = call_590639.validator(path, query, header, formData, body)
+  let scheme = call_590639.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_581610.url(scheme.get, call_581610.host, call_581610.base,
-                         call_581610.route, valid.getOrDefault("path"),
+  let url = call_590639.url(scheme.get, call_590639.host, call_590639.base,
+                         call_590639.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_581610, url, valid)
+  result = hook(call_590639, url, valid)
 
-proc call*(call_581611: Call_ContentOrdersCanceltestorderbycustomer_581597;
+proc call*(call_590640: Call_ContentOrdersCanceltestorderbycustomer_590626;
           orderId: string; merchantId: string; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; key: string = ""; body: JsonNode = nil;
@@ -15921,32 +15921,32 @@ proc call*(call_581611: Call_ContentOrdersCanceltestorderbycustomer_581597;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_581612 = newJObject()
-  var query_581613 = newJObject()
-  var body_581614 = newJObject()
-  add(query_581613, "fields", newJString(fields))
-  add(query_581613, "quotaUser", newJString(quotaUser))
-  add(query_581613, "alt", newJString(alt))
-  add(query_581613, "oauth_token", newJString(oauthToken))
-  add(query_581613, "userIp", newJString(userIp))
-  add(path_581612, "orderId", newJString(orderId))
-  add(query_581613, "key", newJString(key))
-  add(path_581612, "merchantId", newJString(merchantId))
+  var path_590641 = newJObject()
+  var query_590642 = newJObject()
+  var body_590643 = newJObject()
+  add(query_590642, "fields", newJString(fields))
+  add(query_590642, "quotaUser", newJString(quotaUser))
+  add(query_590642, "alt", newJString(alt))
+  add(query_590642, "oauth_token", newJString(oauthToken))
+  add(query_590642, "userIp", newJString(userIp))
+  add(path_590641, "orderId", newJString(orderId))
+  add(query_590642, "key", newJString(key))
+  add(path_590641, "merchantId", newJString(merchantId))
   if body != nil:
-    body_581614 = body
-  add(query_581613, "prettyPrint", newJBool(prettyPrint))
-  result = call_581611.call(path_581612, query_581613, nil, nil, body_581614)
+    body_590643 = body
+  add(query_590642, "prettyPrint", newJBool(prettyPrint))
+  result = call_590640.call(path_590641, query_590642, nil, nil, body_590643)
 
-var contentOrdersCanceltestorderbycustomer* = Call_ContentOrdersCanceltestorderbycustomer_581597(
+var contentOrdersCanceltestorderbycustomer* = Call_ContentOrdersCanceltestorderbycustomer_590626(
     name: "contentOrdersCanceltestorderbycustomer", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com",
     route: "/{merchantId}/testorders/{orderId}/cancelByCustomer",
-    validator: validate_ContentOrdersCanceltestorderbycustomer_581598,
-    base: "/content/v2", url: url_ContentOrdersCanceltestorderbycustomer_581599,
+    validator: validate_ContentOrdersCanceltestorderbycustomer_590627,
+    base: "/content/v2", url: url_ContentOrdersCanceltestorderbycustomer_590628,
     schemes: {Scheme.Https})
 type
-  Call_ContentOrdersGettestordertemplate_581615 = ref object of OpenApiRestCall_579421
-proc url_ContentOrdersGettestordertemplate_581617(protocol: Scheme; host: string;
+  Call_ContentOrdersGettestordertemplate_590644 = ref object of OpenApiRestCall_588450
+proc url_ContentOrdersGettestordertemplate_590646(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -15964,7 +15964,7 @@ proc url_ContentOrdersGettestordertemplate_581617(protocol: Scheme; host: string
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_ContentOrdersGettestordertemplate_581616(path: JsonNode;
+proc validate_ContentOrdersGettestordertemplate_590645(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Sandbox only. Retrieves an order template that can be used to quickly create a new order in sandbox.
   ## 
@@ -15978,16 +15978,16 @@ proc validate_ContentOrdersGettestordertemplate_581616(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `templateName` field"
-  var valid_581618 = path.getOrDefault("templateName")
-  valid_581618 = validateParameter(valid_581618, JString, required = true,
+  var valid_590647 = path.getOrDefault("templateName")
+  valid_590647 = validateParameter(valid_590647, JString, required = true,
                                  default = newJString("template1"))
-  if valid_581618 != nil:
-    section.add "templateName", valid_581618
-  var valid_581619 = path.getOrDefault("merchantId")
-  valid_581619 = validateParameter(valid_581619, JString, required = true,
+  if valid_590647 != nil:
+    section.add "templateName", valid_590647
+  var valid_590648 = path.getOrDefault("merchantId")
+  valid_590648 = validateParameter(valid_590648, JString, required = true,
                                  default = nil)
-  if valid_581619 != nil:
-    section.add "merchantId", valid_581619
+  if valid_590648 != nil:
+    section.add "merchantId", valid_590648
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -16007,46 +16007,46 @@ proc validate_ContentOrdersGettestordertemplate_581616(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_581620 = query.getOrDefault("fields")
-  valid_581620 = validateParameter(valid_581620, JString, required = false,
+  var valid_590649 = query.getOrDefault("fields")
+  valid_590649 = validateParameter(valid_590649, JString, required = false,
                                  default = nil)
-  if valid_581620 != nil:
-    section.add "fields", valid_581620
-  var valid_581621 = query.getOrDefault("country")
-  valid_581621 = validateParameter(valid_581621, JString, required = false,
+  if valid_590649 != nil:
+    section.add "fields", valid_590649
+  var valid_590650 = query.getOrDefault("country")
+  valid_590650 = validateParameter(valid_590650, JString, required = false,
                                  default = nil)
-  if valid_581621 != nil:
-    section.add "country", valid_581621
-  var valid_581622 = query.getOrDefault("quotaUser")
-  valid_581622 = validateParameter(valid_581622, JString, required = false,
+  if valid_590650 != nil:
+    section.add "country", valid_590650
+  var valid_590651 = query.getOrDefault("quotaUser")
+  valid_590651 = validateParameter(valid_590651, JString, required = false,
                                  default = nil)
-  if valid_581622 != nil:
-    section.add "quotaUser", valid_581622
-  var valid_581623 = query.getOrDefault("alt")
-  valid_581623 = validateParameter(valid_581623, JString, required = false,
+  if valid_590651 != nil:
+    section.add "quotaUser", valid_590651
+  var valid_590652 = query.getOrDefault("alt")
+  valid_590652 = validateParameter(valid_590652, JString, required = false,
                                  default = newJString("json"))
-  if valid_581623 != nil:
-    section.add "alt", valid_581623
-  var valid_581624 = query.getOrDefault("oauth_token")
-  valid_581624 = validateParameter(valid_581624, JString, required = false,
+  if valid_590652 != nil:
+    section.add "alt", valid_590652
+  var valid_590653 = query.getOrDefault("oauth_token")
+  valid_590653 = validateParameter(valid_590653, JString, required = false,
                                  default = nil)
-  if valid_581624 != nil:
-    section.add "oauth_token", valid_581624
-  var valid_581625 = query.getOrDefault("userIp")
-  valid_581625 = validateParameter(valid_581625, JString, required = false,
+  if valid_590653 != nil:
+    section.add "oauth_token", valid_590653
+  var valid_590654 = query.getOrDefault("userIp")
+  valid_590654 = validateParameter(valid_590654, JString, required = false,
                                  default = nil)
-  if valid_581625 != nil:
-    section.add "userIp", valid_581625
-  var valid_581626 = query.getOrDefault("key")
-  valid_581626 = validateParameter(valid_581626, JString, required = false,
+  if valid_590654 != nil:
+    section.add "userIp", valid_590654
+  var valid_590655 = query.getOrDefault("key")
+  valid_590655 = validateParameter(valid_590655, JString, required = false,
                                  default = nil)
-  if valid_581626 != nil:
-    section.add "key", valid_581626
-  var valid_581627 = query.getOrDefault("prettyPrint")
-  valid_581627 = validateParameter(valid_581627, JBool, required = false,
+  if valid_590655 != nil:
+    section.add "key", valid_590655
+  var valid_590656 = query.getOrDefault("prettyPrint")
+  valid_590656 = validateParameter(valid_590656, JBool, required = false,
                                  default = newJBool(true))
-  if valid_581627 != nil:
-    section.add "prettyPrint", valid_581627
+  if valid_590656 != nil:
+    section.add "prettyPrint", valid_590656
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -16055,21 +16055,21 @@ proc validate_ContentOrdersGettestordertemplate_581616(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_581628: Call_ContentOrdersGettestordertemplate_581615;
+proc call*(call_590657: Call_ContentOrdersGettestordertemplate_590644;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Sandbox only. Retrieves an order template that can be used to quickly create a new order in sandbox.
   ## 
-  let valid = call_581628.validator(path, query, header, formData, body)
-  let scheme = call_581628.pickScheme
+  let valid = call_590657.validator(path, query, header, formData, body)
+  let scheme = call_590657.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_581628.url(scheme.get, call_581628.host, call_581628.base,
-                         call_581628.route, valid.getOrDefault("path"),
+  let url = call_590657.url(scheme.get, call_590657.host, call_590657.base,
+                         call_590657.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_581628, url, valid)
+  result = hook(call_590657, url, valid)
 
-proc call*(call_581629: Call_ContentOrdersGettestordertemplate_581615;
+proc call*(call_590658: Call_ContentOrdersGettestordertemplate_590644;
           merchantId: string; fields: string = ""; country: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; templateName: string = "template1"; key: string = "";
@@ -16096,26 +16096,26 @@ proc call*(call_581629: Call_ContentOrdersGettestordertemplate_581615;
   ##             : The ID of the account that should manage the order. This cannot be a multi-client account.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_581630 = newJObject()
-  var query_581631 = newJObject()
-  add(query_581631, "fields", newJString(fields))
-  add(query_581631, "country", newJString(country))
-  add(query_581631, "quotaUser", newJString(quotaUser))
-  add(query_581631, "alt", newJString(alt))
-  add(query_581631, "oauth_token", newJString(oauthToken))
-  add(query_581631, "userIp", newJString(userIp))
-  add(path_581630, "templateName", newJString(templateName))
-  add(query_581631, "key", newJString(key))
-  add(path_581630, "merchantId", newJString(merchantId))
-  add(query_581631, "prettyPrint", newJBool(prettyPrint))
-  result = call_581629.call(path_581630, query_581631, nil, nil, nil)
+  var path_590659 = newJObject()
+  var query_590660 = newJObject()
+  add(query_590660, "fields", newJString(fields))
+  add(query_590660, "country", newJString(country))
+  add(query_590660, "quotaUser", newJString(quotaUser))
+  add(query_590660, "alt", newJString(alt))
+  add(query_590660, "oauth_token", newJString(oauthToken))
+  add(query_590660, "userIp", newJString(userIp))
+  add(path_590659, "templateName", newJString(templateName))
+  add(query_590660, "key", newJString(key))
+  add(path_590659, "merchantId", newJString(merchantId))
+  add(query_590660, "prettyPrint", newJBool(prettyPrint))
+  result = call_590658.call(path_590659, query_590660, nil, nil, nil)
 
-var contentOrdersGettestordertemplate* = Call_ContentOrdersGettestordertemplate_581615(
+var contentOrdersGettestordertemplate* = Call_ContentOrdersGettestordertemplate_590644(
     name: "contentOrdersGettestordertemplate", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com",
     route: "/{merchantId}/testordertemplates/{templateName}",
-    validator: validate_ContentOrdersGettestordertemplate_581616,
-    base: "/content/v2", url: url_ContentOrdersGettestordertemplate_581617,
+    validator: validate_ContentOrdersGettestordertemplate_590645,
+    base: "/content/v2", url: url_ContentOrdersGettestordertemplate_590646,
     schemes: {Scheme.Https})
 export
   rest
@@ -16158,7 +16158,7 @@ proc store(auth: var GoogleAuth; token: string; expiry: int; form: string) =
   auth.form = form
   auth.digest = auth.hash
 
-proc authenticate*(fresh: float64 = -3600.0; lifetime: int = 3600): Future[bool] {.async.} =
+proc authenticate*(fresh: float64 = 3600.0; lifetime: int = 3600): Future[bool] {.async.} =
   ## get or refresh an authentication token; provide `fresh`
   ## to ensure that the token won't expire in the next N seconds.
   ## provide `lifetime` to indicate how long the token should last.

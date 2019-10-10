@@ -29,15 +29,15 @@ type
     url*: proc (protocol: Scheme; host: string; base: string; route: string;
               path: JsonNode; query: JsonNode): Uri
 
-  OpenApiRestCall_579408 = ref object of OpenApiRestCall
+  OpenApiRestCall_588441 = ref object of OpenApiRestCall
 proc hash(scheme: Scheme): Hash {.used.} =
   result = hash(ord(scheme))
 
-proc clone[T: OpenApiRestCall_579408](t: T): T {.used.} =
+proc clone[T: OpenApiRestCall_588441](t: T): T {.used.} =
   result = T(name: t.name, meth: t.meth, host: t.host, base: t.base, route: t.route,
            schemes: t.schemes, validator: t.validator, url: t.url)
 
-proc pickScheme(t: OpenApiRestCall_579408): Option[Scheme] {.used.} =
+proc pickScheme(t: OpenApiRestCall_588441): Option[Scheme] {.used.} =
   ## select a supported scheme from a set of candidates
   for scheme in Scheme.low ..
       Scheme.high:
@@ -74,7 +74,7 @@ type
   PathTokenKind = enum
     ConstantSegment, VariableSegment
   PathToken = tuple[kind: PathTokenKind, value: string]
-proc queryString(query: JsonNode): string =
+proc queryString(query: JsonNode): string {.used.} =
   var qs: seq[KeyVal]
   if query == nil:
     return ""
@@ -82,7 +82,7 @@ proc queryString(query: JsonNode): string =
     qs.add (key: k, val: v.getStr)
   result = encodeQuery(qs)
 
-proc hydratePath(input: JsonNode; segments: seq[PathToken]): Option[string] =
+proc hydratePath(input: JsonNode; segments: seq[PathToken]): Option[string] {.used.} =
   ## reconstitute a path with constants and variable values taken from json
   var head: string
   if segments.len == 0:
@@ -108,15 +108,15 @@ const
 proc composeQueryString(query: JsonNode): string
 method hook(call: OpenApiRestCall; url: Uri; input: JsonNode): Recallable {.base.}
 type
-  Call_FirebasedynamiclinksInstallAttribution_579677 = ref object of OpenApiRestCall_579408
-proc url_FirebasedynamiclinksInstallAttribution_579679(protocol: Scheme;
+  Call_FirebasedynamiclinksInstallAttribution_588710 = ref object of OpenApiRestCall_588441
+proc url_FirebasedynamiclinksInstallAttribution_588712(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
   result.query = $composeQueryString(query)
   result.path = base & route
 
-proc validate_FirebasedynamiclinksInstallAttribution_579678(path: JsonNode;
+proc validate_FirebasedynamiclinksInstallAttribution_588711(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Get iOS strong/weak-match info for post-install attribution.
   ## 
@@ -148,61 +148,61 @@ proc validate_FirebasedynamiclinksInstallAttribution_579678(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_579791 = query.getOrDefault("upload_protocol")
-  valid_579791 = validateParameter(valid_579791, JString, required = false,
+  var valid_588824 = query.getOrDefault("upload_protocol")
+  valid_588824 = validateParameter(valid_588824, JString, required = false,
                                  default = nil)
-  if valid_579791 != nil:
-    section.add "upload_protocol", valid_579791
-  var valid_579792 = query.getOrDefault("fields")
-  valid_579792 = validateParameter(valid_579792, JString, required = false,
+  if valid_588824 != nil:
+    section.add "upload_protocol", valid_588824
+  var valid_588825 = query.getOrDefault("fields")
+  valid_588825 = validateParameter(valid_588825, JString, required = false,
                                  default = nil)
-  if valid_579792 != nil:
-    section.add "fields", valid_579792
-  var valid_579793 = query.getOrDefault("quotaUser")
-  valid_579793 = validateParameter(valid_579793, JString, required = false,
+  if valid_588825 != nil:
+    section.add "fields", valid_588825
+  var valid_588826 = query.getOrDefault("quotaUser")
+  valid_588826 = validateParameter(valid_588826, JString, required = false,
                                  default = nil)
-  if valid_579793 != nil:
-    section.add "quotaUser", valid_579793
-  var valid_579807 = query.getOrDefault("alt")
-  valid_579807 = validateParameter(valid_579807, JString, required = false,
+  if valid_588826 != nil:
+    section.add "quotaUser", valid_588826
+  var valid_588840 = query.getOrDefault("alt")
+  valid_588840 = validateParameter(valid_588840, JString, required = false,
                                  default = newJString("json"))
-  if valid_579807 != nil:
-    section.add "alt", valid_579807
-  var valid_579808 = query.getOrDefault("oauth_token")
-  valid_579808 = validateParameter(valid_579808, JString, required = false,
+  if valid_588840 != nil:
+    section.add "alt", valid_588840
+  var valid_588841 = query.getOrDefault("oauth_token")
+  valid_588841 = validateParameter(valid_588841, JString, required = false,
                                  default = nil)
-  if valid_579808 != nil:
-    section.add "oauth_token", valid_579808
-  var valid_579809 = query.getOrDefault("callback")
-  valid_579809 = validateParameter(valid_579809, JString, required = false,
+  if valid_588841 != nil:
+    section.add "oauth_token", valid_588841
+  var valid_588842 = query.getOrDefault("callback")
+  valid_588842 = validateParameter(valid_588842, JString, required = false,
                                  default = nil)
-  if valid_579809 != nil:
-    section.add "callback", valid_579809
-  var valid_579810 = query.getOrDefault("access_token")
-  valid_579810 = validateParameter(valid_579810, JString, required = false,
+  if valid_588842 != nil:
+    section.add "callback", valid_588842
+  var valid_588843 = query.getOrDefault("access_token")
+  valid_588843 = validateParameter(valid_588843, JString, required = false,
                                  default = nil)
-  if valid_579810 != nil:
-    section.add "access_token", valid_579810
-  var valid_579811 = query.getOrDefault("uploadType")
-  valid_579811 = validateParameter(valid_579811, JString, required = false,
+  if valid_588843 != nil:
+    section.add "access_token", valid_588843
+  var valid_588844 = query.getOrDefault("uploadType")
+  valid_588844 = validateParameter(valid_588844, JString, required = false,
                                  default = nil)
-  if valid_579811 != nil:
-    section.add "uploadType", valid_579811
-  var valid_579812 = query.getOrDefault("key")
-  valid_579812 = validateParameter(valid_579812, JString, required = false,
+  if valid_588844 != nil:
+    section.add "uploadType", valid_588844
+  var valid_588845 = query.getOrDefault("key")
+  valid_588845 = validateParameter(valid_588845, JString, required = false,
                                  default = nil)
-  if valid_579812 != nil:
-    section.add "key", valid_579812
-  var valid_579813 = query.getOrDefault("$.xgafv")
-  valid_579813 = validateParameter(valid_579813, JString, required = false,
+  if valid_588845 != nil:
+    section.add "key", valid_588845
+  var valid_588846 = query.getOrDefault("$.xgafv")
+  valid_588846 = validateParameter(valid_588846, JString, required = false,
                                  default = newJString("1"))
-  if valid_579813 != nil:
-    section.add "$.xgafv", valid_579813
-  var valid_579814 = query.getOrDefault("prettyPrint")
-  valid_579814 = validateParameter(valid_579814, JBool, required = false,
+  if valid_588846 != nil:
+    section.add "$.xgafv", valid_588846
+  var valid_588847 = query.getOrDefault("prettyPrint")
+  valid_588847 = validateParameter(valid_588847, JBool, required = false,
                                  default = newJBool(true))
-  if valid_579814 != nil:
-    section.add "prettyPrint", valid_579814
+  if valid_588847 != nil:
+    section.add "prettyPrint", valid_588847
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -214,21 +214,21 @@ proc validate_FirebasedynamiclinksInstallAttribution_579678(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_579838: Call_FirebasedynamiclinksInstallAttribution_579677;
+proc call*(call_588871: Call_FirebasedynamiclinksInstallAttribution_588710;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Get iOS strong/weak-match info for post-install attribution.
   ## 
-  let valid = call_579838.validator(path, query, header, formData, body)
-  let scheme = call_579838.pickScheme
+  let valid = call_588871.validator(path, query, header, formData, body)
+  let scheme = call_588871.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_579838.url(scheme.get, call_579838.host, call_579838.base,
-                         call_579838.route, valid.getOrDefault("path"),
+  let url = call_588871.url(scheme.get, call_588871.host, call_588871.base,
+                         call_588871.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_579838, url, valid)
+  result = hook(call_588871, url, valid)
 
-proc call*(call_579909: Call_FirebasedynamiclinksInstallAttribution_579677;
+proc call*(call_588942: Call_FirebasedynamiclinksInstallAttribution_588710;
           uploadProtocol: string = ""; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; callback: string = "";
           accessToken: string = ""; uploadType: string = ""; key: string = "";
@@ -258,39 +258,39 @@ proc call*(call_579909: Call_FirebasedynamiclinksInstallAttribution_579677;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var query_579910 = newJObject()
-  var body_579912 = newJObject()
-  add(query_579910, "upload_protocol", newJString(uploadProtocol))
-  add(query_579910, "fields", newJString(fields))
-  add(query_579910, "quotaUser", newJString(quotaUser))
-  add(query_579910, "alt", newJString(alt))
-  add(query_579910, "oauth_token", newJString(oauthToken))
-  add(query_579910, "callback", newJString(callback))
-  add(query_579910, "access_token", newJString(accessToken))
-  add(query_579910, "uploadType", newJString(uploadType))
-  add(query_579910, "key", newJString(key))
-  add(query_579910, "$.xgafv", newJString(Xgafv))
+  var query_588943 = newJObject()
+  var body_588945 = newJObject()
+  add(query_588943, "upload_protocol", newJString(uploadProtocol))
+  add(query_588943, "fields", newJString(fields))
+  add(query_588943, "quotaUser", newJString(quotaUser))
+  add(query_588943, "alt", newJString(alt))
+  add(query_588943, "oauth_token", newJString(oauthToken))
+  add(query_588943, "callback", newJString(callback))
+  add(query_588943, "access_token", newJString(accessToken))
+  add(query_588943, "uploadType", newJString(uploadType))
+  add(query_588943, "key", newJString(key))
+  add(query_588943, "$.xgafv", newJString(Xgafv))
   if body != nil:
-    body_579912 = body
-  add(query_579910, "prettyPrint", newJBool(prettyPrint))
-  result = call_579909.call(nil, query_579910, nil, nil, body_579912)
+    body_588945 = body
+  add(query_588943, "prettyPrint", newJBool(prettyPrint))
+  result = call_588942.call(nil, query_588943, nil, nil, body_588945)
 
-var firebasedynamiclinksInstallAttribution* = Call_FirebasedynamiclinksInstallAttribution_579677(
+var firebasedynamiclinksInstallAttribution* = Call_FirebasedynamiclinksInstallAttribution_588710(
     name: "firebasedynamiclinksInstallAttribution", meth: HttpMethod.HttpPost,
     host: "firebasedynamiclinks.googleapis.com", route: "/v1/installAttribution",
-    validator: validate_FirebasedynamiclinksInstallAttribution_579678, base: "/",
-    url: url_FirebasedynamiclinksInstallAttribution_579679,
+    validator: validate_FirebasedynamiclinksInstallAttribution_588711, base: "/",
+    url: url_FirebasedynamiclinksInstallAttribution_588712,
     schemes: {Scheme.Https})
 type
-  Call_FirebasedynamiclinksManagedShortLinksCreate_579951 = ref object of OpenApiRestCall_579408
-proc url_FirebasedynamiclinksManagedShortLinksCreate_579953(protocol: Scheme;
+  Call_FirebasedynamiclinksManagedShortLinksCreate_588984 = ref object of OpenApiRestCall_588441
+proc url_FirebasedynamiclinksManagedShortLinksCreate_588986(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
   result.query = $composeQueryString(query)
   result.path = base & route
 
-proc validate_FirebasedynamiclinksManagedShortLinksCreate_579952(path: JsonNode;
+proc validate_FirebasedynamiclinksManagedShortLinksCreate_588985(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Creates a managed short Dynamic Link given either a valid long Dynamic Link
   ## or details such as Dynamic Link domain, Android and iOS app information.
@@ -334,61 +334,61 @@ proc validate_FirebasedynamiclinksManagedShortLinksCreate_579952(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_579954 = query.getOrDefault("upload_protocol")
-  valid_579954 = validateParameter(valid_579954, JString, required = false,
+  var valid_588987 = query.getOrDefault("upload_protocol")
+  valid_588987 = validateParameter(valid_588987, JString, required = false,
                                  default = nil)
-  if valid_579954 != nil:
-    section.add "upload_protocol", valid_579954
-  var valid_579955 = query.getOrDefault("fields")
-  valid_579955 = validateParameter(valid_579955, JString, required = false,
+  if valid_588987 != nil:
+    section.add "upload_protocol", valid_588987
+  var valid_588988 = query.getOrDefault("fields")
+  valid_588988 = validateParameter(valid_588988, JString, required = false,
                                  default = nil)
-  if valid_579955 != nil:
-    section.add "fields", valid_579955
-  var valid_579956 = query.getOrDefault("quotaUser")
-  valid_579956 = validateParameter(valid_579956, JString, required = false,
+  if valid_588988 != nil:
+    section.add "fields", valid_588988
+  var valid_588989 = query.getOrDefault("quotaUser")
+  valid_588989 = validateParameter(valid_588989, JString, required = false,
                                  default = nil)
-  if valid_579956 != nil:
-    section.add "quotaUser", valid_579956
-  var valid_579957 = query.getOrDefault("alt")
-  valid_579957 = validateParameter(valid_579957, JString, required = false,
+  if valid_588989 != nil:
+    section.add "quotaUser", valid_588989
+  var valid_588990 = query.getOrDefault("alt")
+  valid_588990 = validateParameter(valid_588990, JString, required = false,
                                  default = newJString("json"))
-  if valid_579957 != nil:
-    section.add "alt", valid_579957
-  var valid_579958 = query.getOrDefault("oauth_token")
-  valid_579958 = validateParameter(valid_579958, JString, required = false,
+  if valid_588990 != nil:
+    section.add "alt", valid_588990
+  var valid_588991 = query.getOrDefault("oauth_token")
+  valid_588991 = validateParameter(valid_588991, JString, required = false,
                                  default = nil)
-  if valid_579958 != nil:
-    section.add "oauth_token", valid_579958
-  var valid_579959 = query.getOrDefault("callback")
-  valid_579959 = validateParameter(valid_579959, JString, required = false,
+  if valid_588991 != nil:
+    section.add "oauth_token", valid_588991
+  var valid_588992 = query.getOrDefault("callback")
+  valid_588992 = validateParameter(valid_588992, JString, required = false,
                                  default = nil)
-  if valid_579959 != nil:
-    section.add "callback", valid_579959
-  var valid_579960 = query.getOrDefault("access_token")
-  valid_579960 = validateParameter(valid_579960, JString, required = false,
+  if valid_588992 != nil:
+    section.add "callback", valid_588992
+  var valid_588993 = query.getOrDefault("access_token")
+  valid_588993 = validateParameter(valid_588993, JString, required = false,
                                  default = nil)
-  if valid_579960 != nil:
-    section.add "access_token", valid_579960
-  var valid_579961 = query.getOrDefault("uploadType")
-  valid_579961 = validateParameter(valid_579961, JString, required = false,
+  if valid_588993 != nil:
+    section.add "access_token", valid_588993
+  var valid_588994 = query.getOrDefault("uploadType")
+  valid_588994 = validateParameter(valid_588994, JString, required = false,
                                  default = nil)
-  if valid_579961 != nil:
-    section.add "uploadType", valid_579961
-  var valid_579962 = query.getOrDefault("key")
-  valid_579962 = validateParameter(valid_579962, JString, required = false,
+  if valid_588994 != nil:
+    section.add "uploadType", valid_588994
+  var valid_588995 = query.getOrDefault("key")
+  valid_588995 = validateParameter(valid_588995, JString, required = false,
                                  default = nil)
-  if valid_579962 != nil:
-    section.add "key", valid_579962
-  var valid_579963 = query.getOrDefault("$.xgafv")
-  valid_579963 = validateParameter(valid_579963, JString, required = false,
+  if valid_588995 != nil:
+    section.add "key", valid_588995
+  var valid_588996 = query.getOrDefault("$.xgafv")
+  valid_588996 = validateParameter(valid_588996, JString, required = false,
                                  default = newJString("1"))
-  if valid_579963 != nil:
-    section.add "$.xgafv", valid_579963
-  var valid_579964 = query.getOrDefault("prettyPrint")
-  valid_579964 = validateParameter(valid_579964, JBool, required = false,
+  if valid_588996 != nil:
+    section.add "$.xgafv", valid_588996
+  var valid_588997 = query.getOrDefault("prettyPrint")
+  valid_588997 = validateParameter(valid_588997, JBool, required = false,
                                  default = newJBool(true))
-  if valid_579964 != nil:
-    section.add "prettyPrint", valid_579964
+  if valid_588997 != nil:
+    section.add "prettyPrint", valid_588997
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -400,7 +400,7 @@ proc validate_FirebasedynamiclinksManagedShortLinksCreate_579952(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_579966: Call_FirebasedynamiclinksManagedShortLinksCreate_579951;
+proc call*(call_588999: Call_FirebasedynamiclinksManagedShortLinksCreate_588984;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Creates a managed short Dynamic Link given either a valid long Dynamic Link
@@ -417,16 +417,16 @@ proc call*(call_579966: Call_FirebasedynamiclinksManagedShortLinksCreate_579951;
   ## The Dynamic Link domain in the request must be owned by requester's
   ## Firebase project.
   ## 
-  let valid = call_579966.validator(path, query, header, formData, body)
-  let scheme = call_579966.pickScheme
+  let valid = call_588999.validator(path, query, header, formData, body)
+  let scheme = call_588999.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_579966.url(scheme.get, call_579966.host, call_579966.base,
-                         call_579966.route, valid.getOrDefault("path"),
+  let url = call_588999.url(scheme.get, call_588999.host, call_588999.base,
+                         call_588999.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_579966, url, valid)
+  result = hook(call_588999, url, valid)
 
-proc call*(call_579967: Call_FirebasedynamiclinksManagedShortLinksCreate_579951;
+proc call*(call_589000: Call_FirebasedynamiclinksManagedShortLinksCreate_588984;
           uploadProtocol: string = ""; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; callback: string = "";
           accessToken: string = ""; uploadType: string = ""; key: string = "";
@@ -468,40 +468,40 @@ proc call*(call_579967: Call_FirebasedynamiclinksManagedShortLinksCreate_579951;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var query_579968 = newJObject()
-  var body_579969 = newJObject()
-  add(query_579968, "upload_protocol", newJString(uploadProtocol))
-  add(query_579968, "fields", newJString(fields))
-  add(query_579968, "quotaUser", newJString(quotaUser))
-  add(query_579968, "alt", newJString(alt))
-  add(query_579968, "oauth_token", newJString(oauthToken))
-  add(query_579968, "callback", newJString(callback))
-  add(query_579968, "access_token", newJString(accessToken))
-  add(query_579968, "uploadType", newJString(uploadType))
-  add(query_579968, "key", newJString(key))
-  add(query_579968, "$.xgafv", newJString(Xgafv))
+  var query_589001 = newJObject()
+  var body_589002 = newJObject()
+  add(query_589001, "upload_protocol", newJString(uploadProtocol))
+  add(query_589001, "fields", newJString(fields))
+  add(query_589001, "quotaUser", newJString(quotaUser))
+  add(query_589001, "alt", newJString(alt))
+  add(query_589001, "oauth_token", newJString(oauthToken))
+  add(query_589001, "callback", newJString(callback))
+  add(query_589001, "access_token", newJString(accessToken))
+  add(query_589001, "uploadType", newJString(uploadType))
+  add(query_589001, "key", newJString(key))
+  add(query_589001, "$.xgafv", newJString(Xgafv))
   if body != nil:
-    body_579969 = body
-  add(query_579968, "prettyPrint", newJBool(prettyPrint))
-  result = call_579967.call(nil, query_579968, nil, nil, body_579969)
+    body_589002 = body
+  add(query_589001, "prettyPrint", newJBool(prettyPrint))
+  result = call_589000.call(nil, query_589001, nil, nil, body_589002)
 
-var firebasedynamiclinksManagedShortLinksCreate* = Call_FirebasedynamiclinksManagedShortLinksCreate_579951(
+var firebasedynamiclinksManagedShortLinksCreate* = Call_FirebasedynamiclinksManagedShortLinksCreate_588984(
     name: "firebasedynamiclinksManagedShortLinksCreate",
     meth: HttpMethod.HttpPost, host: "firebasedynamiclinks.googleapis.com",
     route: "/v1/managedShortLinks:create",
-    validator: validate_FirebasedynamiclinksManagedShortLinksCreate_579952,
-    base: "/", url: url_FirebasedynamiclinksManagedShortLinksCreate_579953,
+    validator: validate_FirebasedynamiclinksManagedShortLinksCreate_588985,
+    base: "/", url: url_FirebasedynamiclinksManagedShortLinksCreate_588986,
     schemes: {Scheme.Https})
 type
-  Call_FirebasedynamiclinksReopenAttribution_579970 = ref object of OpenApiRestCall_579408
-proc url_FirebasedynamiclinksReopenAttribution_579972(protocol: Scheme;
+  Call_FirebasedynamiclinksReopenAttribution_589003 = ref object of OpenApiRestCall_588441
+proc url_FirebasedynamiclinksReopenAttribution_589005(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
   result.query = $composeQueryString(query)
   result.path = base & route
 
-proc validate_FirebasedynamiclinksReopenAttribution_579971(path: JsonNode;
+proc validate_FirebasedynamiclinksReopenAttribution_589004(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Get iOS reopen attribution for app universal link open deeplinking.
   ## 
@@ -533,61 +533,61 @@ proc validate_FirebasedynamiclinksReopenAttribution_579971(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_579973 = query.getOrDefault("upload_protocol")
-  valid_579973 = validateParameter(valid_579973, JString, required = false,
+  var valid_589006 = query.getOrDefault("upload_protocol")
+  valid_589006 = validateParameter(valid_589006, JString, required = false,
                                  default = nil)
-  if valid_579973 != nil:
-    section.add "upload_protocol", valid_579973
-  var valid_579974 = query.getOrDefault("fields")
-  valid_579974 = validateParameter(valid_579974, JString, required = false,
+  if valid_589006 != nil:
+    section.add "upload_protocol", valid_589006
+  var valid_589007 = query.getOrDefault("fields")
+  valid_589007 = validateParameter(valid_589007, JString, required = false,
                                  default = nil)
-  if valid_579974 != nil:
-    section.add "fields", valid_579974
-  var valid_579975 = query.getOrDefault("quotaUser")
-  valid_579975 = validateParameter(valid_579975, JString, required = false,
+  if valid_589007 != nil:
+    section.add "fields", valid_589007
+  var valid_589008 = query.getOrDefault("quotaUser")
+  valid_589008 = validateParameter(valid_589008, JString, required = false,
                                  default = nil)
-  if valid_579975 != nil:
-    section.add "quotaUser", valid_579975
-  var valid_579976 = query.getOrDefault("alt")
-  valid_579976 = validateParameter(valid_579976, JString, required = false,
+  if valid_589008 != nil:
+    section.add "quotaUser", valid_589008
+  var valid_589009 = query.getOrDefault("alt")
+  valid_589009 = validateParameter(valid_589009, JString, required = false,
                                  default = newJString("json"))
-  if valid_579976 != nil:
-    section.add "alt", valid_579976
-  var valid_579977 = query.getOrDefault("oauth_token")
-  valid_579977 = validateParameter(valid_579977, JString, required = false,
+  if valid_589009 != nil:
+    section.add "alt", valid_589009
+  var valid_589010 = query.getOrDefault("oauth_token")
+  valid_589010 = validateParameter(valid_589010, JString, required = false,
                                  default = nil)
-  if valid_579977 != nil:
-    section.add "oauth_token", valid_579977
-  var valid_579978 = query.getOrDefault("callback")
-  valid_579978 = validateParameter(valid_579978, JString, required = false,
+  if valid_589010 != nil:
+    section.add "oauth_token", valid_589010
+  var valid_589011 = query.getOrDefault("callback")
+  valid_589011 = validateParameter(valid_589011, JString, required = false,
                                  default = nil)
-  if valid_579978 != nil:
-    section.add "callback", valid_579978
-  var valid_579979 = query.getOrDefault("access_token")
-  valid_579979 = validateParameter(valid_579979, JString, required = false,
+  if valid_589011 != nil:
+    section.add "callback", valid_589011
+  var valid_589012 = query.getOrDefault("access_token")
+  valid_589012 = validateParameter(valid_589012, JString, required = false,
                                  default = nil)
-  if valid_579979 != nil:
-    section.add "access_token", valid_579979
-  var valid_579980 = query.getOrDefault("uploadType")
-  valid_579980 = validateParameter(valid_579980, JString, required = false,
+  if valid_589012 != nil:
+    section.add "access_token", valid_589012
+  var valid_589013 = query.getOrDefault("uploadType")
+  valid_589013 = validateParameter(valid_589013, JString, required = false,
                                  default = nil)
-  if valid_579980 != nil:
-    section.add "uploadType", valid_579980
-  var valid_579981 = query.getOrDefault("key")
-  valid_579981 = validateParameter(valid_579981, JString, required = false,
+  if valid_589013 != nil:
+    section.add "uploadType", valid_589013
+  var valid_589014 = query.getOrDefault("key")
+  valid_589014 = validateParameter(valid_589014, JString, required = false,
                                  default = nil)
-  if valid_579981 != nil:
-    section.add "key", valid_579981
-  var valid_579982 = query.getOrDefault("$.xgafv")
-  valid_579982 = validateParameter(valid_579982, JString, required = false,
+  if valid_589014 != nil:
+    section.add "key", valid_589014
+  var valid_589015 = query.getOrDefault("$.xgafv")
+  valid_589015 = validateParameter(valid_589015, JString, required = false,
                                  default = newJString("1"))
-  if valid_579982 != nil:
-    section.add "$.xgafv", valid_579982
-  var valid_579983 = query.getOrDefault("prettyPrint")
-  valid_579983 = validateParameter(valid_579983, JBool, required = false,
+  if valid_589015 != nil:
+    section.add "$.xgafv", valid_589015
+  var valid_589016 = query.getOrDefault("prettyPrint")
+  valid_589016 = validateParameter(valid_589016, JBool, required = false,
                                  default = newJBool(true))
-  if valid_579983 != nil:
-    section.add "prettyPrint", valid_579983
+  if valid_589016 != nil:
+    section.add "prettyPrint", valid_589016
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -599,21 +599,21 @@ proc validate_FirebasedynamiclinksReopenAttribution_579971(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_579985: Call_FirebasedynamiclinksReopenAttribution_579970;
+proc call*(call_589018: Call_FirebasedynamiclinksReopenAttribution_589003;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Get iOS reopen attribution for app universal link open deeplinking.
   ## 
-  let valid = call_579985.validator(path, query, header, formData, body)
-  let scheme = call_579985.pickScheme
+  let valid = call_589018.validator(path, query, header, formData, body)
+  let scheme = call_589018.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_579985.url(scheme.get, call_579985.host, call_579985.base,
-                         call_579985.route, valid.getOrDefault("path"),
+  let url = call_589018.url(scheme.get, call_589018.host, call_589018.base,
+                         call_589018.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_579985, url, valid)
+  result = hook(call_589018, url, valid)
 
-proc call*(call_579986: Call_FirebasedynamiclinksReopenAttribution_579970;
+proc call*(call_589019: Call_FirebasedynamiclinksReopenAttribution_589003;
           uploadProtocol: string = ""; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; callback: string = "";
           accessToken: string = ""; uploadType: string = ""; key: string = "";
@@ -643,38 +643,38 @@ proc call*(call_579986: Call_FirebasedynamiclinksReopenAttribution_579970;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var query_579987 = newJObject()
-  var body_579988 = newJObject()
-  add(query_579987, "upload_protocol", newJString(uploadProtocol))
-  add(query_579987, "fields", newJString(fields))
-  add(query_579987, "quotaUser", newJString(quotaUser))
-  add(query_579987, "alt", newJString(alt))
-  add(query_579987, "oauth_token", newJString(oauthToken))
-  add(query_579987, "callback", newJString(callback))
-  add(query_579987, "access_token", newJString(accessToken))
-  add(query_579987, "uploadType", newJString(uploadType))
-  add(query_579987, "key", newJString(key))
-  add(query_579987, "$.xgafv", newJString(Xgafv))
+  var query_589020 = newJObject()
+  var body_589021 = newJObject()
+  add(query_589020, "upload_protocol", newJString(uploadProtocol))
+  add(query_589020, "fields", newJString(fields))
+  add(query_589020, "quotaUser", newJString(quotaUser))
+  add(query_589020, "alt", newJString(alt))
+  add(query_589020, "oauth_token", newJString(oauthToken))
+  add(query_589020, "callback", newJString(callback))
+  add(query_589020, "access_token", newJString(accessToken))
+  add(query_589020, "uploadType", newJString(uploadType))
+  add(query_589020, "key", newJString(key))
+  add(query_589020, "$.xgafv", newJString(Xgafv))
   if body != nil:
-    body_579988 = body
-  add(query_579987, "prettyPrint", newJBool(prettyPrint))
-  result = call_579986.call(nil, query_579987, nil, nil, body_579988)
+    body_589021 = body
+  add(query_589020, "prettyPrint", newJBool(prettyPrint))
+  result = call_589019.call(nil, query_589020, nil, nil, body_589021)
 
-var firebasedynamiclinksReopenAttribution* = Call_FirebasedynamiclinksReopenAttribution_579970(
+var firebasedynamiclinksReopenAttribution* = Call_FirebasedynamiclinksReopenAttribution_589003(
     name: "firebasedynamiclinksReopenAttribution", meth: HttpMethod.HttpPost,
     host: "firebasedynamiclinks.googleapis.com", route: "/v1/reopenAttribution",
-    validator: validate_FirebasedynamiclinksReopenAttribution_579971, base: "/",
-    url: url_FirebasedynamiclinksReopenAttribution_579972, schemes: {Scheme.Https})
+    validator: validate_FirebasedynamiclinksReopenAttribution_589004, base: "/",
+    url: url_FirebasedynamiclinksReopenAttribution_589005, schemes: {Scheme.Https})
 type
-  Call_FirebasedynamiclinksShortLinksCreate_579989 = ref object of OpenApiRestCall_579408
-proc url_FirebasedynamiclinksShortLinksCreate_579991(protocol: Scheme;
+  Call_FirebasedynamiclinksShortLinksCreate_589022 = ref object of OpenApiRestCall_588441
+proc url_FirebasedynamiclinksShortLinksCreate_589024(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
   result.query = $composeQueryString(query)
   result.path = base & route
 
-proc validate_FirebasedynamiclinksShortLinksCreate_579990(path: JsonNode;
+proc validate_FirebasedynamiclinksShortLinksCreate_589023(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Creates a short Dynamic Link given either a valid long Dynamic Link or
   ## details such as Dynamic Link domain, Android and iOS app information.
@@ -714,61 +714,61 @@ proc validate_FirebasedynamiclinksShortLinksCreate_579990(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_579992 = query.getOrDefault("upload_protocol")
-  valid_579992 = validateParameter(valid_579992, JString, required = false,
+  var valid_589025 = query.getOrDefault("upload_protocol")
+  valid_589025 = validateParameter(valid_589025, JString, required = false,
                                  default = nil)
-  if valid_579992 != nil:
-    section.add "upload_protocol", valid_579992
-  var valid_579993 = query.getOrDefault("fields")
-  valid_579993 = validateParameter(valid_579993, JString, required = false,
+  if valid_589025 != nil:
+    section.add "upload_protocol", valid_589025
+  var valid_589026 = query.getOrDefault("fields")
+  valid_589026 = validateParameter(valid_589026, JString, required = false,
                                  default = nil)
-  if valid_579993 != nil:
-    section.add "fields", valid_579993
-  var valid_579994 = query.getOrDefault("quotaUser")
-  valid_579994 = validateParameter(valid_579994, JString, required = false,
+  if valid_589026 != nil:
+    section.add "fields", valid_589026
+  var valid_589027 = query.getOrDefault("quotaUser")
+  valid_589027 = validateParameter(valid_589027, JString, required = false,
                                  default = nil)
-  if valid_579994 != nil:
-    section.add "quotaUser", valid_579994
-  var valid_579995 = query.getOrDefault("alt")
-  valid_579995 = validateParameter(valid_579995, JString, required = false,
+  if valid_589027 != nil:
+    section.add "quotaUser", valid_589027
+  var valid_589028 = query.getOrDefault("alt")
+  valid_589028 = validateParameter(valid_589028, JString, required = false,
                                  default = newJString("json"))
-  if valid_579995 != nil:
-    section.add "alt", valid_579995
-  var valid_579996 = query.getOrDefault("oauth_token")
-  valid_579996 = validateParameter(valid_579996, JString, required = false,
+  if valid_589028 != nil:
+    section.add "alt", valid_589028
+  var valid_589029 = query.getOrDefault("oauth_token")
+  valid_589029 = validateParameter(valid_589029, JString, required = false,
                                  default = nil)
-  if valid_579996 != nil:
-    section.add "oauth_token", valid_579996
-  var valid_579997 = query.getOrDefault("callback")
-  valid_579997 = validateParameter(valid_579997, JString, required = false,
+  if valid_589029 != nil:
+    section.add "oauth_token", valid_589029
+  var valid_589030 = query.getOrDefault("callback")
+  valid_589030 = validateParameter(valid_589030, JString, required = false,
                                  default = nil)
-  if valid_579997 != nil:
-    section.add "callback", valid_579997
-  var valid_579998 = query.getOrDefault("access_token")
-  valid_579998 = validateParameter(valid_579998, JString, required = false,
+  if valid_589030 != nil:
+    section.add "callback", valid_589030
+  var valid_589031 = query.getOrDefault("access_token")
+  valid_589031 = validateParameter(valid_589031, JString, required = false,
                                  default = nil)
-  if valid_579998 != nil:
-    section.add "access_token", valid_579998
-  var valid_579999 = query.getOrDefault("uploadType")
-  valid_579999 = validateParameter(valid_579999, JString, required = false,
+  if valid_589031 != nil:
+    section.add "access_token", valid_589031
+  var valid_589032 = query.getOrDefault("uploadType")
+  valid_589032 = validateParameter(valid_589032, JString, required = false,
                                  default = nil)
-  if valid_579999 != nil:
-    section.add "uploadType", valid_579999
-  var valid_580000 = query.getOrDefault("key")
-  valid_580000 = validateParameter(valid_580000, JString, required = false,
+  if valid_589032 != nil:
+    section.add "uploadType", valid_589032
+  var valid_589033 = query.getOrDefault("key")
+  valid_589033 = validateParameter(valid_589033, JString, required = false,
                                  default = nil)
-  if valid_580000 != nil:
-    section.add "key", valid_580000
-  var valid_580001 = query.getOrDefault("$.xgafv")
-  valid_580001 = validateParameter(valid_580001, JString, required = false,
+  if valid_589033 != nil:
+    section.add "key", valid_589033
+  var valid_589034 = query.getOrDefault("$.xgafv")
+  valid_589034 = validateParameter(valid_589034, JString, required = false,
                                  default = newJString("1"))
-  if valid_580001 != nil:
-    section.add "$.xgafv", valid_580001
-  var valid_580002 = query.getOrDefault("prettyPrint")
-  valid_580002 = validateParameter(valid_580002, JBool, required = false,
+  if valid_589034 != nil:
+    section.add "$.xgafv", valid_589034
+  var valid_589035 = query.getOrDefault("prettyPrint")
+  valid_589035 = validateParameter(valid_589035, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580002 != nil:
-    section.add "prettyPrint", valid_580002
+  if valid_589035 != nil:
+    section.add "prettyPrint", valid_589035
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -780,7 +780,7 @@ proc validate_FirebasedynamiclinksShortLinksCreate_579990(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580004: Call_FirebasedynamiclinksShortLinksCreate_579989;
+proc call*(call_589037: Call_FirebasedynamiclinksShortLinksCreate_589022;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Creates a short Dynamic Link given either a valid long Dynamic Link or
@@ -793,16 +793,16 @@ proc call*(call_580004: Call_FirebasedynamiclinksShortLinksCreate_579989;
   ## The Dynamic Link domain in the request must be owned by requester's
   ## Firebase project.
   ## 
-  let valid = call_580004.validator(path, query, header, formData, body)
-  let scheme = call_580004.pickScheme
+  let valid = call_589037.validator(path, query, header, formData, body)
+  let scheme = call_589037.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580004.url(scheme.get, call_580004.host, call_580004.base,
-                         call_580004.route, valid.getOrDefault("path"),
+  let url = call_589037.url(scheme.get, call_589037.host, call_589037.base,
+                         call_589037.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580004, url, valid)
+  result = hook(call_589037, url, valid)
 
-proc call*(call_580005: Call_FirebasedynamiclinksShortLinksCreate_579989;
+proc call*(call_589038: Call_FirebasedynamiclinksShortLinksCreate_589022;
           uploadProtocol: string = ""; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; callback: string = "";
           accessToken: string = ""; uploadType: string = ""; key: string = "";
@@ -840,31 +840,31 @@ proc call*(call_580005: Call_FirebasedynamiclinksShortLinksCreate_579989;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var query_580006 = newJObject()
-  var body_580007 = newJObject()
-  add(query_580006, "upload_protocol", newJString(uploadProtocol))
-  add(query_580006, "fields", newJString(fields))
-  add(query_580006, "quotaUser", newJString(quotaUser))
-  add(query_580006, "alt", newJString(alt))
-  add(query_580006, "oauth_token", newJString(oauthToken))
-  add(query_580006, "callback", newJString(callback))
-  add(query_580006, "access_token", newJString(accessToken))
-  add(query_580006, "uploadType", newJString(uploadType))
-  add(query_580006, "key", newJString(key))
-  add(query_580006, "$.xgafv", newJString(Xgafv))
+  var query_589039 = newJObject()
+  var body_589040 = newJObject()
+  add(query_589039, "upload_protocol", newJString(uploadProtocol))
+  add(query_589039, "fields", newJString(fields))
+  add(query_589039, "quotaUser", newJString(quotaUser))
+  add(query_589039, "alt", newJString(alt))
+  add(query_589039, "oauth_token", newJString(oauthToken))
+  add(query_589039, "callback", newJString(callback))
+  add(query_589039, "access_token", newJString(accessToken))
+  add(query_589039, "uploadType", newJString(uploadType))
+  add(query_589039, "key", newJString(key))
+  add(query_589039, "$.xgafv", newJString(Xgafv))
   if body != nil:
-    body_580007 = body
-  add(query_580006, "prettyPrint", newJBool(prettyPrint))
-  result = call_580005.call(nil, query_580006, nil, nil, body_580007)
+    body_589040 = body
+  add(query_589039, "prettyPrint", newJBool(prettyPrint))
+  result = call_589038.call(nil, query_589039, nil, nil, body_589040)
 
-var firebasedynamiclinksShortLinksCreate* = Call_FirebasedynamiclinksShortLinksCreate_579989(
+var firebasedynamiclinksShortLinksCreate* = Call_FirebasedynamiclinksShortLinksCreate_589022(
     name: "firebasedynamiclinksShortLinksCreate", meth: HttpMethod.HttpPost,
     host: "firebasedynamiclinks.googleapis.com", route: "/v1/shortLinks",
-    validator: validate_FirebasedynamiclinksShortLinksCreate_579990, base: "/",
-    url: url_FirebasedynamiclinksShortLinksCreate_579991, schemes: {Scheme.Https})
+    validator: validate_FirebasedynamiclinksShortLinksCreate_589023, base: "/",
+    url: url_FirebasedynamiclinksShortLinksCreate_589024, schemes: {Scheme.Https})
 type
-  Call_FirebasedynamiclinksGetLinkStats_580008 = ref object of OpenApiRestCall_579408
-proc url_FirebasedynamiclinksGetLinkStats_580010(protocol: Scheme; host: string;
+  Call_FirebasedynamiclinksGetLinkStats_589041 = ref object of OpenApiRestCall_588441
+proc url_FirebasedynamiclinksGetLinkStats_589043(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -880,7 +880,7 @@ proc url_FirebasedynamiclinksGetLinkStats_580010(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_FirebasedynamiclinksGetLinkStats_580009(path: JsonNode;
+proc validate_FirebasedynamiclinksGetLinkStats_589042(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Fetches analytics stats of a short Dynamic Link for a given
   ## duration. Metrics include number of clicks, redirects, installs,
@@ -894,11 +894,11 @@ proc validate_FirebasedynamiclinksGetLinkStats_580009(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `dynamicLink` field"
-  var valid_580025 = path.getOrDefault("dynamicLink")
-  valid_580025 = validateParameter(valid_580025, JString, required = true,
+  var valid_589058 = path.getOrDefault("dynamicLink")
+  valid_589058 = validateParameter(valid_589058, JString, required = true,
                                  default = nil)
-  if valid_580025 != nil:
-    section.add "dynamicLink", valid_580025
+  if valid_589058 != nil:
+    section.add "dynamicLink", valid_589058
   result.add "path", section
   ## parameters in `query` object:
   ##   upload_protocol: JString
@@ -928,71 +928,71 @@ proc validate_FirebasedynamiclinksGetLinkStats_580009(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580026 = query.getOrDefault("upload_protocol")
-  valid_580026 = validateParameter(valid_580026, JString, required = false,
+  var valid_589059 = query.getOrDefault("upload_protocol")
+  valid_589059 = validateParameter(valid_589059, JString, required = false,
                                  default = nil)
-  if valid_580026 != nil:
-    section.add "upload_protocol", valid_580026
-  var valid_580027 = query.getOrDefault("fields")
-  valid_580027 = validateParameter(valid_580027, JString, required = false,
+  if valid_589059 != nil:
+    section.add "upload_protocol", valid_589059
+  var valid_589060 = query.getOrDefault("fields")
+  valid_589060 = validateParameter(valid_589060, JString, required = false,
                                  default = nil)
-  if valid_580027 != nil:
-    section.add "fields", valid_580027
-  var valid_580028 = query.getOrDefault("quotaUser")
-  valid_580028 = validateParameter(valid_580028, JString, required = false,
+  if valid_589060 != nil:
+    section.add "fields", valid_589060
+  var valid_589061 = query.getOrDefault("quotaUser")
+  valid_589061 = validateParameter(valid_589061, JString, required = false,
                                  default = nil)
-  if valid_580028 != nil:
-    section.add "quotaUser", valid_580028
-  var valid_580029 = query.getOrDefault("alt")
-  valid_580029 = validateParameter(valid_580029, JString, required = false,
+  if valid_589061 != nil:
+    section.add "quotaUser", valid_589061
+  var valid_589062 = query.getOrDefault("alt")
+  valid_589062 = validateParameter(valid_589062, JString, required = false,
                                  default = newJString("json"))
-  if valid_580029 != nil:
-    section.add "alt", valid_580029
-  var valid_580030 = query.getOrDefault("oauth_token")
-  valid_580030 = validateParameter(valid_580030, JString, required = false,
+  if valid_589062 != nil:
+    section.add "alt", valid_589062
+  var valid_589063 = query.getOrDefault("oauth_token")
+  valid_589063 = validateParameter(valid_589063, JString, required = false,
                                  default = nil)
-  if valid_580030 != nil:
-    section.add "oauth_token", valid_580030
-  var valid_580031 = query.getOrDefault("callback")
-  valid_580031 = validateParameter(valid_580031, JString, required = false,
+  if valid_589063 != nil:
+    section.add "oauth_token", valid_589063
+  var valid_589064 = query.getOrDefault("callback")
+  valid_589064 = validateParameter(valid_589064, JString, required = false,
                                  default = nil)
-  if valid_580031 != nil:
-    section.add "callback", valid_580031
-  var valid_580032 = query.getOrDefault("access_token")
-  valid_580032 = validateParameter(valid_580032, JString, required = false,
+  if valid_589064 != nil:
+    section.add "callback", valid_589064
+  var valid_589065 = query.getOrDefault("access_token")
+  valid_589065 = validateParameter(valid_589065, JString, required = false,
                                  default = nil)
-  if valid_580032 != nil:
-    section.add "access_token", valid_580032
-  var valid_580033 = query.getOrDefault("uploadType")
-  valid_580033 = validateParameter(valid_580033, JString, required = false,
+  if valid_589065 != nil:
+    section.add "access_token", valid_589065
+  var valid_589066 = query.getOrDefault("uploadType")
+  valid_589066 = validateParameter(valid_589066, JString, required = false,
                                  default = nil)
-  if valid_580033 != nil:
-    section.add "uploadType", valid_580033
-  var valid_580034 = query.getOrDefault("sdkVersion")
-  valid_580034 = validateParameter(valid_580034, JString, required = false,
+  if valid_589066 != nil:
+    section.add "uploadType", valid_589066
+  var valid_589067 = query.getOrDefault("sdkVersion")
+  valid_589067 = validateParameter(valid_589067, JString, required = false,
                                  default = nil)
-  if valid_580034 != nil:
-    section.add "sdkVersion", valid_580034
-  var valid_580035 = query.getOrDefault("durationDays")
-  valid_580035 = validateParameter(valid_580035, JString, required = false,
+  if valid_589067 != nil:
+    section.add "sdkVersion", valid_589067
+  var valid_589068 = query.getOrDefault("durationDays")
+  valid_589068 = validateParameter(valid_589068, JString, required = false,
                                  default = nil)
-  if valid_580035 != nil:
-    section.add "durationDays", valid_580035
-  var valid_580036 = query.getOrDefault("key")
-  valid_580036 = validateParameter(valid_580036, JString, required = false,
+  if valid_589068 != nil:
+    section.add "durationDays", valid_589068
+  var valid_589069 = query.getOrDefault("key")
+  valid_589069 = validateParameter(valid_589069, JString, required = false,
                                  default = nil)
-  if valid_580036 != nil:
-    section.add "key", valid_580036
-  var valid_580037 = query.getOrDefault("$.xgafv")
-  valid_580037 = validateParameter(valid_580037, JString, required = false,
+  if valid_589069 != nil:
+    section.add "key", valid_589069
+  var valid_589070 = query.getOrDefault("$.xgafv")
+  valid_589070 = validateParameter(valid_589070, JString, required = false,
                                  default = newJString("1"))
-  if valid_580037 != nil:
-    section.add "$.xgafv", valid_580037
-  var valid_580038 = query.getOrDefault("prettyPrint")
-  valid_580038 = validateParameter(valid_580038, JBool, required = false,
+  if valid_589070 != nil:
+    section.add "$.xgafv", valid_589070
+  var valid_589071 = query.getOrDefault("prettyPrint")
+  valid_589071 = validateParameter(valid_589071, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580038 != nil:
-    section.add "prettyPrint", valid_580038
+  if valid_589071 != nil:
+    section.add "prettyPrint", valid_589071
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1001,23 +1001,23 @@ proc validate_FirebasedynamiclinksGetLinkStats_580009(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580039: Call_FirebasedynamiclinksGetLinkStats_580008;
+proc call*(call_589072: Call_FirebasedynamiclinksGetLinkStats_589041;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Fetches analytics stats of a short Dynamic Link for a given
   ## duration. Metrics include number of clicks, redirects, installs,
   ## app first opens, and app reopens.
   ## 
-  let valid = call_580039.validator(path, query, header, formData, body)
-  let scheme = call_580039.pickScheme
+  let valid = call_589072.validator(path, query, header, formData, body)
+  let scheme = call_589072.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580039.url(scheme.get, call_580039.host, call_580039.base,
-                         call_580039.route, valid.getOrDefault("path"),
+  let url = call_589072.url(scheme.get, call_589072.host, call_589072.base,
+                         call_589072.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580039, url, valid)
+  result = hook(call_589072, url, valid)
 
-proc call*(call_580040: Call_FirebasedynamiclinksGetLinkStats_580008;
+proc call*(call_589073: Call_FirebasedynamiclinksGetLinkStats_589041;
           dynamicLink: string; uploadProtocol: string = ""; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           callback: string = ""; accessToken: string = ""; uploadType: string = "";
@@ -1055,30 +1055,30 @@ proc call*(call_580040: Call_FirebasedynamiclinksGetLinkStats_580008;
   ##        : V1 error format.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_580041 = newJObject()
-  var query_580042 = newJObject()
-  add(query_580042, "upload_protocol", newJString(uploadProtocol))
-  add(query_580042, "fields", newJString(fields))
-  add(query_580042, "quotaUser", newJString(quotaUser))
-  add(query_580042, "alt", newJString(alt))
-  add(query_580042, "oauth_token", newJString(oauthToken))
-  add(query_580042, "callback", newJString(callback))
-  add(query_580042, "access_token", newJString(accessToken))
-  add(query_580042, "uploadType", newJString(uploadType))
-  add(query_580042, "sdkVersion", newJString(sdkVersion))
-  add(query_580042, "durationDays", newJString(durationDays))
-  add(query_580042, "key", newJString(key))
-  add(path_580041, "dynamicLink", newJString(dynamicLink))
-  add(query_580042, "$.xgafv", newJString(Xgafv))
-  add(query_580042, "prettyPrint", newJBool(prettyPrint))
-  result = call_580040.call(path_580041, query_580042, nil, nil, nil)
+  var path_589074 = newJObject()
+  var query_589075 = newJObject()
+  add(query_589075, "upload_protocol", newJString(uploadProtocol))
+  add(query_589075, "fields", newJString(fields))
+  add(query_589075, "quotaUser", newJString(quotaUser))
+  add(query_589075, "alt", newJString(alt))
+  add(query_589075, "oauth_token", newJString(oauthToken))
+  add(query_589075, "callback", newJString(callback))
+  add(query_589075, "access_token", newJString(accessToken))
+  add(query_589075, "uploadType", newJString(uploadType))
+  add(query_589075, "sdkVersion", newJString(sdkVersion))
+  add(query_589075, "durationDays", newJString(durationDays))
+  add(query_589075, "key", newJString(key))
+  add(path_589074, "dynamicLink", newJString(dynamicLink))
+  add(query_589075, "$.xgafv", newJString(Xgafv))
+  add(query_589075, "prettyPrint", newJBool(prettyPrint))
+  result = call_589073.call(path_589074, query_589075, nil, nil, nil)
 
-var firebasedynamiclinksGetLinkStats* = Call_FirebasedynamiclinksGetLinkStats_580008(
+var firebasedynamiclinksGetLinkStats* = Call_FirebasedynamiclinksGetLinkStats_589041(
     name: "firebasedynamiclinksGetLinkStats", meth: HttpMethod.HttpGet,
     host: "firebasedynamiclinks.googleapis.com",
     route: "/v1/{dynamicLink}/linkStats",
-    validator: validate_FirebasedynamiclinksGetLinkStats_580009, base: "/",
-    url: url_FirebasedynamiclinksGetLinkStats_580010, schemes: {Scheme.Https})
+    validator: validate_FirebasedynamiclinksGetLinkStats_589042, base: "/",
+    url: url_FirebasedynamiclinksGetLinkStats_589043, schemes: {Scheme.Https})
 export
   rest
 
@@ -1120,7 +1120,7 @@ proc store(auth: var GoogleAuth; token: string; expiry: int; form: string) =
   auth.form = form
   auth.digest = auth.hash
 
-proc authenticate*(fresh: float64 = -3600.0; lifetime: int = 3600): Future[bool] {.async.} =
+proc authenticate*(fresh: float64 = 3600.0; lifetime: int = 3600): Future[bool] {.async.} =
   ## get or refresh an authentication token; provide `fresh`
   ## to ensure that the token won't expire in the next N seconds.
   ## provide `lifetime` to indicate how long the token should last.

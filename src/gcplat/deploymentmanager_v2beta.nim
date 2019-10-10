@@ -29,15 +29,15 @@ type
     url*: proc (protocol: Scheme; host: string; base: string; route: string;
               path: JsonNode; query: JsonNode): Uri
 
-  OpenApiRestCall_579437 = ref object of OpenApiRestCall
+  OpenApiRestCall_588466 = ref object of OpenApiRestCall
 proc hash(scheme: Scheme): Hash {.used.} =
   result = hash(ord(scheme))
 
-proc clone[T: OpenApiRestCall_579437](t: T): T {.used.} =
+proc clone[T: OpenApiRestCall_588466](t: T): T {.used.} =
   result = T(name: t.name, meth: t.meth, host: t.host, base: t.base, route: t.route,
            schemes: t.schemes, validator: t.validator, url: t.url)
 
-proc pickScheme(t: OpenApiRestCall_579437): Option[Scheme] {.used.} =
+proc pickScheme(t: OpenApiRestCall_588466): Option[Scheme] {.used.} =
   ## select a supported scheme from a set of candidates
   for scheme in Scheme.low ..
       Scheme.high:
@@ -74,7 +74,7 @@ type
   PathTokenKind = enum
     ConstantSegment, VariableSegment
   PathToken = tuple[kind: PathTokenKind, value: string]
-proc queryString(query: JsonNode): string =
+proc queryString(query: JsonNode): string {.used.} =
   var qs: seq[KeyVal]
   if query == nil:
     return ""
@@ -82,7 +82,7 @@ proc queryString(query: JsonNode): string =
     qs.add (key: k, val: v.getStr)
   result = encodeQuery(qs)
 
-proc hydratePath(input: JsonNode; segments: seq[PathToken]): Option[string] =
+proc hydratePath(input: JsonNode; segments: seq[PathToken]): Option[string] {.used.} =
   ## reconstitute a path with constants and variable values taken from json
   var head: string
   if segments.len == 0:
@@ -108,8 +108,8 @@ const
 proc composeQueryString(query: JsonNode): string
 method hook(call: OpenApiRestCall; url: Uri; input: JsonNode): Recallable {.base.}
 type
-  Call_DeploymentmanagerCompositeTypesInsert_579994 = ref object of OpenApiRestCall_579437
-proc url_DeploymentmanagerCompositeTypesInsert_579996(protocol: Scheme;
+  Call_DeploymentmanagerCompositeTypesInsert_589023 = ref object of OpenApiRestCall_588466
+proc url_DeploymentmanagerCompositeTypesInsert_589025(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -125,7 +125,7 @@ proc url_DeploymentmanagerCompositeTypesInsert_579996(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_DeploymentmanagerCompositeTypesInsert_579995(path: JsonNode;
+proc validate_DeploymentmanagerCompositeTypesInsert_589024(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Creates a composite type.
   ## 
@@ -136,11 +136,11 @@ proc validate_DeploymentmanagerCompositeTypesInsert_579995(path: JsonNode;
   ##          : The project ID for this request.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `project` field"
-  var valid_579997 = path.getOrDefault("project")
-  valid_579997 = validateParameter(valid_579997, JString, required = true,
+  var valid_589026 = path.getOrDefault("project")
+  valid_589026 = validateParameter(valid_589026, JString, required = true,
                                  default = nil)
-  if valid_579997 != nil:
-    section.add "project", valid_579997
+  if valid_589026 != nil:
+    section.add "project", valid_589026
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -158,41 +158,41 @@ proc validate_DeploymentmanagerCompositeTypesInsert_579995(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_579998 = query.getOrDefault("fields")
-  valid_579998 = validateParameter(valid_579998, JString, required = false,
+  var valid_589027 = query.getOrDefault("fields")
+  valid_589027 = validateParameter(valid_589027, JString, required = false,
                                  default = nil)
-  if valid_579998 != nil:
-    section.add "fields", valid_579998
-  var valid_579999 = query.getOrDefault("quotaUser")
-  valid_579999 = validateParameter(valid_579999, JString, required = false,
+  if valid_589027 != nil:
+    section.add "fields", valid_589027
+  var valid_589028 = query.getOrDefault("quotaUser")
+  valid_589028 = validateParameter(valid_589028, JString, required = false,
                                  default = nil)
-  if valid_579999 != nil:
-    section.add "quotaUser", valid_579999
-  var valid_580000 = query.getOrDefault("alt")
-  valid_580000 = validateParameter(valid_580000, JString, required = false,
+  if valid_589028 != nil:
+    section.add "quotaUser", valid_589028
+  var valid_589029 = query.getOrDefault("alt")
+  valid_589029 = validateParameter(valid_589029, JString, required = false,
                                  default = newJString("json"))
-  if valid_580000 != nil:
-    section.add "alt", valid_580000
-  var valid_580001 = query.getOrDefault("oauth_token")
-  valid_580001 = validateParameter(valid_580001, JString, required = false,
+  if valid_589029 != nil:
+    section.add "alt", valid_589029
+  var valid_589030 = query.getOrDefault("oauth_token")
+  valid_589030 = validateParameter(valid_589030, JString, required = false,
                                  default = nil)
-  if valid_580001 != nil:
-    section.add "oauth_token", valid_580001
-  var valid_580002 = query.getOrDefault("userIp")
-  valid_580002 = validateParameter(valid_580002, JString, required = false,
+  if valid_589030 != nil:
+    section.add "oauth_token", valid_589030
+  var valid_589031 = query.getOrDefault("userIp")
+  valid_589031 = validateParameter(valid_589031, JString, required = false,
                                  default = nil)
-  if valid_580002 != nil:
-    section.add "userIp", valid_580002
-  var valid_580003 = query.getOrDefault("key")
-  valid_580003 = validateParameter(valid_580003, JString, required = false,
+  if valid_589031 != nil:
+    section.add "userIp", valid_589031
+  var valid_589032 = query.getOrDefault("key")
+  valid_589032 = validateParameter(valid_589032, JString, required = false,
                                  default = nil)
-  if valid_580003 != nil:
-    section.add "key", valid_580003
-  var valid_580004 = query.getOrDefault("prettyPrint")
-  valid_580004 = validateParameter(valid_580004, JBool, required = false,
+  if valid_589032 != nil:
+    section.add "key", valid_589032
+  var valid_589033 = query.getOrDefault("prettyPrint")
+  valid_589033 = validateParameter(valid_589033, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580004 != nil:
-    section.add "prettyPrint", valid_580004
+  if valid_589033 != nil:
+    section.add "prettyPrint", valid_589033
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -204,21 +204,21 @@ proc validate_DeploymentmanagerCompositeTypesInsert_579995(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580006: Call_DeploymentmanagerCompositeTypesInsert_579994;
+proc call*(call_589035: Call_DeploymentmanagerCompositeTypesInsert_589023;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Creates a composite type.
   ## 
-  let valid = call_580006.validator(path, query, header, formData, body)
-  let scheme = call_580006.pickScheme
+  let valid = call_589035.validator(path, query, header, formData, body)
+  let scheme = call_589035.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580006.url(scheme.get, call_580006.host, call_580006.base,
-                         call_580006.route, valid.getOrDefault("path"),
+  let url = call_589035.url(scheme.get, call_589035.host, call_589035.base,
+                         call_589035.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580006, url, valid)
+  result = hook(call_589035, url, valid)
 
-proc call*(call_580007: Call_DeploymentmanagerCompositeTypesInsert_579994;
+proc call*(call_589036: Call_DeploymentmanagerCompositeTypesInsert_589023;
           project: string; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; userIp: string = "";
           key: string = ""; body: JsonNode = nil; prettyPrint: bool = true): Recallable =
@@ -241,30 +241,30 @@ proc call*(call_580007: Call_DeploymentmanagerCompositeTypesInsert_579994;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_580008 = newJObject()
-  var query_580009 = newJObject()
-  var body_580010 = newJObject()
-  add(query_580009, "fields", newJString(fields))
-  add(query_580009, "quotaUser", newJString(quotaUser))
-  add(query_580009, "alt", newJString(alt))
-  add(query_580009, "oauth_token", newJString(oauthToken))
-  add(query_580009, "userIp", newJString(userIp))
-  add(query_580009, "key", newJString(key))
-  add(path_580008, "project", newJString(project))
+  var path_589037 = newJObject()
+  var query_589038 = newJObject()
+  var body_589039 = newJObject()
+  add(query_589038, "fields", newJString(fields))
+  add(query_589038, "quotaUser", newJString(quotaUser))
+  add(query_589038, "alt", newJString(alt))
+  add(query_589038, "oauth_token", newJString(oauthToken))
+  add(query_589038, "userIp", newJString(userIp))
+  add(query_589038, "key", newJString(key))
+  add(path_589037, "project", newJString(project))
   if body != nil:
-    body_580010 = body
-  add(query_580009, "prettyPrint", newJBool(prettyPrint))
-  result = call_580007.call(path_580008, query_580009, nil, nil, body_580010)
+    body_589039 = body
+  add(query_589038, "prettyPrint", newJBool(prettyPrint))
+  result = call_589036.call(path_589037, query_589038, nil, nil, body_589039)
 
-var deploymentmanagerCompositeTypesInsert* = Call_DeploymentmanagerCompositeTypesInsert_579994(
+var deploymentmanagerCompositeTypesInsert* = Call_DeploymentmanagerCompositeTypesInsert_589023(
     name: "deploymentmanagerCompositeTypesInsert", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com", route: "/{project}/global/compositeTypes",
-    validator: validate_DeploymentmanagerCompositeTypesInsert_579995,
+    validator: validate_DeploymentmanagerCompositeTypesInsert_589024,
     base: "/deploymentmanager/v2beta/projects",
-    url: url_DeploymentmanagerCompositeTypesInsert_579996, schemes: {Scheme.Https})
+    url: url_DeploymentmanagerCompositeTypesInsert_589025, schemes: {Scheme.Https})
 type
-  Call_DeploymentmanagerCompositeTypesList_579705 = ref object of OpenApiRestCall_579437
-proc url_DeploymentmanagerCompositeTypesList_579707(protocol: Scheme; host: string;
+  Call_DeploymentmanagerCompositeTypesList_588734 = ref object of OpenApiRestCall_588466
+proc url_DeploymentmanagerCompositeTypesList_588736(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -280,7 +280,7 @@ proc url_DeploymentmanagerCompositeTypesList_579707(protocol: Scheme; host: stri
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_DeploymentmanagerCompositeTypesList_579706(path: JsonNode;
+proc validate_DeploymentmanagerCompositeTypesList_588735(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Lists all composite types for Deployment Manager.
   ## 
@@ -291,11 +291,11 @@ proc validate_DeploymentmanagerCompositeTypesList_579706(path: JsonNode;
   ##          : The project ID for this request.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `project` field"
-  var valid_579833 = path.getOrDefault("project")
-  valid_579833 = validateParameter(valid_579833, JString, required = true,
+  var valid_588862 = path.getOrDefault("project")
+  valid_588862 = validateParameter(valid_588862, JString, required = true,
                                  default = nil)
-  if valid_579833 != nil:
-    section.add "project", valid_579833
+  if valid_588862 != nil:
+    section.add "project", valid_588862
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -331,61 +331,61 @@ proc validate_DeploymentmanagerCompositeTypesList_579706(path: JsonNode;
   ## 
   ## To filter on multiple expressions, provide each separate expression within parentheses. For example, (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake"). By default, each expression is an AND expression. However, you can include AND and OR expressions explicitly. For example, (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart = true).
   section = newJObject()
-  var valid_579834 = query.getOrDefault("fields")
-  valid_579834 = validateParameter(valid_579834, JString, required = false,
+  var valid_588863 = query.getOrDefault("fields")
+  valid_588863 = validateParameter(valid_588863, JString, required = false,
                                  default = nil)
-  if valid_579834 != nil:
-    section.add "fields", valid_579834
-  var valid_579835 = query.getOrDefault("pageToken")
-  valid_579835 = validateParameter(valid_579835, JString, required = false,
+  if valid_588863 != nil:
+    section.add "fields", valid_588863
+  var valid_588864 = query.getOrDefault("pageToken")
+  valid_588864 = validateParameter(valid_588864, JString, required = false,
                                  default = nil)
-  if valid_579835 != nil:
-    section.add "pageToken", valid_579835
-  var valid_579836 = query.getOrDefault("quotaUser")
-  valid_579836 = validateParameter(valid_579836, JString, required = false,
+  if valid_588864 != nil:
+    section.add "pageToken", valid_588864
+  var valid_588865 = query.getOrDefault("quotaUser")
+  valid_588865 = validateParameter(valid_588865, JString, required = false,
                                  default = nil)
-  if valid_579836 != nil:
-    section.add "quotaUser", valid_579836
-  var valid_579850 = query.getOrDefault("alt")
-  valid_579850 = validateParameter(valid_579850, JString, required = false,
+  if valid_588865 != nil:
+    section.add "quotaUser", valid_588865
+  var valid_588879 = query.getOrDefault("alt")
+  valid_588879 = validateParameter(valid_588879, JString, required = false,
                                  default = newJString("json"))
-  if valid_579850 != nil:
-    section.add "alt", valid_579850
-  var valid_579851 = query.getOrDefault("oauth_token")
-  valid_579851 = validateParameter(valid_579851, JString, required = false,
+  if valid_588879 != nil:
+    section.add "alt", valid_588879
+  var valid_588880 = query.getOrDefault("oauth_token")
+  valid_588880 = validateParameter(valid_588880, JString, required = false,
                                  default = nil)
-  if valid_579851 != nil:
-    section.add "oauth_token", valid_579851
-  var valid_579852 = query.getOrDefault("userIp")
-  valid_579852 = validateParameter(valid_579852, JString, required = false,
+  if valid_588880 != nil:
+    section.add "oauth_token", valid_588880
+  var valid_588881 = query.getOrDefault("userIp")
+  valid_588881 = validateParameter(valid_588881, JString, required = false,
                                  default = nil)
-  if valid_579852 != nil:
-    section.add "userIp", valid_579852
-  var valid_579854 = query.getOrDefault("maxResults")
-  valid_579854 = validateParameter(valid_579854, JInt, required = false,
+  if valid_588881 != nil:
+    section.add "userIp", valid_588881
+  var valid_588883 = query.getOrDefault("maxResults")
+  valid_588883 = validateParameter(valid_588883, JInt, required = false,
                                  default = newJInt(500))
-  if valid_579854 != nil:
-    section.add "maxResults", valid_579854
-  var valid_579855 = query.getOrDefault("orderBy")
-  valid_579855 = validateParameter(valid_579855, JString, required = false,
+  if valid_588883 != nil:
+    section.add "maxResults", valid_588883
+  var valid_588884 = query.getOrDefault("orderBy")
+  valid_588884 = validateParameter(valid_588884, JString, required = false,
                                  default = nil)
-  if valid_579855 != nil:
-    section.add "orderBy", valid_579855
-  var valid_579856 = query.getOrDefault("key")
-  valid_579856 = validateParameter(valid_579856, JString, required = false,
+  if valid_588884 != nil:
+    section.add "orderBy", valid_588884
+  var valid_588885 = query.getOrDefault("key")
+  valid_588885 = validateParameter(valid_588885, JString, required = false,
                                  default = nil)
-  if valid_579856 != nil:
-    section.add "key", valid_579856
-  var valid_579857 = query.getOrDefault("prettyPrint")
-  valid_579857 = validateParameter(valid_579857, JBool, required = false,
+  if valid_588885 != nil:
+    section.add "key", valid_588885
+  var valid_588886 = query.getOrDefault("prettyPrint")
+  valid_588886 = validateParameter(valid_588886, JBool, required = false,
                                  default = newJBool(true))
-  if valid_579857 != nil:
-    section.add "prettyPrint", valid_579857
-  var valid_579858 = query.getOrDefault("filter")
-  valid_579858 = validateParameter(valid_579858, JString, required = false,
+  if valid_588886 != nil:
+    section.add "prettyPrint", valid_588886
+  var valid_588887 = query.getOrDefault("filter")
+  valid_588887 = validateParameter(valid_588887, JString, required = false,
                                  default = nil)
-  if valid_579858 != nil:
-    section.add "filter", valid_579858
+  if valid_588887 != nil:
+    section.add "filter", valid_588887
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -394,21 +394,21 @@ proc validate_DeploymentmanagerCompositeTypesList_579706(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_579881: Call_DeploymentmanagerCompositeTypesList_579705;
+proc call*(call_588910: Call_DeploymentmanagerCompositeTypesList_588734;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Lists all composite types for Deployment Manager.
   ## 
-  let valid = call_579881.validator(path, query, header, formData, body)
-  let scheme = call_579881.pickScheme
+  let valid = call_588910.validator(path, query, header, formData, body)
+  let scheme = call_588910.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_579881.url(scheme.get, call_579881.host, call_579881.base,
-                         call_579881.route, valid.getOrDefault("path"),
+  let url = call_588910.url(scheme.get, call_588910.host, call_588910.base,
+                         call_588910.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_579881, url, valid)
+  result = hook(call_588910, url, valid)
 
-proc call*(call_579952: Call_DeploymentmanagerCompositeTypesList_579705;
+proc call*(call_588981: Call_DeploymentmanagerCompositeTypesList_588734;
           project: string; fields: string = ""; pageToken: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; maxResults: int = 500; orderBy: string = "";
@@ -449,31 +449,31 @@ proc call*(call_579952: Call_DeploymentmanagerCompositeTypesList_579705;
   ## You can also filter nested fields. For example, you could specify scheduling.automaticRestart = false to include instances only if they are not scheduled for automatic restarts. You can use filtering on nested fields to filter based on resource labels.
   ## 
   ## To filter on multiple expressions, provide each separate expression within parentheses. For example, (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake"). By default, each expression is an AND expression. However, you can include AND and OR expressions explicitly. For example, (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart = true).
-  var path_579953 = newJObject()
-  var query_579955 = newJObject()
-  add(query_579955, "fields", newJString(fields))
-  add(query_579955, "pageToken", newJString(pageToken))
-  add(query_579955, "quotaUser", newJString(quotaUser))
-  add(query_579955, "alt", newJString(alt))
-  add(query_579955, "oauth_token", newJString(oauthToken))
-  add(query_579955, "userIp", newJString(userIp))
-  add(query_579955, "maxResults", newJInt(maxResults))
-  add(query_579955, "orderBy", newJString(orderBy))
-  add(query_579955, "key", newJString(key))
-  add(path_579953, "project", newJString(project))
-  add(query_579955, "prettyPrint", newJBool(prettyPrint))
-  add(query_579955, "filter", newJString(filter))
-  result = call_579952.call(path_579953, query_579955, nil, nil, nil)
+  var path_588982 = newJObject()
+  var query_588984 = newJObject()
+  add(query_588984, "fields", newJString(fields))
+  add(query_588984, "pageToken", newJString(pageToken))
+  add(query_588984, "quotaUser", newJString(quotaUser))
+  add(query_588984, "alt", newJString(alt))
+  add(query_588984, "oauth_token", newJString(oauthToken))
+  add(query_588984, "userIp", newJString(userIp))
+  add(query_588984, "maxResults", newJInt(maxResults))
+  add(query_588984, "orderBy", newJString(orderBy))
+  add(query_588984, "key", newJString(key))
+  add(path_588982, "project", newJString(project))
+  add(query_588984, "prettyPrint", newJBool(prettyPrint))
+  add(query_588984, "filter", newJString(filter))
+  result = call_588981.call(path_588982, query_588984, nil, nil, nil)
 
-var deploymentmanagerCompositeTypesList* = Call_DeploymentmanagerCompositeTypesList_579705(
+var deploymentmanagerCompositeTypesList* = Call_DeploymentmanagerCompositeTypesList_588734(
     name: "deploymentmanagerCompositeTypesList", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/{project}/global/compositeTypes",
-    validator: validate_DeploymentmanagerCompositeTypesList_579706,
+    validator: validate_DeploymentmanagerCompositeTypesList_588735,
     base: "/deploymentmanager/v2beta/projects",
-    url: url_DeploymentmanagerCompositeTypesList_579707, schemes: {Scheme.Https})
+    url: url_DeploymentmanagerCompositeTypesList_588736, schemes: {Scheme.Https})
 type
-  Call_DeploymentmanagerCompositeTypesUpdate_580027 = ref object of OpenApiRestCall_579437
-proc url_DeploymentmanagerCompositeTypesUpdate_580029(protocol: Scheme;
+  Call_DeploymentmanagerCompositeTypesUpdate_589056 = ref object of OpenApiRestCall_588466
+proc url_DeploymentmanagerCompositeTypesUpdate_589058(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -491,7 +491,7 @@ proc url_DeploymentmanagerCompositeTypesUpdate_580029(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_DeploymentmanagerCompositeTypesUpdate_580028(path: JsonNode;
+proc validate_DeploymentmanagerCompositeTypesUpdate_589057(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Updates a composite type.
   ## 
@@ -504,16 +504,16 @@ proc validate_DeploymentmanagerCompositeTypesUpdate_580028(path: JsonNode;
   ##                : The name of the composite type for this request.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `project` field"
-  var valid_580030 = path.getOrDefault("project")
-  valid_580030 = validateParameter(valid_580030, JString, required = true,
+  var valid_589059 = path.getOrDefault("project")
+  valid_589059 = validateParameter(valid_589059, JString, required = true,
                                  default = nil)
-  if valid_580030 != nil:
-    section.add "project", valid_580030
-  var valid_580031 = path.getOrDefault("compositeType")
-  valid_580031 = validateParameter(valid_580031, JString, required = true,
+  if valid_589059 != nil:
+    section.add "project", valid_589059
+  var valid_589060 = path.getOrDefault("compositeType")
+  valid_589060 = validateParameter(valid_589060, JString, required = true,
                                  default = nil)
-  if valid_580031 != nil:
-    section.add "compositeType", valid_580031
+  if valid_589060 != nil:
+    section.add "compositeType", valid_589060
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -531,41 +531,41 @@ proc validate_DeploymentmanagerCompositeTypesUpdate_580028(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580032 = query.getOrDefault("fields")
-  valid_580032 = validateParameter(valid_580032, JString, required = false,
+  var valid_589061 = query.getOrDefault("fields")
+  valid_589061 = validateParameter(valid_589061, JString, required = false,
                                  default = nil)
-  if valid_580032 != nil:
-    section.add "fields", valid_580032
-  var valid_580033 = query.getOrDefault("quotaUser")
-  valid_580033 = validateParameter(valid_580033, JString, required = false,
+  if valid_589061 != nil:
+    section.add "fields", valid_589061
+  var valid_589062 = query.getOrDefault("quotaUser")
+  valid_589062 = validateParameter(valid_589062, JString, required = false,
                                  default = nil)
-  if valid_580033 != nil:
-    section.add "quotaUser", valid_580033
-  var valid_580034 = query.getOrDefault("alt")
-  valid_580034 = validateParameter(valid_580034, JString, required = false,
+  if valid_589062 != nil:
+    section.add "quotaUser", valid_589062
+  var valid_589063 = query.getOrDefault("alt")
+  valid_589063 = validateParameter(valid_589063, JString, required = false,
                                  default = newJString("json"))
-  if valid_580034 != nil:
-    section.add "alt", valid_580034
-  var valid_580035 = query.getOrDefault("oauth_token")
-  valid_580035 = validateParameter(valid_580035, JString, required = false,
+  if valid_589063 != nil:
+    section.add "alt", valid_589063
+  var valid_589064 = query.getOrDefault("oauth_token")
+  valid_589064 = validateParameter(valid_589064, JString, required = false,
                                  default = nil)
-  if valid_580035 != nil:
-    section.add "oauth_token", valid_580035
-  var valid_580036 = query.getOrDefault("userIp")
-  valid_580036 = validateParameter(valid_580036, JString, required = false,
+  if valid_589064 != nil:
+    section.add "oauth_token", valid_589064
+  var valid_589065 = query.getOrDefault("userIp")
+  valid_589065 = validateParameter(valid_589065, JString, required = false,
                                  default = nil)
-  if valid_580036 != nil:
-    section.add "userIp", valid_580036
-  var valid_580037 = query.getOrDefault("key")
-  valid_580037 = validateParameter(valid_580037, JString, required = false,
+  if valid_589065 != nil:
+    section.add "userIp", valid_589065
+  var valid_589066 = query.getOrDefault("key")
+  valid_589066 = validateParameter(valid_589066, JString, required = false,
                                  default = nil)
-  if valid_580037 != nil:
-    section.add "key", valid_580037
-  var valid_580038 = query.getOrDefault("prettyPrint")
-  valid_580038 = validateParameter(valid_580038, JBool, required = false,
+  if valid_589066 != nil:
+    section.add "key", valid_589066
+  var valid_589067 = query.getOrDefault("prettyPrint")
+  valid_589067 = validateParameter(valid_589067, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580038 != nil:
-    section.add "prettyPrint", valid_580038
+  if valid_589067 != nil:
+    section.add "prettyPrint", valid_589067
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -577,21 +577,21 @@ proc validate_DeploymentmanagerCompositeTypesUpdate_580028(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580040: Call_DeploymentmanagerCompositeTypesUpdate_580027;
+proc call*(call_589069: Call_DeploymentmanagerCompositeTypesUpdate_589056;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Updates a composite type.
   ## 
-  let valid = call_580040.validator(path, query, header, formData, body)
-  let scheme = call_580040.pickScheme
+  let valid = call_589069.validator(path, query, header, formData, body)
+  let scheme = call_589069.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580040.url(scheme.get, call_580040.host, call_580040.base,
-                         call_580040.route, valid.getOrDefault("path"),
+  let url = call_589069.url(scheme.get, call_589069.host, call_589069.base,
+                         call_589069.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580040, url, valid)
+  result = hook(call_589069, url, valid)
 
-proc call*(call_580041: Call_DeploymentmanagerCompositeTypesUpdate_580027;
+proc call*(call_589070: Call_DeploymentmanagerCompositeTypesUpdate_589056;
           project: string; compositeType: string; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; key: string = ""; body: JsonNode = nil;
@@ -617,32 +617,32 @@ proc call*(call_580041: Call_DeploymentmanagerCompositeTypesUpdate_580027;
   ##              : Returns response with indentations and line breaks.
   ##   compositeType: string (required)
   ##                : The name of the composite type for this request.
-  var path_580042 = newJObject()
-  var query_580043 = newJObject()
-  var body_580044 = newJObject()
-  add(query_580043, "fields", newJString(fields))
-  add(query_580043, "quotaUser", newJString(quotaUser))
-  add(query_580043, "alt", newJString(alt))
-  add(query_580043, "oauth_token", newJString(oauthToken))
-  add(query_580043, "userIp", newJString(userIp))
-  add(query_580043, "key", newJString(key))
-  add(path_580042, "project", newJString(project))
+  var path_589071 = newJObject()
+  var query_589072 = newJObject()
+  var body_589073 = newJObject()
+  add(query_589072, "fields", newJString(fields))
+  add(query_589072, "quotaUser", newJString(quotaUser))
+  add(query_589072, "alt", newJString(alt))
+  add(query_589072, "oauth_token", newJString(oauthToken))
+  add(query_589072, "userIp", newJString(userIp))
+  add(query_589072, "key", newJString(key))
+  add(path_589071, "project", newJString(project))
   if body != nil:
-    body_580044 = body
-  add(query_580043, "prettyPrint", newJBool(prettyPrint))
-  add(path_580042, "compositeType", newJString(compositeType))
-  result = call_580041.call(path_580042, query_580043, nil, nil, body_580044)
+    body_589073 = body
+  add(query_589072, "prettyPrint", newJBool(prettyPrint))
+  add(path_589071, "compositeType", newJString(compositeType))
+  result = call_589070.call(path_589071, query_589072, nil, nil, body_589073)
 
-var deploymentmanagerCompositeTypesUpdate* = Call_DeploymentmanagerCompositeTypesUpdate_580027(
+var deploymentmanagerCompositeTypesUpdate* = Call_DeploymentmanagerCompositeTypesUpdate_589056(
     name: "deploymentmanagerCompositeTypesUpdate", meth: HttpMethod.HttpPut,
     host: "www.googleapis.com",
     route: "/{project}/global/compositeTypes/{compositeType}",
-    validator: validate_DeploymentmanagerCompositeTypesUpdate_580028,
+    validator: validate_DeploymentmanagerCompositeTypesUpdate_589057,
     base: "/deploymentmanager/v2beta/projects",
-    url: url_DeploymentmanagerCompositeTypesUpdate_580029, schemes: {Scheme.Https})
+    url: url_DeploymentmanagerCompositeTypesUpdate_589058, schemes: {Scheme.Https})
 type
-  Call_DeploymentmanagerCompositeTypesGet_580011 = ref object of OpenApiRestCall_579437
-proc url_DeploymentmanagerCompositeTypesGet_580013(protocol: Scheme; host: string;
+  Call_DeploymentmanagerCompositeTypesGet_589040 = ref object of OpenApiRestCall_588466
+proc url_DeploymentmanagerCompositeTypesGet_589042(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -660,7 +660,7 @@ proc url_DeploymentmanagerCompositeTypesGet_580013(protocol: Scheme; host: strin
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_DeploymentmanagerCompositeTypesGet_580012(path: JsonNode;
+proc validate_DeploymentmanagerCompositeTypesGet_589041(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Gets information about a specific composite type.
   ## 
@@ -673,16 +673,16 @@ proc validate_DeploymentmanagerCompositeTypesGet_580012(path: JsonNode;
   ##                : The name of the composite type for this request.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `project` field"
-  var valid_580014 = path.getOrDefault("project")
-  valid_580014 = validateParameter(valid_580014, JString, required = true,
+  var valid_589043 = path.getOrDefault("project")
+  valid_589043 = validateParameter(valid_589043, JString, required = true,
                                  default = nil)
-  if valid_580014 != nil:
-    section.add "project", valid_580014
-  var valid_580015 = path.getOrDefault("compositeType")
-  valid_580015 = validateParameter(valid_580015, JString, required = true,
+  if valid_589043 != nil:
+    section.add "project", valid_589043
+  var valid_589044 = path.getOrDefault("compositeType")
+  valid_589044 = validateParameter(valid_589044, JString, required = true,
                                  default = nil)
-  if valid_580015 != nil:
-    section.add "compositeType", valid_580015
+  if valid_589044 != nil:
+    section.add "compositeType", valid_589044
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -700,41 +700,41 @@ proc validate_DeploymentmanagerCompositeTypesGet_580012(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580016 = query.getOrDefault("fields")
-  valid_580016 = validateParameter(valid_580016, JString, required = false,
+  var valid_589045 = query.getOrDefault("fields")
+  valid_589045 = validateParameter(valid_589045, JString, required = false,
                                  default = nil)
-  if valid_580016 != nil:
-    section.add "fields", valid_580016
-  var valid_580017 = query.getOrDefault("quotaUser")
-  valid_580017 = validateParameter(valid_580017, JString, required = false,
+  if valid_589045 != nil:
+    section.add "fields", valid_589045
+  var valid_589046 = query.getOrDefault("quotaUser")
+  valid_589046 = validateParameter(valid_589046, JString, required = false,
                                  default = nil)
-  if valid_580017 != nil:
-    section.add "quotaUser", valid_580017
-  var valid_580018 = query.getOrDefault("alt")
-  valid_580018 = validateParameter(valid_580018, JString, required = false,
+  if valid_589046 != nil:
+    section.add "quotaUser", valid_589046
+  var valid_589047 = query.getOrDefault("alt")
+  valid_589047 = validateParameter(valid_589047, JString, required = false,
                                  default = newJString("json"))
-  if valid_580018 != nil:
-    section.add "alt", valid_580018
-  var valid_580019 = query.getOrDefault("oauth_token")
-  valid_580019 = validateParameter(valid_580019, JString, required = false,
+  if valid_589047 != nil:
+    section.add "alt", valid_589047
+  var valid_589048 = query.getOrDefault("oauth_token")
+  valid_589048 = validateParameter(valid_589048, JString, required = false,
                                  default = nil)
-  if valid_580019 != nil:
-    section.add "oauth_token", valid_580019
-  var valid_580020 = query.getOrDefault("userIp")
-  valid_580020 = validateParameter(valid_580020, JString, required = false,
+  if valid_589048 != nil:
+    section.add "oauth_token", valid_589048
+  var valid_589049 = query.getOrDefault("userIp")
+  valid_589049 = validateParameter(valid_589049, JString, required = false,
                                  default = nil)
-  if valid_580020 != nil:
-    section.add "userIp", valid_580020
-  var valid_580021 = query.getOrDefault("key")
-  valid_580021 = validateParameter(valid_580021, JString, required = false,
+  if valid_589049 != nil:
+    section.add "userIp", valid_589049
+  var valid_589050 = query.getOrDefault("key")
+  valid_589050 = validateParameter(valid_589050, JString, required = false,
                                  default = nil)
-  if valid_580021 != nil:
-    section.add "key", valid_580021
-  var valid_580022 = query.getOrDefault("prettyPrint")
-  valid_580022 = validateParameter(valid_580022, JBool, required = false,
+  if valid_589050 != nil:
+    section.add "key", valid_589050
+  var valid_589051 = query.getOrDefault("prettyPrint")
+  valid_589051 = validateParameter(valid_589051, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580022 != nil:
-    section.add "prettyPrint", valid_580022
+  if valid_589051 != nil:
+    section.add "prettyPrint", valid_589051
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -743,21 +743,21 @@ proc validate_DeploymentmanagerCompositeTypesGet_580012(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580023: Call_DeploymentmanagerCompositeTypesGet_580011;
+proc call*(call_589052: Call_DeploymentmanagerCompositeTypesGet_589040;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Gets information about a specific composite type.
   ## 
-  let valid = call_580023.validator(path, query, header, formData, body)
-  let scheme = call_580023.pickScheme
+  let valid = call_589052.validator(path, query, header, formData, body)
+  let scheme = call_589052.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580023.url(scheme.get, call_580023.host, call_580023.base,
-                         call_580023.route, valid.getOrDefault("path"),
+  let url = call_589052.url(scheme.get, call_589052.host, call_589052.base,
+                         call_589052.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580023, url, valid)
+  result = hook(call_589052, url, valid)
 
-proc call*(call_580024: Call_DeploymentmanagerCompositeTypesGet_580011;
+proc call*(call_589053: Call_DeploymentmanagerCompositeTypesGet_589040;
           project: string; compositeType: string; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; key: string = ""; prettyPrint: bool = true): Recallable =
@@ -781,29 +781,29 @@ proc call*(call_580024: Call_DeploymentmanagerCompositeTypesGet_580011;
   ##              : Returns response with indentations and line breaks.
   ##   compositeType: string (required)
   ##                : The name of the composite type for this request.
-  var path_580025 = newJObject()
-  var query_580026 = newJObject()
-  add(query_580026, "fields", newJString(fields))
-  add(query_580026, "quotaUser", newJString(quotaUser))
-  add(query_580026, "alt", newJString(alt))
-  add(query_580026, "oauth_token", newJString(oauthToken))
-  add(query_580026, "userIp", newJString(userIp))
-  add(query_580026, "key", newJString(key))
-  add(path_580025, "project", newJString(project))
-  add(query_580026, "prettyPrint", newJBool(prettyPrint))
-  add(path_580025, "compositeType", newJString(compositeType))
-  result = call_580024.call(path_580025, query_580026, nil, nil, nil)
+  var path_589054 = newJObject()
+  var query_589055 = newJObject()
+  add(query_589055, "fields", newJString(fields))
+  add(query_589055, "quotaUser", newJString(quotaUser))
+  add(query_589055, "alt", newJString(alt))
+  add(query_589055, "oauth_token", newJString(oauthToken))
+  add(query_589055, "userIp", newJString(userIp))
+  add(query_589055, "key", newJString(key))
+  add(path_589054, "project", newJString(project))
+  add(query_589055, "prettyPrint", newJBool(prettyPrint))
+  add(path_589054, "compositeType", newJString(compositeType))
+  result = call_589053.call(path_589054, query_589055, nil, nil, nil)
 
-var deploymentmanagerCompositeTypesGet* = Call_DeploymentmanagerCompositeTypesGet_580011(
+var deploymentmanagerCompositeTypesGet* = Call_DeploymentmanagerCompositeTypesGet_589040(
     name: "deploymentmanagerCompositeTypesGet", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com",
     route: "/{project}/global/compositeTypes/{compositeType}",
-    validator: validate_DeploymentmanagerCompositeTypesGet_580012,
+    validator: validate_DeploymentmanagerCompositeTypesGet_589041,
     base: "/deploymentmanager/v2beta/projects",
-    url: url_DeploymentmanagerCompositeTypesGet_580013, schemes: {Scheme.Https})
+    url: url_DeploymentmanagerCompositeTypesGet_589042, schemes: {Scheme.Https})
 type
-  Call_DeploymentmanagerCompositeTypesPatch_580061 = ref object of OpenApiRestCall_579437
-proc url_DeploymentmanagerCompositeTypesPatch_580063(protocol: Scheme;
+  Call_DeploymentmanagerCompositeTypesPatch_589090 = ref object of OpenApiRestCall_588466
+proc url_DeploymentmanagerCompositeTypesPatch_589092(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -821,7 +821,7 @@ proc url_DeploymentmanagerCompositeTypesPatch_580063(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_DeploymentmanagerCompositeTypesPatch_580062(path: JsonNode;
+proc validate_DeploymentmanagerCompositeTypesPatch_589091(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Updates a composite type. This method supports patch semantics.
   ## 
@@ -834,16 +834,16 @@ proc validate_DeploymentmanagerCompositeTypesPatch_580062(path: JsonNode;
   ##                : The name of the composite type for this request.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `project` field"
-  var valid_580064 = path.getOrDefault("project")
-  valid_580064 = validateParameter(valid_580064, JString, required = true,
+  var valid_589093 = path.getOrDefault("project")
+  valid_589093 = validateParameter(valid_589093, JString, required = true,
                                  default = nil)
-  if valid_580064 != nil:
-    section.add "project", valid_580064
-  var valid_580065 = path.getOrDefault("compositeType")
-  valid_580065 = validateParameter(valid_580065, JString, required = true,
+  if valid_589093 != nil:
+    section.add "project", valid_589093
+  var valid_589094 = path.getOrDefault("compositeType")
+  valid_589094 = validateParameter(valid_589094, JString, required = true,
                                  default = nil)
-  if valid_580065 != nil:
-    section.add "compositeType", valid_580065
+  if valid_589094 != nil:
+    section.add "compositeType", valid_589094
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -861,41 +861,41 @@ proc validate_DeploymentmanagerCompositeTypesPatch_580062(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580066 = query.getOrDefault("fields")
-  valid_580066 = validateParameter(valid_580066, JString, required = false,
+  var valid_589095 = query.getOrDefault("fields")
+  valid_589095 = validateParameter(valid_589095, JString, required = false,
                                  default = nil)
-  if valid_580066 != nil:
-    section.add "fields", valid_580066
-  var valid_580067 = query.getOrDefault("quotaUser")
-  valid_580067 = validateParameter(valid_580067, JString, required = false,
+  if valid_589095 != nil:
+    section.add "fields", valid_589095
+  var valid_589096 = query.getOrDefault("quotaUser")
+  valid_589096 = validateParameter(valid_589096, JString, required = false,
                                  default = nil)
-  if valid_580067 != nil:
-    section.add "quotaUser", valid_580067
-  var valid_580068 = query.getOrDefault("alt")
-  valid_580068 = validateParameter(valid_580068, JString, required = false,
+  if valid_589096 != nil:
+    section.add "quotaUser", valid_589096
+  var valid_589097 = query.getOrDefault("alt")
+  valid_589097 = validateParameter(valid_589097, JString, required = false,
                                  default = newJString("json"))
-  if valid_580068 != nil:
-    section.add "alt", valid_580068
-  var valid_580069 = query.getOrDefault("oauth_token")
-  valid_580069 = validateParameter(valid_580069, JString, required = false,
+  if valid_589097 != nil:
+    section.add "alt", valid_589097
+  var valid_589098 = query.getOrDefault("oauth_token")
+  valid_589098 = validateParameter(valid_589098, JString, required = false,
                                  default = nil)
-  if valid_580069 != nil:
-    section.add "oauth_token", valid_580069
-  var valid_580070 = query.getOrDefault("userIp")
-  valid_580070 = validateParameter(valid_580070, JString, required = false,
+  if valid_589098 != nil:
+    section.add "oauth_token", valid_589098
+  var valid_589099 = query.getOrDefault("userIp")
+  valid_589099 = validateParameter(valid_589099, JString, required = false,
                                  default = nil)
-  if valid_580070 != nil:
-    section.add "userIp", valid_580070
-  var valid_580071 = query.getOrDefault("key")
-  valid_580071 = validateParameter(valid_580071, JString, required = false,
+  if valid_589099 != nil:
+    section.add "userIp", valid_589099
+  var valid_589100 = query.getOrDefault("key")
+  valid_589100 = validateParameter(valid_589100, JString, required = false,
                                  default = nil)
-  if valid_580071 != nil:
-    section.add "key", valid_580071
-  var valid_580072 = query.getOrDefault("prettyPrint")
-  valid_580072 = validateParameter(valid_580072, JBool, required = false,
+  if valid_589100 != nil:
+    section.add "key", valid_589100
+  var valid_589101 = query.getOrDefault("prettyPrint")
+  valid_589101 = validateParameter(valid_589101, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580072 != nil:
-    section.add "prettyPrint", valid_580072
+  if valid_589101 != nil:
+    section.add "prettyPrint", valid_589101
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -907,21 +907,21 @@ proc validate_DeploymentmanagerCompositeTypesPatch_580062(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580074: Call_DeploymentmanagerCompositeTypesPatch_580061;
+proc call*(call_589103: Call_DeploymentmanagerCompositeTypesPatch_589090;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Updates a composite type. This method supports patch semantics.
   ## 
-  let valid = call_580074.validator(path, query, header, formData, body)
-  let scheme = call_580074.pickScheme
+  let valid = call_589103.validator(path, query, header, formData, body)
+  let scheme = call_589103.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580074.url(scheme.get, call_580074.host, call_580074.base,
-                         call_580074.route, valid.getOrDefault("path"),
+  let url = call_589103.url(scheme.get, call_589103.host, call_589103.base,
+                         call_589103.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580074, url, valid)
+  result = hook(call_589103, url, valid)
 
-proc call*(call_580075: Call_DeploymentmanagerCompositeTypesPatch_580061;
+proc call*(call_589104: Call_DeploymentmanagerCompositeTypesPatch_589090;
           project: string; compositeType: string; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; key: string = ""; body: JsonNode = nil;
@@ -947,32 +947,32 @@ proc call*(call_580075: Call_DeploymentmanagerCompositeTypesPatch_580061;
   ##              : Returns response with indentations and line breaks.
   ##   compositeType: string (required)
   ##                : The name of the composite type for this request.
-  var path_580076 = newJObject()
-  var query_580077 = newJObject()
-  var body_580078 = newJObject()
-  add(query_580077, "fields", newJString(fields))
-  add(query_580077, "quotaUser", newJString(quotaUser))
-  add(query_580077, "alt", newJString(alt))
-  add(query_580077, "oauth_token", newJString(oauthToken))
-  add(query_580077, "userIp", newJString(userIp))
-  add(query_580077, "key", newJString(key))
-  add(path_580076, "project", newJString(project))
+  var path_589105 = newJObject()
+  var query_589106 = newJObject()
+  var body_589107 = newJObject()
+  add(query_589106, "fields", newJString(fields))
+  add(query_589106, "quotaUser", newJString(quotaUser))
+  add(query_589106, "alt", newJString(alt))
+  add(query_589106, "oauth_token", newJString(oauthToken))
+  add(query_589106, "userIp", newJString(userIp))
+  add(query_589106, "key", newJString(key))
+  add(path_589105, "project", newJString(project))
   if body != nil:
-    body_580078 = body
-  add(query_580077, "prettyPrint", newJBool(prettyPrint))
-  add(path_580076, "compositeType", newJString(compositeType))
-  result = call_580075.call(path_580076, query_580077, nil, nil, body_580078)
+    body_589107 = body
+  add(query_589106, "prettyPrint", newJBool(prettyPrint))
+  add(path_589105, "compositeType", newJString(compositeType))
+  result = call_589104.call(path_589105, query_589106, nil, nil, body_589107)
 
-var deploymentmanagerCompositeTypesPatch* = Call_DeploymentmanagerCompositeTypesPatch_580061(
+var deploymentmanagerCompositeTypesPatch* = Call_DeploymentmanagerCompositeTypesPatch_589090(
     name: "deploymentmanagerCompositeTypesPatch", meth: HttpMethod.HttpPatch,
     host: "www.googleapis.com",
     route: "/{project}/global/compositeTypes/{compositeType}",
-    validator: validate_DeploymentmanagerCompositeTypesPatch_580062,
+    validator: validate_DeploymentmanagerCompositeTypesPatch_589091,
     base: "/deploymentmanager/v2beta/projects",
-    url: url_DeploymentmanagerCompositeTypesPatch_580063, schemes: {Scheme.Https})
+    url: url_DeploymentmanagerCompositeTypesPatch_589092, schemes: {Scheme.Https})
 type
-  Call_DeploymentmanagerCompositeTypesDelete_580045 = ref object of OpenApiRestCall_579437
-proc url_DeploymentmanagerCompositeTypesDelete_580047(protocol: Scheme;
+  Call_DeploymentmanagerCompositeTypesDelete_589074 = ref object of OpenApiRestCall_588466
+proc url_DeploymentmanagerCompositeTypesDelete_589076(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -990,7 +990,7 @@ proc url_DeploymentmanagerCompositeTypesDelete_580047(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_DeploymentmanagerCompositeTypesDelete_580046(path: JsonNode;
+proc validate_DeploymentmanagerCompositeTypesDelete_589075(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Deletes a composite type.
   ## 
@@ -1003,16 +1003,16 @@ proc validate_DeploymentmanagerCompositeTypesDelete_580046(path: JsonNode;
   ##                : The name of the type for this request.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `project` field"
-  var valid_580048 = path.getOrDefault("project")
-  valid_580048 = validateParameter(valid_580048, JString, required = true,
+  var valid_589077 = path.getOrDefault("project")
+  valid_589077 = validateParameter(valid_589077, JString, required = true,
                                  default = nil)
-  if valid_580048 != nil:
-    section.add "project", valid_580048
-  var valid_580049 = path.getOrDefault("compositeType")
-  valid_580049 = validateParameter(valid_580049, JString, required = true,
+  if valid_589077 != nil:
+    section.add "project", valid_589077
+  var valid_589078 = path.getOrDefault("compositeType")
+  valid_589078 = validateParameter(valid_589078, JString, required = true,
                                  default = nil)
-  if valid_580049 != nil:
-    section.add "compositeType", valid_580049
+  if valid_589078 != nil:
+    section.add "compositeType", valid_589078
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -1030,41 +1030,41 @@ proc validate_DeploymentmanagerCompositeTypesDelete_580046(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580050 = query.getOrDefault("fields")
-  valid_580050 = validateParameter(valid_580050, JString, required = false,
+  var valid_589079 = query.getOrDefault("fields")
+  valid_589079 = validateParameter(valid_589079, JString, required = false,
                                  default = nil)
-  if valid_580050 != nil:
-    section.add "fields", valid_580050
-  var valid_580051 = query.getOrDefault("quotaUser")
-  valid_580051 = validateParameter(valid_580051, JString, required = false,
+  if valid_589079 != nil:
+    section.add "fields", valid_589079
+  var valid_589080 = query.getOrDefault("quotaUser")
+  valid_589080 = validateParameter(valid_589080, JString, required = false,
                                  default = nil)
-  if valid_580051 != nil:
-    section.add "quotaUser", valid_580051
-  var valid_580052 = query.getOrDefault("alt")
-  valid_580052 = validateParameter(valid_580052, JString, required = false,
+  if valid_589080 != nil:
+    section.add "quotaUser", valid_589080
+  var valid_589081 = query.getOrDefault("alt")
+  valid_589081 = validateParameter(valid_589081, JString, required = false,
                                  default = newJString("json"))
-  if valid_580052 != nil:
-    section.add "alt", valid_580052
-  var valid_580053 = query.getOrDefault("oauth_token")
-  valid_580053 = validateParameter(valid_580053, JString, required = false,
+  if valid_589081 != nil:
+    section.add "alt", valid_589081
+  var valid_589082 = query.getOrDefault("oauth_token")
+  valid_589082 = validateParameter(valid_589082, JString, required = false,
                                  default = nil)
-  if valid_580053 != nil:
-    section.add "oauth_token", valid_580053
-  var valid_580054 = query.getOrDefault("userIp")
-  valid_580054 = validateParameter(valid_580054, JString, required = false,
+  if valid_589082 != nil:
+    section.add "oauth_token", valid_589082
+  var valid_589083 = query.getOrDefault("userIp")
+  valid_589083 = validateParameter(valid_589083, JString, required = false,
                                  default = nil)
-  if valid_580054 != nil:
-    section.add "userIp", valid_580054
-  var valid_580055 = query.getOrDefault("key")
-  valid_580055 = validateParameter(valid_580055, JString, required = false,
+  if valid_589083 != nil:
+    section.add "userIp", valid_589083
+  var valid_589084 = query.getOrDefault("key")
+  valid_589084 = validateParameter(valid_589084, JString, required = false,
                                  default = nil)
-  if valid_580055 != nil:
-    section.add "key", valid_580055
-  var valid_580056 = query.getOrDefault("prettyPrint")
-  valid_580056 = validateParameter(valid_580056, JBool, required = false,
+  if valid_589084 != nil:
+    section.add "key", valid_589084
+  var valid_589085 = query.getOrDefault("prettyPrint")
+  valid_589085 = validateParameter(valid_589085, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580056 != nil:
-    section.add "prettyPrint", valid_580056
+  if valid_589085 != nil:
+    section.add "prettyPrint", valid_589085
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1073,21 +1073,21 @@ proc validate_DeploymentmanagerCompositeTypesDelete_580046(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580057: Call_DeploymentmanagerCompositeTypesDelete_580045;
+proc call*(call_589086: Call_DeploymentmanagerCompositeTypesDelete_589074;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Deletes a composite type.
   ## 
-  let valid = call_580057.validator(path, query, header, formData, body)
-  let scheme = call_580057.pickScheme
+  let valid = call_589086.validator(path, query, header, formData, body)
+  let scheme = call_589086.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580057.url(scheme.get, call_580057.host, call_580057.base,
-                         call_580057.route, valid.getOrDefault("path"),
+  let url = call_589086.url(scheme.get, call_589086.host, call_589086.base,
+                         call_589086.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580057, url, valid)
+  result = hook(call_589086, url, valid)
 
-proc call*(call_580058: Call_DeploymentmanagerCompositeTypesDelete_580045;
+proc call*(call_589087: Call_DeploymentmanagerCompositeTypesDelete_589074;
           project: string; compositeType: string; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; key: string = ""; prettyPrint: bool = true): Recallable =
@@ -1111,29 +1111,29 @@ proc call*(call_580058: Call_DeploymentmanagerCompositeTypesDelete_580045;
   ##              : Returns response with indentations and line breaks.
   ##   compositeType: string (required)
   ##                : The name of the type for this request.
-  var path_580059 = newJObject()
-  var query_580060 = newJObject()
-  add(query_580060, "fields", newJString(fields))
-  add(query_580060, "quotaUser", newJString(quotaUser))
-  add(query_580060, "alt", newJString(alt))
-  add(query_580060, "oauth_token", newJString(oauthToken))
-  add(query_580060, "userIp", newJString(userIp))
-  add(query_580060, "key", newJString(key))
-  add(path_580059, "project", newJString(project))
-  add(query_580060, "prettyPrint", newJBool(prettyPrint))
-  add(path_580059, "compositeType", newJString(compositeType))
-  result = call_580058.call(path_580059, query_580060, nil, nil, nil)
+  var path_589088 = newJObject()
+  var query_589089 = newJObject()
+  add(query_589089, "fields", newJString(fields))
+  add(query_589089, "quotaUser", newJString(quotaUser))
+  add(query_589089, "alt", newJString(alt))
+  add(query_589089, "oauth_token", newJString(oauthToken))
+  add(query_589089, "userIp", newJString(userIp))
+  add(query_589089, "key", newJString(key))
+  add(path_589088, "project", newJString(project))
+  add(query_589089, "prettyPrint", newJBool(prettyPrint))
+  add(path_589088, "compositeType", newJString(compositeType))
+  result = call_589087.call(path_589088, query_589089, nil, nil, nil)
 
-var deploymentmanagerCompositeTypesDelete* = Call_DeploymentmanagerCompositeTypesDelete_580045(
+var deploymentmanagerCompositeTypesDelete* = Call_DeploymentmanagerCompositeTypesDelete_589074(
     name: "deploymentmanagerCompositeTypesDelete", meth: HttpMethod.HttpDelete,
     host: "www.googleapis.com",
     route: "/{project}/global/compositeTypes/{compositeType}",
-    validator: validate_DeploymentmanagerCompositeTypesDelete_580046,
+    validator: validate_DeploymentmanagerCompositeTypesDelete_589075,
     base: "/deploymentmanager/v2beta/projects",
-    url: url_DeploymentmanagerCompositeTypesDelete_580047, schemes: {Scheme.Https})
+    url: url_DeploymentmanagerCompositeTypesDelete_589076, schemes: {Scheme.Https})
 type
-  Call_DeploymentmanagerDeploymentsInsert_580098 = ref object of OpenApiRestCall_579437
-proc url_DeploymentmanagerDeploymentsInsert_580100(protocol: Scheme; host: string;
+  Call_DeploymentmanagerDeploymentsInsert_589127 = ref object of OpenApiRestCall_588466
+proc url_DeploymentmanagerDeploymentsInsert_589129(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -1149,7 +1149,7 @@ proc url_DeploymentmanagerDeploymentsInsert_580100(protocol: Scheme; host: strin
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_DeploymentmanagerDeploymentsInsert_580099(path: JsonNode;
+proc validate_DeploymentmanagerDeploymentsInsert_589128(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Creates a deployment and all of the resources described by the deployment manifest.
   ## 
@@ -1160,11 +1160,11 @@ proc validate_DeploymentmanagerDeploymentsInsert_580099(path: JsonNode;
   ##          : The project ID for this request.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `project` field"
-  var valid_580101 = path.getOrDefault("project")
-  valid_580101 = validateParameter(valid_580101, JString, required = true,
+  var valid_589130 = path.getOrDefault("project")
+  valid_589130 = validateParameter(valid_589130, JString, required = true,
                                  default = nil)
-  if valid_580101 != nil:
-    section.add "project", valid_580101
+  if valid_589130 != nil:
+    section.add "project", valid_589130
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -1186,50 +1186,50 @@ proc validate_DeploymentmanagerDeploymentsInsert_580099(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580102 = query.getOrDefault("fields")
-  valid_580102 = validateParameter(valid_580102, JString, required = false,
+  var valid_589131 = query.getOrDefault("fields")
+  valid_589131 = validateParameter(valid_589131, JString, required = false,
                                  default = nil)
-  if valid_580102 != nil:
-    section.add "fields", valid_580102
-  var valid_580103 = query.getOrDefault("quotaUser")
-  valid_580103 = validateParameter(valid_580103, JString, required = false,
+  if valid_589131 != nil:
+    section.add "fields", valid_589131
+  var valid_589132 = query.getOrDefault("quotaUser")
+  valid_589132 = validateParameter(valid_589132, JString, required = false,
                                  default = nil)
-  if valid_580103 != nil:
-    section.add "quotaUser", valid_580103
-  var valid_580104 = query.getOrDefault("alt")
-  valid_580104 = validateParameter(valid_580104, JString, required = false,
+  if valid_589132 != nil:
+    section.add "quotaUser", valid_589132
+  var valid_589133 = query.getOrDefault("alt")
+  valid_589133 = validateParameter(valid_589133, JString, required = false,
                                  default = newJString("json"))
-  if valid_580104 != nil:
-    section.add "alt", valid_580104
-  var valid_580105 = query.getOrDefault("createPolicy")
-  valid_580105 = validateParameter(valid_580105, JString, required = false,
+  if valid_589133 != nil:
+    section.add "alt", valid_589133
+  var valid_589134 = query.getOrDefault("createPolicy")
+  valid_589134 = validateParameter(valid_589134, JString, required = false,
                                  default = newJString("CREATE_OR_ACQUIRE"))
-  if valid_580105 != nil:
-    section.add "createPolicy", valid_580105
-  var valid_580106 = query.getOrDefault("oauth_token")
-  valid_580106 = validateParameter(valid_580106, JString, required = false,
+  if valid_589134 != nil:
+    section.add "createPolicy", valid_589134
+  var valid_589135 = query.getOrDefault("oauth_token")
+  valid_589135 = validateParameter(valid_589135, JString, required = false,
                                  default = nil)
-  if valid_580106 != nil:
-    section.add "oauth_token", valid_580106
-  var valid_580107 = query.getOrDefault("userIp")
-  valid_580107 = validateParameter(valid_580107, JString, required = false,
+  if valid_589135 != nil:
+    section.add "oauth_token", valid_589135
+  var valid_589136 = query.getOrDefault("userIp")
+  valid_589136 = validateParameter(valid_589136, JString, required = false,
                                  default = nil)
-  if valid_580107 != nil:
-    section.add "userIp", valid_580107
-  var valid_580108 = query.getOrDefault("key")
-  valid_580108 = validateParameter(valid_580108, JString, required = false,
+  if valid_589136 != nil:
+    section.add "userIp", valid_589136
+  var valid_589137 = query.getOrDefault("key")
+  valid_589137 = validateParameter(valid_589137, JString, required = false,
                                  default = nil)
-  if valid_580108 != nil:
-    section.add "key", valid_580108
-  var valid_580109 = query.getOrDefault("preview")
-  valid_580109 = validateParameter(valid_580109, JBool, required = false, default = nil)
-  if valid_580109 != nil:
-    section.add "preview", valid_580109
-  var valid_580110 = query.getOrDefault("prettyPrint")
-  valid_580110 = validateParameter(valid_580110, JBool, required = false,
+  if valid_589137 != nil:
+    section.add "key", valid_589137
+  var valid_589138 = query.getOrDefault("preview")
+  valid_589138 = validateParameter(valid_589138, JBool, required = false, default = nil)
+  if valid_589138 != nil:
+    section.add "preview", valid_589138
+  var valid_589139 = query.getOrDefault("prettyPrint")
+  valid_589139 = validateParameter(valid_589139, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580110 != nil:
-    section.add "prettyPrint", valid_580110
+  if valid_589139 != nil:
+    section.add "prettyPrint", valid_589139
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1241,21 +1241,21 @@ proc validate_DeploymentmanagerDeploymentsInsert_580099(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580112: Call_DeploymentmanagerDeploymentsInsert_580098;
+proc call*(call_589141: Call_DeploymentmanagerDeploymentsInsert_589127;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Creates a deployment and all of the resources described by the deployment manifest.
   ## 
-  let valid = call_580112.validator(path, query, header, formData, body)
-  let scheme = call_580112.pickScheme
+  let valid = call_589141.validator(path, query, header, formData, body)
+  let scheme = call_589141.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580112.url(scheme.get, call_580112.host, call_580112.base,
-                         call_580112.route, valid.getOrDefault("path"),
+  let url = call_589141.url(scheme.get, call_589141.host, call_589141.base,
+                         call_589141.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580112, url, valid)
+  result = hook(call_589141, url, valid)
 
-proc call*(call_580113: Call_DeploymentmanagerDeploymentsInsert_580098;
+proc call*(call_589142: Call_DeploymentmanagerDeploymentsInsert_589127;
           project: string; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; createPolicy: string = "CREATE_OR_ACQUIRE";
           oauthToken: string = ""; userIp: string = ""; key: string = "";
@@ -1283,32 +1283,32 @@ proc call*(call_580113: Call_DeploymentmanagerDeploymentsInsert_580098;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_580114 = newJObject()
-  var query_580115 = newJObject()
-  var body_580116 = newJObject()
-  add(query_580115, "fields", newJString(fields))
-  add(query_580115, "quotaUser", newJString(quotaUser))
-  add(query_580115, "alt", newJString(alt))
-  add(query_580115, "createPolicy", newJString(createPolicy))
-  add(query_580115, "oauth_token", newJString(oauthToken))
-  add(query_580115, "userIp", newJString(userIp))
-  add(query_580115, "key", newJString(key))
-  add(query_580115, "preview", newJBool(preview))
-  add(path_580114, "project", newJString(project))
+  var path_589143 = newJObject()
+  var query_589144 = newJObject()
+  var body_589145 = newJObject()
+  add(query_589144, "fields", newJString(fields))
+  add(query_589144, "quotaUser", newJString(quotaUser))
+  add(query_589144, "alt", newJString(alt))
+  add(query_589144, "createPolicy", newJString(createPolicy))
+  add(query_589144, "oauth_token", newJString(oauthToken))
+  add(query_589144, "userIp", newJString(userIp))
+  add(query_589144, "key", newJString(key))
+  add(query_589144, "preview", newJBool(preview))
+  add(path_589143, "project", newJString(project))
   if body != nil:
-    body_580116 = body
-  add(query_580115, "prettyPrint", newJBool(prettyPrint))
-  result = call_580113.call(path_580114, query_580115, nil, nil, body_580116)
+    body_589145 = body
+  add(query_589144, "prettyPrint", newJBool(prettyPrint))
+  result = call_589142.call(path_589143, query_589144, nil, nil, body_589145)
 
-var deploymentmanagerDeploymentsInsert* = Call_DeploymentmanagerDeploymentsInsert_580098(
+var deploymentmanagerDeploymentsInsert* = Call_DeploymentmanagerDeploymentsInsert_589127(
     name: "deploymentmanagerDeploymentsInsert", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com", route: "/{project}/global/deployments",
-    validator: validate_DeploymentmanagerDeploymentsInsert_580099,
+    validator: validate_DeploymentmanagerDeploymentsInsert_589128,
     base: "/deploymentmanager/v2beta/projects",
-    url: url_DeploymentmanagerDeploymentsInsert_580100, schemes: {Scheme.Https})
+    url: url_DeploymentmanagerDeploymentsInsert_589129, schemes: {Scheme.Https})
 type
-  Call_DeploymentmanagerDeploymentsList_580079 = ref object of OpenApiRestCall_579437
-proc url_DeploymentmanagerDeploymentsList_580081(protocol: Scheme; host: string;
+  Call_DeploymentmanagerDeploymentsList_589108 = ref object of OpenApiRestCall_588466
+proc url_DeploymentmanagerDeploymentsList_589110(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -1324,7 +1324,7 @@ proc url_DeploymentmanagerDeploymentsList_580081(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_DeploymentmanagerDeploymentsList_580080(path: JsonNode;
+proc validate_DeploymentmanagerDeploymentsList_589109(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Lists all deployments for a given project.
   ## 
@@ -1335,11 +1335,11 @@ proc validate_DeploymentmanagerDeploymentsList_580080(path: JsonNode;
   ##          : The project ID for this request.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `project` field"
-  var valid_580082 = path.getOrDefault("project")
-  valid_580082 = validateParameter(valid_580082, JString, required = true,
+  var valid_589111 = path.getOrDefault("project")
+  valid_589111 = validateParameter(valid_589111, JString, required = true,
                                  default = nil)
-  if valid_580082 != nil:
-    section.add "project", valid_580082
+  if valid_589111 != nil:
+    section.add "project", valid_589111
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -1375,61 +1375,61 @@ proc validate_DeploymentmanagerDeploymentsList_580080(path: JsonNode;
   ## 
   ## To filter on multiple expressions, provide each separate expression within parentheses. For example, (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake"). By default, each expression is an AND expression. However, you can include AND and OR expressions explicitly. For example, (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart = true).
   section = newJObject()
-  var valid_580083 = query.getOrDefault("fields")
-  valid_580083 = validateParameter(valid_580083, JString, required = false,
+  var valid_589112 = query.getOrDefault("fields")
+  valid_589112 = validateParameter(valid_589112, JString, required = false,
                                  default = nil)
-  if valid_580083 != nil:
-    section.add "fields", valid_580083
-  var valid_580084 = query.getOrDefault("pageToken")
-  valid_580084 = validateParameter(valid_580084, JString, required = false,
+  if valid_589112 != nil:
+    section.add "fields", valid_589112
+  var valid_589113 = query.getOrDefault("pageToken")
+  valid_589113 = validateParameter(valid_589113, JString, required = false,
                                  default = nil)
-  if valid_580084 != nil:
-    section.add "pageToken", valid_580084
-  var valid_580085 = query.getOrDefault("quotaUser")
-  valid_580085 = validateParameter(valid_580085, JString, required = false,
+  if valid_589113 != nil:
+    section.add "pageToken", valid_589113
+  var valid_589114 = query.getOrDefault("quotaUser")
+  valid_589114 = validateParameter(valid_589114, JString, required = false,
                                  default = nil)
-  if valid_580085 != nil:
-    section.add "quotaUser", valid_580085
-  var valid_580086 = query.getOrDefault("alt")
-  valid_580086 = validateParameter(valid_580086, JString, required = false,
+  if valid_589114 != nil:
+    section.add "quotaUser", valid_589114
+  var valid_589115 = query.getOrDefault("alt")
+  valid_589115 = validateParameter(valid_589115, JString, required = false,
                                  default = newJString("json"))
-  if valid_580086 != nil:
-    section.add "alt", valid_580086
-  var valid_580087 = query.getOrDefault("oauth_token")
-  valid_580087 = validateParameter(valid_580087, JString, required = false,
+  if valid_589115 != nil:
+    section.add "alt", valid_589115
+  var valid_589116 = query.getOrDefault("oauth_token")
+  valid_589116 = validateParameter(valid_589116, JString, required = false,
                                  default = nil)
-  if valid_580087 != nil:
-    section.add "oauth_token", valid_580087
-  var valid_580088 = query.getOrDefault("userIp")
-  valid_580088 = validateParameter(valid_580088, JString, required = false,
+  if valid_589116 != nil:
+    section.add "oauth_token", valid_589116
+  var valid_589117 = query.getOrDefault("userIp")
+  valid_589117 = validateParameter(valid_589117, JString, required = false,
                                  default = nil)
-  if valid_580088 != nil:
-    section.add "userIp", valid_580088
-  var valid_580089 = query.getOrDefault("maxResults")
-  valid_580089 = validateParameter(valid_580089, JInt, required = false,
+  if valid_589117 != nil:
+    section.add "userIp", valid_589117
+  var valid_589118 = query.getOrDefault("maxResults")
+  valid_589118 = validateParameter(valid_589118, JInt, required = false,
                                  default = newJInt(500))
-  if valid_580089 != nil:
-    section.add "maxResults", valid_580089
-  var valid_580090 = query.getOrDefault("orderBy")
-  valid_580090 = validateParameter(valid_580090, JString, required = false,
+  if valid_589118 != nil:
+    section.add "maxResults", valid_589118
+  var valid_589119 = query.getOrDefault("orderBy")
+  valid_589119 = validateParameter(valid_589119, JString, required = false,
                                  default = nil)
-  if valid_580090 != nil:
-    section.add "orderBy", valid_580090
-  var valid_580091 = query.getOrDefault("key")
-  valid_580091 = validateParameter(valid_580091, JString, required = false,
+  if valid_589119 != nil:
+    section.add "orderBy", valid_589119
+  var valid_589120 = query.getOrDefault("key")
+  valid_589120 = validateParameter(valid_589120, JString, required = false,
                                  default = nil)
-  if valid_580091 != nil:
-    section.add "key", valid_580091
-  var valid_580092 = query.getOrDefault("prettyPrint")
-  valid_580092 = validateParameter(valid_580092, JBool, required = false,
+  if valid_589120 != nil:
+    section.add "key", valid_589120
+  var valid_589121 = query.getOrDefault("prettyPrint")
+  valid_589121 = validateParameter(valid_589121, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580092 != nil:
-    section.add "prettyPrint", valid_580092
-  var valid_580093 = query.getOrDefault("filter")
-  valid_580093 = validateParameter(valid_580093, JString, required = false,
+  if valid_589121 != nil:
+    section.add "prettyPrint", valid_589121
+  var valid_589122 = query.getOrDefault("filter")
+  valid_589122 = validateParameter(valid_589122, JString, required = false,
                                  default = nil)
-  if valid_580093 != nil:
-    section.add "filter", valid_580093
+  if valid_589122 != nil:
+    section.add "filter", valid_589122
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1438,21 +1438,21 @@ proc validate_DeploymentmanagerDeploymentsList_580080(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580094: Call_DeploymentmanagerDeploymentsList_580079;
+proc call*(call_589123: Call_DeploymentmanagerDeploymentsList_589108;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Lists all deployments for a given project.
   ## 
-  let valid = call_580094.validator(path, query, header, formData, body)
-  let scheme = call_580094.pickScheme
+  let valid = call_589123.validator(path, query, header, formData, body)
+  let scheme = call_589123.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580094.url(scheme.get, call_580094.host, call_580094.base,
-                         call_580094.route, valid.getOrDefault("path"),
+  let url = call_589123.url(scheme.get, call_589123.host, call_589123.base,
+                         call_589123.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580094, url, valid)
+  result = hook(call_589123, url, valid)
 
-proc call*(call_580095: Call_DeploymentmanagerDeploymentsList_580079;
+proc call*(call_589124: Call_DeploymentmanagerDeploymentsList_589108;
           project: string; fields: string = ""; pageToken: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; maxResults: int = 500; orderBy: string = "";
@@ -1493,31 +1493,31 @@ proc call*(call_580095: Call_DeploymentmanagerDeploymentsList_580079;
   ## You can also filter nested fields. For example, you could specify scheduling.automaticRestart = false to include instances only if they are not scheduled for automatic restarts. You can use filtering on nested fields to filter based on resource labels.
   ## 
   ## To filter on multiple expressions, provide each separate expression within parentheses. For example, (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake"). By default, each expression is an AND expression. However, you can include AND and OR expressions explicitly. For example, (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart = true).
-  var path_580096 = newJObject()
-  var query_580097 = newJObject()
-  add(query_580097, "fields", newJString(fields))
-  add(query_580097, "pageToken", newJString(pageToken))
-  add(query_580097, "quotaUser", newJString(quotaUser))
-  add(query_580097, "alt", newJString(alt))
-  add(query_580097, "oauth_token", newJString(oauthToken))
-  add(query_580097, "userIp", newJString(userIp))
-  add(query_580097, "maxResults", newJInt(maxResults))
-  add(query_580097, "orderBy", newJString(orderBy))
-  add(query_580097, "key", newJString(key))
-  add(path_580096, "project", newJString(project))
-  add(query_580097, "prettyPrint", newJBool(prettyPrint))
-  add(query_580097, "filter", newJString(filter))
-  result = call_580095.call(path_580096, query_580097, nil, nil, nil)
+  var path_589125 = newJObject()
+  var query_589126 = newJObject()
+  add(query_589126, "fields", newJString(fields))
+  add(query_589126, "pageToken", newJString(pageToken))
+  add(query_589126, "quotaUser", newJString(quotaUser))
+  add(query_589126, "alt", newJString(alt))
+  add(query_589126, "oauth_token", newJString(oauthToken))
+  add(query_589126, "userIp", newJString(userIp))
+  add(query_589126, "maxResults", newJInt(maxResults))
+  add(query_589126, "orderBy", newJString(orderBy))
+  add(query_589126, "key", newJString(key))
+  add(path_589125, "project", newJString(project))
+  add(query_589126, "prettyPrint", newJBool(prettyPrint))
+  add(query_589126, "filter", newJString(filter))
+  result = call_589124.call(path_589125, query_589126, nil, nil, nil)
 
-var deploymentmanagerDeploymentsList* = Call_DeploymentmanagerDeploymentsList_580079(
+var deploymentmanagerDeploymentsList* = Call_DeploymentmanagerDeploymentsList_589108(
     name: "deploymentmanagerDeploymentsList", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/{project}/global/deployments",
-    validator: validate_DeploymentmanagerDeploymentsList_580080,
+    validator: validate_DeploymentmanagerDeploymentsList_589109,
     base: "/deploymentmanager/v2beta/projects",
-    url: url_DeploymentmanagerDeploymentsList_580081, schemes: {Scheme.Https})
+    url: url_DeploymentmanagerDeploymentsList_589110, schemes: {Scheme.Https})
 type
-  Call_DeploymentmanagerDeploymentsUpdate_580133 = ref object of OpenApiRestCall_579437
-proc url_DeploymentmanagerDeploymentsUpdate_580135(protocol: Scheme; host: string;
+  Call_DeploymentmanagerDeploymentsUpdate_589162 = ref object of OpenApiRestCall_588466
+proc url_DeploymentmanagerDeploymentsUpdate_589164(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -1535,7 +1535,7 @@ proc url_DeploymentmanagerDeploymentsUpdate_580135(protocol: Scheme; host: strin
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_DeploymentmanagerDeploymentsUpdate_580134(path: JsonNode;
+proc validate_DeploymentmanagerDeploymentsUpdate_589163(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Updates a deployment and all of the resources described by the deployment manifest.
   ## 
@@ -1549,16 +1549,16 @@ proc validate_DeploymentmanagerDeploymentsUpdate_580134(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `deployment` field"
-  var valid_580136 = path.getOrDefault("deployment")
-  valid_580136 = validateParameter(valid_580136, JString, required = true,
+  var valid_589165 = path.getOrDefault("deployment")
+  valid_589165 = validateParameter(valid_589165, JString, required = true,
                                  default = nil)
-  if valid_580136 != nil:
-    section.add "deployment", valid_580136
-  var valid_580137 = path.getOrDefault("project")
-  valid_580137 = validateParameter(valid_580137, JString, required = true,
+  if valid_589165 != nil:
+    section.add "deployment", valid_589165
+  var valid_589166 = path.getOrDefault("project")
+  valid_589166 = validateParameter(valid_589166, JString, required = true,
                                  default = nil)
-  if valid_580137 != nil:
-    section.add "project", valid_580137
+  if valid_589166 != nil:
+    section.add "project", valid_589166
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -1582,56 +1582,56 @@ proc validate_DeploymentmanagerDeploymentsUpdate_580134(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580138 = query.getOrDefault("fields")
-  valid_580138 = validateParameter(valid_580138, JString, required = false,
+  var valid_589167 = query.getOrDefault("fields")
+  valid_589167 = validateParameter(valid_589167, JString, required = false,
                                  default = nil)
-  if valid_580138 != nil:
-    section.add "fields", valid_580138
-  var valid_580139 = query.getOrDefault("quotaUser")
-  valid_580139 = validateParameter(valid_580139, JString, required = false,
+  if valid_589167 != nil:
+    section.add "fields", valid_589167
+  var valid_589168 = query.getOrDefault("quotaUser")
+  valid_589168 = validateParameter(valid_589168, JString, required = false,
                                  default = nil)
-  if valid_580139 != nil:
-    section.add "quotaUser", valid_580139
-  var valid_580140 = query.getOrDefault("alt")
-  valid_580140 = validateParameter(valid_580140, JString, required = false,
+  if valid_589168 != nil:
+    section.add "quotaUser", valid_589168
+  var valid_589169 = query.getOrDefault("alt")
+  valid_589169 = validateParameter(valid_589169, JString, required = false,
                                  default = newJString("json"))
-  if valid_580140 != nil:
-    section.add "alt", valid_580140
-  var valid_580141 = query.getOrDefault("createPolicy")
-  valid_580141 = validateParameter(valid_580141, JString, required = false,
+  if valid_589169 != nil:
+    section.add "alt", valid_589169
+  var valid_589170 = query.getOrDefault("createPolicy")
+  valid_589170 = validateParameter(valid_589170, JString, required = false,
                                  default = newJString("CREATE_OR_ACQUIRE"))
-  if valid_580141 != nil:
-    section.add "createPolicy", valid_580141
-  var valid_580142 = query.getOrDefault("oauth_token")
-  valid_580142 = validateParameter(valid_580142, JString, required = false,
+  if valid_589170 != nil:
+    section.add "createPolicy", valid_589170
+  var valid_589171 = query.getOrDefault("oauth_token")
+  valid_589171 = validateParameter(valid_589171, JString, required = false,
                                  default = nil)
-  if valid_580142 != nil:
-    section.add "oauth_token", valid_580142
-  var valid_580143 = query.getOrDefault("userIp")
-  valid_580143 = validateParameter(valid_580143, JString, required = false,
+  if valid_589171 != nil:
+    section.add "oauth_token", valid_589171
+  var valid_589172 = query.getOrDefault("userIp")
+  valid_589172 = validateParameter(valid_589172, JString, required = false,
                                  default = nil)
-  if valid_580143 != nil:
-    section.add "userIp", valid_580143
-  var valid_580144 = query.getOrDefault("key")
-  valid_580144 = validateParameter(valid_580144, JString, required = false,
+  if valid_589172 != nil:
+    section.add "userIp", valid_589172
+  var valid_589173 = query.getOrDefault("key")
+  valid_589173 = validateParameter(valid_589173, JString, required = false,
                                  default = nil)
-  if valid_580144 != nil:
-    section.add "key", valid_580144
-  var valid_580145 = query.getOrDefault("preview")
-  valid_580145 = validateParameter(valid_580145, JBool, required = false,
+  if valid_589173 != nil:
+    section.add "key", valid_589173
+  var valid_589174 = query.getOrDefault("preview")
+  valid_589174 = validateParameter(valid_589174, JBool, required = false,
                                  default = newJBool(false))
-  if valid_580145 != nil:
-    section.add "preview", valid_580145
-  var valid_580146 = query.getOrDefault("deletePolicy")
-  valid_580146 = validateParameter(valid_580146, JString, required = false,
+  if valid_589174 != nil:
+    section.add "preview", valid_589174
+  var valid_589175 = query.getOrDefault("deletePolicy")
+  valid_589175 = validateParameter(valid_589175, JString, required = false,
                                  default = newJString("DELETE"))
-  if valid_580146 != nil:
-    section.add "deletePolicy", valid_580146
-  var valid_580147 = query.getOrDefault("prettyPrint")
-  valid_580147 = validateParameter(valid_580147, JBool, required = false,
+  if valid_589175 != nil:
+    section.add "deletePolicy", valid_589175
+  var valid_589176 = query.getOrDefault("prettyPrint")
+  valid_589176 = validateParameter(valid_589176, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580147 != nil:
-    section.add "prettyPrint", valid_580147
+  if valid_589176 != nil:
+    section.add "prettyPrint", valid_589176
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1643,21 +1643,21 @@ proc validate_DeploymentmanagerDeploymentsUpdate_580134(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580149: Call_DeploymentmanagerDeploymentsUpdate_580133;
+proc call*(call_589178: Call_DeploymentmanagerDeploymentsUpdate_589162;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Updates a deployment and all of the resources described by the deployment manifest.
   ## 
-  let valid = call_580149.validator(path, query, header, formData, body)
-  let scheme = call_580149.pickScheme
+  let valid = call_589178.validator(path, query, header, formData, body)
+  let scheme = call_589178.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580149.url(scheme.get, call_580149.host, call_580149.base,
-                         call_580149.route, valid.getOrDefault("path"),
+  let url = call_589178.url(scheme.get, call_589178.host, call_589178.base,
+                         call_589178.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580149, url, valid)
+  result = hook(call_589178, url, valid)
 
-proc call*(call_580150: Call_DeploymentmanagerDeploymentsUpdate_580133;
+proc call*(call_589179: Call_DeploymentmanagerDeploymentsUpdate_589162;
           deployment: string; project: string; fields: string = "";
           quotaUser: string = ""; alt: string = "json";
           createPolicy: string = "CREATE_OR_ACQUIRE"; oauthToken: string = "";
@@ -1691,35 +1691,35 @@ proc call*(call_580150: Call_DeploymentmanagerDeploymentsUpdate_580133;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_580151 = newJObject()
-  var query_580152 = newJObject()
-  var body_580153 = newJObject()
-  add(path_580151, "deployment", newJString(deployment))
-  add(query_580152, "fields", newJString(fields))
-  add(query_580152, "quotaUser", newJString(quotaUser))
-  add(query_580152, "alt", newJString(alt))
-  add(query_580152, "createPolicy", newJString(createPolicy))
-  add(query_580152, "oauth_token", newJString(oauthToken))
-  add(query_580152, "userIp", newJString(userIp))
-  add(query_580152, "key", newJString(key))
-  add(query_580152, "preview", newJBool(preview))
-  add(query_580152, "deletePolicy", newJString(deletePolicy))
-  add(path_580151, "project", newJString(project))
+  var path_589180 = newJObject()
+  var query_589181 = newJObject()
+  var body_589182 = newJObject()
+  add(path_589180, "deployment", newJString(deployment))
+  add(query_589181, "fields", newJString(fields))
+  add(query_589181, "quotaUser", newJString(quotaUser))
+  add(query_589181, "alt", newJString(alt))
+  add(query_589181, "createPolicy", newJString(createPolicy))
+  add(query_589181, "oauth_token", newJString(oauthToken))
+  add(query_589181, "userIp", newJString(userIp))
+  add(query_589181, "key", newJString(key))
+  add(query_589181, "preview", newJBool(preview))
+  add(query_589181, "deletePolicy", newJString(deletePolicy))
+  add(path_589180, "project", newJString(project))
   if body != nil:
-    body_580153 = body
-  add(query_580152, "prettyPrint", newJBool(prettyPrint))
-  result = call_580150.call(path_580151, query_580152, nil, nil, body_580153)
+    body_589182 = body
+  add(query_589181, "prettyPrint", newJBool(prettyPrint))
+  result = call_589179.call(path_589180, query_589181, nil, nil, body_589182)
 
-var deploymentmanagerDeploymentsUpdate* = Call_DeploymentmanagerDeploymentsUpdate_580133(
+var deploymentmanagerDeploymentsUpdate* = Call_DeploymentmanagerDeploymentsUpdate_589162(
     name: "deploymentmanagerDeploymentsUpdate", meth: HttpMethod.HttpPut,
     host: "www.googleapis.com",
     route: "/{project}/global/deployments/{deployment}",
-    validator: validate_DeploymentmanagerDeploymentsUpdate_580134,
+    validator: validate_DeploymentmanagerDeploymentsUpdate_589163,
     base: "/deploymentmanager/v2beta/projects",
-    url: url_DeploymentmanagerDeploymentsUpdate_580135, schemes: {Scheme.Https})
+    url: url_DeploymentmanagerDeploymentsUpdate_589164, schemes: {Scheme.Https})
 type
-  Call_DeploymentmanagerDeploymentsGet_580117 = ref object of OpenApiRestCall_579437
-proc url_DeploymentmanagerDeploymentsGet_580119(protocol: Scheme; host: string;
+  Call_DeploymentmanagerDeploymentsGet_589146 = ref object of OpenApiRestCall_588466
+proc url_DeploymentmanagerDeploymentsGet_589148(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -1737,7 +1737,7 @@ proc url_DeploymentmanagerDeploymentsGet_580119(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_DeploymentmanagerDeploymentsGet_580118(path: JsonNode;
+proc validate_DeploymentmanagerDeploymentsGet_589147(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Gets information about a specific deployment.
   ## 
@@ -1751,16 +1751,16 @@ proc validate_DeploymentmanagerDeploymentsGet_580118(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `deployment` field"
-  var valid_580120 = path.getOrDefault("deployment")
-  valid_580120 = validateParameter(valid_580120, JString, required = true,
+  var valid_589149 = path.getOrDefault("deployment")
+  valid_589149 = validateParameter(valid_589149, JString, required = true,
                                  default = nil)
-  if valid_580120 != nil:
-    section.add "deployment", valid_580120
-  var valid_580121 = path.getOrDefault("project")
-  valid_580121 = validateParameter(valid_580121, JString, required = true,
+  if valid_589149 != nil:
+    section.add "deployment", valid_589149
+  var valid_589150 = path.getOrDefault("project")
+  valid_589150 = validateParameter(valid_589150, JString, required = true,
                                  default = nil)
-  if valid_580121 != nil:
-    section.add "project", valid_580121
+  if valid_589150 != nil:
+    section.add "project", valid_589150
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -1778,41 +1778,41 @@ proc validate_DeploymentmanagerDeploymentsGet_580118(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580122 = query.getOrDefault("fields")
-  valid_580122 = validateParameter(valid_580122, JString, required = false,
+  var valid_589151 = query.getOrDefault("fields")
+  valid_589151 = validateParameter(valid_589151, JString, required = false,
                                  default = nil)
-  if valid_580122 != nil:
-    section.add "fields", valid_580122
-  var valid_580123 = query.getOrDefault("quotaUser")
-  valid_580123 = validateParameter(valid_580123, JString, required = false,
+  if valid_589151 != nil:
+    section.add "fields", valid_589151
+  var valid_589152 = query.getOrDefault("quotaUser")
+  valid_589152 = validateParameter(valid_589152, JString, required = false,
                                  default = nil)
-  if valid_580123 != nil:
-    section.add "quotaUser", valid_580123
-  var valid_580124 = query.getOrDefault("alt")
-  valid_580124 = validateParameter(valid_580124, JString, required = false,
+  if valid_589152 != nil:
+    section.add "quotaUser", valid_589152
+  var valid_589153 = query.getOrDefault("alt")
+  valid_589153 = validateParameter(valid_589153, JString, required = false,
                                  default = newJString("json"))
-  if valid_580124 != nil:
-    section.add "alt", valid_580124
-  var valid_580125 = query.getOrDefault("oauth_token")
-  valid_580125 = validateParameter(valid_580125, JString, required = false,
+  if valid_589153 != nil:
+    section.add "alt", valid_589153
+  var valid_589154 = query.getOrDefault("oauth_token")
+  valid_589154 = validateParameter(valid_589154, JString, required = false,
                                  default = nil)
-  if valid_580125 != nil:
-    section.add "oauth_token", valid_580125
-  var valid_580126 = query.getOrDefault("userIp")
-  valid_580126 = validateParameter(valid_580126, JString, required = false,
+  if valid_589154 != nil:
+    section.add "oauth_token", valid_589154
+  var valid_589155 = query.getOrDefault("userIp")
+  valid_589155 = validateParameter(valid_589155, JString, required = false,
                                  default = nil)
-  if valid_580126 != nil:
-    section.add "userIp", valid_580126
-  var valid_580127 = query.getOrDefault("key")
-  valid_580127 = validateParameter(valid_580127, JString, required = false,
+  if valid_589155 != nil:
+    section.add "userIp", valid_589155
+  var valid_589156 = query.getOrDefault("key")
+  valid_589156 = validateParameter(valid_589156, JString, required = false,
                                  default = nil)
-  if valid_580127 != nil:
-    section.add "key", valid_580127
-  var valid_580128 = query.getOrDefault("prettyPrint")
-  valid_580128 = validateParameter(valid_580128, JBool, required = false,
+  if valid_589156 != nil:
+    section.add "key", valid_589156
+  var valid_589157 = query.getOrDefault("prettyPrint")
+  valid_589157 = validateParameter(valid_589157, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580128 != nil:
-    section.add "prettyPrint", valid_580128
+  if valid_589157 != nil:
+    section.add "prettyPrint", valid_589157
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1821,21 +1821,21 @@ proc validate_DeploymentmanagerDeploymentsGet_580118(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580129: Call_DeploymentmanagerDeploymentsGet_580117;
+proc call*(call_589158: Call_DeploymentmanagerDeploymentsGet_589146;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Gets information about a specific deployment.
   ## 
-  let valid = call_580129.validator(path, query, header, formData, body)
-  let scheme = call_580129.pickScheme
+  let valid = call_589158.validator(path, query, header, formData, body)
+  let scheme = call_589158.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580129.url(scheme.get, call_580129.host, call_580129.base,
-                         call_580129.route, valid.getOrDefault("path"),
+  let url = call_589158.url(scheme.get, call_589158.host, call_589158.base,
+                         call_589158.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580129, url, valid)
+  result = hook(call_589158, url, valid)
 
-proc call*(call_580130: Call_DeploymentmanagerDeploymentsGet_580117;
+proc call*(call_589159: Call_DeploymentmanagerDeploymentsGet_589146;
           deployment: string; project: string; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; key: string = ""; prettyPrint: bool = true): Recallable =
@@ -1859,29 +1859,29 @@ proc call*(call_580130: Call_DeploymentmanagerDeploymentsGet_580117;
   ##          : The project ID for this request.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_580131 = newJObject()
-  var query_580132 = newJObject()
-  add(path_580131, "deployment", newJString(deployment))
-  add(query_580132, "fields", newJString(fields))
-  add(query_580132, "quotaUser", newJString(quotaUser))
-  add(query_580132, "alt", newJString(alt))
-  add(query_580132, "oauth_token", newJString(oauthToken))
-  add(query_580132, "userIp", newJString(userIp))
-  add(query_580132, "key", newJString(key))
-  add(path_580131, "project", newJString(project))
-  add(query_580132, "prettyPrint", newJBool(prettyPrint))
-  result = call_580130.call(path_580131, query_580132, nil, nil, nil)
+  var path_589160 = newJObject()
+  var query_589161 = newJObject()
+  add(path_589160, "deployment", newJString(deployment))
+  add(query_589161, "fields", newJString(fields))
+  add(query_589161, "quotaUser", newJString(quotaUser))
+  add(query_589161, "alt", newJString(alt))
+  add(query_589161, "oauth_token", newJString(oauthToken))
+  add(query_589161, "userIp", newJString(userIp))
+  add(query_589161, "key", newJString(key))
+  add(path_589160, "project", newJString(project))
+  add(query_589161, "prettyPrint", newJBool(prettyPrint))
+  result = call_589159.call(path_589160, query_589161, nil, nil, nil)
 
-var deploymentmanagerDeploymentsGet* = Call_DeploymentmanagerDeploymentsGet_580117(
+var deploymentmanagerDeploymentsGet* = Call_DeploymentmanagerDeploymentsGet_589146(
     name: "deploymentmanagerDeploymentsGet", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com",
     route: "/{project}/global/deployments/{deployment}",
-    validator: validate_DeploymentmanagerDeploymentsGet_580118,
+    validator: validate_DeploymentmanagerDeploymentsGet_589147,
     base: "/deploymentmanager/v2beta/projects",
-    url: url_DeploymentmanagerDeploymentsGet_580119, schemes: {Scheme.Https})
+    url: url_DeploymentmanagerDeploymentsGet_589148, schemes: {Scheme.Https})
 type
-  Call_DeploymentmanagerDeploymentsPatch_580171 = ref object of OpenApiRestCall_579437
-proc url_DeploymentmanagerDeploymentsPatch_580173(protocol: Scheme; host: string;
+  Call_DeploymentmanagerDeploymentsPatch_589200 = ref object of OpenApiRestCall_588466
+proc url_DeploymentmanagerDeploymentsPatch_589202(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -1899,7 +1899,7 @@ proc url_DeploymentmanagerDeploymentsPatch_580173(protocol: Scheme; host: string
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_DeploymentmanagerDeploymentsPatch_580172(path: JsonNode;
+proc validate_DeploymentmanagerDeploymentsPatch_589201(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Updates a deployment and all of the resources described by the deployment manifest. This method supports patch semantics.
   ## 
@@ -1913,16 +1913,16 @@ proc validate_DeploymentmanagerDeploymentsPatch_580172(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `deployment` field"
-  var valid_580174 = path.getOrDefault("deployment")
-  valid_580174 = validateParameter(valid_580174, JString, required = true,
+  var valid_589203 = path.getOrDefault("deployment")
+  valid_589203 = validateParameter(valid_589203, JString, required = true,
                                  default = nil)
-  if valid_580174 != nil:
-    section.add "deployment", valid_580174
-  var valid_580175 = path.getOrDefault("project")
-  valid_580175 = validateParameter(valid_580175, JString, required = true,
+  if valid_589203 != nil:
+    section.add "deployment", valid_589203
+  var valid_589204 = path.getOrDefault("project")
+  valid_589204 = validateParameter(valid_589204, JString, required = true,
                                  default = nil)
-  if valid_580175 != nil:
-    section.add "project", valid_580175
+  if valid_589204 != nil:
+    section.add "project", valid_589204
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -1946,56 +1946,56 @@ proc validate_DeploymentmanagerDeploymentsPatch_580172(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580176 = query.getOrDefault("fields")
-  valid_580176 = validateParameter(valid_580176, JString, required = false,
+  var valid_589205 = query.getOrDefault("fields")
+  valid_589205 = validateParameter(valid_589205, JString, required = false,
                                  default = nil)
-  if valid_580176 != nil:
-    section.add "fields", valid_580176
-  var valid_580177 = query.getOrDefault("quotaUser")
-  valid_580177 = validateParameter(valid_580177, JString, required = false,
+  if valid_589205 != nil:
+    section.add "fields", valid_589205
+  var valid_589206 = query.getOrDefault("quotaUser")
+  valid_589206 = validateParameter(valid_589206, JString, required = false,
                                  default = nil)
-  if valid_580177 != nil:
-    section.add "quotaUser", valid_580177
-  var valid_580178 = query.getOrDefault("alt")
-  valid_580178 = validateParameter(valid_580178, JString, required = false,
+  if valid_589206 != nil:
+    section.add "quotaUser", valid_589206
+  var valid_589207 = query.getOrDefault("alt")
+  valid_589207 = validateParameter(valid_589207, JString, required = false,
                                  default = newJString("json"))
-  if valid_580178 != nil:
-    section.add "alt", valid_580178
-  var valid_580179 = query.getOrDefault("createPolicy")
-  valid_580179 = validateParameter(valid_580179, JString, required = false,
+  if valid_589207 != nil:
+    section.add "alt", valid_589207
+  var valid_589208 = query.getOrDefault("createPolicy")
+  valid_589208 = validateParameter(valid_589208, JString, required = false,
                                  default = newJString("CREATE_OR_ACQUIRE"))
-  if valid_580179 != nil:
-    section.add "createPolicy", valid_580179
-  var valid_580180 = query.getOrDefault("oauth_token")
-  valid_580180 = validateParameter(valid_580180, JString, required = false,
+  if valid_589208 != nil:
+    section.add "createPolicy", valid_589208
+  var valid_589209 = query.getOrDefault("oauth_token")
+  valid_589209 = validateParameter(valid_589209, JString, required = false,
                                  default = nil)
-  if valid_580180 != nil:
-    section.add "oauth_token", valid_580180
-  var valid_580181 = query.getOrDefault("userIp")
-  valid_580181 = validateParameter(valid_580181, JString, required = false,
+  if valid_589209 != nil:
+    section.add "oauth_token", valid_589209
+  var valid_589210 = query.getOrDefault("userIp")
+  valid_589210 = validateParameter(valid_589210, JString, required = false,
                                  default = nil)
-  if valid_580181 != nil:
-    section.add "userIp", valid_580181
-  var valid_580182 = query.getOrDefault("key")
-  valid_580182 = validateParameter(valid_580182, JString, required = false,
+  if valid_589210 != nil:
+    section.add "userIp", valid_589210
+  var valid_589211 = query.getOrDefault("key")
+  valid_589211 = validateParameter(valid_589211, JString, required = false,
                                  default = nil)
-  if valid_580182 != nil:
-    section.add "key", valid_580182
-  var valid_580183 = query.getOrDefault("preview")
-  valid_580183 = validateParameter(valid_580183, JBool, required = false,
+  if valid_589211 != nil:
+    section.add "key", valid_589211
+  var valid_589212 = query.getOrDefault("preview")
+  valid_589212 = validateParameter(valid_589212, JBool, required = false,
                                  default = newJBool(false))
-  if valid_580183 != nil:
-    section.add "preview", valid_580183
-  var valid_580184 = query.getOrDefault("deletePolicy")
-  valid_580184 = validateParameter(valid_580184, JString, required = false,
+  if valid_589212 != nil:
+    section.add "preview", valid_589212
+  var valid_589213 = query.getOrDefault("deletePolicy")
+  valid_589213 = validateParameter(valid_589213, JString, required = false,
                                  default = newJString("DELETE"))
-  if valid_580184 != nil:
-    section.add "deletePolicy", valid_580184
-  var valid_580185 = query.getOrDefault("prettyPrint")
-  valid_580185 = validateParameter(valid_580185, JBool, required = false,
+  if valid_589213 != nil:
+    section.add "deletePolicy", valid_589213
+  var valid_589214 = query.getOrDefault("prettyPrint")
+  valid_589214 = validateParameter(valid_589214, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580185 != nil:
-    section.add "prettyPrint", valid_580185
+  if valid_589214 != nil:
+    section.add "prettyPrint", valid_589214
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -2007,21 +2007,21 @@ proc validate_DeploymentmanagerDeploymentsPatch_580172(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580187: Call_DeploymentmanagerDeploymentsPatch_580171;
+proc call*(call_589216: Call_DeploymentmanagerDeploymentsPatch_589200;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Updates a deployment and all of the resources described by the deployment manifest. This method supports patch semantics.
   ## 
-  let valid = call_580187.validator(path, query, header, formData, body)
-  let scheme = call_580187.pickScheme
+  let valid = call_589216.validator(path, query, header, formData, body)
+  let scheme = call_589216.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580187.url(scheme.get, call_580187.host, call_580187.base,
-                         call_580187.route, valid.getOrDefault("path"),
+  let url = call_589216.url(scheme.get, call_589216.host, call_589216.base,
+                         call_589216.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580187, url, valid)
+  result = hook(call_589216, url, valid)
 
-proc call*(call_580188: Call_DeploymentmanagerDeploymentsPatch_580171;
+proc call*(call_589217: Call_DeploymentmanagerDeploymentsPatch_589200;
           deployment: string; project: string; fields: string = "";
           quotaUser: string = ""; alt: string = "json";
           createPolicy: string = "CREATE_OR_ACQUIRE"; oauthToken: string = "";
@@ -2055,35 +2055,35 @@ proc call*(call_580188: Call_DeploymentmanagerDeploymentsPatch_580171;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_580189 = newJObject()
-  var query_580190 = newJObject()
-  var body_580191 = newJObject()
-  add(path_580189, "deployment", newJString(deployment))
-  add(query_580190, "fields", newJString(fields))
-  add(query_580190, "quotaUser", newJString(quotaUser))
-  add(query_580190, "alt", newJString(alt))
-  add(query_580190, "createPolicy", newJString(createPolicy))
-  add(query_580190, "oauth_token", newJString(oauthToken))
-  add(query_580190, "userIp", newJString(userIp))
-  add(query_580190, "key", newJString(key))
-  add(query_580190, "preview", newJBool(preview))
-  add(query_580190, "deletePolicy", newJString(deletePolicy))
-  add(path_580189, "project", newJString(project))
+  var path_589218 = newJObject()
+  var query_589219 = newJObject()
+  var body_589220 = newJObject()
+  add(path_589218, "deployment", newJString(deployment))
+  add(query_589219, "fields", newJString(fields))
+  add(query_589219, "quotaUser", newJString(quotaUser))
+  add(query_589219, "alt", newJString(alt))
+  add(query_589219, "createPolicy", newJString(createPolicy))
+  add(query_589219, "oauth_token", newJString(oauthToken))
+  add(query_589219, "userIp", newJString(userIp))
+  add(query_589219, "key", newJString(key))
+  add(query_589219, "preview", newJBool(preview))
+  add(query_589219, "deletePolicy", newJString(deletePolicy))
+  add(path_589218, "project", newJString(project))
   if body != nil:
-    body_580191 = body
-  add(query_580190, "prettyPrint", newJBool(prettyPrint))
-  result = call_580188.call(path_580189, query_580190, nil, nil, body_580191)
+    body_589220 = body
+  add(query_589219, "prettyPrint", newJBool(prettyPrint))
+  result = call_589217.call(path_589218, query_589219, nil, nil, body_589220)
 
-var deploymentmanagerDeploymentsPatch* = Call_DeploymentmanagerDeploymentsPatch_580171(
+var deploymentmanagerDeploymentsPatch* = Call_DeploymentmanagerDeploymentsPatch_589200(
     name: "deploymentmanagerDeploymentsPatch", meth: HttpMethod.HttpPatch,
     host: "www.googleapis.com",
     route: "/{project}/global/deployments/{deployment}",
-    validator: validate_DeploymentmanagerDeploymentsPatch_580172,
+    validator: validate_DeploymentmanagerDeploymentsPatch_589201,
     base: "/deploymentmanager/v2beta/projects",
-    url: url_DeploymentmanagerDeploymentsPatch_580173, schemes: {Scheme.Https})
+    url: url_DeploymentmanagerDeploymentsPatch_589202, schemes: {Scheme.Https})
 type
-  Call_DeploymentmanagerDeploymentsDelete_580154 = ref object of OpenApiRestCall_579437
-proc url_DeploymentmanagerDeploymentsDelete_580156(protocol: Scheme; host: string;
+  Call_DeploymentmanagerDeploymentsDelete_589183 = ref object of OpenApiRestCall_588466
+proc url_DeploymentmanagerDeploymentsDelete_589185(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -2101,7 +2101,7 @@ proc url_DeploymentmanagerDeploymentsDelete_580156(protocol: Scheme; host: strin
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_DeploymentmanagerDeploymentsDelete_580155(path: JsonNode;
+proc validate_DeploymentmanagerDeploymentsDelete_589184(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Deletes a deployment and all of the resources in the deployment.
   ## 
@@ -2115,16 +2115,16 @@ proc validate_DeploymentmanagerDeploymentsDelete_580155(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `deployment` field"
-  var valid_580157 = path.getOrDefault("deployment")
-  valid_580157 = validateParameter(valid_580157, JString, required = true,
+  var valid_589186 = path.getOrDefault("deployment")
+  valid_589186 = validateParameter(valid_589186, JString, required = true,
                                  default = nil)
-  if valid_580157 != nil:
-    section.add "deployment", valid_580157
-  var valid_580158 = path.getOrDefault("project")
-  valid_580158 = validateParameter(valid_580158, JString, required = true,
+  if valid_589186 != nil:
+    section.add "deployment", valid_589186
+  var valid_589187 = path.getOrDefault("project")
+  valid_589187 = validateParameter(valid_589187, JString, required = true,
                                  default = nil)
-  if valid_580158 != nil:
-    section.add "project", valid_580158
+  if valid_589187 != nil:
+    section.add "project", valid_589187
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -2144,46 +2144,46 @@ proc validate_DeploymentmanagerDeploymentsDelete_580155(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580159 = query.getOrDefault("fields")
-  valid_580159 = validateParameter(valid_580159, JString, required = false,
+  var valid_589188 = query.getOrDefault("fields")
+  valid_589188 = validateParameter(valid_589188, JString, required = false,
                                  default = nil)
-  if valid_580159 != nil:
-    section.add "fields", valid_580159
-  var valid_580160 = query.getOrDefault("quotaUser")
-  valid_580160 = validateParameter(valid_580160, JString, required = false,
+  if valid_589188 != nil:
+    section.add "fields", valid_589188
+  var valid_589189 = query.getOrDefault("quotaUser")
+  valid_589189 = validateParameter(valid_589189, JString, required = false,
                                  default = nil)
-  if valid_580160 != nil:
-    section.add "quotaUser", valid_580160
-  var valid_580161 = query.getOrDefault("alt")
-  valid_580161 = validateParameter(valid_580161, JString, required = false,
+  if valid_589189 != nil:
+    section.add "quotaUser", valid_589189
+  var valid_589190 = query.getOrDefault("alt")
+  valid_589190 = validateParameter(valid_589190, JString, required = false,
                                  default = newJString("json"))
-  if valid_580161 != nil:
-    section.add "alt", valid_580161
-  var valid_580162 = query.getOrDefault("oauth_token")
-  valid_580162 = validateParameter(valid_580162, JString, required = false,
+  if valid_589190 != nil:
+    section.add "alt", valid_589190
+  var valid_589191 = query.getOrDefault("oauth_token")
+  valid_589191 = validateParameter(valid_589191, JString, required = false,
                                  default = nil)
-  if valid_580162 != nil:
-    section.add "oauth_token", valid_580162
-  var valid_580163 = query.getOrDefault("userIp")
-  valid_580163 = validateParameter(valid_580163, JString, required = false,
+  if valid_589191 != nil:
+    section.add "oauth_token", valid_589191
+  var valid_589192 = query.getOrDefault("userIp")
+  valid_589192 = validateParameter(valid_589192, JString, required = false,
                                  default = nil)
-  if valid_580163 != nil:
-    section.add "userIp", valid_580163
-  var valid_580164 = query.getOrDefault("key")
-  valid_580164 = validateParameter(valid_580164, JString, required = false,
+  if valid_589192 != nil:
+    section.add "userIp", valid_589192
+  var valid_589193 = query.getOrDefault("key")
+  valid_589193 = validateParameter(valid_589193, JString, required = false,
                                  default = nil)
-  if valid_580164 != nil:
-    section.add "key", valid_580164
-  var valid_580165 = query.getOrDefault("deletePolicy")
-  valid_580165 = validateParameter(valid_580165, JString, required = false,
+  if valid_589193 != nil:
+    section.add "key", valid_589193
+  var valid_589194 = query.getOrDefault("deletePolicy")
+  valid_589194 = validateParameter(valid_589194, JString, required = false,
                                  default = newJString("DELETE"))
-  if valid_580165 != nil:
-    section.add "deletePolicy", valid_580165
-  var valid_580166 = query.getOrDefault("prettyPrint")
-  valid_580166 = validateParameter(valid_580166, JBool, required = false,
+  if valid_589194 != nil:
+    section.add "deletePolicy", valid_589194
+  var valid_589195 = query.getOrDefault("prettyPrint")
+  valid_589195 = validateParameter(valid_589195, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580166 != nil:
-    section.add "prettyPrint", valid_580166
+  if valid_589195 != nil:
+    section.add "prettyPrint", valid_589195
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -2192,21 +2192,21 @@ proc validate_DeploymentmanagerDeploymentsDelete_580155(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580167: Call_DeploymentmanagerDeploymentsDelete_580154;
+proc call*(call_589196: Call_DeploymentmanagerDeploymentsDelete_589183;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Deletes a deployment and all of the resources in the deployment.
   ## 
-  let valid = call_580167.validator(path, query, header, formData, body)
-  let scheme = call_580167.pickScheme
+  let valid = call_589196.validator(path, query, header, formData, body)
+  let scheme = call_589196.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580167.url(scheme.get, call_580167.host, call_580167.base,
-                         call_580167.route, valid.getOrDefault("path"),
+  let url = call_589196.url(scheme.get, call_589196.host, call_589196.base,
+                         call_589196.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580167, url, valid)
+  result = hook(call_589196, url, valid)
 
-proc call*(call_580168: Call_DeploymentmanagerDeploymentsDelete_580154;
+proc call*(call_589197: Call_DeploymentmanagerDeploymentsDelete_589183;
           deployment: string; project: string; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; key: string = ""; deletePolicy: string = "DELETE";
@@ -2233,30 +2233,30 @@ proc call*(call_580168: Call_DeploymentmanagerDeploymentsDelete_580154;
   ##          : The project ID for this request.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_580169 = newJObject()
-  var query_580170 = newJObject()
-  add(path_580169, "deployment", newJString(deployment))
-  add(query_580170, "fields", newJString(fields))
-  add(query_580170, "quotaUser", newJString(quotaUser))
-  add(query_580170, "alt", newJString(alt))
-  add(query_580170, "oauth_token", newJString(oauthToken))
-  add(query_580170, "userIp", newJString(userIp))
-  add(query_580170, "key", newJString(key))
-  add(query_580170, "deletePolicy", newJString(deletePolicy))
-  add(path_580169, "project", newJString(project))
-  add(query_580170, "prettyPrint", newJBool(prettyPrint))
-  result = call_580168.call(path_580169, query_580170, nil, nil, nil)
+  var path_589198 = newJObject()
+  var query_589199 = newJObject()
+  add(path_589198, "deployment", newJString(deployment))
+  add(query_589199, "fields", newJString(fields))
+  add(query_589199, "quotaUser", newJString(quotaUser))
+  add(query_589199, "alt", newJString(alt))
+  add(query_589199, "oauth_token", newJString(oauthToken))
+  add(query_589199, "userIp", newJString(userIp))
+  add(query_589199, "key", newJString(key))
+  add(query_589199, "deletePolicy", newJString(deletePolicy))
+  add(path_589198, "project", newJString(project))
+  add(query_589199, "prettyPrint", newJBool(prettyPrint))
+  result = call_589197.call(path_589198, query_589199, nil, nil, nil)
 
-var deploymentmanagerDeploymentsDelete* = Call_DeploymentmanagerDeploymentsDelete_580154(
+var deploymentmanagerDeploymentsDelete* = Call_DeploymentmanagerDeploymentsDelete_589183(
     name: "deploymentmanagerDeploymentsDelete", meth: HttpMethod.HttpDelete,
     host: "www.googleapis.com",
     route: "/{project}/global/deployments/{deployment}",
-    validator: validate_DeploymentmanagerDeploymentsDelete_580155,
+    validator: validate_DeploymentmanagerDeploymentsDelete_589184,
     base: "/deploymentmanager/v2beta/projects",
-    url: url_DeploymentmanagerDeploymentsDelete_580156, schemes: {Scheme.Https})
+    url: url_DeploymentmanagerDeploymentsDelete_589185, schemes: {Scheme.Https})
 type
-  Call_DeploymentmanagerDeploymentsCancelPreview_580192 = ref object of OpenApiRestCall_579437
-proc url_DeploymentmanagerDeploymentsCancelPreview_580194(protocol: Scheme;
+  Call_DeploymentmanagerDeploymentsCancelPreview_589221 = ref object of OpenApiRestCall_588466
+proc url_DeploymentmanagerDeploymentsCancelPreview_589223(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -2275,7 +2275,7 @@ proc url_DeploymentmanagerDeploymentsCancelPreview_580194(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_DeploymentmanagerDeploymentsCancelPreview_580193(path: JsonNode;
+proc validate_DeploymentmanagerDeploymentsCancelPreview_589222(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Cancels and removes the preview currently associated with the deployment.
   ## 
@@ -2289,16 +2289,16 @@ proc validate_DeploymentmanagerDeploymentsCancelPreview_580193(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `deployment` field"
-  var valid_580195 = path.getOrDefault("deployment")
-  valid_580195 = validateParameter(valid_580195, JString, required = true,
+  var valid_589224 = path.getOrDefault("deployment")
+  valid_589224 = validateParameter(valid_589224, JString, required = true,
                                  default = nil)
-  if valid_580195 != nil:
-    section.add "deployment", valid_580195
-  var valid_580196 = path.getOrDefault("project")
-  valid_580196 = validateParameter(valid_580196, JString, required = true,
+  if valid_589224 != nil:
+    section.add "deployment", valid_589224
+  var valid_589225 = path.getOrDefault("project")
+  valid_589225 = validateParameter(valid_589225, JString, required = true,
                                  default = nil)
-  if valid_580196 != nil:
-    section.add "project", valid_580196
+  if valid_589225 != nil:
+    section.add "project", valid_589225
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -2316,41 +2316,41 @@ proc validate_DeploymentmanagerDeploymentsCancelPreview_580193(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580197 = query.getOrDefault("fields")
-  valid_580197 = validateParameter(valid_580197, JString, required = false,
+  var valid_589226 = query.getOrDefault("fields")
+  valid_589226 = validateParameter(valid_589226, JString, required = false,
                                  default = nil)
-  if valid_580197 != nil:
-    section.add "fields", valid_580197
-  var valid_580198 = query.getOrDefault("quotaUser")
-  valid_580198 = validateParameter(valid_580198, JString, required = false,
+  if valid_589226 != nil:
+    section.add "fields", valid_589226
+  var valid_589227 = query.getOrDefault("quotaUser")
+  valid_589227 = validateParameter(valid_589227, JString, required = false,
                                  default = nil)
-  if valid_580198 != nil:
-    section.add "quotaUser", valid_580198
-  var valid_580199 = query.getOrDefault("alt")
-  valid_580199 = validateParameter(valid_580199, JString, required = false,
+  if valid_589227 != nil:
+    section.add "quotaUser", valid_589227
+  var valid_589228 = query.getOrDefault("alt")
+  valid_589228 = validateParameter(valid_589228, JString, required = false,
                                  default = newJString("json"))
-  if valid_580199 != nil:
-    section.add "alt", valid_580199
-  var valid_580200 = query.getOrDefault("oauth_token")
-  valid_580200 = validateParameter(valid_580200, JString, required = false,
+  if valid_589228 != nil:
+    section.add "alt", valid_589228
+  var valid_589229 = query.getOrDefault("oauth_token")
+  valid_589229 = validateParameter(valid_589229, JString, required = false,
                                  default = nil)
-  if valid_580200 != nil:
-    section.add "oauth_token", valid_580200
-  var valid_580201 = query.getOrDefault("userIp")
-  valid_580201 = validateParameter(valid_580201, JString, required = false,
+  if valid_589229 != nil:
+    section.add "oauth_token", valid_589229
+  var valid_589230 = query.getOrDefault("userIp")
+  valid_589230 = validateParameter(valid_589230, JString, required = false,
                                  default = nil)
-  if valid_580201 != nil:
-    section.add "userIp", valid_580201
-  var valid_580202 = query.getOrDefault("key")
-  valid_580202 = validateParameter(valid_580202, JString, required = false,
+  if valid_589230 != nil:
+    section.add "userIp", valid_589230
+  var valid_589231 = query.getOrDefault("key")
+  valid_589231 = validateParameter(valid_589231, JString, required = false,
                                  default = nil)
-  if valid_580202 != nil:
-    section.add "key", valid_580202
-  var valid_580203 = query.getOrDefault("prettyPrint")
-  valid_580203 = validateParameter(valid_580203, JBool, required = false,
+  if valid_589231 != nil:
+    section.add "key", valid_589231
+  var valid_589232 = query.getOrDefault("prettyPrint")
+  valid_589232 = validateParameter(valid_589232, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580203 != nil:
-    section.add "prettyPrint", valid_580203
+  if valid_589232 != nil:
+    section.add "prettyPrint", valid_589232
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -2362,21 +2362,21 @@ proc validate_DeploymentmanagerDeploymentsCancelPreview_580193(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580205: Call_DeploymentmanagerDeploymentsCancelPreview_580192;
+proc call*(call_589234: Call_DeploymentmanagerDeploymentsCancelPreview_589221;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Cancels and removes the preview currently associated with the deployment.
   ## 
-  let valid = call_580205.validator(path, query, header, formData, body)
-  let scheme = call_580205.pickScheme
+  let valid = call_589234.validator(path, query, header, formData, body)
+  let scheme = call_589234.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580205.url(scheme.get, call_580205.host, call_580205.base,
-                         call_580205.route, valid.getOrDefault("path"),
+  let url = call_589234.url(scheme.get, call_589234.host, call_589234.base,
+                         call_589234.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580205, url, valid)
+  result = hook(call_589234, url, valid)
 
-proc call*(call_580206: Call_DeploymentmanagerDeploymentsCancelPreview_580192;
+proc call*(call_589235: Call_DeploymentmanagerDeploymentsCancelPreview_589221;
           deployment: string; project: string; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; key: string = ""; body: JsonNode = nil;
@@ -2402,33 +2402,33 @@ proc call*(call_580206: Call_DeploymentmanagerDeploymentsCancelPreview_580192;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_580207 = newJObject()
-  var query_580208 = newJObject()
-  var body_580209 = newJObject()
-  add(path_580207, "deployment", newJString(deployment))
-  add(query_580208, "fields", newJString(fields))
-  add(query_580208, "quotaUser", newJString(quotaUser))
-  add(query_580208, "alt", newJString(alt))
-  add(query_580208, "oauth_token", newJString(oauthToken))
-  add(query_580208, "userIp", newJString(userIp))
-  add(query_580208, "key", newJString(key))
-  add(path_580207, "project", newJString(project))
+  var path_589236 = newJObject()
+  var query_589237 = newJObject()
+  var body_589238 = newJObject()
+  add(path_589236, "deployment", newJString(deployment))
+  add(query_589237, "fields", newJString(fields))
+  add(query_589237, "quotaUser", newJString(quotaUser))
+  add(query_589237, "alt", newJString(alt))
+  add(query_589237, "oauth_token", newJString(oauthToken))
+  add(query_589237, "userIp", newJString(userIp))
+  add(query_589237, "key", newJString(key))
+  add(path_589236, "project", newJString(project))
   if body != nil:
-    body_580209 = body
-  add(query_580208, "prettyPrint", newJBool(prettyPrint))
-  result = call_580206.call(path_580207, query_580208, nil, nil, body_580209)
+    body_589238 = body
+  add(query_589237, "prettyPrint", newJBool(prettyPrint))
+  result = call_589235.call(path_589236, query_589237, nil, nil, body_589238)
 
-var deploymentmanagerDeploymentsCancelPreview* = Call_DeploymentmanagerDeploymentsCancelPreview_580192(
+var deploymentmanagerDeploymentsCancelPreview* = Call_DeploymentmanagerDeploymentsCancelPreview_589221(
     name: "deploymentmanagerDeploymentsCancelPreview", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com",
     route: "/{project}/global/deployments/{deployment}/cancelPreview",
-    validator: validate_DeploymentmanagerDeploymentsCancelPreview_580193,
+    validator: validate_DeploymentmanagerDeploymentsCancelPreview_589222,
     base: "/deploymentmanager/v2beta/projects",
-    url: url_DeploymentmanagerDeploymentsCancelPreview_580194,
+    url: url_DeploymentmanagerDeploymentsCancelPreview_589223,
     schemes: {Scheme.Https})
 type
-  Call_DeploymentmanagerManifestsList_580210 = ref object of OpenApiRestCall_579437
-proc url_DeploymentmanagerManifestsList_580212(protocol: Scheme; host: string;
+  Call_DeploymentmanagerManifestsList_589239 = ref object of OpenApiRestCall_588466
+proc url_DeploymentmanagerManifestsList_589241(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -2447,7 +2447,7 @@ proc url_DeploymentmanagerManifestsList_580212(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_DeploymentmanagerManifestsList_580211(path: JsonNode;
+proc validate_DeploymentmanagerManifestsList_589240(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Lists all manifests for a given deployment.
   ## 
@@ -2461,16 +2461,16 @@ proc validate_DeploymentmanagerManifestsList_580211(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `deployment` field"
-  var valid_580213 = path.getOrDefault("deployment")
-  valid_580213 = validateParameter(valid_580213, JString, required = true,
+  var valid_589242 = path.getOrDefault("deployment")
+  valid_589242 = validateParameter(valid_589242, JString, required = true,
                                  default = nil)
-  if valid_580213 != nil:
-    section.add "deployment", valid_580213
-  var valid_580214 = path.getOrDefault("project")
-  valid_580214 = validateParameter(valid_580214, JString, required = true,
+  if valid_589242 != nil:
+    section.add "deployment", valid_589242
+  var valid_589243 = path.getOrDefault("project")
+  valid_589243 = validateParameter(valid_589243, JString, required = true,
                                  default = nil)
-  if valid_580214 != nil:
-    section.add "project", valid_580214
+  if valid_589243 != nil:
+    section.add "project", valid_589243
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -2506,61 +2506,61 @@ proc validate_DeploymentmanagerManifestsList_580211(path: JsonNode;
   ## 
   ## To filter on multiple expressions, provide each separate expression within parentheses. For example, (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake"). By default, each expression is an AND expression. However, you can include AND and OR expressions explicitly. For example, (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart = true).
   section = newJObject()
-  var valid_580215 = query.getOrDefault("fields")
-  valid_580215 = validateParameter(valid_580215, JString, required = false,
+  var valid_589244 = query.getOrDefault("fields")
+  valid_589244 = validateParameter(valid_589244, JString, required = false,
                                  default = nil)
-  if valid_580215 != nil:
-    section.add "fields", valid_580215
-  var valid_580216 = query.getOrDefault("pageToken")
-  valid_580216 = validateParameter(valid_580216, JString, required = false,
+  if valid_589244 != nil:
+    section.add "fields", valid_589244
+  var valid_589245 = query.getOrDefault("pageToken")
+  valid_589245 = validateParameter(valid_589245, JString, required = false,
                                  default = nil)
-  if valid_580216 != nil:
-    section.add "pageToken", valid_580216
-  var valid_580217 = query.getOrDefault("quotaUser")
-  valid_580217 = validateParameter(valid_580217, JString, required = false,
+  if valid_589245 != nil:
+    section.add "pageToken", valid_589245
+  var valid_589246 = query.getOrDefault("quotaUser")
+  valid_589246 = validateParameter(valid_589246, JString, required = false,
                                  default = nil)
-  if valid_580217 != nil:
-    section.add "quotaUser", valid_580217
-  var valid_580218 = query.getOrDefault("alt")
-  valid_580218 = validateParameter(valid_580218, JString, required = false,
+  if valid_589246 != nil:
+    section.add "quotaUser", valid_589246
+  var valid_589247 = query.getOrDefault("alt")
+  valid_589247 = validateParameter(valid_589247, JString, required = false,
                                  default = newJString("json"))
-  if valid_580218 != nil:
-    section.add "alt", valid_580218
-  var valid_580219 = query.getOrDefault("oauth_token")
-  valid_580219 = validateParameter(valid_580219, JString, required = false,
+  if valid_589247 != nil:
+    section.add "alt", valid_589247
+  var valid_589248 = query.getOrDefault("oauth_token")
+  valid_589248 = validateParameter(valid_589248, JString, required = false,
                                  default = nil)
-  if valid_580219 != nil:
-    section.add "oauth_token", valid_580219
-  var valid_580220 = query.getOrDefault("userIp")
-  valid_580220 = validateParameter(valid_580220, JString, required = false,
+  if valid_589248 != nil:
+    section.add "oauth_token", valid_589248
+  var valid_589249 = query.getOrDefault("userIp")
+  valid_589249 = validateParameter(valid_589249, JString, required = false,
                                  default = nil)
-  if valid_580220 != nil:
-    section.add "userIp", valid_580220
-  var valid_580221 = query.getOrDefault("maxResults")
-  valid_580221 = validateParameter(valid_580221, JInt, required = false,
+  if valid_589249 != nil:
+    section.add "userIp", valid_589249
+  var valid_589250 = query.getOrDefault("maxResults")
+  valid_589250 = validateParameter(valid_589250, JInt, required = false,
                                  default = newJInt(500))
-  if valid_580221 != nil:
-    section.add "maxResults", valid_580221
-  var valid_580222 = query.getOrDefault("orderBy")
-  valid_580222 = validateParameter(valid_580222, JString, required = false,
+  if valid_589250 != nil:
+    section.add "maxResults", valid_589250
+  var valid_589251 = query.getOrDefault("orderBy")
+  valid_589251 = validateParameter(valid_589251, JString, required = false,
                                  default = nil)
-  if valid_580222 != nil:
-    section.add "orderBy", valid_580222
-  var valid_580223 = query.getOrDefault("key")
-  valid_580223 = validateParameter(valid_580223, JString, required = false,
+  if valid_589251 != nil:
+    section.add "orderBy", valid_589251
+  var valid_589252 = query.getOrDefault("key")
+  valid_589252 = validateParameter(valid_589252, JString, required = false,
                                  default = nil)
-  if valid_580223 != nil:
-    section.add "key", valid_580223
-  var valid_580224 = query.getOrDefault("prettyPrint")
-  valid_580224 = validateParameter(valid_580224, JBool, required = false,
+  if valid_589252 != nil:
+    section.add "key", valid_589252
+  var valid_589253 = query.getOrDefault("prettyPrint")
+  valid_589253 = validateParameter(valid_589253, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580224 != nil:
-    section.add "prettyPrint", valid_580224
-  var valid_580225 = query.getOrDefault("filter")
-  valid_580225 = validateParameter(valid_580225, JString, required = false,
+  if valid_589253 != nil:
+    section.add "prettyPrint", valid_589253
+  var valid_589254 = query.getOrDefault("filter")
+  valid_589254 = validateParameter(valid_589254, JString, required = false,
                                  default = nil)
-  if valid_580225 != nil:
-    section.add "filter", valid_580225
+  if valid_589254 != nil:
+    section.add "filter", valid_589254
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -2569,20 +2569,20 @@ proc validate_DeploymentmanagerManifestsList_580211(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580226: Call_DeploymentmanagerManifestsList_580210; path: JsonNode;
+proc call*(call_589255: Call_DeploymentmanagerManifestsList_589239; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Lists all manifests for a given deployment.
   ## 
-  let valid = call_580226.validator(path, query, header, formData, body)
-  let scheme = call_580226.pickScheme
+  let valid = call_589255.validator(path, query, header, formData, body)
+  let scheme = call_589255.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580226.url(scheme.get, call_580226.host, call_580226.base,
-                         call_580226.route, valid.getOrDefault("path"),
+  let url = call_589255.url(scheme.get, call_589255.host, call_589255.base,
+                         call_589255.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580226, url, valid)
+  result = hook(call_589255, url, valid)
 
-proc call*(call_580227: Call_DeploymentmanagerManifestsList_580210;
+proc call*(call_589256: Call_DeploymentmanagerManifestsList_589239;
           deployment: string; project: string; fields: string = "";
           pageToken: string = ""; quotaUser: string = ""; alt: string = "json";
           oauthToken: string = ""; userIp: string = ""; maxResults: int = 500;
@@ -2626,33 +2626,33 @@ proc call*(call_580227: Call_DeploymentmanagerManifestsList_580210;
   ## You can also filter nested fields. For example, you could specify scheduling.automaticRestart = false to include instances only if they are not scheduled for automatic restarts. You can use filtering on nested fields to filter based on resource labels.
   ## 
   ## To filter on multiple expressions, provide each separate expression within parentheses. For example, (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake"). By default, each expression is an AND expression. However, you can include AND and OR expressions explicitly. For example, (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart = true).
-  var path_580228 = newJObject()
-  var query_580229 = newJObject()
-  add(path_580228, "deployment", newJString(deployment))
-  add(query_580229, "fields", newJString(fields))
-  add(query_580229, "pageToken", newJString(pageToken))
-  add(query_580229, "quotaUser", newJString(quotaUser))
-  add(query_580229, "alt", newJString(alt))
-  add(query_580229, "oauth_token", newJString(oauthToken))
-  add(query_580229, "userIp", newJString(userIp))
-  add(query_580229, "maxResults", newJInt(maxResults))
-  add(query_580229, "orderBy", newJString(orderBy))
-  add(query_580229, "key", newJString(key))
-  add(path_580228, "project", newJString(project))
-  add(query_580229, "prettyPrint", newJBool(prettyPrint))
-  add(query_580229, "filter", newJString(filter))
-  result = call_580227.call(path_580228, query_580229, nil, nil, nil)
+  var path_589257 = newJObject()
+  var query_589258 = newJObject()
+  add(path_589257, "deployment", newJString(deployment))
+  add(query_589258, "fields", newJString(fields))
+  add(query_589258, "pageToken", newJString(pageToken))
+  add(query_589258, "quotaUser", newJString(quotaUser))
+  add(query_589258, "alt", newJString(alt))
+  add(query_589258, "oauth_token", newJString(oauthToken))
+  add(query_589258, "userIp", newJString(userIp))
+  add(query_589258, "maxResults", newJInt(maxResults))
+  add(query_589258, "orderBy", newJString(orderBy))
+  add(query_589258, "key", newJString(key))
+  add(path_589257, "project", newJString(project))
+  add(query_589258, "prettyPrint", newJBool(prettyPrint))
+  add(query_589258, "filter", newJString(filter))
+  result = call_589256.call(path_589257, query_589258, nil, nil, nil)
 
-var deploymentmanagerManifestsList* = Call_DeploymentmanagerManifestsList_580210(
+var deploymentmanagerManifestsList* = Call_DeploymentmanagerManifestsList_589239(
     name: "deploymentmanagerManifestsList", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com",
     route: "/{project}/global/deployments/{deployment}/manifests",
-    validator: validate_DeploymentmanagerManifestsList_580211,
+    validator: validate_DeploymentmanagerManifestsList_589240,
     base: "/deploymentmanager/v2beta/projects",
-    url: url_DeploymentmanagerManifestsList_580212, schemes: {Scheme.Https})
+    url: url_DeploymentmanagerManifestsList_589241, schemes: {Scheme.Https})
 type
-  Call_DeploymentmanagerManifestsGet_580230 = ref object of OpenApiRestCall_579437
-proc url_DeploymentmanagerManifestsGet_580232(protocol: Scheme; host: string;
+  Call_DeploymentmanagerManifestsGet_589259 = ref object of OpenApiRestCall_588466
+proc url_DeploymentmanagerManifestsGet_589261(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -2673,7 +2673,7 @@ proc url_DeploymentmanagerManifestsGet_580232(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_DeploymentmanagerManifestsGet_580231(path: JsonNode; query: JsonNode;
+proc validate_DeploymentmanagerManifestsGet_589260(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Gets information about a specific manifest.
   ## 
@@ -2689,21 +2689,21 @@ proc validate_DeploymentmanagerManifestsGet_580231(path: JsonNode; query: JsonNo
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `deployment` field"
-  var valid_580233 = path.getOrDefault("deployment")
-  valid_580233 = validateParameter(valid_580233, JString, required = true,
+  var valid_589262 = path.getOrDefault("deployment")
+  valid_589262 = validateParameter(valid_589262, JString, required = true,
                                  default = nil)
-  if valid_580233 != nil:
-    section.add "deployment", valid_580233
-  var valid_580234 = path.getOrDefault("project")
-  valid_580234 = validateParameter(valid_580234, JString, required = true,
+  if valid_589262 != nil:
+    section.add "deployment", valid_589262
+  var valid_589263 = path.getOrDefault("project")
+  valid_589263 = validateParameter(valid_589263, JString, required = true,
                                  default = nil)
-  if valid_580234 != nil:
-    section.add "project", valid_580234
-  var valid_580235 = path.getOrDefault("manifest")
-  valid_580235 = validateParameter(valid_580235, JString, required = true,
+  if valid_589263 != nil:
+    section.add "project", valid_589263
+  var valid_589264 = path.getOrDefault("manifest")
+  valid_589264 = validateParameter(valid_589264, JString, required = true,
                                  default = nil)
-  if valid_580235 != nil:
-    section.add "manifest", valid_580235
+  if valid_589264 != nil:
+    section.add "manifest", valid_589264
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -2721,41 +2721,41 @@ proc validate_DeploymentmanagerManifestsGet_580231(path: JsonNode; query: JsonNo
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580236 = query.getOrDefault("fields")
-  valid_580236 = validateParameter(valid_580236, JString, required = false,
+  var valid_589265 = query.getOrDefault("fields")
+  valid_589265 = validateParameter(valid_589265, JString, required = false,
                                  default = nil)
-  if valid_580236 != nil:
-    section.add "fields", valid_580236
-  var valid_580237 = query.getOrDefault("quotaUser")
-  valid_580237 = validateParameter(valid_580237, JString, required = false,
+  if valid_589265 != nil:
+    section.add "fields", valid_589265
+  var valid_589266 = query.getOrDefault("quotaUser")
+  valid_589266 = validateParameter(valid_589266, JString, required = false,
                                  default = nil)
-  if valid_580237 != nil:
-    section.add "quotaUser", valid_580237
-  var valid_580238 = query.getOrDefault("alt")
-  valid_580238 = validateParameter(valid_580238, JString, required = false,
+  if valid_589266 != nil:
+    section.add "quotaUser", valid_589266
+  var valid_589267 = query.getOrDefault("alt")
+  valid_589267 = validateParameter(valid_589267, JString, required = false,
                                  default = newJString("json"))
-  if valid_580238 != nil:
-    section.add "alt", valid_580238
-  var valid_580239 = query.getOrDefault("oauth_token")
-  valid_580239 = validateParameter(valid_580239, JString, required = false,
+  if valid_589267 != nil:
+    section.add "alt", valid_589267
+  var valid_589268 = query.getOrDefault("oauth_token")
+  valid_589268 = validateParameter(valid_589268, JString, required = false,
                                  default = nil)
-  if valid_580239 != nil:
-    section.add "oauth_token", valid_580239
-  var valid_580240 = query.getOrDefault("userIp")
-  valid_580240 = validateParameter(valid_580240, JString, required = false,
+  if valid_589268 != nil:
+    section.add "oauth_token", valid_589268
+  var valid_589269 = query.getOrDefault("userIp")
+  valid_589269 = validateParameter(valid_589269, JString, required = false,
                                  default = nil)
-  if valid_580240 != nil:
-    section.add "userIp", valid_580240
-  var valid_580241 = query.getOrDefault("key")
-  valid_580241 = validateParameter(valid_580241, JString, required = false,
+  if valid_589269 != nil:
+    section.add "userIp", valid_589269
+  var valid_589270 = query.getOrDefault("key")
+  valid_589270 = validateParameter(valid_589270, JString, required = false,
                                  default = nil)
-  if valid_580241 != nil:
-    section.add "key", valid_580241
-  var valid_580242 = query.getOrDefault("prettyPrint")
-  valid_580242 = validateParameter(valid_580242, JBool, required = false,
+  if valid_589270 != nil:
+    section.add "key", valid_589270
+  var valid_589271 = query.getOrDefault("prettyPrint")
+  valid_589271 = validateParameter(valid_589271, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580242 != nil:
-    section.add "prettyPrint", valid_580242
+  if valid_589271 != nil:
+    section.add "prettyPrint", valid_589271
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -2764,20 +2764,20 @@ proc validate_DeploymentmanagerManifestsGet_580231(path: JsonNode; query: JsonNo
   if body != nil:
     result.add "body", body
 
-proc call*(call_580243: Call_DeploymentmanagerManifestsGet_580230; path: JsonNode;
+proc call*(call_589272: Call_DeploymentmanagerManifestsGet_589259; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Gets information about a specific manifest.
   ## 
-  let valid = call_580243.validator(path, query, header, formData, body)
-  let scheme = call_580243.pickScheme
+  let valid = call_589272.validator(path, query, header, formData, body)
+  let scheme = call_589272.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580243.url(scheme.get, call_580243.host, call_580243.base,
-                         call_580243.route, valid.getOrDefault("path"),
+  let url = call_589272.url(scheme.get, call_589272.host, call_589272.base,
+                         call_589272.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580243, url, valid)
+  result = hook(call_589272, url, valid)
 
-proc call*(call_580244: Call_DeploymentmanagerManifestsGet_580230;
+proc call*(call_589273: Call_DeploymentmanagerManifestsGet_589259;
           deployment: string; project: string; manifest: string; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; key: string = ""; prettyPrint: bool = true): Recallable =
@@ -2803,30 +2803,30 @@ proc call*(call_580244: Call_DeploymentmanagerManifestsGet_580230;
   ##              : Returns response with indentations and line breaks.
   ##   manifest: string (required)
   ##           : The name of the manifest for this request.
-  var path_580245 = newJObject()
-  var query_580246 = newJObject()
-  add(path_580245, "deployment", newJString(deployment))
-  add(query_580246, "fields", newJString(fields))
-  add(query_580246, "quotaUser", newJString(quotaUser))
-  add(query_580246, "alt", newJString(alt))
-  add(query_580246, "oauth_token", newJString(oauthToken))
-  add(query_580246, "userIp", newJString(userIp))
-  add(query_580246, "key", newJString(key))
-  add(path_580245, "project", newJString(project))
-  add(query_580246, "prettyPrint", newJBool(prettyPrint))
-  add(path_580245, "manifest", newJString(manifest))
-  result = call_580244.call(path_580245, query_580246, nil, nil, nil)
+  var path_589274 = newJObject()
+  var query_589275 = newJObject()
+  add(path_589274, "deployment", newJString(deployment))
+  add(query_589275, "fields", newJString(fields))
+  add(query_589275, "quotaUser", newJString(quotaUser))
+  add(query_589275, "alt", newJString(alt))
+  add(query_589275, "oauth_token", newJString(oauthToken))
+  add(query_589275, "userIp", newJString(userIp))
+  add(query_589275, "key", newJString(key))
+  add(path_589274, "project", newJString(project))
+  add(query_589275, "prettyPrint", newJBool(prettyPrint))
+  add(path_589274, "manifest", newJString(manifest))
+  result = call_589273.call(path_589274, query_589275, nil, nil, nil)
 
-var deploymentmanagerManifestsGet* = Call_DeploymentmanagerManifestsGet_580230(
+var deploymentmanagerManifestsGet* = Call_DeploymentmanagerManifestsGet_589259(
     name: "deploymentmanagerManifestsGet", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com",
     route: "/{project}/global/deployments/{deployment}/manifests/{manifest}",
-    validator: validate_DeploymentmanagerManifestsGet_580231,
+    validator: validate_DeploymentmanagerManifestsGet_589260,
     base: "/deploymentmanager/v2beta/projects",
-    url: url_DeploymentmanagerManifestsGet_580232, schemes: {Scheme.Https})
+    url: url_DeploymentmanagerManifestsGet_589261, schemes: {Scheme.Https})
 type
-  Call_DeploymentmanagerResourcesList_580247 = ref object of OpenApiRestCall_579437
-proc url_DeploymentmanagerResourcesList_580249(protocol: Scheme; host: string;
+  Call_DeploymentmanagerResourcesList_589276 = ref object of OpenApiRestCall_588466
+proc url_DeploymentmanagerResourcesList_589278(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -2845,7 +2845,7 @@ proc url_DeploymentmanagerResourcesList_580249(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_DeploymentmanagerResourcesList_580248(path: JsonNode;
+proc validate_DeploymentmanagerResourcesList_589277(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Lists all resources in a given deployment.
   ## 
@@ -2859,16 +2859,16 @@ proc validate_DeploymentmanagerResourcesList_580248(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `deployment` field"
-  var valid_580250 = path.getOrDefault("deployment")
-  valid_580250 = validateParameter(valid_580250, JString, required = true,
+  var valid_589279 = path.getOrDefault("deployment")
+  valid_589279 = validateParameter(valid_589279, JString, required = true,
                                  default = nil)
-  if valid_580250 != nil:
-    section.add "deployment", valid_580250
-  var valid_580251 = path.getOrDefault("project")
-  valid_580251 = validateParameter(valid_580251, JString, required = true,
+  if valid_589279 != nil:
+    section.add "deployment", valid_589279
+  var valid_589280 = path.getOrDefault("project")
+  valid_589280 = validateParameter(valid_589280, JString, required = true,
                                  default = nil)
-  if valid_580251 != nil:
-    section.add "project", valid_580251
+  if valid_589280 != nil:
+    section.add "project", valid_589280
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -2904,61 +2904,61 @@ proc validate_DeploymentmanagerResourcesList_580248(path: JsonNode;
   ## 
   ## To filter on multiple expressions, provide each separate expression within parentheses. For example, (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake"). By default, each expression is an AND expression. However, you can include AND and OR expressions explicitly. For example, (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart = true).
   section = newJObject()
-  var valid_580252 = query.getOrDefault("fields")
-  valid_580252 = validateParameter(valid_580252, JString, required = false,
+  var valid_589281 = query.getOrDefault("fields")
+  valid_589281 = validateParameter(valid_589281, JString, required = false,
                                  default = nil)
-  if valid_580252 != nil:
-    section.add "fields", valid_580252
-  var valid_580253 = query.getOrDefault("pageToken")
-  valid_580253 = validateParameter(valid_580253, JString, required = false,
+  if valid_589281 != nil:
+    section.add "fields", valid_589281
+  var valid_589282 = query.getOrDefault("pageToken")
+  valid_589282 = validateParameter(valid_589282, JString, required = false,
                                  default = nil)
-  if valid_580253 != nil:
-    section.add "pageToken", valid_580253
-  var valid_580254 = query.getOrDefault("quotaUser")
-  valid_580254 = validateParameter(valid_580254, JString, required = false,
+  if valid_589282 != nil:
+    section.add "pageToken", valid_589282
+  var valid_589283 = query.getOrDefault("quotaUser")
+  valid_589283 = validateParameter(valid_589283, JString, required = false,
                                  default = nil)
-  if valid_580254 != nil:
-    section.add "quotaUser", valid_580254
-  var valid_580255 = query.getOrDefault("alt")
-  valid_580255 = validateParameter(valid_580255, JString, required = false,
+  if valid_589283 != nil:
+    section.add "quotaUser", valid_589283
+  var valid_589284 = query.getOrDefault("alt")
+  valid_589284 = validateParameter(valid_589284, JString, required = false,
                                  default = newJString("json"))
-  if valid_580255 != nil:
-    section.add "alt", valid_580255
-  var valid_580256 = query.getOrDefault("oauth_token")
-  valid_580256 = validateParameter(valid_580256, JString, required = false,
+  if valid_589284 != nil:
+    section.add "alt", valid_589284
+  var valid_589285 = query.getOrDefault("oauth_token")
+  valid_589285 = validateParameter(valid_589285, JString, required = false,
                                  default = nil)
-  if valid_580256 != nil:
-    section.add "oauth_token", valid_580256
-  var valid_580257 = query.getOrDefault("userIp")
-  valid_580257 = validateParameter(valid_580257, JString, required = false,
+  if valid_589285 != nil:
+    section.add "oauth_token", valid_589285
+  var valid_589286 = query.getOrDefault("userIp")
+  valid_589286 = validateParameter(valid_589286, JString, required = false,
                                  default = nil)
-  if valid_580257 != nil:
-    section.add "userIp", valid_580257
-  var valid_580258 = query.getOrDefault("maxResults")
-  valid_580258 = validateParameter(valid_580258, JInt, required = false,
+  if valid_589286 != nil:
+    section.add "userIp", valid_589286
+  var valid_589287 = query.getOrDefault("maxResults")
+  valid_589287 = validateParameter(valid_589287, JInt, required = false,
                                  default = newJInt(500))
-  if valid_580258 != nil:
-    section.add "maxResults", valid_580258
-  var valid_580259 = query.getOrDefault("orderBy")
-  valid_580259 = validateParameter(valid_580259, JString, required = false,
+  if valid_589287 != nil:
+    section.add "maxResults", valid_589287
+  var valid_589288 = query.getOrDefault("orderBy")
+  valid_589288 = validateParameter(valid_589288, JString, required = false,
                                  default = nil)
-  if valid_580259 != nil:
-    section.add "orderBy", valid_580259
-  var valid_580260 = query.getOrDefault("key")
-  valid_580260 = validateParameter(valid_580260, JString, required = false,
+  if valid_589288 != nil:
+    section.add "orderBy", valid_589288
+  var valid_589289 = query.getOrDefault("key")
+  valid_589289 = validateParameter(valid_589289, JString, required = false,
                                  default = nil)
-  if valid_580260 != nil:
-    section.add "key", valid_580260
-  var valid_580261 = query.getOrDefault("prettyPrint")
-  valid_580261 = validateParameter(valid_580261, JBool, required = false,
+  if valid_589289 != nil:
+    section.add "key", valid_589289
+  var valid_589290 = query.getOrDefault("prettyPrint")
+  valid_589290 = validateParameter(valid_589290, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580261 != nil:
-    section.add "prettyPrint", valid_580261
-  var valid_580262 = query.getOrDefault("filter")
-  valid_580262 = validateParameter(valid_580262, JString, required = false,
+  if valid_589290 != nil:
+    section.add "prettyPrint", valid_589290
+  var valid_589291 = query.getOrDefault("filter")
+  valid_589291 = validateParameter(valid_589291, JString, required = false,
                                  default = nil)
-  if valid_580262 != nil:
-    section.add "filter", valid_580262
+  if valid_589291 != nil:
+    section.add "filter", valid_589291
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -2967,20 +2967,20 @@ proc validate_DeploymentmanagerResourcesList_580248(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580263: Call_DeploymentmanagerResourcesList_580247; path: JsonNode;
+proc call*(call_589292: Call_DeploymentmanagerResourcesList_589276; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Lists all resources in a given deployment.
   ## 
-  let valid = call_580263.validator(path, query, header, formData, body)
-  let scheme = call_580263.pickScheme
+  let valid = call_589292.validator(path, query, header, formData, body)
+  let scheme = call_589292.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580263.url(scheme.get, call_580263.host, call_580263.base,
-                         call_580263.route, valid.getOrDefault("path"),
+  let url = call_589292.url(scheme.get, call_589292.host, call_589292.base,
+                         call_589292.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580263, url, valid)
+  result = hook(call_589292, url, valid)
 
-proc call*(call_580264: Call_DeploymentmanagerResourcesList_580247;
+proc call*(call_589293: Call_DeploymentmanagerResourcesList_589276;
           deployment: string; project: string; fields: string = "";
           pageToken: string = ""; quotaUser: string = ""; alt: string = "json";
           oauthToken: string = ""; userIp: string = ""; maxResults: int = 500;
@@ -3024,33 +3024,33 @@ proc call*(call_580264: Call_DeploymentmanagerResourcesList_580247;
   ## You can also filter nested fields. For example, you could specify scheduling.automaticRestart = false to include instances only if they are not scheduled for automatic restarts. You can use filtering on nested fields to filter based on resource labels.
   ## 
   ## To filter on multiple expressions, provide each separate expression within parentheses. For example, (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake"). By default, each expression is an AND expression. However, you can include AND and OR expressions explicitly. For example, (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart = true).
-  var path_580265 = newJObject()
-  var query_580266 = newJObject()
-  add(path_580265, "deployment", newJString(deployment))
-  add(query_580266, "fields", newJString(fields))
-  add(query_580266, "pageToken", newJString(pageToken))
-  add(query_580266, "quotaUser", newJString(quotaUser))
-  add(query_580266, "alt", newJString(alt))
-  add(query_580266, "oauth_token", newJString(oauthToken))
-  add(query_580266, "userIp", newJString(userIp))
-  add(query_580266, "maxResults", newJInt(maxResults))
-  add(query_580266, "orderBy", newJString(orderBy))
-  add(query_580266, "key", newJString(key))
-  add(path_580265, "project", newJString(project))
-  add(query_580266, "prettyPrint", newJBool(prettyPrint))
-  add(query_580266, "filter", newJString(filter))
-  result = call_580264.call(path_580265, query_580266, nil, nil, nil)
+  var path_589294 = newJObject()
+  var query_589295 = newJObject()
+  add(path_589294, "deployment", newJString(deployment))
+  add(query_589295, "fields", newJString(fields))
+  add(query_589295, "pageToken", newJString(pageToken))
+  add(query_589295, "quotaUser", newJString(quotaUser))
+  add(query_589295, "alt", newJString(alt))
+  add(query_589295, "oauth_token", newJString(oauthToken))
+  add(query_589295, "userIp", newJString(userIp))
+  add(query_589295, "maxResults", newJInt(maxResults))
+  add(query_589295, "orderBy", newJString(orderBy))
+  add(query_589295, "key", newJString(key))
+  add(path_589294, "project", newJString(project))
+  add(query_589295, "prettyPrint", newJBool(prettyPrint))
+  add(query_589295, "filter", newJString(filter))
+  result = call_589293.call(path_589294, query_589295, nil, nil, nil)
 
-var deploymentmanagerResourcesList* = Call_DeploymentmanagerResourcesList_580247(
+var deploymentmanagerResourcesList* = Call_DeploymentmanagerResourcesList_589276(
     name: "deploymentmanagerResourcesList", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com",
     route: "/{project}/global/deployments/{deployment}/resources",
-    validator: validate_DeploymentmanagerResourcesList_580248,
+    validator: validate_DeploymentmanagerResourcesList_589277,
     base: "/deploymentmanager/v2beta/projects",
-    url: url_DeploymentmanagerResourcesList_580249, schemes: {Scheme.Https})
+    url: url_DeploymentmanagerResourcesList_589278, schemes: {Scheme.Https})
 type
-  Call_DeploymentmanagerResourcesGet_580267 = ref object of OpenApiRestCall_579437
-proc url_DeploymentmanagerResourcesGet_580269(protocol: Scheme; host: string;
+  Call_DeploymentmanagerResourcesGet_589296 = ref object of OpenApiRestCall_588466
+proc url_DeploymentmanagerResourcesGet_589298(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -3071,7 +3071,7 @@ proc url_DeploymentmanagerResourcesGet_580269(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_DeploymentmanagerResourcesGet_580268(path: JsonNode; query: JsonNode;
+proc validate_DeploymentmanagerResourcesGet_589297(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Gets information about a single resource.
   ## 
@@ -3087,21 +3087,21 @@ proc validate_DeploymentmanagerResourcesGet_580268(path: JsonNode; query: JsonNo
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `deployment` field"
-  var valid_580270 = path.getOrDefault("deployment")
-  valid_580270 = validateParameter(valid_580270, JString, required = true,
+  var valid_589299 = path.getOrDefault("deployment")
+  valid_589299 = validateParameter(valid_589299, JString, required = true,
                                  default = nil)
-  if valid_580270 != nil:
-    section.add "deployment", valid_580270
-  var valid_580271 = path.getOrDefault("resource")
-  valid_580271 = validateParameter(valid_580271, JString, required = true,
+  if valid_589299 != nil:
+    section.add "deployment", valid_589299
+  var valid_589300 = path.getOrDefault("resource")
+  valid_589300 = validateParameter(valid_589300, JString, required = true,
                                  default = nil)
-  if valid_580271 != nil:
-    section.add "resource", valid_580271
-  var valid_580272 = path.getOrDefault("project")
-  valid_580272 = validateParameter(valid_580272, JString, required = true,
+  if valid_589300 != nil:
+    section.add "resource", valid_589300
+  var valid_589301 = path.getOrDefault("project")
+  valid_589301 = validateParameter(valid_589301, JString, required = true,
                                  default = nil)
-  if valid_580272 != nil:
-    section.add "project", valid_580272
+  if valid_589301 != nil:
+    section.add "project", valid_589301
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -3119,41 +3119,41 @@ proc validate_DeploymentmanagerResourcesGet_580268(path: JsonNode; query: JsonNo
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580273 = query.getOrDefault("fields")
-  valid_580273 = validateParameter(valid_580273, JString, required = false,
+  var valid_589302 = query.getOrDefault("fields")
+  valid_589302 = validateParameter(valid_589302, JString, required = false,
                                  default = nil)
-  if valid_580273 != nil:
-    section.add "fields", valid_580273
-  var valid_580274 = query.getOrDefault("quotaUser")
-  valid_580274 = validateParameter(valid_580274, JString, required = false,
+  if valid_589302 != nil:
+    section.add "fields", valid_589302
+  var valid_589303 = query.getOrDefault("quotaUser")
+  valid_589303 = validateParameter(valid_589303, JString, required = false,
                                  default = nil)
-  if valid_580274 != nil:
-    section.add "quotaUser", valid_580274
-  var valid_580275 = query.getOrDefault("alt")
-  valid_580275 = validateParameter(valid_580275, JString, required = false,
+  if valid_589303 != nil:
+    section.add "quotaUser", valid_589303
+  var valid_589304 = query.getOrDefault("alt")
+  valid_589304 = validateParameter(valid_589304, JString, required = false,
                                  default = newJString("json"))
-  if valid_580275 != nil:
-    section.add "alt", valid_580275
-  var valid_580276 = query.getOrDefault("oauth_token")
-  valid_580276 = validateParameter(valid_580276, JString, required = false,
+  if valid_589304 != nil:
+    section.add "alt", valid_589304
+  var valid_589305 = query.getOrDefault("oauth_token")
+  valid_589305 = validateParameter(valid_589305, JString, required = false,
                                  default = nil)
-  if valid_580276 != nil:
-    section.add "oauth_token", valid_580276
-  var valid_580277 = query.getOrDefault("userIp")
-  valid_580277 = validateParameter(valid_580277, JString, required = false,
+  if valid_589305 != nil:
+    section.add "oauth_token", valid_589305
+  var valid_589306 = query.getOrDefault("userIp")
+  valid_589306 = validateParameter(valid_589306, JString, required = false,
                                  default = nil)
-  if valid_580277 != nil:
-    section.add "userIp", valid_580277
-  var valid_580278 = query.getOrDefault("key")
-  valid_580278 = validateParameter(valid_580278, JString, required = false,
+  if valid_589306 != nil:
+    section.add "userIp", valid_589306
+  var valid_589307 = query.getOrDefault("key")
+  valid_589307 = validateParameter(valid_589307, JString, required = false,
                                  default = nil)
-  if valid_580278 != nil:
-    section.add "key", valid_580278
-  var valid_580279 = query.getOrDefault("prettyPrint")
-  valid_580279 = validateParameter(valid_580279, JBool, required = false,
+  if valid_589307 != nil:
+    section.add "key", valid_589307
+  var valid_589308 = query.getOrDefault("prettyPrint")
+  valid_589308 = validateParameter(valid_589308, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580279 != nil:
-    section.add "prettyPrint", valid_580279
+  if valid_589308 != nil:
+    section.add "prettyPrint", valid_589308
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -3162,20 +3162,20 @@ proc validate_DeploymentmanagerResourcesGet_580268(path: JsonNode; query: JsonNo
   if body != nil:
     result.add "body", body
 
-proc call*(call_580280: Call_DeploymentmanagerResourcesGet_580267; path: JsonNode;
+proc call*(call_589309: Call_DeploymentmanagerResourcesGet_589296; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Gets information about a single resource.
   ## 
-  let valid = call_580280.validator(path, query, header, formData, body)
-  let scheme = call_580280.pickScheme
+  let valid = call_589309.validator(path, query, header, formData, body)
+  let scheme = call_589309.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580280.url(scheme.get, call_580280.host, call_580280.base,
-                         call_580280.route, valid.getOrDefault("path"),
+  let url = call_589309.url(scheme.get, call_589309.host, call_589309.base,
+                         call_589309.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580280, url, valid)
+  result = hook(call_589309, url, valid)
 
-proc call*(call_580281: Call_DeploymentmanagerResourcesGet_580267;
+proc call*(call_589310: Call_DeploymentmanagerResourcesGet_589296;
           deployment: string; resource: string; project: string; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; key: string = ""; prettyPrint: bool = true): Recallable =
@@ -3201,30 +3201,30 @@ proc call*(call_580281: Call_DeploymentmanagerResourcesGet_580267;
   ##          : The project ID for this request.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_580282 = newJObject()
-  var query_580283 = newJObject()
-  add(path_580282, "deployment", newJString(deployment))
-  add(query_580283, "fields", newJString(fields))
-  add(query_580283, "quotaUser", newJString(quotaUser))
-  add(query_580283, "alt", newJString(alt))
-  add(query_580283, "oauth_token", newJString(oauthToken))
-  add(query_580283, "userIp", newJString(userIp))
-  add(query_580283, "key", newJString(key))
-  add(path_580282, "resource", newJString(resource))
-  add(path_580282, "project", newJString(project))
-  add(query_580283, "prettyPrint", newJBool(prettyPrint))
-  result = call_580281.call(path_580282, query_580283, nil, nil, nil)
+  var path_589311 = newJObject()
+  var query_589312 = newJObject()
+  add(path_589311, "deployment", newJString(deployment))
+  add(query_589312, "fields", newJString(fields))
+  add(query_589312, "quotaUser", newJString(quotaUser))
+  add(query_589312, "alt", newJString(alt))
+  add(query_589312, "oauth_token", newJString(oauthToken))
+  add(query_589312, "userIp", newJString(userIp))
+  add(query_589312, "key", newJString(key))
+  add(path_589311, "resource", newJString(resource))
+  add(path_589311, "project", newJString(project))
+  add(query_589312, "prettyPrint", newJBool(prettyPrint))
+  result = call_589310.call(path_589311, query_589312, nil, nil, nil)
 
-var deploymentmanagerResourcesGet* = Call_DeploymentmanagerResourcesGet_580267(
+var deploymentmanagerResourcesGet* = Call_DeploymentmanagerResourcesGet_589296(
     name: "deploymentmanagerResourcesGet", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com",
     route: "/{project}/global/deployments/{deployment}/resources/{resource}",
-    validator: validate_DeploymentmanagerResourcesGet_580268,
+    validator: validate_DeploymentmanagerResourcesGet_589297,
     base: "/deploymentmanager/v2beta/projects",
-    url: url_DeploymentmanagerResourcesGet_580269, schemes: {Scheme.Https})
+    url: url_DeploymentmanagerResourcesGet_589298, schemes: {Scheme.Https})
 type
-  Call_DeploymentmanagerDeploymentsStop_580284 = ref object of OpenApiRestCall_579437
-proc url_DeploymentmanagerDeploymentsStop_580286(protocol: Scheme; host: string;
+  Call_DeploymentmanagerDeploymentsStop_589313 = ref object of OpenApiRestCall_588466
+proc url_DeploymentmanagerDeploymentsStop_589315(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -3243,7 +3243,7 @@ proc url_DeploymentmanagerDeploymentsStop_580286(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_DeploymentmanagerDeploymentsStop_580285(path: JsonNode;
+proc validate_DeploymentmanagerDeploymentsStop_589314(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Stops an ongoing operation. This does not roll back any work that has already been completed, but prevents any new work from being started.
   ## 
@@ -3257,16 +3257,16 @@ proc validate_DeploymentmanagerDeploymentsStop_580285(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `deployment` field"
-  var valid_580287 = path.getOrDefault("deployment")
-  valid_580287 = validateParameter(valid_580287, JString, required = true,
+  var valid_589316 = path.getOrDefault("deployment")
+  valid_589316 = validateParameter(valid_589316, JString, required = true,
                                  default = nil)
-  if valid_580287 != nil:
-    section.add "deployment", valid_580287
-  var valid_580288 = path.getOrDefault("project")
-  valid_580288 = validateParameter(valid_580288, JString, required = true,
+  if valid_589316 != nil:
+    section.add "deployment", valid_589316
+  var valid_589317 = path.getOrDefault("project")
+  valid_589317 = validateParameter(valid_589317, JString, required = true,
                                  default = nil)
-  if valid_580288 != nil:
-    section.add "project", valid_580288
+  if valid_589317 != nil:
+    section.add "project", valid_589317
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -3284,41 +3284,41 @@ proc validate_DeploymentmanagerDeploymentsStop_580285(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580289 = query.getOrDefault("fields")
-  valid_580289 = validateParameter(valid_580289, JString, required = false,
+  var valid_589318 = query.getOrDefault("fields")
+  valid_589318 = validateParameter(valid_589318, JString, required = false,
                                  default = nil)
-  if valid_580289 != nil:
-    section.add "fields", valid_580289
-  var valid_580290 = query.getOrDefault("quotaUser")
-  valid_580290 = validateParameter(valid_580290, JString, required = false,
+  if valid_589318 != nil:
+    section.add "fields", valid_589318
+  var valid_589319 = query.getOrDefault("quotaUser")
+  valid_589319 = validateParameter(valid_589319, JString, required = false,
                                  default = nil)
-  if valid_580290 != nil:
-    section.add "quotaUser", valid_580290
-  var valid_580291 = query.getOrDefault("alt")
-  valid_580291 = validateParameter(valid_580291, JString, required = false,
+  if valid_589319 != nil:
+    section.add "quotaUser", valid_589319
+  var valid_589320 = query.getOrDefault("alt")
+  valid_589320 = validateParameter(valid_589320, JString, required = false,
                                  default = newJString("json"))
-  if valid_580291 != nil:
-    section.add "alt", valid_580291
-  var valid_580292 = query.getOrDefault("oauth_token")
-  valid_580292 = validateParameter(valid_580292, JString, required = false,
+  if valid_589320 != nil:
+    section.add "alt", valid_589320
+  var valid_589321 = query.getOrDefault("oauth_token")
+  valid_589321 = validateParameter(valid_589321, JString, required = false,
                                  default = nil)
-  if valid_580292 != nil:
-    section.add "oauth_token", valid_580292
-  var valid_580293 = query.getOrDefault("userIp")
-  valid_580293 = validateParameter(valid_580293, JString, required = false,
+  if valid_589321 != nil:
+    section.add "oauth_token", valid_589321
+  var valid_589322 = query.getOrDefault("userIp")
+  valid_589322 = validateParameter(valid_589322, JString, required = false,
                                  default = nil)
-  if valid_580293 != nil:
-    section.add "userIp", valid_580293
-  var valid_580294 = query.getOrDefault("key")
-  valid_580294 = validateParameter(valid_580294, JString, required = false,
+  if valid_589322 != nil:
+    section.add "userIp", valid_589322
+  var valid_589323 = query.getOrDefault("key")
+  valid_589323 = validateParameter(valid_589323, JString, required = false,
                                  default = nil)
-  if valid_580294 != nil:
-    section.add "key", valid_580294
-  var valid_580295 = query.getOrDefault("prettyPrint")
-  valid_580295 = validateParameter(valid_580295, JBool, required = false,
+  if valid_589323 != nil:
+    section.add "key", valid_589323
+  var valid_589324 = query.getOrDefault("prettyPrint")
+  valid_589324 = validateParameter(valid_589324, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580295 != nil:
-    section.add "prettyPrint", valid_580295
+  if valid_589324 != nil:
+    section.add "prettyPrint", valid_589324
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -3330,21 +3330,21 @@ proc validate_DeploymentmanagerDeploymentsStop_580285(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580297: Call_DeploymentmanagerDeploymentsStop_580284;
+proc call*(call_589326: Call_DeploymentmanagerDeploymentsStop_589313;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Stops an ongoing operation. This does not roll back any work that has already been completed, but prevents any new work from being started.
   ## 
-  let valid = call_580297.validator(path, query, header, formData, body)
-  let scheme = call_580297.pickScheme
+  let valid = call_589326.validator(path, query, header, formData, body)
+  let scheme = call_589326.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580297.url(scheme.get, call_580297.host, call_580297.base,
-                         call_580297.route, valid.getOrDefault("path"),
+  let url = call_589326.url(scheme.get, call_589326.host, call_589326.base,
+                         call_589326.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580297, url, valid)
+  result = hook(call_589326, url, valid)
 
-proc call*(call_580298: Call_DeploymentmanagerDeploymentsStop_580284;
+proc call*(call_589327: Call_DeploymentmanagerDeploymentsStop_589313;
           deployment: string; project: string; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; key: string = ""; body: JsonNode = nil;
@@ -3370,32 +3370,32 @@ proc call*(call_580298: Call_DeploymentmanagerDeploymentsStop_580284;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_580299 = newJObject()
-  var query_580300 = newJObject()
-  var body_580301 = newJObject()
-  add(path_580299, "deployment", newJString(deployment))
-  add(query_580300, "fields", newJString(fields))
-  add(query_580300, "quotaUser", newJString(quotaUser))
-  add(query_580300, "alt", newJString(alt))
-  add(query_580300, "oauth_token", newJString(oauthToken))
-  add(query_580300, "userIp", newJString(userIp))
-  add(query_580300, "key", newJString(key))
-  add(path_580299, "project", newJString(project))
+  var path_589328 = newJObject()
+  var query_589329 = newJObject()
+  var body_589330 = newJObject()
+  add(path_589328, "deployment", newJString(deployment))
+  add(query_589329, "fields", newJString(fields))
+  add(query_589329, "quotaUser", newJString(quotaUser))
+  add(query_589329, "alt", newJString(alt))
+  add(query_589329, "oauth_token", newJString(oauthToken))
+  add(query_589329, "userIp", newJString(userIp))
+  add(query_589329, "key", newJString(key))
+  add(path_589328, "project", newJString(project))
   if body != nil:
-    body_580301 = body
-  add(query_580300, "prettyPrint", newJBool(prettyPrint))
-  result = call_580298.call(path_580299, query_580300, nil, nil, body_580301)
+    body_589330 = body
+  add(query_589329, "prettyPrint", newJBool(prettyPrint))
+  result = call_589327.call(path_589328, query_589329, nil, nil, body_589330)
 
-var deploymentmanagerDeploymentsStop* = Call_DeploymentmanagerDeploymentsStop_580284(
+var deploymentmanagerDeploymentsStop* = Call_DeploymentmanagerDeploymentsStop_589313(
     name: "deploymentmanagerDeploymentsStop", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com",
     route: "/{project}/global/deployments/{deployment}/stop",
-    validator: validate_DeploymentmanagerDeploymentsStop_580285,
+    validator: validate_DeploymentmanagerDeploymentsStop_589314,
     base: "/deploymentmanager/v2beta/projects",
-    url: url_DeploymentmanagerDeploymentsStop_580286, schemes: {Scheme.Https})
+    url: url_DeploymentmanagerDeploymentsStop_589315, schemes: {Scheme.Https})
 type
-  Call_DeploymentmanagerDeploymentsGetIamPolicy_580302 = ref object of OpenApiRestCall_579437
-proc url_DeploymentmanagerDeploymentsGetIamPolicy_580304(protocol: Scheme;
+  Call_DeploymentmanagerDeploymentsGetIamPolicy_589331 = ref object of OpenApiRestCall_588466
+proc url_DeploymentmanagerDeploymentsGetIamPolicy_589333(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -3414,7 +3414,7 @@ proc url_DeploymentmanagerDeploymentsGetIamPolicy_580304(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_DeploymentmanagerDeploymentsGetIamPolicy_580303(path: JsonNode;
+proc validate_DeploymentmanagerDeploymentsGetIamPolicy_589332(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Gets the access control policy for a resource. May be empty if no such policy or resource exists.
   ## 
@@ -3427,16 +3427,16 @@ proc validate_DeploymentmanagerDeploymentsGetIamPolicy_580303(path: JsonNode;
   ##          : Project ID for this request.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `resource` field"
-  var valid_580305 = path.getOrDefault("resource")
-  valid_580305 = validateParameter(valid_580305, JString, required = true,
+  var valid_589334 = path.getOrDefault("resource")
+  valid_589334 = validateParameter(valid_589334, JString, required = true,
                                  default = nil)
-  if valid_580305 != nil:
-    section.add "resource", valid_580305
-  var valid_580306 = path.getOrDefault("project")
-  valid_580306 = validateParameter(valid_580306, JString, required = true,
+  if valid_589334 != nil:
+    section.add "resource", valid_589334
+  var valid_589335 = path.getOrDefault("project")
+  valid_589335 = validateParameter(valid_589335, JString, required = true,
                                  default = nil)
-  if valid_580306 != nil:
-    section.add "project", valid_580306
+  if valid_589335 != nil:
+    section.add "project", valid_589335
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -3454,41 +3454,41 @@ proc validate_DeploymentmanagerDeploymentsGetIamPolicy_580303(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580307 = query.getOrDefault("fields")
-  valid_580307 = validateParameter(valid_580307, JString, required = false,
+  var valid_589336 = query.getOrDefault("fields")
+  valid_589336 = validateParameter(valid_589336, JString, required = false,
                                  default = nil)
-  if valid_580307 != nil:
-    section.add "fields", valid_580307
-  var valid_580308 = query.getOrDefault("quotaUser")
-  valid_580308 = validateParameter(valid_580308, JString, required = false,
+  if valid_589336 != nil:
+    section.add "fields", valid_589336
+  var valid_589337 = query.getOrDefault("quotaUser")
+  valid_589337 = validateParameter(valid_589337, JString, required = false,
                                  default = nil)
-  if valid_580308 != nil:
-    section.add "quotaUser", valid_580308
-  var valid_580309 = query.getOrDefault("alt")
-  valid_580309 = validateParameter(valid_580309, JString, required = false,
+  if valid_589337 != nil:
+    section.add "quotaUser", valid_589337
+  var valid_589338 = query.getOrDefault("alt")
+  valid_589338 = validateParameter(valid_589338, JString, required = false,
                                  default = newJString("json"))
-  if valid_580309 != nil:
-    section.add "alt", valid_580309
-  var valid_580310 = query.getOrDefault("oauth_token")
-  valid_580310 = validateParameter(valid_580310, JString, required = false,
+  if valid_589338 != nil:
+    section.add "alt", valid_589338
+  var valid_589339 = query.getOrDefault("oauth_token")
+  valid_589339 = validateParameter(valid_589339, JString, required = false,
                                  default = nil)
-  if valid_580310 != nil:
-    section.add "oauth_token", valid_580310
-  var valid_580311 = query.getOrDefault("userIp")
-  valid_580311 = validateParameter(valid_580311, JString, required = false,
+  if valid_589339 != nil:
+    section.add "oauth_token", valid_589339
+  var valid_589340 = query.getOrDefault("userIp")
+  valid_589340 = validateParameter(valid_589340, JString, required = false,
                                  default = nil)
-  if valid_580311 != nil:
-    section.add "userIp", valid_580311
-  var valid_580312 = query.getOrDefault("key")
-  valid_580312 = validateParameter(valid_580312, JString, required = false,
+  if valid_589340 != nil:
+    section.add "userIp", valid_589340
+  var valid_589341 = query.getOrDefault("key")
+  valid_589341 = validateParameter(valid_589341, JString, required = false,
                                  default = nil)
-  if valid_580312 != nil:
-    section.add "key", valid_580312
-  var valid_580313 = query.getOrDefault("prettyPrint")
-  valid_580313 = validateParameter(valid_580313, JBool, required = false,
+  if valid_589341 != nil:
+    section.add "key", valid_589341
+  var valid_589342 = query.getOrDefault("prettyPrint")
+  valid_589342 = validateParameter(valid_589342, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580313 != nil:
-    section.add "prettyPrint", valid_580313
+  if valid_589342 != nil:
+    section.add "prettyPrint", valid_589342
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -3497,21 +3497,21 @@ proc validate_DeploymentmanagerDeploymentsGetIamPolicy_580303(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580314: Call_DeploymentmanagerDeploymentsGetIamPolicy_580302;
+proc call*(call_589343: Call_DeploymentmanagerDeploymentsGetIamPolicy_589331;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Gets the access control policy for a resource. May be empty if no such policy or resource exists.
   ## 
-  let valid = call_580314.validator(path, query, header, formData, body)
-  let scheme = call_580314.pickScheme
+  let valid = call_589343.validator(path, query, header, formData, body)
+  let scheme = call_589343.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580314.url(scheme.get, call_580314.host, call_580314.base,
-                         call_580314.route, valid.getOrDefault("path"),
+  let url = call_589343.url(scheme.get, call_589343.host, call_589343.base,
+                         call_589343.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580314, url, valid)
+  result = hook(call_589343, url, valid)
 
-proc call*(call_580315: Call_DeploymentmanagerDeploymentsGetIamPolicy_580302;
+proc call*(call_589344: Call_DeploymentmanagerDeploymentsGetIamPolicy_589331;
           resource: string; project: string; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; key: string = ""; prettyPrint: bool = true): Recallable =
@@ -3535,30 +3535,30 @@ proc call*(call_580315: Call_DeploymentmanagerDeploymentsGetIamPolicy_580302;
   ##          : Project ID for this request.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_580316 = newJObject()
-  var query_580317 = newJObject()
-  add(query_580317, "fields", newJString(fields))
-  add(query_580317, "quotaUser", newJString(quotaUser))
-  add(query_580317, "alt", newJString(alt))
-  add(query_580317, "oauth_token", newJString(oauthToken))
-  add(query_580317, "userIp", newJString(userIp))
-  add(query_580317, "key", newJString(key))
-  add(path_580316, "resource", newJString(resource))
-  add(path_580316, "project", newJString(project))
-  add(query_580317, "prettyPrint", newJBool(prettyPrint))
-  result = call_580315.call(path_580316, query_580317, nil, nil, nil)
+  var path_589345 = newJObject()
+  var query_589346 = newJObject()
+  add(query_589346, "fields", newJString(fields))
+  add(query_589346, "quotaUser", newJString(quotaUser))
+  add(query_589346, "alt", newJString(alt))
+  add(query_589346, "oauth_token", newJString(oauthToken))
+  add(query_589346, "userIp", newJString(userIp))
+  add(query_589346, "key", newJString(key))
+  add(path_589345, "resource", newJString(resource))
+  add(path_589345, "project", newJString(project))
+  add(query_589346, "prettyPrint", newJBool(prettyPrint))
+  result = call_589344.call(path_589345, query_589346, nil, nil, nil)
 
-var deploymentmanagerDeploymentsGetIamPolicy* = Call_DeploymentmanagerDeploymentsGetIamPolicy_580302(
+var deploymentmanagerDeploymentsGetIamPolicy* = Call_DeploymentmanagerDeploymentsGetIamPolicy_589331(
     name: "deploymentmanagerDeploymentsGetIamPolicy", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com",
     route: "/{project}/global/deployments/{resource}/getIamPolicy",
-    validator: validate_DeploymentmanagerDeploymentsGetIamPolicy_580303,
+    validator: validate_DeploymentmanagerDeploymentsGetIamPolicy_589332,
     base: "/deploymentmanager/v2beta/projects",
-    url: url_DeploymentmanagerDeploymentsGetIamPolicy_580304,
+    url: url_DeploymentmanagerDeploymentsGetIamPolicy_589333,
     schemes: {Scheme.Https})
 type
-  Call_DeploymentmanagerDeploymentsSetIamPolicy_580318 = ref object of OpenApiRestCall_579437
-proc url_DeploymentmanagerDeploymentsSetIamPolicy_580320(protocol: Scheme;
+  Call_DeploymentmanagerDeploymentsSetIamPolicy_589347 = ref object of OpenApiRestCall_588466
+proc url_DeploymentmanagerDeploymentsSetIamPolicy_589349(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -3577,7 +3577,7 @@ proc url_DeploymentmanagerDeploymentsSetIamPolicy_580320(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_DeploymentmanagerDeploymentsSetIamPolicy_580319(path: JsonNode;
+proc validate_DeploymentmanagerDeploymentsSetIamPolicy_589348(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Sets the access control policy on the specified resource. Replaces any existing policy.
   ## 
@@ -3590,16 +3590,16 @@ proc validate_DeploymentmanagerDeploymentsSetIamPolicy_580319(path: JsonNode;
   ##          : Project ID for this request.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `resource` field"
-  var valid_580321 = path.getOrDefault("resource")
-  valid_580321 = validateParameter(valid_580321, JString, required = true,
+  var valid_589350 = path.getOrDefault("resource")
+  valid_589350 = validateParameter(valid_589350, JString, required = true,
                                  default = nil)
-  if valid_580321 != nil:
-    section.add "resource", valid_580321
-  var valid_580322 = path.getOrDefault("project")
-  valid_580322 = validateParameter(valid_580322, JString, required = true,
+  if valid_589350 != nil:
+    section.add "resource", valid_589350
+  var valid_589351 = path.getOrDefault("project")
+  valid_589351 = validateParameter(valid_589351, JString, required = true,
                                  default = nil)
-  if valid_580322 != nil:
-    section.add "project", valid_580322
+  if valid_589351 != nil:
+    section.add "project", valid_589351
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -3617,41 +3617,41 @@ proc validate_DeploymentmanagerDeploymentsSetIamPolicy_580319(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580323 = query.getOrDefault("fields")
-  valid_580323 = validateParameter(valid_580323, JString, required = false,
+  var valid_589352 = query.getOrDefault("fields")
+  valid_589352 = validateParameter(valid_589352, JString, required = false,
                                  default = nil)
-  if valid_580323 != nil:
-    section.add "fields", valid_580323
-  var valid_580324 = query.getOrDefault("quotaUser")
-  valid_580324 = validateParameter(valid_580324, JString, required = false,
+  if valid_589352 != nil:
+    section.add "fields", valid_589352
+  var valid_589353 = query.getOrDefault("quotaUser")
+  valid_589353 = validateParameter(valid_589353, JString, required = false,
                                  default = nil)
-  if valid_580324 != nil:
-    section.add "quotaUser", valid_580324
-  var valid_580325 = query.getOrDefault("alt")
-  valid_580325 = validateParameter(valid_580325, JString, required = false,
+  if valid_589353 != nil:
+    section.add "quotaUser", valid_589353
+  var valid_589354 = query.getOrDefault("alt")
+  valid_589354 = validateParameter(valid_589354, JString, required = false,
                                  default = newJString("json"))
-  if valid_580325 != nil:
-    section.add "alt", valid_580325
-  var valid_580326 = query.getOrDefault("oauth_token")
-  valid_580326 = validateParameter(valid_580326, JString, required = false,
+  if valid_589354 != nil:
+    section.add "alt", valid_589354
+  var valid_589355 = query.getOrDefault("oauth_token")
+  valid_589355 = validateParameter(valid_589355, JString, required = false,
                                  default = nil)
-  if valid_580326 != nil:
-    section.add "oauth_token", valid_580326
-  var valid_580327 = query.getOrDefault("userIp")
-  valid_580327 = validateParameter(valid_580327, JString, required = false,
+  if valid_589355 != nil:
+    section.add "oauth_token", valid_589355
+  var valid_589356 = query.getOrDefault("userIp")
+  valid_589356 = validateParameter(valid_589356, JString, required = false,
                                  default = nil)
-  if valid_580327 != nil:
-    section.add "userIp", valid_580327
-  var valid_580328 = query.getOrDefault("key")
-  valid_580328 = validateParameter(valid_580328, JString, required = false,
+  if valid_589356 != nil:
+    section.add "userIp", valid_589356
+  var valid_589357 = query.getOrDefault("key")
+  valid_589357 = validateParameter(valid_589357, JString, required = false,
                                  default = nil)
-  if valid_580328 != nil:
-    section.add "key", valid_580328
-  var valid_580329 = query.getOrDefault("prettyPrint")
-  valid_580329 = validateParameter(valid_580329, JBool, required = false,
+  if valid_589357 != nil:
+    section.add "key", valid_589357
+  var valid_589358 = query.getOrDefault("prettyPrint")
+  valid_589358 = validateParameter(valid_589358, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580329 != nil:
-    section.add "prettyPrint", valid_580329
+  if valid_589358 != nil:
+    section.add "prettyPrint", valid_589358
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -3663,21 +3663,21 @@ proc validate_DeploymentmanagerDeploymentsSetIamPolicy_580319(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580331: Call_DeploymentmanagerDeploymentsSetIamPolicy_580318;
+proc call*(call_589360: Call_DeploymentmanagerDeploymentsSetIamPolicy_589347;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Sets the access control policy on the specified resource. Replaces any existing policy.
   ## 
-  let valid = call_580331.validator(path, query, header, formData, body)
-  let scheme = call_580331.pickScheme
+  let valid = call_589360.validator(path, query, header, formData, body)
+  let scheme = call_589360.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580331.url(scheme.get, call_580331.host, call_580331.base,
-                         call_580331.route, valid.getOrDefault("path"),
+  let url = call_589360.url(scheme.get, call_589360.host, call_589360.base,
+                         call_589360.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580331, url, valid)
+  result = hook(call_589360, url, valid)
 
-proc call*(call_580332: Call_DeploymentmanagerDeploymentsSetIamPolicy_580318;
+proc call*(call_589361: Call_DeploymentmanagerDeploymentsSetIamPolicy_589347;
           resource: string; project: string; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; key: string = ""; body: JsonNode = nil;
@@ -3703,33 +3703,33 @@ proc call*(call_580332: Call_DeploymentmanagerDeploymentsSetIamPolicy_580318;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_580333 = newJObject()
-  var query_580334 = newJObject()
-  var body_580335 = newJObject()
-  add(query_580334, "fields", newJString(fields))
-  add(query_580334, "quotaUser", newJString(quotaUser))
-  add(query_580334, "alt", newJString(alt))
-  add(query_580334, "oauth_token", newJString(oauthToken))
-  add(query_580334, "userIp", newJString(userIp))
-  add(query_580334, "key", newJString(key))
-  add(path_580333, "resource", newJString(resource))
-  add(path_580333, "project", newJString(project))
+  var path_589362 = newJObject()
+  var query_589363 = newJObject()
+  var body_589364 = newJObject()
+  add(query_589363, "fields", newJString(fields))
+  add(query_589363, "quotaUser", newJString(quotaUser))
+  add(query_589363, "alt", newJString(alt))
+  add(query_589363, "oauth_token", newJString(oauthToken))
+  add(query_589363, "userIp", newJString(userIp))
+  add(query_589363, "key", newJString(key))
+  add(path_589362, "resource", newJString(resource))
+  add(path_589362, "project", newJString(project))
   if body != nil:
-    body_580335 = body
-  add(query_580334, "prettyPrint", newJBool(prettyPrint))
-  result = call_580332.call(path_580333, query_580334, nil, nil, body_580335)
+    body_589364 = body
+  add(query_589363, "prettyPrint", newJBool(prettyPrint))
+  result = call_589361.call(path_589362, query_589363, nil, nil, body_589364)
 
-var deploymentmanagerDeploymentsSetIamPolicy* = Call_DeploymentmanagerDeploymentsSetIamPolicy_580318(
+var deploymentmanagerDeploymentsSetIamPolicy* = Call_DeploymentmanagerDeploymentsSetIamPolicy_589347(
     name: "deploymentmanagerDeploymentsSetIamPolicy", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com",
     route: "/{project}/global/deployments/{resource}/setIamPolicy",
-    validator: validate_DeploymentmanagerDeploymentsSetIamPolicy_580319,
+    validator: validate_DeploymentmanagerDeploymentsSetIamPolicy_589348,
     base: "/deploymentmanager/v2beta/projects",
-    url: url_DeploymentmanagerDeploymentsSetIamPolicy_580320,
+    url: url_DeploymentmanagerDeploymentsSetIamPolicy_589349,
     schemes: {Scheme.Https})
 type
-  Call_DeploymentmanagerDeploymentsTestIamPermissions_580336 = ref object of OpenApiRestCall_579437
-proc url_DeploymentmanagerDeploymentsTestIamPermissions_580338(protocol: Scheme;
+  Call_DeploymentmanagerDeploymentsTestIamPermissions_589365 = ref object of OpenApiRestCall_588466
+proc url_DeploymentmanagerDeploymentsTestIamPermissions_589367(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -3748,7 +3748,7 @@ proc url_DeploymentmanagerDeploymentsTestIamPermissions_580338(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_DeploymentmanagerDeploymentsTestIamPermissions_580337(
+proc validate_DeploymentmanagerDeploymentsTestIamPermissions_589366(
     path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
     body: JsonNode): JsonNode =
   ## Returns permissions that a caller has on the specified resource.
@@ -3762,16 +3762,16 @@ proc validate_DeploymentmanagerDeploymentsTestIamPermissions_580337(
   ##          : Project ID for this request.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `resource` field"
-  var valid_580339 = path.getOrDefault("resource")
-  valid_580339 = validateParameter(valid_580339, JString, required = true,
+  var valid_589368 = path.getOrDefault("resource")
+  valid_589368 = validateParameter(valid_589368, JString, required = true,
                                  default = nil)
-  if valid_580339 != nil:
-    section.add "resource", valid_580339
-  var valid_580340 = path.getOrDefault("project")
-  valid_580340 = validateParameter(valid_580340, JString, required = true,
+  if valid_589368 != nil:
+    section.add "resource", valid_589368
+  var valid_589369 = path.getOrDefault("project")
+  valid_589369 = validateParameter(valid_589369, JString, required = true,
                                  default = nil)
-  if valid_580340 != nil:
-    section.add "project", valid_580340
+  if valid_589369 != nil:
+    section.add "project", valid_589369
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -3789,41 +3789,41 @@ proc validate_DeploymentmanagerDeploymentsTestIamPermissions_580337(
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580341 = query.getOrDefault("fields")
-  valid_580341 = validateParameter(valid_580341, JString, required = false,
+  var valid_589370 = query.getOrDefault("fields")
+  valid_589370 = validateParameter(valid_589370, JString, required = false,
                                  default = nil)
-  if valid_580341 != nil:
-    section.add "fields", valid_580341
-  var valid_580342 = query.getOrDefault("quotaUser")
-  valid_580342 = validateParameter(valid_580342, JString, required = false,
+  if valid_589370 != nil:
+    section.add "fields", valid_589370
+  var valid_589371 = query.getOrDefault("quotaUser")
+  valid_589371 = validateParameter(valid_589371, JString, required = false,
                                  default = nil)
-  if valid_580342 != nil:
-    section.add "quotaUser", valid_580342
-  var valid_580343 = query.getOrDefault("alt")
-  valid_580343 = validateParameter(valid_580343, JString, required = false,
+  if valid_589371 != nil:
+    section.add "quotaUser", valid_589371
+  var valid_589372 = query.getOrDefault("alt")
+  valid_589372 = validateParameter(valid_589372, JString, required = false,
                                  default = newJString("json"))
-  if valid_580343 != nil:
-    section.add "alt", valid_580343
-  var valid_580344 = query.getOrDefault("oauth_token")
-  valid_580344 = validateParameter(valid_580344, JString, required = false,
+  if valid_589372 != nil:
+    section.add "alt", valid_589372
+  var valid_589373 = query.getOrDefault("oauth_token")
+  valid_589373 = validateParameter(valid_589373, JString, required = false,
                                  default = nil)
-  if valid_580344 != nil:
-    section.add "oauth_token", valid_580344
-  var valid_580345 = query.getOrDefault("userIp")
-  valid_580345 = validateParameter(valid_580345, JString, required = false,
+  if valid_589373 != nil:
+    section.add "oauth_token", valid_589373
+  var valid_589374 = query.getOrDefault("userIp")
+  valid_589374 = validateParameter(valid_589374, JString, required = false,
                                  default = nil)
-  if valid_580345 != nil:
-    section.add "userIp", valid_580345
-  var valid_580346 = query.getOrDefault("key")
-  valid_580346 = validateParameter(valid_580346, JString, required = false,
+  if valid_589374 != nil:
+    section.add "userIp", valid_589374
+  var valid_589375 = query.getOrDefault("key")
+  valid_589375 = validateParameter(valid_589375, JString, required = false,
                                  default = nil)
-  if valid_580346 != nil:
-    section.add "key", valid_580346
-  var valid_580347 = query.getOrDefault("prettyPrint")
-  valid_580347 = validateParameter(valid_580347, JBool, required = false,
+  if valid_589375 != nil:
+    section.add "key", valid_589375
+  var valid_589376 = query.getOrDefault("prettyPrint")
+  valid_589376 = validateParameter(valid_589376, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580347 != nil:
-    section.add "prettyPrint", valid_580347
+  if valid_589376 != nil:
+    section.add "prettyPrint", valid_589376
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -3835,21 +3835,21 @@ proc validate_DeploymentmanagerDeploymentsTestIamPermissions_580337(
   if body != nil:
     result.add "body", body
 
-proc call*(call_580349: Call_DeploymentmanagerDeploymentsTestIamPermissions_580336;
+proc call*(call_589378: Call_DeploymentmanagerDeploymentsTestIamPermissions_589365;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Returns permissions that a caller has on the specified resource.
   ## 
-  let valid = call_580349.validator(path, query, header, formData, body)
-  let scheme = call_580349.pickScheme
+  let valid = call_589378.validator(path, query, header, formData, body)
+  let scheme = call_589378.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580349.url(scheme.get, call_580349.host, call_580349.base,
-                         call_580349.route, valid.getOrDefault("path"),
+  let url = call_589378.url(scheme.get, call_589378.host, call_589378.base,
+                         call_589378.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580349, url, valid)
+  result = hook(call_589378, url, valid)
 
-proc call*(call_580350: Call_DeploymentmanagerDeploymentsTestIamPermissions_580336;
+proc call*(call_589379: Call_DeploymentmanagerDeploymentsTestIamPermissions_589365;
           resource: string; project: string; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; key: string = ""; body: JsonNode = nil;
@@ -3875,33 +3875,33 @@ proc call*(call_580350: Call_DeploymentmanagerDeploymentsTestIamPermissions_5803
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_580351 = newJObject()
-  var query_580352 = newJObject()
-  var body_580353 = newJObject()
-  add(query_580352, "fields", newJString(fields))
-  add(query_580352, "quotaUser", newJString(quotaUser))
-  add(query_580352, "alt", newJString(alt))
-  add(query_580352, "oauth_token", newJString(oauthToken))
-  add(query_580352, "userIp", newJString(userIp))
-  add(query_580352, "key", newJString(key))
-  add(path_580351, "resource", newJString(resource))
-  add(path_580351, "project", newJString(project))
+  var path_589380 = newJObject()
+  var query_589381 = newJObject()
+  var body_589382 = newJObject()
+  add(query_589381, "fields", newJString(fields))
+  add(query_589381, "quotaUser", newJString(quotaUser))
+  add(query_589381, "alt", newJString(alt))
+  add(query_589381, "oauth_token", newJString(oauthToken))
+  add(query_589381, "userIp", newJString(userIp))
+  add(query_589381, "key", newJString(key))
+  add(path_589380, "resource", newJString(resource))
+  add(path_589380, "project", newJString(project))
   if body != nil:
-    body_580353 = body
-  add(query_580352, "prettyPrint", newJBool(prettyPrint))
-  result = call_580350.call(path_580351, query_580352, nil, nil, body_580353)
+    body_589382 = body
+  add(query_589381, "prettyPrint", newJBool(prettyPrint))
+  result = call_589379.call(path_589380, query_589381, nil, nil, body_589382)
 
-var deploymentmanagerDeploymentsTestIamPermissions* = Call_DeploymentmanagerDeploymentsTestIamPermissions_580336(
+var deploymentmanagerDeploymentsTestIamPermissions* = Call_DeploymentmanagerDeploymentsTestIamPermissions_589365(
     name: "deploymentmanagerDeploymentsTestIamPermissions",
     meth: HttpMethod.HttpPost, host: "www.googleapis.com",
     route: "/{project}/global/deployments/{resource}/testIamPermissions",
-    validator: validate_DeploymentmanagerDeploymentsTestIamPermissions_580337,
+    validator: validate_DeploymentmanagerDeploymentsTestIamPermissions_589366,
     base: "/deploymentmanager/v2beta/projects",
-    url: url_DeploymentmanagerDeploymentsTestIamPermissions_580338,
+    url: url_DeploymentmanagerDeploymentsTestIamPermissions_589367,
     schemes: {Scheme.Https})
 type
-  Call_DeploymentmanagerOperationsList_580354 = ref object of OpenApiRestCall_579437
-proc url_DeploymentmanagerOperationsList_580356(protocol: Scheme; host: string;
+  Call_DeploymentmanagerOperationsList_589383 = ref object of OpenApiRestCall_588466
+proc url_DeploymentmanagerOperationsList_589385(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -3917,7 +3917,7 @@ proc url_DeploymentmanagerOperationsList_580356(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_DeploymentmanagerOperationsList_580355(path: JsonNode;
+proc validate_DeploymentmanagerOperationsList_589384(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Lists all operations for a project.
   ## 
@@ -3928,11 +3928,11 @@ proc validate_DeploymentmanagerOperationsList_580355(path: JsonNode;
   ##          : The project ID for this request.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `project` field"
-  var valid_580357 = path.getOrDefault("project")
-  valid_580357 = validateParameter(valid_580357, JString, required = true,
+  var valid_589386 = path.getOrDefault("project")
+  valid_589386 = validateParameter(valid_589386, JString, required = true,
                                  default = nil)
-  if valid_580357 != nil:
-    section.add "project", valid_580357
+  if valid_589386 != nil:
+    section.add "project", valid_589386
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -3968,61 +3968,61 @@ proc validate_DeploymentmanagerOperationsList_580355(path: JsonNode;
   ## 
   ## To filter on multiple expressions, provide each separate expression within parentheses. For example, (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake"). By default, each expression is an AND expression. However, you can include AND and OR expressions explicitly. For example, (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart = true).
   section = newJObject()
-  var valid_580358 = query.getOrDefault("fields")
-  valid_580358 = validateParameter(valid_580358, JString, required = false,
+  var valid_589387 = query.getOrDefault("fields")
+  valid_589387 = validateParameter(valid_589387, JString, required = false,
                                  default = nil)
-  if valid_580358 != nil:
-    section.add "fields", valid_580358
-  var valid_580359 = query.getOrDefault("pageToken")
-  valid_580359 = validateParameter(valid_580359, JString, required = false,
+  if valid_589387 != nil:
+    section.add "fields", valid_589387
+  var valid_589388 = query.getOrDefault("pageToken")
+  valid_589388 = validateParameter(valid_589388, JString, required = false,
                                  default = nil)
-  if valid_580359 != nil:
-    section.add "pageToken", valid_580359
-  var valid_580360 = query.getOrDefault("quotaUser")
-  valid_580360 = validateParameter(valid_580360, JString, required = false,
+  if valid_589388 != nil:
+    section.add "pageToken", valid_589388
+  var valid_589389 = query.getOrDefault("quotaUser")
+  valid_589389 = validateParameter(valid_589389, JString, required = false,
                                  default = nil)
-  if valid_580360 != nil:
-    section.add "quotaUser", valid_580360
-  var valid_580361 = query.getOrDefault("alt")
-  valid_580361 = validateParameter(valid_580361, JString, required = false,
+  if valid_589389 != nil:
+    section.add "quotaUser", valid_589389
+  var valid_589390 = query.getOrDefault("alt")
+  valid_589390 = validateParameter(valid_589390, JString, required = false,
                                  default = newJString("json"))
-  if valid_580361 != nil:
-    section.add "alt", valid_580361
-  var valid_580362 = query.getOrDefault("oauth_token")
-  valid_580362 = validateParameter(valid_580362, JString, required = false,
+  if valid_589390 != nil:
+    section.add "alt", valid_589390
+  var valid_589391 = query.getOrDefault("oauth_token")
+  valid_589391 = validateParameter(valid_589391, JString, required = false,
                                  default = nil)
-  if valid_580362 != nil:
-    section.add "oauth_token", valid_580362
-  var valid_580363 = query.getOrDefault("userIp")
-  valid_580363 = validateParameter(valid_580363, JString, required = false,
+  if valid_589391 != nil:
+    section.add "oauth_token", valid_589391
+  var valid_589392 = query.getOrDefault("userIp")
+  valid_589392 = validateParameter(valid_589392, JString, required = false,
                                  default = nil)
-  if valid_580363 != nil:
-    section.add "userIp", valid_580363
-  var valid_580364 = query.getOrDefault("maxResults")
-  valid_580364 = validateParameter(valid_580364, JInt, required = false,
+  if valid_589392 != nil:
+    section.add "userIp", valid_589392
+  var valid_589393 = query.getOrDefault("maxResults")
+  valid_589393 = validateParameter(valid_589393, JInt, required = false,
                                  default = newJInt(500))
-  if valid_580364 != nil:
-    section.add "maxResults", valid_580364
-  var valid_580365 = query.getOrDefault("orderBy")
-  valid_580365 = validateParameter(valid_580365, JString, required = false,
+  if valid_589393 != nil:
+    section.add "maxResults", valid_589393
+  var valid_589394 = query.getOrDefault("orderBy")
+  valid_589394 = validateParameter(valid_589394, JString, required = false,
                                  default = nil)
-  if valid_580365 != nil:
-    section.add "orderBy", valid_580365
-  var valid_580366 = query.getOrDefault("key")
-  valid_580366 = validateParameter(valid_580366, JString, required = false,
+  if valid_589394 != nil:
+    section.add "orderBy", valid_589394
+  var valid_589395 = query.getOrDefault("key")
+  valid_589395 = validateParameter(valid_589395, JString, required = false,
                                  default = nil)
-  if valid_580366 != nil:
-    section.add "key", valid_580366
-  var valid_580367 = query.getOrDefault("prettyPrint")
-  valid_580367 = validateParameter(valid_580367, JBool, required = false,
+  if valid_589395 != nil:
+    section.add "key", valid_589395
+  var valid_589396 = query.getOrDefault("prettyPrint")
+  valid_589396 = validateParameter(valid_589396, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580367 != nil:
-    section.add "prettyPrint", valid_580367
-  var valid_580368 = query.getOrDefault("filter")
-  valid_580368 = validateParameter(valid_580368, JString, required = false,
+  if valid_589396 != nil:
+    section.add "prettyPrint", valid_589396
+  var valid_589397 = query.getOrDefault("filter")
+  valid_589397 = validateParameter(valid_589397, JString, required = false,
                                  default = nil)
-  if valid_580368 != nil:
-    section.add "filter", valid_580368
+  if valid_589397 != nil:
+    section.add "filter", valid_589397
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -4031,21 +4031,21 @@ proc validate_DeploymentmanagerOperationsList_580355(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580369: Call_DeploymentmanagerOperationsList_580354;
+proc call*(call_589398: Call_DeploymentmanagerOperationsList_589383;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Lists all operations for a project.
   ## 
-  let valid = call_580369.validator(path, query, header, formData, body)
-  let scheme = call_580369.pickScheme
+  let valid = call_589398.validator(path, query, header, formData, body)
+  let scheme = call_589398.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580369.url(scheme.get, call_580369.host, call_580369.base,
-                         call_580369.route, valid.getOrDefault("path"),
+  let url = call_589398.url(scheme.get, call_589398.host, call_589398.base,
+                         call_589398.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580369, url, valid)
+  result = hook(call_589398, url, valid)
 
-proc call*(call_580370: Call_DeploymentmanagerOperationsList_580354;
+proc call*(call_589399: Call_DeploymentmanagerOperationsList_589383;
           project: string; fields: string = ""; pageToken: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; maxResults: int = 500; orderBy: string = "";
@@ -4086,31 +4086,31 @@ proc call*(call_580370: Call_DeploymentmanagerOperationsList_580354;
   ## You can also filter nested fields. For example, you could specify scheduling.automaticRestart = false to include instances only if they are not scheduled for automatic restarts. You can use filtering on nested fields to filter based on resource labels.
   ## 
   ## To filter on multiple expressions, provide each separate expression within parentheses. For example, (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake"). By default, each expression is an AND expression. However, you can include AND and OR expressions explicitly. For example, (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart = true).
-  var path_580371 = newJObject()
-  var query_580372 = newJObject()
-  add(query_580372, "fields", newJString(fields))
-  add(query_580372, "pageToken", newJString(pageToken))
-  add(query_580372, "quotaUser", newJString(quotaUser))
-  add(query_580372, "alt", newJString(alt))
-  add(query_580372, "oauth_token", newJString(oauthToken))
-  add(query_580372, "userIp", newJString(userIp))
-  add(query_580372, "maxResults", newJInt(maxResults))
-  add(query_580372, "orderBy", newJString(orderBy))
-  add(query_580372, "key", newJString(key))
-  add(path_580371, "project", newJString(project))
-  add(query_580372, "prettyPrint", newJBool(prettyPrint))
-  add(query_580372, "filter", newJString(filter))
-  result = call_580370.call(path_580371, query_580372, nil, nil, nil)
+  var path_589400 = newJObject()
+  var query_589401 = newJObject()
+  add(query_589401, "fields", newJString(fields))
+  add(query_589401, "pageToken", newJString(pageToken))
+  add(query_589401, "quotaUser", newJString(quotaUser))
+  add(query_589401, "alt", newJString(alt))
+  add(query_589401, "oauth_token", newJString(oauthToken))
+  add(query_589401, "userIp", newJString(userIp))
+  add(query_589401, "maxResults", newJInt(maxResults))
+  add(query_589401, "orderBy", newJString(orderBy))
+  add(query_589401, "key", newJString(key))
+  add(path_589400, "project", newJString(project))
+  add(query_589401, "prettyPrint", newJBool(prettyPrint))
+  add(query_589401, "filter", newJString(filter))
+  result = call_589399.call(path_589400, query_589401, nil, nil, nil)
 
-var deploymentmanagerOperationsList* = Call_DeploymentmanagerOperationsList_580354(
+var deploymentmanagerOperationsList* = Call_DeploymentmanagerOperationsList_589383(
     name: "deploymentmanagerOperationsList", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/{project}/global/operations",
-    validator: validate_DeploymentmanagerOperationsList_580355,
+    validator: validate_DeploymentmanagerOperationsList_589384,
     base: "/deploymentmanager/v2beta/projects",
-    url: url_DeploymentmanagerOperationsList_580356, schemes: {Scheme.Https})
+    url: url_DeploymentmanagerOperationsList_589385, schemes: {Scheme.Https})
 type
-  Call_DeploymentmanagerOperationsGet_580373 = ref object of OpenApiRestCall_579437
-proc url_DeploymentmanagerOperationsGet_580375(protocol: Scheme; host: string;
+  Call_DeploymentmanagerOperationsGet_589402 = ref object of OpenApiRestCall_588466
+proc url_DeploymentmanagerOperationsGet_589404(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -4128,7 +4128,7 @@ proc url_DeploymentmanagerOperationsGet_580375(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_DeploymentmanagerOperationsGet_580374(path: JsonNode;
+proc validate_DeploymentmanagerOperationsGet_589403(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Gets information about a specific operation.
   ## 
@@ -4141,16 +4141,16 @@ proc validate_DeploymentmanagerOperationsGet_580374(path: JsonNode;
   ##          : The project ID for this request.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `operation` field"
-  var valid_580376 = path.getOrDefault("operation")
-  valid_580376 = validateParameter(valid_580376, JString, required = true,
+  var valid_589405 = path.getOrDefault("operation")
+  valid_589405 = validateParameter(valid_589405, JString, required = true,
                                  default = nil)
-  if valid_580376 != nil:
-    section.add "operation", valid_580376
-  var valid_580377 = path.getOrDefault("project")
-  valid_580377 = validateParameter(valid_580377, JString, required = true,
+  if valid_589405 != nil:
+    section.add "operation", valid_589405
+  var valid_589406 = path.getOrDefault("project")
+  valid_589406 = validateParameter(valid_589406, JString, required = true,
                                  default = nil)
-  if valid_580377 != nil:
-    section.add "project", valid_580377
+  if valid_589406 != nil:
+    section.add "project", valid_589406
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -4168,41 +4168,41 @@ proc validate_DeploymentmanagerOperationsGet_580374(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580378 = query.getOrDefault("fields")
-  valid_580378 = validateParameter(valid_580378, JString, required = false,
+  var valid_589407 = query.getOrDefault("fields")
+  valid_589407 = validateParameter(valid_589407, JString, required = false,
                                  default = nil)
-  if valid_580378 != nil:
-    section.add "fields", valid_580378
-  var valid_580379 = query.getOrDefault("quotaUser")
-  valid_580379 = validateParameter(valid_580379, JString, required = false,
+  if valid_589407 != nil:
+    section.add "fields", valid_589407
+  var valid_589408 = query.getOrDefault("quotaUser")
+  valid_589408 = validateParameter(valid_589408, JString, required = false,
                                  default = nil)
-  if valid_580379 != nil:
-    section.add "quotaUser", valid_580379
-  var valid_580380 = query.getOrDefault("alt")
-  valid_580380 = validateParameter(valid_580380, JString, required = false,
+  if valid_589408 != nil:
+    section.add "quotaUser", valid_589408
+  var valid_589409 = query.getOrDefault("alt")
+  valid_589409 = validateParameter(valid_589409, JString, required = false,
                                  default = newJString("json"))
-  if valid_580380 != nil:
-    section.add "alt", valid_580380
-  var valid_580381 = query.getOrDefault("oauth_token")
-  valid_580381 = validateParameter(valid_580381, JString, required = false,
+  if valid_589409 != nil:
+    section.add "alt", valid_589409
+  var valid_589410 = query.getOrDefault("oauth_token")
+  valid_589410 = validateParameter(valid_589410, JString, required = false,
                                  default = nil)
-  if valid_580381 != nil:
-    section.add "oauth_token", valid_580381
-  var valid_580382 = query.getOrDefault("userIp")
-  valid_580382 = validateParameter(valid_580382, JString, required = false,
+  if valid_589410 != nil:
+    section.add "oauth_token", valid_589410
+  var valid_589411 = query.getOrDefault("userIp")
+  valid_589411 = validateParameter(valid_589411, JString, required = false,
                                  default = nil)
-  if valid_580382 != nil:
-    section.add "userIp", valid_580382
-  var valid_580383 = query.getOrDefault("key")
-  valid_580383 = validateParameter(valid_580383, JString, required = false,
+  if valid_589411 != nil:
+    section.add "userIp", valid_589411
+  var valid_589412 = query.getOrDefault("key")
+  valid_589412 = validateParameter(valid_589412, JString, required = false,
                                  default = nil)
-  if valid_580383 != nil:
-    section.add "key", valid_580383
-  var valid_580384 = query.getOrDefault("prettyPrint")
-  valid_580384 = validateParameter(valid_580384, JBool, required = false,
+  if valid_589412 != nil:
+    section.add "key", valid_589412
+  var valid_589413 = query.getOrDefault("prettyPrint")
+  valid_589413 = validateParameter(valid_589413, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580384 != nil:
-    section.add "prettyPrint", valid_580384
+  if valid_589413 != nil:
+    section.add "prettyPrint", valid_589413
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -4211,20 +4211,20 @@ proc validate_DeploymentmanagerOperationsGet_580374(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580385: Call_DeploymentmanagerOperationsGet_580373; path: JsonNode;
+proc call*(call_589414: Call_DeploymentmanagerOperationsGet_589402; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Gets information about a specific operation.
   ## 
-  let valid = call_580385.validator(path, query, header, formData, body)
-  let scheme = call_580385.pickScheme
+  let valid = call_589414.validator(path, query, header, formData, body)
+  let scheme = call_589414.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580385.url(scheme.get, call_580385.host, call_580385.base,
-                         call_580385.route, valid.getOrDefault("path"),
+  let url = call_589414.url(scheme.get, call_589414.host, call_589414.base,
+                         call_589414.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580385, url, valid)
+  result = hook(call_589414, url, valid)
 
-proc call*(call_580386: Call_DeploymentmanagerOperationsGet_580373;
+proc call*(call_589415: Call_DeploymentmanagerOperationsGet_589402;
           operation: string; project: string; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; key: string = ""; prettyPrint: bool = true): Recallable =
@@ -4248,28 +4248,28 @@ proc call*(call_580386: Call_DeploymentmanagerOperationsGet_580373;
   ##          : The project ID for this request.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_580387 = newJObject()
-  var query_580388 = newJObject()
-  add(query_580388, "fields", newJString(fields))
-  add(query_580388, "quotaUser", newJString(quotaUser))
-  add(query_580388, "alt", newJString(alt))
-  add(path_580387, "operation", newJString(operation))
-  add(query_580388, "oauth_token", newJString(oauthToken))
-  add(query_580388, "userIp", newJString(userIp))
-  add(query_580388, "key", newJString(key))
-  add(path_580387, "project", newJString(project))
-  add(query_580388, "prettyPrint", newJBool(prettyPrint))
-  result = call_580386.call(path_580387, query_580388, nil, nil, nil)
+  var path_589416 = newJObject()
+  var query_589417 = newJObject()
+  add(query_589417, "fields", newJString(fields))
+  add(query_589417, "quotaUser", newJString(quotaUser))
+  add(query_589417, "alt", newJString(alt))
+  add(path_589416, "operation", newJString(operation))
+  add(query_589417, "oauth_token", newJString(oauthToken))
+  add(query_589417, "userIp", newJString(userIp))
+  add(query_589417, "key", newJString(key))
+  add(path_589416, "project", newJString(project))
+  add(query_589417, "prettyPrint", newJBool(prettyPrint))
+  result = call_589415.call(path_589416, query_589417, nil, nil, nil)
 
-var deploymentmanagerOperationsGet* = Call_DeploymentmanagerOperationsGet_580373(
+var deploymentmanagerOperationsGet* = Call_DeploymentmanagerOperationsGet_589402(
     name: "deploymentmanagerOperationsGet", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/{project}/global/operations/{operation}",
-    validator: validate_DeploymentmanagerOperationsGet_580374,
+    validator: validate_DeploymentmanagerOperationsGet_589403,
     base: "/deploymentmanager/v2beta/projects",
-    url: url_DeploymentmanagerOperationsGet_580375, schemes: {Scheme.Https})
+    url: url_DeploymentmanagerOperationsGet_589404, schemes: {Scheme.Https})
 type
-  Call_DeploymentmanagerTypeProvidersInsert_580408 = ref object of OpenApiRestCall_579437
-proc url_DeploymentmanagerTypeProvidersInsert_580410(protocol: Scheme;
+  Call_DeploymentmanagerTypeProvidersInsert_589437 = ref object of OpenApiRestCall_588466
+proc url_DeploymentmanagerTypeProvidersInsert_589439(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -4285,7 +4285,7 @@ proc url_DeploymentmanagerTypeProvidersInsert_580410(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_DeploymentmanagerTypeProvidersInsert_580409(path: JsonNode;
+proc validate_DeploymentmanagerTypeProvidersInsert_589438(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Creates a type provider.
   ## 
@@ -4296,11 +4296,11 @@ proc validate_DeploymentmanagerTypeProvidersInsert_580409(path: JsonNode;
   ##          : The project ID for this request.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `project` field"
-  var valid_580411 = path.getOrDefault("project")
-  valid_580411 = validateParameter(valid_580411, JString, required = true,
+  var valid_589440 = path.getOrDefault("project")
+  valid_589440 = validateParameter(valid_589440, JString, required = true,
                                  default = nil)
-  if valid_580411 != nil:
-    section.add "project", valid_580411
+  if valid_589440 != nil:
+    section.add "project", valid_589440
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -4318,41 +4318,41 @@ proc validate_DeploymentmanagerTypeProvidersInsert_580409(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580412 = query.getOrDefault("fields")
-  valid_580412 = validateParameter(valid_580412, JString, required = false,
+  var valid_589441 = query.getOrDefault("fields")
+  valid_589441 = validateParameter(valid_589441, JString, required = false,
                                  default = nil)
-  if valid_580412 != nil:
-    section.add "fields", valid_580412
-  var valid_580413 = query.getOrDefault("quotaUser")
-  valid_580413 = validateParameter(valid_580413, JString, required = false,
+  if valid_589441 != nil:
+    section.add "fields", valid_589441
+  var valid_589442 = query.getOrDefault("quotaUser")
+  valid_589442 = validateParameter(valid_589442, JString, required = false,
                                  default = nil)
-  if valid_580413 != nil:
-    section.add "quotaUser", valid_580413
-  var valid_580414 = query.getOrDefault("alt")
-  valid_580414 = validateParameter(valid_580414, JString, required = false,
+  if valid_589442 != nil:
+    section.add "quotaUser", valid_589442
+  var valid_589443 = query.getOrDefault("alt")
+  valid_589443 = validateParameter(valid_589443, JString, required = false,
                                  default = newJString("json"))
-  if valid_580414 != nil:
-    section.add "alt", valid_580414
-  var valid_580415 = query.getOrDefault("oauth_token")
-  valid_580415 = validateParameter(valid_580415, JString, required = false,
+  if valid_589443 != nil:
+    section.add "alt", valid_589443
+  var valid_589444 = query.getOrDefault("oauth_token")
+  valid_589444 = validateParameter(valid_589444, JString, required = false,
                                  default = nil)
-  if valid_580415 != nil:
-    section.add "oauth_token", valid_580415
-  var valid_580416 = query.getOrDefault("userIp")
-  valid_580416 = validateParameter(valid_580416, JString, required = false,
+  if valid_589444 != nil:
+    section.add "oauth_token", valid_589444
+  var valid_589445 = query.getOrDefault("userIp")
+  valid_589445 = validateParameter(valid_589445, JString, required = false,
                                  default = nil)
-  if valid_580416 != nil:
-    section.add "userIp", valid_580416
-  var valid_580417 = query.getOrDefault("key")
-  valid_580417 = validateParameter(valid_580417, JString, required = false,
+  if valid_589445 != nil:
+    section.add "userIp", valid_589445
+  var valid_589446 = query.getOrDefault("key")
+  valid_589446 = validateParameter(valid_589446, JString, required = false,
                                  default = nil)
-  if valid_580417 != nil:
-    section.add "key", valid_580417
-  var valid_580418 = query.getOrDefault("prettyPrint")
-  valid_580418 = validateParameter(valid_580418, JBool, required = false,
+  if valid_589446 != nil:
+    section.add "key", valid_589446
+  var valid_589447 = query.getOrDefault("prettyPrint")
+  valid_589447 = validateParameter(valid_589447, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580418 != nil:
-    section.add "prettyPrint", valid_580418
+  if valid_589447 != nil:
+    section.add "prettyPrint", valid_589447
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -4364,21 +4364,21 @@ proc validate_DeploymentmanagerTypeProvidersInsert_580409(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580420: Call_DeploymentmanagerTypeProvidersInsert_580408;
+proc call*(call_589449: Call_DeploymentmanagerTypeProvidersInsert_589437;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Creates a type provider.
   ## 
-  let valid = call_580420.validator(path, query, header, formData, body)
-  let scheme = call_580420.pickScheme
+  let valid = call_589449.validator(path, query, header, formData, body)
+  let scheme = call_589449.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580420.url(scheme.get, call_580420.host, call_580420.base,
-                         call_580420.route, valid.getOrDefault("path"),
+  let url = call_589449.url(scheme.get, call_589449.host, call_589449.base,
+                         call_589449.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580420, url, valid)
+  result = hook(call_589449, url, valid)
 
-proc call*(call_580421: Call_DeploymentmanagerTypeProvidersInsert_580408;
+proc call*(call_589450: Call_DeploymentmanagerTypeProvidersInsert_589437;
           project: string; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; userIp: string = "";
           key: string = ""; body: JsonNode = nil; prettyPrint: bool = true): Recallable =
@@ -4401,30 +4401,30 @@ proc call*(call_580421: Call_DeploymentmanagerTypeProvidersInsert_580408;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_580422 = newJObject()
-  var query_580423 = newJObject()
-  var body_580424 = newJObject()
-  add(query_580423, "fields", newJString(fields))
-  add(query_580423, "quotaUser", newJString(quotaUser))
-  add(query_580423, "alt", newJString(alt))
-  add(query_580423, "oauth_token", newJString(oauthToken))
-  add(query_580423, "userIp", newJString(userIp))
-  add(query_580423, "key", newJString(key))
-  add(path_580422, "project", newJString(project))
+  var path_589451 = newJObject()
+  var query_589452 = newJObject()
+  var body_589453 = newJObject()
+  add(query_589452, "fields", newJString(fields))
+  add(query_589452, "quotaUser", newJString(quotaUser))
+  add(query_589452, "alt", newJString(alt))
+  add(query_589452, "oauth_token", newJString(oauthToken))
+  add(query_589452, "userIp", newJString(userIp))
+  add(query_589452, "key", newJString(key))
+  add(path_589451, "project", newJString(project))
   if body != nil:
-    body_580424 = body
-  add(query_580423, "prettyPrint", newJBool(prettyPrint))
-  result = call_580421.call(path_580422, query_580423, nil, nil, body_580424)
+    body_589453 = body
+  add(query_589452, "prettyPrint", newJBool(prettyPrint))
+  result = call_589450.call(path_589451, query_589452, nil, nil, body_589453)
 
-var deploymentmanagerTypeProvidersInsert* = Call_DeploymentmanagerTypeProvidersInsert_580408(
+var deploymentmanagerTypeProvidersInsert* = Call_DeploymentmanagerTypeProvidersInsert_589437(
     name: "deploymentmanagerTypeProvidersInsert", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com", route: "/{project}/global/typeProviders",
-    validator: validate_DeploymentmanagerTypeProvidersInsert_580409,
+    validator: validate_DeploymentmanagerTypeProvidersInsert_589438,
     base: "/deploymentmanager/v2beta/projects",
-    url: url_DeploymentmanagerTypeProvidersInsert_580410, schemes: {Scheme.Https})
+    url: url_DeploymentmanagerTypeProvidersInsert_589439, schemes: {Scheme.Https})
 type
-  Call_DeploymentmanagerTypeProvidersList_580389 = ref object of OpenApiRestCall_579437
-proc url_DeploymentmanagerTypeProvidersList_580391(protocol: Scheme; host: string;
+  Call_DeploymentmanagerTypeProvidersList_589418 = ref object of OpenApiRestCall_588466
+proc url_DeploymentmanagerTypeProvidersList_589420(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -4440,7 +4440,7 @@ proc url_DeploymentmanagerTypeProvidersList_580391(protocol: Scheme; host: strin
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_DeploymentmanagerTypeProvidersList_580390(path: JsonNode;
+proc validate_DeploymentmanagerTypeProvidersList_589419(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Lists all resource type providers for Deployment Manager.
   ## 
@@ -4451,11 +4451,11 @@ proc validate_DeploymentmanagerTypeProvidersList_580390(path: JsonNode;
   ##          : The project ID for this request.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `project` field"
-  var valid_580392 = path.getOrDefault("project")
-  valid_580392 = validateParameter(valid_580392, JString, required = true,
+  var valid_589421 = path.getOrDefault("project")
+  valid_589421 = validateParameter(valid_589421, JString, required = true,
                                  default = nil)
-  if valid_580392 != nil:
-    section.add "project", valid_580392
+  if valid_589421 != nil:
+    section.add "project", valid_589421
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -4491,61 +4491,61 @@ proc validate_DeploymentmanagerTypeProvidersList_580390(path: JsonNode;
   ## 
   ## To filter on multiple expressions, provide each separate expression within parentheses. For example, (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake"). By default, each expression is an AND expression. However, you can include AND and OR expressions explicitly. For example, (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart = true).
   section = newJObject()
-  var valid_580393 = query.getOrDefault("fields")
-  valid_580393 = validateParameter(valid_580393, JString, required = false,
+  var valid_589422 = query.getOrDefault("fields")
+  valid_589422 = validateParameter(valid_589422, JString, required = false,
                                  default = nil)
-  if valid_580393 != nil:
-    section.add "fields", valid_580393
-  var valid_580394 = query.getOrDefault("pageToken")
-  valid_580394 = validateParameter(valid_580394, JString, required = false,
+  if valid_589422 != nil:
+    section.add "fields", valid_589422
+  var valid_589423 = query.getOrDefault("pageToken")
+  valid_589423 = validateParameter(valid_589423, JString, required = false,
                                  default = nil)
-  if valid_580394 != nil:
-    section.add "pageToken", valid_580394
-  var valid_580395 = query.getOrDefault("quotaUser")
-  valid_580395 = validateParameter(valid_580395, JString, required = false,
+  if valid_589423 != nil:
+    section.add "pageToken", valid_589423
+  var valid_589424 = query.getOrDefault("quotaUser")
+  valid_589424 = validateParameter(valid_589424, JString, required = false,
                                  default = nil)
-  if valid_580395 != nil:
-    section.add "quotaUser", valid_580395
-  var valid_580396 = query.getOrDefault("alt")
-  valid_580396 = validateParameter(valid_580396, JString, required = false,
+  if valid_589424 != nil:
+    section.add "quotaUser", valid_589424
+  var valid_589425 = query.getOrDefault("alt")
+  valid_589425 = validateParameter(valid_589425, JString, required = false,
                                  default = newJString("json"))
-  if valid_580396 != nil:
-    section.add "alt", valid_580396
-  var valid_580397 = query.getOrDefault("oauth_token")
-  valid_580397 = validateParameter(valid_580397, JString, required = false,
+  if valid_589425 != nil:
+    section.add "alt", valid_589425
+  var valid_589426 = query.getOrDefault("oauth_token")
+  valid_589426 = validateParameter(valid_589426, JString, required = false,
                                  default = nil)
-  if valid_580397 != nil:
-    section.add "oauth_token", valid_580397
-  var valid_580398 = query.getOrDefault("userIp")
-  valid_580398 = validateParameter(valid_580398, JString, required = false,
+  if valid_589426 != nil:
+    section.add "oauth_token", valid_589426
+  var valid_589427 = query.getOrDefault("userIp")
+  valid_589427 = validateParameter(valid_589427, JString, required = false,
                                  default = nil)
-  if valid_580398 != nil:
-    section.add "userIp", valid_580398
-  var valid_580399 = query.getOrDefault("maxResults")
-  valid_580399 = validateParameter(valid_580399, JInt, required = false,
+  if valid_589427 != nil:
+    section.add "userIp", valid_589427
+  var valid_589428 = query.getOrDefault("maxResults")
+  valid_589428 = validateParameter(valid_589428, JInt, required = false,
                                  default = newJInt(500))
-  if valid_580399 != nil:
-    section.add "maxResults", valid_580399
-  var valid_580400 = query.getOrDefault("orderBy")
-  valid_580400 = validateParameter(valid_580400, JString, required = false,
+  if valid_589428 != nil:
+    section.add "maxResults", valid_589428
+  var valid_589429 = query.getOrDefault("orderBy")
+  valid_589429 = validateParameter(valid_589429, JString, required = false,
                                  default = nil)
-  if valid_580400 != nil:
-    section.add "orderBy", valid_580400
-  var valid_580401 = query.getOrDefault("key")
-  valid_580401 = validateParameter(valid_580401, JString, required = false,
+  if valid_589429 != nil:
+    section.add "orderBy", valid_589429
+  var valid_589430 = query.getOrDefault("key")
+  valid_589430 = validateParameter(valid_589430, JString, required = false,
                                  default = nil)
-  if valid_580401 != nil:
-    section.add "key", valid_580401
-  var valid_580402 = query.getOrDefault("prettyPrint")
-  valid_580402 = validateParameter(valid_580402, JBool, required = false,
+  if valid_589430 != nil:
+    section.add "key", valid_589430
+  var valid_589431 = query.getOrDefault("prettyPrint")
+  valid_589431 = validateParameter(valid_589431, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580402 != nil:
-    section.add "prettyPrint", valid_580402
-  var valid_580403 = query.getOrDefault("filter")
-  valid_580403 = validateParameter(valid_580403, JString, required = false,
+  if valid_589431 != nil:
+    section.add "prettyPrint", valid_589431
+  var valid_589432 = query.getOrDefault("filter")
+  valid_589432 = validateParameter(valid_589432, JString, required = false,
                                  default = nil)
-  if valid_580403 != nil:
-    section.add "filter", valid_580403
+  if valid_589432 != nil:
+    section.add "filter", valid_589432
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -4554,21 +4554,21 @@ proc validate_DeploymentmanagerTypeProvidersList_580390(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580404: Call_DeploymentmanagerTypeProvidersList_580389;
+proc call*(call_589433: Call_DeploymentmanagerTypeProvidersList_589418;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Lists all resource type providers for Deployment Manager.
   ## 
-  let valid = call_580404.validator(path, query, header, formData, body)
-  let scheme = call_580404.pickScheme
+  let valid = call_589433.validator(path, query, header, formData, body)
+  let scheme = call_589433.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580404.url(scheme.get, call_580404.host, call_580404.base,
-                         call_580404.route, valid.getOrDefault("path"),
+  let url = call_589433.url(scheme.get, call_589433.host, call_589433.base,
+                         call_589433.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580404, url, valid)
+  result = hook(call_589433, url, valid)
 
-proc call*(call_580405: Call_DeploymentmanagerTypeProvidersList_580389;
+proc call*(call_589434: Call_DeploymentmanagerTypeProvidersList_589418;
           project: string; fields: string = ""; pageToken: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; maxResults: int = 500; orderBy: string = "";
@@ -4609,31 +4609,31 @@ proc call*(call_580405: Call_DeploymentmanagerTypeProvidersList_580389;
   ## You can also filter nested fields. For example, you could specify scheduling.automaticRestart = false to include instances only if they are not scheduled for automatic restarts. You can use filtering on nested fields to filter based on resource labels.
   ## 
   ## To filter on multiple expressions, provide each separate expression within parentheses. For example, (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake"). By default, each expression is an AND expression. However, you can include AND and OR expressions explicitly. For example, (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart = true).
-  var path_580406 = newJObject()
-  var query_580407 = newJObject()
-  add(query_580407, "fields", newJString(fields))
-  add(query_580407, "pageToken", newJString(pageToken))
-  add(query_580407, "quotaUser", newJString(quotaUser))
-  add(query_580407, "alt", newJString(alt))
-  add(query_580407, "oauth_token", newJString(oauthToken))
-  add(query_580407, "userIp", newJString(userIp))
-  add(query_580407, "maxResults", newJInt(maxResults))
-  add(query_580407, "orderBy", newJString(orderBy))
-  add(query_580407, "key", newJString(key))
-  add(path_580406, "project", newJString(project))
-  add(query_580407, "prettyPrint", newJBool(prettyPrint))
-  add(query_580407, "filter", newJString(filter))
-  result = call_580405.call(path_580406, query_580407, nil, nil, nil)
+  var path_589435 = newJObject()
+  var query_589436 = newJObject()
+  add(query_589436, "fields", newJString(fields))
+  add(query_589436, "pageToken", newJString(pageToken))
+  add(query_589436, "quotaUser", newJString(quotaUser))
+  add(query_589436, "alt", newJString(alt))
+  add(query_589436, "oauth_token", newJString(oauthToken))
+  add(query_589436, "userIp", newJString(userIp))
+  add(query_589436, "maxResults", newJInt(maxResults))
+  add(query_589436, "orderBy", newJString(orderBy))
+  add(query_589436, "key", newJString(key))
+  add(path_589435, "project", newJString(project))
+  add(query_589436, "prettyPrint", newJBool(prettyPrint))
+  add(query_589436, "filter", newJString(filter))
+  result = call_589434.call(path_589435, query_589436, nil, nil, nil)
 
-var deploymentmanagerTypeProvidersList* = Call_DeploymentmanagerTypeProvidersList_580389(
+var deploymentmanagerTypeProvidersList* = Call_DeploymentmanagerTypeProvidersList_589418(
     name: "deploymentmanagerTypeProvidersList", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/{project}/global/typeProviders",
-    validator: validate_DeploymentmanagerTypeProvidersList_580390,
+    validator: validate_DeploymentmanagerTypeProvidersList_589419,
     base: "/deploymentmanager/v2beta/projects",
-    url: url_DeploymentmanagerTypeProvidersList_580391, schemes: {Scheme.Https})
+    url: url_DeploymentmanagerTypeProvidersList_589420, schemes: {Scheme.Https})
 type
-  Call_DeploymentmanagerTypeProvidersUpdate_580441 = ref object of OpenApiRestCall_579437
-proc url_DeploymentmanagerTypeProvidersUpdate_580443(protocol: Scheme;
+  Call_DeploymentmanagerTypeProvidersUpdate_589470 = ref object of OpenApiRestCall_588466
+proc url_DeploymentmanagerTypeProvidersUpdate_589472(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -4651,7 +4651,7 @@ proc url_DeploymentmanagerTypeProvidersUpdate_580443(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_DeploymentmanagerTypeProvidersUpdate_580442(path: JsonNode;
+proc validate_DeploymentmanagerTypeProvidersUpdate_589471(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Updates a type provider.
   ## 
@@ -4665,16 +4665,16 @@ proc validate_DeploymentmanagerTypeProvidersUpdate_580442(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `typeProvider` field"
-  var valid_580444 = path.getOrDefault("typeProvider")
-  valid_580444 = validateParameter(valid_580444, JString, required = true,
+  var valid_589473 = path.getOrDefault("typeProvider")
+  valid_589473 = validateParameter(valid_589473, JString, required = true,
                                  default = nil)
-  if valid_580444 != nil:
-    section.add "typeProvider", valid_580444
-  var valid_580445 = path.getOrDefault("project")
-  valid_580445 = validateParameter(valid_580445, JString, required = true,
+  if valid_589473 != nil:
+    section.add "typeProvider", valid_589473
+  var valid_589474 = path.getOrDefault("project")
+  valid_589474 = validateParameter(valid_589474, JString, required = true,
                                  default = nil)
-  if valid_580445 != nil:
-    section.add "project", valid_580445
+  if valid_589474 != nil:
+    section.add "project", valid_589474
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -4692,41 +4692,41 @@ proc validate_DeploymentmanagerTypeProvidersUpdate_580442(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580446 = query.getOrDefault("fields")
-  valid_580446 = validateParameter(valid_580446, JString, required = false,
+  var valid_589475 = query.getOrDefault("fields")
+  valid_589475 = validateParameter(valid_589475, JString, required = false,
                                  default = nil)
-  if valid_580446 != nil:
-    section.add "fields", valid_580446
-  var valid_580447 = query.getOrDefault("quotaUser")
-  valid_580447 = validateParameter(valid_580447, JString, required = false,
+  if valid_589475 != nil:
+    section.add "fields", valid_589475
+  var valid_589476 = query.getOrDefault("quotaUser")
+  valid_589476 = validateParameter(valid_589476, JString, required = false,
                                  default = nil)
-  if valid_580447 != nil:
-    section.add "quotaUser", valid_580447
-  var valid_580448 = query.getOrDefault("alt")
-  valid_580448 = validateParameter(valid_580448, JString, required = false,
+  if valid_589476 != nil:
+    section.add "quotaUser", valid_589476
+  var valid_589477 = query.getOrDefault("alt")
+  valid_589477 = validateParameter(valid_589477, JString, required = false,
                                  default = newJString("json"))
-  if valid_580448 != nil:
-    section.add "alt", valid_580448
-  var valid_580449 = query.getOrDefault("oauth_token")
-  valid_580449 = validateParameter(valid_580449, JString, required = false,
+  if valid_589477 != nil:
+    section.add "alt", valid_589477
+  var valid_589478 = query.getOrDefault("oauth_token")
+  valid_589478 = validateParameter(valid_589478, JString, required = false,
                                  default = nil)
-  if valid_580449 != nil:
-    section.add "oauth_token", valid_580449
-  var valid_580450 = query.getOrDefault("userIp")
-  valid_580450 = validateParameter(valid_580450, JString, required = false,
+  if valid_589478 != nil:
+    section.add "oauth_token", valid_589478
+  var valid_589479 = query.getOrDefault("userIp")
+  valid_589479 = validateParameter(valid_589479, JString, required = false,
                                  default = nil)
-  if valid_580450 != nil:
-    section.add "userIp", valid_580450
-  var valid_580451 = query.getOrDefault("key")
-  valid_580451 = validateParameter(valid_580451, JString, required = false,
+  if valid_589479 != nil:
+    section.add "userIp", valid_589479
+  var valid_589480 = query.getOrDefault("key")
+  valid_589480 = validateParameter(valid_589480, JString, required = false,
                                  default = nil)
-  if valid_580451 != nil:
-    section.add "key", valid_580451
-  var valid_580452 = query.getOrDefault("prettyPrint")
-  valid_580452 = validateParameter(valid_580452, JBool, required = false,
+  if valid_589480 != nil:
+    section.add "key", valid_589480
+  var valid_589481 = query.getOrDefault("prettyPrint")
+  valid_589481 = validateParameter(valid_589481, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580452 != nil:
-    section.add "prettyPrint", valid_580452
+  if valid_589481 != nil:
+    section.add "prettyPrint", valid_589481
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -4738,21 +4738,21 @@ proc validate_DeploymentmanagerTypeProvidersUpdate_580442(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580454: Call_DeploymentmanagerTypeProvidersUpdate_580441;
+proc call*(call_589483: Call_DeploymentmanagerTypeProvidersUpdate_589470;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Updates a type provider.
   ## 
-  let valid = call_580454.validator(path, query, header, formData, body)
-  let scheme = call_580454.pickScheme
+  let valid = call_589483.validator(path, query, header, formData, body)
+  let scheme = call_589483.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580454.url(scheme.get, call_580454.host, call_580454.base,
-                         call_580454.route, valid.getOrDefault("path"),
+  let url = call_589483.url(scheme.get, call_589483.host, call_589483.base,
+                         call_589483.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580454, url, valid)
+  result = hook(call_589483, url, valid)
 
-proc call*(call_580455: Call_DeploymentmanagerTypeProvidersUpdate_580441;
+proc call*(call_589484: Call_DeploymentmanagerTypeProvidersUpdate_589470;
           typeProvider: string; project: string; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; key: string = ""; body: JsonNode = nil;
@@ -4778,32 +4778,32 @@ proc call*(call_580455: Call_DeploymentmanagerTypeProvidersUpdate_580441;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_580456 = newJObject()
-  var query_580457 = newJObject()
-  var body_580458 = newJObject()
-  add(query_580457, "fields", newJString(fields))
-  add(query_580457, "quotaUser", newJString(quotaUser))
-  add(query_580457, "alt", newJString(alt))
-  add(path_580456, "typeProvider", newJString(typeProvider))
-  add(query_580457, "oauth_token", newJString(oauthToken))
-  add(query_580457, "userIp", newJString(userIp))
-  add(query_580457, "key", newJString(key))
-  add(path_580456, "project", newJString(project))
+  var path_589485 = newJObject()
+  var query_589486 = newJObject()
+  var body_589487 = newJObject()
+  add(query_589486, "fields", newJString(fields))
+  add(query_589486, "quotaUser", newJString(quotaUser))
+  add(query_589486, "alt", newJString(alt))
+  add(path_589485, "typeProvider", newJString(typeProvider))
+  add(query_589486, "oauth_token", newJString(oauthToken))
+  add(query_589486, "userIp", newJString(userIp))
+  add(query_589486, "key", newJString(key))
+  add(path_589485, "project", newJString(project))
   if body != nil:
-    body_580458 = body
-  add(query_580457, "prettyPrint", newJBool(prettyPrint))
-  result = call_580455.call(path_580456, query_580457, nil, nil, body_580458)
+    body_589487 = body
+  add(query_589486, "prettyPrint", newJBool(prettyPrint))
+  result = call_589484.call(path_589485, query_589486, nil, nil, body_589487)
 
-var deploymentmanagerTypeProvidersUpdate* = Call_DeploymentmanagerTypeProvidersUpdate_580441(
+var deploymentmanagerTypeProvidersUpdate* = Call_DeploymentmanagerTypeProvidersUpdate_589470(
     name: "deploymentmanagerTypeProvidersUpdate", meth: HttpMethod.HttpPut,
     host: "www.googleapis.com",
     route: "/{project}/global/typeProviders/{typeProvider}",
-    validator: validate_DeploymentmanagerTypeProvidersUpdate_580442,
+    validator: validate_DeploymentmanagerTypeProvidersUpdate_589471,
     base: "/deploymentmanager/v2beta/projects",
-    url: url_DeploymentmanagerTypeProvidersUpdate_580443, schemes: {Scheme.Https})
+    url: url_DeploymentmanagerTypeProvidersUpdate_589472, schemes: {Scheme.Https})
 type
-  Call_DeploymentmanagerTypeProvidersGet_580425 = ref object of OpenApiRestCall_579437
-proc url_DeploymentmanagerTypeProvidersGet_580427(protocol: Scheme; host: string;
+  Call_DeploymentmanagerTypeProvidersGet_589454 = ref object of OpenApiRestCall_588466
+proc url_DeploymentmanagerTypeProvidersGet_589456(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -4821,7 +4821,7 @@ proc url_DeploymentmanagerTypeProvidersGet_580427(protocol: Scheme; host: string
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_DeploymentmanagerTypeProvidersGet_580426(path: JsonNode;
+proc validate_DeploymentmanagerTypeProvidersGet_589455(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Gets information about a specific type provider.
   ## 
@@ -4835,16 +4835,16 @@ proc validate_DeploymentmanagerTypeProvidersGet_580426(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `typeProvider` field"
-  var valid_580428 = path.getOrDefault("typeProvider")
-  valid_580428 = validateParameter(valid_580428, JString, required = true,
+  var valid_589457 = path.getOrDefault("typeProvider")
+  valid_589457 = validateParameter(valid_589457, JString, required = true,
                                  default = nil)
-  if valid_580428 != nil:
-    section.add "typeProvider", valid_580428
-  var valid_580429 = path.getOrDefault("project")
-  valid_580429 = validateParameter(valid_580429, JString, required = true,
+  if valid_589457 != nil:
+    section.add "typeProvider", valid_589457
+  var valid_589458 = path.getOrDefault("project")
+  valid_589458 = validateParameter(valid_589458, JString, required = true,
                                  default = nil)
-  if valid_580429 != nil:
-    section.add "project", valid_580429
+  if valid_589458 != nil:
+    section.add "project", valid_589458
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -4862,41 +4862,41 @@ proc validate_DeploymentmanagerTypeProvidersGet_580426(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580430 = query.getOrDefault("fields")
-  valid_580430 = validateParameter(valid_580430, JString, required = false,
+  var valid_589459 = query.getOrDefault("fields")
+  valid_589459 = validateParameter(valid_589459, JString, required = false,
                                  default = nil)
-  if valid_580430 != nil:
-    section.add "fields", valid_580430
-  var valid_580431 = query.getOrDefault("quotaUser")
-  valid_580431 = validateParameter(valid_580431, JString, required = false,
+  if valid_589459 != nil:
+    section.add "fields", valid_589459
+  var valid_589460 = query.getOrDefault("quotaUser")
+  valid_589460 = validateParameter(valid_589460, JString, required = false,
                                  default = nil)
-  if valid_580431 != nil:
-    section.add "quotaUser", valid_580431
-  var valid_580432 = query.getOrDefault("alt")
-  valid_580432 = validateParameter(valid_580432, JString, required = false,
+  if valid_589460 != nil:
+    section.add "quotaUser", valid_589460
+  var valid_589461 = query.getOrDefault("alt")
+  valid_589461 = validateParameter(valid_589461, JString, required = false,
                                  default = newJString("json"))
-  if valid_580432 != nil:
-    section.add "alt", valid_580432
-  var valid_580433 = query.getOrDefault("oauth_token")
-  valid_580433 = validateParameter(valid_580433, JString, required = false,
+  if valid_589461 != nil:
+    section.add "alt", valid_589461
+  var valid_589462 = query.getOrDefault("oauth_token")
+  valid_589462 = validateParameter(valid_589462, JString, required = false,
                                  default = nil)
-  if valid_580433 != nil:
-    section.add "oauth_token", valid_580433
-  var valid_580434 = query.getOrDefault("userIp")
-  valid_580434 = validateParameter(valid_580434, JString, required = false,
+  if valid_589462 != nil:
+    section.add "oauth_token", valid_589462
+  var valid_589463 = query.getOrDefault("userIp")
+  valid_589463 = validateParameter(valid_589463, JString, required = false,
                                  default = nil)
-  if valid_580434 != nil:
-    section.add "userIp", valid_580434
-  var valid_580435 = query.getOrDefault("key")
-  valid_580435 = validateParameter(valid_580435, JString, required = false,
+  if valid_589463 != nil:
+    section.add "userIp", valid_589463
+  var valid_589464 = query.getOrDefault("key")
+  valid_589464 = validateParameter(valid_589464, JString, required = false,
                                  default = nil)
-  if valid_580435 != nil:
-    section.add "key", valid_580435
-  var valid_580436 = query.getOrDefault("prettyPrint")
-  valid_580436 = validateParameter(valid_580436, JBool, required = false,
+  if valid_589464 != nil:
+    section.add "key", valid_589464
+  var valid_589465 = query.getOrDefault("prettyPrint")
+  valid_589465 = validateParameter(valid_589465, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580436 != nil:
-    section.add "prettyPrint", valid_580436
+  if valid_589465 != nil:
+    section.add "prettyPrint", valid_589465
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -4905,21 +4905,21 @@ proc validate_DeploymentmanagerTypeProvidersGet_580426(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580437: Call_DeploymentmanagerTypeProvidersGet_580425;
+proc call*(call_589466: Call_DeploymentmanagerTypeProvidersGet_589454;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Gets information about a specific type provider.
   ## 
-  let valid = call_580437.validator(path, query, header, formData, body)
-  let scheme = call_580437.pickScheme
+  let valid = call_589466.validator(path, query, header, formData, body)
+  let scheme = call_589466.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580437.url(scheme.get, call_580437.host, call_580437.base,
-                         call_580437.route, valid.getOrDefault("path"),
+  let url = call_589466.url(scheme.get, call_589466.host, call_589466.base,
+                         call_589466.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580437, url, valid)
+  result = hook(call_589466, url, valid)
 
-proc call*(call_580438: Call_DeploymentmanagerTypeProvidersGet_580425;
+proc call*(call_589467: Call_DeploymentmanagerTypeProvidersGet_589454;
           typeProvider: string; project: string; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; key: string = ""; prettyPrint: bool = true): Recallable =
@@ -4943,29 +4943,29 @@ proc call*(call_580438: Call_DeploymentmanagerTypeProvidersGet_580425;
   ##          : The project ID for this request.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_580439 = newJObject()
-  var query_580440 = newJObject()
-  add(query_580440, "fields", newJString(fields))
-  add(query_580440, "quotaUser", newJString(quotaUser))
-  add(query_580440, "alt", newJString(alt))
-  add(path_580439, "typeProvider", newJString(typeProvider))
-  add(query_580440, "oauth_token", newJString(oauthToken))
-  add(query_580440, "userIp", newJString(userIp))
-  add(query_580440, "key", newJString(key))
-  add(path_580439, "project", newJString(project))
-  add(query_580440, "prettyPrint", newJBool(prettyPrint))
-  result = call_580438.call(path_580439, query_580440, nil, nil, nil)
+  var path_589468 = newJObject()
+  var query_589469 = newJObject()
+  add(query_589469, "fields", newJString(fields))
+  add(query_589469, "quotaUser", newJString(quotaUser))
+  add(query_589469, "alt", newJString(alt))
+  add(path_589468, "typeProvider", newJString(typeProvider))
+  add(query_589469, "oauth_token", newJString(oauthToken))
+  add(query_589469, "userIp", newJString(userIp))
+  add(query_589469, "key", newJString(key))
+  add(path_589468, "project", newJString(project))
+  add(query_589469, "prettyPrint", newJBool(prettyPrint))
+  result = call_589467.call(path_589468, query_589469, nil, nil, nil)
 
-var deploymentmanagerTypeProvidersGet* = Call_DeploymentmanagerTypeProvidersGet_580425(
+var deploymentmanagerTypeProvidersGet* = Call_DeploymentmanagerTypeProvidersGet_589454(
     name: "deploymentmanagerTypeProvidersGet", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com",
     route: "/{project}/global/typeProviders/{typeProvider}",
-    validator: validate_DeploymentmanagerTypeProvidersGet_580426,
+    validator: validate_DeploymentmanagerTypeProvidersGet_589455,
     base: "/deploymentmanager/v2beta/projects",
-    url: url_DeploymentmanagerTypeProvidersGet_580427, schemes: {Scheme.Https})
+    url: url_DeploymentmanagerTypeProvidersGet_589456, schemes: {Scheme.Https})
 type
-  Call_DeploymentmanagerTypeProvidersPatch_580475 = ref object of OpenApiRestCall_579437
-proc url_DeploymentmanagerTypeProvidersPatch_580477(protocol: Scheme; host: string;
+  Call_DeploymentmanagerTypeProvidersPatch_589504 = ref object of OpenApiRestCall_588466
+proc url_DeploymentmanagerTypeProvidersPatch_589506(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -4983,7 +4983,7 @@ proc url_DeploymentmanagerTypeProvidersPatch_580477(protocol: Scheme; host: stri
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_DeploymentmanagerTypeProvidersPatch_580476(path: JsonNode;
+proc validate_DeploymentmanagerTypeProvidersPatch_589505(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Updates a type provider. This method supports patch semantics.
   ## 
@@ -4997,16 +4997,16 @@ proc validate_DeploymentmanagerTypeProvidersPatch_580476(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `typeProvider` field"
-  var valid_580478 = path.getOrDefault("typeProvider")
-  valid_580478 = validateParameter(valid_580478, JString, required = true,
+  var valid_589507 = path.getOrDefault("typeProvider")
+  valid_589507 = validateParameter(valid_589507, JString, required = true,
                                  default = nil)
-  if valid_580478 != nil:
-    section.add "typeProvider", valid_580478
-  var valid_580479 = path.getOrDefault("project")
-  valid_580479 = validateParameter(valid_580479, JString, required = true,
+  if valid_589507 != nil:
+    section.add "typeProvider", valid_589507
+  var valid_589508 = path.getOrDefault("project")
+  valid_589508 = validateParameter(valid_589508, JString, required = true,
                                  default = nil)
-  if valid_580479 != nil:
-    section.add "project", valid_580479
+  if valid_589508 != nil:
+    section.add "project", valid_589508
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -5024,41 +5024,41 @@ proc validate_DeploymentmanagerTypeProvidersPatch_580476(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580480 = query.getOrDefault("fields")
-  valid_580480 = validateParameter(valid_580480, JString, required = false,
+  var valid_589509 = query.getOrDefault("fields")
+  valid_589509 = validateParameter(valid_589509, JString, required = false,
                                  default = nil)
-  if valid_580480 != nil:
-    section.add "fields", valid_580480
-  var valid_580481 = query.getOrDefault("quotaUser")
-  valid_580481 = validateParameter(valid_580481, JString, required = false,
+  if valid_589509 != nil:
+    section.add "fields", valid_589509
+  var valid_589510 = query.getOrDefault("quotaUser")
+  valid_589510 = validateParameter(valid_589510, JString, required = false,
                                  default = nil)
-  if valid_580481 != nil:
-    section.add "quotaUser", valid_580481
-  var valid_580482 = query.getOrDefault("alt")
-  valid_580482 = validateParameter(valid_580482, JString, required = false,
+  if valid_589510 != nil:
+    section.add "quotaUser", valid_589510
+  var valid_589511 = query.getOrDefault("alt")
+  valid_589511 = validateParameter(valid_589511, JString, required = false,
                                  default = newJString("json"))
-  if valid_580482 != nil:
-    section.add "alt", valid_580482
-  var valid_580483 = query.getOrDefault("oauth_token")
-  valid_580483 = validateParameter(valid_580483, JString, required = false,
+  if valid_589511 != nil:
+    section.add "alt", valid_589511
+  var valid_589512 = query.getOrDefault("oauth_token")
+  valid_589512 = validateParameter(valid_589512, JString, required = false,
                                  default = nil)
-  if valid_580483 != nil:
-    section.add "oauth_token", valid_580483
-  var valid_580484 = query.getOrDefault("userIp")
-  valid_580484 = validateParameter(valid_580484, JString, required = false,
+  if valid_589512 != nil:
+    section.add "oauth_token", valid_589512
+  var valid_589513 = query.getOrDefault("userIp")
+  valid_589513 = validateParameter(valid_589513, JString, required = false,
                                  default = nil)
-  if valid_580484 != nil:
-    section.add "userIp", valid_580484
-  var valid_580485 = query.getOrDefault("key")
-  valid_580485 = validateParameter(valid_580485, JString, required = false,
+  if valid_589513 != nil:
+    section.add "userIp", valid_589513
+  var valid_589514 = query.getOrDefault("key")
+  valid_589514 = validateParameter(valid_589514, JString, required = false,
                                  default = nil)
-  if valid_580485 != nil:
-    section.add "key", valid_580485
-  var valid_580486 = query.getOrDefault("prettyPrint")
-  valid_580486 = validateParameter(valid_580486, JBool, required = false,
+  if valid_589514 != nil:
+    section.add "key", valid_589514
+  var valid_589515 = query.getOrDefault("prettyPrint")
+  valid_589515 = validateParameter(valid_589515, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580486 != nil:
-    section.add "prettyPrint", valid_580486
+  if valid_589515 != nil:
+    section.add "prettyPrint", valid_589515
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -5070,21 +5070,21 @@ proc validate_DeploymentmanagerTypeProvidersPatch_580476(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580488: Call_DeploymentmanagerTypeProvidersPatch_580475;
+proc call*(call_589517: Call_DeploymentmanagerTypeProvidersPatch_589504;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Updates a type provider. This method supports patch semantics.
   ## 
-  let valid = call_580488.validator(path, query, header, formData, body)
-  let scheme = call_580488.pickScheme
+  let valid = call_589517.validator(path, query, header, formData, body)
+  let scheme = call_589517.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580488.url(scheme.get, call_580488.host, call_580488.base,
-                         call_580488.route, valid.getOrDefault("path"),
+  let url = call_589517.url(scheme.get, call_589517.host, call_589517.base,
+                         call_589517.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580488, url, valid)
+  result = hook(call_589517, url, valid)
 
-proc call*(call_580489: Call_DeploymentmanagerTypeProvidersPatch_580475;
+proc call*(call_589518: Call_DeploymentmanagerTypeProvidersPatch_589504;
           typeProvider: string; project: string; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; key: string = ""; body: JsonNode = nil;
@@ -5110,32 +5110,32 @@ proc call*(call_580489: Call_DeploymentmanagerTypeProvidersPatch_580475;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_580490 = newJObject()
-  var query_580491 = newJObject()
-  var body_580492 = newJObject()
-  add(query_580491, "fields", newJString(fields))
-  add(query_580491, "quotaUser", newJString(quotaUser))
-  add(query_580491, "alt", newJString(alt))
-  add(path_580490, "typeProvider", newJString(typeProvider))
-  add(query_580491, "oauth_token", newJString(oauthToken))
-  add(query_580491, "userIp", newJString(userIp))
-  add(query_580491, "key", newJString(key))
-  add(path_580490, "project", newJString(project))
+  var path_589519 = newJObject()
+  var query_589520 = newJObject()
+  var body_589521 = newJObject()
+  add(query_589520, "fields", newJString(fields))
+  add(query_589520, "quotaUser", newJString(quotaUser))
+  add(query_589520, "alt", newJString(alt))
+  add(path_589519, "typeProvider", newJString(typeProvider))
+  add(query_589520, "oauth_token", newJString(oauthToken))
+  add(query_589520, "userIp", newJString(userIp))
+  add(query_589520, "key", newJString(key))
+  add(path_589519, "project", newJString(project))
   if body != nil:
-    body_580492 = body
-  add(query_580491, "prettyPrint", newJBool(prettyPrint))
-  result = call_580489.call(path_580490, query_580491, nil, nil, body_580492)
+    body_589521 = body
+  add(query_589520, "prettyPrint", newJBool(prettyPrint))
+  result = call_589518.call(path_589519, query_589520, nil, nil, body_589521)
 
-var deploymentmanagerTypeProvidersPatch* = Call_DeploymentmanagerTypeProvidersPatch_580475(
+var deploymentmanagerTypeProvidersPatch* = Call_DeploymentmanagerTypeProvidersPatch_589504(
     name: "deploymentmanagerTypeProvidersPatch", meth: HttpMethod.HttpPatch,
     host: "www.googleapis.com",
     route: "/{project}/global/typeProviders/{typeProvider}",
-    validator: validate_DeploymentmanagerTypeProvidersPatch_580476,
+    validator: validate_DeploymentmanagerTypeProvidersPatch_589505,
     base: "/deploymentmanager/v2beta/projects",
-    url: url_DeploymentmanagerTypeProvidersPatch_580477, schemes: {Scheme.Https})
+    url: url_DeploymentmanagerTypeProvidersPatch_589506, schemes: {Scheme.Https})
 type
-  Call_DeploymentmanagerTypeProvidersDelete_580459 = ref object of OpenApiRestCall_579437
-proc url_DeploymentmanagerTypeProvidersDelete_580461(protocol: Scheme;
+  Call_DeploymentmanagerTypeProvidersDelete_589488 = ref object of OpenApiRestCall_588466
+proc url_DeploymentmanagerTypeProvidersDelete_589490(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -5153,7 +5153,7 @@ proc url_DeploymentmanagerTypeProvidersDelete_580461(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_DeploymentmanagerTypeProvidersDelete_580460(path: JsonNode;
+proc validate_DeploymentmanagerTypeProvidersDelete_589489(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Deletes a type provider.
   ## 
@@ -5167,16 +5167,16 @@ proc validate_DeploymentmanagerTypeProvidersDelete_580460(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `typeProvider` field"
-  var valid_580462 = path.getOrDefault("typeProvider")
-  valid_580462 = validateParameter(valid_580462, JString, required = true,
+  var valid_589491 = path.getOrDefault("typeProvider")
+  valid_589491 = validateParameter(valid_589491, JString, required = true,
                                  default = nil)
-  if valid_580462 != nil:
-    section.add "typeProvider", valid_580462
-  var valid_580463 = path.getOrDefault("project")
-  valid_580463 = validateParameter(valid_580463, JString, required = true,
+  if valid_589491 != nil:
+    section.add "typeProvider", valid_589491
+  var valid_589492 = path.getOrDefault("project")
+  valid_589492 = validateParameter(valid_589492, JString, required = true,
                                  default = nil)
-  if valid_580463 != nil:
-    section.add "project", valid_580463
+  if valid_589492 != nil:
+    section.add "project", valid_589492
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -5194,41 +5194,41 @@ proc validate_DeploymentmanagerTypeProvidersDelete_580460(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580464 = query.getOrDefault("fields")
-  valid_580464 = validateParameter(valid_580464, JString, required = false,
+  var valid_589493 = query.getOrDefault("fields")
+  valid_589493 = validateParameter(valid_589493, JString, required = false,
                                  default = nil)
-  if valid_580464 != nil:
-    section.add "fields", valid_580464
-  var valid_580465 = query.getOrDefault("quotaUser")
-  valid_580465 = validateParameter(valid_580465, JString, required = false,
+  if valid_589493 != nil:
+    section.add "fields", valid_589493
+  var valid_589494 = query.getOrDefault("quotaUser")
+  valid_589494 = validateParameter(valid_589494, JString, required = false,
                                  default = nil)
-  if valid_580465 != nil:
-    section.add "quotaUser", valid_580465
-  var valid_580466 = query.getOrDefault("alt")
-  valid_580466 = validateParameter(valid_580466, JString, required = false,
+  if valid_589494 != nil:
+    section.add "quotaUser", valid_589494
+  var valid_589495 = query.getOrDefault("alt")
+  valid_589495 = validateParameter(valid_589495, JString, required = false,
                                  default = newJString("json"))
-  if valid_580466 != nil:
-    section.add "alt", valid_580466
-  var valid_580467 = query.getOrDefault("oauth_token")
-  valid_580467 = validateParameter(valid_580467, JString, required = false,
+  if valid_589495 != nil:
+    section.add "alt", valid_589495
+  var valid_589496 = query.getOrDefault("oauth_token")
+  valid_589496 = validateParameter(valid_589496, JString, required = false,
                                  default = nil)
-  if valid_580467 != nil:
-    section.add "oauth_token", valid_580467
-  var valid_580468 = query.getOrDefault("userIp")
-  valid_580468 = validateParameter(valid_580468, JString, required = false,
+  if valid_589496 != nil:
+    section.add "oauth_token", valid_589496
+  var valid_589497 = query.getOrDefault("userIp")
+  valid_589497 = validateParameter(valid_589497, JString, required = false,
                                  default = nil)
-  if valid_580468 != nil:
-    section.add "userIp", valid_580468
-  var valid_580469 = query.getOrDefault("key")
-  valid_580469 = validateParameter(valid_580469, JString, required = false,
+  if valid_589497 != nil:
+    section.add "userIp", valid_589497
+  var valid_589498 = query.getOrDefault("key")
+  valid_589498 = validateParameter(valid_589498, JString, required = false,
                                  default = nil)
-  if valid_580469 != nil:
-    section.add "key", valid_580469
-  var valid_580470 = query.getOrDefault("prettyPrint")
-  valid_580470 = validateParameter(valid_580470, JBool, required = false,
+  if valid_589498 != nil:
+    section.add "key", valid_589498
+  var valid_589499 = query.getOrDefault("prettyPrint")
+  valid_589499 = validateParameter(valid_589499, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580470 != nil:
-    section.add "prettyPrint", valid_580470
+  if valid_589499 != nil:
+    section.add "prettyPrint", valid_589499
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -5237,21 +5237,21 @@ proc validate_DeploymentmanagerTypeProvidersDelete_580460(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580471: Call_DeploymentmanagerTypeProvidersDelete_580459;
+proc call*(call_589500: Call_DeploymentmanagerTypeProvidersDelete_589488;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Deletes a type provider.
   ## 
-  let valid = call_580471.validator(path, query, header, formData, body)
-  let scheme = call_580471.pickScheme
+  let valid = call_589500.validator(path, query, header, formData, body)
+  let scheme = call_589500.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580471.url(scheme.get, call_580471.host, call_580471.base,
-                         call_580471.route, valid.getOrDefault("path"),
+  let url = call_589500.url(scheme.get, call_589500.host, call_589500.base,
+                         call_589500.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580471, url, valid)
+  result = hook(call_589500, url, valid)
 
-proc call*(call_580472: Call_DeploymentmanagerTypeProvidersDelete_580459;
+proc call*(call_589501: Call_DeploymentmanagerTypeProvidersDelete_589488;
           typeProvider: string; project: string; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; key: string = ""; prettyPrint: bool = true): Recallable =
@@ -5275,29 +5275,29 @@ proc call*(call_580472: Call_DeploymentmanagerTypeProvidersDelete_580459;
   ##          : The project ID for this request.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_580473 = newJObject()
-  var query_580474 = newJObject()
-  add(query_580474, "fields", newJString(fields))
-  add(query_580474, "quotaUser", newJString(quotaUser))
-  add(query_580474, "alt", newJString(alt))
-  add(path_580473, "typeProvider", newJString(typeProvider))
-  add(query_580474, "oauth_token", newJString(oauthToken))
-  add(query_580474, "userIp", newJString(userIp))
-  add(query_580474, "key", newJString(key))
-  add(path_580473, "project", newJString(project))
-  add(query_580474, "prettyPrint", newJBool(prettyPrint))
-  result = call_580472.call(path_580473, query_580474, nil, nil, nil)
+  var path_589502 = newJObject()
+  var query_589503 = newJObject()
+  add(query_589503, "fields", newJString(fields))
+  add(query_589503, "quotaUser", newJString(quotaUser))
+  add(query_589503, "alt", newJString(alt))
+  add(path_589502, "typeProvider", newJString(typeProvider))
+  add(query_589503, "oauth_token", newJString(oauthToken))
+  add(query_589503, "userIp", newJString(userIp))
+  add(query_589503, "key", newJString(key))
+  add(path_589502, "project", newJString(project))
+  add(query_589503, "prettyPrint", newJBool(prettyPrint))
+  result = call_589501.call(path_589502, query_589503, nil, nil, nil)
 
-var deploymentmanagerTypeProvidersDelete* = Call_DeploymentmanagerTypeProvidersDelete_580459(
+var deploymentmanagerTypeProvidersDelete* = Call_DeploymentmanagerTypeProvidersDelete_589488(
     name: "deploymentmanagerTypeProvidersDelete", meth: HttpMethod.HttpDelete,
     host: "www.googleapis.com",
     route: "/{project}/global/typeProviders/{typeProvider}",
-    validator: validate_DeploymentmanagerTypeProvidersDelete_580460,
+    validator: validate_DeploymentmanagerTypeProvidersDelete_589489,
     base: "/deploymentmanager/v2beta/projects",
-    url: url_DeploymentmanagerTypeProvidersDelete_580461, schemes: {Scheme.Https})
+    url: url_DeploymentmanagerTypeProvidersDelete_589490, schemes: {Scheme.Https})
 type
-  Call_DeploymentmanagerTypeProvidersListTypes_580493 = ref object of OpenApiRestCall_579437
-proc url_DeploymentmanagerTypeProvidersListTypes_580495(protocol: Scheme;
+  Call_DeploymentmanagerTypeProvidersListTypes_589522 = ref object of OpenApiRestCall_588466
+proc url_DeploymentmanagerTypeProvidersListTypes_589524(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -5316,7 +5316,7 @@ proc url_DeploymentmanagerTypeProvidersListTypes_580495(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_DeploymentmanagerTypeProvidersListTypes_580494(path: JsonNode;
+proc validate_DeploymentmanagerTypeProvidersListTypes_589523(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Lists all the type info for a TypeProvider.
   ## 
@@ -5330,16 +5330,16 @@ proc validate_DeploymentmanagerTypeProvidersListTypes_580494(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `typeProvider` field"
-  var valid_580496 = path.getOrDefault("typeProvider")
-  valid_580496 = validateParameter(valid_580496, JString, required = true,
+  var valid_589525 = path.getOrDefault("typeProvider")
+  valid_589525 = validateParameter(valid_589525, JString, required = true,
                                  default = nil)
-  if valid_580496 != nil:
-    section.add "typeProvider", valid_580496
-  var valid_580497 = path.getOrDefault("project")
-  valid_580497 = validateParameter(valid_580497, JString, required = true,
+  if valid_589525 != nil:
+    section.add "typeProvider", valid_589525
+  var valid_589526 = path.getOrDefault("project")
+  valid_589526 = validateParameter(valid_589526, JString, required = true,
                                  default = nil)
-  if valid_580497 != nil:
-    section.add "project", valid_580497
+  if valid_589526 != nil:
+    section.add "project", valid_589526
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -5375,61 +5375,61 @@ proc validate_DeploymentmanagerTypeProvidersListTypes_580494(path: JsonNode;
   ## 
   ## To filter on multiple expressions, provide each separate expression within parentheses. For example, (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake"). By default, each expression is an AND expression. However, you can include AND and OR expressions explicitly. For example, (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart = true).
   section = newJObject()
-  var valid_580498 = query.getOrDefault("fields")
-  valid_580498 = validateParameter(valid_580498, JString, required = false,
+  var valid_589527 = query.getOrDefault("fields")
+  valid_589527 = validateParameter(valid_589527, JString, required = false,
                                  default = nil)
-  if valid_580498 != nil:
-    section.add "fields", valid_580498
-  var valid_580499 = query.getOrDefault("pageToken")
-  valid_580499 = validateParameter(valid_580499, JString, required = false,
+  if valid_589527 != nil:
+    section.add "fields", valid_589527
+  var valid_589528 = query.getOrDefault("pageToken")
+  valid_589528 = validateParameter(valid_589528, JString, required = false,
                                  default = nil)
-  if valid_580499 != nil:
-    section.add "pageToken", valid_580499
-  var valid_580500 = query.getOrDefault("quotaUser")
-  valid_580500 = validateParameter(valid_580500, JString, required = false,
+  if valid_589528 != nil:
+    section.add "pageToken", valid_589528
+  var valid_589529 = query.getOrDefault("quotaUser")
+  valid_589529 = validateParameter(valid_589529, JString, required = false,
                                  default = nil)
-  if valid_580500 != nil:
-    section.add "quotaUser", valid_580500
-  var valid_580501 = query.getOrDefault("alt")
-  valid_580501 = validateParameter(valid_580501, JString, required = false,
+  if valid_589529 != nil:
+    section.add "quotaUser", valid_589529
+  var valid_589530 = query.getOrDefault("alt")
+  valid_589530 = validateParameter(valid_589530, JString, required = false,
                                  default = newJString("json"))
-  if valid_580501 != nil:
-    section.add "alt", valid_580501
-  var valid_580502 = query.getOrDefault("oauth_token")
-  valid_580502 = validateParameter(valid_580502, JString, required = false,
+  if valid_589530 != nil:
+    section.add "alt", valid_589530
+  var valid_589531 = query.getOrDefault("oauth_token")
+  valid_589531 = validateParameter(valid_589531, JString, required = false,
                                  default = nil)
-  if valid_580502 != nil:
-    section.add "oauth_token", valid_580502
-  var valid_580503 = query.getOrDefault("userIp")
-  valid_580503 = validateParameter(valid_580503, JString, required = false,
+  if valid_589531 != nil:
+    section.add "oauth_token", valid_589531
+  var valid_589532 = query.getOrDefault("userIp")
+  valid_589532 = validateParameter(valid_589532, JString, required = false,
                                  default = nil)
-  if valid_580503 != nil:
-    section.add "userIp", valid_580503
-  var valid_580504 = query.getOrDefault("maxResults")
-  valid_580504 = validateParameter(valid_580504, JInt, required = false,
+  if valid_589532 != nil:
+    section.add "userIp", valid_589532
+  var valid_589533 = query.getOrDefault("maxResults")
+  valid_589533 = validateParameter(valid_589533, JInt, required = false,
                                  default = newJInt(500))
-  if valid_580504 != nil:
-    section.add "maxResults", valid_580504
-  var valid_580505 = query.getOrDefault("orderBy")
-  valid_580505 = validateParameter(valid_580505, JString, required = false,
+  if valid_589533 != nil:
+    section.add "maxResults", valid_589533
+  var valid_589534 = query.getOrDefault("orderBy")
+  valid_589534 = validateParameter(valid_589534, JString, required = false,
                                  default = nil)
-  if valid_580505 != nil:
-    section.add "orderBy", valid_580505
-  var valid_580506 = query.getOrDefault("key")
-  valid_580506 = validateParameter(valid_580506, JString, required = false,
+  if valid_589534 != nil:
+    section.add "orderBy", valid_589534
+  var valid_589535 = query.getOrDefault("key")
+  valid_589535 = validateParameter(valid_589535, JString, required = false,
                                  default = nil)
-  if valid_580506 != nil:
-    section.add "key", valid_580506
-  var valid_580507 = query.getOrDefault("prettyPrint")
-  valid_580507 = validateParameter(valid_580507, JBool, required = false,
+  if valid_589535 != nil:
+    section.add "key", valid_589535
+  var valid_589536 = query.getOrDefault("prettyPrint")
+  valid_589536 = validateParameter(valid_589536, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580507 != nil:
-    section.add "prettyPrint", valid_580507
-  var valid_580508 = query.getOrDefault("filter")
-  valid_580508 = validateParameter(valid_580508, JString, required = false,
+  if valid_589536 != nil:
+    section.add "prettyPrint", valid_589536
+  var valid_589537 = query.getOrDefault("filter")
+  valid_589537 = validateParameter(valid_589537, JString, required = false,
                                  default = nil)
-  if valid_580508 != nil:
-    section.add "filter", valid_580508
+  if valid_589537 != nil:
+    section.add "filter", valid_589537
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -5438,21 +5438,21 @@ proc validate_DeploymentmanagerTypeProvidersListTypes_580494(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580509: Call_DeploymentmanagerTypeProvidersListTypes_580493;
+proc call*(call_589538: Call_DeploymentmanagerTypeProvidersListTypes_589522;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Lists all the type info for a TypeProvider.
   ## 
-  let valid = call_580509.validator(path, query, header, formData, body)
-  let scheme = call_580509.pickScheme
+  let valid = call_589538.validator(path, query, header, formData, body)
+  let scheme = call_589538.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580509.url(scheme.get, call_580509.host, call_580509.base,
-                         call_580509.route, valid.getOrDefault("path"),
+  let url = call_589538.url(scheme.get, call_589538.host, call_589538.base,
+                         call_589538.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580509, url, valid)
+  result = hook(call_589538, url, valid)
 
-proc call*(call_580510: Call_DeploymentmanagerTypeProvidersListTypes_580493;
+proc call*(call_589539: Call_DeploymentmanagerTypeProvidersListTypes_589522;
           typeProvider: string; project: string; fields: string = "";
           pageToken: string = ""; quotaUser: string = ""; alt: string = "json";
           oauthToken: string = ""; userIp: string = ""; maxResults: int = 500;
@@ -5496,34 +5496,34 @@ proc call*(call_580510: Call_DeploymentmanagerTypeProvidersListTypes_580493;
   ## You can also filter nested fields. For example, you could specify scheduling.automaticRestart = false to include instances only if they are not scheduled for automatic restarts. You can use filtering on nested fields to filter based on resource labels.
   ## 
   ## To filter on multiple expressions, provide each separate expression within parentheses. For example, (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake"). By default, each expression is an AND expression. However, you can include AND and OR expressions explicitly. For example, (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart = true).
-  var path_580511 = newJObject()
-  var query_580512 = newJObject()
-  add(query_580512, "fields", newJString(fields))
-  add(query_580512, "pageToken", newJString(pageToken))
-  add(query_580512, "quotaUser", newJString(quotaUser))
-  add(query_580512, "alt", newJString(alt))
-  add(path_580511, "typeProvider", newJString(typeProvider))
-  add(query_580512, "oauth_token", newJString(oauthToken))
-  add(query_580512, "userIp", newJString(userIp))
-  add(query_580512, "maxResults", newJInt(maxResults))
-  add(query_580512, "orderBy", newJString(orderBy))
-  add(query_580512, "key", newJString(key))
-  add(path_580511, "project", newJString(project))
-  add(query_580512, "prettyPrint", newJBool(prettyPrint))
-  add(query_580512, "filter", newJString(filter))
-  result = call_580510.call(path_580511, query_580512, nil, nil, nil)
+  var path_589540 = newJObject()
+  var query_589541 = newJObject()
+  add(query_589541, "fields", newJString(fields))
+  add(query_589541, "pageToken", newJString(pageToken))
+  add(query_589541, "quotaUser", newJString(quotaUser))
+  add(query_589541, "alt", newJString(alt))
+  add(path_589540, "typeProvider", newJString(typeProvider))
+  add(query_589541, "oauth_token", newJString(oauthToken))
+  add(query_589541, "userIp", newJString(userIp))
+  add(query_589541, "maxResults", newJInt(maxResults))
+  add(query_589541, "orderBy", newJString(orderBy))
+  add(query_589541, "key", newJString(key))
+  add(path_589540, "project", newJString(project))
+  add(query_589541, "prettyPrint", newJBool(prettyPrint))
+  add(query_589541, "filter", newJString(filter))
+  result = call_589539.call(path_589540, query_589541, nil, nil, nil)
 
-var deploymentmanagerTypeProvidersListTypes* = Call_DeploymentmanagerTypeProvidersListTypes_580493(
+var deploymentmanagerTypeProvidersListTypes* = Call_DeploymentmanagerTypeProvidersListTypes_589522(
     name: "deploymentmanagerTypeProvidersListTypes", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com",
     route: "/{project}/global/typeProviders/{typeProvider}/types",
-    validator: validate_DeploymentmanagerTypeProvidersListTypes_580494,
+    validator: validate_DeploymentmanagerTypeProvidersListTypes_589523,
     base: "/deploymentmanager/v2beta/projects",
-    url: url_DeploymentmanagerTypeProvidersListTypes_580495,
+    url: url_DeploymentmanagerTypeProvidersListTypes_589524,
     schemes: {Scheme.Https})
 type
-  Call_DeploymentmanagerTypeProvidersGetType_580513 = ref object of OpenApiRestCall_579437
-proc url_DeploymentmanagerTypeProvidersGetType_580515(protocol: Scheme;
+  Call_DeploymentmanagerTypeProvidersGetType_589542 = ref object of OpenApiRestCall_588466
+proc url_DeploymentmanagerTypeProvidersGetType_589544(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -5544,7 +5544,7 @@ proc url_DeploymentmanagerTypeProvidersGetType_580515(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_DeploymentmanagerTypeProvidersGetType_580514(path: JsonNode;
+proc validate_DeploymentmanagerTypeProvidersGetType_589543(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Gets a type info for a type provided by a TypeProvider.
   ## 
@@ -5559,21 +5559,21 @@ proc validate_DeploymentmanagerTypeProvidersGetType_580514(path: JsonNode;
   ##          : The project ID for this request.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `type` field"
-  var valid_580516 = path.getOrDefault("type")
-  valid_580516 = validateParameter(valid_580516, JString, required = true,
+  var valid_589545 = path.getOrDefault("type")
+  valid_589545 = validateParameter(valid_589545, JString, required = true,
                                  default = nil)
-  if valid_580516 != nil:
-    section.add "type", valid_580516
-  var valid_580517 = path.getOrDefault("typeProvider")
-  valid_580517 = validateParameter(valid_580517, JString, required = true,
+  if valid_589545 != nil:
+    section.add "type", valid_589545
+  var valid_589546 = path.getOrDefault("typeProvider")
+  valid_589546 = validateParameter(valid_589546, JString, required = true,
                                  default = nil)
-  if valid_580517 != nil:
-    section.add "typeProvider", valid_580517
-  var valid_580518 = path.getOrDefault("project")
-  valid_580518 = validateParameter(valid_580518, JString, required = true,
+  if valid_589546 != nil:
+    section.add "typeProvider", valid_589546
+  var valid_589547 = path.getOrDefault("project")
+  valid_589547 = validateParameter(valid_589547, JString, required = true,
                                  default = nil)
-  if valid_580518 != nil:
-    section.add "project", valid_580518
+  if valid_589547 != nil:
+    section.add "project", valid_589547
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -5591,41 +5591,41 @@ proc validate_DeploymentmanagerTypeProvidersGetType_580514(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580519 = query.getOrDefault("fields")
-  valid_580519 = validateParameter(valid_580519, JString, required = false,
+  var valid_589548 = query.getOrDefault("fields")
+  valid_589548 = validateParameter(valid_589548, JString, required = false,
                                  default = nil)
-  if valid_580519 != nil:
-    section.add "fields", valid_580519
-  var valid_580520 = query.getOrDefault("quotaUser")
-  valid_580520 = validateParameter(valid_580520, JString, required = false,
+  if valid_589548 != nil:
+    section.add "fields", valid_589548
+  var valid_589549 = query.getOrDefault("quotaUser")
+  valid_589549 = validateParameter(valid_589549, JString, required = false,
                                  default = nil)
-  if valid_580520 != nil:
-    section.add "quotaUser", valid_580520
-  var valid_580521 = query.getOrDefault("alt")
-  valid_580521 = validateParameter(valid_580521, JString, required = false,
+  if valid_589549 != nil:
+    section.add "quotaUser", valid_589549
+  var valid_589550 = query.getOrDefault("alt")
+  valid_589550 = validateParameter(valid_589550, JString, required = false,
                                  default = newJString("json"))
-  if valid_580521 != nil:
-    section.add "alt", valid_580521
-  var valid_580522 = query.getOrDefault("oauth_token")
-  valid_580522 = validateParameter(valid_580522, JString, required = false,
+  if valid_589550 != nil:
+    section.add "alt", valid_589550
+  var valid_589551 = query.getOrDefault("oauth_token")
+  valid_589551 = validateParameter(valid_589551, JString, required = false,
                                  default = nil)
-  if valid_580522 != nil:
-    section.add "oauth_token", valid_580522
-  var valid_580523 = query.getOrDefault("userIp")
-  valid_580523 = validateParameter(valid_580523, JString, required = false,
+  if valid_589551 != nil:
+    section.add "oauth_token", valid_589551
+  var valid_589552 = query.getOrDefault("userIp")
+  valid_589552 = validateParameter(valid_589552, JString, required = false,
                                  default = nil)
-  if valid_580523 != nil:
-    section.add "userIp", valid_580523
-  var valid_580524 = query.getOrDefault("key")
-  valid_580524 = validateParameter(valid_580524, JString, required = false,
+  if valid_589552 != nil:
+    section.add "userIp", valid_589552
+  var valid_589553 = query.getOrDefault("key")
+  valid_589553 = validateParameter(valid_589553, JString, required = false,
                                  default = nil)
-  if valid_580524 != nil:
-    section.add "key", valid_580524
-  var valid_580525 = query.getOrDefault("prettyPrint")
-  valid_580525 = validateParameter(valid_580525, JBool, required = false,
+  if valid_589553 != nil:
+    section.add "key", valid_589553
+  var valid_589554 = query.getOrDefault("prettyPrint")
+  valid_589554 = validateParameter(valid_589554, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580525 != nil:
-    section.add "prettyPrint", valid_580525
+  if valid_589554 != nil:
+    section.add "prettyPrint", valid_589554
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -5634,21 +5634,21 @@ proc validate_DeploymentmanagerTypeProvidersGetType_580514(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580526: Call_DeploymentmanagerTypeProvidersGetType_580513;
+proc call*(call_589555: Call_DeploymentmanagerTypeProvidersGetType_589542;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Gets a type info for a type provided by a TypeProvider.
   ## 
-  let valid = call_580526.validator(path, query, header, formData, body)
-  let scheme = call_580526.pickScheme
+  let valid = call_589555.validator(path, query, header, formData, body)
+  let scheme = call_589555.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580526.url(scheme.get, call_580526.host, call_580526.base,
-                         call_580526.route, valid.getOrDefault("path"),
+  let url = call_589555.url(scheme.get, call_589555.host, call_589555.base,
+                         call_589555.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580526, url, valid)
+  result = hook(call_589555, url, valid)
 
-proc call*(call_580527: Call_DeploymentmanagerTypeProvidersGetType_580513;
+proc call*(call_589556: Call_DeploymentmanagerTypeProvidersGetType_589542;
           `type`: string; typeProvider: string; project: string; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; key: string = ""; prettyPrint: bool = true): Recallable =
@@ -5674,30 +5674,30 @@ proc call*(call_580527: Call_DeploymentmanagerTypeProvidersGetType_580513;
   ##          : The project ID for this request.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_580528 = newJObject()
-  var query_580529 = newJObject()
-  add(path_580528, "type", newJString(`type`))
-  add(query_580529, "fields", newJString(fields))
-  add(query_580529, "quotaUser", newJString(quotaUser))
-  add(query_580529, "alt", newJString(alt))
-  add(path_580528, "typeProvider", newJString(typeProvider))
-  add(query_580529, "oauth_token", newJString(oauthToken))
-  add(query_580529, "userIp", newJString(userIp))
-  add(query_580529, "key", newJString(key))
-  add(path_580528, "project", newJString(project))
-  add(query_580529, "prettyPrint", newJBool(prettyPrint))
-  result = call_580527.call(path_580528, query_580529, nil, nil, nil)
+  var path_589557 = newJObject()
+  var query_589558 = newJObject()
+  add(path_589557, "type", newJString(`type`))
+  add(query_589558, "fields", newJString(fields))
+  add(query_589558, "quotaUser", newJString(quotaUser))
+  add(query_589558, "alt", newJString(alt))
+  add(path_589557, "typeProvider", newJString(typeProvider))
+  add(query_589558, "oauth_token", newJString(oauthToken))
+  add(query_589558, "userIp", newJString(userIp))
+  add(query_589558, "key", newJString(key))
+  add(path_589557, "project", newJString(project))
+  add(query_589558, "prettyPrint", newJBool(prettyPrint))
+  result = call_589556.call(path_589557, query_589558, nil, nil, nil)
 
-var deploymentmanagerTypeProvidersGetType* = Call_DeploymentmanagerTypeProvidersGetType_580513(
+var deploymentmanagerTypeProvidersGetType* = Call_DeploymentmanagerTypeProvidersGetType_589542(
     name: "deploymentmanagerTypeProvidersGetType", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com",
     route: "/{project}/global/typeProviders/{typeProvider}/types/{type}",
-    validator: validate_DeploymentmanagerTypeProvidersGetType_580514,
+    validator: validate_DeploymentmanagerTypeProvidersGetType_589543,
     base: "/deploymentmanager/v2beta/projects",
-    url: url_DeploymentmanagerTypeProvidersGetType_580515, schemes: {Scheme.Https})
+    url: url_DeploymentmanagerTypeProvidersGetType_589544, schemes: {Scheme.Https})
 type
-  Call_DeploymentmanagerTypesList_580530 = ref object of OpenApiRestCall_579437
-proc url_DeploymentmanagerTypesList_580532(protocol: Scheme; host: string;
+  Call_DeploymentmanagerTypesList_589559 = ref object of OpenApiRestCall_588466
+proc url_DeploymentmanagerTypesList_589561(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -5713,7 +5713,7 @@ proc url_DeploymentmanagerTypesList_580532(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_DeploymentmanagerTypesList_580531(path: JsonNode; query: JsonNode;
+proc validate_DeploymentmanagerTypesList_589560(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Lists all resource types for Deployment Manager.
   ## 
@@ -5724,11 +5724,11 @@ proc validate_DeploymentmanagerTypesList_580531(path: JsonNode; query: JsonNode;
   ##          : The project ID for this request.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `project` field"
-  var valid_580533 = path.getOrDefault("project")
-  valid_580533 = validateParameter(valid_580533, JString, required = true,
+  var valid_589562 = path.getOrDefault("project")
+  valid_589562 = validateParameter(valid_589562, JString, required = true,
                                  default = nil)
-  if valid_580533 != nil:
-    section.add "project", valid_580533
+  if valid_589562 != nil:
+    section.add "project", valid_589562
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -5764,61 +5764,61 @@ proc validate_DeploymentmanagerTypesList_580531(path: JsonNode; query: JsonNode;
   ## 
   ## To filter on multiple expressions, provide each separate expression within parentheses. For example, (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake"). By default, each expression is an AND expression. However, you can include AND and OR expressions explicitly. For example, (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart = true).
   section = newJObject()
-  var valid_580534 = query.getOrDefault("fields")
-  valid_580534 = validateParameter(valid_580534, JString, required = false,
+  var valid_589563 = query.getOrDefault("fields")
+  valid_589563 = validateParameter(valid_589563, JString, required = false,
                                  default = nil)
-  if valid_580534 != nil:
-    section.add "fields", valid_580534
-  var valid_580535 = query.getOrDefault("pageToken")
-  valid_580535 = validateParameter(valid_580535, JString, required = false,
+  if valid_589563 != nil:
+    section.add "fields", valid_589563
+  var valid_589564 = query.getOrDefault("pageToken")
+  valid_589564 = validateParameter(valid_589564, JString, required = false,
                                  default = nil)
-  if valid_580535 != nil:
-    section.add "pageToken", valid_580535
-  var valid_580536 = query.getOrDefault("quotaUser")
-  valid_580536 = validateParameter(valid_580536, JString, required = false,
+  if valid_589564 != nil:
+    section.add "pageToken", valid_589564
+  var valid_589565 = query.getOrDefault("quotaUser")
+  valid_589565 = validateParameter(valid_589565, JString, required = false,
                                  default = nil)
-  if valid_580536 != nil:
-    section.add "quotaUser", valid_580536
-  var valid_580537 = query.getOrDefault("alt")
-  valid_580537 = validateParameter(valid_580537, JString, required = false,
+  if valid_589565 != nil:
+    section.add "quotaUser", valid_589565
+  var valid_589566 = query.getOrDefault("alt")
+  valid_589566 = validateParameter(valid_589566, JString, required = false,
                                  default = newJString("json"))
-  if valid_580537 != nil:
-    section.add "alt", valid_580537
-  var valid_580538 = query.getOrDefault("oauth_token")
-  valid_580538 = validateParameter(valid_580538, JString, required = false,
+  if valid_589566 != nil:
+    section.add "alt", valid_589566
+  var valid_589567 = query.getOrDefault("oauth_token")
+  valid_589567 = validateParameter(valid_589567, JString, required = false,
                                  default = nil)
-  if valid_580538 != nil:
-    section.add "oauth_token", valid_580538
-  var valid_580539 = query.getOrDefault("userIp")
-  valid_580539 = validateParameter(valid_580539, JString, required = false,
+  if valid_589567 != nil:
+    section.add "oauth_token", valid_589567
+  var valid_589568 = query.getOrDefault("userIp")
+  valid_589568 = validateParameter(valid_589568, JString, required = false,
                                  default = nil)
-  if valid_580539 != nil:
-    section.add "userIp", valid_580539
-  var valid_580540 = query.getOrDefault("maxResults")
-  valid_580540 = validateParameter(valid_580540, JInt, required = false,
+  if valid_589568 != nil:
+    section.add "userIp", valid_589568
+  var valid_589569 = query.getOrDefault("maxResults")
+  valid_589569 = validateParameter(valid_589569, JInt, required = false,
                                  default = newJInt(500))
-  if valid_580540 != nil:
-    section.add "maxResults", valid_580540
-  var valid_580541 = query.getOrDefault("orderBy")
-  valid_580541 = validateParameter(valid_580541, JString, required = false,
+  if valid_589569 != nil:
+    section.add "maxResults", valid_589569
+  var valid_589570 = query.getOrDefault("orderBy")
+  valid_589570 = validateParameter(valid_589570, JString, required = false,
                                  default = nil)
-  if valid_580541 != nil:
-    section.add "orderBy", valid_580541
-  var valid_580542 = query.getOrDefault("key")
-  valid_580542 = validateParameter(valid_580542, JString, required = false,
+  if valid_589570 != nil:
+    section.add "orderBy", valid_589570
+  var valid_589571 = query.getOrDefault("key")
+  valid_589571 = validateParameter(valid_589571, JString, required = false,
                                  default = nil)
-  if valid_580542 != nil:
-    section.add "key", valid_580542
-  var valid_580543 = query.getOrDefault("prettyPrint")
-  valid_580543 = validateParameter(valid_580543, JBool, required = false,
+  if valid_589571 != nil:
+    section.add "key", valid_589571
+  var valid_589572 = query.getOrDefault("prettyPrint")
+  valid_589572 = validateParameter(valid_589572, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580543 != nil:
-    section.add "prettyPrint", valid_580543
-  var valid_580544 = query.getOrDefault("filter")
-  valid_580544 = validateParameter(valid_580544, JString, required = false,
+  if valid_589572 != nil:
+    section.add "prettyPrint", valid_589572
+  var valid_589573 = query.getOrDefault("filter")
+  valid_589573 = validateParameter(valid_589573, JString, required = false,
                                  default = nil)
-  if valid_580544 != nil:
-    section.add "filter", valid_580544
+  if valid_589573 != nil:
+    section.add "filter", valid_589573
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -5827,20 +5827,20 @@ proc validate_DeploymentmanagerTypesList_580531(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580545: Call_DeploymentmanagerTypesList_580530; path: JsonNode;
+proc call*(call_589574: Call_DeploymentmanagerTypesList_589559; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Lists all resource types for Deployment Manager.
   ## 
-  let valid = call_580545.validator(path, query, header, formData, body)
-  let scheme = call_580545.pickScheme
+  let valid = call_589574.validator(path, query, header, formData, body)
+  let scheme = call_589574.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580545.url(scheme.get, call_580545.host, call_580545.base,
-                         call_580545.route, valid.getOrDefault("path"),
+  let url = call_589574.url(scheme.get, call_589574.host, call_589574.base,
+                         call_589574.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580545, url, valid)
+  result = hook(call_589574, url, valid)
 
-proc call*(call_580546: Call_DeploymentmanagerTypesList_580530; project: string;
+proc call*(call_589575: Call_DeploymentmanagerTypesList_589559; project: string;
           fields: string = ""; pageToken: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; userIp: string = "";
           maxResults: int = 500; orderBy: string = ""; key: string = "";
@@ -5881,28 +5881,28 @@ proc call*(call_580546: Call_DeploymentmanagerTypesList_580530; project: string;
   ## You can also filter nested fields. For example, you could specify scheduling.automaticRestart = false to include instances only if they are not scheduled for automatic restarts. You can use filtering on nested fields to filter based on resource labels.
   ## 
   ## To filter on multiple expressions, provide each separate expression within parentheses. For example, (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake"). By default, each expression is an AND expression. However, you can include AND and OR expressions explicitly. For example, (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart = true).
-  var path_580547 = newJObject()
-  var query_580548 = newJObject()
-  add(query_580548, "fields", newJString(fields))
-  add(query_580548, "pageToken", newJString(pageToken))
-  add(query_580548, "quotaUser", newJString(quotaUser))
-  add(query_580548, "alt", newJString(alt))
-  add(query_580548, "oauth_token", newJString(oauthToken))
-  add(query_580548, "userIp", newJString(userIp))
-  add(query_580548, "maxResults", newJInt(maxResults))
-  add(query_580548, "orderBy", newJString(orderBy))
-  add(query_580548, "key", newJString(key))
-  add(path_580547, "project", newJString(project))
-  add(query_580548, "prettyPrint", newJBool(prettyPrint))
-  add(query_580548, "filter", newJString(filter))
-  result = call_580546.call(path_580547, query_580548, nil, nil, nil)
+  var path_589576 = newJObject()
+  var query_589577 = newJObject()
+  add(query_589577, "fields", newJString(fields))
+  add(query_589577, "pageToken", newJString(pageToken))
+  add(query_589577, "quotaUser", newJString(quotaUser))
+  add(query_589577, "alt", newJString(alt))
+  add(query_589577, "oauth_token", newJString(oauthToken))
+  add(query_589577, "userIp", newJString(userIp))
+  add(query_589577, "maxResults", newJInt(maxResults))
+  add(query_589577, "orderBy", newJString(orderBy))
+  add(query_589577, "key", newJString(key))
+  add(path_589576, "project", newJString(project))
+  add(query_589577, "prettyPrint", newJBool(prettyPrint))
+  add(query_589577, "filter", newJString(filter))
+  result = call_589575.call(path_589576, query_589577, nil, nil, nil)
 
-var deploymentmanagerTypesList* = Call_DeploymentmanagerTypesList_580530(
+var deploymentmanagerTypesList* = Call_DeploymentmanagerTypesList_589559(
     name: "deploymentmanagerTypesList", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/{project}/global/types",
-    validator: validate_DeploymentmanagerTypesList_580531,
+    validator: validate_DeploymentmanagerTypesList_589560,
     base: "/deploymentmanager/v2beta/projects",
-    url: url_DeploymentmanagerTypesList_580532, schemes: {Scheme.Https})
+    url: url_DeploymentmanagerTypesList_589561, schemes: {Scheme.Https})
 export
   rest
 
@@ -5944,7 +5944,7 @@ proc store(auth: var GoogleAuth; token: string; expiry: int; form: string) =
   auth.form = form
   auth.digest = auth.hash
 
-proc authenticate*(fresh: float64 = -3600.0; lifetime: int = 3600): Future[bool] {.async.} =
+proc authenticate*(fresh: float64 = 3600.0; lifetime: int = 3600): Future[bool] {.async.} =
   ## get or refresh an authentication token; provide `fresh`
   ## to ensure that the token won't expire in the next N seconds.
   ## provide `lifetime` to indicate how long the token should last.

@@ -30,15 +30,15 @@ type
     url*: proc (protocol: Scheme; host: string; base: string; route: string;
               path: JsonNode; query: JsonNode): Uri
 
-  OpenApiRestCall_579408 = ref object of OpenApiRestCall
+  OpenApiRestCall_588441 = ref object of OpenApiRestCall
 proc hash(scheme: Scheme): Hash {.used.} =
   result = hash(ord(scheme))
 
-proc clone[T: OpenApiRestCall_579408](t: T): T {.used.} =
+proc clone[T: OpenApiRestCall_588441](t: T): T {.used.} =
   result = T(name: t.name, meth: t.meth, host: t.host, base: t.base, route: t.route,
            schemes: t.schemes, validator: t.validator, url: t.url)
 
-proc pickScheme(t: OpenApiRestCall_579408): Option[Scheme] {.used.} =
+proc pickScheme(t: OpenApiRestCall_588441): Option[Scheme] {.used.} =
   ## select a supported scheme from a set of candidates
   for scheme in Scheme.low ..
       Scheme.high:
@@ -75,7 +75,7 @@ type
   PathTokenKind = enum
     ConstantSegment, VariableSegment
   PathToken = tuple[kind: PathTokenKind, value: string]
-proc queryString(query: JsonNode): string =
+proc queryString(query: JsonNode): string {.used.} =
   var qs: seq[KeyVal]
   if query == nil:
     return ""
@@ -83,7 +83,7 @@ proc queryString(query: JsonNode): string =
     qs.add (key: k, val: v.getStr)
   result = encodeQuery(qs)
 
-proc hydratePath(input: JsonNode; segments: seq[PathToken]): Option[string] =
+proc hydratePath(input: JsonNode; segments: seq[PathToken]): Option[string] {.used.} =
   ## reconstitute a path with constants and variable values taken from json
   var head: string
   if segments.len == 0:
@@ -109,8 +109,8 @@ const
 proc composeQueryString(query: JsonNode): string
 method hook(call: OpenApiRestCall; url: Uri; input: JsonNode): Recallable {.base.}
 type
-  Call_CloudtraceProjectsTracesList_579677 = ref object of OpenApiRestCall_579408
-proc url_CloudtraceProjectsTracesList_579679(protocol: Scheme; host: string;
+  Call_CloudtraceProjectsTracesList_588710 = ref object of OpenApiRestCall_588441
+proc url_CloudtraceProjectsTracesList_588712(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -126,7 +126,7 @@ proc url_CloudtraceProjectsTracesList_579679(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_CloudtraceProjectsTracesList_579678(path: JsonNode; query: JsonNode;
+proc validate_CloudtraceProjectsTracesList_588711(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Returns of a list of traces that match the specified filter conditions.
   ## 
@@ -134,14 +134,14 @@ proc validate_CloudtraceProjectsTracesList_579678(path: JsonNode; query: JsonNod
   result = newJObject()
   ## parameters in `path` object:
   ##   projectId: JString (required)
-  ##            : ID of the Cloud project where the trace data is stored.
+  ##            : Required. ID of the Cloud project where the trace data is stored.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `projectId` field"
-  var valid_579805 = path.getOrDefault("projectId")
-  valid_579805 = validateParameter(valid_579805, JString, required = true,
+  var valid_588838 = path.getOrDefault("projectId")
+  valid_588838 = validateParameter(valid_588838, JString, required = true,
                                  default = nil)
-  if valid_579805 != nil:
-    section.add "projectId", valid_579805
+  if valid_588838 != nil:
+    section.add "projectId", valid_588838
   result.add "path", section
   ## parameters in `query` object:
   ##   upload_protocol: JString
@@ -150,11 +150,11 @@ proc validate_CloudtraceProjectsTracesList_579678(path: JsonNode; query: JsonNod
   ##         : Selector specifying which fields to include in a partial response.
   ##   pageToken: JString
   ##            : Token identifying the page of results to return. If provided, use the
-  ## value of the `next_page_token` field from a previous request. Optional.
+  ## value of the `next_page_token` field from a previous request.
   ##   quotaUser: JString
   ##            : Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters.
   ##   view: JString
-  ##       : Type of data returned for traces in the list. Optional. Default is
+  ##       : Optional. Type of data returned for traces in the list. Default is
   ## `MINIMAL`.
   ##   alt: JString
   ##      : Data format for response.
@@ -170,7 +170,7 @@ proc validate_CloudtraceProjectsTracesList_579678(path: JsonNode; query: JsonNod
   ##          : End of the time interval (inclusive) during which the trace data was
   ## collected from the application.
   ##   orderBy: JString
-  ##          : Field used to sort the returned traces. Optional.
+  ##          : Optional. Field used to sort the returned traces.
   ## Can be one of the following:
   ## 
   ## *   `trace_id`
@@ -188,16 +188,16 @@ proc validate_CloudtraceProjectsTracesList_579678(path: JsonNode; query: JsonNod
   ##   $.xgafv: JString
   ##          : V1 error format.
   ##   pageSize: JInt
-  ##           : Maximum number of traces to return. If not specified or <= 0, the
+  ##           : Optional. Maximum number of traces to return. If not specified or <= 0, the
   ## implementation selects a reasonable value.  The implementation may
-  ## return fewer traces than the requested page size. Optional.
+  ## return fewer traces than the requested page size.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   ##   startTime: JString
   ##            : Start of the time interval (inclusive) during which the trace data was
   ## collected from the application.
   ##   filter: JString
-  ##         : An optional filter against labels for the request.
+  ##         : Optional. A filter against labels for the request.
   ## 
   ## By default, searches use prefix matching. To specify exact match, prepend
   ## a plus symbol (`+`) to the search term.
@@ -228,95 +228,95 @@ proc validate_CloudtraceProjectsTracesList_579678(path: JsonNode; query: JsonNod
   ## *   `method:VALUE`: Equivalent to `/http/method:VALUE`.
   ## *   `url:VALUE`: Equivalent to `/http/url:VALUE`.
   section = newJObject()
-  var valid_579806 = query.getOrDefault("upload_protocol")
-  valid_579806 = validateParameter(valid_579806, JString, required = false,
+  var valid_588839 = query.getOrDefault("upload_protocol")
+  valid_588839 = validateParameter(valid_588839, JString, required = false,
                                  default = nil)
-  if valid_579806 != nil:
-    section.add "upload_protocol", valid_579806
-  var valid_579807 = query.getOrDefault("fields")
-  valid_579807 = validateParameter(valid_579807, JString, required = false,
+  if valid_588839 != nil:
+    section.add "upload_protocol", valid_588839
+  var valid_588840 = query.getOrDefault("fields")
+  valid_588840 = validateParameter(valid_588840, JString, required = false,
                                  default = nil)
-  if valid_579807 != nil:
-    section.add "fields", valid_579807
-  var valid_579808 = query.getOrDefault("pageToken")
-  valid_579808 = validateParameter(valid_579808, JString, required = false,
+  if valid_588840 != nil:
+    section.add "fields", valid_588840
+  var valid_588841 = query.getOrDefault("pageToken")
+  valid_588841 = validateParameter(valid_588841, JString, required = false,
                                  default = nil)
-  if valid_579808 != nil:
-    section.add "pageToken", valid_579808
-  var valid_579809 = query.getOrDefault("quotaUser")
-  valid_579809 = validateParameter(valid_579809, JString, required = false,
+  if valid_588841 != nil:
+    section.add "pageToken", valid_588841
+  var valid_588842 = query.getOrDefault("quotaUser")
+  valid_588842 = validateParameter(valid_588842, JString, required = false,
                                  default = nil)
-  if valid_579809 != nil:
-    section.add "quotaUser", valid_579809
-  var valid_579823 = query.getOrDefault("view")
-  valid_579823 = validateParameter(valid_579823, JString, required = false,
+  if valid_588842 != nil:
+    section.add "quotaUser", valid_588842
+  var valid_588856 = query.getOrDefault("view")
+  valid_588856 = validateParameter(valid_588856, JString, required = false,
                                  default = newJString("VIEW_TYPE_UNSPECIFIED"))
-  if valid_579823 != nil:
-    section.add "view", valid_579823
-  var valid_579824 = query.getOrDefault("alt")
-  valid_579824 = validateParameter(valid_579824, JString, required = false,
+  if valid_588856 != nil:
+    section.add "view", valid_588856
+  var valid_588857 = query.getOrDefault("alt")
+  valid_588857 = validateParameter(valid_588857, JString, required = false,
                                  default = newJString("json"))
-  if valid_579824 != nil:
-    section.add "alt", valid_579824
-  var valid_579825 = query.getOrDefault("oauth_token")
-  valid_579825 = validateParameter(valid_579825, JString, required = false,
+  if valid_588857 != nil:
+    section.add "alt", valid_588857
+  var valid_588858 = query.getOrDefault("oauth_token")
+  valid_588858 = validateParameter(valid_588858, JString, required = false,
                                  default = nil)
-  if valid_579825 != nil:
-    section.add "oauth_token", valid_579825
-  var valid_579826 = query.getOrDefault("callback")
-  valid_579826 = validateParameter(valid_579826, JString, required = false,
+  if valid_588858 != nil:
+    section.add "oauth_token", valid_588858
+  var valid_588859 = query.getOrDefault("callback")
+  valid_588859 = validateParameter(valid_588859, JString, required = false,
                                  default = nil)
-  if valid_579826 != nil:
-    section.add "callback", valid_579826
-  var valid_579827 = query.getOrDefault("access_token")
-  valid_579827 = validateParameter(valid_579827, JString, required = false,
+  if valid_588859 != nil:
+    section.add "callback", valid_588859
+  var valid_588860 = query.getOrDefault("access_token")
+  valid_588860 = validateParameter(valid_588860, JString, required = false,
                                  default = nil)
-  if valid_579827 != nil:
-    section.add "access_token", valid_579827
-  var valid_579828 = query.getOrDefault("uploadType")
-  valid_579828 = validateParameter(valid_579828, JString, required = false,
+  if valid_588860 != nil:
+    section.add "access_token", valid_588860
+  var valid_588861 = query.getOrDefault("uploadType")
+  valid_588861 = validateParameter(valid_588861, JString, required = false,
                                  default = nil)
-  if valid_579828 != nil:
-    section.add "uploadType", valid_579828
-  var valid_579829 = query.getOrDefault("endTime")
-  valid_579829 = validateParameter(valid_579829, JString, required = false,
+  if valid_588861 != nil:
+    section.add "uploadType", valid_588861
+  var valid_588862 = query.getOrDefault("endTime")
+  valid_588862 = validateParameter(valid_588862, JString, required = false,
                                  default = nil)
-  if valid_579829 != nil:
-    section.add "endTime", valid_579829
-  var valid_579830 = query.getOrDefault("orderBy")
-  valid_579830 = validateParameter(valid_579830, JString, required = false,
+  if valid_588862 != nil:
+    section.add "endTime", valid_588862
+  var valid_588863 = query.getOrDefault("orderBy")
+  valid_588863 = validateParameter(valid_588863, JString, required = false,
                                  default = nil)
-  if valid_579830 != nil:
-    section.add "orderBy", valid_579830
-  var valid_579831 = query.getOrDefault("key")
-  valid_579831 = validateParameter(valid_579831, JString, required = false,
+  if valid_588863 != nil:
+    section.add "orderBy", valid_588863
+  var valid_588864 = query.getOrDefault("key")
+  valid_588864 = validateParameter(valid_588864, JString, required = false,
                                  default = nil)
-  if valid_579831 != nil:
-    section.add "key", valid_579831
-  var valid_579832 = query.getOrDefault("$.xgafv")
-  valid_579832 = validateParameter(valid_579832, JString, required = false,
+  if valid_588864 != nil:
+    section.add "key", valid_588864
+  var valid_588865 = query.getOrDefault("$.xgafv")
+  valid_588865 = validateParameter(valid_588865, JString, required = false,
                                  default = newJString("1"))
-  if valid_579832 != nil:
-    section.add "$.xgafv", valid_579832
-  var valid_579833 = query.getOrDefault("pageSize")
-  valid_579833 = validateParameter(valid_579833, JInt, required = false, default = nil)
-  if valid_579833 != nil:
-    section.add "pageSize", valid_579833
-  var valid_579834 = query.getOrDefault("prettyPrint")
-  valid_579834 = validateParameter(valid_579834, JBool, required = false,
+  if valid_588865 != nil:
+    section.add "$.xgafv", valid_588865
+  var valid_588866 = query.getOrDefault("pageSize")
+  valid_588866 = validateParameter(valid_588866, JInt, required = false, default = nil)
+  if valid_588866 != nil:
+    section.add "pageSize", valid_588866
+  var valid_588867 = query.getOrDefault("prettyPrint")
+  valid_588867 = validateParameter(valid_588867, JBool, required = false,
                                  default = newJBool(true))
-  if valid_579834 != nil:
-    section.add "prettyPrint", valid_579834
-  var valid_579835 = query.getOrDefault("startTime")
-  valid_579835 = validateParameter(valid_579835, JString, required = false,
+  if valid_588867 != nil:
+    section.add "prettyPrint", valid_588867
+  var valid_588868 = query.getOrDefault("startTime")
+  valid_588868 = validateParameter(valid_588868, JString, required = false,
                                  default = nil)
-  if valid_579835 != nil:
-    section.add "startTime", valid_579835
-  var valid_579836 = query.getOrDefault("filter")
-  valid_579836 = validateParameter(valid_579836, JString, required = false,
+  if valid_588868 != nil:
+    section.add "startTime", valid_588868
+  var valid_588869 = query.getOrDefault("filter")
+  valid_588869 = validateParameter(valid_588869, JString, required = false,
                                  default = nil)
-  if valid_579836 != nil:
-    section.add "filter", valid_579836
+  if valid_588869 != nil:
+    section.add "filter", valid_588869
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -325,20 +325,20 @@ proc validate_CloudtraceProjectsTracesList_579678(path: JsonNode; query: JsonNod
   if body != nil:
     result.add "body", body
 
-proc call*(call_579859: Call_CloudtraceProjectsTracesList_579677; path: JsonNode;
+proc call*(call_588892: Call_CloudtraceProjectsTracesList_588710; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Returns of a list of traces that match the specified filter conditions.
   ## 
-  let valid = call_579859.validator(path, query, header, formData, body)
-  let scheme = call_579859.pickScheme
+  let valid = call_588892.validator(path, query, header, formData, body)
+  let scheme = call_588892.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_579859.url(scheme.get, call_579859.host, call_579859.base,
-                         call_579859.route, valid.getOrDefault("path"),
+  let url = call_588892.url(scheme.get, call_588892.host, call_588892.base,
+                         call_588892.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_579859, url, valid)
+  result = hook(call_588892, url, valid)
 
-proc call*(call_579930: Call_CloudtraceProjectsTracesList_579677;
+proc call*(call_588963: Call_CloudtraceProjectsTracesList_588710;
           projectId: string; uploadProtocol: string = ""; fields: string = "";
           pageToken: string = ""; quotaUser: string = "";
           view: string = "VIEW_TYPE_UNSPECIFIED"; alt: string = "json";
@@ -354,11 +354,11 @@ proc call*(call_579930: Call_CloudtraceProjectsTracesList_579677;
   ##         : Selector specifying which fields to include in a partial response.
   ##   pageToken: string
   ##            : Token identifying the page of results to return. If provided, use the
-  ## value of the `next_page_token` field from a previous request. Optional.
+  ## value of the `next_page_token` field from a previous request.
   ##   quotaUser: string
   ##            : Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters.
   ##   view: string
-  ##       : Type of data returned for traces in the list. Optional. Default is
+  ##       : Optional. Type of data returned for traces in the list. Default is
   ## `MINIMAL`.
   ##   alt: string
   ##      : Data format for response.
@@ -374,7 +374,7 @@ proc call*(call_579930: Call_CloudtraceProjectsTracesList_579677;
   ##          : End of the time interval (inclusive) during which the trace data was
   ## collected from the application.
   ##   orderBy: string
-  ##          : Field used to sort the returned traces. Optional.
+  ##          : Optional. Field used to sort the returned traces.
   ## Can be one of the following:
   ## 
   ## *   `trace_id`
@@ -390,20 +390,20 @@ proc call*(call_579930: Call_CloudtraceProjectsTracesList_579677;
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   projectId: string (required)
-  ##            : ID of the Cloud project where the trace data is stored.
+  ##            : Required. ID of the Cloud project where the trace data is stored.
   ##   Xgafv: string
   ##        : V1 error format.
   ##   pageSize: int
-  ##           : Maximum number of traces to return. If not specified or <= 0, the
+  ##           : Optional. Maximum number of traces to return. If not specified or <= 0, the
   ## implementation selects a reasonable value.  The implementation may
-  ## return fewer traces than the requested page size. Optional.
+  ## return fewer traces than the requested page size.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
   ##   startTime: string
   ##            : Start of the time interval (inclusive) during which the trace data was
   ## collected from the application.
   ##   filter: string
-  ##         : An optional filter against labels for the request.
+  ##         : Optional. A filter against labels for the request.
   ## 
   ## By default, searches use prefix matching. To specify exact match, prepend
   ## a plus symbol (`+`) to the search term.
@@ -433,37 +433,37 @@ proc call*(call_579930: Call_CloudtraceProjectsTracesList_579677;
   ##     specified.
   ## *   `method:VALUE`: Equivalent to `/http/method:VALUE`.
   ## *   `url:VALUE`: Equivalent to `/http/url:VALUE`.
-  var path_579931 = newJObject()
-  var query_579933 = newJObject()
-  add(query_579933, "upload_protocol", newJString(uploadProtocol))
-  add(query_579933, "fields", newJString(fields))
-  add(query_579933, "pageToken", newJString(pageToken))
-  add(query_579933, "quotaUser", newJString(quotaUser))
-  add(query_579933, "view", newJString(view))
-  add(query_579933, "alt", newJString(alt))
-  add(query_579933, "oauth_token", newJString(oauthToken))
-  add(query_579933, "callback", newJString(callback))
-  add(query_579933, "access_token", newJString(accessToken))
-  add(query_579933, "uploadType", newJString(uploadType))
-  add(query_579933, "endTime", newJString(endTime))
-  add(query_579933, "orderBy", newJString(orderBy))
-  add(query_579933, "key", newJString(key))
-  add(path_579931, "projectId", newJString(projectId))
-  add(query_579933, "$.xgafv", newJString(Xgafv))
-  add(query_579933, "pageSize", newJInt(pageSize))
-  add(query_579933, "prettyPrint", newJBool(prettyPrint))
-  add(query_579933, "startTime", newJString(startTime))
-  add(query_579933, "filter", newJString(filter))
-  result = call_579930.call(path_579931, query_579933, nil, nil, nil)
+  var path_588964 = newJObject()
+  var query_588966 = newJObject()
+  add(query_588966, "upload_protocol", newJString(uploadProtocol))
+  add(query_588966, "fields", newJString(fields))
+  add(query_588966, "pageToken", newJString(pageToken))
+  add(query_588966, "quotaUser", newJString(quotaUser))
+  add(query_588966, "view", newJString(view))
+  add(query_588966, "alt", newJString(alt))
+  add(query_588966, "oauth_token", newJString(oauthToken))
+  add(query_588966, "callback", newJString(callback))
+  add(query_588966, "access_token", newJString(accessToken))
+  add(query_588966, "uploadType", newJString(uploadType))
+  add(query_588966, "endTime", newJString(endTime))
+  add(query_588966, "orderBy", newJString(orderBy))
+  add(query_588966, "key", newJString(key))
+  add(path_588964, "projectId", newJString(projectId))
+  add(query_588966, "$.xgafv", newJString(Xgafv))
+  add(query_588966, "pageSize", newJInt(pageSize))
+  add(query_588966, "prettyPrint", newJBool(prettyPrint))
+  add(query_588966, "startTime", newJString(startTime))
+  add(query_588966, "filter", newJString(filter))
+  result = call_588963.call(path_588964, query_588966, nil, nil, nil)
 
-var cloudtraceProjectsTracesList* = Call_CloudtraceProjectsTracesList_579677(
+var cloudtraceProjectsTracesList* = Call_CloudtraceProjectsTracesList_588710(
     name: "cloudtraceProjectsTracesList", meth: HttpMethod.HttpGet,
     host: "cloudtrace.googleapis.com", route: "/v1/projects/{projectId}/traces",
-    validator: validate_CloudtraceProjectsTracesList_579678, base: "/",
-    url: url_CloudtraceProjectsTracesList_579679, schemes: {Scheme.Https})
+    validator: validate_CloudtraceProjectsTracesList_588711, base: "/",
+    url: url_CloudtraceProjectsTracesList_588712, schemes: {Scheme.Https})
 type
-  Call_CloudtraceProjectsPatchTraces_579972 = ref object of OpenApiRestCall_579408
-proc url_CloudtraceProjectsPatchTraces_579974(protocol: Scheme; host: string;
+  Call_CloudtraceProjectsPatchTraces_589005 = ref object of OpenApiRestCall_588441
+proc url_CloudtraceProjectsPatchTraces_589007(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -479,7 +479,7 @@ proc url_CloudtraceProjectsPatchTraces_579974(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_CloudtraceProjectsPatchTraces_579973(path: JsonNode; query: JsonNode;
+proc validate_CloudtraceProjectsPatchTraces_589006(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Sends new traces to Stackdriver Trace or updates existing traces. If the ID
   ## of a trace that you send matches that of an existing trace, any fields
@@ -491,14 +491,14 @@ proc validate_CloudtraceProjectsPatchTraces_579973(path: JsonNode; query: JsonNo
   result = newJObject()
   ## parameters in `path` object:
   ##   projectId: JString (required)
-  ##            : ID of the Cloud project where the trace data is stored.
+  ##            : Required. ID of the Cloud project where the trace data is stored.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `projectId` field"
-  var valid_579975 = path.getOrDefault("projectId")
-  valid_579975 = validateParameter(valid_579975, JString, required = true,
+  var valid_589008 = path.getOrDefault("projectId")
+  valid_589008 = validateParameter(valid_589008, JString, required = true,
                                  default = nil)
-  if valid_579975 != nil:
-    section.add "projectId", valid_579975
+  if valid_589008 != nil:
+    section.add "projectId", valid_589008
   result.add "path", section
   ## parameters in `query` object:
   ##   upload_protocol: JString
@@ -524,61 +524,61 @@ proc validate_CloudtraceProjectsPatchTraces_579973(path: JsonNode; query: JsonNo
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_579976 = query.getOrDefault("upload_protocol")
-  valid_579976 = validateParameter(valid_579976, JString, required = false,
+  var valid_589009 = query.getOrDefault("upload_protocol")
+  valid_589009 = validateParameter(valid_589009, JString, required = false,
                                  default = nil)
-  if valid_579976 != nil:
-    section.add "upload_protocol", valid_579976
-  var valid_579977 = query.getOrDefault("fields")
-  valid_579977 = validateParameter(valid_579977, JString, required = false,
+  if valid_589009 != nil:
+    section.add "upload_protocol", valid_589009
+  var valid_589010 = query.getOrDefault("fields")
+  valid_589010 = validateParameter(valid_589010, JString, required = false,
                                  default = nil)
-  if valid_579977 != nil:
-    section.add "fields", valid_579977
-  var valid_579978 = query.getOrDefault("quotaUser")
-  valid_579978 = validateParameter(valid_579978, JString, required = false,
+  if valid_589010 != nil:
+    section.add "fields", valid_589010
+  var valid_589011 = query.getOrDefault("quotaUser")
+  valid_589011 = validateParameter(valid_589011, JString, required = false,
                                  default = nil)
-  if valid_579978 != nil:
-    section.add "quotaUser", valid_579978
-  var valid_579979 = query.getOrDefault("alt")
-  valid_579979 = validateParameter(valid_579979, JString, required = false,
+  if valid_589011 != nil:
+    section.add "quotaUser", valid_589011
+  var valid_589012 = query.getOrDefault("alt")
+  valid_589012 = validateParameter(valid_589012, JString, required = false,
                                  default = newJString("json"))
-  if valid_579979 != nil:
-    section.add "alt", valid_579979
-  var valid_579980 = query.getOrDefault("oauth_token")
-  valid_579980 = validateParameter(valid_579980, JString, required = false,
+  if valid_589012 != nil:
+    section.add "alt", valid_589012
+  var valid_589013 = query.getOrDefault("oauth_token")
+  valid_589013 = validateParameter(valid_589013, JString, required = false,
                                  default = nil)
-  if valid_579980 != nil:
-    section.add "oauth_token", valid_579980
-  var valid_579981 = query.getOrDefault("callback")
-  valid_579981 = validateParameter(valid_579981, JString, required = false,
+  if valid_589013 != nil:
+    section.add "oauth_token", valid_589013
+  var valid_589014 = query.getOrDefault("callback")
+  valid_589014 = validateParameter(valid_589014, JString, required = false,
                                  default = nil)
-  if valid_579981 != nil:
-    section.add "callback", valid_579981
-  var valid_579982 = query.getOrDefault("access_token")
-  valid_579982 = validateParameter(valid_579982, JString, required = false,
+  if valid_589014 != nil:
+    section.add "callback", valid_589014
+  var valid_589015 = query.getOrDefault("access_token")
+  valid_589015 = validateParameter(valid_589015, JString, required = false,
                                  default = nil)
-  if valid_579982 != nil:
-    section.add "access_token", valid_579982
-  var valid_579983 = query.getOrDefault("uploadType")
-  valid_579983 = validateParameter(valid_579983, JString, required = false,
+  if valid_589015 != nil:
+    section.add "access_token", valid_589015
+  var valid_589016 = query.getOrDefault("uploadType")
+  valid_589016 = validateParameter(valid_589016, JString, required = false,
                                  default = nil)
-  if valid_579983 != nil:
-    section.add "uploadType", valid_579983
-  var valid_579984 = query.getOrDefault("key")
-  valid_579984 = validateParameter(valid_579984, JString, required = false,
+  if valid_589016 != nil:
+    section.add "uploadType", valid_589016
+  var valid_589017 = query.getOrDefault("key")
+  valid_589017 = validateParameter(valid_589017, JString, required = false,
                                  default = nil)
-  if valid_579984 != nil:
-    section.add "key", valid_579984
-  var valid_579985 = query.getOrDefault("$.xgafv")
-  valid_579985 = validateParameter(valid_579985, JString, required = false,
+  if valid_589017 != nil:
+    section.add "key", valid_589017
+  var valid_589018 = query.getOrDefault("$.xgafv")
+  valid_589018 = validateParameter(valid_589018, JString, required = false,
                                  default = newJString("1"))
-  if valid_579985 != nil:
-    section.add "$.xgafv", valid_579985
-  var valid_579986 = query.getOrDefault("prettyPrint")
-  valid_579986 = validateParameter(valid_579986, JBool, required = false,
+  if valid_589018 != nil:
+    section.add "$.xgafv", valid_589018
+  var valid_589019 = query.getOrDefault("prettyPrint")
+  valid_589019 = validateParameter(valid_589019, JBool, required = false,
                                  default = newJBool(true))
-  if valid_579986 != nil:
-    section.add "prettyPrint", valid_579986
+  if valid_589019 != nil:
+    section.add "prettyPrint", valid_589019
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -590,7 +590,7 @@ proc validate_CloudtraceProjectsPatchTraces_579973(path: JsonNode; query: JsonNo
   if body != nil:
     result.add "body", body
 
-proc call*(call_579988: Call_CloudtraceProjectsPatchTraces_579972; path: JsonNode;
+proc call*(call_589021: Call_CloudtraceProjectsPatchTraces_589005; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Sends new traces to Stackdriver Trace or updates existing traces. If the ID
   ## of a trace that you send matches that of an existing trace, any fields
@@ -598,16 +598,16 @@ proc call*(call_579988: Call_CloudtraceProjectsPatchTraces_579972; path: JsonNod
   ## and any new fields provided are merged with the existing trace data. If the
   ## ID does not match, a new trace is created.
   ## 
-  let valid = call_579988.validator(path, query, header, formData, body)
-  let scheme = call_579988.pickScheme
+  let valid = call_589021.validator(path, query, header, formData, body)
+  let scheme = call_589021.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_579988.url(scheme.get, call_579988.host, call_579988.base,
-                         call_579988.route, valid.getOrDefault("path"),
+  let url = call_589021.url(scheme.get, call_589021.host, call_589021.base,
+                         call_589021.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_579988, url, valid)
+  result = hook(call_589021, url, valid)
 
-proc call*(call_579989: Call_CloudtraceProjectsPatchTraces_579972;
+proc call*(call_589022: Call_CloudtraceProjectsPatchTraces_589005;
           projectId: string; uploadProtocol: string = ""; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           callback: string = ""; accessToken: string = ""; uploadType: string = "";
@@ -638,39 +638,39 @@ proc call*(call_579989: Call_CloudtraceProjectsPatchTraces_579972;
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   projectId: string (required)
-  ##            : ID of the Cloud project where the trace data is stored.
+  ##            : Required. ID of the Cloud project where the trace data is stored.
   ##   Xgafv: string
   ##        : V1 error format.
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_579990 = newJObject()
-  var query_579991 = newJObject()
-  var body_579992 = newJObject()
-  add(query_579991, "upload_protocol", newJString(uploadProtocol))
-  add(query_579991, "fields", newJString(fields))
-  add(query_579991, "quotaUser", newJString(quotaUser))
-  add(query_579991, "alt", newJString(alt))
-  add(query_579991, "oauth_token", newJString(oauthToken))
-  add(query_579991, "callback", newJString(callback))
-  add(query_579991, "access_token", newJString(accessToken))
-  add(query_579991, "uploadType", newJString(uploadType))
-  add(query_579991, "key", newJString(key))
-  add(path_579990, "projectId", newJString(projectId))
-  add(query_579991, "$.xgafv", newJString(Xgafv))
+  var path_589023 = newJObject()
+  var query_589024 = newJObject()
+  var body_589025 = newJObject()
+  add(query_589024, "upload_protocol", newJString(uploadProtocol))
+  add(query_589024, "fields", newJString(fields))
+  add(query_589024, "quotaUser", newJString(quotaUser))
+  add(query_589024, "alt", newJString(alt))
+  add(query_589024, "oauth_token", newJString(oauthToken))
+  add(query_589024, "callback", newJString(callback))
+  add(query_589024, "access_token", newJString(accessToken))
+  add(query_589024, "uploadType", newJString(uploadType))
+  add(query_589024, "key", newJString(key))
+  add(path_589023, "projectId", newJString(projectId))
+  add(query_589024, "$.xgafv", newJString(Xgafv))
   if body != nil:
-    body_579992 = body
-  add(query_579991, "prettyPrint", newJBool(prettyPrint))
-  result = call_579989.call(path_579990, query_579991, nil, nil, body_579992)
+    body_589025 = body
+  add(query_589024, "prettyPrint", newJBool(prettyPrint))
+  result = call_589022.call(path_589023, query_589024, nil, nil, body_589025)
 
-var cloudtraceProjectsPatchTraces* = Call_CloudtraceProjectsPatchTraces_579972(
+var cloudtraceProjectsPatchTraces* = Call_CloudtraceProjectsPatchTraces_589005(
     name: "cloudtraceProjectsPatchTraces", meth: HttpMethod.HttpPatch,
     host: "cloudtrace.googleapis.com", route: "/v1/projects/{projectId}/traces",
-    validator: validate_CloudtraceProjectsPatchTraces_579973, base: "/",
-    url: url_CloudtraceProjectsPatchTraces_579974, schemes: {Scheme.Https})
+    validator: validate_CloudtraceProjectsPatchTraces_589006, base: "/",
+    url: url_CloudtraceProjectsPatchTraces_589007, schemes: {Scheme.Https})
 type
-  Call_CloudtraceProjectsTracesGet_579993 = ref object of OpenApiRestCall_579408
-proc url_CloudtraceProjectsTracesGet_579995(protocol: Scheme; host: string;
+  Call_CloudtraceProjectsTracesGet_589026 = ref object of OpenApiRestCall_588441
+proc url_CloudtraceProjectsTracesGet_589028(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -688,7 +688,7 @@ proc url_CloudtraceProjectsTracesGet_579995(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_CloudtraceProjectsTracesGet_579994(path: JsonNode; query: JsonNode;
+proc validate_CloudtraceProjectsTracesGet_589027(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Gets a single trace by its ID.
   ## 
@@ -696,21 +696,21 @@ proc validate_CloudtraceProjectsTracesGet_579994(path: JsonNode; query: JsonNode
   result = newJObject()
   ## parameters in `path` object:
   ##   traceId: JString (required)
-  ##          : ID of the trace to return.
+  ##          : Required. ID of the trace to return.
   ##   projectId: JString (required)
-  ##            : ID of the Cloud project where the trace data is stored.
+  ##            : Required. ID of the Cloud project where the trace data is stored.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `traceId` field"
-  var valid_579996 = path.getOrDefault("traceId")
-  valid_579996 = validateParameter(valid_579996, JString, required = true,
+  var valid_589029 = path.getOrDefault("traceId")
+  valid_589029 = validateParameter(valid_589029, JString, required = true,
                                  default = nil)
-  if valid_579996 != nil:
-    section.add "traceId", valid_579996
-  var valid_579997 = path.getOrDefault("projectId")
-  valid_579997 = validateParameter(valid_579997, JString, required = true,
+  if valid_589029 != nil:
+    section.add "traceId", valid_589029
+  var valid_589030 = path.getOrDefault("projectId")
+  valid_589030 = validateParameter(valid_589030, JString, required = true,
                                  default = nil)
-  if valid_579997 != nil:
-    section.add "projectId", valid_579997
+  if valid_589030 != nil:
+    section.add "projectId", valid_589030
   result.add "path", section
   ## parameters in `query` object:
   ##   upload_protocol: JString
@@ -736,61 +736,61 @@ proc validate_CloudtraceProjectsTracesGet_579994(path: JsonNode; query: JsonNode
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_579998 = query.getOrDefault("upload_protocol")
-  valid_579998 = validateParameter(valid_579998, JString, required = false,
+  var valid_589031 = query.getOrDefault("upload_protocol")
+  valid_589031 = validateParameter(valid_589031, JString, required = false,
                                  default = nil)
-  if valid_579998 != nil:
-    section.add "upload_protocol", valid_579998
-  var valid_579999 = query.getOrDefault("fields")
-  valid_579999 = validateParameter(valid_579999, JString, required = false,
+  if valid_589031 != nil:
+    section.add "upload_protocol", valid_589031
+  var valid_589032 = query.getOrDefault("fields")
+  valid_589032 = validateParameter(valid_589032, JString, required = false,
                                  default = nil)
-  if valid_579999 != nil:
-    section.add "fields", valid_579999
-  var valid_580000 = query.getOrDefault("quotaUser")
-  valid_580000 = validateParameter(valid_580000, JString, required = false,
+  if valid_589032 != nil:
+    section.add "fields", valid_589032
+  var valid_589033 = query.getOrDefault("quotaUser")
+  valid_589033 = validateParameter(valid_589033, JString, required = false,
                                  default = nil)
-  if valid_580000 != nil:
-    section.add "quotaUser", valid_580000
-  var valid_580001 = query.getOrDefault("alt")
-  valid_580001 = validateParameter(valid_580001, JString, required = false,
+  if valid_589033 != nil:
+    section.add "quotaUser", valid_589033
+  var valid_589034 = query.getOrDefault("alt")
+  valid_589034 = validateParameter(valid_589034, JString, required = false,
                                  default = newJString("json"))
-  if valid_580001 != nil:
-    section.add "alt", valid_580001
-  var valid_580002 = query.getOrDefault("oauth_token")
-  valid_580002 = validateParameter(valid_580002, JString, required = false,
+  if valid_589034 != nil:
+    section.add "alt", valid_589034
+  var valid_589035 = query.getOrDefault("oauth_token")
+  valid_589035 = validateParameter(valid_589035, JString, required = false,
                                  default = nil)
-  if valid_580002 != nil:
-    section.add "oauth_token", valid_580002
-  var valid_580003 = query.getOrDefault("callback")
-  valid_580003 = validateParameter(valid_580003, JString, required = false,
+  if valid_589035 != nil:
+    section.add "oauth_token", valid_589035
+  var valid_589036 = query.getOrDefault("callback")
+  valid_589036 = validateParameter(valid_589036, JString, required = false,
                                  default = nil)
-  if valid_580003 != nil:
-    section.add "callback", valid_580003
-  var valid_580004 = query.getOrDefault("access_token")
-  valid_580004 = validateParameter(valid_580004, JString, required = false,
+  if valid_589036 != nil:
+    section.add "callback", valid_589036
+  var valid_589037 = query.getOrDefault("access_token")
+  valid_589037 = validateParameter(valid_589037, JString, required = false,
                                  default = nil)
-  if valid_580004 != nil:
-    section.add "access_token", valid_580004
-  var valid_580005 = query.getOrDefault("uploadType")
-  valid_580005 = validateParameter(valid_580005, JString, required = false,
+  if valid_589037 != nil:
+    section.add "access_token", valid_589037
+  var valid_589038 = query.getOrDefault("uploadType")
+  valid_589038 = validateParameter(valid_589038, JString, required = false,
                                  default = nil)
-  if valid_580005 != nil:
-    section.add "uploadType", valid_580005
-  var valid_580006 = query.getOrDefault("key")
-  valid_580006 = validateParameter(valid_580006, JString, required = false,
+  if valid_589038 != nil:
+    section.add "uploadType", valid_589038
+  var valid_589039 = query.getOrDefault("key")
+  valid_589039 = validateParameter(valid_589039, JString, required = false,
                                  default = nil)
-  if valid_580006 != nil:
-    section.add "key", valid_580006
-  var valid_580007 = query.getOrDefault("$.xgafv")
-  valid_580007 = validateParameter(valid_580007, JString, required = false,
+  if valid_589039 != nil:
+    section.add "key", valid_589039
+  var valid_589040 = query.getOrDefault("$.xgafv")
+  valid_589040 = validateParameter(valid_589040, JString, required = false,
                                  default = newJString("1"))
-  if valid_580007 != nil:
-    section.add "$.xgafv", valid_580007
-  var valid_580008 = query.getOrDefault("prettyPrint")
-  valid_580008 = validateParameter(valid_580008, JBool, required = false,
+  if valid_589040 != nil:
+    section.add "$.xgafv", valid_589040
+  var valid_589041 = query.getOrDefault("prettyPrint")
+  valid_589041 = validateParameter(valid_589041, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580008 != nil:
-    section.add "prettyPrint", valid_580008
+  if valid_589041 != nil:
+    section.add "prettyPrint", valid_589041
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -799,20 +799,20 @@ proc validate_CloudtraceProjectsTracesGet_579994(path: JsonNode; query: JsonNode
   if body != nil:
     result.add "body", body
 
-proc call*(call_580009: Call_CloudtraceProjectsTracesGet_579993; path: JsonNode;
+proc call*(call_589042: Call_CloudtraceProjectsTracesGet_589026; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Gets a single trace by its ID.
   ## 
-  let valid = call_580009.validator(path, query, header, formData, body)
-  let scheme = call_580009.pickScheme
+  let valid = call_589042.validator(path, query, header, formData, body)
+  let scheme = call_589042.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580009.url(scheme.get, call_580009.host, call_580009.base,
-                         call_580009.route, valid.getOrDefault("path"),
+  let url = call_589042.url(scheme.get, call_589042.host, call_589042.base,
+                         call_589042.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580009, url, valid)
+  result = hook(call_589042, url, valid)
 
-proc call*(call_580010: Call_CloudtraceProjectsTracesGet_579993; traceId: string;
+proc call*(call_589043: Call_CloudtraceProjectsTracesGet_589026; traceId: string;
           projectId: string; uploadProtocol: string = ""; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           callback: string = ""; accessToken: string = ""; uploadType: string = "";
@@ -836,38 +836,38 @@ proc call*(call_580010: Call_CloudtraceProjectsTracesGet_579993; traceId: string
   ##   uploadType: string
   ##             : Legacy upload protocol for media (e.g. "media", "multipart").
   ##   traceId: string (required)
-  ##          : ID of the trace to return.
+  ##          : Required. ID of the trace to return.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   projectId: string (required)
-  ##            : ID of the Cloud project where the trace data is stored.
+  ##            : Required. ID of the Cloud project where the trace data is stored.
   ##   Xgafv: string
   ##        : V1 error format.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_580011 = newJObject()
-  var query_580012 = newJObject()
-  add(query_580012, "upload_protocol", newJString(uploadProtocol))
-  add(query_580012, "fields", newJString(fields))
-  add(query_580012, "quotaUser", newJString(quotaUser))
-  add(query_580012, "alt", newJString(alt))
-  add(query_580012, "oauth_token", newJString(oauthToken))
-  add(query_580012, "callback", newJString(callback))
-  add(query_580012, "access_token", newJString(accessToken))
-  add(query_580012, "uploadType", newJString(uploadType))
-  add(path_580011, "traceId", newJString(traceId))
-  add(query_580012, "key", newJString(key))
-  add(path_580011, "projectId", newJString(projectId))
-  add(query_580012, "$.xgafv", newJString(Xgafv))
-  add(query_580012, "prettyPrint", newJBool(prettyPrint))
-  result = call_580010.call(path_580011, query_580012, nil, nil, nil)
+  var path_589044 = newJObject()
+  var query_589045 = newJObject()
+  add(query_589045, "upload_protocol", newJString(uploadProtocol))
+  add(query_589045, "fields", newJString(fields))
+  add(query_589045, "quotaUser", newJString(quotaUser))
+  add(query_589045, "alt", newJString(alt))
+  add(query_589045, "oauth_token", newJString(oauthToken))
+  add(query_589045, "callback", newJString(callback))
+  add(query_589045, "access_token", newJString(accessToken))
+  add(query_589045, "uploadType", newJString(uploadType))
+  add(path_589044, "traceId", newJString(traceId))
+  add(query_589045, "key", newJString(key))
+  add(path_589044, "projectId", newJString(projectId))
+  add(query_589045, "$.xgafv", newJString(Xgafv))
+  add(query_589045, "prettyPrint", newJBool(prettyPrint))
+  result = call_589043.call(path_589044, query_589045, nil, nil, nil)
 
-var cloudtraceProjectsTracesGet* = Call_CloudtraceProjectsTracesGet_579993(
+var cloudtraceProjectsTracesGet* = Call_CloudtraceProjectsTracesGet_589026(
     name: "cloudtraceProjectsTracesGet", meth: HttpMethod.HttpGet,
     host: "cloudtrace.googleapis.com",
     route: "/v1/projects/{projectId}/traces/{traceId}",
-    validator: validate_CloudtraceProjectsTracesGet_579994, base: "/",
-    url: url_CloudtraceProjectsTracesGet_579995, schemes: {Scheme.Https})
+    validator: validate_CloudtraceProjectsTracesGet_589027, base: "/",
+    url: url_CloudtraceProjectsTracesGet_589028, schemes: {Scheme.Https})
 export
   rest
 
@@ -909,7 +909,7 @@ proc store(auth: var GoogleAuth; token: string; expiry: int; form: string) =
   auth.form = form
   auth.digest = auth.hash
 
-proc authenticate*(fresh: float64 = -3600.0; lifetime: int = 3600): Future[bool] {.async.} =
+proc authenticate*(fresh: float64 = 3600.0; lifetime: int = 3600): Future[bool] {.async.} =
   ## get or refresh an authentication token; provide `fresh`
   ## to ensure that the token won't expire in the next N seconds.
   ## provide `lifetime` to indicate how long the token should last.

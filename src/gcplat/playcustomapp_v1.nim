@@ -29,15 +29,15 @@ type
     url*: proc (protocol: Scheme; host: string; base: string; route: string;
               path: JsonNode; query: JsonNode): Uri
 
-  OpenApiRestCall_579408 = ref object of OpenApiRestCall
+  OpenApiRestCall_588441 = ref object of OpenApiRestCall
 proc hash(scheme: Scheme): Hash {.used.} =
   result = hash(ord(scheme))
 
-proc clone[T: OpenApiRestCall_579408](t: T): T {.used.} =
+proc clone[T: OpenApiRestCall_588441](t: T): T {.used.} =
   result = T(name: t.name, meth: t.meth, host: t.host, base: t.base, route: t.route,
            schemes: t.schemes, validator: t.validator, url: t.url)
 
-proc pickScheme(t: OpenApiRestCall_579408): Option[Scheme] {.used.} =
+proc pickScheme(t: OpenApiRestCall_588441): Option[Scheme] {.used.} =
   ## select a supported scheme from a set of candidates
   for scheme in Scheme.low ..
       Scheme.high:
@@ -74,7 +74,7 @@ type
   PathTokenKind = enum
     ConstantSegment, VariableSegment
   PathToken = tuple[kind: PathTokenKind, value: string]
-proc queryString(query: JsonNode): string =
+proc queryString(query: JsonNode): string {.used.} =
   var qs: seq[KeyVal]
   if query == nil:
     return ""
@@ -82,7 +82,7 @@ proc queryString(query: JsonNode): string =
     qs.add (key: k, val: v.getStr)
   result = encodeQuery(qs)
 
-proc hydratePath(input: JsonNode; segments: seq[PathToken]): Option[string] =
+proc hydratePath(input: JsonNode; segments: seq[PathToken]): Option[string] {.used.} =
   ## reconstitute a path with constants and variable values taken from json
   var head: string
   if segments.len == 0:
@@ -108,8 +108,8 @@ const
 proc composeQueryString(query: JsonNode): string
 method hook(call: OpenApiRestCall; url: Uri; input: JsonNode): Recallable {.base.}
 type
-  Call_PlaycustomappAccountsCustomAppsCreate_579676 = ref object of OpenApiRestCall_579408
-proc url_PlaycustomappAccountsCustomAppsCreate_579678(protocol: Scheme;
+  Call_PlaycustomappAccountsCustomAppsCreate_588709 = ref object of OpenApiRestCall_588441
+proc url_PlaycustomappAccountsCustomAppsCreate_588711(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -125,7 +125,7 @@ proc url_PlaycustomappAccountsCustomAppsCreate_579678(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_PlaycustomappAccountsCustomAppsCreate_579677(path: JsonNode;
+proc validate_PlaycustomappAccountsCustomAppsCreate_588710(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Create and publish a new custom app.
   ## 
@@ -136,11 +136,11 @@ proc validate_PlaycustomappAccountsCustomAppsCreate_579677(path: JsonNode;
   ##          : Developer account ID.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `account` field"
-  var valid_579804 = path.getOrDefault("account")
-  valid_579804 = validateParameter(valid_579804, JString, required = true,
+  var valid_588837 = path.getOrDefault("account")
+  valid_588837 = validateParameter(valid_588837, JString, required = true,
                                  default = nil)
-  if valid_579804 != nil:
-    section.add "account", valid_579804
+  if valid_588837 != nil:
+    section.add "account", valid_588837
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -158,41 +158,41 @@ proc validate_PlaycustomappAccountsCustomAppsCreate_579677(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_579805 = query.getOrDefault("fields")
-  valid_579805 = validateParameter(valid_579805, JString, required = false,
+  var valid_588838 = query.getOrDefault("fields")
+  valid_588838 = validateParameter(valid_588838, JString, required = false,
                                  default = nil)
-  if valid_579805 != nil:
-    section.add "fields", valid_579805
-  var valid_579806 = query.getOrDefault("quotaUser")
-  valid_579806 = validateParameter(valid_579806, JString, required = false,
+  if valid_588838 != nil:
+    section.add "fields", valid_588838
+  var valid_588839 = query.getOrDefault("quotaUser")
+  valid_588839 = validateParameter(valid_588839, JString, required = false,
                                  default = nil)
-  if valid_579806 != nil:
-    section.add "quotaUser", valid_579806
-  var valid_579820 = query.getOrDefault("alt")
-  valid_579820 = validateParameter(valid_579820, JString, required = false,
+  if valid_588839 != nil:
+    section.add "quotaUser", valid_588839
+  var valid_588853 = query.getOrDefault("alt")
+  valid_588853 = validateParameter(valid_588853, JString, required = false,
                                  default = newJString("json"))
-  if valid_579820 != nil:
-    section.add "alt", valid_579820
-  var valid_579821 = query.getOrDefault("oauth_token")
-  valid_579821 = validateParameter(valid_579821, JString, required = false,
+  if valid_588853 != nil:
+    section.add "alt", valid_588853
+  var valid_588854 = query.getOrDefault("oauth_token")
+  valid_588854 = validateParameter(valid_588854, JString, required = false,
                                  default = nil)
-  if valid_579821 != nil:
-    section.add "oauth_token", valid_579821
-  var valid_579822 = query.getOrDefault("userIp")
-  valid_579822 = validateParameter(valid_579822, JString, required = false,
+  if valid_588854 != nil:
+    section.add "oauth_token", valid_588854
+  var valid_588855 = query.getOrDefault("userIp")
+  valid_588855 = validateParameter(valid_588855, JString, required = false,
                                  default = nil)
-  if valid_579822 != nil:
-    section.add "userIp", valid_579822
-  var valid_579823 = query.getOrDefault("key")
-  valid_579823 = validateParameter(valid_579823, JString, required = false,
+  if valid_588855 != nil:
+    section.add "userIp", valid_588855
+  var valid_588856 = query.getOrDefault("key")
+  valid_588856 = validateParameter(valid_588856, JString, required = false,
                                  default = nil)
-  if valid_579823 != nil:
-    section.add "key", valid_579823
-  var valid_579824 = query.getOrDefault("prettyPrint")
-  valid_579824 = validateParameter(valid_579824, JBool, required = false,
+  if valid_588856 != nil:
+    section.add "key", valid_588856
+  var valid_588857 = query.getOrDefault("prettyPrint")
+  valid_588857 = validateParameter(valid_588857, JBool, required = false,
                                  default = newJBool(true))
-  if valid_579824 != nil:
-    section.add "prettyPrint", valid_579824
+  if valid_588857 != nil:
+    section.add "prettyPrint", valid_588857
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -204,21 +204,21 @@ proc validate_PlaycustomappAccountsCustomAppsCreate_579677(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_579848: Call_PlaycustomappAccountsCustomAppsCreate_579676;
+proc call*(call_588881: Call_PlaycustomappAccountsCustomAppsCreate_588709;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Create and publish a new custom app.
   ## 
-  let valid = call_579848.validator(path, query, header, formData, body)
-  let scheme = call_579848.pickScheme
+  let valid = call_588881.validator(path, query, header, formData, body)
+  let scheme = call_588881.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_579848.url(scheme.get, call_579848.host, call_579848.base,
-                         call_579848.route, valid.getOrDefault("path"),
+  let url = call_588881.url(scheme.get, call_588881.host, call_588881.base,
+                         call_588881.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_579848, url, valid)
+  result = hook(call_588881, url, valid)
 
-proc call*(call_579919: Call_PlaycustomappAccountsCustomAppsCreate_579676;
+proc call*(call_588952: Call_PlaycustomappAccountsCustomAppsCreate_588709;
           account: string; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; userIp: string = "";
           key: string = ""; body: JsonNode = nil; prettyPrint: bool = true): Recallable =
@@ -241,27 +241,27 @@ proc call*(call_579919: Call_PlaycustomappAccountsCustomAppsCreate_579676;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_579920 = newJObject()
-  var query_579922 = newJObject()
-  var body_579923 = newJObject()
-  add(query_579922, "fields", newJString(fields))
-  add(query_579922, "quotaUser", newJString(quotaUser))
-  add(query_579922, "alt", newJString(alt))
-  add(query_579922, "oauth_token", newJString(oauthToken))
-  add(path_579920, "account", newJString(account))
-  add(query_579922, "userIp", newJString(userIp))
-  add(query_579922, "key", newJString(key))
+  var path_588953 = newJObject()
+  var query_588955 = newJObject()
+  var body_588956 = newJObject()
+  add(query_588955, "fields", newJString(fields))
+  add(query_588955, "quotaUser", newJString(quotaUser))
+  add(query_588955, "alt", newJString(alt))
+  add(query_588955, "oauth_token", newJString(oauthToken))
+  add(path_588953, "account", newJString(account))
+  add(query_588955, "userIp", newJString(userIp))
+  add(query_588955, "key", newJString(key))
   if body != nil:
-    body_579923 = body
-  add(query_579922, "prettyPrint", newJBool(prettyPrint))
-  result = call_579919.call(path_579920, query_579922, nil, nil, body_579923)
+    body_588956 = body
+  add(query_588955, "prettyPrint", newJBool(prettyPrint))
+  result = call_588952.call(path_588953, query_588955, nil, nil, body_588956)
 
-var playcustomappAccountsCustomAppsCreate* = Call_PlaycustomappAccountsCustomAppsCreate_579676(
+var playcustomappAccountsCustomAppsCreate* = Call_PlaycustomappAccountsCustomAppsCreate_588709(
     name: "playcustomappAccountsCustomAppsCreate", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com", route: "/{account}/customApps",
-    validator: validate_PlaycustomappAccountsCustomAppsCreate_579677,
+    validator: validate_PlaycustomappAccountsCustomAppsCreate_588710,
     base: "/playcustomapp/v1/accounts",
-    url: url_PlaycustomappAccountsCustomAppsCreate_579678, schemes: {Scheme.Https})
+    url: url_PlaycustomappAccountsCustomAppsCreate_588711, schemes: {Scheme.Https})
 export
   rest
 
@@ -303,7 +303,7 @@ proc store(auth: var GoogleAuth; token: string; expiry: int; form: string) =
   auth.form = form
   auth.digest = auth.hash
 
-proc authenticate*(fresh: float64 = -3600.0; lifetime: int = 3600): Future[bool] {.async.} =
+proc authenticate*(fresh: float64 = 3600.0; lifetime: int = 3600): Future[bool] {.async.} =
   ## get or refresh an authentication token; provide `fresh`
   ## to ensure that the token won't expire in the next N seconds.
   ## provide `lifetime` to indicate how long the token should last.

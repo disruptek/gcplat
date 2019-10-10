@@ -29,15 +29,15 @@ type
     url*: proc (protocol: Scheme; host: string; base: string; route: string;
               path: JsonNode; query: JsonNode): Uri
 
-  OpenApiRestCall_579408 = ref object of OpenApiRestCall
+  OpenApiRestCall_588441 = ref object of OpenApiRestCall
 proc hash(scheme: Scheme): Hash {.used.} =
   result = hash(ord(scheme))
 
-proc clone[T: OpenApiRestCall_579408](t: T): T {.used.} =
+proc clone[T: OpenApiRestCall_588441](t: T): T {.used.} =
   result = T(name: t.name, meth: t.meth, host: t.host, base: t.base, route: t.route,
            schemes: t.schemes, validator: t.validator, url: t.url)
 
-proc pickScheme(t: OpenApiRestCall_579408): Option[Scheme] {.used.} =
+proc pickScheme(t: OpenApiRestCall_588441): Option[Scheme] {.used.} =
   ## select a supported scheme from a set of candidates
   for scheme in Scheme.low ..
       Scheme.high:
@@ -74,7 +74,7 @@ type
   PathTokenKind = enum
     ConstantSegment, VariableSegment
   PathToken = tuple[kind: PathTokenKind, value: string]
-proc queryString(query: JsonNode): string =
+proc queryString(query: JsonNode): string {.used.} =
   var qs: seq[KeyVal]
   if query == nil:
     return ""
@@ -82,7 +82,7 @@ proc queryString(query: JsonNode): string =
     qs.add (key: k, val: v.getStr)
   result = encodeQuery(qs)
 
-proc hydratePath(input: JsonNode; segments: seq[PathToken]): Option[string] =
+proc hydratePath(input: JsonNode; segments: seq[PathToken]): Option[string] {.used.} =
   ## reconstitute a path with constants and variable values taken from json
   var head: string
   if segments.len == 0:
@@ -108,15 +108,15 @@ const
 proc composeQueryString(query: JsonNode): string
 method hook(call: OpenApiRestCall; url: Uri; input: JsonNode): Recallable {.base.}
 type
-  Call_DigitalassetlinksAssetlinksCheck_579677 = ref object of OpenApiRestCall_579408
-proc url_DigitalassetlinksAssetlinksCheck_579679(protocol: Scheme; host: string;
+  Call_DigitalassetlinksAssetlinksCheck_588710 = ref object of OpenApiRestCall_588441
+proc url_DigitalassetlinksAssetlinksCheck_588712(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
   result.query = $composeQueryString(query)
   result.path = base & route
 
-proc validate_DigitalassetlinksAssetlinksCheck_579678(path: JsonNode;
+proc validate_DigitalassetlinksAssetlinksCheck_588711(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Determines whether the specified (directional) relationship exists between
   ## the specified source and target assets.
@@ -309,96 +309,96 @@ proc validate_DigitalassetlinksAssetlinksCheck_579678(path: JsonNode;
   ## `com.google.android.apps.maps`.
   ## REQUIRED
   section = newJObject()
-  var valid_579791 = query.getOrDefault("upload_protocol")
-  valid_579791 = validateParameter(valid_579791, JString, required = false,
+  var valid_588824 = query.getOrDefault("upload_protocol")
+  valid_588824 = validateParameter(valid_588824, JString, required = false,
                                  default = nil)
-  if valid_579791 != nil:
-    section.add "upload_protocol", valid_579791
-  var valid_579792 = query.getOrDefault("fields")
-  valid_579792 = validateParameter(valid_579792, JString, required = false,
+  if valid_588824 != nil:
+    section.add "upload_protocol", valid_588824
+  var valid_588825 = query.getOrDefault("fields")
+  valid_588825 = validateParameter(valid_588825, JString, required = false,
                                  default = nil)
-  if valid_579792 != nil:
-    section.add "fields", valid_579792
-  var valid_579793 = query.getOrDefault("quotaUser")
-  valid_579793 = validateParameter(valid_579793, JString, required = false,
+  if valid_588825 != nil:
+    section.add "fields", valid_588825
+  var valid_588826 = query.getOrDefault("quotaUser")
+  valid_588826 = validateParameter(valid_588826, JString, required = false,
                                  default = nil)
-  if valid_579793 != nil:
-    section.add "quotaUser", valid_579793
-  var valid_579794 = query.getOrDefault("target.web.site")
-  valid_579794 = validateParameter(valid_579794, JString, required = false,
+  if valid_588826 != nil:
+    section.add "quotaUser", valid_588826
+  var valid_588827 = query.getOrDefault("target.web.site")
+  valid_588827 = validateParameter(valid_588827, JString, required = false,
                                  default = nil)
-  if valid_579794 != nil:
-    section.add "target.web.site", valid_579794
-  var valid_579808 = query.getOrDefault("alt")
-  valid_579808 = validateParameter(valid_579808, JString, required = false,
+  if valid_588827 != nil:
+    section.add "target.web.site", valid_588827
+  var valid_588841 = query.getOrDefault("alt")
+  valid_588841 = validateParameter(valid_588841, JString, required = false,
                                  default = newJString("json"))
-  if valid_579808 != nil:
-    section.add "alt", valid_579808
-  var valid_579809 = query.getOrDefault("target.androidApp.certificate.sha256Fingerprint")
-  valid_579809 = validateParameter(valid_579809, JString, required = false,
+  if valid_588841 != nil:
+    section.add "alt", valid_588841
+  var valid_588842 = query.getOrDefault("target.androidApp.certificate.sha256Fingerprint")
+  valid_588842 = validateParameter(valid_588842, JString, required = false,
                                  default = nil)
-  if valid_579809 != nil:
-    section.add "target.androidApp.certificate.sha256Fingerprint", valid_579809
-  var valid_579810 = query.getOrDefault("source.androidApp.certificate.sha256Fingerprint")
-  valid_579810 = validateParameter(valid_579810, JString, required = false,
+  if valid_588842 != nil:
+    section.add "target.androidApp.certificate.sha256Fingerprint", valid_588842
+  var valid_588843 = query.getOrDefault("source.androidApp.certificate.sha256Fingerprint")
+  valid_588843 = validateParameter(valid_588843, JString, required = false,
                                  default = nil)
-  if valid_579810 != nil:
-    section.add "source.androidApp.certificate.sha256Fingerprint", valid_579810
-  var valid_579811 = query.getOrDefault("oauth_token")
-  valid_579811 = validateParameter(valid_579811, JString, required = false,
+  if valid_588843 != nil:
+    section.add "source.androidApp.certificate.sha256Fingerprint", valid_588843
+  var valid_588844 = query.getOrDefault("oauth_token")
+  valid_588844 = validateParameter(valid_588844, JString, required = false,
                                  default = nil)
-  if valid_579811 != nil:
-    section.add "oauth_token", valid_579811
-  var valid_579812 = query.getOrDefault("callback")
-  valid_579812 = validateParameter(valid_579812, JString, required = false,
+  if valid_588844 != nil:
+    section.add "oauth_token", valid_588844
+  var valid_588845 = query.getOrDefault("callback")
+  valid_588845 = validateParameter(valid_588845, JString, required = false,
                                  default = nil)
-  if valid_579812 != nil:
-    section.add "callback", valid_579812
-  var valid_579813 = query.getOrDefault("access_token")
-  valid_579813 = validateParameter(valid_579813, JString, required = false,
+  if valid_588845 != nil:
+    section.add "callback", valid_588845
+  var valid_588846 = query.getOrDefault("access_token")
+  valid_588846 = validateParameter(valid_588846, JString, required = false,
                                  default = nil)
-  if valid_579813 != nil:
-    section.add "access_token", valid_579813
-  var valid_579814 = query.getOrDefault("uploadType")
-  valid_579814 = validateParameter(valid_579814, JString, required = false,
+  if valid_588846 != nil:
+    section.add "access_token", valid_588846
+  var valid_588847 = query.getOrDefault("uploadType")
+  valid_588847 = validateParameter(valid_588847, JString, required = false,
                                  default = nil)
-  if valid_579814 != nil:
-    section.add "uploadType", valid_579814
-  var valid_579815 = query.getOrDefault("source.web.site")
-  valid_579815 = validateParameter(valid_579815, JString, required = false,
+  if valid_588847 != nil:
+    section.add "uploadType", valid_588847
+  var valid_588848 = query.getOrDefault("source.web.site")
+  valid_588848 = validateParameter(valid_588848, JString, required = false,
                                  default = nil)
-  if valid_579815 != nil:
-    section.add "source.web.site", valid_579815
-  var valid_579816 = query.getOrDefault("target.androidApp.packageName")
-  valid_579816 = validateParameter(valid_579816, JString, required = false,
+  if valid_588848 != nil:
+    section.add "source.web.site", valid_588848
+  var valid_588849 = query.getOrDefault("target.androidApp.packageName")
+  valid_588849 = validateParameter(valid_588849, JString, required = false,
                                  default = nil)
-  if valid_579816 != nil:
-    section.add "target.androidApp.packageName", valid_579816
-  var valid_579817 = query.getOrDefault("key")
-  valid_579817 = validateParameter(valid_579817, JString, required = false,
+  if valid_588849 != nil:
+    section.add "target.androidApp.packageName", valid_588849
+  var valid_588850 = query.getOrDefault("key")
+  valid_588850 = validateParameter(valid_588850, JString, required = false,
                                  default = nil)
-  if valid_579817 != nil:
-    section.add "key", valid_579817
-  var valid_579818 = query.getOrDefault("$.xgafv")
-  valid_579818 = validateParameter(valid_579818, JString, required = false,
+  if valid_588850 != nil:
+    section.add "key", valid_588850
+  var valid_588851 = query.getOrDefault("$.xgafv")
+  valid_588851 = validateParameter(valid_588851, JString, required = false,
                                  default = newJString("1"))
-  if valid_579818 != nil:
-    section.add "$.xgafv", valid_579818
-  var valid_579819 = query.getOrDefault("relation")
-  valid_579819 = validateParameter(valid_579819, JString, required = false,
+  if valid_588851 != nil:
+    section.add "$.xgafv", valid_588851
+  var valid_588852 = query.getOrDefault("relation")
+  valid_588852 = validateParameter(valid_588852, JString, required = false,
                                  default = nil)
-  if valid_579819 != nil:
-    section.add "relation", valid_579819
-  var valid_579820 = query.getOrDefault("prettyPrint")
-  valid_579820 = validateParameter(valid_579820, JBool, required = false,
+  if valid_588852 != nil:
+    section.add "relation", valid_588852
+  var valid_588853 = query.getOrDefault("prettyPrint")
+  valid_588853 = validateParameter(valid_588853, JBool, required = false,
                                  default = newJBool(true))
-  if valid_579820 != nil:
-    section.add "prettyPrint", valid_579820
-  var valid_579821 = query.getOrDefault("source.androidApp.packageName")
-  valid_579821 = validateParameter(valid_579821, JString, required = false,
+  if valid_588853 != nil:
+    section.add "prettyPrint", valid_588853
+  var valid_588854 = query.getOrDefault("source.androidApp.packageName")
+  valid_588854 = validateParameter(valid_588854, JString, required = false,
                                  default = nil)
-  if valid_579821 != nil:
-    section.add "source.androidApp.packageName", valid_579821
+  if valid_588854 != nil:
+    section.add "source.androidApp.packageName", valid_588854
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -407,7 +407,7 @@ proc validate_DigitalassetlinksAssetlinksCheck_579678(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_579844: Call_DigitalassetlinksAssetlinksCheck_579677;
+proc call*(call_588877: Call_DigitalassetlinksAssetlinksCheck_588710;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Determines whether the specified (directional) relationship exists between
@@ -434,16 +434,16 @@ proc call*(call_579844: Call_DigitalassetlinksAssetlinksCheck_579677;
   ## design
   ## specification](https://github.com/google/digitalassetlinks/blob/master/well-known/details.md).
   ## 
-  let valid = call_579844.validator(path, query, header, formData, body)
-  let scheme = call_579844.pickScheme
+  let valid = call_588877.validator(path, query, header, formData, body)
+  let scheme = call_588877.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_579844.url(scheme.get, call_579844.host, call_579844.base,
-                         call_579844.route, valid.getOrDefault("path"),
+  let url = call_588877.url(scheme.get, call_588877.host, call_588877.base,
+                         call_588877.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_579844, url, valid)
+  result = hook(call_588877, url, valid)
 
-proc call*(call_579915: Call_DigitalassetlinksAssetlinksCheck_579677;
+proc call*(call_588948: Call_DigitalassetlinksAssetlinksCheck_588710;
           uploadProtocol: string = ""; fields: string = ""; quotaUser: string = "";
           targetWebSite: string = ""; alt: string = "json";
           targetAndroidAppCertificateSha256Fingerprint: string = "";
@@ -638,46 +638,46 @@ proc call*(call_579915: Call_DigitalassetlinksAssetlinksCheck_579677;
   ## For example, the Google Maps app uses the package name
   ## `com.google.android.apps.maps`.
   ## REQUIRED
-  var query_579916 = newJObject()
-  add(query_579916, "upload_protocol", newJString(uploadProtocol))
-  add(query_579916, "fields", newJString(fields))
-  add(query_579916, "quotaUser", newJString(quotaUser))
-  add(query_579916, "target.web.site", newJString(targetWebSite))
-  add(query_579916, "alt", newJString(alt))
-  add(query_579916, "target.androidApp.certificate.sha256Fingerprint",
+  var query_588949 = newJObject()
+  add(query_588949, "upload_protocol", newJString(uploadProtocol))
+  add(query_588949, "fields", newJString(fields))
+  add(query_588949, "quotaUser", newJString(quotaUser))
+  add(query_588949, "target.web.site", newJString(targetWebSite))
+  add(query_588949, "alt", newJString(alt))
+  add(query_588949, "target.androidApp.certificate.sha256Fingerprint",
       newJString(targetAndroidAppCertificateSha256Fingerprint))
-  add(query_579916, "source.androidApp.certificate.sha256Fingerprint",
+  add(query_588949, "source.androidApp.certificate.sha256Fingerprint",
       newJString(sourceAndroidAppCertificateSha256Fingerprint))
-  add(query_579916, "oauth_token", newJString(oauthToken))
-  add(query_579916, "callback", newJString(callback))
-  add(query_579916, "access_token", newJString(accessToken))
-  add(query_579916, "uploadType", newJString(uploadType))
-  add(query_579916, "source.web.site", newJString(sourceWebSite))
-  add(query_579916, "target.androidApp.packageName",
+  add(query_588949, "oauth_token", newJString(oauthToken))
+  add(query_588949, "callback", newJString(callback))
+  add(query_588949, "access_token", newJString(accessToken))
+  add(query_588949, "uploadType", newJString(uploadType))
+  add(query_588949, "source.web.site", newJString(sourceWebSite))
+  add(query_588949, "target.androidApp.packageName",
       newJString(targetAndroidAppPackageName))
-  add(query_579916, "key", newJString(key))
-  add(query_579916, "$.xgafv", newJString(Xgafv))
-  add(query_579916, "relation", newJString(relation))
-  add(query_579916, "prettyPrint", newJBool(prettyPrint))
-  add(query_579916, "source.androidApp.packageName",
+  add(query_588949, "key", newJString(key))
+  add(query_588949, "$.xgafv", newJString(Xgafv))
+  add(query_588949, "relation", newJString(relation))
+  add(query_588949, "prettyPrint", newJBool(prettyPrint))
+  add(query_588949, "source.androidApp.packageName",
       newJString(sourceAndroidAppPackageName))
-  result = call_579915.call(nil, query_579916, nil, nil, nil)
+  result = call_588948.call(nil, query_588949, nil, nil, nil)
 
-var digitalassetlinksAssetlinksCheck* = Call_DigitalassetlinksAssetlinksCheck_579677(
+var digitalassetlinksAssetlinksCheck* = Call_DigitalassetlinksAssetlinksCheck_588710(
     name: "digitalassetlinksAssetlinksCheck", meth: HttpMethod.HttpGet,
     host: "digitalassetlinks.googleapis.com", route: "/v1/assetlinks:check",
-    validator: validate_DigitalassetlinksAssetlinksCheck_579678, base: "/",
-    url: url_DigitalassetlinksAssetlinksCheck_579679, schemes: {Scheme.Https})
+    validator: validate_DigitalassetlinksAssetlinksCheck_588711, base: "/",
+    url: url_DigitalassetlinksAssetlinksCheck_588712, schemes: {Scheme.Https})
 type
-  Call_DigitalassetlinksStatementsList_579956 = ref object of OpenApiRestCall_579408
-proc url_DigitalassetlinksStatementsList_579958(protocol: Scheme; host: string;
+  Call_DigitalassetlinksStatementsList_588989 = ref object of OpenApiRestCall_588441
+proc url_DigitalassetlinksStatementsList_588991(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
   result.query = $composeQueryString(query)
   result.path = base & route
 
-proc validate_DigitalassetlinksStatementsList_579957(path: JsonNode;
+proc validate_DigitalassetlinksStatementsList_588990(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Retrieves a list of all statements from a given source that match the
   ## specified target and statement string.
@@ -801,81 +801,81 @@ proc validate_DigitalassetlinksStatementsList_579957(path: JsonNode;
   ## `com.google.android.apps.maps`.
   ## REQUIRED
   section = newJObject()
-  var valid_579959 = query.getOrDefault("upload_protocol")
-  valid_579959 = validateParameter(valid_579959, JString, required = false,
+  var valid_588992 = query.getOrDefault("upload_protocol")
+  valid_588992 = validateParameter(valid_588992, JString, required = false,
                                  default = nil)
-  if valid_579959 != nil:
-    section.add "upload_protocol", valid_579959
-  var valid_579960 = query.getOrDefault("fields")
-  valid_579960 = validateParameter(valid_579960, JString, required = false,
+  if valid_588992 != nil:
+    section.add "upload_protocol", valid_588992
+  var valid_588993 = query.getOrDefault("fields")
+  valid_588993 = validateParameter(valid_588993, JString, required = false,
                                  default = nil)
-  if valid_579960 != nil:
-    section.add "fields", valid_579960
-  var valid_579961 = query.getOrDefault("quotaUser")
-  valid_579961 = validateParameter(valid_579961, JString, required = false,
+  if valid_588993 != nil:
+    section.add "fields", valid_588993
+  var valid_588994 = query.getOrDefault("quotaUser")
+  valid_588994 = validateParameter(valid_588994, JString, required = false,
                                  default = nil)
-  if valid_579961 != nil:
-    section.add "quotaUser", valid_579961
-  var valid_579962 = query.getOrDefault("alt")
-  valid_579962 = validateParameter(valid_579962, JString, required = false,
+  if valid_588994 != nil:
+    section.add "quotaUser", valid_588994
+  var valid_588995 = query.getOrDefault("alt")
+  valid_588995 = validateParameter(valid_588995, JString, required = false,
                                  default = newJString("json"))
-  if valid_579962 != nil:
-    section.add "alt", valid_579962
-  var valid_579963 = query.getOrDefault("source.androidApp.certificate.sha256Fingerprint")
-  valid_579963 = validateParameter(valid_579963, JString, required = false,
+  if valid_588995 != nil:
+    section.add "alt", valid_588995
+  var valid_588996 = query.getOrDefault("source.androidApp.certificate.sha256Fingerprint")
+  valid_588996 = validateParameter(valid_588996, JString, required = false,
                                  default = nil)
-  if valid_579963 != nil:
-    section.add "source.androidApp.certificate.sha256Fingerprint", valid_579963
-  var valid_579964 = query.getOrDefault("oauth_token")
-  valid_579964 = validateParameter(valid_579964, JString, required = false,
+  if valid_588996 != nil:
+    section.add "source.androidApp.certificate.sha256Fingerprint", valid_588996
+  var valid_588997 = query.getOrDefault("oauth_token")
+  valid_588997 = validateParameter(valid_588997, JString, required = false,
                                  default = nil)
-  if valid_579964 != nil:
-    section.add "oauth_token", valid_579964
-  var valid_579965 = query.getOrDefault("callback")
-  valid_579965 = validateParameter(valid_579965, JString, required = false,
+  if valid_588997 != nil:
+    section.add "oauth_token", valid_588997
+  var valid_588998 = query.getOrDefault("callback")
+  valid_588998 = validateParameter(valid_588998, JString, required = false,
                                  default = nil)
-  if valid_579965 != nil:
-    section.add "callback", valid_579965
-  var valid_579966 = query.getOrDefault("access_token")
-  valid_579966 = validateParameter(valid_579966, JString, required = false,
+  if valid_588998 != nil:
+    section.add "callback", valid_588998
+  var valid_588999 = query.getOrDefault("access_token")
+  valid_588999 = validateParameter(valid_588999, JString, required = false,
                                  default = nil)
-  if valid_579966 != nil:
-    section.add "access_token", valid_579966
-  var valid_579967 = query.getOrDefault("uploadType")
-  valid_579967 = validateParameter(valid_579967, JString, required = false,
+  if valid_588999 != nil:
+    section.add "access_token", valid_588999
+  var valid_589000 = query.getOrDefault("uploadType")
+  valid_589000 = validateParameter(valid_589000, JString, required = false,
                                  default = nil)
-  if valid_579967 != nil:
-    section.add "uploadType", valid_579967
-  var valid_579968 = query.getOrDefault("source.web.site")
-  valid_579968 = validateParameter(valid_579968, JString, required = false,
+  if valid_589000 != nil:
+    section.add "uploadType", valid_589000
+  var valid_589001 = query.getOrDefault("source.web.site")
+  valid_589001 = validateParameter(valid_589001, JString, required = false,
                                  default = nil)
-  if valid_579968 != nil:
-    section.add "source.web.site", valid_579968
-  var valid_579969 = query.getOrDefault("key")
-  valid_579969 = validateParameter(valid_579969, JString, required = false,
+  if valid_589001 != nil:
+    section.add "source.web.site", valid_589001
+  var valid_589002 = query.getOrDefault("key")
+  valid_589002 = validateParameter(valid_589002, JString, required = false,
                                  default = nil)
-  if valid_579969 != nil:
-    section.add "key", valid_579969
-  var valid_579970 = query.getOrDefault("$.xgafv")
-  valid_579970 = validateParameter(valid_579970, JString, required = false,
+  if valid_589002 != nil:
+    section.add "key", valid_589002
+  var valid_589003 = query.getOrDefault("$.xgafv")
+  valid_589003 = validateParameter(valid_589003, JString, required = false,
                                  default = newJString("1"))
-  if valid_579970 != nil:
-    section.add "$.xgafv", valid_579970
-  var valid_579971 = query.getOrDefault("relation")
-  valid_579971 = validateParameter(valid_579971, JString, required = false,
+  if valid_589003 != nil:
+    section.add "$.xgafv", valid_589003
+  var valid_589004 = query.getOrDefault("relation")
+  valid_589004 = validateParameter(valid_589004, JString, required = false,
                                  default = nil)
-  if valid_579971 != nil:
-    section.add "relation", valid_579971
-  var valid_579972 = query.getOrDefault("prettyPrint")
-  valid_579972 = validateParameter(valid_579972, JBool, required = false,
+  if valid_589004 != nil:
+    section.add "relation", valid_589004
+  var valid_589005 = query.getOrDefault("prettyPrint")
+  valid_589005 = validateParameter(valid_589005, JBool, required = false,
                                  default = newJBool(true))
-  if valid_579972 != nil:
-    section.add "prettyPrint", valid_579972
-  var valid_579973 = query.getOrDefault("source.androidApp.packageName")
-  valid_579973 = validateParameter(valid_579973, JString, required = false,
+  if valid_589005 != nil:
+    section.add "prettyPrint", valid_589005
+  var valid_589006 = query.getOrDefault("source.androidApp.packageName")
+  valid_589006 = validateParameter(valid_589006, JString, required = false,
                                  default = nil)
-  if valid_579973 != nil:
-    section.add "source.androidApp.packageName", valid_579973
+  if valid_589006 != nil:
+    section.add "source.androidApp.packageName", valid_589006
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -884,7 +884,7 @@ proc validate_DigitalassetlinksStatementsList_579957(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_579974: Call_DigitalassetlinksStatementsList_579956;
+proc call*(call_589007: Call_DigitalassetlinksStatementsList_588989;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Retrieves a list of all statements from a given source that match the
@@ -905,16 +905,16 @@ proc call*(call_579974: Call_DigitalassetlinksStatementsList_579956;
   ## device, the feature would make it easy to navigate to the corresponding web
   ## site or Google+ profile.
   ## 
-  let valid = call_579974.validator(path, query, header, formData, body)
-  let scheme = call_579974.pickScheme
+  let valid = call_589007.validator(path, query, header, formData, body)
+  let scheme = call_589007.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_579974.url(scheme.get, call_579974.host, call_579974.base,
-                         call_579974.route, valid.getOrDefault("path"),
+  let url = call_589007.url(scheme.get, call_589007.host, call_589007.base,
+                         call_589007.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_579974, url, valid)
+  result = hook(call_589007, url, valid)
 
-proc call*(call_579975: Call_DigitalassetlinksStatementsList_579956;
+proc call*(call_589008: Call_DigitalassetlinksStatementsList_588989;
           uploadProtocol: string = ""; fields: string = ""; quotaUser: string = "";
           alt: string = "json";
           sourceAndroidAppCertificateSha256Fingerprint: string = "";
@@ -1038,31 +1038,31 @@ proc call*(call_579975: Call_DigitalassetlinksStatementsList_579956;
   ## For example, the Google Maps app uses the package name
   ## `com.google.android.apps.maps`.
   ## REQUIRED
-  var query_579976 = newJObject()
-  add(query_579976, "upload_protocol", newJString(uploadProtocol))
-  add(query_579976, "fields", newJString(fields))
-  add(query_579976, "quotaUser", newJString(quotaUser))
-  add(query_579976, "alt", newJString(alt))
-  add(query_579976, "source.androidApp.certificate.sha256Fingerprint",
+  var query_589009 = newJObject()
+  add(query_589009, "upload_protocol", newJString(uploadProtocol))
+  add(query_589009, "fields", newJString(fields))
+  add(query_589009, "quotaUser", newJString(quotaUser))
+  add(query_589009, "alt", newJString(alt))
+  add(query_589009, "source.androidApp.certificate.sha256Fingerprint",
       newJString(sourceAndroidAppCertificateSha256Fingerprint))
-  add(query_579976, "oauth_token", newJString(oauthToken))
-  add(query_579976, "callback", newJString(callback))
-  add(query_579976, "access_token", newJString(accessToken))
-  add(query_579976, "uploadType", newJString(uploadType))
-  add(query_579976, "source.web.site", newJString(sourceWebSite))
-  add(query_579976, "key", newJString(key))
-  add(query_579976, "$.xgafv", newJString(Xgafv))
-  add(query_579976, "relation", newJString(relation))
-  add(query_579976, "prettyPrint", newJBool(prettyPrint))
-  add(query_579976, "source.androidApp.packageName",
+  add(query_589009, "oauth_token", newJString(oauthToken))
+  add(query_589009, "callback", newJString(callback))
+  add(query_589009, "access_token", newJString(accessToken))
+  add(query_589009, "uploadType", newJString(uploadType))
+  add(query_589009, "source.web.site", newJString(sourceWebSite))
+  add(query_589009, "key", newJString(key))
+  add(query_589009, "$.xgafv", newJString(Xgafv))
+  add(query_589009, "relation", newJString(relation))
+  add(query_589009, "prettyPrint", newJBool(prettyPrint))
+  add(query_589009, "source.androidApp.packageName",
       newJString(sourceAndroidAppPackageName))
-  result = call_579975.call(nil, query_579976, nil, nil, nil)
+  result = call_589008.call(nil, query_589009, nil, nil, nil)
 
-var digitalassetlinksStatementsList* = Call_DigitalassetlinksStatementsList_579956(
+var digitalassetlinksStatementsList* = Call_DigitalassetlinksStatementsList_588989(
     name: "digitalassetlinksStatementsList", meth: HttpMethod.HttpGet,
     host: "digitalassetlinks.googleapis.com", route: "/v1/statements:list",
-    validator: validate_DigitalassetlinksStatementsList_579957, base: "/",
-    url: url_DigitalassetlinksStatementsList_579958, schemes: {Scheme.Https})
+    validator: validate_DigitalassetlinksStatementsList_588990, base: "/",
+    url: url_DigitalassetlinksStatementsList_588991, schemes: {Scheme.Https})
 export
   rest
 
@@ -1104,7 +1104,7 @@ proc store(auth: var GoogleAuth; token: string; expiry: int; form: string) =
   auth.form = form
   auth.digest = auth.hash
 
-proc authenticate*(fresh: float64 = -3600.0; lifetime: int = 3600): Future[bool] {.async.} =
+proc authenticate*(fresh: float64 = 3600.0; lifetime: int = 3600): Future[bool] {.async.} =
   ## get or refresh an authentication token; provide `fresh`
   ## to ensure that the token won't expire in the next N seconds.
   ## provide `lifetime` to indicate how long the token should last.

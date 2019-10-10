@@ -29,15 +29,15 @@ type
     url*: proc (protocol: Scheme; host: string; base: string; route: string;
               path: JsonNode; query: JsonNode): Uri
 
-  OpenApiRestCall_579408 = ref object of OpenApiRestCall
+  OpenApiRestCall_588441 = ref object of OpenApiRestCall
 proc hash(scheme: Scheme): Hash {.used.} =
   result = hash(ord(scheme))
 
-proc clone[T: OpenApiRestCall_579408](t: T): T {.used.} =
+proc clone[T: OpenApiRestCall_588441](t: T): T {.used.} =
   result = T(name: t.name, meth: t.meth, host: t.host, base: t.base, route: t.route,
            schemes: t.schemes, validator: t.validator, url: t.url)
 
-proc pickScheme(t: OpenApiRestCall_579408): Option[Scheme] {.used.} =
+proc pickScheme(t: OpenApiRestCall_588441): Option[Scheme] {.used.} =
   ## select a supported scheme from a set of candidates
   for scheme in Scheme.low ..
       Scheme.high:
@@ -74,7 +74,7 @@ type
   PathTokenKind = enum
     ConstantSegment, VariableSegment
   PathToken = tuple[kind: PathTokenKind, value: string]
-proc queryString(query: JsonNode): string =
+proc queryString(query: JsonNode): string {.used.} =
   var qs: seq[KeyVal]
   if query == nil:
     return ""
@@ -82,7 +82,7 @@ proc queryString(query: JsonNode): string =
     qs.add (key: k, val: v.getStr)
   result = encodeQuery(qs)
 
-proc hydratePath(input: JsonNode; segments: seq[PathToken]): Option[string] =
+proc hydratePath(input: JsonNode; segments: seq[PathToken]): Option[string] {.used.} =
   ## reconstitute a path with constants and variable values taken from json
   var head: string
   if segments.len == 0:
@@ -108,15 +108,15 @@ const
 proc composeQueryString(query: JsonNode): string
 method hook(call: OpenApiRestCall; url: Uri; input: JsonNode): Recallable {.base.}
 type
-  Call_PagespeedonlinePagespeedapiRunpagespeed_579676 = ref object of OpenApiRestCall_579408
-proc url_PagespeedonlinePagespeedapiRunpagespeed_579678(protocol: Scheme;
+  Call_PagespeedonlinePagespeedapiRunpagespeed_588709 = ref object of OpenApiRestCall_588441
+proc url_PagespeedonlinePagespeedapiRunpagespeed_588711(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
   result.query = $composeQueryString(query)
   result.path = base & route
 
-proc validate_PagespeedonlinePagespeedapiRunpagespeed_579677(path: JsonNode;
+proc validate_PagespeedonlinePagespeedapiRunpagespeed_588710(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Runs PageSpeed analysis on the page at the specified URL, and returns a PageSpeed score, a list of suggestions to make that page faster, and other information.
   ## 
@@ -152,72 +152,72 @@ proc validate_PagespeedonlinePagespeedapiRunpagespeed_579677(path: JsonNode;
   ##   strategy: JString
   ##           : The analysis strategy to use
   section = newJObject()
-  var valid_579790 = query.getOrDefault("locale")
-  valid_579790 = validateParameter(valid_579790, JString, required = false,
+  var valid_588823 = query.getOrDefault("locale")
+  valid_588823 = validateParameter(valid_588823, JString, required = false,
                                  default = nil)
-  if valid_579790 != nil:
-    section.add "locale", valid_579790
-  var valid_579791 = query.getOrDefault("fields")
-  valid_579791 = validateParameter(valid_579791, JString, required = false,
+  if valid_588823 != nil:
+    section.add "locale", valid_588823
+  var valid_588824 = query.getOrDefault("fields")
+  valid_588824 = validateParameter(valid_588824, JString, required = false,
                                  default = nil)
-  if valid_579791 != nil:
-    section.add "fields", valid_579791
-  var valid_579792 = query.getOrDefault("quotaUser")
-  valid_579792 = validateParameter(valid_579792, JString, required = false,
+  if valid_588824 != nil:
+    section.add "fields", valid_588824
+  var valid_588825 = query.getOrDefault("quotaUser")
+  valid_588825 = validateParameter(valid_588825, JString, required = false,
                                  default = nil)
-  if valid_579792 != nil:
-    section.add "quotaUser", valid_579792
-  var valid_579806 = query.getOrDefault("alt")
-  valid_579806 = validateParameter(valid_579806, JString, required = false,
+  if valid_588825 != nil:
+    section.add "quotaUser", valid_588825
+  var valid_588839 = query.getOrDefault("alt")
+  valid_588839 = validateParameter(valid_588839, JString, required = false,
                                  default = newJString("json"))
-  if valid_579806 != nil:
-    section.add "alt", valid_579806
-  var valid_579807 = query.getOrDefault("oauth_token")
-  valid_579807 = validateParameter(valid_579807, JString, required = false,
+  if valid_588839 != nil:
+    section.add "alt", valid_588839
+  var valid_588840 = query.getOrDefault("oauth_token")
+  valid_588840 = validateParameter(valid_588840, JString, required = false,
                                  default = nil)
-  if valid_579807 != nil:
-    section.add "oauth_token", valid_579807
-  var valid_579808 = query.getOrDefault("userIp")
-  valid_579808 = validateParameter(valid_579808, JString, required = false,
+  if valid_588840 != nil:
+    section.add "oauth_token", valid_588840
+  var valid_588841 = query.getOrDefault("userIp")
+  valid_588841 = validateParameter(valid_588841, JString, required = false,
                                  default = nil)
-  if valid_579808 != nil:
-    section.add "userIp", valid_579808
-  var valid_579809 = query.getOrDefault("filter_third_party_resources")
-  valid_579809 = validateParameter(valid_579809, JBool, required = false,
+  if valid_588841 != nil:
+    section.add "userIp", valid_588841
+  var valid_588842 = query.getOrDefault("filter_third_party_resources")
+  valid_588842 = validateParameter(valid_588842, JBool, required = false,
                                  default = newJBool(false))
-  if valid_579809 != nil:
-    section.add "filter_third_party_resources", valid_579809
+  if valid_588842 != nil:
+    section.add "filter_third_party_resources", valid_588842
   assert query != nil, "query argument is necessary due to required `url` field"
-  var valid_579810 = query.getOrDefault("url")
-  valid_579810 = validateParameter(valid_579810, JString, required = true,
+  var valid_588843 = query.getOrDefault("url")
+  valid_588843 = validateParameter(valid_588843, JString, required = true,
                                  default = nil)
-  if valid_579810 != nil:
-    section.add "url", valid_579810
-  var valid_579811 = query.getOrDefault("key")
-  valid_579811 = validateParameter(valid_579811, JString, required = false,
+  if valid_588843 != nil:
+    section.add "url", valid_588843
+  var valid_588844 = query.getOrDefault("key")
+  valid_588844 = validateParameter(valid_588844, JString, required = false,
                                  default = nil)
-  if valid_579811 != nil:
-    section.add "key", valid_579811
-  var valid_579812 = query.getOrDefault("rule")
-  valid_579812 = validateParameter(valid_579812, JArray, required = false,
+  if valid_588844 != nil:
+    section.add "key", valid_588844
+  var valid_588845 = query.getOrDefault("rule")
+  valid_588845 = validateParameter(valid_588845, JArray, required = false,
                                  default = nil)
-  if valid_579812 != nil:
-    section.add "rule", valid_579812
-  var valid_579813 = query.getOrDefault("screenshot")
-  valid_579813 = validateParameter(valid_579813, JBool, required = false,
+  if valid_588845 != nil:
+    section.add "rule", valid_588845
+  var valid_588846 = query.getOrDefault("screenshot")
+  valid_588846 = validateParameter(valid_588846, JBool, required = false,
                                  default = newJBool(false))
-  if valid_579813 != nil:
-    section.add "screenshot", valid_579813
-  var valid_579814 = query.getOrDefault("prettyPrint")
-  valid_579814 = validateParameter(valid_579814, JBool, required = false,
+  if valid_588846 != nil:
+    section.add "screenshot", valid_588846
+  var valid_588847 = query.getOrDefault("prettyPrint")
+  valid_588847 = validateParameter(valid_588847, JBool, required = false,
                                  default = newJBool(true))
-  if valid_579814 != nil:
-    section.add "prettyPrint", valid_579814
-  var valid_579815 = query.getOrDefault("strategy")
-  valid_579815 = validateParameter(valid_579815, JString, required = false,
+  if valid_588847 != nil:
+    section.add "prettyPrint", valid_588847
+  var valid_588848 = query.getOrDefault("strategy")
+  valid_588848 = validateParameter(valid_588848, JString, required = false,
                                  default = newJString("desktop"))
-  if valid_579815 != nil:
-    section.add "strategy", valid_579815
+  if valid_588848 != nil:
+    section.add "strategy", valid_588848
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -226,21 +226,21 @@ proc validate_PagespeedonlinePagespeedapiRunpagespeed_579677(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_579838: Call_PagespeedonlinePagespeedapiRunpagespeed_579676;
+proc call*(call_588871: Call_PagespeedonlinePagespeedapiRunpagespeed_588709;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Runs PageSpeed analysis on the page at the specified URL, and returns a PageSpeed score, a list of suggestions to make that page faster, and other information.
   ## 
-  let valid = call_579838.validator(path, query, header, formData, body)
-  let scheme = call_579838.pickScheme
+  let valid = call_588871.validator(path, query, header, formData, body)
+  let scheme = call_588871.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_579838.url(scheme.get, call_579838.host, call_579838.base,
-                         call_579838.route, valid.getOrDefault("path"),
+  let url = call_588871.url(scheme.get, call_588871.host, call_588871.base,
+                         call_588871.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_579838, url, valid)
+  result = hook(call_588871, url, valid)
 
-proc call*(call_579909: Call_PagespeedonlinePagespeedapiRunpagespeed_579676;
+proc call*(call_588942: Call_PagespeedonlinePagespeedapiRunpagespeed_588709;
           url: string; locale: string = ""; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; userIp: string = "";
           filterThirdPartyResources: bool = false; key: string = "";
@@ -274,29 +274,29 @@ proc call*(call_579909: Call_PagespeedonlinePagespeedapiRunpagespeed_579676;
   ##              : Returns response with indentations and line breaks.
   ##   strategy: string
   ##           : The analysis strategy to use
-  var query_579910 = newJObject()
-  add(query_579910, "locale", newJString(locale))
-  add(query_579910, "fields", newJString(fields))
-  add(query_579910, "quotaUser", newJString(quotaUser))
-  add(query_579910, "alt", newJString(alt))
-  add(query_579910, "oauth_token", newJString(oauthToken))
-  add(query_579910, "userIp", newJString(userIp))
-  add(query_579910, "filter_third_party_resources",
+  var query_588943 = newJObject()
+  add(query_588943, "locale", newJString(locale))
+  add(query_588943, "fields", newJString(fields))
+  add(query_588943, "quotaUser", newJString(quotaUser))
+  add(query_588943, "alt", newJString(alt))
+  add(query_588943, "oauth_token", newJString(oauthToken))
+  add(query_588943, "userIp", newJString(userIp))
+  add(query_588943, "filter_third_party_resources",
       newJBool(filterThirdPartyResources))
-  add(query_579910, "url", newJString(url))
-  add(query_579910, "key", newJString(key))
+  add(query_588943, "url", newJString(url))
+  add(query_588943, "key", newJString(key))
   if rule != nil:
-    query_579910.add "rule", rule
-  add(query_579910, "screenshot", newJBool(screenshot))
-  add(query_579910, "prettyPrint", newJBool(prettyPrint))
-  add(query_579910, "strategy", newJString(strategy))
-  result = call_579909.call(nil, query_579910, nil, nil, nil)
+    query_588943.add "rule", rule
+  add(query_588943, "screenshot", newJBool(screenshot))
+  add(query_588943, "prettyPrint", newJBool(prettyPrint))
+  add(query_588943, "strategy", newJString(strategy))
+  result = call_588942.call(nil, query_588943, nil, nil, nil)
 
-var pagespeedonlinePagespeedapiRunpagespeed* = Call_PagespeedonlinePagespeedapiRunpagespeed_579676(
+var pagespeedonlinePagespeedapiRunpagespeed* = Call_PagespeedonlinePagespeedapiRunpagespeed_588709(
     name: "pagespeedonlinePagespeedapiRunpagespeed", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/runPagespeed",
-    validator: validate_PagespeedonlinePagespeedapiRunpagespeed_579677,
-    base: "/pagespeedonline/v1", url: url_PagespeedonlinePagespeedapiRunpagespeed_579678,
+    validator: validate_PagespeedonlinePagespeedapiRunpagespeed_588710,
+    base: "/pagespeedonline/v1", url: url_PagespeedonlinePagespeedapiRunpagespeed_588711,
     schemes: {Scheme.Https})
 export
   rest
@@ -339,7 +339,7 @@ proc store(auth: var GoogleAuth; token: string; expiry: int; form: string) =
   auth.form = form
   auth.digest = auth.hash
 
-proc authenticate*(fresh: float64 = -3600.0; lifetime: int = 3600): Future[bool] {.async.} =
+proc authenticate*(fresh: float64 = 3600.0; lifetime: int = 3600): Future[bool] {.async.} =
   ## get or refresh an authentication token; provide `fresh`
   ## to ensure that the token won't expire in the next N seconds.
   ## provide `lifetime` to indicate how long the token should last.

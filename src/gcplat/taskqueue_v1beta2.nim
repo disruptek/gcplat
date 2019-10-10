@@ -29,15 +29,15 @@ type
     url*: proc (protocol: Scheme; host: string; base: string; route: string;
               path: JsonNode; query: JsonNode): Uri
 
-  OpenApiRestCall_579408 = ref object of OpenApiRestCall
+  OpenApiRestCall_588441 = ref object of OpenApiRestCall
 proc hash(scheme: Scheme): Hash {.used.} =
   result = hash(ord(scheme))
 
-proc clone[T: OpenApiRestCall_579408](t: T): T {.used.} =
+proc clone[T: OpenApiRestCall_588441](t: T): T {.used.} =
   result = T(name: t.name, meth: t.meth, host: t.host, base: t.base, route: t.route,
            schemes: t.schemes, validator: t.validator, url: t.url)
 
-proc pickScheme(t: OpenApiRestCall_579408): Option[Scheme] {.used.} =
+proc pickScheme(t: OpenApiRestCall_588441): Option[Scheme] {.used.} =
   ## select a supported scheme from a set of candidates
   for scheme in Scheme.low ..
       Scheme.high:
@@ -74,7 +74,7 @@ type
   PathTokenKind = enum
     ConstantSegment, VariableSegment
   PathToken = tuple[kind: PathTokenKind, value: string]
-proc queryString(query: JsonNode): string =
+proc queryString(query: JsonNode): string {.used.} =
   var qs: seq[KeyVal]
   if query == nil:
     return ""
@@ -82,7 +82,7 @@ proc queryString(query: JsonNode): string =
     qs.add (key: k, val: v.getStr)
   result = encodeQuery(qs)
 
-proc hydratePath(input: JsonNode; segments: seq[PathToken]): Option[string] =
+proc hydratePath(input: JsonNode; segments: seq[PathToken]): Option[string] {.used.} =
   ## reconstitute a path with constants and variable values taken from json
   var head: string
   if segments.len == 0:
@@ -108,8 +108,8 @@ const
 proc composeQueryString(query: JsonNode): string
 method hook(call: OpenApiRestCall; url: Uri; input: JsonNode): Recallable {.base.}
 type
-  Call_TaskqueueTaskqueuesGet_579676 = ref object of OpenApiRestCall_579408
-proc url_TaskqueueTaskqueuesGet_579678(protocol: Scheme; host: string; base: string;
+  Call_TaskqueueTaskqueuesGet_588709 = ref object of OpenApiRestCall_588441
+proc url_TaskqueueTaskqueuesGet_588711(protocol: Scheme; host: string; base: string;
                                       route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -127,7 +127,7 @@ proc url_TaskqueueTaskqueuesGet_579678(protocol: Scheme; host: string; base: str
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_TaskqueueTaskqueuesGet_579677(path: JsonNode; query: JsonNode;
+proc validate_TaskqueueTaskqueuesGet_588710(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Get detailed information about a TaskQueue.
   ## 
@@ -140,16 +140,16 @@ proc validate_TaskqueueTaskqueuesGet_579677(path: JsonNode; query: JsonNode;
   ##            : The id of the taskqueue to get the properties of.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `project` field"
-  var valid_579804 = path.getOrDefault("project")
-  valid_579804 = validateParameter(valid_579804, JString, required = true,
+  var valid_588837 = path.getOrDefault("project")
+  valid_588837 = validateParameter(valid_588837, JString, required = true,
                                  default = nil)
-  if valid_579804 != nil:
-    section.add "project", valid_579804
-  var valid_579805 = path.getOrDefault("taskqueue")
-  valid_579805 = validateParameter(valid_579805, JString, required = true,
+  if valid_588837 != nil:
+    section.add "project", valid_588837
+  var valid_588838 = path.getOrDefault("taskqueue")
+  valid_588838 = validateParameter(valid_588838, JString, required = true,
                                  default = nil)
-  if valid_579805 != nil:
-    section.add "taskqueue", valid_579805
+  if valid_588838 != nil:
+    section.add "taskqueue", valid_588838
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -169,45 +169,45 @@ proc validate_TaskqueueTaskqueuesGet_579677(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_579806 = query.getOrDefault("fields")
-  valid_579806 = validateParameter(valid_579806, JString, required = false,
+  var valid_588839 = query.getOrDefault("fields")
+  valid_588839 = validateParameter(valid_588839, JString, required = false,
                                  default = nil)
-  if valid_579806 != nil:
-    section.add "fields", valid_579806
-  var valid_579807 = query.getOrDefault("quotaUser")
-  valid_579807 = validateParameter(valid_579807, JString, required = false,
+  if valid_588839 != nil:
+    section.add "fields", valid_588839
+  var valid_588840 = query.getOrDefault("quotaUser")
+  valid_588840 = validateParameter(valid_588840, JString, required = false,
                                  default = nil)
-  if valid_579807 != nil:
-    section.add "quotaUser", valid_579807
-  var valid_579821 = query.getOrDefault("alt")
-  valid_579821 = validateParameter(valid_579821, JString, required = false,
+  if valid_588840 != nil:
+    section.add "quotaUser", valid_588840
+  var valid_588854 = query.getOrDefault("alt")
+  valid_588854 = validateParameter(valid_588854, JString, required = false,
                                  default = newJString("json"))
-  if valid_579821 != nil:
-    section.add "alt", valid_579821
-  var valid_579822 = query.getOrDefault("getStats")
-  valid_579822 = validateParameter(valid_579822, JBool, required = false, default = nil)
-  if valid_579822 != nil:
-    section.add "getStats", valid_579822
-  var valid_579823 = query.getOrDefault("oauth_token")
-  valid_579823 = validateParameter(valid_579823, JString, required = false,
+  if valid_588854 != nil:
+    section.add "alt", valid_588854
+  var valid_588855 = query.getOrDefault("getStats")
+  valid_588855 = validateParameter(valid_588855, JBool, required = false, default = nil)
+  if valid_588855 != nil:
+    section.add "getStats", valid_588855
+  var valid_588856 = query.getOrDefault("oauth_token")
+  valid_588856 = validateParameter(valid_588856, JString, required = false,
                                  default = nil)
-  if valid_579823 != nil:
-    section.add "oauth_token", valid_579823
-  var valid_579824 = query.getOrDefault("userIp")
-  valid_579824 = validateParameter(valid_579824, JString, required = false,
+  if valid_588856 != nil:
+    section.add "oauth_token", valid_588856
+  var valid_588857 = query.getOrDefault("userIp")
+  valid_588857 = validateParameter(valid_588857, JString, required = false,
                                  default = nil)
-  if valid_579824 != nil:
-    section.add "userIp", valid_579824
-  var valid_579825 = query.getOrDefault("key")
-  valid_579825 = validateParameter(valid_579825, JString, required = false,
+  if valid_588857 != nil:
+    section.add "userIp", valid_588857
+  var valid_588858 = query.getOrDefault("key")
+  valid_588858 = validateParameter(valid_588858, JString, required = false,
                                  default = nil)
-  if valid_579825 != nil:
-    section.add "key", valid_579825
-  var valid_579826 = query.getOrDefault("prettyPrint")
-  valid_579826 = validateParameter(valid_579826, JBool, required = false,
+  if valid_588858 != nil:
+    section.add "key", valid_588858
+  var valid_588859 = query.getOrDefault("prettyPrint")
+  valid_588859 = validateParameter(valid_588859, JBool, required = false,
                                  default = newJBool(true))
-  if valid_579826 != nil:
-    section.add "prettyPrint", valid_579826
+  if valid_588859 != nil:
+    section.add "prettyPrint", valid_588859
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -216,20 +216,20 @@ proc validate_TaskqueueTaskqueuesGet_579677(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_579849: Call_TaskqueueTaskqueuesGet_579676; path: JsonNode;
+proc call*(call_588882: Call_TaskqueueTaskqueuesGet_588709; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Get detailed information about a TaskQueue.
   ## 
-  let valid = call_579849.validator(path, query, header, formData, body)
-  let scheme = call_579849.pickScheme
+  let valid = call_588882.validator(path, query, header, formData, body)
+  let scheme = call_588882.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_579849.url(scheme.get, call_579849.host, call_579849.base,
-                         call_579849.route, valid.getOrDefault("path"),
+  let url = call_588882.url(scheme.get, call_588882.host, call_588882.base,
+                         call_588882.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_579849, url, valid)
+  result = hook(call_588882, url, valid)
 
-proc call*(call_579920: Call_TaskqueueTaskqueuesGet_579676; project: string;
+proc call*(call_588953: Call_TaskqueueTaskqueuesGet_588709; project: string;
           taskqueue: string; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; getStats: bool = false; oauthToken: string = "";
           userIp: string = ""; key: string = ""; prettyPrint: bool = true): Recallable =
@@ -255,29 +255,29 @@ proc call*(call_579920: Call_TaskqueueTaskqueuesGet_579676; project: string;
   ##              : Returns response with indentations and line breaks.
   ##   taskqueue: string (required)
   ##            : The id of the taskqueue to get the properties of.
-  var path_579921 = newJObject()
-  var query_579923 = newJObject()
-  add(query_579923, "fields", newJString(fields))
-  add(query_579923, "quotaUser", newJString(quotaUser))
-  add(query_579923, "alt", newJString(alt))
-  add(query_579923, "getStats", newJBool(getStats))
-  add(query_579923, "oauth_token", newJString(oauthToken))
-  add(query_579923, "userIp", newJString(userIp))
-  add(query_579923, "key", newJString(key))
-  add(path_579921, "project", newJString(project))
-  add(query_579923, "prettyPrint", newJBool(prettyPrint))
-  add(path_579921, "taskqueue", newJString(taskqueue))
-  result = call_579920.call(path_579921, query_579923, nil, nil, nil)
+  var path_588954 = newJObject()
+  var query_588956 = newJObject()
+  add(query_588956, "fields", newJString(fields))
+  add(query_588956, "quotaUser", newJString(quotaUser))
+  add(query_588956, "alt", newJString(alt))
+  add(query_588956, "getStats", newJBool(getStats))
+  add(query_588956, "oauth_token", newJString(oauthToken))
+  add(query_588956, "userIp", newJString(userIp))
+  add(query_588956, "key", newJString(key))
+  add(path_588954, "project", newJString(project))
+  add(query_588956, "prettyPrint", newJBool(prettyPrint))
+  add(path_588954, "taskqueue", newJString(taskqueue))
+  result = call_588953.call(path_588954, query_588956, nil, nil, nil)
 
-var taskqueueTaskqueuesGet* = Call_TaskqueueTaskqueuesGet_579676(
+var taskqueueTaskqueuesGet* = Call_TaskqueueTaskqueuesGet_588709(
     name: "taskqueueTaskqueuesGet", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/{project}/taskqueues/{taskqueue}",
-    validator: validate_TaskqueueTaskqueuesGet_579677,
-    base: "/taskqueue/v1beta2/projects", url: url_TaskqueueTaskqueuesGet_579678,
+    validator: validate_TaskqueueTaskqueuesGet_588710,
+    base: "/taskqueue/v1beta2/projects", url: url_TaskqueueTaskqueuesGet_588711,
     schemes: {Scheme.Https})
 type
-  Call_TaskqueueTasksInsert_579978 = ref object of OpenApiRestCall_579408
-proc url_TaskqueueTasksInsert_579980(protocol: Scheme; host: string; base: string;
+  Call_TaskqueueTasksInsert_589011 = ref object of OpenApiRestCall_588441
+proc url_TaskqueueTasksInsert_589013(protocol: Scheme; host: string; base: string;
                                     route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -296,7 +296,7 @@ proc url_TaskqueueTasksInsert_579980(protocol: Scheme; host: string; base: strin
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_TaskqueueTasksInsert_579979(path: JsonNode; query: JsonNode;
+proc validate_TaskqueueTasksInsert_589012(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Insert a new task in a TaskQueue
   ## 
@@ -309,16 +309,16 @@ proc validate_TaskqueueTasksInsert_579979(path: JsonNode; query: JsonNode;
   ##            : The taskqueue to insert the task into
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `project` field"
-  var valid_579981 = path.getOrDefault("project")
-  valid_579981 = validateParameter(valid_579981, JString, required = true,
+  var valid_589014 = path.getOrDefault("project")
+  valid_589014 = validateParameter(valid_589014, JString, required = true,
                                  default = nil)
-  if valid_579981 != nil:
-    section.add "project", valid_579981
-  var valid_579982 = path.getOrDefault("taskqueue")
-  valid_579982 = validateParameter(valid_579982, JString, required = true,
+  if valid_589014 != nil:
+    section.add "project", valid_589014
+  var valid_589015 = path.getOrDefault("taskqueue")
+  valid_589015 = validateParameter(valid_589015, JString, required = true,
                                  default = nil)
-  if valid_579982 != nil:
-    section.add "taskqueue", valid_579982
+  if valid_589015 != nil:
+    section.add "taskqueue", valid_589015
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -336,41 +336,41 @@ proc validate_TaskqueueTasksInsert_579979(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_579983 = query.getOrDefault("fields")
-  valid_579983 = validateParameter(valid_579983, JString, required = false,
+  var valid_589016 = query.getOrDefault("fields")
+  valid_589016 = validateParameter(valid_589016, JString, required = false,
                                  default = nil)
-  if valid_579983 != nil:
-    section.add "fields", valid_579983
-  var valid_579984 = query.getOrDefault("quotaUser")
-  valid_579984 = validateParameter(valid_579984, JString, required = false,
+  if valid_589016 != nil:
+    section.add "fields", valid_589016
+  var valid_589017 = query.getOrDefault("quotaUser")
+  valid_589017 = validateParameter(valid_589017, JString, required = false,
                                  default = nil)
-  if valid_579984 != nil:
-    section.add "quotaUser", valid_579984
-  var valid_579985 = query.getOrDefault("alt")
-  valid_579985 = validateParameter(valid_579985, JString, required = false,
+  if valid_589017 != nil:
+    section.add "quotaUser", valid_589017
+  var valid_589018 = query.getOrDefault("alt")
+  valid_589018 = validateParameter(valid_589018, JString, required = false,
                                  default = newJString("json"))
-  if valid_579985 != nil:
-    section.add "alt", valid_579985
-  var valid_579986 = query.getOrDefault("oauth_token")
-  valid_579986 = validateParameter(valid_579986, JString, required = false,
+  if valid_589018 != nil:
+    section.add "alt", valid_589018
+  var valid_589019 = query.getOrDefault("oauth_token")
+  valid_589019 = validateParameter(valid_589019, JString, required = false,
                                  default = nil)
-  if valid_579986 != nil:
-    section.add "oauth_token", valid_579986
-  var valid_579987 = query.getOrDefault("userIp")
-  valid_579987 = validateParameter(valid_579987, JString, required = false,
+  if valid_589019 != nil:
+    section.add "oauth_token", valid_589019
+  var valid_589020 = query.getOrDefault("userIp")
+  valid_589020 = validateParameter(valid_589020, JString, required = false,
                                  default = nil)
-  if valid_579987 != nil:
-    section.add "userIp", valid_579987
-  var valid_579988 = query.getOrDefault("key")
-  valid_579988 = validateParameter(valid_579988, JString, required = false,
+  if valid_589020 != nil:
+    section.add "userIp", valid_589020
+  var valid_589021 = query.getOrDefault("key")
+  valid_589021 = validateParameter(valid_589021, JString, required = false,
                                  default = nil)
-  if valid_579988 != nil:
-    section.add "key", valid_579988
-  var valid_579989 = query.getOrDefault("prettyPrint")
-  valid_579989 = validateParameter(valid_579989, JBool, required = false,
+  if valid_589021 != nil:
+    section.add "key", valid_589021
+  var valid_589022 = query.getOrDefault("prettyPrint")
+  valid_589022 = validateParameter(valid_589022, JBool, required = false,
                                  default = newJBool(true))
-  if valid_579989 != nil:
-    section.add "prettyPrint", valid_579989
+  if valid_589022 != nil:
+    section.add "prettyPrint", valid_589022
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -382,20 +382,20 @@ proc validate_TaskqueueTasksInsert_579979(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_579991: Call_TaskqueueTasksInsert_579978; path: JsonNode;
+proc call*(call_589024: Call_TaskqueueTasksInsert_589011; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Insert a new task in a TaskQueue
   ## 
-  let valid = call_579991.validator(path, query, header, formData, body)
-  let scheme = call_579991.pickScheme
+  let valid = call_589024.validator(path, query, header, formData, body)
+  let scheme = call_589024.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_579991.url(scheme.get, call_579991.host, call_579991.base,
-                         call_579991.route, valid.getOrDefault("path"),
+  let url = call_589024.url(scheme.get, call_589024.host, call_589024.base,
+                         call_589024.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_579991, url, valid)
+  result = hook(call_589024, url, valid)
 
-proc call*(call_579992: Call_TaskqueueTasksInsert_579978; project: string;
+proc call*(call_589025: Call_TaskqueueTasksInsert_589011; project: string;
           taskqueue: string; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; userIp: string = "";
           key: string = ""; body: JsonNode = nil; prettyPrint: bool = true): Recallable =
@@ -420,31 +420,31 @@ proc call*(call_579992: Call_TaskqueueTasksInsert_579978; project: string;
   ##              : Returns response with indentations and line breaks.
   ##   taskqueue: string (required)
   ##            : The taskqueue to insert the task into
-  var path_579993 = newJObject()
-  var query_579994 = newJObject()
-  var body_579995 = newJObject()
-  add(query_579994, "fields", newJString(fields))
-  add(query_579994, "quotaUser", newJString(quotaUser))
-  add(query_579994, "alt", newJString(alt))
-  add(query_579994, "oauth_token", newJString(oauthToken))
-  add(query_579994, "userIp", newJString(userIp))
-  add(query_579994, "key", newJString(key))
-  add(path_579993, "project", newJString(project))
+  var path_589026 = newJObject()
+  var query_589027 = newJObject()
+  var body_589028 = newJObject()
+  add(query_589027, "fields", newJString(fields))
+  add(query_589027, "quotaUser", newJString(quotaUser))
+  add(query_589027, "alt", newJString(alt))
+  add(query_589027, "oauth_token", newJString(oauthToken))
+  add(query_589027, "userIp", newJString(userIp))
+  add(query_589027, "key", newJString(key))
+  add(path_589026, "project", newJString(project))
   if body != nil:
-    body_579995 = body
-  add(query_579994, "prettyPrint", newJBool(prettyPrint))
-  add(path_579993, "taskqueue", newJString(taskqueue))
-  result = call_579992.call(path_579993, query_579994, nil, nil, body_579995)
+    body_589028 = body
+  add(query_589027, "prettyPrint", newJBool(prettyPrint))
+  add(path_589026, "taskqueue", newJString(taskqueue))
+  result = call_589025.call(path_589026, query_589027, nil, nil, body_589028)
 
-var taskqueueTasksInsert* = Call_TaskqueueTasksInsert_579978(
+var taskqueueTasksInsert* = Call_TaskqueueTasksInsert_589011(
     name: "taskqueueTasksInsert", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com", route: "/{project}/taskqueues/{taskqueue}/tasks",
-    validator: validate_TaskqueueTasksInsert_579979,
-    base: "/taskqueue/v1beta2/projects", url: url_TaskqueueTasksInsert_579980,
+    validator: validate_TaskqueueTasksInsert_589012,
+    base: "/taskqueue/v1beta2/projects", url: url_TaskqueueTasksInsert_589013,
     schemes: {Scheme.Https})
 type
-  Call_TaskqueueTasksList_579962 = ref object of OpenApiRestCall_579408
-proc url_TaskqueueTasksList_579964(protocol: Scheme; host: string; base: string;
+  Call_TaskqueueTasksList_588995 = ref object of OpenApiRestCall_588441
+proc url_TaskqueueTasksList_588997(protocol: Scheme; host: string; base: string;
                                   route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -463,7 +463,7 @@ proc url_TaskqueueTasksList_579964(protocol: Scheme; host: string; base: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_TaskqueueTasksList_579963(path: JsonNode; query: JsonNode;
+proc validate_TaskqueueTasksList_588996(path: JsonNode; query: JsonNode;
                                        header: JsonNode; formData: JsonNode;
                                        body: JsonNode): JsonNode =
   ## List Tasks in a TaskQueue
@@ -477,16 +477,16 @@ proc validate_TaskqueueTasksList_579963(path: JsonNode; query: JsonNode;
   ##            : The id of the taskqueue to list tasks from.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `project` field"
-  var valid_579965 = path.getOrDefault("project")
-  valid_579965 = validateParameter(valid_579965, JString, required = true,
+  var valid_588998 = path.getOrDefault("project")
+  valid_588998 = validateParameter(valid_588998, JString, required = true,
                                  default = nil)
-  if valid_579965 != nil:
-    section.add "project", valid_579965
-  var valid_579966 = path.getOrDefault("taskqueue")
-  valid_579966 = validateParameter(valid_579966, JString, required = true,
+  if valid_588998 != nil:
+    section.add "project", valid_588998
+  var valid_588999 = path.getOrDefault("taskqueue")
+  valid_588999 = validateParameter(valid_588999, JString, required = true,
                                  default = nil)
-  if valid_579966 != nil:
-    section.add "taskqueue", valid_579966
+  if valid_588999 != nil:
+    section.add "taskqueue", valid_588999
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -504,41 +504,41 @@ proc validate_TaskqueueTasksList_579963(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_579967 = query.getOrDefault("fields")
-  valid_579967 = validateParameter(valid_579967, JString, required = false,
+  var valid_589000 = query.getOrDefault("fields")
+  valid_589000 = validateParameter(valid_589000, JString, required = false,
                                  default = nil)
-  if valid_579967 != nil:
-    section.add "fields", valid_579967
-  var valid_579968 = query.getOrDefault("quotaUser")
-  valid_579968 = validateParameter(valid_579968, JString, required = false,
+  if valid_589000 != nil:
+    section.add "fields", valid_589000
+  var valid_589001 = query.getOrDefault("quotaUser")
+  valid_589001 = validateParameter(valid_589001, JString, required = false,
                                  default = nil)
-  if valid_579968 != nil:
-    section.add "quotaUser", valid_579968
-  var valid_579969 = query.getOrDefault("alt")
-  valid_579969 = validateParameter(valid_579969, JString, required = false,
+  if valid_589001 != nil:
+    section.add "quotaUser", valid_589001
+  var valid_589002 = query.getOrDefault("alt")
+  valid_589002 = validateParameter(valid_589002, JString, required = false,
                                  default = newJString("json"))
-  if valid_579969 != nil:
-    section.add "alt", valid_579969
-  var valid_579970 = query.getOrDefault("oauth_token")
-  valid_579970 = validateParameter(valid_579970, JString, required = false,
+  if valid_589002 != nil:
+    section.add "alt", valid_589002
+  var valid_589003 = query.getOrDefault("oauth_token")
+  valid_589003 = validateParameter(valid_589003, JString, required = false,
                                  default = nil)
-  if valid_579970 != nil:
-    section.add "oauth_token", valid_579970
-  var valid_579971 = query.getOrDefault("userIp")
-  valid_579971 = validateParameter(valid_579971, JString, required = false,
+  if valid_589003 != nil:
+    section.add "oauth_token", valid_589003
+  var valid_589004 = query.getOrDefault("userIp")
+  valid_589004 = validateParameter(valid_589004, JString, required = false,
                                  default = nil)
-  if valid_579971 != nil:
-    section.add "userIp", valid_579971
-  var valid_579972 = query.getOrDefault("key")
-  valid_579972 = validateParameter(valid_579972, JString, required = false,
+  if valid_589004 != nil:
+    section.add "userIp", valid_589004
+  var valid_589005 = query.getOrDefault("key")
+  valid_589005 = validateParameter(valid_589005, JString, required = false,
                                  default = nil)
-  if valid_579972 != nil:
-    section.add "key", valid_579972
-  var valid_579973 = query.getOrDefault("prettyPrint")
-  valid_579973 = validateParameter(valid_579973, JBool, required = false,
+  if valid_589005 != nil:
+    section.add "key", valid_589005
+  var valid_589006 = query.getOrDefault("prettyPrint")
+  valid_589006 = validateParameter(valid_589006, JBool, required = false,
                                  default = newJBool(true))
-  if valid_579973 != nil:
-    section.add "prettyPrint", valid_579973
+  if valid_589006 != nil:
+    section.add "prettyPrint", valid_589006
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -547,20 +547,20 @@ proc validate_TaskqueueTasksList_579963(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_579974: Call_TaskqueueTasksList_579962; path: JsonNode;
+proc call*(call_589007: Call_TaskqueueTasksList_588995; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## List Tasks in a TaskQueue
   ## 
-  let valid = call_579974.validator(path, query, header, formData, body)
-  let scheme = call_579974.pickScheme
+  let valid = call_589007.validator(path, query, header, formData, body)
+  let scheme = call_589007.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_579974.url(scheme.get, call_579974.host, call_579974.base,
-                         call_579974.route, valid.getOrDefault("path"),
+  let url = call_589007.url(scheme.get, call_589007.host, call_589007.base,
+                         call_589007.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_579974, url, valid)
+  result = hook(call_589007, url, valid)
 
-proc call*(call_579975: Call_TaskqueueTasksList_579962; project: string;
+proc call*(call_589008: Call_TaskqueueTasksList_588995; project: string;
           taskqueue: string; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; userIp: string = "";
           key: string = ""; prettyPrint: bool = true): Recallable =
@@ -584,28 +584,28 @@ proc call*(call_579975: Call_TaskqueueTasksList_579962; project: string;
   ##              : Returns response with indentations and line breaks.
   ##   taskqueue: string (required)
   ##            : The id of the taskqueue to list tasks from.
-  var path_579976 = newJObject()
-  var query_579977 = newJObject()
-  add(query_579977, "fields", newJString(fields))
-  add(query_579977, "quotaUser", newJString(quotaUser))
-  add(query_579977, "alt", newJString(alt))
-  add(query_579977, "oauth_token", newJString(oauthToken))
-  add(query_579977, "userIp", newJString(userIp))
-  add(query_579977, "key", newJString(key))
-  add(path_579976, "project", newJString(project))
-  add(query_579977, "prettyPrint", newJBool(prettyPrint))
-  add(path_579976, "taskqueue", newJString(taskqueue))
-  result = call_579975.call(path_579976, query_579977, nil, nil, nil)
+  var path_589009 = newJObject()
+  var query_589010 = newJObject()
+  add(query_589010, "fields", newJString(fields))
+  add(query_589010, "quotaUser", newJString(quotaUser))
+  add(query_589010, "alt", newJString(alt))
+  add(query_589010, "oauth_token", newJString(oauthToken))
+  add(query_589010, "userIp", newJString(userIp))
+  add(query_589010, "key", newJString(key))
+  add(path_589009, "project", newJString(project))
+  add(query_589010, "prettyPrint", newJBool(prettyPrint))
+  add(path_589009, "taskqueue", newJString(taskqueue))
+  result = call_589008.call(path_589009, query_589010, nil, nil, nil)
 
-var taskqueueTasksList* = Call_TaskqueueTasksList_579962(
+var taskqueueTasksList* = Call_TaskqueueTasksList_588995(
     name: "taskqueueTasksList", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/{project}/taskqueues/{taskqueue}/tasks",
-    validator: validate_TaskqueueTasksList_579963,
-    base: "/taskqueue/v1beta2/projects", url: url_TaskqueueTasksList_579964,
+    validator: validate_TaskqueueTasksList_588996,
+    base: "/taskqueue/v1beta2/projects", url: url_TaskqueueTasksList_588997,
     schemes: {Scheme.Https})
 type
-  Call_TaskqueueTasksLease_579996 = ref object of OpenApiRestCall_579408
-proc url_TaskqueueTasksLease_579998(protocol: Scheme; host: string; base: string;
+  Call_TaskqueueTasksLease_589029 = ref object of OpenApiRestCall_588441
+proc url_TaskqueueTasksLease_589031(protocol: Scheme; host: string; base: string;
                                    route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -624,7 +624,7 @@ proc url_TaskqueueTasksLease_579998(protocol: Scheme; host: string; base: string
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_TaskqueueTasksLease_579997(path: JsonNode; query: JsonNode;
+proc validate_TaskqueueTasksLease_589030(path: JsonNode; query: JsonNode;
                                         header: JsonNode; formData: JsonNode;
                                         body: JsonNode): JsonNode =
   ## Lease 1 or more tasks from a TaskQueue.
@@ -638,16 +638,16 @@ proc validate_TaskqueueTasksLease_579997(path: JsonNode; query: JsonNode;
   ##            : The taskqueue to lease a task from.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `project` field"
-  var valid_579999 = path.getOrDefault("project")
-  valid_579999 = validateParameter(valid_579999, JString, required = true,
+  var valid_589032 = path.getOrDefault("project")
+  valid_589032 = validateParameter(valid_589032, JString, required = true,
                                  default = nil)
-  if valid_579999 != nil:
-    section.add "project", valid_579999
-  var valid_580000 = path.getOrDefault("taskqueue")
-  valid_580000 = validateParameter(valid_580000, JString, required = true,
+  if valid_589032 != nil:
+    section.add "project", valid_589032
+  var valid_589033 = path.getOrDefault("taskqueue")
+  valid_589033 = validateParameter(valid_589033, JString, required = true,
                                  default = nil)
-  if valid_580000 != nil:
-    section.add "taskqueue", valid_580000
+  if valid_589033 != nil:
+    section.add "taskqueue", valid_589033
   result.add "path", section
   ## parameters in `query` object:
   ##   tag: JString
@@ -673,60 +673,60 @@ proc validate_TaskqueueTasksLease_579997(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580001 = query.getOrDefault("tag")
-  valid_580001 = validateParameter(valid_580001, JString, required = false,
+  var valid_589034 = query.getOrDefault("tag")
+  valid_589034 = validateParameter(valid_589034, JString, required = false,
                                  default = nil)
-  if valid_580001 != nil:
-    section.add "tag", valid_580001
-  var valid_580002 = query.getOrDefault("fields")
-  valid_580002 = validateParameter(valid_580002, JString, required = false,
+  if valid_589034 != nil:
+    section.add "tag", valid_589034
+  var valid_589035 = query.getOrDefault("fields")
+  valid_589035 = validateParameter(valid_589035, JString, required = false,
                                  default = nil)
-  if valid_580002 != nil:
-    section.add "fields", valid_580002
-  var valid_580003 = query.getOrDefault("quotaUser")
-  valid_580003 = validateParameter(valid_580003, JString, required = false,
+  if valid_589035 != nil:
+    section.add "fields", valid_589035
+  var valid_589036 = query.getOrDefault("quotaUser")
+  valid_589036 = validateParameter(valid_589036, JString, required = false,
                                  default = nil)
-  if valid_580003 != nil:
-    section.add "quotaUser", valid_580003
-  var valid_580004 = query.getOrDefault("alt")
-  valid_580004 = validateParameter(valid_580004, JString, required = false,
+  if valid_589036 != nil:
+    section.add "quotaUser", valid_589036
+  var valid_589037 = query.getOrDefault("alt")
+  valid_589037 = validateParameter(valid_589037, JString, required = false,
                                  default = newJString("json"))
-  if valid_580004 != nil:
-    section.add "alt", valid_580004
-  var valid_580005 = query.getOrDefault("oauth_token")
-  valid_580005 = validateParameter(valid_580005, JString, required = false,
+  if valid_589037 != nil:
+    section.add "alt", valid_589037
+  var valid_589038 = query.getOrDefault("oauth_token")
+  valid_589038 = validateParameter(valid_589038, JString, required = false,
                                  default = nil)
-  if valid_580005 != nil:
-    section.add "oauth_token", valid_580005
-  var valid_580006 = query.getOrDefault("userIp")
-  valid_580006 = validateParameter(valid_580006, JString, required = false,
+  if valid_589038 != nil:
+    section.add "oauth_token", valid_589038
+  var valid_589039 = query.getOrDefault("userIp")
+  valid_589039 = validateParameter(valid_589039, JString, required = false,
                                  default = nil)
-  if valid_580006 != nil:
-    section.add "userIp", valid_580006
-  var valid_580007 = query.getOrDefault("key")
-  valid_580007 = validateParameter(valid_580007, JString, required = false,
+  if valid_589039 != nil:
+    section.add "userIp", valid_589039
+  var valid_589040 = query.getOrDefault("key")
+  valid_589040 = validateParameter(valid_589040, JString, required = false,
                                  default = nil)
-  if valid_580007 != nil:
-    section.add "key", valid_580007
-  var valid_580008 = query.getOrDefault("groupByTag")
-  valid_580008 = validateParameter(valid_580008, JBool, required = false, default = nil)
-  if valid_580008 != nil:
-    section.add "groupByTag", valid_580008
+  if valid_589040 != nil:
+    section.add "key", valid_589040
+  var valid_589041 = query.getOrDefault("groupByTag")
+  valid_589041 = validateParameter(valid_589041, JBool, required = false, default = nil)
+  if valid_589041 != nil:
+    section.add "groupByTag", valid_589041
   assert query != nil,
         "query argument is necessary due to required `leaseSecs` field"
-  var valid_580009 = query.getOrDefault("leaseSecs")
-  valid_580009 = validateParameter(valid_580009, JInt, required = true, default = nil)
-  if valid_580009 != nil:
-    section.add "leaseSecs", valid_580009
-  var valid_580010 = query.getOrDefault("numTasks")
-  valid_580010 = validateParameter(valid_580010, JInt, required = true, default = nil)
-  if valid_580010 != nil:
-    section.add "numTasks", valid_580010
-  var valid_580011 = query.getOrDefault("prettyPrint")
-  valid_580011 = validateParameter(valid_580011, JBool, required = false,
+  var valid_589042 = query.getOrDefault("leaseSecs")
+  valid_589042 = validateParameter(valid_589042, JInt, required = true, default = nil)
+  if valid_589042 != nil:
+    section.add "leaseSecs", valid_589042
+  var valid_589043 = query.getOrDefault("numTasks")
+  valid_589043 = validateParameter(valid_589043, JInt, required = true, default = nil)
+  if valid_589043 != nil:
+    section.add "numTasks", valid_589043
+  var valid_589044 = query.getOrDefault("prettyPrint")
+  valid_589044 = validateParameter(valid_589044, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580011 != nil:
-    section.add "prettyPrint", valid_580011
+  if valid_589044 != nil:
+    section.add "prettyPrint", valid_589044
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -735,20 +735,20 @@ proc validate_TaskqueueTasksLease_579997(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580012: Call_TaskqueueTasksLease_579996; path: JsonNode;
+proc call*(call_589045: Call_TaskqueueTasksLease_589029; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Lease 1 or more tasks from a TaskQueue.
   ## 
-  let valid = call_580012.validator(path, query, header, formData, body)
-  let scheme = call_580012.pickScheme
+  let valid = call_589045.validator(path, query, header, formData, body)
+  let scheme = call_589045.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580012.url(scheme.get, call_580012.host, call_580012.base,
-                         call_580012.route, valid.getOrDefault("path"),
+  let url = call_589045.url(scheme.get, call_589045.host, call_589045.base,
+                         call_589045.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580012, url, valid)
+  result = hook(call_589045, url, valid)
 
-proc call*(call_580013: Call_TaskqueueTasksLease_579996; leaseSecs: int;
+proc call*(call_589046: Call_TaskqueueTasksLease_589029; leaseSecs: int;
           project: string; numTasks: int; taskqueue: string; tag: string = "";
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           oauthToken: string = ""; userIp: string = ""; key: string = "";
@@ -781,33 +781,33 @@ proc call*(call_580013: Call_TaskqueueTasksLease_579996; leaseSecs: int;
   ##              : Returns response with indentations and line breaks.
   ##   taskqueue: string (required)
   ##            : The taskqueue to lease a task from.
-  var path_580014 = newJObject()
-  var query_580015 = newJObject()
-  add(query_580015, "tag", newJString(tag))
-  add(query_580015, "fields", newJString(fields))
-  add(query_580015, "quotaUser", newJString(quotaUser))
-  add(query_580015, "alt", newJString(alt))
-  add(query_580015, "oauth_token", newJString(oauthToken))
-  add(query_580015, "userIp", newJString(userIp))
-  add(query_580015, "key", newJString(key))
-  add(query_580015, "groupByTag", newJBool(groupByTag))
-  add(query_580015, "leaseSecs", newJInt(leaseSecs))
-  add(path_580014, "project", newJString(project))
-  add(query_580015, "numTasks", newJInt(numTasks))
-  add(query_580015, "prettyPrint", newJBool(prettyPrint))
-  add(path_580014, "taskqueue", newJString(taskqueue))
-  result = call_580013.call(path_580014, query_580015, nil, nil, nil)
+  var path_589047 = newJObject()
+  var query_589048 = newJObject()
+  add(query_589048, "tag", newJString(tag))
+  add(query_589048, "fields", newJString(fields))
+  add(query_589048, "quotaUser", newJString(quotaUser))
+  add(query_589048, "alt", newJString(alt))
+  add(query_589048, "oauth_token", newJString(oauthToken))
+  add(query_589048, "userIp", newJString(userIp))
+  add(query_589048, "key", newJString(key))
+  add(query_589048, "groupByTag", newJBool(groupByTag))
+  add(query_589048, "leaseSecs", newJInt(leaseSecs))
+  add(path_589047, "project", newJString(project))
+  add(query_589048, "numTasks", newJInt(numTasks))
+  add(query_589048, "prettyPrint", newJBool(prettyPrint))
+  add(path_589047, "taskqueue", newJString(taskqueue))
+  result = call_589046.call(path_589047, query_589048, nil, nil, nil)
 
-var taskqueueTasksLease* = Call_TaskqueueTasksLease_579996(
+var taskqueueTasksLease* = Call_TaskqueueTasksLease_589029(
     name: "taskqueueTasksLease", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com",
     route: "/{project}/taskqueues/{taskqueue}/tasks/lease",
-    validator: validate_TaskqueueTasksLease_579997,
-    base: "/taskqueue/v1beta2/projects", url: url_TaskqueueTasksLease_579998,
+    validator: validate_TaskqueueTasksLease_589030,
+    base: "/taskqueue/v1beta2/projects", url: url_TaskqueueTasksLease_589031,
     schemes: {Scheme.Https})
 type
-  Call_TaskqueueTasksUpdate_580033 = ref object of OpenApiRestCall_579408
-proc url_TaskqueueTasksUpdate_580035(protocol: Scheme; host: string; base: string;
+  Call_TaskqueueTasksUpdate_589066 = ref object of OpenApiRestCall_588441
+proc url_TaskqueueTasksUpdate_589068(protocol: Scheme; host: string; base: string;
                                     route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -828,7 +828,7 @@ proc url_TaskqueueTasksUpdate_580035(protocol: Scheme; host: string; base: strin
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_TaskqueueTasksUpdate_580034(path: JsonNode; query: JsonNode;
+proc validate_TaskqueueTasksUpdate_589067(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Update tasks that are leased out of a TaskQueue.
   ## 
@@ -841,21 +841,21 @@ proc validate_TaskqueueTasksUpdate_580034(path: JsonNode; query: JsonNode;
   ##   taskqueue: JString (required)
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `task` field"
-  var valid_580036 = path.getOrDefault("task")
-  valid_580036 = validateParameter(valid_580036, JString, required = true,
+  var valid_589069 = path.getOrDefault("task")
+  valid_589069 = validateParameter(valid_589069, JString, required = true,
                                  default = nil)
-  if valid_580036 != nil:
-    section.add "task", valid_580036
-  var valid_580037 = path.getOrDefault("project")
-  valid_580037 = validateParameter(valid_580037, JString, required = true,
+  if valid_589069 != nil:
+    section.add "task", valid_589069
+  var valid_589070 = path.getOrDefault("project")
+  valid_589070 = validateParameter(valid_589070, JString, required = true,
                                  default = nil)
-  if valid_580037 != nil:
-    section.add "project", valid_580037
-  var valid_580038 = path.getOrDefault("taskqueue")
-  valid_580038 = validateParameter(valid_580038, JString, required = true,
+  if valid_589070 != nil:
+    section.add "project", valid_589070
+  var valid_589071 = path.getOrDefault("taskqueue")
+  valid_589071 = validateParameter(valid_589071, JString, required = true,
                                  default = nil)
-  if valid_580038 != nil:
-    section.add "taskqueue", valid_580038
+  if valid_589071 != nil:
+    section.add "taskqueue", valid_589071
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -875,47 +875,47 @@ proc validate_TaskqueueTasksUpdate_580034(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580039 = query.getOrDefault("fields")
-  valid_580039 = validateParameter(valid_580039, JString, required = false,
+  var valid_589072 = query.getOrDefault("fields")
+  valid_589072 = validateParameter(valid_589072, JString, required = false,
                                  default = nil)
-  if valid_580039 != nil:
-    section.add "fields", valid_580039
-  var valid_580040 = query.getOrDefault("quotaUser")
-  valid_580040 = validateParameter(valid_580040, JString, required = false,
+  if valid_589072 != nil:
+    section.add "fields", valid_589072
+  var valid_589073 = query.getOrDefault("quotaUser")
+  valid_589073 = validateParameter(valid_589073, JString, required = false,
                                  default = nil)
-  if valid_580040 != nil:
-    section.add "quotaUser", valid_580040
-  var valid_580041 = query.getOrDefault("alt")
-  valid_580041 = validateParameter(valid_580041, JString, required = false,
+  if valid_589073 != nil:
+    section.add "quotaUser", valid_589073
+  var valid_589074 = query.getOrDefault("alt")
+  valid_589074 = validateParameter(valid_589074, JString, required = false,
                                  default = newJString("json"))
-  if valid_580041 != nil:
-    section.add "alt", valid_580041
-  var valid_580042 = query.getOrDefault("oauth_token")
-  valid_580042 = validateParameter(valid_580042, JString, required = false,
+  if valid_589074 != nil:
+    section.add "alt", valid_589074
+  var valid_589075 = query.getOrDefault("oauth_token")
+  valid_589075 = validateParameter(valid_589075, JString, required = false,
                                  default = nil)
-  if valid_580042 != nil:
-    section.add "oauth_token", valid_580042
-  var valid_580043 = query.getOrDefault("userIp")
-  valid_580043 = validateParameter(valid_580043, JString, required = false,
+  if valid_589075 != nil:
+    section.add "oauth_token", valid_589075
+  var valid_589076 = query.getOrDefault("userIp")
+  valid_589076 = validateParameter(valid_589076, JString, required = false,
                                  default = nil)
-  if valid_580043 != nil:
-    section.add "userIp", valid_580043
-  var valid_580044 = query.getOrDefault("key")
-  valid_580044 = validateParameter(valid_580044, JString, required = false,
+  if valid_589076 != nil:
+    section.add "userIp", valid_589076
+  var valid_589077 = query.getOrDefault("key")
+  valid_589077 = validateParameter(valid_589077, JString, required = false,
                                  default = nil)
-  if valid_580044 != nil:
-    section.add "key", valid_580044
+  if valid_589077 != nil:
+    section.add "key", valid_589077
   assert query != nil,
         "query argument is necessary due to required `newLeaseSeconds` field"
-  var valid_580045 = query.getOrDefault("newLeaseSeconds")
-  valid_580045 = validateParameter(valid_580045, JInt, required = true, default = nil)
-  if valid_580045 != nil:
-    section.add "newLeaseSeconds", valid_580045
-  var valid_580046 = query.getOrDefault("prettyPrint")
-  valid_580046 = validateParameter(valid_580046, JBool, required = false,
+  var valid_589078 = query.getOrDefault("newLeaseSeconds")
+  valid_589078 = validateParameter(valid_589078, JInt, required = true, default = nil)
+  if valid_589078 != nil:
+    section.add "newLeaseSeconds", valid_589078
+  var valid_589079 = query.getOrDefault("prettyPrint")
+  valid_589079 = validateParameter(valid_589079, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580046 != nil:
-    section.add "prettyPrint", valid_580046
+  if valid_589079 != nil:
+    section.add "prettyPrint", valid_589079
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -927,20 +927,20 @@ proc validate_TaskqueueTasksUpdate_580034(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580048: Call_TaskqueueTasksUpdate_580033; path: JsonNode;
+proc call*(call_589081: Call_TaskqueueTasksUpdate_589066; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Update tasks that are leased out of a TaskQueue.
   ## 
-  let valid = call_580048.validator(path, query, header, formData, body)
-  let scheme = call_580048.pickScheme
+  let valid = call_589081.validator(path, query, header, formData, body)
+  let scheme = call_589081.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580048.url(scheme.get, call_580048.host, call_580048.base,
-                         call_580048.route, valid.getOrDefault("path"),
+  let url = call_589081.url(scheme.get, call_589081.host, call_589081.base,
+                         call_589081.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580048, url, valid)
+  result = hook(call_589081, url, valid)
 
-proc call*(call_580049: Call_TaskqueueTasksUpdate_580033; task: string;
+proc call*(call_589082: Call_TaskqueueTasksUpdate_589066; task: string;
           newLeaseSeconds: int; project: string; taskqueue: string;
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           oauthToken: string = ""; userIp: string = ""; key: string = "";
@@ -968,34 +968,34 @@ proc call*(call_580049: Call_TaskqueueTasksUpdate_580033; task: string;
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
   ##   taskqueue: string (required)
-  var path_580050 = newJObject()
-  var query_580051 = newJObject()
-  var body_580052 = newJObject()
-  add(query_580051, "fields", newJString(fields))
-  add(query_580051, "quotaUser", newJString(quotaUser))
-  add(query_580051, "alt", newJString(alt))
-  add(path_580050, "task", newJString(task))
-  add(query_580051, "oauth_token", newJString(oauthToken))
-  add(query_580051, "userIp", newJString(userIp))
-  add(query_580051, "key", newJString(key))
-  add(query_580051, "newLeaseSeconds", newJInt(newLeaseSeconds))
-  add(path_580050, "project", newJString(project))
+  var path_589083 = newJObject()
+  var query_589084 = newJObject()
+  var body_589085 = newJObject()
+  add(query_589084, "fields", newJString(fields))
+  add(query_589084, "quotaUser", newJString(quotaUser))
+  add(query_589084, "alt", newJString(alt))
+  add(path_589083, "task", newJString(task))
+  add(query_589084, "oauth_token", newJString(oauthToken))
+  add(query_589084, "userIp", newJString(userIp))
+  add(query_589084, "key", newJString(key))
+  add(query_589084, "newLeaseSeconds", newJInt(newLeaseSeconds))
+  add(path_589083, "project", newJString(project))
   if body != nil:
-    body_580052 = body
-  add(query_580051, "prettyPrint", newJBool(prettyPrint))
-  add(path_580050, "taskqueue", newJString(taskqueue))
-  result = call_580049.call(path_580050, query_580051, nil, nil, body_580052)
+    body_589085 = body
+  add(query_589084, "prettyPrint", newJBool(prettyPrint))
+  add(path_589083, "taskqueue", newJString(taskqueue))
+  result = call_589082.call(path_589083, query_589084, nil, nil, body_589085)
 
-var taskqueueTasksUpdate* = Call_TaskqueueTasksUpdate_580033(
+var taskqueueTasksUpdate* = Call_TaskqueueTasksUpdate_589066(
     name: "taskqueueTasksUpdate", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com",
     route: "/{project}/taskqueues/{taskqueue}/tasks/{task}",
-    validator: validate_TaskqueueTasksUpdate_580034,
-    base: "/taskqueue/v1beta2/projects", url: url_TaskqueueTasksUpdate_580035,
+    validator: validate_TaskqueueTasksUpdate_589067,
+    base: "/taskqueue/v1beta2/projects", url: url_TaskqueueTasksUpdate_589068,
     schemes: {Scheme.Https})
 type
-  Call_TaskqueueTasksGet_580016 = ref object of OpenApiRestCall_579408
-proc url_TaskqueueTasksGet_580018(protocol: Scheme; host: string; base: string;
+  Call_TaskqueueTasksGet_589049 = ref object of OpenApiRestCall_588441
+proc url_TaskqueueTasksGet_589051(protocol: Scheme; host: string; base: string;
                                  route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -1016,7 +1016,7 @@ proc url_TaskqueueTasksGet_580018(protocol: Scheme; host: string; base: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_TaskqueueTasksGet_580017(path: JsonNode; query: JsonNode;
+proc validate_TaskqueueTasksGet_589050(path: JsonNode; query: JsonNode;
                                       header: JsonNode; formData: JsonNode;
                                       body: JsonNode): JsonNode =
   ## Get a particular task from a TaskQueue.
@@ -1032,21 +1032,21 @@ proc validate_TaskqueueTasksGet_580017(path: JsonNode; query: JsonNode;
   ##            : The taskqueue in which the task belongs.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `task` field"
-  var valid_580019 = path.getOrDefault("task")
-  valid_580019 = validateParameter(valid_580019, JString, required = true,
+  var valid_589052 = path.getOrDefault("task")
+  valid_589052 = validateParameter(valid_589052, JString, required = true,
                                  default = nil)
-  if valid_580019 != nil:
-    section.add "task", valid_580019
-  var valid_580020 = path.getOrDefault("project")
-  valid_580020 = validateParameter(valid_580020, JString, required = true,
+  if valid_589052 != nil:
+    section.add "task", valid_589052
+  var valid_589053 = path.getOrDefault("project")
+  valid_589053 = validateParameter(valid_589053, JString, required = true,
                                  default = nil)
-  if valid_580020 != nil:
-    section.add "project", valid_580020
-  var valid_580021 = path.getOrDefault("taskqueue")
-  valid_580021 = validateParameter(valid_580021, JString, required = true,
+  if valid_589053 != nil:
+    section.add "project", valid_589053
+  var valid_589054 = path.getOrDefault("taskqueue")
+  valid_589054 = validateParameter(valid_589054, JString, required = true,
                                  default = nil)
-  if valid_580021 != nil:
-    section.add "taskqueue", valid_580021
+  if valid_589054 != nil:
+    section.add "taskqueue", valid_589054
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -1064,41 +1064,41 @@ proc validate_TaskqueueTasksGet_580017(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580022 = query.getOrDefault("fields")
-  valid_580022 = validateParameter(valid_580022, JString, required = false,
+  var valid_589055 = query.getOrDefault("fields")
+  valid_589055 = validateParameter(valid_589055, JString, required = false,
                                  default = nil)
-  if valid_580022 != nil:
-    section.add "fields", valid_580022
-  var valid_580023 = query.getOrDefault("quotaUser")
-  valid_580023 = validateParameter(valid_580023, JString, required = false,
+  if valid_589055 != nil:
+    section.add "fields", valid_589055
+  var valid_589056 = query.getOrDefault("quotaUser")
+  valid_589056 = validateParameter(valid_589056, JString, required = false,
                                  default = nil)
-  if valid_580023 != nil:
-    section.add "quotaUser", valid_580023
-  var valid_580024 = query.getOrDefault("alt")
-  valid_580024 = validateParameter(valid_580024, JString, required = false,
+  if valid_589056 != nil:
+    section.add "quotaUser", valid_589056
+  var valid_589057 = query.getOrDefault("alt")
+  valid_589057 = validateParameter(valid_589057, JString, required = false,
                                  default = newJString("json"))
-  if valid_580024 != nil:
-    section.add "alt", valid_580024
-  var valid_580025 = query.getOrDefault("oauth_token")
-  valid_580025 = validateParameter(valid_580025, JString, required = false,
+  if valid_589057 != nil:
+    section.add "alt", valid_589057
+  var valid_589058 = query.getOrDefault("oauth_token")
+  valid_589058 = validateParameter(valid_589058, JString, required = false,
                                  default = nil)
-  if valid_580025 != nil:
-    section.add "oauth_token", valid_580025
-  var valid_580026 = query.getOrDefault("userIp")
-  valid_580026 = validateParameter(valid_580026, JString, required = false,
+  if valid_589058 != nil:
+    section.add "oauth_token", valid_589058
+  var valid_589059 = query.getOrDefault("userIp")
+  valid_589059 = validateParameter(valid_589059, JString, required = false,
                                  default = nil)
-  if valid_580026 != nil:
-    section.add "userIp", valid_580026
-  var valid_580027 = query.getOrDefault("key")
-  valid_580027 = validateParameter(valid_580027, JString, required = false,
+  if valid_589059 != nil:
+    section.add "userIp", valid_589059
+  var valid_589060 = query.getOrDefault("key")
+  valid_589060 = validateParameter(valid_589060, JString, required = false,
                                  default = nil)
-  if valid_580027 != nil:
-    section.add "key", valid_580027
-  var valid_580028 = query.getOrDefault("prettyPrint")
-  valid_580028 = validateParameter(valid_580028, JBool, required = false,
+  if valid_589060 != nil:
+    section.add "key", valid_589060
+  var valid_589061 = query.getOrDefault("prettyPrint")
+  valid_589061 = validateParameter(valid_589061, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580028 != nil:
-    section.add "prettyPrint", valid_580028
+  if valid_589061 != nil:
+    section.add "prettyPrint", valid_589061
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1107,20 +1107,20 @@ proc validate_TaskqueueTasksGet_580017(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580029: Call_TaskqueueTasksGet_580016; path: JsonNode;
+proc call*(call_589062: Call_TaskqueueTasksGet_589049; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Get a particular task from a TaskQueue.
   ## 
-  let valid = call_580029.validator(path, query, header, formData, body)
-  let scheme = call_580029.pickScheme
+  let valid = call_589062.validator(path, query, header, formData, body)
+  let scheme = call_589062.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580029.url(scheme.get, call_580029.host, call_580029.base,
-                         call_580029.route, valid.getOrDefault("path"),
+  let url = call_589062.url(scheme.get, call_589062.host, call_589062.base,
+                         call_589062.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580029, url, valid)
+  result = hook(call_589062, url, valid)
 
-proc call*(call_580030: Call_TaskqueueTasksGet_580016; task: string; project: string;
+proc call*(call_589063: Call_TaskqueueTasksGet_589049; task: string; project: string;
           taskqueue: string; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; userIp: string = "";
           key: string = ""; prettyPrint: bool = true): Recallable =
@@ -1146,29 +1146,29 @@ proc call*(call_580030: Call_TaskqueueTasksGet_580016; task: string; project: st
   ##              : Returns response with indentations and line breaks.
   ##   taskqueue: string (required)
   ##            : The taskqueue in which the task belongs.
-  var path_580031 = newJObject()
-  var query_580032 = newJObject()
-  add(query_580032, "fields", newJString(fields))
-  add(query_580032, "quotaUser", newJString(quotaUser))
-  add(query_580032, "alt", newJString(alt))
-  add(path_580031, "task", newJString(task))
-  add(query_580032, "oauth_token", newJString(oauthToken))
-  add(query_580032, "userIp", newJString(userIp))
-  add(query_580032, "key", newJString(key))
-  add(path_580031, "project", newJString(project))
-  add(query_580032, "prettyPrint", newJBool(prettyPrint))
-  add(path_580031, "taskqueue", newJString(taskqueue))
-  result = call_580030.call(path_580031, query_580032, nil, nil, nil)
+  var path_589064 = newJObject()
+  var query_589065 = newJObject()
+  add(query_589065, "fields", newJString(fields))
+  add(query_589065, "quotaUser", newJString(quotaUser))
+  add(query_589065, "alt", newJString(alt))
+  add(path_589064, "task", newJString(task))
+  add(query_589065, "oauth_token", newJString(oauthToken))
+  add(query_589065, "userIp", newJString(userIp))
+  add(query_589065, "key", newJString(key))
+  add(path_589064, "project", newJString(project))
+  add(query_589065, "prettyPrint", newJBool(prettyPrint))
+  add(path_589064, "taskqueue", newJString(taskqueue))
+  result = call_589063.call(path_589064, query_589065, nil, nil, nil)
 
-var taskqueueTasksGet* = Call_TaskqueueTasksGet_580016(name: "taskqueueTasksGet",
+var taskqueueTasksGet* = Call_TaskqueueTasksGet_589049(name: "taskqueueTasksGet",
     meth: HttpMethod.HttpGet, host: "www.googleapis.com",
     route: "/{project}/taskqueues/{taskqueue}/tasks/{task}",
-    validator: validate_TaskqueueTasksGet_580017,
-    base: "/taskqueue/v1beta2/projects", url: url_TaskqueueTasksGet_580018,
+    validator: validate_TaskqueueTasksGet_589050,
+    base: "/taskqueue/v1beta2/projects", url: url_TaskqueueTasksGet_589051,
     schemes: {Scheme.Https})
 type
-  Call_TaskqueueTasksPatch_580070 = ref object of OpenApiRestCall_579408
-proc url_TaskqueueTasksPatch_580072(protocol: Scheme; host: string; base: string;
+  Call_TaskqueueTasksPatch_589103 = ref object of OpenApiRestCall_588441
+proc url_TaskqueueTasksPatch_589105(protocol: Scheme; host: string; base: string;
                                    route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -1189,7 +1189,7 @@ proc url_TaskqueueTasksPatch_580072(protocol: Scheme; host: string; base: string
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_TaskqueueTasksPatch_580071(path: JsonNode; query: JsonNode;
+proc validate_TaskqueueTasksPatch_589104(path: JsonNode; query: JsonNode;
                                         header: JsonNode; formData: JsonNode;
                                         body: JsonNode): JsonNode =
   ## Update tasks that are leased out of a TaskQueue. This method supports patch semantics.
@@ -1203,21 +1203,21 @@ proc validate_TaskqueueTasksPatch_580071(path: JsonNode; query: JsonNode;
   ##   taskqueue: JString (required)
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `task` field"
-  var valid_580073 = path.getOrDefault("task")
-  valid_580073 = validateParameter(valid_580073, JString, required = true,
+  var valid_589106 = path.getOrDefault("task")
+  valid_589106 = validateParameter(valid_589106, JString, required = true,
                                  default = nil)
-  if valid_580073 != nil:
-    section.add "task", valid_580073
-  var valid_580074 = path.getOrDefault("project")
-  valid_580074 = validateParameter(valid_580074, JString, required = true,
+  if valid_589106 != nil:
+    section.add "task", valid_589106
+  var valid_589107 = path.getOrDefault("project")
+  valid_589107 = validateParameter(valid_589107, JString, required = true,
                                  default = nil)
-  if valid_580074 != nil:
-    section.add "project", valid_580074
-  var valid_580075 = path.getOrDefault("taskqueue")
-  valid_580075 = validateParameter(valid_580075, JString, required = true,
+  if valid_589107 != nil:
+    section.add "project", valid_589107
+  var valid_589108 = path.getOrDefault("taskqueue")
+  valid_589108 = validateParameter(valid_589108, JString, required = true,
                                  default = nil)
-  if valid_580075 != nil:
-    section.add "taskqueue", valid_580075
+  if valid_589108 != nil:
+    section.add "taskqueue", valid_589108
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -1237,47 +1237,47 @@ proc validate_TaskqueueTasksPatch_580071(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580076 = query.getOrDefault("fields")
-  valid_580076 = validateParameter(valid_580076, JString, required = false,
+  var valid_589109 = query.getOrDefault("fields")
+  valid_589109 = validateParameter(valid_589109, JString, required = false,
                                  default = nil)
-  if valid_580076 != nil:
-    section.add "fields", valid_580076
-  var valid_580077 = query.getOrDefault("quotaUser")
-  valid_580077 = validateParameter(valid_580077, JString, required = false,
+  if valid_589109 != nil:
+    section.add "fields", valid_589109
+  var valid_589110 = query.getOrDefault("quotaUser")
+  valid_589110 = validateParameter(valid_589110, JString, required = false,
                                  default = nil)
-  if valid_580077 != nil:
-    section.add "quotaUser", valid_580077
-  var valid_580078 = query.getOrDefault("alt")
-  valid_580078 = validateParameter(valid_580078, JString, required = false,
+  if valid_589110 != nil:
+    section.add "quotaUser", valid_589110
+  var valid_589111 = query.getOrDefault("alt")
+  valid_589111 = validateParameter(valid_589111, JString, required = false,
                                  default = newJString("json"))
-  if valid_580078 != nil:
-    section.add "alt", valid_580078
-  var valid_580079 = query.getOrDefault("oauth_token")
-  valid_580079 = validateParameter(valid_580079, JString, required = false,
+  if valid_589111 != nil:
+    section.add "alt", valid_589111
+  var valid_589112 = query.getOrDefault("oauth_token")
+  valid_589112 = validateParameter(valid_589112, JString, required = false,
                                  default = nil)
-  if valid_580079 != nil:
-    section.add "oauth_token", valid_580079
-  var valid_580080 = query.getOrDefault("userIp")
-  valid_580080 = validateParameter(valid_580080, JString, required = false,
+  if valid_589112 != nil:
+    section.add "oauth_token", valid_589112
+  var valid_589113 = query.getOrDefault("userIp")
+  valid_589113 = validateParameter(valid_589113, JString, required = false,
                                  default = nil)
-  if valid_580080 != nil:
-    section.add "userIp", valid_580080
-  var valid_580081 = query.getOrDefault("key")
-  valid_580081 = validateParameter(valid_580081, JString, required = false,
+  if valid_589113 != nil:
+    section.add "userIp", valid_589113
+  var valid_589114 = query.getOrDefault("key")
+  valid_589114 = validateParameter(valid_589114, JString, required = false,
                                  default = nil)
-  if valid_580081 != nil:
-    section.add "key", valid_580081
+  if valid_589114 != nil:
+    section.add "key", valid_589114
   assert query != nil,
         "query argument is necessary due to required `newLeaseSeconds` field"
-  var valid_580082 = query.getOrDefault("newLeaseSeconds")
-  valid_580082 = validateParameter(valid_580082, JInt, required = true, default = nil)
-  if valid_580082 != nil:
-    section.add "newLeaseSeconds", valid_580082
-  var valid_580083 = query.getOrDefault("prettyPrint")
-  valid_580083 = validateParameter(valid_580083, JBool, required = false,
+  var valid_589115 = query.getOrDefault("newLeaseSeconds")
+  valid_589115 = validateParameter(valid_589115, JInt, required = true, default = nil)
+  if valid_589115 != nil:
+    section.add "newLeaseSeconds", valid_589115
+  var valid_589116 = query.getOrDefault("prettyPrint")
+  valid_589116 = validateParameter(valid_589116, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580083 != nil:
-    section.add "prettyPrint", valid_580083
+  if valid_589116 != nil:
+    section.add "prettyPrint", valid_589116
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1289,20 +1289,20 @@ proc validate_TaskqueueTasksPatch_580071(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580085: Call_TaskqueueTasksPatch_580070; path: JsonNode;
+proc call*(call_589118: Call_TaskqueueTasksPatch_589103; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Update tasks that are leased out of a TaskQueue. This method supports patch semantics.
   ## 
-  let valid = call_580085.validator(path, query, header, formData, body)
-  let scheme = call_580085.pickScheme
+  let valid = call_589118.validator(path, query, header, formData, body)
+  let scheme = call_589118.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580085.url(scheme.get, call_580085.host, call_580085.base,
-                         call_580085.route, valid.getOrDefault("path"),
+  let url = call_589118.url(scheme.get, call_589118.host, call_589118.base,
+                         call_589118.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580085, url, valid)
+  result = hook(call_589118, url, valid)
 
-proc call*(call_580086: Call_TaskqueueTasksPatch_580070; task: string;
+proc call*(call_589119: Call_TaskqueueTasksPatch_589103; task: string;
           newLeaseSeconds: int; project: string; taskqueue: string;
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           oauthToken: string = ""; userIp: string = ""; key: string = "";
@@ -1330,34 +1330,34 @@ proc call*(call_580086: Call_TaskqueueTasksPatch_580070; task: string;
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
   ##   taskqueue: string (required)
-  var path_580087 = newJObject()
-  var query_580088 = newJObject()
-  var body_580089 = newJObject()
-  add(query_580088, "fields", newJString(fields))
-  add(query_580088, "quotaUser", newJString(quotaUser))
-  add(query_580088, "alt", newJString(alt))
-  add(path_580087, "task", newJString(task))
-  add(query_580088, "oauth_token", newJString(oauthToken))
-  add(query_580088, "userIp", newJString(userIp))
-  add(query_580088, "key", newJString(key))
-  add(query_580088, "newLeaseSeconds", newJInt(newLeaseSeconds))
-  add(path_580087, "project", newJString(project))
+  var path_589120 = newJObject()
+  var query_589121 = newJObject()
+  var body_589122 = newJObject()
+  add(query_589121, "fields", newJString(fields))
+  add(query_589121, "quotaUser", newJString(quotaUser))
+  add(query_589121, "alt", newJString(alt))
+  add(path_589120, "task", newJString(task))
+  add(query_589121, "oauth_token", newJString(oauthToken))
+  add(query_589121, "userIp", newJString(userIp))
+  add(query_589121, "key", newJString(key))
+  add(query_589121, "newLeaseSeconds", newJInt(newLeaseSeconds))
+  add(path_589120, "project", newJString(project))
   if body != nil:
-    body_580089 = body
-  add(query_580088, "prettyPrint", newJBool(prettyPrint))
-  add(path_580087, "taskqueue", newJString(taskqueue))
-  result = call_580086.call(path_580087, query_580088, nil, nil, body_580089)
+    body_589122 = body
+  add(query_589121, "prettyPrint", newJBool(prettyPrint))
+  add(path_589120, "taskqueue", newJString(taskqueue))
+  result = call_589119.call(path_589120, query_589121, nil, nil, body_589122)
 
-var taskqueueTasksPatch* = Call_TaskqueueTasksPatch_580070(
+var taskqueueTasksPatch* = Call_TaskqueueTasksPatch_589103(
     name: "taskqueueTasksPatch", meth: HttpMethod.HttpPatch,
     host: "www.googleapis.com",
     route: "/{project}/taskqueues/{taskqueue}/tasks/{task}",
-    validator: validate_TaskqueueTasksPatch_580071,
-    base: "/taskqueue/v1beta2/projects", url: url_TaskqueueTasksPatch_580072,
+    validator: validate_TaskqueueTasksPatch_589104,
+    base: "/taskqueue/v1beta2/projects", url: url_TaskqueueTasksPatch_589105,
     schemes: {Scheme.Https})
 type
-  Call_TaskqueueTasksDelete_580053 = ref object of OpenApiRestCall_579408
-proc url_TaskqueueTasksDelete_580055(protocol: Scheme; host: string; base: string;
+  Call_TaskqueueTasksDelete_589086 = ref object of OpenApiRestCall_588441
+proc url_TaskqueueTasksDelete_589088(protocol: Scheme; host: string; base: string;
                                     route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -1378,7 +1378,7 @@ proc url_TaskqueueTasksDelete_580055(protocol: Scheme; host: string; base: strin
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_TaskqueueTasksDelete_580054(path: JsonNode; query: JsonNode;
+proc validate_TaskqueueTasksDelete_589087(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Delete a task from a TaskQueue.
   ## 
@@ -1393,21 +1393,21 @@ proc validate_TaskqueueTasksDelete_580054(path: JsonNode; query: JsonNode;
   ##            : The taskqueue to delete a task from.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `task` field"
-  var valid_580056 = path.getOrDefault("task")
-  valid_580056 = validateParameter(valid_580056, JString, required = true,
+  var valid_589089 = path.getOrDefault("task")
+  valid_589089 = validateParameter(valid_589089, JString, required = true,
                                  default = nil)
-  if valid_580056 != nil:
-    section.add "task", valid_580056
-  var valid_580057 = path.getOrDefault("project")
-  valid_580057 = validateParameter(valid_580057, JString, required = true,
+  if valid_589089 != nil:
+    section.add "task", valid_589089
+  var valid_589090 = path.getOrDefault("project")
+  valid_589090 = validateParameter(valid_589090, JString, required = true,
                                  default = nil)
-  if valid_580057 != nil:
-    section.add "project", valid_580057
-  var valid_580058 = path.getOrDefault("taskqueue")
-  valid_580058 = validateParameter(valid_580058, JString, required = true,
+  if valid_589090 != nil:
+    section.add "project", valid_589090
+  var valid_589091 = path.getOrDefault("taskqueue")
+  valid_589091 = validateParameter(valid_589091, JString, required = true,
                                  default = nil)
-  if valid_580058 != nil:
-    section.add "taskqueue", valid_580058
+  if valid_589091 != nil:
+    section.add "taskqueue", valid_589091
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -1425,41 +1425,41 @@ proc validate_TaskqueueTasksDelete_580054(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580059 = query.getOrDefault("fields")
-  valid_580059 = validateParameter(valid_580059, JString, required = false,
+  var valid_589092 = query.getOrDefault("fields")
+  valid_589092 = validateParameter(valid_589092, JString, required = false,
                                  default = nil)
-  if valid_580059 != nil:
-    section.add "fields", valid_580059
-  var valid_580060 = query.getOrDefault("quotaUser")
-  valid_580060 = validateParameter(valid_580060, JString, required = false,
+  if valid_589092 != nil:
+    section.add "fields", valid_589092
+  var valid_589093 = query.getOrDefault("quotaUser")
+  valid_589093 = validateParameter(valid_589093, JString, required = false,
                                  default = nil)
-  if valid_580060 != nil:
-    section.add "quotaUser", valid_580060
-  var valid_580061 = query.getOrDefault("alt")
-  valid_580061 = validateParameter(valid_580061, JString, required = false,
+  if valid_589093 != nil:
+    section.add "quotaUser", valid_589093
+  var valid_589094 = query.getOrDefault("alt")
+  valid_589094 = validateParameter(valid_589094, JString, required = false,
                                  default = newJString("json"))
-  if valid_580061 != nil:
-    section.add "alt", valid_580061
-  var valid_580062 = query.getOrDefault("oauth_token")
-  valid_580062 = validateParameter(valid_580062, JString, required = false,
+  if valid_589094 != nil:
+    section.add "alt", valid_589094
+  var valid_589095 = query.getOrDefault("oauth_token")
+  valid_589095 = validateParameter(valid_589095, JString, required = false,
                                  default = nil)
-  if valid_580062 != nil:
-    section.add "oauth_token", valid_580062
-  var valid_580063 = query.getOrDefault("userIp")
-  valid_580063 = validateParameter(valid_580063, JString, required = false,
+  if valid_589095 != nil:
+    section.add "oauth_token", valid_589095
+  var valid_589096 = query.getOrDefault("userIp")
+  valid_589096 = validateParameter(valid_589096, JString, required = false,
                                  default = nil)
-  if valid_580063 != nil:
-    section.add "userIp", valid_580063
-  var valid_580064 = query.getOrDefault("key")
-  valid_580064 = validateParameter(valid_580064, JString, required = false,
+  if valid_589096 != nil:
+    section.add "userIp", valid_589096
+  var valid_589097 = query.getOrDefault("key")
+  valid_589097 = validateParameter(valid_589097, JString, required = false,
                                  default = nil)
-  if valid_580064 != nil:
-    section.add "key", valid_580064
-  var valid_580065 = query.getOrDefault("prettyPrint")
-  valid_580065 = validateParameter(valid_580065, JBool, required = false,
+  if valid_589097 != nil:
+    section.add "key", valid_589097
+  var valid_589098 = query.getOrDefault("prettyPrint")
+  valid_589098 = validateParameter(valid_589098, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580065 != nil:
-    section.add "prettyPrint", valid_580065
+  if valid_589098 != nil:
+    section.add "prettyPrint", valid_589098
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1468,20 +1468,20 @@ proc validate_TaskqueueTasksDelete_580054(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580066: Call_TaskqueueTasksDelete_580053; path: JsonNode;
+proc call*(call_589099: Call_TaskqueueTasksDelete_589086; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Delete a task from a TaskQueue.
   ## 
-  let valid = call_580066.validator(path, query, header, formData, body)
-  let scheme = call_580066.pickScheme
+  let valid = call_589099.validator(path, query, header, formData, body)
+  let scheme = call_589099.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580066.url(scheme.get, call_580066.host, call_580066.base,
-                         call_580066.route, valid.getOrDefault("path"),
+  let url = call_589099.url(scheme.get, call_589099.host, call_589099.base,
+                         call_589099.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580066, url, valid)
+  result = hook(call_589099, url, valid)
 
-proc call*(call_580067: Call_TaskqueueTasksDelete_580053; task: string;
+proc call*(call_589100: Call_TaskqueueTasksDelete_589086; task: string;
           project: string; taskqueue: string; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; key: string = ""; prettyPrint: bool = true): Recallable =
@@ -1507,26 +1507,26 @@ proc call*(call_580067: Call_TaskqueueTasksDelete_580053; task: string;
   ##              : Returns response with indentations and line breaks.
   ##   taskqueue: string (required)
   ##            : The taskqueue to delete a task from.
-  var path_580068 = newJObject()
-  var query_580069 = newJObject()
-  add(query_580069, "fields", newJString(fields))
-  add(query_580069, "quotaUser", newJString(quotaUser))
-  add(query_580069, "alt", newJString(alt))
-  add(path_580068, "task", newJString(task))
-  add(query_580069, "oauth_token", newJString(oauthToken))
-  add(query_580069, "userIp", newJString(userIp))
-  add(query_580069, "key", newJString(key))
-  add(path_580068, "project", newJString(project))
-  add(query_580069, "prettyPrint", newJBool(prettyPrint))
-  add(path_580068, "taskqueue", newJString(taskqueue))
-  result = call_580067.call(path_580068, query_580069, nil, nil, nil)
+  var path_589101 = newJObject()
+  var query_589102 = newJObject()
+  add(query_589102, "fields", newJString(fields))
+  add(query_589102, "quotaUser", newJString(quotaUser))
+  add(query_589102, "alt", newJString(alt))
+  add(path_589101, "task", newJString(task))
+  add(query_589102, "oauth_token", newJString(oauthToken))
+  add(query_589102, "userIp", newJString(userIp))
+  add(query_589102, "key", newJString(key))
+  add(path_589101, "project", newJString(project))
+  add(query_589102, "prettyPrint", newJBool(prettyPrint))
+  add(path_589101, "taskqueue", newJString(taskqueue))
+  result = call_589100.call(path_589101, query_589102, nil, nil, nil)
 
-var taskqueueTasksDelete* = Call_TaskqueueTasksDelete_580053(
+var taskqueueTasksDelete* = Call_TaskqueueTasksDelete_589086(
     name: "taskqueueTasksDelete", meth: HttpMethod.HttpDelete,
     host: "www.googleapis.com",
     route: "/{project}/taskqueues/{taskqueue}/tasks/{task}",
-    validator: validate_TaskqueueTasksDelete_580054,
-    base: "/taskqueue/v1beta2/projects", url: url_TaskqueueTasksDelete_580055,
+    validator: validate_TaskqueueTasksDelete_589087,
+    base: "/taskqueue/v1beta2/projects", url: url_TaskqueueTasksDelete_589088,
     schemes: {Scheme.Https})
 export
   rest
@@ -1569,7 +1569,7 @@ proc store(auth: var GoogleAuth; token: string; expiry: int; form: string) =
   auth.form = form
   auth.digest = auth.hash
 
-proc authenticate*(fresh: float64 = -3600.0; lifetime: int = 3600): Future[bool] {.async.} =
+proc authenticate*(fresh: float64 = 3600.0; lifetime: int = 3600): Future[bool] {.async.} =
   ## get or refresh an authentication token; provide `fresh`
   ## to ensure that the token won't expire in the next N seconds.
   ## provide `lifetime` to indicate how long the token should last.

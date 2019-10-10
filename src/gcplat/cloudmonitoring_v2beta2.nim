@@ -27,15 +27,15 @@ type
     url*: proc (protocol: Scheme; host: string; base: string; route: string;
               path: JsonNode; query: JsonNode): Uri
 
-  OpenApiRestCall_579424 = ref object of OpenApiRestCall
+  OpenApiRestCall_588457 = ref object of OpenApiRestCall
 proc hash(scheme: Scheme): Hash {.used.} =
   result = hash(ord(scheme))
 
-proc clone[T: OpenApiRestCall_579424](t: T): T {.used.} =
+proc clone[T: OpenApiRestCall_588457](t: T): T {.used.} =
   result = T(name: t.name, meth: t.meth, host: t.host, base: t.base, route: t.route,
            schemes: t.schemes, validator: t.validator, url: t.url)
 
-proc pickScheme(t: OpenApiRestCall_579424): Option[Scheme] {.used.} =
+proc pickScheme(t: OpenApiRestCall_588457): Option[Scheme] {.used.} =
   ## select a supported scheme from a set of candidates
   for scheme in Scheme.low ..
       Scheme.high:
@@ -72,7 +72,7 @@ type
   PathTokenKind = enum
     ConstantSegment, VariableSegment
   PathToken = tuple[kind: PathTokenKind, value: string]
-proc queryString(query: JsonNode): string =
+proc queryString(query: JsonNode): string {.used.} =
   var qs: seq[KeyVal]
   if query == nil:
     return ""
@@ -80,7 +80,7 @@ proc queryString(query: JsonNode): string =
     qs.add (key: k, val: v.getStr)
   result = encodeQuery(qs)
 
-proc hydratePath(input: JsonNode; segments: seq[PathToken]): Option[string] =
+proc hydratePath(input: JsonNode; segments: seq[PathToken]): Option[string] {.used.} =
   ## reconstitute a path with constants and variable values taken from json
   var head: string
   if segments.len == 0:
@@ -106,8 +106,8 @@ const
 proc composeQueryString(query: JsonNode): string
 method hook(call: OpenApiRestCall; url: Uri; input: JsonNode): Recallable {.base.}
 type
-  Call_CloudmonitoringMetricDescriptorsCreate_579982 = ref object of OpenApiRestCall_579424
-proc url_CloudmonitoringMetricDescriptorsCreate_579984(protocol: Scheme;
+  Call_CloudmonitoringMetricDescriptorsCreate_589015 = ref object of OpenApiRestCall_588457
+proc url_CloudmonitoringMetricDescriptorsCreate_589017(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -123,7 +123,7 @@ proc url_CloudmonitoringMetricDescriptorsCreate_579984(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_CloudmonitoringMetricDescriptorsCreate_579983(path: JsonNode;
+proc validate_CloudmonitoringMetricDescriptorsCreate_589016(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Create a new metric.
   ## 
@@ -134,11 +134,11 @@ proc validate_CloudmonitoringMetricDescriptorsCreate_579983(path: JsonNode;
   ##          : The project id. The value can be the numeric project ID or string-based project name.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `project` field"
-  var valid_579985 = path.getOrDefault("project")
-  valid_579985 = validateParameter(valid_579985, JString, required = true,
+  var valid_589018 = path.getOrDefault("project")
+  valid_589018 = validateParameter(valid_589018, JString, required = true,
                                  default = nil)
-  if valid_579985 != nil:
-    section.add "project", valid_579985
+  if valid_589018 != nil:
+    section.add "project", valid_589018
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -156,41 +156,41 @@ proc validate_CloudmonitoringMetricDescriptorsCreate_579983(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_579986 = query.getOrDefault("fields")
-  valid_579986 = validateParameter(valid_579986, JString, required = false,
+  var valid_589019 = query.getOrDefault("fields")
+  valid_589019 = validateParameter(valid_589019, JString, required = false,
                                  default = nil)
-  if valid_579986 != nil:
-    section.add "fields", valid_579986
-  var valid_579987 = query.getOrDefault("quotaUser")
-  valid_579987 = validateParameter(valid_579987, JString, required = false,
+  if valid_589019 != nil:
+    section.add "fields", valid_589019
+  var valid_589020 = query.getOrDefault("quotaUser")
+  valid_589020 = validateParameter(valid_589020, JString, required = false,
                                  default = nil)
-  if valid_579987 != nil:
-    section.add "quotaUser", valid_579987
-  var valid_579988 = query.getOrDefault("alt")
-  valid_579988 = validateParameter(valid_579988, JString, required = false,
+  if valid_589020 != nil:
+    section.add "quotaUser", valid_589020
+  var valid_589021 = query.getOrDefault("alt")
+  valid_589021 = validateParameter(valid_589021, JString, required = false,
                                  default = newJString("json"))
-  if valid_579988 != nil:
-    section.add "alt", valid_579988
-  var valid_579989 = query.getOrDefault("oauth_token")
-  valid_579989 = validateParameter(valid_579989, JString, required = false,
+  if valid_589021 != nil:
+    section.add "alt", valid_589021
+  var valid_589022 = query.getOrDefault("oauth_token")
+  valid_589022 = validateParameter(valid_589022, JString, required = false,
                                  default = nil)
-  if valid_579989 != nil:
-    section.add "oauth_token", valid_579989
-  var valid_579990 = query.getOrDefault("userIp")
-  valid_579990 = validateParameter(valid_579990, JString, required = false,
+  if valid_589022 != nil:
+    section.add "oauth_token", valid_589022
+  var valid_589023 = query.getOrDefault("userIp")
+  valid_589023 = validateParameter(valid_589023, JString, required = false,
                                  default = nil)
-  if valid_579990 != nil:
-    section.add "userIp", valid_579990
-  var valid_579991 = query.getOrDefault("key")
-  valid_579991 = validateParameter(valid_579991, JString, required = false,
+  if valid_589023 != nil:
+    section.add "userIp", valid_589023
+  var valid_589024 = query.getOrDefault("key")
+  valid_589024 = validateParameter(valid_589024, JString, required = false,
                                  default = nil)
-  if valid_579991 != nil:
-    section.add "key", valid_579991
-  var valid_579992 = query.getOrDefault("prettyPrint")
-  valid_579992 = validateParameter(valid_579992, JBool, required = false,
+  if valid_589024 != nil:
+    section.add "key", valid_589024
+  var valid_589025 = query.getOrDefault("prettyPrint")
+  valid_589025 = validateParameter(valid_589025, JBool, required = false,
                                  default = newJBool(true))
-  if valid_579992 != nil:
-    section.add "prettyPrint", valid_579992
+  if valid_589025 != nil:
+    section.add "prettyPrint", valid_589025
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -202,21 +202,21 @@ proc validate_CloudmonitoringMetricDescriptorsCreate_579983(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_579994: Call_CloudmonitoringMetricDescriptorsCreate_579982;
+proc call*(call_589027: Call_CloudmonitoringMetricDescriptorsCreate_589015;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Create a new metric.
   ## 
-  let valid = call_579994.validator(path, query, header, formData, body)
-  let scheme = call_579994.pickScheme
+  let valid = call_589027.validator(path, query, header, formData, body)
+  let scheme = call_589027.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_579994.url(scheme.get, call_579994.host, call_579994.base,
-                         call_579994.route, valid.getOrDefault("path"),
+  let url = call_589027.url(scheme.get, call_589027.host, call_589027.base,
+                         call_589027.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_579994, url, valid)
+  result = hook(call_589027, url, valid)
 
-proc call*(call_579995: Call_CloudmonitoringMetricDescriptorsCreate_579982;
+proc call*(call_589028: Call_CloudmonitoringMetricDescriptorsCreate_589015;
           project: string; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; userIp: string = "";
           key: string = ""; body: JsonNode = nil; prettyPrint: bool = true): Recallable =
@@ -239,31 +239,31 @@ proc call*(call_579995: Call_CloudmonitoringMetricDescriptorsCreate_579982;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_579996 = newJObject()
-  var query_579997 = newJObject()
-  var body_579998 = newJObject()
-  add(query_579997, "fields", newJString(fields))
-  add(query_579997, "quotaUser", newJString(quotaUser))
-  add(query_579997, "alt", newJString(alt))
-  add(query_579997, "oauth_token", newJString(oauthToken))
-  add(query_579997, "userIp", newJString(userIp))
-  add(query_579997, "key", newJString(key))
-  add(path_579996, "project", newJString(project))
+  var path_589029 = newJObject()
+  var query_589030 = newJObject()
+  var body_589031 = newJObject()
+  add(query_589030, "fields", newJString(fields))
+  add(query_589030, "quotaUser", newJString(quotaUser))
+  add(query_589030, "alt", newJString(alt))
+  add(query_589030, "oauth_token", newJString(oauthToken))
+  add(query_589030, "userIp", newJString(userIp))
+  add(query_589030, "key", newJString(key))
+  add(path_589029, "project", newJString(project))
   if body != nil:
-    body_579998 = body
-  add(query_579997, "prettyPrint", newJBool(prettyPrint))
-  result = call_579995.call(path_579996, query_579997, nil, nil, body_579998)
+    body_589031 = body
+  add(query_589030, "prettyPrint", newJBool(prettyPrint))
+  result = call_589028.call(path_589029, query_589030, nil, nil, body_589031)
 
-var cloudmonitoringMetricDescriptorsCreate* = Call_CloudmonitoringMetricDescriptorsCreate_579982(
+var cloudmonitoringMetricDescriptorsCreate* = Call_CloudmonitoringMetricDescriptorsCreate_589015(
     name: "cloudmonitoringMetricDescriptorsCreate", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com", route: "/{project}/metricDescriptors",
-    validator: validate_CloudmonitoringMetricDescriptorsCreate_579983,
+    validator: validate_CloudmonitoringMetricDescriptorsCreate_589016,
     base: "/cloudmonitoring/v2beta2/projects",
-    url: url_CloudmonitoringMetricDescriptorsCreate_579984,
+    url: url_CloudmonitoringMetricDescriptorsCreate_589017,
     schemes: {Scheme.Https})
 type
-  Call_CloudmonitoringMetricDescriptorsList_579692 = ref object of OpenApiRestCall_579424
-proc url_CloudmonitoringMetricDescriptorsList_579694(protocol: Scheme;
+  Call_CloudmonitoringMetricDescriptorsList_588725 = ref object of OpenApiRestCall_588457
+proc url_CloudmonitoringMetricDescriptorsList_588727(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -279,7 +279,7 @@ proc url_CloudmonitoringMetricDescriptorsList_579694(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_CloudmonitoringMetricDescriptorsList_579693(path: JsonNode;
+proc validate_CloudmonitoringMetricDescriptorsList_588726(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## List metric descriptors that match the query. If the query is not set, then all of the metric descriptors will be returned. Large responses will be paginated, use the nextPageToken returned in the response to request subsequent pages of results by setting the pageToken query parameter to the value of the nextPageToken.
   ## 
@@ -290,11 +290,11 @@ proc validate_CloudmonitoringMetricDescriptorsList_579693(path: JsonNode;
   ##          : The project id. The value can be the numeric project ID or string-based project name.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `project` field"
-  var valid_579820 = path.getOrDefault("project")
-  valid_579820 = validateParameter(valid_579820, JString, required = true,
+  var valid_588853 = path.getOrDefault("project")
+  valid_588853 = validateParameter(valid_588853, JString, required = true,
                                  default = nil)
-  if valid_579820 != nil:
-    section.add "project", valid_579820
+  if valid_588853 != nil:
+    section.add "project", valid_588853
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -318,56 +318,56 @@ proc validate_CloudmonitoringMetricDescriptorsList_579693(path: JsonNode;
   ##   count: JInt
   ##        : Maximum number of metric descriptors per page. Used for pagination. If not specified, count = 100.
   section = newJObject()
-  var valid_579821 = query.getOrDefault("fields")
-  valid_579821 = validateParameter(valid_579821, JString, required = false,
+  var valid_588854 = query.getOrDefault("fields")
+  valid_588854 = validateParameter(valid_588854, JString, required = false,
                                  default = nil)
-  if valid_579821 != nil:
-    section.add "fields", valid_579821
-  var valid_579822 = query.getOrDefault("pageToken")
-  valid_579822 = validateParameter(valid_579822, JString, required = false,
+  if valid_588854 != nil:
+    section.add "fields", valid_588854
+  var valid_588855 = query.getOrDefault("pageToken")
+  valid_588855 = validateParameter(valid_588855, JString, required = false,
                                  default = nil)
-  if valid_579822 != nil:
-    section.add "pageToken", valid_579822
-  var valid_579823 = query.getOrDefault("quotaUser")
-  valid_579823 = validateParameter(valid_579823, JString, required = false,
+  if valid_588855 != nil:
+    section.add "pageToken", valid_588855
+  var valid_588856 = query.getOrDefault("quotaUser")
+  valid_588856 = validateParameter(valid_588856, JString, required = false,
                                  default = nil)
-  if valid_579823 != nil:
-    section.add "quotaUser", valid_579823
-  var valid_579837 = query.getOrDefault("alt")
-  valid_579837 = validateParameter(valid_579837, JString, required = false,
+  if valid_588856 != nil:
+    section.add "quotaUser", valid_588856
+  var valid_588870 = query.getOrDefault("alt")
+  valid_588870 = validateParameter(valid_588870, JString, required = false,
                                  default = newJString("json"))
-  if valid_579837 != nil:
-    section.add "alt", valid_579837
-  var valid_579838 = query.getOrDefault("query")
-  valid_579838 = validateParameter(valid_579838, JString, required = false,
+  if valid_588870 != nil:
+    section.add "alt", valid_588870
+  var valid_588871 = query.getOrDefault("query")
+  valid_588871 = validateParameter(valid_588871, JString, required = false,
                                  default = nil)
-  if valid_579838 != nil:
-    section.add "query", valid_579838
-  var valid_579839 = query.getOrDefault("oauth_token")
-  valid_579839 = validateParameter(valid_579839, JString, required = false,
+  if valid_588871 != nil:
+    section.add "query", valid_588871
+  var valid_588872 = query.getOrDefault("oauth_token")
+  valid_588872 = validateParameter(valid_588872, JString, required = false,
                                  default = nil)
-  if valid_579839 != nil:
-    section.add "oauth_token", valid_579839
-  var valid_579840 = query.getOrDefault("userIp")
-  valid_579840 = validateParameter(valid_579840, JString, required = false,
+  if valid_588872 != nil:
+    section.add "oauth_token", valid_588872
+  var valid_588873 = query.getOrDefault("userIp")
+  valid_588873 = validateParameter(valid_588873, JString, required = false,
                                  default = nil)
-  if valid_579840 != nil:
-    section.add "userIp", valid_579840
-  var valid_579841 = query.getOrDefault("key")
-  valid_579841 = validateParameter(valid_579841, JString, required = false,
+  if valid_588873 != nil:
+    section.add "userIp", valid_588873
+  var valid_588874 = query.getOrDefault("key")
+  valid_588874 = validateParameter(valid_588874, JString, required = false,
                                  default = nil)
-  if valid_579841 != nil:
-    section.add "key", valid_579841
-  var valid_579842 = query.getOrDefault("prettyPrint")
-  valid_579842 = validateParameter(valid_579842, JBool, required = false,
+  if valid_588874 != nil:
+    section.add "key", valid_588874
+  var valid_588875 = query.getOrDefault("prettyPrint")
+  valid_588875 = validateParameter(valid_588875, JBool, required = false,
                                  default = newJBool(true))
-  if valid_579842 != nil:
-    section.add "prettyPrint", valid_579842
-  var valid_579844 = query.getOrDefault("count")
-  valid_579844 = validateParameter(valid_579844, JInt, required = false,
+  if valid_588875 != nil:
+    section.add "prettyPrint", valid_588875
+  var valid_588877 = query.getOrDefault("count")
+  valid_588877 = validateParameter(valid_588877, JInt, required = false,
                                  default = newJInt(100))
-  if valid_579844 != nil:
-    section.add "count", valid_579844
+  if valid_588877 != nil:
+    section.add "count", valid_588877
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -379,21 +379,21 @@ proc validate_CloudmonitoringMetricDescriptorsList_579693(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_579868: Call_CloudmonitoringMetricDescriptorsList_579692;
+proc call*(call_588901: Call_CloudmonitoringMetricDescriptorsList_588725;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## List metric descriptors that match the query. If the query is not set, then all of the metric descriptors will be returned. Large responses will be paginated, use the nextPageToken returned in the response to request subsequent pages of results by setting the pageToken query parameter to the value of the nextPageToken.
   ## 
-  let valid = call_579868.validator(path, query, header, formData, body)
-  let scheme = call_579868.pickScheme
+  let valid = call_588901.validator(path, query, header, formData, body)
+  let scheme = call_588901.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_579868.url(scheme.get, call_579868.host, call_579868.base,
-                         call_579868.route, valid.getOrDefault("path"),
+  let url = call_588901.url(scheme.get, call_588901.host, call_588901.base,
+                         call_588901.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_579868, url, valid)
+  result = hook(call_588901, url, valid)
 
-proc call*(call_579939: Call_CloudmonitoringMetricDescriptorsList_579692;
+proc call*(call_588972: Call_CloudmonitoringMetricDescriptorsList_588725;
           project: string; fields: string = ""; pageToken: string = "";
           quotaUser: string = ""; alt: string = "json"; query: string = "";
           oauthToken: string = ""; userIp: string = ""; key: string = "";
@@ -423,33 +423,33 @@ proc call*(call_579939: Call_CloudmonitoringMetricDescriptorsList_579692;
   ##              : Returns response with indentations and line breaks.
   ##   count: int
   ##        : Maximum number of metric descriptors per page. Used for pagination. If not specified, count = 100.
-  var path_579940 = newJObject()
-  var query_579942 = newJObject()
-  var body_579943 = newJObject()
-  add(query_579942, "fields", newJString(fields))
-  add(query_579942, "pageToken", newJString(pageToken))
-  add(query_579942, "quotaUser", newJString(quotaUser))
-  add(query_579942, "alt", newJString(alt))
-  add(query_579942, "query", newJString(query))
-  add(query_579942, "oauth_token", newJString(oauthToken))
-  add(query_579942, "userIp", newJString(userIp))
-  add(query_579942, "key", newJString(key))
-  add(path_579940, "project", newJString(project))
+  var path_588973 = newJObject()
+  var query_588975 = newJObject()
+  var body_588976 = newJObject()
+  add(query_588975, "fields", newJString(fields))
+  add(query_588975, "pageToken", newJString(pageToken))
+  add(query_588975, "quotaUser", newJString(quotaUser))
+  add(query_588975, "alt", newJString(alt))
+  add(query_588975, "query", newJString(query))
+  add(query_588975, "oauth_token", newJString(oauthToken))
+  add(query_588975, "userIp", newJString(userIp))
+  add(query_588975, "key", newJString(key))
+  add(path_588973, "project", newJString(project))
   if body != nil:
-    body_579943 = body
-  add(query_579942, "prettyPrint", newJBool(prettyPrint))
-  add(query_579942, "count", newJInt(count))
-  result = call_579939.call(path_579940, query_579942, nil, nil, body_579943)
+    body_588976 = body
+  add(query_588975, "prettyPrint", newJBool(prettyPrint))
+  add(query_588975, "count", newJInt(count))
+  result = call_588972.call(path_588973, query_588975, nil, nil, body_588976)
 
-var cloudmonitoringMetricDescriptorsList* = Call_CloudmonitoringMetricDescriptorsList_579692(
+var cloudmonitoringMetricDescriptorsList* = Call_CloudmonitoringMetricDescriptorsList_588725(
     name: "cloudmonitoringMetricDescriptorsList", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/{project}/metricDescriptors",
-    validator: validate_CloudmonitoringMetricDescriptorsList_579693,
+    validator: validate_CloudmonitoringMetricDescriptorsList_588726,
     base: "/cloudmonitoring/v2beta2/projects",
-    url: url_CloudmonitoringMetricDescriptorsList_579694, schemes: {Scheme.Https})
+    url: url_CloudmonitoringMetricDescriptorsList_588727, schemes: {Scheme.Https})
 type
-  Call_CloudmonitoringMetricDescriptorsDelete_579999 = ref object of OpenApiRestCall_579424
-proc url_CloudmonitoringMetricDescriptorsDelete_580001(protocol: Scheme;
+  Call_CloudmonitoringMetricDescriptorsDelete_589032 = ref object of OpenApiRestCall_588457
+proc url_CloudmonitoringMetricDescriptorsDelete_589034(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -467,7 +467,7 @@ proc url_CloudmonitoringMetricDescriptorsDelete_580001(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_CloudmonitoringMetricDescriptorsDelete_580000(path: JsonNode;
+proc validate_CloudmonitoringMetricDescriptorsDelete_589033(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Delete an existing metric.
   ## 
@@ -480,16 +480,16 @@ proc validate_CloudmonitoringMetricDescriptorsDelete_580000(path: JsonNode;
   ##          : The project ID to which the metric belongs.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `metric` field"
-  var valid_580002 = path.getOrDefault("metric")
-  valid_580002 = validateParameter(valid_580002, JString, required = true,
+  var valid_589035 = path.getOrDefault("metric")
+  valid_589035 = validateParameter(valid_589035, JString, required = true,
                                  default = nil)
-  if valid_580002 != nil:
-    section.add "metric", valid_580002
-  var valid_580003 = path.getOrDefault("project")
-  valid_580003 = validateParameter(valid_580003, JString, required = true,
+  if valid_589035 != nil:
+    section.add "metric", valid_589035
+  var valid_589036 = path.getOrDefault("project")
+  valid_589036 = validateParameter(valid_589036, JString, required = true,
                                  default = nil)
-  if valid_580003 != nil:
-    section.add "project", valid_580003
+  if valid_589036 != nil:
+    section.add "project", valid_589036
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -507,41 +507,41 @@ proc validate_CloudmonitoringMetricDescriptorsDelete_580000(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580004 = query.getOrDefault("fields")
-  valid_580004 = validateParameter(valid_580004, JString, required = false,
+  var valid_589037 = query.getOrDefault("fields")
+  valid_589037 = validateParameter(valid_589037, JString, required = false,
                                  default = nil)
-  if valid_580004 != nil:
-    section.add "fields", valid_580004
-  var valid_580005 = query.getOrDefault("quotaUser")
-  valid_580005 = validateParameter(valid_580005, JString, required = false,
+  if valid_589037 != nil:
+    section.add "fields", valid_589037
+  var valid_589038 = query.getOrDefault("quotaUser")
+  valid_589038 = validateParameter(valid_589038, JString, required = false,
                                  default = nil)
-  if valid_580005 != nil:
-    section.add "quotaUser", valid_580005
-  var valid_580006 = query.getOrDefault("alt")
-  valid_580006 = validateParameter(valid_580006, JString, required = false,
+  if valid_589038 != nil:
+    section.add "quotaUser", valid_589038
+  var valid_589039 = query.getOrDefault("alt")
+  valid_589039 = validateParameter(valid_589039, JString, required = false,
                                  default = newJString("json"))
-  if valid_580006 != nil:
-    section.add "alt", valid_580006
-  var valid_580007 = query.getOrDefault("oauth_token")
-  valid_580007 = validateParameter(valid_580007, JString, required = false,
+  if valid_589039 != nil:
+    section.add "alt", valid_589039
+  var valid_589040 = query.getOrDefault("oauth_token")
+  valid_589040 = validateParameter(valid_589040, JString, required = false,
                                  default = nil)
-  if valid_580007 != nil:
-    section.add "oauth_token", valid_580007
-  var valid_580008 = query.getOrDefault("userIp")
-  valid_580008 = validateParameter(valid_580008, JString, required = false,
+  if valid_589040 != nil:
+    section.add "oauth_token", valid_589040
+  var valid_589041 = query.getOrDefault("userIp")
+  valid_589041 = validateParameter(valid_589041, JString, required = false,
                                  default = nil)
-  if valid_580008 != nil:
-    section.add "userIp", valid_580008
-  var valid_580009 = query.getOrDefault("key")
-  valid_580009 = validateParameter(valid_580009, JString, required = false,
+  if valid_589041 != nil:
+    section.add "userIp", valid_589041
+  var valid_589042 = query.getOrDefault("key")
+  valid_589042 = validateParameter(valid_589042, JString, required = false,
                                  default = nil)
-  if valid_580009 != nil:
-    section.add "key", valid_580009
-  var valid_580010 = query.getOrDefault("prettyPrint")
-  valid_580010 = validateParameter(valid_580010, JBool, required = false,
+  if valid_589042 != nil:
+    section.add "key", valid_589042
+  var valid_589043 = query.getOrDefault("prettyPrint")
+  valid_589043 = validateParameter(valid_589043, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580010 != nil:
-    section.add "prettyPrint", valid_580010
+  if valid_589043 != nil:
+    section.add "prettyPrint", valid_589043
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -550,21 +550,21 @@ proc validate_CloudmonitoringMetricDescriptorsDelete_580000(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580011: Call_CloudmonitoringMetricDescriptorsDelete_579999;
+proc call*(call_589044: Call_CloudmonitoringMetricDescriptorsDelete_589032;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Delete an existing metric.
   ## 
-  let valid = call_580011.validator(path, query, header, formData, body)
-  let scheme = call_580011.pickScheme
+  let valid = call_589044.validator(path, query, header, formData, body)
+  let scheme = call_589044.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580011.url(scheme.get, call_580011.host, call_580011.base,
-                         call_580011.route, valid.getOrDefault("path"),
+  let url = call_589044.url(scheme.get, call_589044.host, call_589044.base,
+                         call_589044.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580011, url, valid)
+  result = hook(call_589044, url, valid)
 
-proc call*(call_580012: Call_CloudmonitoringMetricDescriptorsDelete_579999;
+proc call*(call_589045: Call_CloudmonitoringMetricDescriptorsDelete_589032;
           metric: string; project: string; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; userIp: string = "";
           key: string = ""; prettyPrint: bool = true): Recallable =
@@ -588,29 +588,29 @@ proc call*(call_580012: Call_CloudmonitoringMetricDescriptorsDelete_579999;
   ##          : The project ID to which the metric belongs.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_580013 = newJObject()
-  var query_580014 = newJObject()
-  add(query_580014, "fields", newJString(fields))
-  add(query_580014, "quotaUser", newJString(quotaUser))
-  add(query_580014, "alt", newJString(alt))
-  add(query_580014, "oauth_token", newJString(oauthToken))
-  add(query_580014, "userIp", newJString(userIp))
-  add(path_580013, "metric", newJString(metric))
-  add(query_580014, "key", newJString(key))
-  add(path_580013, "project", newJString(project))
-  add(query_580014, "prettyPrint", newJBool(prettyPrint))
-  result = call_580012.call(path_580013, query_580014, nil, nil, nil)
+  var path_589046 = newJObject()
+  var query_589047 = newJObject()
+  add(query_589047, "fields", newJString(fields))
+  add(query_589047, "quotaUser", newJString(quotaUser))
+  add(query_589047, "alt", newJString(alt))
+  add(query_589047, "oauth_token", newJString(oauthToken))
+  add(query_589047, "userIp", newJString(userIp))
+  add(path_589046, "metric", newJString(metric))
+  add(query_589047, "key", newJString(key))
+  add(path_589046, "project", newJString(project))
+  add(query_589047, "prettyPrint", newJBool(prettyPrint))
+  result = call_589045.call(path_589046, query_589047, nil, nil, nil)
 
-var cloudmonitoringMetricDescriptorsDelete* = Call_CloudmonitoringMetricDescriptorsDelete_579999(
+var cloudmonitoringMetricDescriptorsDelete* = Call_CloudmonitoringMetricDescriptorsDelete_589032(
     name: "cloudmonitoringMetricDescriptorsDelete", meth: HttpMethod.HttpDelete,
     host: "www.googleapis.com", route: "/{project}/metricDescriptors/{metric}",
-    validator: validate_CloudmonitoringMetricDescriptorsDelete_580000,
+    validator: validate_CloudmonitoringMetricDescriptorsDelete_589033,
     base: "/cloudmonitoring/v2beta2/projects",
-    url: url_CloudmonitoringMetricDescriptorsDelete_580001,
+    url: url_CloudmonitoringMetricDescriptorsDelete_589034,
     schemes: {Scheme.Https})
 type
-  Call_CloudmonitoringTimeseriesList_580015 = ref object of OpenApiRestCall_579424
-proc url_CloudmonitoringTimeseriesList_580017(protocol: Scheme; host: string;
+  Call_CloudmonitoringTimeseriesList_589048 = ref object of OpenApiRestCall_588457
+proc url_CloudmonitoringTimeseriesList_589050(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -628,7 +628,7 @@ proc url_CloudmonitoringTimeseriesList_580017(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_CloudmonitoringTimeseriesList_580016(path: JsonNode; query: JsonNode;
+proc validate_CloudmonitoringTimeseriesList_589049(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## List the data points of the time series that match the metric and labels values and that have data points in the interval. Large responses are paginated; use the nextPageToken returned in the response to request subsequent pages of results by setting the pageToken query parameter to the value of the nextPageToken.
   ## 
@@ -641,16 +641,16 @@ proc validate_CloudmonitoringTimeseriesList_580016(path: JsonNode; query: JsonNo
   ##          : The project ID to which this time series belongs. The value can be the numeric project ID or string-based project name.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `metric` field"
-  var valid_580018 = path.getOrDefault("metric")
-  valid_580018 = validateParameter(valid_580018, JString, required = true,
+  var valid_589051 = path.getOrDefault("metric")
+  valid_589051 = validateParameter(valid_589051, JString, required = true,
                                  default = nil)
-  if valid_580018 != nil:
-    section.add "metric", valid_580018
-  var valid_580019 = path.getOrDefault("project")
-  valid_580019 = validateParameter(valid_580019, JString, required = true,
+  if valid_589051 != nil:
+    section.add "metric", valid_589051
+  var valid_589052 = path.getOrDefault("project")
+  valid_589052 = validateParameter(valid_589052, JString, required = true,
                                  default = nil)
-  if valid_580019 != nil:
-    section.add "project", valid_580019
+  if valid_589052 != nil:
+    section.add "project", valid_589052
   result.add "path", section
   ## parameters in `query` object:
   ##   aggregator: JString
@@ -700,83 +700,83 @@ proc validate_CloudmonitoringTimeseriesList_580016(path: JsonNode; query: JsonNo
   ## - d: day 
   ## - w: week  Examples: 3m, 4w. Only one unit is allowed, for example: 2w3d is not allowed; you should use 17d instead.
   section = newJObject()
-  var valid_580020 = query.getOrDefault("aggregator")
-  valid_580020 = validateParameter(valid_580020, JString, required = false,
+  var valid_589053 = query.getOrDefault("aggregator")
+  valid_589053 = validateParameter(valid_589053, JString, required = false,
                                  default = newJString("max"))
-  if valid_580020 != nil:
-    section.add "aggregator", valid_580020
-  var valid_580021 = query.getOrDefault("fields")
-  valid_580021 = validateParameter(valid_580021, JString, required = false,
+  if valid_589053 != nil:
+    section.add "aggregator", valid_589053
+  var valid_589054 = query.getOrDefault("fields")
+  valid_589054 = validateParameter(valid_589054, JString, required = false,
                                  default = nil)
-  if valid_580021 != nil:
-    section.add "fields", valid_580021
-  var valid_580022 = query.getOrDefault("pageToken")
-  valid_580022 = validateParameter(valid_580022, JString, required = false,
+  if valid_589054 != nil:
+    section.add "fields", valid_589054
+  var valid_589055 = query.getOrDefault("pageToken")
+  valid_589055 = validateParameter(valid_589055, JString, required = false,
                                  default = nil)
-  if valid_580022 != nil:
-    section.add "pageToken", valid_580022
-  var valid_580023 = query.getOrDefault("quotaUser")
-  valid_580023 = validateParameter(valid_580023, JString, required = false,
+  if valid_589055 != nil:
+    section.add "pageToken", valid_589055
+  var valid_589056 = query.getOrDefault("quotaUser")
+  valid_589056 = validateParameter(valid_589056, JString, required = false,
                                  default = nil)
-  if valid_580023 != nil:
-    section.add "quotaUser", valid_580023
-  var valid_580024 = query.getOrDefault("oldest")
-  valid_580024 = validateParameter(valid_580024, JString, required = false,
+  if valid_589056 != nil:
+    section.add "quotaUser", valid_589056
+  var valid_589057 = query.getOrDefault("oldest")
+  valid_589057 = validateParameter(valid_589057, JString, required = false,
                                  default = nil)
-  if valid_580024 != nil:
-    section.add "oldest", valid_580024
-  var valid_580025 = query.getOrDefault("alt")
-  valid_580025 = validateParameter(valid_580025, JString, required = false,
+  if valid_589057 != nil:
+    section.add "oldest", valid_589057
+  var valid_589058 = query.getOrDefault("alt")
+  valid_589058 = validateParameter(valid_589058, JString, required = false,
                                  default = newJString("json"))
-  if valid_580025 != nil:
-    section.add "alt", valid_580025
-  var valid_580026 = query.getOrDefault("timespan")
-  valid_580026 = validateParameter(valid_580026, JString, required = false,
+  if valid_589058 != nil:
+    section.add "alt", valid_589058
+  var valid_589059 = query.getOrDefault("timespan")
+  valid_589059 = validateParameter(valid_589059, JString, required = false,
                                  default = nil)
-  if valid_580026 != nil:
-    section.add "timespan", valid_580026
-  var valid_580027 = query.getOrDefault("oauth_token")
-  valid_580027 = validateParameter(valid_580027, JString, required = false,
+  if valid_589059 != nil:
+    section.add "timespan", valid_589059
+  var valid_589060 = query.getOrDefault("oauth_token")
+  valid_589060 = validateParameter(valid_589060, JString, required = false,
                                  default = nil)
-  if valid_580027 != nil:
-    section.add "oauth_token", valid_580027
-  var valid_580028 = query.getOrDefault("userIp")
-  valid_580028 = validateParameter(valid_580028, JString, required = false,
+  if valid_589060 != nil:
+    section.add "oauth_token", valid_589060
+  var valid_589061 = query.getOrDefault("userIp")
+  valid_589061 = validateParameter(valid_589061, JString, required = false,
                                  default = nil)
-  if valid_580028 != nil:
-    section.add "userIp", valid_580028
-  var valid_580029 = query.getOrDefault("key")
-  valid_580029 = validateParameter(valid_580029, JString, required = false,
+  if valid_589061 != nil:
+    section.add "userIp", valid_589061
+  var valid_589062 = query.getOrDefault("key")
+  valid_589062 = validateParameter(valid_589062, JString, required = false,
                                  default = nil)
-  if valid_580029 != nil:
-    section.add "key", valid_580029
-  var valid_580030 = query.getOrDefault("labels")
-  valid_580030 = validateParameter(valid_580030, JArray, required = false,
+  if valid_589062 != nil:
+    section.add "key", valid_589062
+  var valid_589063 = query.getOrDefault("labels")
+  valid_589063 = validateParameter(valid_589063, JArray, required = false,
                                  default = nil)
-  if valid_580030 != nil:
-    section.add "labels", valid_580030
-  var valid_580031 = query.getOrDefault("prettyPrint")
-  valid_580031 = validateParameter(valid_580031, JBool, required = false,
+  if valid_589063 != nil:
+    section.add "labels", valid_589063
+  var valid_589064 = query.getOrDefault("prettyPrint")
+  valid_589064 = validateParameter(valid_589064, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580031 != nil:
-    section.add "prettyPrint", valid_580031
-  var valid_580032 = query.getOrDefault("count")
-  valid_580032 = validateParameter(valid_580032, JInt, required = false,
+  if valid_589064 != nil:
+    section.add "prettyPrint", valid_589064
+  var valid_589065 = query.getOrDefault("count")
+  valid_589065 = validateParameter(valid_589065, JInt, required = false,
                                  default = newJInt(6000))
-  if valid_580032 != nil:
-    section.add "count", valid_580032
+  if valid_589065 != nil:
+    section.add "count", valid_589065
   assert query != nil,
         "query argument is necessary due to required `youngest` field"
-  var valid_580033 = query.getOrDefault("youngest")
-  valid_580033 = validateParameter(valid_580033, JString, required = true,
+  var valid_589066 = query.getOrDefault("youngest")
+  valid_589066 = validateParameter(valid_589066, JString, required = true,
                                  default = nil)
-  if valid_580033 != nil:
-    section.add "youngest", valid_580033
-  var valid_580034 = query.getOrDefault("window")
-  valid_580034 = validateParameter(valid_580034, JString, required = false,
+  if valid_589066 != nil:
+    section.add "youngest", valid_589066
+  var valid_589067 = query.getOrDefault("window")
+  valid_589067 = validateParameter(valid_589067, JString, required = false,
                                  default = nil)
-  if valid_580034 != nil:
-    section.add "window", valid_580034
+  if valid_589067 != nil:
+    section.add "window", valid_589067
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -788,20 +788,20 @@ proc validate_CloudmonitoringTimeseriesList_580016(path: JsonNode; query: JsonNo
   if body != nil:
     result.add "body", body
 
-proc call*(call_580036: Call_CloudmonitoringTimeseriesList_580015; path: JsonNode;
+proc call*(call_589069: Call_CloudmonitoringTimeseriesList_589048; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## List the data points of the time series that match the metric and labels values and that have data points in the interval. Large responses are paginated; use the nextPageToken returned in the response to request subsequent pages of results by setting the pageToken query parameter to the value of the nextPageToken.
   ## 
-  let valid = call_580036.validator(path, query, header, formData, body)
-  let scheme = call_580036.pickScheme
+  let valid = call_589069.validator(path, query, header, formData, body)
+  let scheme = call_589069.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580036.url(scheme.get, call_580036.host, call_580036.base,
-                         call_580036.route, valid.getOrDefault("path"),
+  let url = call_589069.url(scheme.get, call_589069.host, call_589069.base,
+                         call_589069.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580036, url, valid)
+  result = hook(call_589069, url, valid)
 
-proc call*(call_580037: Call_CloudmonitoringTimeseriesList_580015; metric: string;
+proc call*(call_589070: Call_CloudmonitoringTimeseriesList_589048; metric: string;
           project: string; youngest: string; aggregator: string = "max";
           fields: string = ""; pageToken: string = ""; quotaUser: string = "";
           oldest: string = ""; alt: string = "json"; timespan: string = "";
@@ -861,40 +861,40 @@ proc call*(call_580037: Call_CloudmonitoringTimeseriesList_580015; metric: strin
   ## - h: hour 
   ## - d: day 
   ## - w: week  Examples: 3m, 4w. Only one unit is allowed, for example: 2w3d is not allowed; you should use 17d instead.
-  var path_580038 = newJObject()
-  var query_580039 = newJObject()
-  var body_580040 = newJObject()
-  add(query_580039, "aggregator", newJString(aggregator))
-  add(query_580039, "fields", newJString(fields))
-  add(query_580039, "pageToken", newJString(pageToken))
-  add(query_580039, "quotaUser", newJString(quotaUser))
-  add(query_580039, "oldest", newJString(oldest))
-  add(query_580039, "alt", newJString(alt))
-  add(query_580039, "timespan", newJString(timespan))
-  add(query_580039, "oauth_token", newJString(oauthToken))
-  add(query_580039, "userIp", newJString(userIp))
-  add(path_580038, "metric", newJString(metric))
-  add(query_580039, "key", newJString(key))
+  var path_589071 = newJObject()
+  var query_589072 = newJObject()
+  var body_589073 = newJObject()
+  add(query_589072, "aggregator", newJString(aggregator))
+  add(query_589072, "fields", newJString(fields))
+  add(query_589072, "pageToken", newJString(pageToken))
+  add(query_589072, "quotaUser", newJString(quotaUser))
+  add(query_589072, "oldest", newJString(oldest))
+  add(query_589072, "alt", newJString(alt))
+  add(query_589072, "timespan", newJString(timespan))
+  add(query_589072, "oauth_token", newJString(oauthToken))
+  add(query_589072, "userIp", newJString(userIp))
+  add(path_589071, "metric", newJString(metric))
+  add(query_589072, "key", newJString(key))
   if labels != nil:
-    query_580039.add "labels", labels
-  add(path_580038, "project", newJString(project))
+    query_589072.add "labels", labels
+  add(path_589071, "project", newJString(project))
   if body != nil:
-    body_580040 = body
-  add(query_580039, "prettyPrint", newJBool(prettyPrint))
-  add(query_580039, "count", newJInt(count))
-  add(query_580039, "youngest", newJString(youngest))
-  add(query_580039, "window", newJString(window))
-  result = call_580037.call(path_580038, query_580039, nil, nil, body_580040)
+    body_589073 = body
+  add(query_589072, "prettyPrint", newJBool(prettyPrint))
+  add(query_589072, "count", newJInt(count))
+  add(query_589072, "youngest", newJString(youngest))
+  add(query_589072, "window", newJString(window))
+  result = call_589070.call(path_589071, query_589072, nil, nil, body_589073)
 
-var cloudmonitoringTimeseriesList* = Call_CloudmonitoringTimeseriesList_580015(
+var cloudmonitoringTimeseriesList* = Call_CloudmonitoringTimeseriesList_589048(
     name: "cloudmonitoringTimeseriesList", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/{project}/timeseries/{metric}",
-    validator: validate_CloudmonitoringTimeseriesList_580016,
+    validator: validate_CloudmonitoringTimeseriesList_589049,
     base: "/cloudmonitoring/v2beta2/projects",
-    url: url_CloudmonitoringTimeseriesList_580017, schemes: {Scheme.Https})
+    url: url_CloudmonitoringTimeseriesList_589050, schemes: {Scheme.Https})
 type
-  Call_CloudmonitoringTimeseriesWrite_580041 = ref object of OpenApiRestCall_579424
-proc url_CloudmonitoringTimeseriesWrite_580043(protocol: Scheme; host: string;
+  Call_CloudmonitoringTimeseriesWrite_589074 = ref object of OpenApiRestCall_588457
+proc url_CloudmonitoringTimeseriesWrite_589076(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -910,7 +910,7 @@ proc url_CloudmonitoringTimeseriesWrite_580043(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_CloudmonitoringTimeseriesWrite_580042(path: JsonNode;
+proc validate_CloudmonitoringTimeseriesWrite_589075(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Put data points to one or more time series for one or more metrics. If a time series does not exist, a new time series will be created. It is not allowed to write a time series point that is older than the existing youngest point of that time series. Points that are older than the existing youngest point of that time series will be discarded silently. Therefore, users should make sure that points of a time series are written sequentially in the order of their end time.
   ## 
@@ -921,11 +921,11 @@ proc validate_CloudmonitoringTimeseriesWrite_580042(path: JsonNode;
   ##          : The project ID. The value can be the numeric project ID or string-based project name.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `project` field"
-  var valid_580044 = path.getOrDefault("project")
-  valid_580044 = validateParameter(valid_580044, JString, required = true,
+  var valid_589077 = path.getOrDefault("project")
+  valid_589077 = validateParameter(valid_589077, JString, required = true,
                                  default = nil)
-  if valid_580044 != nil:
-    section.add "project", valid_580044
+  if valid_589077 != nil:
+    section.add "project", valid_589077
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -943,41 +943,41 @@ proc validate_CloudmonitoringTimeseriesWrite_580042(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580045 = query.getOrDefault("fields")
-  valid_580045 = validateParameter(valid_580045, JString, required = false,
+  var valid_589078 = query.getOrDefault("fields")
+  valid_589078 = validateParameter(valid_589078, JString, required = false,
                                  default = nil)
-  if valid_580045 != nil:
-    section.add "fields", valid_580045
-  var valid_580046 = query.getOrDefault("quotaUser")
-  valid_580046 = validateParameter(valid_580046, JString, required = false,
+  if valid_589078 != nil:
+    section.add "fields", valid_589078
+  var valid_589079 = query.getOrDefault("quotaUser")
+  valid_589079 = validateParameter(valid_589079, JString, required = false,
                                  default = nil)
-  if valid_580046 != nil:
-    section.add "quotaUser", valid_580046
-  var valid_580047 = query.getOrDefault("alt")
-  valid_580047 = validateParameter(valid_580047, JString, required = false,
+  if valid_589079 != nil:
+    section.add "quotaUser", valid_589079
+  var valid_589080 = query.getOrDefault("alt")
+  valid_589080 = validateParameter(valid_589080, JString, required = false,
                                  default = newJString("json"))
-  if valid_580047 != nil:
-    section.add "alt", valid_580047
-  var valid_580048 = query.getOrDefault("oauth_token")
-  valid_580048 = validateParameter(valid_580048, JString, required = false,
+  if valid_589080 != nil:
+    section.add "alt", valid_589080
+  var valid_589081 = query.getOrDefault("oauth_token")
+  valid_589081 = validateParameter(valid_589081, JString, required = false,
                                  default = nil)
-  if valid_580048 != nil:
-    section.add "oauth_token", valid_580048
-  var valid_580049 = query.getOrDefault("userIp")
-  valid_580049 = validateParameter(valid_580049, JString, required = false,
+  if valid_589081 != nil:
+    section.add "oauth_token", valid_589081
+  var valid_589082 = query.getOrDefault("userIp")
+  valid_589082 = validateParameter(valid_589082, JString, required = false,
                                  default = nil)
-  if valid_580049 != nil:
-    section.add "userIp", valid_580049
-  var valid_580050 = query.getOrDefault("key")
-  valid_580050 = validateParameter(valid_580050, JString, required = false,
+  if valid_589082 != nil:
+    section.add "userIp", valid_589082
+  var valid_589083 = query.getOrDefault("key")
+  valid_589083 = validateParameter(valid_589083, JString, required = false,
                                  default = nil)
-  if valid_580050 != nil:
-    section.add "key", valid_580050
-  var valid_580051 = query.getOrDefault("prettyPrint")
-  valid_580051 = validateParameter(valid_580051, JBool, required = false,
+  if valid_589083 != nil:
+    section.add "key", valid_589083
+  var valid_589084 = query.getOrDefault("prettyPrint")
+  valid_589084 = validateParameter(valid_589084, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580051 != nil:
-    section.add "prettyPrint", valid_580051
+  if valid_589084 != nil:
+    section.add "prettyPrint", valid_589084
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -989,20 +989,20 @@ proc validate_CloudmonitoringTimeseriesWrite_580042(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580053: Call_CloudmonitoringTimeseriesWrite_580041; path: JsonNode;
+proc call*(call_589086: Call_CloudmonitoringTimeseriesWrite_589074; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Put data points to one or more time series for one or more metrics. If a time series does not exist, a new time series will be created. It is not allowed to write a time series point that is older than the existing youngest point of that time series. Points that are older than the existing youngest point of that time series will be discarded silently. Therefore, users should make sure that points of a time series are written sequentially in the order of their end time.
   ## 
-  let valid = call_580053.validator(path, query, header, formData, body)
-  let scheme = call_580053.pickScheme
+  let valid = call_589086.validator(path, query, header, formData, body)
+  let scheme = call_589086.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580053.url(scheme.get, call_580053.host, call_580053.base,
-                         call_580053.route, valid.getOrDefault("path"),
+  let url = call_589086.url(scheme.get, call_589086.host, call_589086.base,
+                         call_589086.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580053, url, valid)
+  result = hook(call_589086, url, valid)
 
-proc call*(call_580054: Call_CloudmonitoringTimeseriesWrite_580041;
+proc call*(call_589087: Call_CloudmonitoringTimeseriesWrite_589074;
           project: string; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; userIp: string = "";
           key: string = ""; body: JsonNode = nil; prettyPrint: bool = true): Recallable =
@@ -1025,30 +1025,30 @@ proc call*(call_580054: Call_CloudmonitoringTimeseriesWrite_580041;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_580055 = newJObject()
-  var query_580056 = newJObject()
-  var body_580057 = newJObject()
-  add(query_580056, "fields", newJString(fields))
-  add(query_580056, "quotaUser", newJString(quotaUser))
-  add(query_580056, "alt", newJString(alt))
-  add(query_580056, "oauth_token", newJString(oauthToken))
-  add(query_580056, "userIp", newJString(userIp))
-  add(query_580056, "key", newJString(key))
-  add(path_580055, "project", newJString(project))
+  var path_589088 = newJObject()
+  var query_589089 = newJObject()
+  var body_589090 = newJObject()
+  add(query_589089, "fields", newJString(fields))
+  add(query_589089, "quotaUser", newJString(quotaUser))
+  add(query_589089, "alt", newJString(alt))
+  add(query_589089, "oauth_token", newJString(oauthToken))
+  add(query_589089, "userIp", newJString(userIp))
+  add(query_589089, "key", newJString(key))
+  add(path_589088, "project", newJString(project))
   if body != nil:
-    body_580057 = body
-  add(query_580056, "prettyPrint", newJBool(prettyPrint))
-  result = call_580054.call(path_580055, query_580056, nil, nil, body_580057)
+    body_589090 = body
+  add(query_589089, "prettyPrint", newJBool(prettyPrint))
+  result = call_589087.call(path_589088, query_589089, nil, nil, body_589090)
 
-var cloudmonitoringTimeseriesWrite* = Call_CloudmonitoringTimeseriesWrite_580041(
+var cloudmonitoringTimeseriesWrite* = Call_CloudmonitoringTimeseriesWrite_589074(
     name: "cloudmonitoringTimeseriesWrite", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com", route: "/{project}/timeseries:write",
-    validator: validate_CloudmonitoringTimeseriesWrite_580042,
+    validator: validate_CloudmonitoringTimeseriesWrite_589075,
     base: "/cloudmonitoring/v2beta2/projects",
-    url: url_CloudmonitoringTimeseriesWrite_580043, schemes: {Scheme.Https})
+    url: url_CloudmonitoringTimeseriesWrite_589076, schemes: {Scheme.Https})
 type
-  Call_CloudmonitoringTimeseriesDescriptorsList_580058 = ref object of OpenApiRestCall_579424
-proc url_CloudmonitoringTimeseriesDescriptorsList_580060(protocol: Scheme;
+  Call_CloudmonitoringTimeseriesDescriptorsList_589091 = ref object of OpenApiRestCall_588457
+proc url_CloudmonitoringTimeseriesDescriptorsList_589093(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -1066,7 +1066,7 @@ proc url_CloudmonitoringTimeseriesDescriptorsList_580060(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_CloudmonitoringTimeseriesDescriptorsList_580059(path: JsonNode;
+proc validate_CloudmonitoringTimeseriesDescriptorsList_589092(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## List the descriptors of the time series that match the metric and labels values and that have data points in the interval. Large responses are paginated; use the nextPageToken returned in the response to request subsequent pages of results by setting the pageToken query parameter to the value of the nextPageToken.
   ## 
@@ -1079,16 +1079,16 @@ proc validate_CloudmonitoringTimeseriesDescriptorsList_580059(path: JsonNode;
   ##          : The project ID to which this time series belongs. The value can be the numeric project ID or string-based project name.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `metric` field"
-  var valid_580061 = path.getOrDefault("metric")
-  valid_580061 = validateParameter(valid_580061, JString, required = true,
+  var valid_589094 = path.getOrDefault("metric")
+  valid_589094 = validateParameter(valid_589094, JString, required = true,
                                  default = nil)
-  if valid_580061 != nil:
-    section.add "metric", valid_580061
-  var valid_580062 = path.getOrDefault("project")
-  valid_580062 = validateParameter(valid_580062, JString, required = true,
+  if valid_589094 != nil:
+    section.add "metric", valid_589094
+  var valid_589095 = path.getOrDefault("project")
+  valid_589095 = validateParameter(valid_589095, JString, required = true,
                                  default = nil)
-  if valid_580062 != nil:
-    section.add "project", valid_580062
+  if valid_589095 != nil:
+    section.add "project", valid_589095
   result.add "path", section
   ## parameters in `query` object:
   ##   aggregator: JString
@@ -1138,83 +1138,83 @@ proc validate_CloudmonitoringTimeseriesDescriptorsList_580059(path: JsonNode;
   ## - d: day 
   ## - w: week  Examples: 3m, 4w. Only one unit is allowed, for example: 2w3d is not allowed; you should use 17d instead.
   section = newJObject()
-  var valid_580063 = query.getOrDefault("aggregator")
-  valid_580063 = validateParameter(valid_580063, JString, required = false,
+  var valid_589096 = query.getOrDefault("aggregator")
+  valid_589096 = validateParameter(valid_589096, JString, required = false,
                                  default = newJString("max"))
-  if valid_580063 != nil:
-    section.add "aggregator", valid_580063
-  var valid_580064 = query.getOrDefault("fields")
-  valid_580064 = validateParameter(valid_580064, JString, required = false,
+  if valid_589096 != nil:
+    section.add "aggregator", valid_589096
+  var valid_589097 = query.getOrDefault("fields")
+  valid_589097 = validateParameter(valid_589097, JString, required = false,
                                  default = nil)
-  if valid_580064 != nil:
-    section.add "fields", valid_580064
-  var valid_580065 = query.getOrDefault("pageToken")
-  valid_580065 = validateParameter(valid_580065, JString, required = false,
+  if valid_589097 != nil:
+    section.add "fields", valid_589097
+  var valid_589098 = query.getOrDefault("pageToken")
+  valid_589098 = validateParameter(valid_589098, JString, required = false,
                                  default = nil)
-  if valid_580065 != nil:
-    section.add "pageToken", valid_580065
-  var valid_580066 = query.getOrDefault("quotaUser")
-  valid_580066 = validateParameter(valid_580066, JString, required = false,
+  if valid_589098 != nil:
+    section.add "pageToken", valid_589098
+  var valid_589099 = query.getOrDefault("quotaUser")
+  valid_589099 = validateParameter(valid_589099, JString, required = false,
                                  default = nil)
-  if valid_580066 != nil:
-    section.add "quotaUser", valid_580066
-  var valid_580067 = query.getOrDefault("oldest")
-  valid_580067 = validateParameter(valid_580067, JString, required = false,
+  if valid_589099 != nil:
+    section.add "quotaUser", valid_589099
+  var valid_589100 = query.getOrDefault("oldest")
+  valid_589100 = validateParameter(valid_589100, JString, required = false,
                                  default = nil)
-  if valid_580067 != nil:
-    section.add "oldest", valid_580067
-  var valid_580068 = query.getOrDefault("alt")
-  valid_580068 = validateParameter(valid_580068, JString, required = false,
+  if valid_589100 != nil:
+    section.add "oldest", valid_589100
+  var valid_589101 = query.getOrDefault("alt")
+  valid_589101 = validateParameter(valid_589101, JString, required = false,
                                  default = newJString("json"))
-  if valid_580068 != nil:
-    section.add "alt", valid_580068
-  var valid_580069 = query.getOrDefault("timespan")
-  valid_580069 = validateParameter(valid_580069, JString, required = false,
+  if valid_589101 != nil:
+    section.add "alt", valid_589101
+  var valid_589102 = query.getOrDefault("timespan")
+  valid_589102 = validateParameter(valid_589102, JString, required = false,
                                  default = nil)
-  if valid_580069 != nil:
-    section.add "timespan", valid_580069
-  var valid_580070 = query.getOrDefault("oauth_token")
-  valid_580070 = validateParameter(valid_580070, JString, required = false,
+  if valid_589102 != nil:
+    section.add "timespan", valid_589102
+  var valid_589103 = query.getOrDefault("oauth_token")
+  valid_589103 = validateParameter(valid_589103, JString, required = false,
                                  default = nil)
-  if valid_580070 != nil:
-    section.add "oauth_token", valid_580070
-  var valid_580071 = query.getOrDefault("userIp")
-  valid_580071 = validateParameter(valid_580071, JString, required = false,
+  if valid_589103 != nil:
+    section.add "oauth_token", valid_589103
+  var valid_589104 = query.getOrDefault("userIp")
+  valid_589104 = validateParameter(valid_589104, JString, required = false,
                                  default = nil)
-  if valid_580071 != nil:
-    section.add "userIp", valid_580071
-  var valid_580072 = query.getOrDefault("key")
-  valid_580072 = validateParameter(valid_580072, JString, required = false,
+  if valid_589104 != nil:
+    section.add "userIp", valid_589104
+  var valid_589105 = query.getOrDefault("key")
+  valid_589105 = validateParameter(valid_589105, JString, required = false,
                                  default = nil)
-  if valid_580072 != nil:
-    section.add "key", valid_580072
-  var valid_580073 = query.getOrDefault("labels")
-  valid_580073 = validateParameter(valid_580073, JArray, required = false,
+  if valid_589105 != nil:
+    section.add "key", valid_589105
+  var valid_589106 = query.getOrDefault("labels")
+  valid_589106 = validateParameter(valid_589106, JArray, required = false,
                                  default = nil)
-  if valid_580073 != nil:
-    section.add "labels", valid_580073
-  var valid_580074 = query.getOrDefault("prettyPrint")
-  valid_580074 = validateParameter(valid_580074, JBool, required = false,
+  if valid_589106 != nil:
+    section.add "labels", valid_589106
+  var valid_589107 = query.getOrDefault("prettyPrint")
+  valid_589107 = validateParameter(valid_589107, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580074 != nil:
-    section.add "prettyPrint", valid_580074
-  var valid_580075 = query.getOrDefault("count")
-  valid_580075 = validateParameter(valid_580075, JInt, required = false,
+  if valid_589107 != nil:
+    section.add "prettyPrint", valid_589107
+  var valid_589108 = query.getOrDefault("count")
+  valid_589108 = validateParameter(valid_589108, JInt, required = false,
                                  default = newJInt(100))
-  if valid_580075 != nil:
-    section.add "count", valid_580075
+  if valid_589108 != nil:
+    section.add "count", valid_589108
   assert query != nil,
         "query argument is necessary due to required `youngest` field"
-  var valid_580076 = query.getOrDefault("youngest")
-  valid_580076 = validateParameter(valid_580076, JString, required = true,
+  var valid_589109 = query.getOrDefault("youngest")
+  valid_589109 = validateParameter(valid_589109, JString, required = true,
                                  default = nil)
-  if valid_580076 != nil:
-    section.add "youngest", valid_580076
-  var valid_580077 = query.getOrDefault("window")
-  valid_580077 = validateParameter(valid_580077, JString, required = false,
+  if valid_589109 != nil:
+    section.add "youngest", valid_589109
+  var valid_589110 = query.getOrDefault("window")
+  valid_589110 = validateParameter(valid_589110, JString, required = false,
                                  default = nil)
-  if valid_580077 != nil:
-    section.add "window", valid_580077
+  if valid_589110 != nil:
+    section.add "window", valid_589110
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1226,21 +1226,21 @@ proc validate_CloudmonitoringTimeseriesDescriptorsList_580059(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580079: Call_CloudmonitoringTimeseriesDescriptorsList_580058;
+proc call*(call_589112: Call_CloudmonitoringTimeseriesDescriptorsList_589091;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## List the descriptors of the time series that match the metric and labels values and that have data points in the interval. Large responses are paginated; use the nextPageToken returned in the response to request subsequent pages of results by setting the pageToken query parameter to the value of the nextPageToken.
   ## 
-  let valid = call_580079.validator(path, query, header, formData, body)
-  let scheme = call_580079.pickScheme
+  let valid = call_589112.validator(path, query, header, formData, body)
+  let scheme = call_589112.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580079.url(scheme.get, call_580079.host, call_580079.base,
-                         call_580079.route, valid.getOrDefault("path"),
+  let url = call_589112.url(scheme.get, call_589112.host, call_589112.base,
+                         call_589112.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580079, url, valid)
+  result = hook(call_589112, url, valid)
 
-proc call*(call_580080: Call_CloudmonitoringTimeseriesDescriptorsList_580058;
+proc call*(call_589113: Call_CloudmonitoringTimeseriesDescriptorsList_589091;
           metric: string; project: string; youngest: string;
           aggregator: string = "max"; fields: string = ""; pageToken: string = "";
           quotaUser: string = ""; oldest: string = ""; alt: string = "json";
@@ -1300,38 +1300,38 @@ proc call*(call_580080: Call_CloudmonitoringTimeseriesDescriptorsList_580058;
   ## - h: hour 
   ## - d: day 
   ## - w: week  Examples: 3m, 4w. Only one unit is allowed, for example: 2w3d is not allowed; you should use 17d instead.
-  var path_580081 = newJObject()
-  var query_580082 = newJObject()
-  var body_580083 = newJObject()
-  add(query_580082, "aggregator", newJString(aggregator))
-  add(query_580082, "fields", newJString(fields))
-  add(query_580082, "pageToken", newJString(pageToken))
-  add(query_580082, "quotaUser", newJString(quotaUser))
-  add(query_580082, "oldest", newJString(oldest))
-  add(query_580082, "alt", newJString(alt))
-  add(query_580082, "timespan", newJString(timespan))
-  add(query_580082, "oauth_token", newJString(oauthToken))
-  add(query_580082, "userIp", newJString(userIp))
-  add(path_580081, "metric", newJString(metric))
-  add(query_580082, "key", newJString(key))
+  var path_589114 = newJObject()
+  var query_589115 = newJObject()
+  var body_589116 = newJObject()
+  add(query_589115, "aggregator", newJString(aggregator))
+  add(query_589115, "fields", newJString(fields))
+  add(query_589115, "pageToken", newJString(pageToken))
+  add(query_589115, "quotaUser", newJString(quotaUser))
+  add(query_589115, "oldest", newJString(oldest))
+  add(query_589115, "alt", newJString(alt))
+  add(query_589115, "timespan", newJString(timespan))
+  add(query_589115, "oauth_token", newJString(oauthToken))
+  add(query_589115, "userIp", newJString(userIp))
+  add(path_589114, "metric", newJString(metric))
+  add(query_589115, "key", newJString(key))
   if labels != nil:
-    query_580082.add "labels", labels
-  add(path_580081, "project", newJString(project))
+    query_589115.add "labels", labels
+  add(path_589114, "project", newJString(project))
   if body != nil:
-    body_580083 = body
-  add(query_580082, "prettyPrint", newJBool(prettyPrint))
-  add(query_580082, "count", newJInt(count))
-  add(query_580082, "youngest", newJString(youngest))
-  add(query_580082, "window", newJString(window))
-  result = call_580080.call(path_580081, query_580082, nil, nil, body_580083)
+    body_589116 = body
+  add(query_589115, "prettyPrint", newJBool(prettyPrint))
+  add(query_589115, "count", newJInt(count))
+  add(query_589115, "youngest", newJString(youngest))
+  add(query_589115, "window", newJString(window))
+  result = call_589113.call(path_589114, query_589115, nil, nil, body_589116)
 
-var cloudmonitoringTimeseriesDescriptorsList* = Call_CloudmonitoringTimeseriesDescriptorsList_580058(
+var cloudmonitoringTimeseriesDescriptorsList* = Call_CloudmonitoringTimeseriesDescriptorsList_589091(
     name: "cloudmonitoringTimeseriesDescriptorsList", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com",
     route: "/{project}/timeseriesDescriptors/{metric}",
-    validator: validate_CloudmonitoringTimeseriesDescriptorsList_580059,
+    validator: validate_CloudmonitoringTimeseriesDescriptorsList_589092,
     base: "/cloudmonitoring/v2beta2/projects",
-    url: url_CloudmonitoringTimeseriesDescriptorsList_580060,
+    url: url_CloudmonitoringTimeseriesDescriptorsList_589093,
     schemes: {Scheme.Https})
 export
   rest
@@ -1374,7 +1374,7 @@ proc store(auth: var GoogleAuth; token: string; expiry: int; form: string) =
   auth.form = form
   auth.digest = auth.hash
 
-proc authenticate*(fresh: float64 = -3600.0; lifetime: int = 3600): Future[bool] {.async.} =
+proc authenticate*(fresh: float64 = 3600.0; lifetime: int = 3600): Future[bool] {.async.} =
   ## get or refresh an authentication token; provide `fresh`
   ## to ensure that the token won't expire in the next N seconds.
   ## provide `lifetime` to indicate how long the token should last.

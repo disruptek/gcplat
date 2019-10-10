@@ -29,15 +29,15 @@ type
     url*: proc (protocol: Scheme; host: string; base: string; route: string;
               path: JsonNode; query: JsonNode): Uri
 
-  OpenApiRestCall_579408 = ref object of OpenApiRestCall
+  OpenApiRestCall_588441 = ref object of OpenApiRestCall
 proc hash(scheme: Scheme): Hash {.used.} =
   result = hash(ord(scheme))
 
-proc clone[T: OpenApiRestCall_579408](t: T): T {.used.} =
+proc clone[T: OpenApiRestCall_588441](t: T): T {.used.} =
   result = T(name: t.name, meth: t.meth, host: t.host, base: t.base, route: t.route,
            schemes: t.schemes, validator: t.validator, url: t.url)
 
-proc pickScheme(t: OpenApiRestCall_579408): Option[Scheme] {.used.} =
+proc pickScheme(t: OpenApiRestCall_588441): Option[Scheme] {.used.} =
   ## select a supported scheme from a set of candidates
   for scheme in Scheme.low ..
       Scheme.high:
@@ -74,7 +74,7 @@ type
   PathTokenKind = enum
     ConstantSegment, VariableSegment
   PathToken = tuple[kind: PathTokenKind, value: string]
-proc queryString(query: JsonNode): string =
+proc queryString(query: JsonNode): string {.used.} =
   var qs: seq[KeyVal]
   if query == nil:
     return ""
@@ -82,7 +82,7 @@ proc queryString(query: JsonNode): string =
     qs.add (key: k, val: v.getStr)
   result = encodeQuery(qs)
 
-proc hydratePath(input: JsonNode; segments: seq[PathToken]): Option[string] =
+proc hydratePath(input: JsonNode; segments: seq[PathToken]): Option[string] {.used.} =
   ## reconstitute a path with constants and variable values taken from json
   var head: string
   if segments.len == 0:
@@ -108,15 +108,15 @@ const
 proc composeQueryString(query: JsonNode): string
 method hook(call: OpenApiRestCall; url: Uri; input: JsonNode): Recallable {.base.}
 type
-  Call_KgsearchEntitiesSearch_579677 = ref object of OpenApiRestCall_579408
-proc url_KgsearchEntitiesSearch_579679(protocol: Scheme; host: string; base: string;
+  Call_KgsearchEntitiesSearch_588710 = ref object of OpenApiRestCall_588441
+proc url_KgsearchEntitiesSearch_588712(protocol: Scheme; host: string; base: string;
                                       route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
   result.query = $composeQueryString(query)
   result.path = base & route
 
-proc validate_KgsearchEntitiesSearch_579678(path: JsonNode; query: JsonNode;
+proc validate_KgsearchEntitiesSearch_588711(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Searches Knowledge Graph for entities that match the constraints.
   ## A list of matched entities will be returned in response, which will be in
@@ -169,93 +169,93 @@ proc validate_KgsearchEntitiesSearch_579678(path: JsonNode; query: JsonNode;
   ##   limit: JInt
   ##        : Limits the number of entities to be returned.
   section = newJObject()
-  var valid_579791 = query.getOrDefault("upload_protocol")
-  valid_579791 = validateParameter(valid_579791, JString, required = false,
+  var valid_588824 = query.getOrDefault("upload_protocol")
+  valid_588824 = validateParameter(valid_588824, JString, required = false,
                                  default = nil)
-  if valid_579791 != nil:
-    section.add "upload_protocol", valid_579791
-  var valid_579792 = query.getOrDefault("fields")
-  valid_579792 = validateParameter(valid_579792, JString, required = false,
+  if valid_588824 != nil:
+    section.add "upload_protocol", valid_588824
+  var valid_588825 = query.getOrDefault("fields")
+  valid_588825 = validateParameter(valid_588825, JString, required = false,
                                  default = nil)
-  if valid_579792 != nil:
-    section.add "fields", valid_579792
-  var valid_579793 = query.getOrDefault("languages")
-  valid_579793 = validateParameter(valid_579793, JArray, required = false,
+  if valid_588825 != nil:
+    section.add "fields", valid_588825
+  var valid_588826 = query.getOrDefault("languages")
+  valid_588826 = validateParameter(valid_588826, JArray, required = false,
                                  default = nil)
-  if valid_579793 != nil:
-    section.add "languages", valid_579793
-  var valid_579794 = query.getOrDefault("quotaUser")
-  valid_579794 = validateParameter(valid_579794, JString, required = false,
+  if valid_588826 != nil:
+    section.add "languages", valid_588826
+  var valid_588827 = query.getOrDefault("quotaUser")
+  valid_588827 = validateParameter(valid_588827, JString, required = false,
                                  default = nil)
-  if valid_579794 != nil:
-    section.add "quotaUser", valid_579794
-  var valid_579808 = query.getOrDefault("alt")
-  valid_579808 = validateParameter(valid_579808, JString, required = false,
+  if valid_588827 != nil:
+    section.add "quotaUser", valid_588827
+  var valid_588841 = query.getOrDefault("alt")
+  valid_588841 = validateParameter(valid_588841, JString, required = false,
                                  default = newJString("json"))
-  if valid_579808 != nil:
-    section.add "alt", valid_579808
-  var valid_579809 = query.getOrDefault("query")
-  valid_579809 = validateParameter(valid_579809, JString, required = false,
+  if valid_588841 != nil:
+    section.add "alt", valid_588841
+  var valid_588842 = query.getOrDefault("query")
+  valid_588842 = validateParameter(valid_588842, JString, required = false,
                                  default = nil)
-  if valid_579809 != nil:
-    section.add "query", valid_579809
-  var valid_579810 = query.getOrDefault("types")
-  valid_579810 = validateParameter(valid_579810, JArray, required = false,
+  if valid_588842 != nil:
+    section.add "query", valid_588842
+  var valid_588843 = query.getOrDefault("types")
+  valid_588843 = validateParameter(valid_588843, JArray, required = false,
                                  default = nil)
-  if valid_579810 != nil:
-    section.add "types", valid_579810
-  var valid_579811 = query.getOrDefault("oauth_token")
-  valid_579811 = validateParameter(valid_579811, JString, required = false,
+  if valid_588843 != nil:
+    section.add "types", valid_588843
+  var valid_588844 = query.getOrDefault("oauth_token")
+  valid_588844 = validateParameter(valid_588844, JString, required = false,
                                  default = nil)
-  if valid_579811 != nil:
-    section.add "oauth_token", valid_579811
-  var valid_579812 = query.getOrDefault("callback")
-  valid_579812 = validateParameter(valid_579812, JString, required = false,
+  if valid_588844 != nil:
+    section.add "oauth_token", valid_588844
+  var valid_588845 = query.getOrDefault("callback")
+  valid_588845 = validateParameter(valid_588845, JString, required = false,
                                  default = nil)
-  if valid_579812 != nil:
-    section.add "callback", valid_579812
-  var valid_579813 = query.getOrDefault("access_token")
-  valid_579813 = validateParameter(valid_579813, JString, required = false,
+  if valid_588845 != nil:
+    section.add "callback", valid_588845
+  var valid_588846 = query.getOrDefault("access_token")
+  valid_588846 = validateParameter(valid_588846, JString, required = false,
                                  default = nil)
-  if valid_579813 != nil:
-    section.add "access_token", valid_579813
-  var valid_579814 = query.getOrDefault("uploadType")
-  valid_579814 = validateParameter(valid_579814, JString, required = false,
+  if valid_588846 != nil:
+    section.add "access_token", valid_588846
+  var valid_588847 = query.getOrDefault("uploadType")
+  valid_588847 = validateParameter(valid_588847, JString, required = false,
                                  default = nil)
-  if valid_579814 != nil:
-    section.add "uploadType", valid_579814
-  var valid_579815 = query.getOrDefault("indent")
-  valid_579815 = validateParameter(valid_579815, JBool, required = false, default = nil)
-  if valid_579815 != nil:
-    section.add "indent", valid_579815
-  var valid_579816 = query.getOrDefault("ids")
-  valid_579816 = validateParameter(valid_579816, JArray, required = false,
+  if valid_588847 != nil:
+    section.add "uploadType", valid_588847
+  var valid_588848 = query.getOrDefault("indent")
+  valid_588848 = validateParameter(valid_588848, JBool, required = false, default = nil)
+  if valid_588848 != nil:
+    section.add "indent", valid_588848
+  var valid_588849 = query.getOrDefault("ids")
+  valid_588849 = validateParameter(valid_588849, JArray, required = false,
                                  default = nil)
-  if valid_579816 != nil:
-    section.add "ids", valid_579816
-  var valid_579817 = query.getOrDefault("key")
-  valid_579817 = validateParameter(valid_579817, JString, required = false,
+  if valid_588849 != nil:
+    section.add "ids", valid_588849
+  var valid_588850 = query.getOrDefault("key")
+  valid_588850 = validateParameter(valid_588850, JString, required = false,
                                  default = nil)
-  if valid_579817 != nil:
-    section.add "key", valid_579817
-  var valid_579818 = query.getOrDefault("$.xgafv")
-  valid_579818 = validateParameter(valid_579818, JString, required = false,
+  if valid_588850 != nil:
+    section.add "key", valid_588850
+  var valid_588851 = query.getOrDefault("$.xgafv")
+  valid_588851 = validateParameter(valid_588851, JString, required = false,
                                  default = newJString("1"))
-  if valid_579818 != nil:
-    section.add "$.xgafv", valid_579818
-  var valid_579819 = query.getOrDefault("prettyPrint")
-  valid_579819 = validateParameter(valid_579819, JBool, required = false,
+  if valid_588851 != nil:
+    section.add "$.xgafv", valid_588851
+  var valid_588852 = query.getOrDefault("prettyPrint")
+  valid_588852 = validateParameter(valid_588852, JBool, required = false,
                                  default = newJBool(true))
-  if valid_579819 != nil:
-    section.add "prettyPrint", valid_579819
-  var valid_579820 = query.getOrDefault("prefix")
-  valid_579820 = validateParameter(valid_579820, JBool, required = false, default = nil)
-  if valid_579820 != nil:
-    section.add "prefix", valid_579820
-  var valid_579821 = query.getOrDefault("limit")
-  valid_579821 = validateParameter(valid_579821, JInt, required = false, default = nil)
-  if valid_579821 != nil:
-    section.add "limit", valid_579821
+  if valid_588852 != nil:
+    section.add "prettyPrint", valid_588852
+  var valid_588853 = query.getOrDefault("prefix")
+  valid_588853 = validateParameter(valid_588853, JBool, required = false, default = nil)
+  if valid_588853 != nil:
+    section.add "prefix", valid_588853
+  var valid_588854 = query.getOrDefault("limit")
+  valid_588854 = validateParameter(valid_588854, JInt, required = false, default = nil)
+  if valid_588854 != nil:
+    section.add "limit", valid_588854
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -264,22 +264,22 @@ proc validate_KgsearchEntitiesSearch_579678(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_579844: Call_KgsearchEntitiesSearch_579677; path: JsonNode;
+proc call*(call_588877: Call_KgsearchEntitiesSearch_588710; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Searches Knowledge Graph for entities that match the constraints.
   ## A list of matched entities will be returned in response, which will be in
   ## JSON-LD format and compatible with http://schema.org
   ## 
-  let valid = call_579844.validator(path, query, header, formData, body)
-  let scheme = call_579844.pickScheme
+  let valid = call_588877.validator(path, query, header, formData, body)
+  let scheme = call_588877.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_579844.url(scheme.get, call_579844.host, call_579844.base,
-                         call_579844.route, valid.getOrDefault("path"),
+  let url = call_588877.url(scheme.get, call_588877.host, call_588877.base,
+                         call_588877.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_579844, url, valid)
+  result = hook(call_588877, url, valid)
 
-proc call*(call_579915: Call_KgsearchEntitiesSearch_579677;
+proc call*(call_588948: Call_KgsearchEntitiesSearch_588710;
           uploadProtocol: string = ""; fields: string = ""; languages: JsonNode = nil;
           quotaUser: string = ""; alt: string = "json"; query: string = "";
           types: JsonNode = nil; oauthToken: string = ""; callback: string = "";
@@ -331,35 +331,35 @@ proc call*(call_579915: Call_KgsearchEntitiesSearch_579677;
   ##         : Enables prefix match against names and aliases of entities
   ##   limit: int
   ##        : Limits the number of entities to be returned.
-  var query_579916 = newJObject()
-  add(query_579916, "upload_protocol", newJString(uploadProtocol))
-  add(query_579916, "fields", newJString(fields))
+  var query_588949 = newJObject()
+  add(query_588949, "upload_protocol", newJString(uploadProtocol))
+  add(query_588949, "fields", newJString(fields))
   if languages != nil:
-    query_579916.add "languages", languages
-  add(query_579916, "quotaUser", newJString(quotaUser))
-  add(query_579916, "alt", newJString(alt))
-  add(query_579916, "query", newJString(query))
+    query_588949.add "languages", languages
+  add(query_588949, "quotaUser", newJString(quotaUser))
+  add(query_588949, "alt", newJString(alt))
+  add(query_588949, "query", newJString(query))
   if types != nil:
-    query_579916.add "types", types
-  add(query_579916, "oauth_token", newJString(oauthToken))
-  add(query_579916, "callback", newJString(callback))
-  add(query_579916, "access_token", newJString(accessToken))
-  add(query_579916, "uploadType", newJString(uploadType))
-  add(query_579916, "indent", newJBool(indent))
+    query_588949.add "types", types
+  add(query_588949, "oauth_token", newJString(oauthToken))
+  add(query_588949, "callback", newJString(callback))
+  add(query_588949, "access_token", newJString(accessToken))
+  add(query_588949, "uploadType", newJString(uploadType))
+  add(query_588949, "indent", newJBool(indent))
   if ids != nil:
-    query_579916.add "ids", ids
-  add(query_579916, "key", newJString(key))
-  add(query_579916, "$.xgafv", newJString(Xgafv))
-  add(query_579916, "prettyPrint", newJBool(prettyPrint))
-  add(query_579916, "prefix", newJBool(prefix))
-  add(query_579916, "limit", newJInt(limit))
-  result = call_579915.call(nil, query_579916, nil, nil, nil)
+    query_588949.add "ids", ids
+  add(query_588949, "key", newJString(key))
+  add(query_588949, "$.xgafv", newJString(Xgafv))
+  add(query_588949, "prettyPrint", newJBool(prettyPrint))
+  add(query_588949, "prefix", newJBool(prefix))
+  add(query_588949, "limit", newJInt(limit))
+  result = call_588948.call(nil, query_588949, nil, nil, nil)
 
-var kgsearchEntitiesSearch* = Call_KgsearchEntitiesSearch_579677(
+var kgsearchEntitiesSearch* = Call_KgsearchEntitiesSearch_588710(
     name: "kgsearchEntitiesSearch", meth: HttpMethod.HttpGet,
     host: "kgsearch.googleapis.com", route: "/v1/entities:search",
-    validator: validate_KgsearchEntitiesSearch_579678, base: "/",
-    url: url_KgsearchEntitiesSearch_579679, schemes: {Scheme.Https})
+    validator: validate_KgsearchEntitiesSearch_588711, base: "/",
+    url: url_KgsearchEntitiesSearch_588712, schemes: {Scheme.Https})
 export
   rest
 
@@ -401,7 +401,7 @@ proc store(auth: var GoogleAuth; token: string; expiry: int; form: string) =
   auth.form = form
   auth.digest = auth.hash
 
-proc authenticate*(fresh: float64 = -3600.0; lifetime: int = 3600): Future[bool] {.async.} =
+proc authenticate*(fresh: float64 = 3600.0; lifetime: int = 3600): Future[bool] {.async.} =
   ## get or refresh an authentication token; provide `fresh`
   ## to ensure that the token won't expire in the next N seconds.
   ## provide `lifetime` to indicate how long the token should last.

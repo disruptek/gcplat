@@ -29,15 +29,15 @@ type
     url*: proc (protocol: Scheme; host: string; base: string; route: string;
               path: JsonNode; query: JsonNode): Uri
 
-  OpenApiRestCall_579424 = ref object of OpenApiRestCall
+  OpenApiRestCall_588457 = ref object of OpenApiRestCall
 proc hash(scheme: Scheme): Hash {.used.} =
   result = hash(ord(scheme))
 
-proc clone[T: OpenApiRestCall_579424](t: T): T {.used.} =
+proc clone[T: OpenApiRestCall_588457](t: T): T {.used.} =
   result = T(name: t.name, meth: t.meth, host: t.host, base: t.base, route: t.route,
            schemes: t.schemes, validator: t.validator, url: t.url)
 
-proc pickScheme(t: OpenApiRestCall_579424): Option[Scheme] {.used.} =
+proc pickScheme(t: OpenApiRestCall_588457): Option[Scheme] {.used.} =
   ## select a supported scheme from a set of candidates
   for scheme in Scheme.low ..
       Scheme.high:
@@ -74,7 +74,7 @@ type
   PathTokenKind = enum
     ConstantSegment, VariableSegment
   PathToken = tuple[kind: PathTokenKind, value: string]
-proc queryString(query: JsonNode): string =
+proc queryString(query: JsonNode): string {.used.} =
   var qs: seq[KeyVal]
   if query == nil:
     return ""
@@ -82,7 +82,7 @@ proc queryString(query: JsonNode): string =
     qs.add (key: k, val: v.getStr)
   result = encodeQuery(qs)
 
-proc hydratePath(input: JsonNode; segments: seq[PathToken]): Option[string] =
+proc hydratePath(input: JsonNode; segments: seq[PathToken]): Option[string] {.used.} =
   ## reconstitute a path with constants and variable values taken from json
   var head: string
   if segments.len == 0:
@@ -108,15 +108,15 @@ const
 proc composeQueryString(query: JsonNode): string
 method hook(call: OpenApiRestCall; url: Uri; input: JsonNode): Recallable {.base.}
 type
-  Call_AppsactivityActivitiesList_579692 = ref object of OpenApiRestCall_579424
-proc url_AppsactivityActivitiesList_579694(protocol: Scheme; host: string;
+  Call_AppsactivityActivitiesList_588725 = ref object of OpenApiRestCall_588457
+proc url_AppsactivityActivitiesList_588727(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
   result.query = $composeQueryString(query)
   result.path = base & route
 
-proc validate_AppsactivityActivitiesList_579693(path: JsonNode; query: JsonNode;
+proc validate_AppsactivityActivitiesList_588726(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Returns a list of activities visible to the current logged in user. Visible activities are determined by the visibility settings of the object that was acted on, e.g. Drive files a user can see. An activity is a record of past events. Multiple events may be merged if they are similar. A request is scoped to activities from a given Google service using the source parameter.
   ## 
@@ -155,76 +155,76 @@ proc validate_AppsactivityActivitiesList_579693(path: JsonNode; query: JsonNode;
   ##   userId: JString
   ##         : The ID used for ACL checks (does not filter the resulting event list by the assigned value). Use the special value me to indicate the currently authenticated user.
   section = newJObject()
-  var valid_579819 = query.getOrDefault("groupingStrategy")
-  valid_579819 = validateParameter(valid_579819, JString, required = false,
+  var valid_588852 = query.getOrDefault("groupingStrategy")
+  valid_588852 = validateParameter(valid_588852, JString, required = false,
                                  default = newJString("driveUi"))
-  if valid_579819 != nil:
-    section.add "groupingStrategy", valid_579819
-  var valid_579820 = query.getOrDefault("fields")
-  valid_579820 = validateParameter(valid_579820, JString, required = false,
+  if valid_588852 != nil:
+    section.add "groupingStrategy", valid_588852
+  var valid_588853 = query.getOrDefault("fields")
+  valid_588853 = validateParameter(valid_588853, JString, required = false,
                                  default = nil)
-  if valid_579820 != nil:
-    section.add "fields", valid_579820
-  var valid_579821 = query.getOrDefault("pageToken")
-  valid_579821 = validateParameter(valid_579821, JString, required = false,
+  if valid_588853 != nil:
+    section.add "fields", valid_588853
+  var valid_588854 = query.getOrDefault("pageToken")
+  valid_588854 = validateParameter(valid_588854, JString, required = false,
                                  default = nil)
-  if valid_579821 != nil:
-    section.add "pageToken", valid_579821
-  var valid_579822 = query.getOrDefault("quotaUser")
-  valid_579822 = validateParameter(valid_579822, JString, required = false,
+  if valid_588854 != nil:
+    section.add "pageToken", valid_588854
+  var valid_588855 = query.getOrDefault("quotaUser")
+  valid_588855 = validateParameter(valid_588855, JString, required = false,
                                  default = nil)
-  if valid_579822 != nil:
-    section.add "quotaUser", valid_579822
-  var valid_579823 = query.getOrDefault("alt")
-  valid_579823 = validateParameter(valid_579823, JString, required = false,
+  if valid_588855 != nil:
+    section.add "quotaUser", valid_588855
+  var valid_588856 = query.getOrDefault("alt")
+  valid_588856 = validateParameter(valid_588856, JString, required = false,
                                  default = newJString("json"))
-  if valid_579823 != nil:
-    section.add "alt", valid_579823
-  var valid_579824 = query.getOrDefault("drive.ancestorId")
-  valid_579824 = validateParameter(valid_579824, JString, required = false,
+  if valid_588856 != nil:
+    section.add "alt", valid_588856
+  var valid_588857 = query.getOrDefault("drive.ancestorId")
+  valid_588857 = validateParameter(valid_588857, JString, required = false,
                                  default = nil)
-  if valid_579824 != nil:
-    section.add "drive.ancestorId", valid_579824
-  var valid_579825 = query.getOrDefault("oauth_token")
-  valid_579825 = validateParameter(valid_579825, JString, required = false,
+  if valid_588857 != nil:
+    section.add "drive.ancestorId", valid_588857
+  var valid_588858 = query.getOrDefault("oauth_token")
+  valid_588858 = validateParameter(valid_588858, JString, required = false,
                                  default = nil)
-  if valid_579825 != nil:
-    section.add "oauth_token", valid_579825
-  var valid_579826 = query.getOrDefault("userIp")
-  valid_579826 = validateParameter(valid_579826, JString, required = false,
+  if valid_588858 != nil:
+    section.add "oauth_token", valid_588858
+  var valid_588859 = query.getOrDefault("userIp")
+  valid_588859 = validateParameter(valid_588859, JString, required = false,
                                  default = nil)
-  if valid_579826 != nil:
-    section.add "userIp", valid_579826
-  var valid_579827 = query.getOrDefault("source")
-  valid_579827 = validateParameter(valid_579827, JString, required = false,
+  if valid_588859 != nil:
+    section.add "userIp", valid_588859
+  var valid_588860 = query.getOrDefault("source")
+  valid_588860 = validateParameter(valid_588860, JString, required = false,
                                  default = nil)
-  if valid_579827 != nil:
-    section.add "source", valid_579827
-  var valid_579828 = query.getOrDefault("key")
-  valid_579828 = validateParameter(valid_579828, JString, required = false,
+  if valid_588860 != nil:
+    section.add "source", valid_588860
+  var valid_588861 = query.getOrDefault("key")
+  valid_588861 = validateParameter(valid_588861, JString, required = false,
                                  default = nil)
-  if valid_579828 != nil:
-    section.add "key", valid_579828
-  var valid_579829 = query.getOrDefault("drive.fileId")
-  valid_579829 = validateParameter(valid_579829, JString, required = false,
+  if valid_588861 != nil:
+    section.add "key", valid_588861
+  var valid_588862 = query.getOrDefault("drive.fileId")
+  valid_588862 = validateParameter(valid_588862, JString, required = false,
                                  default = nil)
-  if valid_579829 != nil:
-    section.add "drive.fileId", valid_579829
-  var valid_579831 = query.getOrDefault("pageSize")
-  valid_579831 = validateParameter(valid_579831, JInt, required = false,
+  if valid_588862 != nil:
+    section.add "drive.fileId", valid_588862
+  var valid_588864 = query.getOrDefault("pageSize")
+  valid_588864 = validateParameter(valid_588864, JInt, required = false,
                                  default = newJInt(50))
-  if valid_579831 != nil:
-    section.add "pageSize", valid_579831
-  var valid_579832 = query.getOrDefault("prettyPrint")
-  valid_579832 = validateParameter(valid_579832, JBool, required = false,
+  if valid_588864 != nil:
+    section.add "pageSize", valid_588864
+  var valid_588865 = query.getOrDefault("prettyPrint")
+  valid_588865 = validateParameter(valid_588865, JBool, required = false,
                                  default = newJBool(true))
-  if valid_579832 != nil:
-    section.add "prettyPrint", valid_579832
-  var valid_579833 = query.getOrDefault("userId")
-  valid_579833 = validateParameter(valid_579833, JString, required = false,
+  if valid_588865 != nil:
+    section.add "prettyPrint", valid_588865
+  var valid_588866 = query.getOrDefault("userId")
+  valid_588866 = validateParameter(valid_588866, JString, required = false,
                                  default = newJString("me"))
-  if valid_579833 != nil:
-    section.add "userId", valid_579833
+  if valid_588866 != nil:
+    section.add "userId", valid_588866
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -233,20 +233,20 @@ proc validate_AppsactivityActivitiesList_579693(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_579856: Call_AppsactivityActivitiesList_579692; path: JsonNode;
+proc call*(call_588889: Call_AppsactivityActivitiesList_588725; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Returns a list of activities visible to the current logged in user. Visible activities are determined by the visibility settings of the object that was acted on, e.g. Drive files a user can see. An activity is a record of past events. Multiple events may be merged if they are similar. A request is scoped to activities from a given Google service using the source parameter.
   ## 
-  let valid = call_579856.validator(path, query, header, formData, body)
-  let scheme = call_579856.pickScheme
+  let valid = call_588889.validator(path, query, header, formData, body)
+  let scheme = call_588889.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_579856.url(scheme.get, call_579856.host, call_579856.base,
-                         call_579856.route, valid.getOrDefault("path"),
+  let url = call_588889.url(scheme.get, call_588889.host, call_588889.base,
+                         call_588889.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_579856, url, valid)
+  result = hook(call_588889, url, valid)
 
-proc call*(call_579927: Call_AppsactivityActivitiesList_579692;
+proc call*(call_588960: Call_AppsactivityActivitiesList_588725;
           groupingStrategy: string = "driveUi"; fields: string = "";
           pageToken: string = ""; quotaUser: string = ""; alt: string = "json";
           driveAncestorId: string = ""; oauthToken: string = ""; userIp: string = "";
@@ -283,28 +283,28 @@ proc call*(call_579927: Call_AppsactivityActivitiesList_579692;
   ##              : Returns response with indentations and line breaks.
   ##   userId: string
   ##         : The ID used for ACL checks (does not filter the resulting event list by the assigned value). Use the special value me to indicate the currently authenticated user.
-  var query_579928 = newJObject()
-  add(query_579928, "groupingStrategy", newJString(groupingStrategy))
-  add(query_579928, "fields", newJString(fields))
-  add(query_579928, "pageToken", newJString(pageToken))
-  add(query_579928, "quotaUser", newJString(quotaUser))
-  add(query_579928, "alt", newJString(alt))
-  add(query_579928, "drive.ancestorId", newJString(driveAncestorId))
-  add(query_579928, "oauth_token", newJString(oauthToken))
-  add(query_579928, "userIp", newJString(userIp))
-  add(query_579928, "source", newJString(source))
-  add(query_579928, "key", newJString(key))
-  add(query_579928, "drive.fileId", newJString(driveFileId))
-  add(query_579928, "pageSize", newJInt(pageSize))
-  add(query_579928, "prettyPrint", newJBool(prettyPrint))
-  add(query_579928, "userId", newJString(userId))
-  result = call_579927.call(nil, query_579928, nil, nil, nil)
+  var query_588961 = newJObject()
+  add(query_588961, "groupingStrategy", newJString(groupingStrategy))
+  add(query_588961, "fields", newJString(fields))
+  add(query_588961, "pageToken", newJString(pageToken))
+  add(query_588961, "quotaUser", newJString(quotaUser))
+  add(query_588961, "alt", newJString(alt))
+  add(query_588961, "drive.ancestorId", newJString(driveAncestorId))
+  add(query_588961, "oauth_token", newJString(oauthToken))
+  add(query_588961, "userIp", newJString(userIp))
+  add(query_588961, "source", newJString(source))
+  add(query_588961, "key", newJString(key))
+  add(query_588961, "drive.fileId", newJString(driveFileId))
+  add(query_588961, "pageSize", newJInt(pageSize))
+  add(query_588961, "prettyPrint", newJBool(prettyPrint))
+  add(query_588961, "userId", newJString(userId))
+  result = call_588960.call(nil, query_588961, nil, nil, nil)
 
-var appsactivityActivitiesList* = Call_AppsactivityActivitiesList_579692(
+var appsactivityActivitiesList* = Call_AppsactivityActivitiesList_588725(
     name: "appsactivityActivitiesList", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/activities",
-    validator: validate_AppsactivityActivitiesList_579693,
-    base: "/appsactivity/v1", url: url_AppsactivityActivitiesList_579694,
+    validator: validate_AppsactivityActivitiesList_588726,
+    base: "/appsactivity/v1", url: url_AppsactivityActivitiesList_588727,
     schemes: {Scheme.Https})
 export
   rest
@@ -347,7 +347,7 @@ proc store(auth: var GoogleAuth; token: string; expiry: int; form: string) =
   auth.form = form
   auth.digest = auth.hash
 
-proc authenticate*(fresh: float64 = -3600.0; lifetime: int = 3600): Future[bool] {.async.} =
+proc authenticate*(fresh: float64 = 3600.0; lifetime: int = 3600): Future[bool] {.async.} =
   ## get or refresh an authentication token; provide `fresh`
   ## to ensure that the token won't expire in the next N seconds.
   ## provide `lifetime` to indicate how long the token should last.

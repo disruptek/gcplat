@@ -30,15 +30,15 @@ type
     url*: proc (protocol: Scheme; host: string; base: string; route: string;
               path: JsonNode; query: JsonNode): Uri
 
-  OpenApiRestCall_579408 = ref object of OpenApiRestCall
+  OpenApiRestCall_588441 = ref object of OpenApiRestCall
 proc hash(scheme: Scheme): Hash {.used.} =
   result = hash(ord(scheme))
 
-proc clone[T: OpenApiRestCall_579408](t: T): T {.used.} =
+proc clone[T: OpenApiRestCall_588441](t: T): T {.used.} =
   result = T(name: t.name, meth: t.meth, host: t.host, base: t.base, route: t.route,
            schemes: t.schemes, validator: t.validator, url: t.url)
 
-proc pickScheme(t: OpenApiRestCall_579408): Option[Scheme] {.used.} =
+proc pickScheme(t: OpenApiRestCall_588441): Option[Scheme] {.used.} =
   ## select a supported scheme from a set of candidates
   for scheme in Scheme.low ..
       Scheme.high:
@@ -75,7 +75,7 @@ type
   PathTokenKind = enum
     ConstantSegment, VariableSegment
   PathToken = tuple[kind: PathTokenKind, value: string]
-proc queryString(query: JsonNode): string =
+proc queryString(query: JsonNode): string {.used.} =
   var qs: seq[KeyVal]
   if query == nil:
     return ""
@@ -83,7 +83,7 @@ proc queryString(query: JsonNode): string =
     qs.add (key: k, val: v.getStr)
   result = encodeQuery(qs)
 
-proc hydratePath(input: JsonNode; segments: seq[PathToken]): Option[string] =
+proc hydratePath(input: JsonNode; segments: seq[PathToken]): Option[string] {.used.} =
   ## reconstitute a path with constants and variable values taken from json
   var head: string
   if segments.len == 0:
@@ -109,8 +109,8 @@ const
 proc composeQueryString(query: JsonNode): string
 method hook(call: OpenApiRestCall; url: Uri; input: JsonNode): Recallable {.base.}
 type
-  Call_CloudiotProjectsLocationsRegistriesDevicesGet_579677 = ref object of OpenApiRestCall_579408
-proc url_CloudiotProjectsLocationsRegistriesDevicesGet_579679(protocol: Scheme;
+  Call_CloudiotProjectsLocationsRegistriesDevicesGet_588710 = ref object of OpenApiRestCall_588441
+proc url_CloudiotProjectsLocationsRegistriesDevicesGet_588712(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -125,7 +125,7 @@ proc url_CloudiotProjectsLocationsRegistriesDevicesGet_579679(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_CloudiotProjectsLocationsRegistriesDevicesGet_579678(
+proc validate_CloudiotProjectsLocationsRegistriesDevicesGet_588711(
     path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
     body: JsonNode): JsonNode =
   ## Gets details about a device.
@@ -139,11 +139,11 @@ proc validate_CloudiotProjectsLocationsRegistriesDevicesGet_579678(
   ## `projects/p0/locations/us-central1/registries/registry0/devices/{num_id}`.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `name` field"
-  var valid_579805 = path.getOrDefault("name")
-  valid_579805 = validateParameter(valid_579805, JString, required = true,
+  var valid_588838 = path.getOrDefault("name")
+  valid_588838 = validateParameter(valid_588838, JString, required = true,
                                  default = nil)
-  if valid_579805 != nil:
-    section.add "name", valid_579805
+  if valid_588838 != nil:
+    section.add "name", valid_588838
   result.add "path", section
   ## parameters in `query` object:
   ##   upload_protocol: JString
@@ -172,66 +172,66 @@ proc validate_CloudiotProjectsLocationsRegistriesDevicesGet_579678(
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_579806 = query.getOrDefault("upload_protocol")
-  valid_579806 = validateParameter(valid_579806, JString, required = false,
+  var valid_588839 = query.getOrDefault("upload_protocol")
+  valid_588839 = validateParameter(valid_588839, JString, required = false,
                                  default = nil)
-  if valid_579806 != nil:
-    section.add "upload_protocol", valid_579806
-  var valid_579807 = query.getOrDefault("fields")
-  valid_579807 = validateParameter(valid_579807, JString, required = false,
+  if valid_588839 != nil:
+    section.add "upload_protocol", valid_588839
+  var valid_588840 = query.getOrDefault("fields")
+  valid_588840 = validateParameter(valid_588840, JString, required = false,
                                  default = nil)
-  if valid_579807 != nil:
-    section.add "fields", valid_579807
-  var valid_579808 = query.getOrDefault("quotaUser")
-  valid_579808 = validateParameter(valid_579808, JString, required = false,
+  if valid_588840 != nil:
+    section.add "fields", valid_588840
+  var valid_588841 = query.getOrDefault("quotaUser")
+  valid_588841 = validateParameter(valid_588841, JString, required = false,
                                  default = nil)
-  if valid_579808 != nil:
-    section.add "quotaUser", valid_579808
-  var valid_579822 = query.getOrDefault("alt")
-  valid_579822 = validateParameter(valid_579822, JString, required = false,
+  if valid_588841 != nil:
+    section.add "quotaUser", valid_588841
+  var valid_588855 = query.getOrDefault("alt")
+  valid_588855 = validateParameter(valid_588855, JString, required = false,
                                  default = newJString("json"))
-  if valid_579822 != nil:
-    section.add "alt", valid_579822
-  var valid_579823 = query.getOrDefault("oauth_token")
-  valid_579823 = validateParameter(valid_579823, JString, required = false,
+  if valid_588855 != nil:
+    section.add "alt", valid_588855
+  var valid_588856 = query.getOrDefault("oauth_token")
+  valid_588856 = validateParameter(valid_588856, JString, required = false,
                                  default = nil)
-  if valid_579823 != nil:
-    section.add "oauth_token", valid_579823
-  var valid_579824 = query.getOrDefault("callback")
-  valid_579824 = validateParameter(valid_579824, JString, required = false,
+  if valid_588856 != nil:
+    section.add "oauth_token", valid_588856
+  var valid_588857 = query.getOrDefault("callback")
+  valid_588857 = validateParameter(valid_588857, JString, required = false,
                                  default = nil)
-  if valid_579824 != nil:
-    section.add "callback", valid_579824
-  var valid_579825 = query.getOrDefault("access_token")
-  valid_579825 = validateParameter(valid_579825, JString, required = false,
+  if valid_588857 != nil:
+    section.add "callback", valid_588857
+  var valid_588858 = query.getOrDefault("access_token")
+  valid_588858 = validateParameter(valid_588858, JString, required = false,
                                  default = nil)
-  if valid_579825 != nil:
-    section.add "access_token", valid_579825
-  var valid_579826 = query.getOrDefault("uploadType")
-  valid_579826 = validateParameter(valid_579826, JString, required = false,
+  if valid_588858 != nil:
+    section.add "access_token", valid_588858
+  var valid_588859 = query.getOrDefault("uploadType")
+  valid_588859 = validateParameter(valid_588859, JString, required = false,
                                  default = nil)
-  if valid_579826 != nil:
-    section.add "uploadType", valid_579826
-  var valid_579827 = query.getOrDefault("key")
-  valid_579827 = validateParameter(valid_579827, JString, required = false,
+  if valid_588859 != nil:
+    section.add "uploadType", valid_588859
+  var valid_588860 = query.getOrDefault("key")
+  valid_588860 = validateParameter(valid_588860, JString, required = false,
                                  default = nil)
-  if valid_579827 != nil:
-    section.add "key", valid_579827
-  var valid_579828 = query.getOrDefault("fieldMask")
-  valid_579828 = validateParameter(valid_579828, JString, required = false,
+  if valid_588860 != nil:
+    section.add "key", valid_588860
+  var valid_588861 = query.getOrDefault("fieldMask")
+  valid_588861 = validateParameter(valid_588861, JString, required = false,
                                  default = nil)
-  if valid_579828 != nil:
-    section.add "fieldMask", valid_579828
-  var valid_579829 = query.getOrDefault("$.xgafv")
-  valid_579829 = validateParameter(valid_579829, JString, required = false,
+  if valid_588861 != nil:
+    section.add "fieldMask", valid_588861
+  var valid_588862 = query.getOrDefault("$.xgafv")
+  valid_588862 = validateParameter(valid_588862, JString, required = false,
                                  default = newJString("1"))
-  if valid_579829 != nil:
-    section.add "$.xgafv", valid_579829
-  var valid_579830 = query.getOrDefault("prettyPrint")
-  valid_579830 = validateParameter(valid_579830, JBool, required = false,
+  if valid_588862 != nil:
+    section.add "$.xgafv", valid_588862
+  var valid_588863 = query.getOrDefault("prettyPrint")
+  valid_588863 = validateParameter(valid_588863, JBool, required = false,
                                  default = newJBool(true))
-  if valid_579830 != nil:
-    section.add "prettyPrint", valid_579830
+  if valid_588863 != nil:
+    section.add "prettyPrint", valid_588863
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -240,21 +240,21 @@ proc validate_CloudiotProjectsLocationsRegistriesDevicesGet_579678(
   if body != nil:
     result.add "body", body
 
-proc call*(call_579853: Call_CloudiotProjectsLocationsRegistriesDevicesGet_579677;
+proc call*(call_588886: Call_CloudiotProjectsLocationsRegistriesDevicesGet_588710;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Gets details about a device.
   ## 
-  let valid = call_579853.validator(path, query, header, formData, body)
-  let scheme = call_579853.pickScheme
+  let valid = call_588886.validator(path, query, header, formData, body)
+  let scheme = call_588886.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_579853.url(scheme.get, call_579853.host, call_579853.base,
-                         call_579853.route, valid.getOrDefault("path"),
+  let url = call_588886.url(scheme.get, call_588886.host, call_588886.base,
+                         call_588886.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_579853, url, valid)
+  result = hook(call_588886, url, valid)
 
-proc call*(call_579924: Call_CloudiotProjectsLocationsRegistriesDevicesGet_579677;
+proc call*(call_588957: Call_CloudiotProjectsLocationsRegistriesDevicesGet_588710;
           name: string; uploadProtocol: string = ""; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           callback: string = ""; accessToken: string = ""; uploadType: string = "";
@@ -291,32 +291,32 @@ proc call*(call_579924: Call_CloudiotProjectsLocationsRegistriesDevicesGet_57967
   ##        : V1 error format.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_579925 = newJObject()
-  var query_579927 = newJObject()
-  add(query_579927, "upload_protocol", newJString(uploadProtocol))
-  add(query_579927, "fields", newJString(fields))
-  add(query_579927, "quotaUser", newJString(quotaUser))
-  add(path_579925, "name", newJString(name))
-  add(query_579927, "alt", newJString(alt))
-  add(query_579927, "oauth_token", newJString(oauthToken))
-  add(query_579927, "callback", newJString(callback))
-  add(query_579927, "access_token", newJString(accessToken))
-  add(query_579927, "uploadType", newJString(uploadType))
-  add(query_579927, "key", newJString(key))
-  add(query_579927, "fieldMask", newJString(fieldMask))
-  add(query_579927, "$.xgafv", newJString(Xgafv))
-  add(query_579927, "prettyPrint", newJBool(prettyPrint))
-  result = call_579924.call(path_579925, query_579927, nil, nil, nil)
+  var path_588958 = newJObject()
+  var query_588960 = newJObject()
+  add(query_588960, "upload_protocol", newJString(uploadProtocol))
+  add(query_588960, "fields", newJString(fields))
+  add(query_588960, "quotaUser", newJString(quotaUser))
+  add(path_588958, "name", newJString(name))
+  add(query_588960, "alt", newJString(alt))
+  add(query_588960, "oauth_token", newJString(oauthToken))
+  add(query_588960, "callback", newJString(callback))
+  add(query_588960, "access_token", newJString(accessToken))
+  add(query_588960, "uploadType", newJString(uploadType))
+  add(query_588960, "key", newJString(key))
+  add(query_588960, "fieldMask", newJString(fieldMask))
+  add(query_588960, "$.xgafv", newJString(Xgafv))
+  add(query_588960, "prettyPrint", newJBool(prettyPrint))
+  result = call_588957.call(path_588958, query_588960, nil, nil, nil)
 
-var cloudiotProjectsLocationsRegistriesDevicesGet* = Call_CloudiotProjectsLocationsRegistriesDevicesGet_579677(
+var cloudiotProjectsLocationsRegistriesDevicesGet* = Call_CloudiotProjectsLocationsRegistriesDevicesGet_588710(
     name: "cloudiotProjectsLocationsRegistriesDevicesGet",
     meth: HttpMethod.HttpGet, host: "cloudiot.googleapis.com", route: "/v1/{name}",
-    validator: validate_CloudiotProjectsLocationsRegistriesDevicesGet_579678,
-    base: "/", url: url_CloudiotProjectsLocationsRegistriesDevicesGet_579679,
+    validator: validate_CloudiotProjectsLocationsRegistriesDevicesGet_588711,
+    base: "/", url: url_CloudiotProjectsLocationsRegistriesDevicesGet_588712,
     schemes: {Scheme.Https})
 type
-  Call_CloudiotProjectsLocationsRegistriesDevicesPatch_579985 = ref object of OpenApiRestCall_579408
-proc url_CloudiotProjectsLocationsRegistriesDevicesPatch_579987(protocol: Scheme;
+  Call_CloudiotProjectsLocationsRegistriesDevicesPatch_589018 = ref object of OpenApiRestCall_588441
+proc url_CloudiotProjectsLocationsRegistriesDevicesPatch_589020(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -331,7 +331,7 @@ proc url_CloudiotProjectsLocationsRegistriesDevicesPatch_579987(protocol: Scheme
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_CloudiotProjectsLocationsRegistriesDevicesPatch_579986(
+proc validate_CloudiotProjectsLocationsRegistriesDevicesPatch_589019(
     path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
     body: JsonNode): JsonNode =
   ## Updates a device.
@@ -347,11 +347,11 @@ proc validate_CloudiotProjectsLocationsRegistriesDevicesPatch_579986(
   ## in the device numeric ID.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `name` field"
-  var valid_579988 = path.getOrDefault("name")
-  valid_579988 = validateParameter(valid_579988, JString, required = true,
+  var valid_589021 = path.getOrDefault("name")
+  valid_589021 = validateParameter(valid_589021, JString, required = true,
                                  default = nil)
-  if valid_579988 != nil:
-    section.add "name", valid_579988
+  if valid_589021 != nil:
+    section.add "name", valid_589021
   result.add "path", section
   ## parameters in `query` object:
   ##   upload_protocol: JString
@@ -382,66 +382,66 @@ proc validate_CloudiotProjectsLocationsRegistriesDevicesPatch_579986(
   ## are immutable or only set by the server.
   ## Mutable top-level fields: `credentials`, `blocked`, and `metadata`
   section = newJObject()
-  var valid_579989 = query.getOrDefault("upload_protocol")
-  valid_579989 = validateParameter(valid_579989, JString, required = false,
+  var valid_589022 = query.getOrDefault("upload_protocol")
+  valid_589022 = validateParameter(valid_589022, JString, required = false,
                                  default = nil)
-  if valid_579989 != nil:
-    section.add "upload_protocol", valid_579989
-  var valid_579990 = query.getOrDefault("fields")
-  valid_579990 = validateParameter(valid_579990, JString, required = false,
+  if valid_589022 != nil:
+    section.add "upload_protocol", valid_589022
+  var valid_589023 = query.getOrDefault("fields")
+  valid_589023 = validateParameter(valid_589023, JString, required = false,
                                  default = nil)
-  if valid_579990 != nil:
-    section.add "fields", valid_579990
-  var valid_579991 = query.getOrDefault("quotaUser")
-  valid_579991 = validateParameter(valid_579991, JString, required = false,
+  if valid_589023 != nil:
+    section.add "fields", valid_589023
+  var valid_589024 = query.getOrDefault("quotaUser")
+  valid_589024 = validateParameter(valid_589024, JString, required = false,
                                  default = nil)
-  if valid_579991 != nil:
-    section.add "quotaUser", valid_579991
-  var valid_579992 = query.getOrDefault("alt")
-  valid_579992 = validateParameter(valid_579992, JString, required = false,
+  if valid_589024 != nil:
+    section.add "quotaUser", valid_589024
+  var valid_589025 = query.getOrDefault("alt")
+  valid_589025 = validateParameter(valid_589025, JString, required = false,
                                  default = newJString("json"))
-  if valid_579992 != nil:
-    section.add "alt", valid_579992
-  var valid_579993 = query.getOrDefault("oauth_token")
-  valid_579993 = validateParameter(valid_579993, JString, required = false,
+  if valid_589025 != nil:
+    section.add "alt", valid_589025
+  var valid_589026 = query.getOrDefault("oauth_token")
+  valid_589026 = validateParameter(valid_589026, JString, required = false,
                                  default = nil)
-  if valid_579993 != nil:
-    section.add "oauth_token", valid_579993
-  var valid_579994 = query.getOrDefault("callback")
-  valid_579994 = validateParameter(valid_579994, JString, required = false,
+  if valid_589026 != nil:
+    section.add "oauth_token", valid_589026
+  var valid_589027 = query.getOrDefault("callback")
+  valid_589027 = validateParameter(valid_589027, JString, required = false,
                                  default = nil)
-  if valid_579994 != nil:
-    section.add "callback", valid_579994
-  var valid_579995 = query.getOrDefault("access_token")
-  valid_579995 = validateParameter(valid_579995, JString, required = false,
+  if valid_589027 != nil:
+    section.add "callback", valid_589027
+  var valid_589028 = query.getOrDefault("access_token")
+  valid_589028 = validateParameter(valid_589028, JString, required = false,
                                  default = nil)
-  if valid_579995 != nil:
-    section.add "access_token", valid_579995
-  var valid_579996 = query.getOrDefault("uploadType")
-  valid_579996 = validateParameter(valid_579996, JString, required = false,
+  if valid_589028 != nil:
+    section.add "access_token", valid_589028
+  var valid_589029 = query.getOrDefault("uploadType")
+  valid_589029 = validateParameter(valid_589029, JString, required = false,
                                  default = nil)
-  if valid_579996 != nil:
-    section.add "uploadType", valid_579996
-  var valid_579997 = query.getOrDefault("key")
-  valid_579997 = validateParameter(valid_579997, JString, required = false,
+  if valid_589029 != nil:
+    section.add "uploadType", valid_589029
+  var valid_589030 = query.getOrDefault("key")
+  valid_589030 = validateParameter(valid_589030, JString, required = false,
                                  default = nil)
-  if valid_579997 != nil:
-    section.add "key", valid_579997
-  var valid_579998 = query.getOrDefault("$.xgafv")
-  valid_579998 = validateParameter(valid_579998, JString, required = false,
+  if valid_589030 != nil:
+    section.add "key", valid_589030
+  var valid_589031 = query.getOrDefault("$.xgafv")
+  valid_589031 = validateParameter(valid_589031, JString, required = false,
                                  default = newJString("1"))
-  if valid_579998 != nil:
-    section.add "$.xgafv", valid_579998
-  var valid_579999 = query.getOrDefault("prettyPrint")
-  valid_579999 = validateParameter(valid_579999, JBool, required = false,
+  if valid_589031 != nil:
+    section.add "$.xgafv", valid_589031
+  var valid_589032 = query.getOrDefault("prettyPrint")
+  valid_589032 = validateParameter(valid_589032, JBool, required = false,
                                  default = newJBool(true))
-  if valid_579999 != nil:
-    section.add "prettyPrint", valid_579999
-  var valid_580000 = query.getOrDefault("updateMask")
-  valid_580000 = validateParameter(valid_580000, JString, required = false,
+  if valid_589032 != nil:
+    section.add "prettyPrint", valid_589032
+  var valid_589033 = query.getOrDefault("updateMask")
+  valid_589033 = validateParameter(valid_589033, JString, required = false,
                                  default = nil)
-  if valid_580000 != nil:
-    section.add "updateMask", valid_580000
+  if valid_589033 != nil:
+    section.add "updateMask", valid_589033
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -453,21 +453,21 @@ proc validate_CloudiotProjectsLocationsRegistriesDevicesPatch_579986(
   if body != nil:
     result.add "body", body
 
-proc call*(call_580002: Call_CloudiotProjectsLocationsRegistriesDevicesPatch_579985;
+proc call*(call_589035: Call_CloudiotProjectsLocationsRegistriesDevicesPatch_589018;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Updates a device.
   ## 
-  let valid = call_580002.validator(path, query, header, formData, body)
-  let scheme = call_580002.pickScheme
+  let valid = call_589035.validator(path, query, header, formData, body)
+  let scheme = call_589035.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580002.url(scheme.get, call_580002.host, call_580002.base,
-                         call_580002.route, valid.getOrDefault("path"),
+  let url = call_589035.url(scheme.get, call_589035.host, call_589035.base,
+                         call_589035.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580002, url, valid)
+  result = hook(call_589035, url, valid)
 
-proc call*(call_580003: Call_CloudiotProjectsLocationsRegistriesDevicesPatch_579985;
+proc call*(call_589036: Call_CloudiotProjectsLocationsRegistriesDevicesPatch_589018;
           name: string; uploadProtocol: string = ""; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           callback: string = ""; accessToken: string = ""; uploadType: string = "";
@@ -509,36 +509,36 @@ proc call*(call_580003: Call_CloudiotProjectsLocationsRegistriesDevicesPatch_579
   ## The field mask must not be empty, and it must not contain fields that
   ## are immutable or only set by the server.
   ## Mutable top-level fields: `credentials`, `blocked`, and `metadata`
-  var path_580004 = newJObject()
-  var query_580005 = newJObject()
-  var body_580006 = newJObject()
-  add(query_580005, "upload_protocol", newJString(uploadProtocol))
-  add(query_580005, "fields", newJString(fields))
-  add(query_580005, "quotaUser", newJString(quotaUser))
-  add(path_580004, "name", newJString(name))
-  add(query_580005, "alt", newJString(alt))
-  add(query_580005, "oauth_token", newJString(oauthToken))
-  add(query_580005, "callback", newJString(callback))
-  add(query_580005, "access_token", newJString(accessToken))
-  add(query_580005, "uploadType", newJString(uploadType))
-  add(query_580005, "key", newJString(key))
-  add(query_580005, "$.xgafv", newJString(Xgafv))
+  var path_589037 = newJObject()
+  var query_589038 = newJObject()
+  var body_589039 = newJObject()
+  add(query_589038, "upload_protocol", newJString(uploadProtocol))
+  add(query_589038, "fields", newJString(fields))
+  add(query_589038, "quotaUser", newJString(quotaUser))
+  add(path_589037, "name", newJString(name))
+  add(query_589038, "alt", newJString(alt))
+  add(query_589038, "oauth_token", newJString(oauthToken))
+  add(query_589038, "callback", newJString(callback))
+  add(query_589038, "access_token", newJString(accessToken))
+  add(query_589038, "uploadType", newJString(uploadType))
+  add(query_589038, "key", newJString(key))
+  add(query_589038, "$.xgafv", newJString(Xgafv))
   if body != nil:
-    body_580006 = body
-  add(query_580005, "prettyPrint", newJBool(prettyPrint))
-  add(query_580005, "updateMask", newJString(updateMask))
-  result = call_580003.call(path_580004, query_580005, nil, nil, body_580006)
+    body_589039 = body
+  add(query_589038, "prettyPrint", newJBool(prettyPrint))
+  add(query_589038, "updateMask", newJString(updateMask))
+  result = call_589036.call(path_589037, query_589038, nil, nil, body_589039)
 
-var cloudiotProjectsLocationsRegistriesDevicesPatch* = Call_CloudiotProjectsLocationsRegistriesDevicesPatch_579985(
+var cloudiotProjectsLocationsRegistriesDevicesPatch* = Call_CloudiotProjectsLocationsRegistriesDevicesPatch_589018(
     name: "cloudiotProjectsLocationsRegistriesDevicesPatch",
     meth: HttpMethod.HttpPatch, host: "cloudiot.googleapis.com",
     route: "/v1/{name}",
-    validator: validate_CloudiotProjectsLocationsRegistriesDevicesPatch_579986,
-    base: "/", url: url_CloudiotProjectsLocationsRegistriesDevicesPatch_579987,
+    validator: validate_CloudiotProjectsLocationsRegistriesDevicesPatch_589019,
+    base: "/", url: url_CloudiotProjectsLocationsRegistriesDevicesPatch_589020,
     schemes: {Scheme.Https})
 type
-  Call_CloudiotProjectsLocationsRegistriesDevicesDelete_579966 = ref object of OpenApiRestCall_579408
-proc url_CloudiotProjectsLocationsRegistriesDevicesDelete_579968(
+  Call_CloudiotProjectsLocationsRegistriesDevicesDelete_588999 = ref object of OpenApiRestCall_588441
+proc url_CloudiotProjectsLocationsRegistriesDevicesDelete_589001(
     protocol: Scheme; host: string; base: string; route: string; path: JsonNode;
     query: JsonNode): Uri =
   result.scheme = $protocol
@@ -554,7 +554,7 @@ proc url_CloudiotProjectsLocationsRegistriesDevicesDelete_579968(
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_CloudiotProjectsLocationsRegistriesDevicesDelete_579967(
+proc validate_CloudiotProjectsLocationsRegistriesDevicesDelete_589000(
     path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
     body: JsonNode): JsonNode =
   ## Deletes a device.
@@ -568,11 +568,11 @@ proc validate_CloudiotProjectsLocationsRegistriesDevicesDelete_579967(
   ## `projects/p0/locations/us-central1/registries/registry0/devices/{num_id}`.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `name` field"
-  var valid_579969 = path.getOrDefault("name")
-  valid_579969 = validateParameter(valid_579969, JString, required = true,
+  var valid_589002 = path.getOrDefault("name")
+  valid_589002 = validateParameter(valid_589002, JString, required = true,
                                  default = nil)
-  if valid_579969 != nil:
-    section.add "name", valid_579969
+  if valid_589002 != nil:
+    section.add "name", valid_589002
   result.add "path", section
   ## parameters in `query` object:
   ##   upload_protocol: JString
@@ -598,61 +598,61 @@ proc validate_CloudiotProjectsLocationsRegistriesDevicesDelete_579967(
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_579970 = query.getOrDefault("upload_protocol")
-  valid_579970 = validateParameter(valid_579970, JString, required = false,
+  var valid_589003 = query.getOrDefault("upload_protocol")
+  valid_589003 = validateParameter(valid_589003, JString, required = false,
                                  default = nil)
-  if valid_579970 != nil:
-    section.add "upload_protocol", valid_579970
-  var valid_579971 = query.getOrDefault("fields")
-  valid_579971 = validateParameter(valid_579971, JString, required = false,
+  if valid_589003 != nil:
+    section.add "upload_protocol", valid_589003
+  var valid_589004 = query.getOrDefault("fields")
+  valid_589004 = validateParameter(valid_589004, JString, required = false,
                                  default = nil)
-  if valid_579971 != nil:
-    section.add "fields", valid_579971
-  var valid_579972 = query.getOrDefault("quotaUser")
-  valid_579972 = validateParameter(valid_579972, JString, required = false,
+  if valid_589004 != nil:
+    section.add "fields", valid_589004
+  var valid_589005 = query.getOrDefault("quotaUser")
+  valid_589005 = validateParameter(valid_589005, JString, required = false,
                                  default = nil)
-  if valid_579972 != nil:
-    section.add "quotaUser", valid_579972
-  var valid_579973 = query.getOrDefault("alt")
-  valid_579973 = validateParameter(valid_579973, JString, required = false,
+  if valid_589005 != nil:
+    section.add "quotaUser", valid_589005
+  var valid_589006 = query.getOrDefault("alt")
+  valid_589006 = validateParameter(valid_589006, JString, required = false,
                                  default = newJString("json"))
-  if valid_579973 != nil:
-    section.add "alt", valid_579973
-  var valid_579974 = query.getOrDefault("oauth_token")
-  valid_579974 = validateParameter(valid_579974, JString, required = false,
+  if valid_589006 != nil:
+    section.add "alt", valid_589006
+  var valid_589007 = query.getOrDefault("oauth_token")
+  valid_589007 = validateParameter(valid_589007, JString, required = false,
                                  default = nil)
-  if valid_579974 != nil:
-    section.add "oauth_token", valid_579974
-  var valid_579975 = query.getOrDefault("callback")
-  valid_579975 = validateParameter(valid_579975, JString, required = false,
+  if valid_589007 != nil:
+    section.add "oauth_token", valid_589007
+  var valid_589008 = query.getOrDefault("callback")
+  valid_589008 = validateParameter(valid_589008, JString, required = false,
                                  default = nil)
-  if valid_579975 != nil:
-    section.add "callback", valid_579975
-  var valid_579976 = query.getOrDefault("access_token")
-  valid_579976 = validateParameter(valid_579976, JString, required = false,
+  if valid_589008 != nil:
+    section.add "callback", valid_589008
+  var valid_589009 = query.getOrDefault("access_token")
+  valid_589009 = validateParameter(valid_589009, JString, required = false,
                                  default = nil)
-  if valid_579976 != nil:
-    section.add "access_token", valid_579976
-  var valid_579977 = query.getOrDefault("uploadType")
-  valid_579977 = validateParameter(valid_579977, JString, required = false,
+  if valid_589009 != nil:
+    section.add "access_token", valid_589009
+  var valid_589010 = query.getOrDefault("uploadType")
+  valid_589010 = validateParameter(valid_589010, JString, required = false,
                                  default = nil)
-  if valid_579977 != nil:
-    section.add "uploadType", valid_579977
-  var valid_579978 = query.getOrDefault("key")
-  valid_579978 = validateParameter(valid_579978, JString, required = false,
+  if valid_589010 != nil:
+    section.add "uploadType", valid_589010
+  var valid_589011 = query.getOrDefault("key")
+  valid_589011 = validateParameter(valid_589011, JString, required = false,
                                  default = nil)
-  if valid_579978 != nil:
-    section.add "key", valid_579978
-  var valid_579979 = query.getOrDefault("$.xgafv")
-  valid_579979 = validateParameter(valid_579979, JString, required = false,
+  if valid_589011 != nil:
+    section.add "key", valid_589011
+  var valid_589012 = query.getOrDefault("$.xgafv")
+  valid_589012 = validateParameter(valid_589012, JString, required = false,
                                  default = newJString("1"))
-  if valid_579979 != nil:
-    section.add "$.xgafv", valid_579979
-  var valid_579980 = query.getOrDefault("prettyPrint")
-  valid_579980 = validateParameter(valid_579980, JBool, required = false,
+  if valid_589012 != nil:
+    section.add "$.xgafv", valid_589012
+  var valid_589013 = query.getOrDefault("prettyPrint")
+  valid_589013 = validateParameter(valid_589013, JBool, required = false,
                                  default = newJBool(true))
-  if valid_579980 != nil:
-    section.add "prettyPrint", valid_579980
+  if valid_589013 != nil:
+    section.add "prettyPrint", valid_589013
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -661,21 +661,21 @@ proc validate_CloudiotProjectsLocationsRegistriesDevicesDelete_579967(
   if body != nil:
     result.add "body", body
 
-proc call*(call_579981: Call_CloudiotProjectsLocationsRegistriesDevicesDelete_579966;
+proc call*(call_589014: Call_CloudiotProjectsLocationsRegistriesDevicesDelete_588999;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Deletes a device.
   ## 
-  let valid = call_579981.validator(path, query, header, formData, body)
-  let scheme = call_579981.pickScheme
+  let valid = call_589014.validator(path, query, header, formData, body)
+  let scheme = call_589014.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_579981.url(scheme.get, call_579981.host, call_579981.base,
-                         call_579981.route, valid.getOrDefault("path"),
+  let url = call_589014.url(scheme.get, call_589014.host, call_589014.base,
+                         call_589014.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_579981, url, valid)
+  result = hook(call_589014, url, valid)
 
-proc call*(call_579982: Call_CloudiotProjectsLocationsRegistriesDevicesDelete_579966;
+proc call*(call_589015: Call_CloudiotProjectsLocationsRegistriesDevicesDelete_588999;
           name: string; uploadProtocol: string = ""; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           callback: string = ""; accessToken: string = ""; uploadType: string = "";
@@ -708,32 +708,32 @@ proc call*(call_579982: Call_CloudiotProjectsLocationsRegistriesDevicesDelete_57
   ##        : V1 error format.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_579983 = newJObject()
-  var query_579984 = newJObject()
-  add(query_579984, "upload_protocol", newJString(uploadProtocol))
-  add(query_579984, "fields", newJString(fields))
-  add(query_579984, "quotaUser", newJString(quotaUser))
-  add(path_579983, "name", newJString(name))
-  add(query_579984, "alt", newJString(alt))
-  add(query_579984, "oauth_token", newJString(oauthToken))
-  add(query_579984, "callback", newJString(callback))
-  add(query_579984, "access_token", newJString(accessToken))
-  add(query_579984, "uploadType", newJString(uploadType))
-  add(query_579984, "key", newJString(key))
-  add(query_579984, "$.xgafv", newJString(Xgafv))
-  add(query_579984, "prettyPrint", newJBool(prettyPrint))
-  result = call_579982.call(path_579983, query_579984, nil, nil, nil)
+  var path_589016 = newJObject()
+  var query_589017 = newJObject()
+  add(query_589017, "upload_protocol", newJString(uploadProtocol))
+  add(query_589017, "fields", newJString(fields))
+  add(query_589017, "quotaUser", newJString(quotaUser))
+  add(path_589016, "name", newJString(name))
+  add(query_589017, "alt", newJString(alt))
+  add(query_589017, "oauth_token", newJString(oauthToken))
+  add(query_589017, "callback", newJString(callback))
+  add(query_589017, "access_token", newJString(accessToken))
+  add(query_589017, "uploadType", newJString(uploadType))
+  add(query_589017, "key", newJString(key))
+  add(query_589017, "$.xgafv", newJString(Xgafv))
+  add(query_589017, "prettyPrint", newJBool(prettyPrint))
+  result = call_589015.call(path_589016, query_589017, nil, nil, nil)
 
-var cloudiotProjectsLocationsRegistriesDevicesDelete* = Call_CloudiotProjectsLocationsRegistriesDevicesDelete_579966(
+var cloudiotProjectsLocationsRegistriesDevicesDelete* = Call_CloudiotProjectsLocationsRegistriesDevicesDelete_588999(
     name: "cloudiotProjectsLocationsRegistriesDevicesDelete",
     meth: HttpMethod.HttpDelete, host: "cloudiot.googleapis.com",
     route: "/v1/{name}",
-    validator: validate_CloudiotProjectsLocationsRegistriesDevicesDelete_579967,
-    base: "/", url: url_CloudiotProjectsLocationsRegistriesDevicesDelete_579968,
+    validator: validate_CloudiotProjectsLocationsRegistriesDevicesDelete_589000,
+    base: "/", url: url_CloudiotProjectsLocationsRegistriesDevicesDelete_589001,
     schemes: {Scheme.Https})
 type
-  Call_CloudiotProjectsLocationsRegistriesDevicesConfigVersionsList_580007 = ref object of OpenApiRestCall_579408
-proc url_CloudiotProjectsLocationsRegistriesDevicesConfigVersionsList_580009(
+  Call_CloudiotProjectsLocationsRegistriesDevicesConfigVersionsList_589040 = ref object of OpenApiRestCall_588441
+proc url_CloudiotProjectsLocationsRegistriesDevicesConfigVersionsList_589042(
     protocol: Scheme; host: string; base: string; route: string; path: JsonNode;
     query: JsonNode): Uri =
   result.scheme = $protocol
@@ -750,7 +750,7 @@ proc url_CloudiotProjectsLocationsRegistriesDevicesConfigVersionsList_580009(
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_CloudiotProjectsLocationsRegistriesDevicesConfigVersionsList_580008(
+proc validate_CloudiotProjectsLocationsRegistriesDevicesConfigVersionsList_589041(
     path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
     body: JsonNode): JsonNode =
   ## Lists the last few versions of the device configuration in descending
@@ -765,11 +765,11 @@ proc validate_CloudiotProjectsLocationsRegistriesDevicesConfigVersionsList_58000
   ## `projects/p0/locations/us-central1/registries/registry0/devices/{num_id}`.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `name` field"
-  var valid_580010 = path.getOrDefault("name")
-  valid_580010 = validateParameter(valid_580010, JString, required = true,
+  var valid_589043 = path.getOrDefault("name")
+  valid_589043 = validateParameter(valid_589043, JString, required = true,
                                  default = nil)
-  if valid_580010 != nil:
-    section.add "name", valid_580010
+  if valid_589043 != nil:
+    section.add "name", valid_589043
   result.add "path", section
   ## parameters in `query` object:
   ##   upload_protocol: JString
@@ -799,65 +799,65 @@ proc validate_CloudiotProjectsLocationsRegistriesDevicesConfigVersionsList_58000
   ## the version number. The maximum number of versions retained is 10. If this
   ## value is zero, it will return all the versions available.
   section = newJObject()
-  var valid_580011 = query.getOrDefault("upload_protocol")
-  valid_580011 = validateParameter(valid_580011, JString, required = false,
+  var valid_589044 = query.getOrDefault("upload_protocol")
+  valid_589044 = validateParameter(valid_589044, JString, required = false,
                                  default = nil)
-  if valid_580011 != nil:
-    section.add "upload_protocol", valid_580011
-  var valid_580012 = query.getOrDefault("fields")
-  valid_580012 = validateParameter(valid_580012, JString, required = false,
+  if valid_589044 != nil:
+    section.add "upload_protocol", valid_589044
+  var valid_589045 = query.getOrDefault("fields")
+  valid_589045 = validateParameter(valid_589045, JString, required = false,
                                  default = nil)
-  if valid_580012 != nil:
-    section.add "fields", valid_580012
-  var valid_580013 = query.getOrDefault("quotaUser")
-  valid_580013 = validateParameter(valid_580013, JString, required = false,
+  if valid_589045 != nil:
+    section.add "fields", valid_589045
+  var valid_589046 = query.getOrDefault("quotaUser")
+  valid_589046 = validateParameter(valid_589046, JString, required = false,
                                  default = nil)
-  if valid_580013 != nil:
-    section.add "quotaUser", valid_580013
-  var valid_580014 = query.getOrDefault("alt")
-  valid_580014 = validateParameter(valid_580014, JString, required = false,
+  if valid_589046 != nil:
+    section.add "quotaUser", valid_589046
+  var valid_589047 = query.getOrDefault("alt")
+  valid_589047 = validateParameter(valid_589047, JString, required = false,
                                  default = newJString("json"))
-  if valid_580014 != nil:
-    section.add "alt", valid_580014
-  var valid_580015 = query.getOrDefault("oauth_token")
-  valid_580015 = validateParameter(valid_580015, JString, required = false,
+  if valid_589047 != nil:
+    section.add "alt", valid_589047
+  var valid_589048 = query.getOrDefault("oauth_token")
+  valid_589048 = validateParameter(valid_589048, JString, required = false,
                                  default = nil)
-  if valid_580015 != nil:
-    section.add "oauth_token", valid_580015
-  var valid_580016 = query.getOrDefault("callback")
-  valid_580016 = validateParameter(valid_580016, JString, required = false,
+  if valid_589048 != nil:
+    section.add "oauth_token", valid_589048
+  var valid_589049 = query.getOrDefault("callback")
+  valid_589049 = validateParameter(valid_589049, JString, required = false,
                                  default = nil)
-  if valid_580016 != nil:
-    section.add "callback", valid_580016
-  var valid_580017 = query.getOrDefault("access_token")
-  valid_580017 = validateParameter(valid_580017, JString, required = false,
+  if valid_589049 != nil:
+    section.add "callback", valid_589049
+  var valid_589050 = query.getOrDefault("access_token")
+  valid_589050 = validateParameter(valid_589050, JString, required = false,
                                  default = nil)
-  if valid_580017 != nil:
-    section.add "access_token", valid_580017
-  var valid_580018 = query.getOrDefault("uploadType")
-  valid_580018 = validateParameter(valid_580018, JString, required = false,
+  if valid_589050 != nil:
+    section.add "access_token", valid_589050
+  var valid_589051 = query.getOrDefault("uploadType")
+  valid_589051 = validateParameter(valid_589051, JString, required = false,
                                  default = nil)
-  if valid_580018 != nil:
-    section.add "uploadType", valid_580018
-  var valid_580019 = query.getOrDefault("key")
-  valid_580019 = validateParameter(valid_580019, JString, required = false,
+  if valid_589051 != nil:
+    section.add "uploadType", valid_589051
+  var valid_589052 = query.getOrDefault("key")
+  valid_589052 = validateParameter(valid_589052, JString, required = false,
                                  default = nil)
-  if valid_580019 != nil:
-    section.add "key", valid_580019
-  var valid_580020 = query.getOrDefault("$.xgafv")
-  valid_580020 = validateParameter(valid_580020, JString, required = false,
+  if valid_589052 != nil:
+    section.add "key", valid_589052
+  var valid_589053 = query.getOrDefault("$.xgafv")
+  valid_589053 = validateParameter(valid_589053, JString, required = false,
                                  default = newJString("1"))
-  if valid_580020 != nil:
-    section.add "$.xgafv", valid_580020
-  var valid_580021 = query.getOrDefault("prettyPrint")
-  valid_580021 = validateParameter(valid_580021, JBool, required = false,
+  if valid_589053 != nil:
+    section.add "$.xgafv", valid_589053
+  var valid_589054 = query.getOrDefault("prettyPrint")
+  valid_589054 = validateParameter(valid_589054, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580021 != nil:
-    section.add "prettyPrint", valid_580021
-  var valid_580022 = query.getOrDefault("numVersions")
-  valid_580022 = validateParameter(valid_580022, JInt, required = false, default = nil)
-  if valid_580022 != nil:
-    section.add "numVersions", valid_580022
+  if valid_589054 != nil:
+    section.add "prettyPrint", valid_589054
+  var valid_589055 = query.getOrDefault("numVersions")
+  valid_589055 = validateParameter(valid_589055, JInt, required = false, default = nil)
+  if valid_589055 != nil:
+    section.add "numVersions", valid_589055
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -866,22 +866,22 @@ proc validate_CloudiotProjectsLocationsRegistriesDevicesConfigVersionsList_58000
   if body != nil:
     result.add "body", body
 
-proc call*(call_580023: Call_CloudiotProjectsLocationsRegistriesDevicesConfigVersionsList_580007;
+proc call*(call_589056: Call_CloudiotProjectsLocationsRegistriesDevicesConfigVersionsList_589040;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Lists the last few versions of the device configuration in descending
   ## order (i.e.: newest first).
   ## 
-  let valid = call_580023.validator(path, query, header, formData, body)
-  let scheme = call_580023.pickScheme
+  let valid = call_589056.validator(path, query, header, formData, body)
+  let scheme = call_589056.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580023.url(scheme.get, call_580023.host, call_580023.base,
-                         call_580023.route, valid.getOrDefault("path"),
+  let url = call_589056.url(scheme.get, call_589056.host, call_589056.base,
+                         call_589056.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580023, url, valid)
+  result = hook(call_589056, url, valid)
 
-proc call*(call_580024: Call_CloudiotProjectsLocationsRegistriesDevicesConfigVersionsList_580007;
+proc call*(call_589057: Call_CloudiotProjectsLocationsRegistriesDevicesConfigVersionsList_589040;
           name: string; uploadProtocol: string = ""; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           callback: string = ""; accessToken: string = ""; uploadType: string = "";
@@ -920,33 +920,33 @@ proc call*(call_580024: Call_CloudiotProjectsLocationsRegistriesDevicesConfigVer
   ##              : The number of versions to list. Versions are listed in decreasing order of
   ## the version number. The maximum number of versions retained is 10. If this
   ## value is zero, it will return all the versions available.
-  var path_580025 = newJObject()
-  var query_580026 = newJObject()
-  add(query_580026, "upload_protocol", newJString(uploadProtocol))
-  add(query_580026, "fields", newJString(fields))
-  add(query_580026, "quotaUser", newJString(quotaUser))
-  add(path_580025, "name", newJString(name))
-  add(query_580026, "alt", newJString(alt))
-  add(query_580026, "oauth_token", newJString(oauthToken))
-  add(query_580026, "callback", newJString(callback))
-  add(query_580026, "access_token", newJString(accessToken))
-  add(query_580026, "uploadType", newJString(uploadType))
-  add(query_580026, "key", newJString(key))
-  add(query_580026, "$.xgafv", newJString(Xgafv))
-  add(query_580026, "prettyPrint", newJBool(prettyPrint))
-  add(query_580026, "numVersions", newJInt(numVersions))
-  result = call_580024.call(path_580025, query_580026, nil, nil, nil)
+  var path_589058 = newJObject()
+  var query_589059 = newJObject()
+  add(query_589059, "upload_protocol", newJString(uploadProtocol))
+  add(query_589059, "fields", newJString(fields))
+  add(query_589059, "quotaUser", newJString(quotaUser))
+  add(path_589058, "name", newJString(name))
+  add(query_589059, "alt", newJString(alt))
+  add(query_589059, "oauth_token", newJString(oauthToken))
+  add(query_589059, "callback", newJString(callback))
+  add(query_589059, "access_token", newJString(accessToken))
+  add(query_589059, "uploadType", newJString(uploadType))
+  add(query_589059, "key", newJString(key))
+  add(query_589059, "$.xgafv", newJString(Xgafv))
+  add(query_589059, "prettyPrint", newJBool(prettyPrint))
+  add(query_589059, "numVersions", newJInt(numVersions))
+  result = call_589057.call(path_589058, query_589059, nil, nil, nil)
 
-var cloudiotProjectsLocationsRegistriesDevicesConfigVersionsList* = Call_CloudiotProjectsLocationsRegistriesDevicesConfigVersionsList_580007(
+var cloudiotProjectsLocationsRegistriesDevicesConfigVersionsList* = Call_CloudiotProjectsLocationsRegistriesDevicesConfigVersionsList_589040(
     name: "cloudiotProjectsLocationsRegistriesDevicesConfigVersionsList",
     meth: HttpMethod.HttpGet, host: "cloudiot.googleapis.com",
-    route: "/v1/{name}/configVersions", validator: validate_CloudiotProjectsLocationsRegistriesDevicesConfigVersionsList_580008,
+    route: "/v1/{name}/configVersions", validator: validate_CloudiotProjectsLocationsRegistriesDevicesConfigVersionsList_589041,
     base: "/",
-    url: url_CloudiotProjectsLocationsRegistriesDevicesConfigVersionsList_580009,
+    url: url_CloudiotProjectsLocationsRegistriesDevicesConfigVersionsList_589042,
     schemes: {Scheme.Https})
 type
-  Call_CloudiotProjectsLocationsRegistriesDevicesStatesList_580027 = ref object of OpenApiRestCall_579408
-proc url_CloudiotProjectsLocationsRegistriesDevicesStatesList_580029(
+  Call_CloudiotProjectsLocationsRegistriesDevicesStatesList_589060 = ref object of OpenApiRestCall_588441
+proc url_CloudiotProjectsLocationsRegistriesDevicesStatesList_589062(
     protocol: Scheme; host: string; base: string; route: string; path: JsonNode;
     query: JsonNode): Uri =
   result.scheme = $protocol
@@ -963,7 +963,7 @@ proc url_CloudiotProjectsLocationsRegistriesDevicesStatesList_580029(
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_CloudiotProjectsLocationsRegistriesDevicesStatesList_580028(
+proc validate_CloudiotProjectsLocationsRegistriesDevicesStatesList_589061(
     path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
     body: JsonNode): JsonNode =
   ## Lists the last few versions of the device state in descending order (i.e.:
@@ -978,11 +978,11 @@ proc validate_CloudiotProjectsLocationsRegistriesDevicesStatesList_580028(
   ## `projects/p0/locations/us-central1/registries/registry0/devices/{num_id}`.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `name` field"
-  var valid_580030 = path.getOrDefault("name")
-  valid_580030 = validateParameter(valid_580030, JString, required = true,
+  var valid_589063 = path.getOrDefault("name")
+  valid_589063 = validateParameter(valid_589063, JString, required = true,
                                  default = nil)
-  if valid_580030 != nil:
-    section.add "name", valid_580030
+  if valid_589063 != nil:
+    section.add "name", valid_589063
   result.add "path", section
   ## parameters in `query` object:
   ##   upload_protocol: JString
@@ -1012,65 +1012,65 @@ proc validate_CloudiotProjectsLocationsRegistriesDevicesStatesList_580028(
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580031 = query.getOrDefault("upload_protocol")
-  valid_580031 = validateParameter(valid_580031, JString, required = false,
+  var valid_589064 = query.getOrDefault("upload_protocol")
+  valid_589064 = validateParameter(valid_589064, JString, required = false,
                                  default = nil)
-  if valid_580031 != nil:
-    section.add "upload_protocol", valid_580031
-  var valid_580032 = query.getOrDefault("fields")
-  valid_580032 = validateParameter(valid_580032, JString, required = false,
+  if valid_589064 != nil:
+    section.add "upload_protocol", valid_589064
+  var valid_589065 = query.getOrDefault("fields")
+  valid_589065 = validateParameter(valid_589065, JString, required = false,
                                  default = nil)
-  if valid_580032 != nil:
-    section.add "fields", valid_580032
-  var valid_580033 = query.getOrDefault("quotaUser")
-  valid_580033 = validateParameter(valid_580033, JString, required = false,
+  if valid_589065 != nil:
+    section.add "fields", valid_589065
+  var valid_589066 = query.getOrDefault("quotaUser")
+  valid_589066 = validateParameter(valid_589066, JString, required = false,
                                  default = nil)
-  if valid_580033 != nil:
-    section.add "quotaUser", valid_580033
-  var valid_580034 = query.getOrDefault("alt")
-  valid_580034 = validateParameter(valid_580034, JString, required = false,
+  if valid_589066 != nil:
+    section.add "quotaUser", valid_589066
+  var valid_589067 = query.getOrDefault("alt")
+  valid_589067 = validateParameter(valid_589067, JString, required = false,
                                  default = newJString("json"))
-  if valid_580034 != nil:
-    section.add "alt", valid_580034
-  var valid_580035 = query.getOrDefault("oauth_token")
-  valid_580035 = validateParameter(valid_580035, JString, required = false,
+  if valid_589067 != nil:
+    section.add "alt", valid_589067
+  var valid_589068 = query.getOrDefault("oauth_token")
+  valid_589068 = validateParameter(valid_589068, JString, required = false,
                                  default = nil)
-  if valid_580035 != nil:
-    section.add "oauth_token", valid_580035
-  var valid_580036 = query.getOrDefault("callback")
-  valid_580036 = validateParameter(valid_580036, JString, required = false,
+  if valid_589068 != nil:
+    section.add "oauth_token", valid_589068
+  var valid_589069 = query.getOrDefault("callback")
+  valid_589069 = validateParameter(valid_589069, JString, required = false,
                                  default = nil)
-  if valid_580036 != nil:
-    section.add "callback", valid_580036
-  var valid_580037 = query.getOrDefault("access_token")
-  valid_580037 = validateParameter(valid_580037, JString, required = false,
+  if valid_589069 != nil:
+    section.add "callback", valid_589069
+  var valid_589070 = query.getOrDefault("access_token")
+  valid_589070 = validateParameter(valid_589070, JString, required = false,
                                  default = nil)
-  if valid_580037 != nil:
-    section.add "access_token", valid_580037
-  var valid_580038 = query.getOrDefault("uploadType")
-  valid_580038 = validateParameter(valid_580038, JString, required = false,
+  if valid_589070 != nil:
+    section.add "access_token", valid_589070
+  var valid_589071 = query.getOrDefault("uploadType")
+  valid_589071 = validateParameter(valid_589071, JString, required = false,
                                  default = nil)
-  if valid_580038 != nil:
-    section.add "uploadType", valid_580038
-  var valid_580039 = query.getOrDefault("key")
-  valid_580039 = validateParameter(valid_580039, JString, required = false,
+  if valid_589071 != nil:
+    section.add "uploadType", valid_589071
+  var valid_589072 = query.getOrDefault("key")
+  valid_589072 = validateParameter(valid_589072, JString, required = false,
                                  default = nil)
-  if valid_580039 != nil:
-    section.add "key", valid_580039
-  var valid_580040 = query.getOrDefault("$.xgafv")
-  valid_580040 = validateParameter(valid_580040, JString, required = false,
+  if valid_589072 != nil:
+    section.add "key", valid_589072
+  var valid_589073 = query.getOrDefault("$.xgafv")
+  valid_589073 = validateParameter(valid_589073, JString, required = false,
                                  default = newJString("1"))
-  if valid_580040 != nil:
-    section.add "$.xgafv", valid_580040
-  var valid_580041 = query.getOrDefault("numStates")
-  valid_580041 = validateParameter(valid_580041, JInt, required = false, default = nil)
-  if valid_580041 != nil:
-    section.add "numStates", valid_580041
-  var valid_580042 = query.getOrDefault("prettyPrint")
-  valid_580042 = validateParameter(valid_580042, JBool, required = false,
+  if valid_589073 != nil:
+    section.add "$.xgafv", valid_589073
+  var valid_589074 = query.getOrDefault("numStates")
+  valid_589074 = validateParameter(valid_589074, JInt, required = false, default = nil)
+  if valid_589074 != nil:
+    section.add "numStates", valid_589074
+  var valid_589075 = query.getOrDefault("prettyPrint")
+  valid_589075 = validateParameter(valid_589075, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580042 != nil:
-    section.add "prettyPrint", valid_580042
+  if valid_589075 != nil:
+    section.add "prettyPrint", valid_589075
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1079,22 +1079,22 @@ proc validate_CloudiotProjectsLocationsRegistriesDevicesStatesList_580028(
   if body != nil:
     result.add "body", body
 
-proc call*(call_580043: Call_CloudiotProjectsLocationsRegistriesDevicesStatesList_580027;
+proc call*(call_589076: Call_CloudiotProjectsLocationsRegistriesDevicesStatesList_589060;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Lists the last few versions of the device state in descending order (i.e.:
   ## newest first).
   ## 
-  let valid = call_580043.validator(path, query, header, formData, body)
-  let scheme = call_580043.pickScheme
+  let valid = call_589076.validator(path, query, header, formData, body)
+  let scheme = call_589076.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580043.url(scheme.get, call_580043.host, call_580043.base,
-                         call_580043.route, valid.getOrDefault("path"),
+  let url = call_589076.url(scheme.get, call_589076.host, call_589076.base,
+                         call_589076.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580043, url, valid)
+  result = hook(call_589076, url, valid)
 
-proc call*(call_580044: Call_CloudiotProjectsLocationsRegistriesDevicesStatesList_580027;
+proc call*(call_589077: Call_CloudiotProjectsLocationsRegistriesDevicesStatesList_589060;
           name: string; uploadProtocol: string = ""; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           callback: string = ""; accessToken: string = ""; uploadType: string = "";
@@ -1133,33 +1133,33 @@ proc call*(call_580044: Call_CloudiotProjectsLocationsRegistriesDevicesStatesLis
   ## value is zero, it will return all the states available.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_580045 = newJObject()
-  var query_580046 = newJObject()
-  add(query_580046, "upload_protocol", newJString(uploadProtocol))
-  add(query_580046, "fields", newJString(fields))
-  add(query_580046, "quotaUser", newJString(quotaUser))
-  add(path_580045, "name", newJString(name))
-  add(query_580046, "alt", newJString(alt))
-  add(query_580046, "oauth_token", newJString(oauthToken))
-  add(query_580046, "callback", newJString(callback))
-  add(query_580046, "access_token", newJString(accessToken))
-  add(query_580046, "uploadType", newJString(uploadType))
-  add(query_580046, "key", newJString(key))
-  add(query_580046, "$.xgafv", newJString(Xgafv))
-  add(query_580046, "numStates", newJInt(numStates))
-  add(query_580046, "prettyPrint", newJBool(prettyPrint))
-  result = call_580044.call(path_580045, query_580046, nil, nil, nil)
+  var path_589078 = newJObject()
+  var query_589079 = newJObject()
+  add(query_589079, "upload_protocol", newJString(uploadProtocol))
+  add(query_589079, "fields", newJString(fields))
+  add(query_589079, "quotaUser", newJString(quotaUser))
+  add(path_589078, "name", newJString(name))
+  add(query_589079, "alt", newJString(alt))
+  add(query_589079, "oauth_token", newJString(oauthToken))
+  add(query_589079, "callback", newJString(callback))
+  add(query_589079, "access_token", newJString(accessToken))
+  add(query_589079, "uploadType", newJString(uploadType))
+  add(query_589079, "key", newJString(key))
+  add(query_589079, "$.xgafv", newJString(Xgafv))
+  add(query_589079, "numStates", newJInt(numStates))
+  add(query_589079, "prettyPrint", newJBool(prettyPrint))
+  result = call_589077.call(path_589078, query_589079, nil, nil, nil)
 
-var cloudiotProjectsLocationsRegistriesDevicesStatesList* = Call_CloudiotProjectsLocationsRegistriesDevicesStatesList_580027(
+var cloudiotProjectsLocationsRegistriesDevicesStatesList* = Call_CloudiotProjectsLocationsRegistriesDevicesStatesList_589060(
     name: "cloudiotProjectsLocationsRegistriesDevicesStatesList",
     meth: HttpMethod.HttpGet, host: "cloudiot.googleapis.com",
     route: "/v1/{name}/states",
-    validator: validate_CloudiotProjectsLocationsRegistriesDevicesStatesList_580028,
-    base: "/", url: url_CloudiotProjectsLocationsRegistriesDevicesStatesList_580029,
+    validator: validate_CloudiotProjectsLocationsRegistriesDevicesStatesList_589061,
+    base: "/", url: url_CloudiotProjectsLocationsRegistriesDevicesStatesList_589062,
     schemes: {Scheme.Https})
 type
-  Call_CloudiotProjectsLocationsRegistriesDevicesModifyCloudToDeviceConfig_580047 = ref object of OpenApiRestCall_579408
-proc url_CloudiotProjectsLocationsRegistriesDevicesModifyCloudToDeviceConfig_580049(
+  Call_CloudiotProjectsLocationsRegistriesDevicesModifyCloudToDeviceConfig_589080 = ref object of OpenApiRestCall_588441
+proc url_CloudiotProjectsLocationsRegistriesDevicesModifyCloudToDeviceConfig_589082(
     protocol: Scheme; host: string; base: string; route: string; path: JsonNode;
     query: JsonNode): Uri =
   result.scheme = $protocol
@@ -1176,7 +1176,7 @@ proc url_CloudiotProjectsLocationsRegistriesDevicesModifyCloudToDeviceConfig_580
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_CloudiotProjectsLocationsRegistriesDevicesModifyCloudToDeviceConfig_580048(
+proc validate_CloudiotProjectsLocationsRegistriesDevicesModifyCloudToDeviceConfig_589081(
     path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
     body: JsonNode): JsonNode =
   ## Modifies the configuration for the device, which is eventually sent from
@@ -1192,11 +1192,11 @@ proc validate_CloudiotProjectsLocationsRegistriesDevicesModifyCloudToDeviceConfi
   ## `projects/p0/locations/us-central1/registries/registry0/devices/{num_id}`.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `name` field"
-  var valid_580050 = path.getOrDefault("name")
-  valid_580050 = validateParameter(valid_580050, JString, required = true,
+  var valid_589083 = path.getOrDefault("name")
+  valid_589083 = validateParameter(valid_589083, JString, required = true,
                                  default = nil)
-  if valid_580050 != nil:
-    section.add "name", valid_580050
+  if valid_589083 != nil:
+    section.add "name", valid_589083
   result.add "path", section
   ## parameters in `query` object:
   ##   upload_protocol: JString
@@ -1222,61 +1222,61 @@ proc validate_CloudiotProjectsLocationsRegistriesDevicesModifyCloudToDeviceConfi
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580051 = query.getOrDefault("upload_protocol")
-  valid_580051 = validateParameter(valid_580051, JString, required = false,
+  var valid_589084 = query.getOrDefault("upload_protocol")
+  valid_589084 = validateParameter(valid_589084, JString, required = false,
                                  default = nil)
-  if valid_580051 != nil:
-    section.add "upload_protocol", valid_580051
-  var valid_580052 = query.getOrDefault("fields")
-  valid_580052 = validateParameter(valid_580052, JString, required = false,
+  if valid_589084 != nil:
+    section.add "upload_protocol", valid_589084
+  var valid_589085 = query.getOrDefault("fields")
+  valid_589085 = validateParameter(valid_589085, JString, required = false,
                                  default = nil)
-  if valid_580052 != nil:
-    section.add "fields", valid_580052
-  var valid_580053 = query.getOrDefault("quotaUser")
-  valid_580053 = validateParameter(valid_580053, JString, required = false,
+  if valid_589085 != nil:
+    section.add "fields", valid_589085
+  var valid_589086 = query.getOrDefault("quotaUser")
+  valid_589086 = validateParameter(valid_589086, JString, required = false,
                                  default = nil)
-  if valid_580053 != nil:
-    section.add "quotaUser", valid_580053
-  var valid_580054 = query.getOrDefault("alt")
-  valid_580054 = validateParameter(valid_580054, JString, required = false,
+  if valid_589086 != nil:
+    section.add "quotaUser", valid_589086
+  var valid_589087 = query.getOrDefault("alt")
+  valid_589087 = validateParameter(valid_589087, JString, required = false,
                                  default = newJString("json"))
-  if valid_580054 != nil:
-    section.add "alt", valid_580054
-  var valid_580055 = query.getOrDefault("oauth_token")
-  valid_580055 = validateParameter(valid_580055, JString, required = false,
+  if valid_589087 != nil:
+    section.add "alt", valid_589087
+  var valid_589088 = query.getOrDefault("oauth_token")
+  valid_589088 = validateParameter(valid_589088, JString, required = false,
                                  default = nil)
-  if valid_580055 != nil:
-    section.add "oauth_token", valid_580055
-  var valid_580056 = query.getOrDefault("callback")
-  valid_580056 = validateParameter(valid_580056, JString, required = false,
+  if valid_589088 != nil:
+    section.add "oauth_token", valid_589088
+  var valid_589089 = query.getOrDefault("callback")
+  valid_589089 = validateParameter(valid_589089, JString, required = false,
                                  default = nil)
-  if valid_580056 != nil:
-    section.add "callback", valid_580056
-  var valid_580057 = query.getOrDefault("access_token")
-  valid_580057 = validateParameter(valid_580057, JString, required = false,
+  if valid_589089 != nil:
+    section.add "callback", valid_589089
+  var valid_589090 = query.getOrDefault("access_token")
+  valid_589090 = validateParameter(valid_589090, JString, required = false,
                                  default = nil)
-  if valid_580057 != nil:
-    section.add "access_token", valid_580057
-  var valid_580058 = query.getOrDefault("uploadType")
-  valid_580058 = validateParameter(valid_580058, JString, required = false,
+  if valid_589090 != nil:
+    section.add "access_token", valid_589090
+  var valid_589091 = query.getOrDefault("uploadType")
+  valid_589091 = validateParameter(valid_589091, JString, required = false,
                                  default = nil)
-  if valid_580058 != nil:
-    section.add "uploadType", valid_580058
-  var valid_580059 = query.getOrDefault("key")
-  valid_580059 = validateParameter(valid_580059, JString, required = false,
+  if valid_589091 != nil:
+    section.add "uploadType", valid_589091
+  var valid_589092 = query.getOrDefault("key")
+  valid_589092 = validateParameter(valid_589092, JString, required = false,
                                  default = nil)
-  if valid_580059 != nil:
-    section.add "key", valid_580059
-  var valid_580060 = query.getOrDefault("$.xgafv")
-  valid_580060 = validateParameter(valid_580060, JString, required = false,
+  if valid_589092 != nil:
+    section.add "key", valid_589092
+  var valid_589093 = query.getOrDefault("$.xgafv")
+  valid_589093 = validateParameter(valid_589093, JString, required = false,
                                  default = newJString("1"))
-  if valid_580060 != nil:
-    section.add "$.xgafv", valid_580060
-  var valid_580061 = query.getOrDefault("prettyPrint")
-  valid_580061 = validateParameter(valid_580061, JBool, required = false,
+  if valid_589093 != nil:
+    section.add "$.xgafv", valid_589093
+  var valid_589094 = query.getOrDefault("prettyPrint")
+  valid_589094 = validateParameter(valid_589094, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580061 != nil:
-    section.add "prettyPrint", valid_580061
+  if valid_589094 != nil:
+    section.add "prettyPrint", valid_589094
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1288,23 +1288,23 @@ proc validate_CloudiotProjectsLocationsRegistriesDevicesModifyCloudToDeviceConfi
   if body != nil:
     result.add "body", body
 
-proc call*(call_580063: Call_CloudiotProjectsLocationsRegistriesDevicesModifyCloudToDeviceConfig_580047;
+proc call*(call_589096: Call_CloudiotProjectsLocationsRegistriesDevicesModifyCloudToDeviceConfig_589080;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Modifies the configuration for the device, which is eventually sent from
   ## the Cloud IoT Core servers. Returns the modified configuration version and
   ## its metadata.
   ## 
-  let valid = call_580063.validator(path, query, header, formData, body)
-  let scheme = call_580063.pickScheme
+  let valid = call_589096.validator(path, query, header, formData, body)
+  let scheme = call_589096.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580063.url(scheme.get, call_580063.host, call_580063.base,
-                         call_580063.route, valid.getOrDefault("path"),
+  let url = call_589096.url(scheme.get, call_589096.host, call_589096.base,
+                         call_589096.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580063, url, valid)
+  result = hook(call_589096, url, valid)
 
-proc call*(call_580064: Call_CloudiotProjectsLocationsRegistriesDevicesModifyCloudToDeviceConfig_580047;
+proc call*(call_589097: Call_CloudiotProjectsLocationsRegistriesDevicesModifyCloudToDeviceConfig_589080;
           name: string; uploadProtocol: string = ""; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           callback: string = ""; accessToken: string = ""; uploadType: string = "";
@@ -1341,33 +1341,33 @@ proc call*(call_580064: Call_CloudiotProjectsLocationsRegistriesDevicesModifyClo
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_580065 = newJObject()
-  var query_580066 = newJObject()
-  var body_580067 = newJObject()
-  add(query_580066, "upload_protocol", newJString(uploadProtocol))
-  add(query_580066, "fields", newJString(fields))
-  add(query_580066, "quotaUser", newJString(quotaUser))
-  add(path_580065, "name", newJString(name))
-  add(query_580066, "alt", newJString(alt))
-  add(query_580066, "oauth_token", newJString(oauthToken))
-  add(query_580066, "callback", newJString(callback))
-  add(query_580066, "access_token", newJString(accessToken))
-  add(query_580066, "uploadType", newJString(uploadType))
-  add(query_580066, "key", newJString(key))
-  add(query_580066, "$.xgafv", newJString(Xgafv))
+  var path_589098 = newJObject()
+  var query_589099 = newJObject()
+  var body_589100 = newJObject()
+  add(query_589099, "upload_protocol", newJString(uploadProtocol))
+  add(query_589099, "fields", newJString(fields))
+  add(query_589099, "quotaUser", newJString(quotaUser))
+  add(path_589098, "name", newJString(name))
+  add(query_589099, "alt", newJString(alt))
+  add(query_589099, "oauth_token", newJString(oauthToken))
+  add(query_589099, "callback", newJString(callback))
+  add(query_589099, "access_token", newJString(accessToken))
+  add(query_589099, "uploadType", newJString(uploadType))
+  add(query_589099, "key", newJString(key))
+  add(query_589099, "$.xgafv", newJString(Xgafv))
   if body != nil:
-    body_580067 = body
-  add(query_580066, "prettyPrint", newJBool(prettyPrint))
-  result = call_580064.call(path_580065, query_580066, nil, nil, body_580067)
+    body_589100 = body
+  add(query_589099, "prettyPrint", newJBool(prettyPrint))
+  result = call_589097.call(path_589098, query_589099, nil, nil, body_589100)
 
-var cloudiotProjectsLocationsRegistriesDevicesModifyCloudToDeviceConfig* = Call_CloudiotProjectsLocationsRegistriesDevicesModifyCloudToDeviceConfig_580047(name: "cloudiotProjectsLocationsRegistriesDevicesModifyCloudToDeviceConfig",
+var cloudiotProjectsLocationsRegistriesDevicesModifyCloudToDeviceConfig* = Call_CloudiotProjectsLocationsRegistriesDevicesModifyCloudToDeviceConfig_589080(name: "cloudiotProjectsLocationsRegistriesDevicesModifyCloudToDeviceConfig",
     meth: HttpMethod.HttpPost, host: "cloudiot.googleapis.com",
-    route: "/v1/{name}:modifyCloudToDeviceConfig", validator: validate_CloudiotProjectsLocationsRegistriesDevicesModifyCloudToDeviceConfig_580048,
-    base: "/", url: url_CloudiotProjectsLocationsRegistriesDevicesModifyCloudToDeviceConfig_580049,
+    route: "/v1/{name}:modifyCloudToDeviceConfig", validator: validate_CloudiotProjectsLocationsRegistriesDevicesModifyCloudToDeviceConfig_589081,
+    base: "/", url: url_CloudiotProjectsLocationsRegistriesDevicesModifyCloudToDeviceConfig_589082,
     schemes: {Scheme.Https})
 type
-  Call_CloudiotProjectsLocationsRegistriesDevicesSendCommandToDevice_580068 = ref object of OpenApiRestCall_579408
-proc url_CloudiotProjectsLocationsRegistriesDevicesSendCommandToDevice_580070(
+  Call_CloudiotProjectsLocationsRegistriesDevicesSendCommandToDevice_589101 = ref object of OpenApiRestCall_588441
+proc url_CloudiotProjectsLocationsRegistriesDevicesSendCommandToDevice_589103(
     protocol: Scheme; host: string; base: string; route: string; path: JsonNode;
     query: JsonNode): Uri =
   result.scheme = $protocol
@@ -1384,7 +1384,7 @@ proc url_CloudiotProjectsLocationsRegistriesDevicesSendCommandToDevice_580070(
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_CloudiotProjectsLocationsRegistriesDevicesSendCommandToDevice_580069(
+proc validate_CloudiotProjectsLocationsRegistriesDevicesSendCommandToDevice_589102(
     path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
     body: JsonNode): JsonNode =
   ## Sends a command to the specified device. In order for a device to be able
@@ -1410,11 +1410,11 @@ proc validate_CloudiotProjectsLocationsRegistriesDevicesSendCommandToDevice_5800
   ## `projects/p0/locations/us-central1/registries/registry0/devices/{num_id}`.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `name` field"
-  var valid_580071 = path.getOrDefault("name")
-  valid_580071 = validateParameter(valid_580071, JString, required = true,
+  var valid_589104 = path.getOrDefault("name")
+  valid_589104 = validateParameter(valid_589104, JString, required = true,
                                  default = nil)
-  if valid_580071 != nil:
-    section.add "name", valid_580071
+  if valid_589104 != nil:
+    section.add "name", valid_589104
   result.add "path", section
   ## parameters in `query` object:
   ##   upload_protocol: JString
@@ -1440,61 +1440,61 @@ proc validate_CloudiotProjectsLocationsRegistriesDevicesSendCommandToDevice_5800
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580072 = query.getOrDefault("upload_protocol")
-  valid_580072 = validateParameter(valid_580072, JString, required = false,
+  var valid_589105 = query.getOrDefault("upload_protocol")
+  valid_589105 = validateParameter(valid_589105, JString, required = false,
                                  default = nil)
-  if valid_580072 != nil:
-    section.add "upload_protocol", valid_580072
-  var valid_580073 = query.getOrDefault("fields")
-  valid_580073 = validateParameter(valid_580073, JString, required = false,
+  if valid_589105 != nil:
+    section.add "upload_protocol", valid_589105
+  var valid_589106 = query.getOrDefault("fields")
+  valid_589106 = validateParameter(valid_589106, JString, required = false,
                                  default = nil)
-  if valid_580073 != nil:
-    section.add "fields", valid_580073
-  var valid_580074 = query.getOrDefault("quotaUser")
-  valid_580074 = validateParameter(valid_580074, JString, required = false,
+  if valid_589106 != nil:
+    section.add "fields", valid_589106
+  var valid_589107 = query.getOrDefault("quotaUser")
+  valid_589107 = validateParameter(valid_589107, JString, required = false,
                                  default = nil)
-  if valid_580074 != nil:
-    section.add "quotaUser", valid_580074
-  var valid_580075 = query.getOrDefault("alt")
-  valid_580075 = validateParameter(valid_580075, JString, required = false,
+  if valid_589107 != nil:
+    section.add "quotaUser", valid_589107
+  var valid_589108 = query.getOrDefault("alt")
+  valid_589108 = validateParameter(valid_589108, JString, required = false,
                                  default = newJString("json"))
-  if valid_580075 != nil:
-    section.add "alt", valid_580075
-  var valid_580076 = query.getOrDefault("oauth_token")
-  valid_580076 = validateParameter(valid_580076, JString, required = false,
+  if valid_589108 != nil:
+    section.add "alt", valid_589108
+  var valid_589109 = query.getOrDefault("oauth_token")
+  valid_589109 = validateParameter(valid_589109, JString, required = false,
                                  default = nil)
-  if valid_580076 != nil:
-    section.add "oauth_token", valid_580076
-  var valid_580077 = query.getOrDefault("callback")
-  valid_580077 = validateParameter(valid_580077, JString, required = false,
+  if valid_589109 != nil:
+    section.add "oauth_token", valid_589109
+  var valid_589110 = query.getOrDefault("callback")
+  valid_589110 = validateParameter(valid_589110, JString, required = false,
                                  default = nil)
-  if valid_580077 != nil:
-    section.add "callback", valid_580077
-  var valid_580078 = query.getOrDefault("access_token")
-  valid_580078 = validateParameter(valid_580078, JString, required = false,
+  if valid_589110 != nil:
+    section.add "callback", valid_589110
+  var valid_589111 = query.getOrDefault("access_token")
+  valid_589111 = validateParameter(valid_589111, JString, required = false,
                                  default = nil)
-  if valid_580078 != nil:
-    section.add "access_token", valid_580078
-  var valid_580079 = query.getOrDefault("uploadType")
-  valid_580079 = validateParameter(valid_580079, JString, required = false,
+  if valid_589111 != nil:
+    section.add "access_token", valid_589111
+  var valid_589112 = query.getOrDefault("uploadType")
+  valid_589112 = validateParameter(valid_589112, JString, required = false,
                                  default = nil)
-  if valid_580079 != nil:
-    section.add "uploadType", valid_580079
-  var valid_580080 = query.getOrDefault("key")
-  valid_580080 = validateParameter(valid_580080, JString, required = false,
+  if valid_589112 != nil:
+    section.add "uploadType", valid_589112
+  var valid_589113 = query.getOrDefault("key")
+  valid_589113 = validateParameter(valid_589113, JString, required = false,
                                  default = nil)
-  if valid_580080 != nil:
-    section.add "key", valid_580080
-  var valid_580081 = query.getOrDefault("$.xgafv")
-  valid_580081 = validateParameter(valid_580081, JString, required = false,
+  if valid_589113 != nil:
+    section.add "key", valid_589113
+  var valid_589114 = query.getOrDefault("$.xgafv")
+  valid_589114 = validateParameter(valid_589114, JString, required = false,
                                  default = newJString("1"))
-  if valid_580081 != nil:
-    section.add "$.xgafv", valid_580081
-  var valid_580082 = query.getOrDefault("prettyPrint")
-  valid_580082 = validateParameter(valid_580082, JBool, required = false,
+  if valid_589114 != nil:
+    section.add "$.xgafv", valid_589114
+  var valid_589115 = query.getOrDefault("prettyPrint")
+  valid_589115 = validateParameter(valid_589115, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580082 != nil:
-    section.add "prettyPrint", valid_580082
+  if valid_589115 != nil:
+    section.add "prettyPrint", valid_589115
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1506,7 +1506,7 @@ proc validate_CloudiotProjectsLocationsRegistriesDevicesSendCommandToDevice_5800
   if body != nil:
     result.add "body", body
 
-proc call*(call_580084: Call_CloudiotProjectsLocationsRegistriesDevicesSendCommandToDevice_580068;
+proc call*(call_589117: Call_CloudiotProjectsLocationsRegistriesDevicesSendCommandToDevice_589101;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Sends a command to the specified device. In order for a device to be able
@@ -1523,16 +1523,16 @@ proc call*(call_580084: Call_CloudiotProjectsLocationsRegistriesDevicesSendComma
   ## return OK. If the subscription is QoS 1, at least once delivery will be
   ## guaranteed; for QoS 0, no acknowledgment will be expected from the device.
   ## 
-  let valid = call_580084.validator(path, query, header, formData, body)
-  let scheme = call_580084.pickScheme
+  let valid = call_589117.validator(path, query, header, formData, body)
+  let scheme = call_589117.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580084.url(scheme.get, call_580084.host, call_580084.base,
-                         call_580084.route, valid.getOrDefault("path"),
+  let url = call_589117.url(scheme.get, call_589117.host, call_589117.base,
+                         call_589117.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580084, url, valid)
+  result = hook(call_589117, url, valid)
 
-proc call*(call_580085: Call_CloudiotProjectsLocationsRegistriesDevicesSendCommandToDevice_580068;
+proc call*(call_589118: Call_CloudiotProjectsLocationsRegistriesDevicesSendCommandToDevice_589101;
           name: string; uploadProtocol: string = ""; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           callback: string = ""; accessToken: string = ""; uploadType: string = "";
@@ -1579,35 +1579,35 @@ proc call*(call_580085: Call_CloudiotProjectsLocationsRegistriesDevicesSendComma
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_580086 = newJObject()
-  var query_580087 = newJObject()
-  var body_580088 = newJObject()
-  add(query_580087, "upload_protocol", newJString(uploadProtocol))
-  add(query_580087, "fields", newJString(fields))
-  add(query_580087, "quotaUser", newJString(quotaUser))
-  add(path_580086, "name", newJString(name))
-  add(query_580087, "alt", newJString(alt))
-  add(query_580087, "oauth_token", newJString(oauthToken))
-  add(query_580087, "callback", newJString(callback))
-  add(query_580087, "access_token", newJString(accessToken))
-  add(query_580087, "uploadType", newJString(uploadType))
-  add(query_580087, "key", newJString(key))
-  add(query_580087, "$.xgafv", newJString(Xgafv))
+  var path_589119 = newJObject()
+  var query_589120 = newJObject()
+  var body_589121 = newJObject()
+  add(query_589120, "upload_protocol", newJString(uploadProtocol))
+  add(query_589120, "fields", newJString(fields))
+  add(query_589120, "quotaUser", newJString(quotaUser))
+  add(path_589119, "name", newJString(name))
+  add(query_589120, "alt", newJString(alt))
+  add(query_589120, "oauth_token", newJString(oauthToken))
+  add(query_589120, "callback", newJString(callback))
+  add(query_589120, "access_token", newJString(accessToken))
+  add(query_589120, "uploadType", newJString(uploadType))
+  add(query_589120, "key", newJString(key))
+  add(query_589120, "$.xgafv", newJString(Xgafv))
   if body != nil:
-    body_580088 = body
-  add(query_580087, "prettyPrint", newJBool(prettyPrint))
-  result = call_580085.call(path_580086, query_580087, nil, nil, body_580088)
+    body_589121 = body
+  add(query_589120, "prettyPrint", newJBool(prettyPrint))
+  result = call_589118.call(path_589119, query_589120, nil, nil, body_589121)
 
-var cloudiotProjectsLocationsRegistriesDevicesSendCommandToDevice* = Call_CloudiotProjectsLocationsRegistriesDevicesSendCommandToDevice_580068(
+var cloudiotProjectsLocationsRegistriesDevicesSendCommandToDevice* = Call_CloudiotProjectsLocationsRegistriesDevicesSendCommandToDevice_589101(
     name: "cloudiotProjectsLocationsRegistriesDevicesSendCommandToDevice",
     meth: HttpMethod.HttpPost, host: "cloudiot.googleapis.com",
-    route: "/v1/{name}:sendCommandToDevice", validator: validate_CloudiotProjectsLocationsRegistriesDevicesSendCommandToDevice_580069,
+    route: "/v1/{name}:sendCommandToDevice", validator: validate_CloudiotProjectsLocationsRegistriesDevicesSendCommandToDevice_589102,
     base: "/",
-    url: url_CloudiotProjectsLocationsRegistriesDevicesSendCommandToDevice_580070,
+    url: url_CloudiotProjectsLocationsRegistriesDevicesSendCommandToDevice_589103,
     schemes: {Scheme.Https})
 type
-  Call_CloudiotProjectsLocationsRegistriesDevicesCreate_580116 = ref object of OpenApiRestCall_579408
-proc url_CloudiotProjectsLocationsRegistriesDevicesCreate_580118(
+  Call_CloudiotProjectsLocationsRegistriesDevicesCreate_589149 = ref object of OpenApiRestCall_588441
+proc url_CloudiotProjectsLocationsRegistriesDevicesCreate_589151(
     protocol: Scheme; host: string; base: string; route: string; path: JsonNode;
     query: JsonNode): Uri =
   result.scheme = $protocol
@@ -1624,7 +1624,7 @@ proc url_CloudiotProjectsLocationsRegistriesDevicesCreate_580118(
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_CloudiotProjectsLocationsRegistriesDevicesCreate_580117(
+proc validate_CloudiotProjectsLocationsRegistriesDevicesCreate_589150(
     path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
     body: JsonNode): JsonNode =
   ## Creates a device in a device registry.
@@ -1638,11 +1638,11 @@ proc validate_CloudiotProjectsLocationsRegistriesDevicesCreate_580117(
   ## `projects/example-project/locations/us-central1/registries/my-registry`.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `parent` field"
-  var valid_580119 = path.getOrDefault("parent")
-  valid_580119 = validateParameter(valid_580119, JString, required = true,
+  var valid_589152 = path.getOrDefault("parent")
+  valid_589152 = validateParameter(valid_589152, JString, required = true,
                                  default = nil)
-  if valid_580119 != nil:
-    section.add "parent", valid_580119
+  if valid_589152 != nil:
+    section.add "parent", valid_589152
   result.add "path", section
   ## parameters in `query` object:
   ##   upload_protocol: JString
@@ -1668,61 +1668,61 @@ proc validate_CloudiotProjectsLocationsRegistriesDevicesCreate_580117(
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580120 = query.getOrDefault("upload_protocol")
-  valid_580120 = validateParameter(valid_580120, JString, required = false,
+  var valid_589153 = query.getOrDefault("upload_protocol")
+  valid_589153 = validateParameter(valid_589153, JString, required = false,
                                  default = nil)
-  if valid_580120 != nil:
-    section.add "upload_protocol", valid_580120
-  var valid_580121 = query.getOrDefault("fields")
-  valid_580121 = validateParameter(valid_580121, JString, required = false,
+  if valid_589153 != nil:
+    section.add "upload_protocol", valid_589153
+  var valid_589154 = query.getOrDefault("fields")
+  valid_589154 = validateParameter(valid_589154, JString, required = false,
                                  default = nil)
-  if valid_580121 != nil:
-    section.add "fields", valid_580121
-  var valid_580122 = query.getOrDefault("quotaUser")
-  valid_580122 = validateParameter(valid_580122, JString, required = false,
+  if valid_589154 != nil:
+    section.add "fields", valid_589154
+  var valid_589155 = query.getOrDefault("quotaUser")
+  valid_589155 = validateParameter(valid_589155, JString, required = false,
                                  default = nil)
-  if valid_580122 != nil:
-    section.add "quotaUser", valid_580122
-  var valid_580123 = query.getOrDefault("alt")
-  valid_580123 = validateParameter(valid_580123, JString, required = false,
+  if valid_589155 != nil:
+    section.add "quotaUser", valid_589155
+  var valid_589156 = query.getOrDefault("alt")
+  valid_589156 = validateParameter(valid_589156, JString, required = false,
                                  default = newJString("json"))
-  if valid_580123 != nil:
-    section.add "alt", valid_580123
-  var valid_580124 = query.getOrDefault("oauth_token")
-  valid_580124 = validateParameter(valid_580124, JString, required = false,
+  if valid_589156 != nil:
+    section.add "alt", valid_589156
+  var valid_589157 = query.getOrDefault("oauth_token")
+  valid_589157 = validateParameter(valid_589157, JString, required = false,
                                  default = nil)
-  if valid_580124 != nil:
-    section.add "oauth_token", valid_580124
-  var valid_580125 = query.getOrDefault("callback")
-  valid_580125 = validateParameter(valid_580125, JString, required = false,
+  if valid_589157 != nil:
+    section.add "oauth_token", valid_589157
+  var valid_589158 = query.getOrDefault("callback")
+  valid_589158 = validateParameter(valid_589158, JString, required = false,
                                  default = nil)
-  if valid_580125 != nil:
-    section.add "callback", valid_580125
-  var valid_580126 = query.getOrDefault("access_token")
-  valid_580126 = validateParameter(valid_580126, JString, required = false,
+  if valid_589158 != nil:
+    section.add "callback", valid_589158
+  var valid_589159 = query.getOrDefault("access_token")
+  valid_589159 = validateParameter(valid_589159, JString, required = false,
                                  default = nil)
-  if valid_580126 != nil:
-    section.add "access_token", valid_580126
-  var valid_580127 = query.getOrDefault("uploadType")
-  valid_580127 = validateParameter(valid_580127, JString, required = false,
+  if valid_589159 != nil:
+    section.add "access_token", valid_589159
+  var valid_589160 = query.getOrDefault("uploadType")
+  valid_589160 = validateParameter(valid_589160, JString, required = false,
                                  default = nil)
-  if valid_580127 != nil:
-    section.add "uploadType", valid_580127
-  var valid_580128 = query.getOrDefault("key")
-  valid_580128 = validateParameter(valid_580128, JString, required = false,
+  if valid_589160 != nil:
+    section.add "uploadType", valid_589160
+  var valid_589161 = query.getOrDefault("key")
+  valid_589161 = validateParameter(valid_589161, JString, required = false,
                                  default = nil)
-  if valid_580128 != nil:
-    section.add "key", valid_580128
-  var valid_580129 = query.getOrDefault("$.xgafv")
-  valid_580129 = validateParameter(valid_580129, JString, required = false,
+  if valid_589161 != nil:
+    section.add "key", valid_589161
+  var valid_589162 = query.getOrDefault("$.xgafv")
+  valid_589162 = validateParameter(valid_589162, JString, required = false,
                                  default = newJString("1"))
-  if valid_580129 != nil:
-    section.add "$.xgafv", valid_580129
-  var valid_580130 = query.getOrDefault("prettyPrint")
-  valid_580130 = validateParameter(valid_580130, JBool, required = false,
+  if valid_589162 != nil:
+    section.add "$.xgafv", valid_589162
+  var valid_589163 = query.getOrDefault("prettyPrint")
+  valid_589163 = validateParameter(valid_589163, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580130 != nil:
-    section.add "prettyPrint", valid_580130
+  if valid_589163 != nil:
+    section.add "prettyPrint", valid_589163
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1734,21 +1734,21 @@ proc validate_CloudiotProjectsLocationsRegistriesDevicesCreate_580117(
   if body != nil:
     result.add "body", body
 
-proc call*(call_580132: Call_CloudiotProjectsLocationsRegistriesDevicesCreate_580116;
+proc call*(call_589165: Call_CloudiotProjectsLocationsRegistriesDevicesCreate_589149;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Creates a device in a device registry.
   ## 
-  let valid = call_580132.validator(path, query, header, formData, body)
-  let scheme = call_580132.pickScheme
+  let valid = call_589165.validator(path, query, header, formData, body)
+  let scheme = call_589165.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580132.url(scheme.get, call_580132.host, call_580132.base,
-                         call_580132.route, valid.getOrDefault("path"),
+  let url = call_589165.url(scheme.get, call_589165.host, call_589165.base,
+                         call_589165.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580132, url, valid)
+  result = hook(call_589165, url, valid)
 
-proc call*(call_580133: Call_CloudiotProjectsLocationsRegistriesDevicesCreate_580116;
+proc call*(call_589166: Call_CloudiotProjectsLocationsRegistriesDevicesCreate_589149;
           parent: string; uploadProtocol: string = ""; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           callback: string = ""; accessToken: string = ""; uploadType: string = "";
@@ -1783,35 +1783,35 @@ proc call*(call_580133: Call_CloudiotProjectsLocationsRegistriesDevicesCreate_58
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_580134 = newJObject()
-  var query_580135 = newJObject()
-  var body_580136 = newJObject()
-  add(query_580135, "upload_protocol", newJString(uploadProtocol))
-  add(query_580135, "fields", newJString(fields))
-  add(query_580135, "quotaUser", newJString(quotaUser))
-  add(query_580135, "alt", newJString(alt))
-  add(query_580135, "oauth_token", newJString(oauthToken))
-  add(query_580135, "callback", newJString(callback))
-  add(query_580135, "access_token", newJString(accessToken))
-  add(query_580135, "uploadType", newJString(uploadType))
-  add(path_580134, "parent", newJString(parent))
-  add(query_580135, "key", newJString(key))
-  add(query_580135, "$.xgafv", newJString(Xgafv))
+  var path_589167 = newJObject()
+  var query_589168 = newJObject()
+  var body_589169 = newJObject()
+  add(query_589168, "upload_protocol", newJString(uploadProtocol))
+  add(query_589168, "fields", newJString(fields))
+  add(query_589168, "quotaUser", newJString(quotaUser))
+  add(query_589168, "alt", newJString(alt))
+  add(query_589168, "oauth_token", newJString(oauthToken))
+  add(query_589168, "callback", newJString(callback))
+  add(query_589168, "access_token", newJString(accessToken))
+  add(query_589168, "uploadType", newJString(uploadType))
+  add(path_589167, "parent", newJString(parent))
+  add(query_589168, "key", newJString(key))
+  add(query_589168, "$.xgafv", newJString(Xgafv))
   if body != nil:
-    body_580136 = body
-  add(query_580135, "prettyPrint", newJBool(prettyPrint))
-  result = call_580133.call(path_580134, query_580135, nil, nil, body_580136)
+    body_589169 = body
+  add(query_589168, "prettyPrint", newJBool(prettyPrint))
+  result = call_589166.call(path_589167, query_589168, nil, nil, body_589169)
 
-var cloudiotProjectsLocationsRegistriesDevicesCreate* = Call_CloudiotProjectsLocationsRegistriesDevicesCreate_580116(
+var cloudiotProjectsLocationsRegistriesDevicesCreate* = Call_CloudiotProjectsLocationsRegistriesDevicesCreate_589149(
     name: "cloudiotProjectsLocationsRegistriesDevicesCreate",
     meth: HttpMethod.HttpPost, host: "cloudiot.googleapis.com",
     route: "/v1/{parent}/devices",
-    validator: validate_CloudiotProjectsLocationsRegistriesDevicesCreate_580117,
-    base: "/", url: url_CloudiotProjectsLocationsRegistriesDevicesCreate_580118,
+    validator: validate_CloudiotProjectsLocationsRegistriesDevicesCreate_589150,
+    base: "/", url: url_CloudiotProjectsLocationsRegistriesDevicesCreate_589151,
     schemes: {Scheme.Https})
 type
-  Call_CloudiotProjectsLocationsRegistriesDevicesList_580089 = ref object of OpenApiRestCall_579408
-proc url_CloudiotProjectsLocationsRegistriesDevicesList_580091(protocol: Scheme;
+  Call_CloudiotProjectsLocationsRegistriesDevicesList_589122 = ref object of OpenApiRestCall_588441
+proc url_CloudiotProjectsLocationsRegistriesDevicesList_589124(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -1827,7 +1827,7 @@ proc url_CloudiotProjectsLocationsRegistriesDevicesList_580091(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_CloudiotProjectsLocationsRegistriesDevicesList_580090(
+proc validate_CloudiotProjectsLocationsRegistriesDevicesList_589123(
     path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
     body: JsonNode): JsonNode =
   ## List devices in a device registry.
@@ -1840,11 +1840,11 @@ proc validate_CloudiotProjectsLocationsRegistriesDevicesList_580090(
   ## `projects/my-project/locations/us-central1/registries/my-registry`.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `parent` field"
-  var valid_580092 = path.getOrDefault("parent")
-  valid_580092 = validateParameter(valid_580092, JString, required = true,
+  var valid_589125 = path.getOrDefault("parent")
+  valid_589125 = validateParameter(valid_589125, JString, required = true,
                                  default = nil)
-  if valid_580092 != nil:
-    section.add "parent", valid_580092
+  if valid_589125 != nil:
+    section.add "parent", valid_589125
   result.add "path", section
   ## parameters in `query` object:
   ##   upload_protocol: JString
@@ -1903,100 +1903,100 @@ proc validate_CloudiotProjectsLocationsRegistriesDevicesList_580090(
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580093 = query.getOrDefault("upload_protocol")
-  valid_580093 = validateParameter(valid_580093, JString, required = false,
+  var valid_589126 = query.getOrDefault("upload_protocol")
+  valid_589126 = validateParameter(valid_589126, JString, required = false,
                                  default = nil)
-  if valid_580093 != nil:
-    section.add "upload_protocol", valid_580093
-  var valid_580094 = query.getOrDefault("gatewayListOptions.gatewayType")
-  valid_580094 = validateParameter(valid_580094, JString, required = false, default = newJString(
+  if valid_589126 != nil:
+    section.add "upload_protocol", valid_589126
+  var valid_589127 = query.getOrDefault("gatewayListOptions.gatewayType")
+  valid_589127 = validateParameter(valid_589127, JString, required = false, default = newJString(
       "GATEWAY_TYPE_UNSPECIFIED"))
-  if valid_580094 != nil:
-    section.add "gatewayListOptions.gatewayType", valid_580094
-  var valid_580095 = query.getOrDefault("fields")
-  valid_580095 = validateParameter(valid_580095, JString, required = false,
+  if valid_589127 != nil:
+    section.add "gatewayListOptions.gatewayType", valid_589127
+  var valid_589128 = query.getOrDefault("fields")
+  valid_589128 = validateParameter(valid_589128, JString, required = false,
                                  default = nil)
-  if valid_580095 != nil:
-    section.add "fields", valid_580095
-  var valid_580096 = query.getOrDefault("pageToken")
-  valid_580096 = validateParameter(valid_580096, JString, required = false,
+  if valid_589128 != nil:
+    section.add "fields", valid_589128
+  var valid_589129 = query.getOrDefault("pageToken")
+  valid_589129 = validateParameter(valid_589129, JString, required = false,
                                  default = nil)
-  if valid_580096 != nil:
-    section.add "pageToken", valid_580096
-  var valid_580097 = query.getOrDefault("quotaUser")
-  valid_580097 = validateParameter(valid_580097, JString, required = false,
+  if valid_589129 != nil:
+    section.add "pageToken", valid_589129
+  var valid_589130 = query.getOrDefault("quotaUser")
+  valid_589130 = validateParameter(valid_589130, JString, required = false,
                                  default = nil)
-  if valid_580097 != nil:
-    section.add "quotaUser", valid_580097
-  var valid_580098 = query.getOrDefault("alt")
-  valid_580098 = validateParameter(valid_580098, JString, required = false,
+  if valid_589130 != nil:
+    section.add "quotaUser", valid_589130
+  var valid_589131 = query.getOrDefault("alt")
+  valid_589131 = validateParameter(valid_589131, JString, required = false,
                                  default = newJString("json"))
-  if valid_580098 != nil:
-    section.add "alt", valid_580098
-  var valid_580099 = query.getOrDefault("gatewayListOptions.associationsDeviceId")
-  valid_580099 = validateParameter(valid_580099, JString, required = false,
+  if valid_589131 != nil:
+    section.add "alt", valid_589131
+  var valid_589132 = query.getOrDefault("gatewayListOptions.associationsDeviceId")
+  valid_589132 = validateParameter(valid_589132, JString, required = false,
                                  default = nil)
-  if valid_580099 != nil:
-    section.add "gatewayListOptions.associationsDeviceId", valid_580099
-  var valid_580100 = query.getOrDefault("oauth_token")
-  valid_580100 = validateParameter(valid_580100, JString, required = false,
+  if valid_589132 != nil:
+    section.add "gatewayListOptions.associationsDeviceId", valid_589132
+  var valid_589133 = query.getOrDefault("oauth_token")
+  valid_589133 = validateParameter(valid_589133, JString, required = false,
                                  default = nil)
-  if valid_580100 != nil:
-    section.add "oauth_token", valid_580100
-  var valid_580101 = query.getOrDefault("callback")
-  valid_580101 = validateParameter(valid_580101, JString, required = false,
+  if valid_589133 != nil:
+    section.add "oauth_token", valid_589133
+  var valid_589134 = query.getOrDefault("callback")
+  valid_589134 = validateParameter(valid_589134, JString, required = false,
                                  default = nil)
-  if valid_580101 != nil:
-    section.add "callback", valid_580101
-  var valid_580102 = query.getOrDefault("access_token")
-  valid_580102 = validateParameter(valid_580102, JString, required = false,
+  if valid_589134 != nil:
+    section.add "callback", valid_589134
+  var valid_589135 = query.getOrDefault("access_token")
+  valid_589135 = validateParameter(valid_589135, JString, required = false,
                                  default = nil)
-  if valid_580102 != nil:
-    section.add "access_token", valid_580102
-  var valid_580103 = query.getOrDefault("uploadType")
-  valid_580103 = validateParameter(valid_580103, JString, required = false,
+  if valid_589135 != nil:
+    section.add "access_token", valid_589135
+  var valid_589136 = query.getOrDefault("uploadType")
+  valid_589136 = validateParameter(valid_589136, JString, required = false,
                                  default = nil)
-  if valid_580103 != nil:
-    section.add "uploadType", valid_580103
-  var valid_580104 = query.getOrDefault("gatewayListOptions.associationsGatewayId")
-  valid_580104 = validateParameter(valid_580104, JString, required = false,
+  if valid_589136 != nil:
+    section.add "uploadType", valid_589136
+  var valid_589137 = query.getOrDefault("gatewayListOptions.associationsGatewayId")
+  valid_589137 = validateParameter(valid_589137, JString, required = false,
                                  default = nil)
-  if valid_580104 != nil:
-    section.add "gatewayListOptions.associationsGatewayId", valid_580104
-  var valid_580105 = query.getOrDefault("deviceIds")
-  valid_580105 = validateParameter(valid_580105, JArray, required = false,
+  if valid_589137 != nil:
+    section.add "gatewayListOptions.associationsGatewayId", valid_589137
+  var valid_589138 = query.getOrDefault("deviceIds")
+  valid_589138 = validateParameter(valid_589138, JArray, required = false,
                                  default = nil)
-  if valid_580105 != nil:
-    section.add "deviceIds", valid_580105
-  var valid_580106 = query.getOrDefault("key")
-  valid_580106 = validateParameter(valid_580106, JString, required = false,
+  if valid_589138 != nil:
+    section.add "deviceIds", valid_589138
+  var valid_589139 = query.getOrDefault("key")
+  valid_589139 = validateParameter(valid_589139, JString, required = false,
                                  default = nil)
-  if valid_580106 != nil:
-    section.add "key", valid_580106
-  var valid_580107 = query.getOrDefault("fieldMask")
-  valid_580107 = validateParameter(valid_580107, JString, required = false,
+  if valid_589139 != nil:
+    section.add "key", valid_589139
+  var valid_589140 = query.getOrDefault("fieldMask")
+  valid_589140 = validateParameter(valid_589140, JString, required = false,
                                  default = nil)
-  if valid_580107 != nil:
-    section.add "fieldMask", valid_580107
-  var valid_580108 = query.getOrDefault("$.xgafv")
-  valid_580108 = validateParameter(valid_580108, JString, required = false,
+  if valid_589140 != nil:
+    section.add "fieldMask", valid_589140
+  var valid_589141 = query.getOrDefault("$.xgafv")
+  valid_589141 = validateParameter(valid_589141, JString, required = false,
                                  default = newJString("1"))
-  if valid_580108 != nil:
-    section.add "$.xgafv", valid_580108
-  var valid_580109 = query.getOrDefault("pageSize")
-  valid_580109 = validateParameter(valid_580109, JInt, required = false, default = nil)
-  if valid_580109 != nil:
-    section.add "pageSize", valid_580109
-  var valid_580110 = query.getOrDefault("deviceNumIds")
-  valid_580110 = validateParameter(valid_580110, JArray, required = false,
+  if valid_589141 != nil:
+    section.add "$.xgafv", valid_589141
+  var valid_589142 = query.getOrDefault("pageSize")
+  valid_589142 = validateParameter(valid_589142, JInt, required = false, default = nil)
+  if valid_589142 != nil:
+    section.add "pageSize", valid_589142
+  var valid_589143 = query.getOrDefault("deviceNumIds")
+  valid_589143 = validateParameter(valid_589143, JArray, required = false,
                                  default = nil)
-  if valid_580110 != nil:
-    section.add "deviceNumIds", valid_580110
-  var valid_580111 = query.getOrDefault("prettyPrint")
-  valid_580111 = validateParameter(valid_580111, JBool, required = false,
+  if valid_589143 != nil:
+    section.add "deviceNumIds", valid_589143
+  var valid_589144 = query.getOrDefault("prettyPrint")
+  valid_589144 = validateParameter(valid_589144, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580111 != nil:
-    section.add "prettyPrint", valid_580111
+  if valid_589144 != nil:
+    section.add "prettyPrint", valid_589144
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -2005,21 +2005,21 @@ proc validate_CloudiotProjectsLocationsRegistriesDevicesList_580090(
   if body != nil:
     result.add "body", body
 
-proc call*(call_580112: Call_CloudiotProjectsLocationsRegistriesDevicesList_580089;
+proc call*(call_589145: Call_CloudiotProjectsLocationsRegistriesDevicesList_589122;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## List devices in a device registry.
   ## 
-  let valid = call_580112.validator(path, query, header, formData, body)
-  let scheme = call_580112.pickScheme
+  let valid = call_589145.validator(path, query, header, formData, body)
+  let scheme = call_589145.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580112.url(scheme.get, call_580112.host, call_580112.base,
-                         call_580112.route, valid.getOrDefault("path"),
+  let url = call_589145.url(scheme.get, call_589145.host, call_589145.base,
+                         call_589145.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580112, url, valid)
+  result = hook(call_589145, url, valid)
 
-proc call*(call_580113: Call_CloudiotProjectsLocationsRegistriesDevicesList_580089;
+proc call*(call_589146: Call_CloudiotProjectsLocationsRegistriesDevicesList_589122;
           parent: string; uploadProtocol: string = "";
           gatewayListOptionsGatewayType: string = "GATEWAY_TYPE_UNSPECIFIED";
           fields: string = ""; pageToken: string = ""; quotaUser: string = "";
@@ -2090,45 +2090,45 @@ proc call*(call_580113: Call_CloudiotProjectsLocationsRegistriesDevicesList_5800
   ## IDs: 10,000.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_580114 = newJObject()
-  var query_580115 = newJObject()
-  add(query_580115, "upload_protocol", newJString(uploadProtocol))
-  add(query_580115, "gatewayListOptions.gatewayType",
+  var path_589147 = newJObject()
+  var query_589148 = newJObject()
+  add(query_589148, "upload_protocol", newJString(uploadProtocol))
+  add(query_589148, "gatewayListOptions.gatewayType",
       newJString(gatewayListOptionsGatewayType))
-  add(query_580115, "fields", newJString(fields))
-  add(query_580115, "pageToken", newJString(pageToken))
-  add(query_580115, "quotaUser", newJString(quotaUser))
-  add(query_580115, "alt", newJString(alt))
-  add(query_580115, "gatewayListOptions.associationsDeviceId",
+  add(query_589148, "fields", newJString(fields))
+  add(query_589148, "pageToken", newJString(pageToken))
+  add(query_589148, "quotaUser", newJString(quotaUser))
+  add(query_589148, "alt", newJString(alt))
+  add(query_589148, "gatewayListOptions.associationsDeviceId",
       newJString(gatewayListOptionsAssociationsDeviceId))
-  add(query_580115, "oauth_token", newJString(oauthToken))
-  add(query_580115, "callback", newJString(callback))
-  add(query_580115, "access_token", newJString(accessToken))
-  add(query_580115, "uploadType", newJString(uploadType))
-  add(path_580114, "parent", newJString(parent))
-  add(query_580115, "gatewayListOptions.associationsGatewayId",
+  add(query_589148, "oauth_token", newJString(oauthToken))
+  add(query_589148, "callback", newJString(callback))
+  add(query_589148, "access_token", newJString(accessToken))
+  add(query_589148, "uploadType", newJString(uploadType))
+  add(path_589147, "parent", newJString(parent))
+  add(query_589148, "gatewayListOptions.associationsGatewayId",
       newJString(gatewayListOptionsAssociationsGatewayId))
   if deviceIds != nil:
-    query_580115.add "deviceIds", deviceIds
-  add(query_580115, "key", newJString(key))
-  add(query_580115, "fieldMask", newJString(fieldMask))
-  add(query_580115, "$.xgafv", newJString(Xgafv))
-  add(query_580115, "pageSize", newJInt(pageSize))
+    query_589148.add "deviceIds", deviceIds
+  add(query_589148, "key", newJString(key))
+  add(query_589148, "fieldMask", newJString(fieldMask))
+  add(query_589148, "$.xgafv", newJString(Xgafv))
+  add(query_589148, "pageSize", newJInt(pageSize))
   if deviceNumIds != nil:
-    query_580115.add "deviceNumIds", deviceNumIds
-  add(query_580115, "prettyPrint", newJBool(prettyPrint))
-  result = call_580113.call(path_580114, query_580115, nil, nil, nil)
+    query_589148.add "deviceNumIds", deviceNumIds
+  add(query_589148, "prettyPrint", newJBool(prettyPrint))
+  result = call_589146.call(path_589147, query_589148, nil, nil, nil)
 
-var cloudiotProjectsLocationsRegistriesDevicesList* = Call_CloudiotProjectsLocationsRegistriesDevicesList_580089(
+var cloudiotProjectsLocationsRegistriesDevicesList* = Call_CloudiotProjectsLocationsRegistriesDevicesList_589122(
     name: "cloudiotProjectsLocationsRegistriesDevicesList",
     meth: HttpMethod.HttpGet, host: "cloudiot.googleapis.com",
     route: "/v1/{parent}/devices",
-    validator: validate_CloudiotProjectsLocationsRegistriesDevicesList_580090,
-    base: "/", url: url_CloudiotProjectsLocationsRegistriesDevicesList_580091,
+    validator: validate_CloudiotProjectsLocationsRegistriesDevicesList_589123,
+    base: "/", url: url_CloudiotProjectsLocationsRegistriesDevicesList_589124,
     schemes: {Scheme.Https})
 type
-  Call_CloudiotProjectsLocationsRegistriesCreate_580158 = ref object of OpenApiRestCall_579408
-proc url_CloudiotProjectsLocationsRegistriesCreate_580160(protocol: Scheme;
+  Call_CloudiotProjectsLocationsRegistriesCreate_589191 = ref object of OpenApiRestCall_588441
+proc url_CloudiotProjectsLocationsRegistriesCreate_589193(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -2144,7 +2144,7 @@ proc url_CloudiotProjectsLocationsRegistriesCreate_580160(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_CloudiotProjectsLocationsRegistriesCreate_580159(path: JsonNode;
+proc validate_CloudiotProjectsLocationsRegistriesCreate_589192(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Creates a device registry that contains devices.
   ## 
@@ -2156,11 +2156,11 @@ proc validate_CloudiotProjectsLocationsRegistriesCreate_580159(path: JsonNode;
   ## For example, `projects/example-project/locations/us-central1`.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `parent` field"
-  var valid_580161 = path.getOrDefault("parent")
-  valid_580161 = validateParameter(valid_580161, JString, required = true,
+  var valid_589194 = path.getOrDefault("parent")
+  valid_589194 = validateParameter(valid_589194, JString, required = true,
                                  default = nil)
-  if valid_580161 != nil:
-    section.add "parent", valid_580161
+  if valid_589194 != nil:
+    section.add "parent", valid_589194
   result.add "path", section
   ## parameters in `query` object:
   ##   upload_protocol: JString
@@ -2186,61 +2186,61 @@ proc validate_CloudiotProjectsLocationsRegistriesCreate_580159(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580162 = query.getOrDefault("upload_protocol")
-  valid_580162 = validateParameter(valid_580162, JString, required = false,
+  var valid_589195 = query.getOrDefault("upload_protocol")
+  valid_589195 = validateParameter(valid_589195, JString, required = false,
                                  default = nil)
-  if valid_580162 != nil:
-    section.add "upload_protocol", valid_580162
-  var valid_580163 = query.getOrDefault("fields")
-  valid_580163 = validateParameter(valid_580163, JString, required = false,
+  if valid_589195 != nil:
+    section.add "upload_protocol", valid_589195
+  var valid_589196 = query.getOrDefault("fields")
+  valid_589196 = validateParameter(valid_589196, JString, required = false,
                                  default = nil)
-  if valid_580163 != nil:
-    section.add "fields", valid_580163
-  var valid_580164 = query.getOrDefault("quotaUser")
-  valid_580164 = validateParameter(valid_580164, JString, required = false,
+  if valid_589196 != nil:
+    section.add "fields", valid_589196
+  var valid_589197 = query.getOrDefault("quotaUser")
+  valid_589197 = validateParameter(valid_589197, JString, required = false,
                                  default = nil)
-  if valid_580164 != nil:
-    section.add "quotaUser", valid_580164
-  var valid_580165 = query.getOrDefault("alt")
-  valid_580165 = validateParameter(valid_580165, JString, required = false,
+  if valid_589197 != nil:
+    section.add "quotaUser", valid_589197
+  var valid_589198 = query.getOrDefault("alt")
+  valid_589198 = validateParameter(valid_589198, JString, required = false,
                                  default = newJString("json"))
-  if valid_580165 != nil:
-    section.add "alt", valid_580165
-  var valid_580166 = query.getOrDefault("oauth_token")
-  valid_580166 = validateParameter(valid_580166, JString, required = false,
+  if valid_589198 != nil:
+    section.add "alt", valid_589198
+  var valid_589199 = query.getOrDefault("oauth_token")
+  valid_589199 = validateParameter(valid_589199, JString, required = false,
                                  default = nil)
-  if valid_580166 != nil:
-    section.add "oauth_token", valid_580166
-  var valid_580167 = query.getOrDefault("callback")
-  valid_580167 = validateParameter(valid_580167, JString, required = false,
+  if valid_589199 != nil:
+    section.add "oauth_token", valid_589199
+  var valid_589200 = query.getOrDefault("callback")
+  valid_589200 = validateParameter(valid_589200, JString, required = false,
                                  default = nil)
-  if valid_580167 != nil:
-    section.add "callback", valid_580167
-  var valid_580168 = query.getOrDefault("access_token")
-  valid_580168 = validateParameter(valid_580168, JString, required = false,
+  if valid_589200 != nil:
+    section.add "callback", valid_589200
+  var valid_589201 = query.getOrDefault("access_token")
+  valid_589201 = validateParameter(valid_589201, JString, required = false,
                                  default = nil)
-  if valid_580168 != nil:
-    section.add "access_token", valid_580168
-  var valid_580169 = query.getOrDefault("uploadType")
-  valid_580169 = validateParameter(valid_580169, JString, required = false,
+  if valid_589201 != nil:
+    section.add "access_token", valid_589201
+  var valid_589202 = query.getOrDefault("uploadType")
+  valid_589202 = validateParameter(valid_589202, JString, required = false,
                                  default = nil)
-  if valid_580169 != nil:
-    section.add "uploadType", valid_580169
-  var valid_580170 = query.getOrDefault("key")
-  valid_580170 = validateParameter(valid_580170, JString, required = false,
+  if valid_589202 != nil:
+    section.add "uploadType", valid_589202
+  var valid_589203 = query.getOrDefault("key")
+  valid_589203 = validateParameter(valid_589203, JString, required = false,
                                  default = nil)
-  if valid_580170 != nil:
-    section.add "key", valid_580170
-  var valid_580171 = query.getOrDefault("$.xgafv")
-  valid_580171 = validateParameter(valid_580171, JString, required = false,
+  if valid_589203 != nil:
+    section.add "key", valid_589203
+  var valid_589204 = query.getOrDefault("$.xgafv")
+  valid_589204 = validateParameter(valid_589204, JString, required = false,
                                  default = newJString("1"))
-  if valid_580171 != nil:
-    section.add "$.xgafv", valid_580171
-  var valid_580172 = query.getOrDefault("prettyPrint")
-  valid_580172 = validateParameter(valid_580172, JBool, required = false,
+  if valid_589204 != nil:
+    section.add "$.xgafv", valid_589204
+  var valid_589205 = query.getOrDefault("prettyPrint")
+  valid_589205 = validateParameter(valid_589205, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580172 != nil:
-    section.add "prettyPrint", valid_580172
+  if valid_589205 != nil:
+    section.add "prettyPrint", valid_589205
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -2252,21 +2252,21 @@ proc validate_CloudiotProjectsLocationsRegistriesCreate_580159(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580174: Call_CloudiotProjectsLocationsRegistriesCreate_580158;
+proc call*(call_589207: Call_CloudiotProjectsLocationsRegistriesCreate_589191;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Creates a device registry that contains devices.
   ## 
-  let valid = call_580174.validator(path, query, header, formData, body)
-  let scheme = call_580174.pickScheme
+  let valid = call_589207.validator(path, query, header, formData, body)
+  let scheme = call_589207.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580174.url(scheme.get, call_580174.host, call_580174.base,
-                         call_580174.route, valid.getOrDefault("path"),
+  let url = call_589207.url(scheme.get, call_589207.host, call_589207.base,
+                         call_589207.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580174, url, valid)
+  result = hook(call_589207, url, valid)
 
-proc call*(call_580175: Call_CloudiotProjectsLocationsRegistriesCreate_580158;
+proc call*(call_589208: Call_CloudiotProjectsLocationsRegistriesCreate_589191;
           parent: string; uploadProtocol: string = ""; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           callback: string = ""; accessToken: string = ""; uploadType: string = "";
@@ -2300,34 +2300,34 @@ proc call*(call_580175: Call_CloudiotProjectsLocationsRegistriesCreate_580158;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_580176 = newJObject()
-  var query_580177 = newJObject()
-  var body_580178 = newJObject()
-  add(query_580177, "upload_protocol", newJString(uploadProtocol))
-  add(query_580177, "fields", newJString(fields))
-  add(query_580177, "quotaUser", newJString(quotaUser))
-  add(query_580177, "alt", newJString(alt))
-  add(query_580177, "oauth_token", newJString(oauthToken))
-  add(query_580177, "callback", newJString(callback))
-  add(query_580177, "access_token", newJString(accessToken))
-  add(query_580177, "uploadType", newJString(uploadType))
-  add(path_580176, "parent", newJString(parent))
-  add(query_580177, "key", newJString(key))
-  add(query_580177, "$.xgafv", newJString(Xgafv))
+  var path_589209 = newJObject()
+  var query_589210 = newJObject()
+  var body_589211 = newJObject()
+  add(query_589210, "upload_protocol", newJString(uploadProtocol))
+  add(query_589210, "fields", newJString(fields))
+  add(query_589210, "quotaUser", newJString(quotaUser))
+  add(query_589210, "alt", newJString(alt))
+  add(query_589210, "oauth_token", newJString(oauthToken))
+  add(query_589210, "callback", newJString(callback))
+  add(query_589210, "access_token", newJString(accessToken))
+  add(query_589210, "uploadType", newJString(uploadType))
+  add(path_589209, "parent", newJString(parent))
+  add(query_589210, "key", newJString(key))
+  add(query_589210, "$.xgafv", newJString(Xgafv))
   if body != nil:
-    body_580178 = body
-  add(query_580177, "prettyPrint", newJBool(prettyPrint))
-  result = call_580175.call(path_580176, query_580177, nil, nil, body_580178)
+    body_589211 = body
+  add(query_589210, "prettyPrint", newJBool(prettyPrint))
+  result = call_589208.call(path_589209, query_589210, nil, nil, body_589211)
 
-var cloudiotProjectsLocationsRegistriesCreate* = Call_CloudiotProjectsLocationsRegistriesCreate_580158(
+var cloudiotProjectsLocationsRegistriesCreate* = Call_CloudiotProjectsLocationsRegistriesCreate_589191(
     name: "cloudiotProjectsLocationsRegistriesCreate", meth: HttpMethod.HttpPost,
     host: "cloudiot.googleapis.com", route: "/v1/{parent}/registries",
-    validator: validate_CloudiotProjectsLocationsRegistriesCreate_580159,
-    base: "/", url: url_CloudiotProjectsLocationsRegistriesCreate_580160,
+    validator: validate_CloudiotProjectsLocationsRegistriesCreate_589192,
+    base: "/", url: url_CloudiotProjectsLocationsRegistriesCreate_589193,
     schemes: {Scheme.Https})
 type
-  Call_CloudiotProjectsLocationsRegistriesList_580137 = ref object of OpenApiRestCall_579408
-proc url_CloudiotProjectsLocationsRegistriesList_580139(protocol: Scheme;
+  Call_CloudiotProjectsLocationsRegistriesList_589170 = ref object of OpenApiRestCall_588441
+proc url_CloudiotProjectsLocationsRegistriesList_589172(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -2343,7 +2343,7 @@ proc url_CloudiotProjectsLocationsRegistriesList_580139(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_CloudiotProjectsLocationsRegistriesList_580138(path: JsonNode;
+proc validate_CloudiotProjectsLocationsRegistriesList_589171(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Lists device registries.
   ## 
@@ -2355,11 +2355,11 @@ proc validate_CloudiotProjectsLocationsRegistriesList_580138(path: JsonNode;
   ## `projects/example-project/locations/us-central1`.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `parent` field"
-  var valid_580140 = path.getOrDefault("parent")
-  valid_580140 = validateParameter(valid_580140, JString, required = true,
+  var valid_589173 = path.getOrDefault("parent")
+  valid_589173 = validateParameter(valid_589173, JString, required = true,
                                  default = nil)
-  if valid_580140 != nil:
-    section.add "parent", valid_580140
+  if valid_589173 != nil:
+    section.add "parent", valid_589173
   result.add "path", section
   ## parameters in `query` object:
   ##   upload_protocol: JString
@@ -2394,70 +2394,70 @@ proc validate_CloudiotProjectsLocationsRegistriesList_580138(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580141 = query.getOrDefault("upload_protocol")
-  valid_580141 = validateParameter(valid_580141, JString, required = false,
+  var valid_589174 = query.getOrDefault("upload_protocol")
+  valid_589174 = validateParameter(valid_589174, JString, required = false,
                                  default = nil)
-  if valid_580141 != nil:
-    section.add "upload_protocol", valid_580141
-  var valid_580142 = query.getOrDefault("fields")
-  valid_580142 = validateParameter(valid_580142, JString, required = false,
+  if valid_589174 != nil:
+    section.add "upload_protocol", valid_589174
+  var valid_589175 = query.getOrDefault("fields")
+  valid_589175 = validateParameter(valid_589175, JString, required = false,
                                  default = nil)
-  if valid_580142 != nil:
-    section.add "fields", valid_580142
-  var valid_580143 = query.getOrDefault("pageToken")
-  valid_580143 = validateParameter(valid_580143, JString, required = false,
+  if valid_589175 != nil:
+    section.add "fields", valid_589175
+  var valid_589176 = query.getOrDefault("pageToken")
+  valid_589176 = validateParameter(valid_589176, JString, required = false,
                                  default = nil)
-  if valid_580143 != nil:
-    section.add "pageToken", valid_580143
-  var valid_580144 = query.getOrDefault("quotaUser")
-  valid_580144 = validateParameter(valid_580144, JString, required = false,
+  if valid_589176 != nil:
+    section.add "pageToken", valid_589176
+  var valid_589177 = query.getOrDefault("quotaUser")
+  valid_589177 = validateParameter(valid_589177, JString, required = false,
                                  default = nil)
-  if valid_580144 != nil:
-    section.add "quotaUser", valid_580144
-  var valid_580145 = query.getOrDefault("alt")
-  valid_580145 = validateParameter(valid_580145, JString, required = false,
+  if valid_589177 != nil:
+    section.add "quotaUser", valid_589177
+  var valid_589178 = query.getOrDefault("alt")
+  valid_589178 = validateParameter(valid_589178, JString, required = false,
                                  default = newJString("json"))
-  if valid_580145 != nil:
-    section.add "alt", valid_580145
-  var valid_580146 = query.getOrDefault("oauth_token")
-  valid_580146 = validateParameter(valid_580146, JString, required = false,
+  if valid_589178 != nil:
+    section.add "alt", valid_589178
+  var valid_589179 = query.getOrDefault("oauth_token")
+  valid_589179 = validateParameter(valid_589179, JString, required = false,
                                  default = nil)
-  if valid_580146 != nil:
-    section.add "oauth_token", valid_580146
-  var valid_580147 = query.getOrDefault("callback")
-  valid_580147 = validateParameter(valid_580147, JString, required = false,
+  if valid_589179 != nil:
+    section.add "oauth_token", valid_589179
+  var valid_589180 = query.getOrDefault("callback")
+  valid_589180 = validateParameter(valid_589180, JString, required = false,
                                  default = nil)
-  if valid_580147 != nil:
-    section.add "callback", valid_580147
-  var valid_580148 = query.getOrDefault("access_token")
-  valid_580148 = validateParameter(valid_580148, JString, required = false,
+  if valid_589180 != nil:
+    section.add "callback", valid_589180
+  var valid_589181 = query.getOrDefault("access_token")
+  valid_589181 = validateParameter(valid_589181, JString, required = false,
                                  default = nil)
-  if valid_580148 != nil:
-    section.add "access_token", valid_580148
-  var valid_580149 = query.getOrDefault("uploadType")
-  valid_580149 = validateParameter(valid_580149, JString, required = false,
+  if valid_589181 != nil:
+    section.add "access_token", valid_589181
+  var valid_589182 = query.getOrDefault("uploadType")
+  valid_589182 = validateParameter(valid_589182, JString, required = false,
                                  default = nil)
-  if valid_580149 != nil:
-    section.add "uploadType", valid_580149
-  var valid_580150 = query.getOrDefault("key")
-  valid_580150 = validateParameter(valid_580150, JString, required = false,
+  if valid_589182 != nil:
+    section.add "uploadType", valid_589182
+  var valid_589183 = query.getOrDefault("key")
+  valid_589183 = validateParameter(valid_589183, JString, required = false,
                                  default = nil)
-  if valid_580150 != nil:
-    section.add "key", valid_580150
-  var valid_580151 = query.getOrDefault("$.xgafv")
-  valid_580151 = validateParameter(valid_580151, JString, required = false,
+  if valid_589183 != nil:
+    section.add "key", valid_589183
+  var valid_589184 = query.getOrDefault("$.xgafv")
+  valid_589184 = validateParameter(valid_589184, JString, required = false,
                                  default = newJString("1"))
-  if valid_580151 != nil:
-    section.add "$.xgafv", valid_580151
-  var valid_580152 = query.getOrDefault("pageSize")
-  valid_580152 = validateParameter(valid_580152, JInt, required = false, default = nil)
-  if valid_580152 != nil:
-    section.add "pageSize", valid_580152
-  var valid_580153 = query.getOrDefault("prettyPrint")
-  valid_580153 = validateParameter(valid_580153, JBool, required = false,
+  if valid_589184 != nil:
+    section.add "$.xgafv", valid_589184
+  var valid_589185 = query.getOrDefault("pageSize")
+  valid_589185 = validateParameter(valid_589185, JInt, required = false, default = nil)
+  if valid_589185 != nil:
+    section.add "pageSize", valid_589185
+  var valid_589186 = query.getOrDefault("prettyPrint")
+  valid_589186 = validateParameter(valid_589186, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580153 != nil:
-    section.add "prettyPrint", valid_580153
+  if valid_589186 != nil:
+    section.add "prettyPrint", valid_589186
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -2466,21 +2466,21 @@ proc validate_CloudiotProjectsLocationsRegistriesList_580138(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580154: Call_CloudiotProjectsLocationsRegistriesList_580137;
+proc call*(call_589187: Call_CloudiotProjectsLocationsRegistriesList_589170;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Lists device registries.
   ## 
-  let valid = call_580154.validator(path, query, header, formData, body)
-  let scheme = call_580154.pickScheme
+  let valid = call_589187.validator(path, query, header, formData, body)
+  let scheme = call_589187.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580154.url(scheme.get, call_580154.host, call_580154.base,
-                         call_580154.route, valid.getOrDefault("path"),
+  let url = call_589187.url(scheme.get, call_589187.host, call_589187.base,
+                         call_589187.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580154, url, valid)
+  result = hook(call_589187, url, valid)
 
-proc call*(call_580155: Call_CloudiotProjectsLocationsRegistriesList_580137;
+proc call*(call_589188: Call_CloudiotProjectsLocationsRegistriesList_589170;
           parent: string; uploadProtocol: string = ""; fields: string = "";
           pageToken: string = ""; quotaUser: string = ""; alt: string = "json";
           oauthToken: string = ""; callback: string = ""; accessToken: string = "";
@@ -2522,33 +2522,33 @@ proc call*(call_580155: Call_CloudiotProjectsLocationsRegistriesList_580137;
   ## indicates that more data is available.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_580156 = newJObject()
-  var query_580157 = newJObject()
-  add(query_580157, "upload_protocol", newJString(uploadProtocol))
-  add(query_580157, "fields", newJString(fields))
-  add(query_580157, "pageToken", newJString(pageToken))
-  add(query_580157, "quotaUser", newJString(quotaUser))
-  add(query_580157, "alt", newJString(alt))
-  add(query_580157, "oauth_token", newJString(oauthToken))
-  add(query_580157, "callback", newJString(callback))
-  add(query_580157, "access_token", newJString(accessToken))
-  add(query_580157, "uploadType", newJString(uploadType))
-  add(path_580156, "parent", newJString(parent))
-  add(query_580157, "key", newJString(key))
-  add(query_580157, "$.xgafv", newJString(Xgafv))
-  add(query_580157, "pageSize", newJInt(pageSize))
-  add(query_580157, "prettyPrint", newJBool(prettyPrint))
-  result = call_580155.call(path_580156, query_580157, nil, nil, nil)
+  var path_589189 = newJObject()
+  var query_589190 = newJObject()
+  add(query_589190, "upload_protocol", newJString(uploadProtocol))
+  add(query_589190, "fields", newJString(fields))
+  add(query_589190, "pageToken", newJString(pageToken))
+  add(query_589190, "quotaUser", newJString(quotaUser))
+  add(query_589190, "alt", newJString(alt))
+  add(query_589190, "oauth_token", newJString(oauthToken))
+  add(query_589190, "callback", newJString(callback))
+  add(query_589190, "access_token", newJString(accessToken))
+  add(query_589190, "uploadType", newJString(uploadType))
+  add(path_589189, "parent", newJString(parent))
+  add(query_589190, "key", newJString(key))
+  add(query_589190, "$.xgafv", newJString(Xgafv))
+  add(query_589190, "pageSize", newJInt(pageSize))
+  add(query_589190, "prettyPrint", newJBool(prettyPrint))
+  result = call_589188.call(path_589189, query_589190, nil, nil, nil)
 
-var cloudiotProjectsLocationsRegistriesList* = Call_CloudiotProjectsLocationsRegistriesList_580137(
+var cloudiotProjectsLocationsRegistriesList* = Call_CloudiotProjectsLocationsRegistriesList_589170(
     name: "cloudiotProjectsLocationsRegistriesList", meth: HttpMethod.HttpGet,
     host: "cloudiot.googleapis.com", route: "/v1/{parent}/registries",
-    validator: validate_CloudiotProjectsLocationsRegistriesList_580138, base: "/",
-    url: url_CloudiotProjectsLocationsRegistriesList_580139,
+    validator: validate_CloudiotProjectsLocationsRegistriesList_589171, base: "/",
+    url: url_CloudiotProjectsLocationsRegistriesList_589172,
     schemes: {Scheme.Https})
 type
-  Call_CloudiotProjectsLocationsRegistriesBindDeviceToGateway_580179 = ref object of OpenApiRestCall_579408
-proc url_CloudiotProjectsLocationsRegistriesBindDeviceToGateway_580181(
+  Call_CloudiotProjectsLocationsRegistriesBindDeviceToGateway_589212 = ref object of OpenApiRestCall_588441
+proc url_CloudiotProjectsLocationsRegistriesBindDeviceToGateway_589214(
     protocol: Scheme; host: string; base: string; route: string; path: JsonNode;
     query: JsonNode): Uri =
   result.scheme = $protocol
@@ -2565,7 +2565,7 @@ proc url_CloudiotProjectsLocationsRegistriesBindDeviceToGateway_580181(
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_CloudiotProjectsLocationsRegistriesBindDeviceToGateway_580180(
+proc validate_CloudiotProjectsLocationsRegistriesBindDeviceToGateway_589213(
     path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
     body: JsonNode): JsonNode =
   ## Associates the device with the gateway.
@@ -2578,11 +2578,11 @@ proc validate_CloudiotProjectsLocationsRegistriesBindDeviceToGateway_580180(
   ## `projects/example-project/locations/us-central1/registries/my-registry`.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `parent` field"
-  var valid_580182 = path.getOrDefault("parent")
-  valid_580182 = validateParameter(valid_580182, JString, required = true,
+  var valid_589215 = path.getOrDefault("parent")
+  valid_589215 = validateParameter(valid_589215, JString, required = true,
                                  default = nil)
-  if valid_580182 != nil:
-    section.add "parent", valid_580182
+  if valid_589215 != nil:
+    section.add "parent", valid_589215
   result.add "path", section
   ## parameters in `query` object:
   ##   upload_protocol: JString
@@ -2608,61 +2608,61 @@ proc validate_CloudiotProjectsLocationsRegistriesBindDeviceToGateway_580180(
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580183 = query.getOrDefault("upload_protocol")
-  valid_580183 = validateParameter(valid_580183, JString, required = false,
+  var valid_589216 = query.getOrDefault("upload_protocol")
+  valid_589216 = validateParameter(valid_589216, JString, required = false,
                                  default = nil)
-  if valid_580183 != nil:
-    section.add "upload_protocol", valid_580183
-  var valid_580184 = query.getOrDefault("fields")
-  valid_580184 = validateParameter(valid_580184, JString, required = false,
+  if valid_589216 != nil:
+    section.add "upload_protocol", valid_589216
+  var valid_589217 = query.getOrDefault("fields")
+  valid_589217 = validateParameter(valid_589217, JString, required = false,
                                  default = nil)
-  if valid_580184 != nil:
-    section.add "fields", valid_580184
-  var valid_580185 = query.getOrDefault("quotaUser")
-  valid_580185 = validateParameter(valid_580185, JString, required = false,
+  if valid_589217 != nil:
+    section.add "fields", valid_589217
+  var valid_589218 = query.getOrDefault("quotaUser")
+  valid_589218 = validateParameter(valid_589218, JString, required = false,
                                  default = nil)
-  if valid_580185 != nil:
-    section.add "quotaUser", valid_580185
-  var valid_580186 = query.getOrDefault("alt")
-  valid_580186 = validateParameter(valid_580186, JString, required = false,
+  if valid_589218 != nil:
+    section.add "quotaUser", valid_589218
+  var valid_589219 = query.getOrDefault("alt")
+  valid_589219 = validateParameter(valid_589219, JString, required = false,
                                  default = newJString("json"))
-  if valid_580186 != nil:
-    section.add "alt", valid_580186
-  var valid_580187 = query.getOrDefault("oauth_token")
-  valid_580187 = validateParameter(valid_580187, JString, required = false,
+  if valid_589219 != nil:
+    section.add "alt", valid_589219
+  var valid_589220 = query.getOrDefault("oauth_token")
+  valid_589220 = validateParameter(valid_589220, JString, required = false,
                                  default = nil)
-  if valid_580187 != nil:
-    section.add "oauth_token", valid_580187
-  var valid_580188 = query.getOrDefault("callback")
-  valid_580188 = validateParameter(valid_580188, JString, required = false,
+  if valid_589220 != nil:
+    section.add "oauth_token", valid_589220
+  var valid_589221 = query.getOrDefault("callback")
+  valid_589221 = validateParameter(valid_589221, JString, required = false,
                                  default = nil)
-  if valid_580188 != nil:
-    section.add "callback", valid_580188
-  var valid_580189 = query.getOrDefault("access_token")
-  valid_580189 = validateParameter(valid_580189, JString, required = false,
+  if valid_589221 != nil:
+    section.add "callback", valid_589221
+  var valid_589222 = query.getOrDefault("access_token")
+  valid_589222 = validateParameter(valid_589222, JString, required = false,
                                  default = nil)
-  if valid_580189 != nil:
-    section.add "access_token", valid_580189
-  var valid_580190 = query.getOrDefault("uploadType")
-  valid_580190 = validateParameter(valid_580190, JString, required = false,
+  if valid_589222 != nil:
+    section.add "access_token", valid_589222
+  var valid_589223 = query.getOrDefault("uploadType")
+  valid_589223 = validateParameter(valid_589223, JString, required = false,
                                  default = nil)
-  if valid_580190 != nil:
-    section.add "uploadType", valid_580190
-  var valid_580191 = query.getOrDefault("key")
-  valid_580191 = validateParameter(valid_580191, JString, required = false,
+  if valid_589223 != nil:
+    section.add "uploadType", valid_589223
+  var valid_589224 = query.getOrDefault("key")
+  valid_589224 = validateParameter(valid_589224, JString, required = false,
                                  default = nil)
-  if valid_580191 != nil:
-    section.add "key", valid_580191
-  var valid_580192 = query.getOrDefault("$.xgafv")
-  valid_580192 = validateParameter(valid_580192, JString, required = false,
+  if valid_589224 != nil:
+    section.add "key", valid_589224
+  var valid_589225 = query.getOrDefault("$.xgafv")
+  valid_589225 = validateParameter(valid_589225, JString, required = false,
                                  default = newJString("1"))
-  if valid_580192 != nil:
-    section.add "$.xgafv", valid_580192
-  var valid_580193 = query.getOrDefault("prettyPrint")
-  valid_580193 = validateParameter(valid_580193, JBool, required = false,
+  if valid_589225 != nil:
+    section.add "$.xgafv", valid_589225
+  var valid_589226 = query.getOrDefault("prettyPrint")
+  valid_589226 = validateParameter(valid_589226, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580193 != nil:
-    section.add "prettyPrint", valid_580193
+  if valid_589226 != nil:
+    section.add "prettyPrint", valid_589226
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -2674,21 +2674,21 @@ proc validate_CloudiotProjectsLocationsRegistriesBindDeviceToGateway_580180(
   if body != nil:
     result.add "body", body
 
-proc call*(call_580195: Call_CloudiotProjectsLocationsRegistriesBindDeviceToGateway_580179;
+proc call*(call_589228: Call_CloudiotProjectsLocationsRegistriesBindDeviceToGateway_589212;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Associates the device with the gateway.
   ## 
-  let valid = call_580195.validator(path, query, header, formData, body)
-  let scheme = call_580195.pickScheme
+  let valid = call_589228.validator(path, query, header, formData, body)
+  let scheme = call_589228.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580195.url(scheme.get, call_580195.host, call_580195.base,
-                         call_580195.route, valid.getOrDefault("path"),
+  let url = call_589228.url(scheme.get, call_589228.host, call_589228.base,
+                         call_589228.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580195, url, valid)
+  result = hook(call_589228, url, valid)
 
-proc call*(call_580196: Call_CloudiotProjectsLocationsRegistriesBindDeviceToGateway_580179;
+proc call*(call_589229: Call_CloudiotProjectsLocationsRegistriesBindDeviceToGateway_589212;
           parent: string; uploadProtocol: string = ""; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           callback: string = ""; accessToken: string = ""; uploadType: string = "";
@@ -2722,35 +2722,35 @@ proc call*(call_580196: Call_CloudiotProjectsLocationsRegistriesBindDeviceToGate
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_580197 = newJObject()
-  var query_580198 = newJObject()
-  var body_580199 = newJObject()
-  add(query_580198, "upload_protocol", newJString(uploadProtocol))
-  add(query_580198, "fields", newJString(fields))
-  add(query_580198, "quotaUser", newJString(quotaUser))
-  add(query_580198, "alt", newJString(alt))
-  add(query_580198, "oauth_token", newJString(oauthToken))
-  add(query_580198, "callback", newJString(callback))
-  add(query_580198, "access_token", newJString(accessToken))
-  add(query_580198, "uploadType", newJString(uploadType))
-  add(path_580197, "parent", newJString(parent))
-  add(query_580198, "key", newJString(key))
-  add(query_580198, "$.xgafv", newJString(Xgafv))
+  var path_589230 = newJObject()
+  var query_589231 = newJObject()
+  var body_589232 = newJObject()
+  add(query_589231, "upload_protocol", newJString(uploadProtocol))
+  add(query_589231, "fields", newJString(fields))
+  add(query_589231, "quotaUser", newJString(quotaUser))
+  add(query_589231, "alt", newJString(alt))
+  add(query_589231, "oauth_token", newJString(oauthToken))
+  add(query_589231, "callback", newJString(callback))
+  add(query_589231, "access_token", newJString(accessToken))
+  add(query_589231, "uploadType", newJString(uploadType))
+  add(path_589230, "parent", newJString(parent))
+  add(query_589231, "key", newJString(key))
+  add(query_589231, "$.xgafv", newJString(Xgafv))
   if body != nil:
-    body_580199 = body
-  add(query_580198, "prettyPrint", newJBool(prettyPrint))
-  result = call_580196.call(path_580197, query_580198, nil, nil, body_580199)
+    body_589232 = body
+  add(query_589231, "prettyPrint", newJBool(prettyPrint))
+  result = call_589229.call(path_589230, query_589231, nil, nil, body_589232)
 
-var cloudiotProjectsLocationsRegistriesBindDeviceToGateway* = Call_CloudiotProjectsLocationsRegistriesBindDeviceToGateway_580179(
+var cloudiotProjectsLocationsRegistriesBindDeviceToGateway* = Call_CloudiotProjectsLocationsRegistriesBindDeviceToGateway_589212(
     name: "cloudiotProjectsLocationsRegistriesBindDeviceToGateway",
     meth: HttpMethod.HttpPost, host: "cloudiot.googleapis.com",
     route: "/v1/{parent}:bindDeviceToGateway",
-    validator: validate_CloudiotProjectsLocationsRegistriesBindDeviceToGateway_580180,
-    base: "/", url: url_CloudiotProjectsLocationsRegistriesBindDeviceToGateway_580181,
+    validator: validate_CloudiotProjectsLocationsRegistriesBindDeviceToGateway_589213,
+    base: "/", url: url_CloudiotProjectsLocationsRegistriesBindDeviceToGateway_589214,
     schemes: {Scheme.Https})
 type
-  Call_CloudiotProjectsLocationsRegistriesUnbindDeviceFromGateway_580200 = ref object of OpenApiRestCall_579408
-proc url_CloudiotProjectsLocationsRegistriesUnbindDeviceFromGateway_580202(
+  Call_CloudiotProjectsLocationsRegistriesUnbindDeviceFromGateway_589233 = ref object of OpenApiRestCall_588441
+proc url_CloudiotProjectsLocationsRegistriesUnbindDeviceFromGateway_589235(
     protocol: Scheme; host: string; base: string; route: string; path: JsonNode;
     query: JsonNode): Uri =
   result.scheme = $protocol
@@ -2767,7 +2767,7 @@ proc url_CloudiotProjectsLocationsRegistriesUnbindDeviceFromGateway_580202(
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_CloudiotProjectsLocationsRegistriesUnbindDeviceFromGateway_580201(
+proc validate_CloudiotProjectsLocationsRegistriesUnbindDeviceFromGateway_589234(
     path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
     body: JsonNode): JsonNode =
   ## Deletes the association between the device and the gateway.
@@ -2780,11 +2780,11 @@ proc validate_CloudiotProjectsLocationsRegistriesUnbindDeviceFromGateway_580201(
   ## `projects/example-project/locations/us-central1/registries/my-registry`.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `parent` field"
-  var valid_580203 = path.getOrDefault("parent")
-  valid_580203 = validateParameter(valid_580203, JString, required = true,
+  var valid_589236 = path.getOrDefault("parent")
+  valid_589236 = validateParameter(valid_589236, JString, required = true,
                                  default = nil)
-  if valid_580203 != nil:
-    section.add "parent", valid_580203
+  if valid_589236 != nil:
+    section.add "parent", valid_589236
   result.add "path", section
   ## parameters in `query` object:
   ##   upload_protocol: JString
@@ -2810,61 +2810,61 @@ proc validate_CloudiotProjectsLocationsRegistriesUnbindDeviceFromGateway_580201(
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580204 = query.getOrDefault("upload_protocol")
-  valid_580204 = validateParameter(valid_580204, JString, required = false,
+  var valid_589237 = query.getOrDefault("upload_protocol")
+  valid_589237 = validateParameter(valid_589237, JString, required = false,
                                  default = nil)
-  if valid_580204 != nil:
-    section.add "upload_protocol", valid_580204
-  var valid_580205 = query.getOrDefault("fields")
-  valid_580205 = validateParameter(valid_580205, JString, required = false,
+  if valid_589237 != nil:
+    section.add "upload_protocol", valid_589237
+  var valid_589238 = query.getOrDefault("fields")
+  valid_589238 = validateParameter(valid_589238, JString, required = false,
                                  default = nil)
-  if valid_580205 != nil:
-    section.add "fields", valid_580205
-  var valid_580206 = query.getOrDefault("quotaUser")
-  valid_580206 = validateParameter(valid_580206, JString, required = false,
+  if valid_589238 != nil:
+    section.add "fields", valid_589238
+  var valid_589239 = query.getOrDefault("quotaUser")
+  valid_589239 = validateParameter(valid_589239, JString, required = false,
                                  default = nil)
-  if valid_580206 != nil:
-    section.add "quotaUser", valid_580206
-  var valid_580207 = query.getOrDefault("alt")
-  valid_580207 = validateParameter(valid_580207, JString, required = false,
+  if valid_589239 != nil:
+    section.add "quotaUser", valid_589239
+  var valid_589240 = query.getOrDefault("alt")
+  valid_589240 = validateParameter(valid_589240, JString, required = false,
                                  default = newJString("json"))
-  if valid_580207 != nil:
-    section.add "alt", valid_580207
-  var valid_580208 = query.getOrDefault("oauth_token")
-  valid_580208 = validateParameter(valid_580208, JString, required = false,
+  if valid_589240 != nil:
+    section.add "alt", valid_589240
+  var valid_589241 = query.getOrDefault("oauth_token")
+  valid_589241 = validateParameter(valid_589241, JString, required = false,
                                  default = nil)
-  if valid_580208 != nil:
-    section.add "oauth_token", valid_580208
-  var valid_580209 = query.getOrDefault("callback")
-  valid_580209 = validateParameter(valid_580209, JString, required = false,
+  if valid_589241 != nil:
+    section.add "oauth_token", valid_589241
+  var valid_589242 = query.getOrDefault("callback")
+  valid_589242 = validateParameter(valid_589242, JString, required = false,
                                  default = nil)
-  if valid_580209 != nil:
-    section.add "callback", valid_580209
-  var valid_580210 = query.getOrDefault("access_token")
-  valid_580210 = validateParameter(valid_580210, JString, required = false,
+  if valid_589242 != nil:
+    section.add "callback", valid_589242
+  var valid_589243 = query.getOrDefault("access_token")
+  valid_589243 = validateParameter(valid_589243, JString, required = false,
                                  default = nil)
-  if valid_580210 != nil:
-    section.add "access_token", valid_580210
-  var valid_580211 = query.getOrDefault("uploadType")
-  valid_580211 = validateParameter(valid_580211, JString, required = false,
+  if valid_589243 != nil:
+    section.add "access_token", valid_589243
+  var valid_589244 = query.getOrDefault("uploadType")
+  valid_589244 = validateParameter(valid_589244, JString, required = false,
                                  default = nil)
-  if valid_580211 != nil:
-    section.add "uploadType", valid_580211
-  var valid_580212 = query.getOrDefault("key")
-  valid_580212 = validateParameter(valid_580212, JString, required = false,
+  if valid_589244 != nil:
+    section.add "uploadType", valid_589244
+  var valid_589245 = query.getOrDefault("key")
+  valid_589245 = validateParameter(valid_589245, JString, required = false,
                                  default = nil)
-  if valid_580212 != nil:
-    section.add "key", valid_580212
-  var valid_580213 = query.getOrDefault("$.xgafv")
-  valid_580213 = validateParameter(valid_580213, JString, required = false,
+  if valid_589245 != nil:
+    section.add "key", valid_589245
+  var valid_589246 = query.getOrDefault("$.xgafv")
+  valid_589246 = validateParameter(valid_589246, JString, required = false,
                                  default = newJString("1"))
-  if valid_580213 != nil:
-    section.add "$.xgafv", valid_580213
-  var valid_580214 = query.getOrDefault("prettyPrint")
-  valid_580214 = validateParameter(valid_580214, JBool, required = false,
+  if valid_589246 != nil:
+    section.add "$.xgafv", valid_589246
+  var valid_589247 = query.getOrDefault("prettyPrint")
+  valid_589247 = validateParameter(valid_589247, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580214 != nil:
-    section.add "prettyPrint", valid_580214
+  if valid_589247 != nil:
+    section.add "prettyPrint", valid_589247
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -2876,21 +2876,21 @@ proc validate_CloudiotProjectsLocationsRegistriesUnbindDeviceFromGateway_580201(
   if body != nil:
     result.add "body", body
 
-proc call*(call_580216: Call_CloudiotProjectsLocationsRegistriesUnbindDeviceFromGateway_580200;
+proc call*(call_589249: Call_CloudiotProjectsLocationsRegistriesUnbindDeviceFromGateway_589233;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Deletes the association between the device and the gateway.
   ## 
-  let valid = call_580216.validator(path, query, header, formData, body)
-  let scheme = call_580216.pickScheme
+  let valid = call_589249.validator(path, query, header, formData, body)
+  let scheme = call_589249.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580216.url(scheme.get, call_580216.host, call_580216.base,
-                         call_580216.route, valid.getOrDefault("path"),
+  let url = call_589249.url(scheme.get, call_589249.host, call_589249.base,
+                         call_589249.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580216, url, valid)
+  result = hook(call_589249, url, valid)
 
-proc call*(call_580217: Call_CloudiotProjectsLocationsRegistriesUnbindDeviceFromGateway_580200;
+proc call*(call_589250: Call_CloudiotProjectsLocationsRegistriesUnbindDeviceFromGateway_589233;
           parent: string; uploadProtocol: string = ""; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           callback: string = ""; accessToken: string = ""; uploadType: string = "";
@@ -2924,35 +2924,35 @@ proc call*(call_580217: Call_CloudiotProjectsLocationsRegistriesUnbindDeviceFrom
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_580218 = newJObject()
-  var query_580219 = newJObject()
-  var body_580220 = newJObject()
-  add(query_580219, "upload_protocol", newJString(uploadProtocol))
-  add(query_580219, "fields", newJString(fields))
-  add(query_580219, "quotaUser", newJString(quotaUser))
-  add(query_580219, "alt", newJString(alt))
-  add(query_580219, "oauth_token", newJString(oauthToken))
-  add(query_580219, "callback", newJString(callback))
-  add(query_580219, "access_token", newJString(accessToken))
-  add(query_580219, "uploadType", newJString(uploadType))
-  add(path_580218, "parent", newJString(parent))
-  add(query_580219, "key", newJString(key))
-  add(query_580219, "$.xgafv", newJString(Xgafv))
+  var path_589251 = newJObject()
+  var query_589252 = newJObject()
+  var body_589253 = newJObject()
+  add(query_589252, "upload_protocol", newJString(uploadProtocol))
+  add(query_589252, "fields", newJString(fields))
+  add(query_589252, "quotaUser", newJString(quotaUser))
+  add(query_589252, "alt", newJString(alt))
+  add(query_589252, "oauth_token", newJString(oauthToken))
+  add(query_589252, "callback", newJString(callback))
+  add(query_589252, "access_token", newJString(accessToken))
+  add(query_589252, "uploadType", newJString(uploadType))
+  add(path_589251, "parent", newJString(parent))
+  add(query_589252, "key", newJString(key))
+  add(query_589252, "$.xgafv", newJString(Xgafv))
   if body != nil:
-    body_580220 = body
-  add(query_580219, "prettyPrint", newJBool(prettyPrint))
-  result = call_580217.call(path_580218, query_580219, nil, nil, body_580220)
+    body_589253 = body
+  add(query_589252, "prettyPrint", newJBool(prettyPrint))
+  result = call_589250.call(path_589251, query_589252, nil, nil, body_589253)
 
-var cloudiotProjectsLocationsRegistriesUnbindDeviceFromGateway* = Call_CloudiotProjectsLocationsRegistriesUnbindDeviceFromGateway_580200(
+var cloudiotProjectsLocationsRegistriesUnbindDeviceFromGateway* = Call_CloudiotProjectsLocationsRegistriesUnbindDeviceFromGateway_589233(
     name: "cloudiotProjectsLocationsRegistriesUnbindDeviceFromGateway",
     meth: HttpMethod.HttpPost, host: "cloudiot.googleapis.com",
-    route: "/v1/{parent}:unbindDeviceFromGateway", validator: validate_CloudiotProjectsLocationsRegistriesUnbindDeviceFromGateway_580201,
+    route: "/v1/{parent}:unbindDeviceFromGateway", validator: validate_CloudiotProjectsLocationsRegistriesUnbindDeviceFromGateway_589234,
     base: "/",
-    url: url_CloudiotProjectsLocationsRegistriesUnbindDeviceFromGateway_580202,
+    url: url_CloudiotProjectsLocationsRegistriesUnbindDeviceFromGateway_589235,
     schemes: {Scheme.Https})
 type
-  Call_CloudiotProjectsLocationsRegistriesGroupsGetIamPolicy_580221 = ref object of OpenApiRestCall_579408
-proc url_CloudiotProjectsLocationsRegistriesGroupsGetIamPolicy_580223(
+  Call_CloudiotProjectsLocationsRegistriesGroupsGetIamPolicy_589254 = ref object of OpenApiRestCall_588441
+proc url_CloudiotProjectsLocationsRegistriesGroupsGetIamPolicy_589256(
     protocol: Scheme; host: string; base: string; route: string; path: JsonNode;
     query: JsonNode): Uri =
   result.scheme = $protocol
@@ -2969,7 +2969,7 @@ proc url_CloudiotProjectsLocationsRegistriesGroupsGetIamPolicy_580223(
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_CloudiotProjectsLocationsRegistriesGroupsGetIamPolicy_580222(
+proc validate_CloudiotProjectsLocationsRegistriesGroupsGetIamPolicy_589255(
     path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
     body: JsonNode): JsonNode =
   ## Gets the access control policy for a resource.
@@ -2984,11 +2984,11 @@ proc validate_CloudiotProjectsLocationsRegistriesGroupsGetIamPolicy_580222(
   ## See the operation documentation for the appropriate value for this field.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `resource` field"
-  var valid_580224 = path.getOrDefault("resource")
-  valid_580224 = validateParameter(valid_580224, JString, required = true,
+  var valid_589257 = path.getOrDefault("resource")
+  valid_589257 = validateParameter(valid_589257, JString, required = true,
                                  default = nil)
-  if valid_580224 != nil:
-    section.add "resource", valid_580224
+  if valid_589257 != nil:
+    section.add "resource", valid_589257
   result.add "path", section
   ## parameters in `query` object:
   ##   upload_protocol: JString
@@ -3014,61 +3014,61 @@ proc validate_CloudiotProjectsLocationsRegistriesGroupsGetIamPolicy_580222(
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580225 = query.getOrDefault("upload_protocol")
-  valid_580225 = validateParameter(valid_580225, JString, required = false,
+  var valid_589258 = query.getOrDefault("upload_protocol")
+  valid_589258 = validateParameter(valid_589258, JString, required = false,
                                  default = nil)
-  if valid_580225 != nil:
-    section.add "upload_protocol", valid_580225
-  var valid_580226 = query.getOrDefault("fields")
-  valid_580226 = validateParameter(valid_580226, JString, required = false,
+  if valid_589258 != nil:
+    section.add "upload_protocol", valid_589258
+  var valid_589259 = query.getOrDefault("fields")
+  valid_589259 = validateParameter(valid_589259, JString, required = false,
                                  default = nil)
-  if valid_580226 != nil:
-    section.add "fields", valid_580226
-  var valid_580227 = query.getOrDefault("quotaUser")
-  valid_580227 = validateParameter(valid_580227, JString, required = false,
+  if valid_589259 != nil:
+    section.add "fields", valid_589259
+  var valid_589260 = query.getOrDefault("quotaUser")
+  valid_589260 = validateParameter(valid_589260, JString, required = false,
                                  default = nil)
-  if valid_580227 != nil:
-    section.add "quotaUser", valid_580227
-  var valid_580228 = query.getOrDefault("alt")
-  valid_580228 = validateParameter(valid_580228, JString, required = false,
+  if valid_589260 != nil:
+    section.add "quotaUser", valid_589260
+  var valid_589261 = query.getOrDefault("alt")
+  valid_589261 = validateParameter(valid_589261, JString, required = false,
                                  default = newJString("json"))
-  if valid_580228 != nil:
-    section.add "alt", valid_580228
-  var valid_580229 = query.getOrDefault("oauth_token")
-  valid_580229 = validateParameter(valid_580229, JString, required = false,
+  if valid_589261 != nil:
+    section.add "alt", valid_589261
+  var valid_589262 = query.getOrDefault("oauth_token")
+  valid_589262 = validateParameter(valid_589262, JString, required = false,
                                  default = nil)
-  if valid_580229 != nil:
-    section.add "oauth_token", valid_580229
-  var valid_580230 = query.getOrDefault("callback")
-  valid_580230 = validateParameter(valid_580230, JString, required = false,
+  if valid_589262 != nil:
+    section.add "oauth_token", valid_589262
+  var valid_589263 = query.getOrDefault("callback")
+  valid_589263 = validateParameter(valid_589263, JString, required = false,
                                  default = nil)
-  if valid_580230 != nil:
-    section.add "callback", valid_580230
-  var valid_580231 = query.getOrDefault("access_token")
-  valid_580231 = validateParameter(valid_580231, JString, required = false,
+  if valid_589263 != nil:
+    section.add "callback", valid_589263
+  var valid_589264 = query.getOrDefault("access_token")
+  valid_589264 = validateParameter(valid_589264, JString, required = false,
                                  default = nil)
-  if valid_580231 != nil:
-    section.add "access_token", valid_580231
-  var valid_580232 = query.getOrDefault("uploadType")
-  valid_580232 = validateParameter(valid_580232, JString, required = false,
+  if valid_589264 != nil:
+    section.add "access_token", valid_589264
+  var valid_589265 = query.getOrDefault("uploadType")
+  valid_589265 = validateParameter(valid_589265, JString, required = false,
                                  default = nil)
-  if valid_580232 != nil:
-    section.add "uploadType", valid_580232
-  var valid_580233 = query.getOrDefault("key")
-  valid_580233 = validateParameter(valid_580233, JString, required = false,
+  if valid_589265 != nil:
+    section.add "uploadType", valid_589265
+  var valid_589266 = query.getOrDefault("key")
+  valid_589266 = validateParameter(valid_589266, JString, required = false,
                                  default = nil)
-  if valid_580233 != nil:
-    section.add "key", valid_580233
-  var valid_580234 = query.getOrDefault("$.xgafv")
-  valid_580234 = validateParameter(valid_580234, JString, required = false,
+  if valid_589266 != nil:
+    section.add "key", valid_589266
+  var valid_589267 = query.getOrDefault("$.xgafv")
+  valid_589267 = validateParameter(valid_589267, JString, required = false,
                                  default = newJString("1"))
-  if valid_580234 != nil:
-    section.add "$.xgafv", valid_580234
-  var valid_580235 = query.getOrDefault("prettyPrint")
-  valid_580235 = validateParameter(valid_580235, JBool, required = false,
+  if valid_589267 != nil:
+    section.add "$.xgafv", valid_589267
+  var valid_589268 = query.getOrDefault("prettyPrint")
+  valid_589268 = validateParameter(valid_589268, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580235 != nil:
-    section.add "prettyPrint", valid_580235
+  if valid_589268 != nil:
+    section.add "prettyPrint", valid_589268
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -3080,23 +3080,23 @@ proc validate_CloudiotProjectsLocationsRegistriesGroupsGetIamPolicy_580222(
   if body != nil:
     result.add "body", body
 
-proc call*(call_580237: Call_CloudiotProjectsLocationsRegistriesGroupsGetIamPolicy_580221;
+proc call*(call_589270: Call_CloudiotProjectsLocationsRegistriesGroupsGetIamPolicy_589254;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Gets the access control policy for a resource.
   ## Returns an empty policy if the resource exists and does not have a policy
   ## set.
   ## 
-  let valid = call_580237.validator(path, query, header, formData, body)
-  let scheme = call_580237.pickScheme
+  let valid = call_589270.validator(path, query, header, formData, body)
+  let scheme = call_589270.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580237.url(scheme.get, call_580237.host, call_580237.base,
-                         call_580237.route, valid.getOrDefault("path"),
+  let url = call_589270.url(scheme.get, call_589270.host, call_589270.base,
+                         call_589270.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580237, url, valid)
+  result = hook(call_589270, url, valid)
 
-proc call*(call_580238: Call_CloudiotProjectsLocationsRegistriesGroupsGetIamPolicy_580221;
+proc call*(call_589271: Call_CloudiotProjectsLocationsRegistriesGroupsGetIamPolicy_589254;
           resource: string; uploadProtocol: string = ""; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           callback: string = ""; accessToken: string = ""; uploadType: string = "";
@@ -3132,35 +3132,35 @@ proc call*(call_580238: Call_CloudiotProjectsLocationsRegistriesGroupsGetIamPoli
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_580239 = newJObject()
-  var query_580240 = newJObject()
-  var body_580241 = newJObject()
-  add(query_580240, "upload_protocol", newJString(uploadProtocol))
-  add(query_580240, "fields", newJString(fields))
-  add(query_580240, "quotaUser", newJString(quotaUser))
-  add(query_580240, "alt", newJString(alt))
-  add(query_580240, "oauth_token", newJString(oauthToken))
-  add(query_580240, "callback", newJString(callback))
-  add(query_580240, "access_token", newJString(accessToken))
-  add(query_580240, "uploadType", newJString(uploadType))
-  add(query_580240, "key", newJString(key))
-  add(query_580240, "$.xgafv", newJString(Xgafv))
-  add(path_580239, "resource", newJString(resource))
+  var path_589272 = newJObject()
+  var query_589273 = newJObject()
+  var body_589274 = newJObject()
+  add(query_589273, "upload_protocol", newJString(uploadProtocol))
+  add(query_589273, "fields", newJString(fields))
+  add(query_589273, "quotaUser", newJString(quotaUser))
+  add(query_589273, "alt", newJString(alt))
+  add(query_589273, "oauth_token", newJString(oauthToken))
+  add(query_589273, "callback", newJString(callback))
+  add(query_589273, "access_token", newJString(accessToken))
+  add(query_589273, "uploadType", newJString(uploadType))
+  add(query_589273, "key", newJString(key))
+  add(query_589273, "$.xgafv", newJString(Xgafv))
+  add(path_589272, "resource", newJString(resource))
   if body != nil:
-    body_580241 = body
-  add(query_580240, "prettyPrint", newJBool(prettyPrint))
-  result = call_580238.call(path_580239, query_580240, nil, nil, body_580241)
+    body_589274 = body
+  add(query_589273, "prettyPrint", newJBool(prettyPrint))
+  result = call_589271.call(path_589272, query_589273, nil, nil, body_589274)
 
-var cloudiotProjectsLocationsRegistriesGroupsGetIamPolicy* = Call_CloudiotProjectsLocationsRegistriesGroupsGetIamPolicy_580221(
+var cloudiotProjectsLocationsRegistriesGroupsGetIamPolicy* = Call_CloudiotProjectsLocationsRegistriesGroupsGetIamPolicy_589254(
     name: "cloudiotProjectsLocationsRegistriesGroupsGetIamPolicy",
     meth: HttpMethod.HttpPost, host: "cloudiot.googleapis.com",
     route: "/v1/{resource}:getIamPolicy",
-    validator: validate_CloudiotProjectsLocationsRegistriesGroupsGetIamPolicy_580222,
-    base: "/", url: url_CloudiotProjectsLocationsRegistriesGroupsGetIamPolicy_580223,
+    validator: validate_CloudiotProjectsLocationsRegistriesGroupsGetIamPolicy_589255,
+    base: "/", url: url_CloudiotProjectsLocationsRegistriesGroupsGetIamPolicy_589256,
     schemes: {Scheme.Https})
 type
-  Call_CloudiotProjectsLocationsRegistriesGroupsSetIamPolicy_580242 = ref object of OpenApiRestCall_579408
-proc url_CloudiotProjectsLocationsRegistriesGroupsSetIamPolicy_580244(
+  Call_CloudiotProjectsLocationsRegistriesGroupsSetIamPolicy_589275 = ref object of OpenApiRestCall_588441
+proc url_CloudiotProjectsLocationsRegistriesGroupsSetIamPolicy_589277(
     protocol: Scheme; host: string; base: string; route: string; path: JsonNode;
     query: JsonNode): Uri =
   result.scheme = $protocol
@@ -3177,7 +3177,7 @@ proc url_CloudiotProjectsLocationsRegistriesGroupsSetIamPolicy_580244(
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_CloudiotProjectsLocationsRegistriesGroupsSetIamPolicy_580243(
+proc validate_CloudiotProjectsLocationsRegistriesGroupsSetIamPolicy_589276(
     path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
     body: JsonNode): JsonNode =
   ## Sets the access control policy on the specified resource. Replaces any
@@ -3191,11 +3191,11 @@ proc validate_CloudiotProjectsLocationsRegistriesGroupsSetIamPolicy_580243(
   ## See the operation documentation for the appropriate value for this field.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `resource` field"
-  var valid_580245 = path.getOrDefault("resource")
-  valid_580245 = validateParameter(valid_580245, JString, required = true,
+  var valid_589278 = path.getOrDefault("resource")
+  valid_589278 = validateParameter(valid_589278, JString, required = true,
                                  default = nil)
-  if valid_580245 != nil:
-    section.add "resource", valid_580245
+  if valid_589278 != nil:
+    section.add "resource", valid_589278
   result.add "path", section
   ## parameters in `query` object:
   ##   upload_protocol: JString
@@ -3221,61 +3221,61 @@ proc validate_CloudiotProjectsLocationsRegistriesGroupsSetIamPolicy_580243(
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580246 = query.getOrDefault("upload_protocol")
-  valid_580246 = validateParameter(valid_580246, JString, required = false,
+  var valid_589279 = query.getOrDefault("upload_protocol")
+  valid_589279 = validateParameter(valid_589279, JString, required = false,
                                  default = nil)
-  if valid_580246 != nil:
-    section.add "upload_protocol", valid_580246
-  var valid_580247 = query.getOrDefault("fields")
-  valid_580247 = validateParameter(valid_580247, JString, required = false,
+  if valid_589279 != nil:
+    section.add "upload_protocol", valid_589279
+  var valid_589280 = query.getOrDefault("fields")
+  valid_589280 = validateParameter(valid_589280, JString, required = false,
                                  default = nil)
-  if valid_580247 != nil:
-    section.add "fields", valid_580247
-  var valid_580248 = query.getOrDefault("quotaUser")
-  valid_580248 = validateParameter(valid_580248, JString, required = false,
+  if valid_589280 != nil:
+    section.add "fields", valid_589280
+  var valid_589281 = query.getOrDefault("quotaUser")
+  valid_589281 = validateParameter(valid_589281, JString, required = false,
                                  default = nil)
-  if valid_580248 != nil:
-    section.add "quotaUser", valid_580248
-  var valid_580249 = query.getOrDefault("alt")
-  valid_580249 = validateParameter(valid_580249, JString, required = false,
+  if valid_589281 != nil:
+    section.add "quotaUser", valid_589281
+  var valid_589282 = query.getOrDefault("alt")
+  valid_589282 = validateParameter(valid_589282, JString, required = false,
                                  default = newJString("json"))
-  if valid_580249 != nil:
-    section.add "alt", valid_580249
-  var valid_580250 = query.getOrDefault("oauth_token")
-  valid_580250 = validateParameter(valid_580250, JString, required = false,
+  if valid_589282 != nil:
+    section.add "alt", valid_589282
+  var valid_589283 = query.getOrDefault("oauth_token")
+  valid_589283 = validateParameter(valid_589283, JString, required = false,
                                  default = nil)
-  if valid_580250 != nil:
-    section.add "oauth_token", valid_580250
-  var valid_580251 = query.getOrDefault("callback")
-  valid_580251 = validateParameter(valid_580251, JString, required = false,
+  if valid_589283 != nil:
+    section.add "oauth_token", valid_589283
+  var valid_589284 = query.getOrDefault("callback")
+  valid_589284 = validateParameter(valid_589284, JString, required = false,
                                  default = nil)
-  if valid_580251 != nil:
-    section.add "callback", valid_580251
-  var valid_580252 = query.getOrDefault("access_token")
-  valid_580252 = validateParameter(valid_580252, JString, required = false,
+  if valid_589284 != nil:
+    section.add "callback", valid_589284
+  var valid_589285 = query.getOrDefault("access_token")
+  valid_589285 = validateParameter(valid_589285, JString, required = false,
                                  default = nil)
-  if valid_580252 != nil:
-    section.add "access_token", valid_580252
-  var valid_580253 = query.getOrDefault("uploadType")
-  valid_580253 = validateParameter(valid_580253, JString, required = false,
+  if valid_589285 != nil:
+    section.add "access_token", valid_589285
+  var valid_589286 = query.getOrDefault("uploadType")
+  valid_589286 = validateParameter(valid_589286, JString, required = false,
                                  default = nil)
-  if valid_580253 != nil:
-    section.add "uploadType", valid_580253
-  var valid_580254 = query.getOrDefault("key")
-  valid_580254 = validateParameter(valid_580254, JString, required = false,
+  if valid_589286 != nil:
+    section.add "uploadType", valid_589286
+  var valid_589287 = query.getOrDefault("key")
+  valid_589287 = validateParameter(valid_589287, JString, required = false,
                                  default = nil)
-  if valid_580254 != nil:
-    section.add "key", valid_580254
-  var valid_580255 = query.getOrDefault("$.xgafv")
-  valid_580255 = validateParameter(valid_580255, JString, required = false,
+  if valid_589287 != nil:
+    section.add "key", valid_589287
+  var valid_589288 = query.getOrDefault("$.xgafv")
+  valid_589288 = validateParameter(valid_589288, JString, required = false,
                                  default = newJString("1"))
-  if valid_580255 != nil:
-    section.add "$.xgafv", valid_580255
-  var valid_580256 = query.getOrDefault("prettyPrint")
-  valid_580256 = validateParameter(valid_580256, JBool, required = false,
+  if valid_589288 != nil:
+    section.add "$.xgafv", valid_589288
+  var valid_589289 = query.getOrDefault("prettyPrint")
+  valid_589289 = validateParameter(valid_589289, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580256 != nil:
-    section.add "prettyPrint", valid_580256
+  if valid_589289 != nil:
+    section.add "prettyPrint", valid_589289
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -3287,22 +3287,22 @@ proc validate_CloudiotProjectsLocationsRegistriesGroupsSetIamPolicy_580243(
   if body != nil:
     result.add "body", body
 
-proc call*(call_580258: Call_CloudiotProjectsLocationsRegistriesGroupsSetIamPolicy_580242;
+proc call*(call_589291: Call_CloudiotProjectsLocationsRegistriesGroupsSetIamPolicy_589275;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Sets the access control policy on the specified resource. Replaces any
   ## existing policy.
   ## 
-  let valid = call_580258.validator(path, query, header, formData, body)
-  let scheme = call_580258.pickScheme
+  let valid = call_589291.validator(path, query, header, formData, body)
+  let scheme = call_589291.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580258.url(scheme.get, call_580258.host, call_580258.base,
-                         call_580258.route, valid.getOrDefault("path"),
+  let url = call_589291.url(scheme.get, call_589291.host, call_589291.base,
+                         call_589291.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580258, url, valid)
+  result = hook(call_589291, url, valid)
 
-proc call*(call_580259: Call_CloudiotProjectsLocationsRegistriesGroupsSetIamPolicy_580242;
+proc call*(call_589292: Call_CloudiotProjectsLocationsRegistriesGroupsSetIamPolicy_589275;
           resource: string; uploadProtocol: string = ""; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           callback: string = ""; accessToken: string = ""; uploadType: string = "";
@@ -3337,35 +3337,35 @@ proc call*(call_580259: Call_CloudiotProjectsLocationsRegistriesGroupsSetIamPoli
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_580260 = newJObject()
-  var query_580261 = newJObject()
-  var body_580262 = newJObject()
-  add(query_580261, "upload_protocol", newJString(uploadProtocol))
-  add(query_580261, "fields", newJString(fields))
-  add(query_580261, "quotaUser", newJString(quotaUser))
-  add(query_580261, "alt", newJString(alt))
-  add(query_580261, "oauth_token", newJString(oauthToken))
-  add(query_580261, "callback", newJString(callback))
-  add(query_580261, "access_token", newJString(accessToken))
-  add(query_580261, "uploadType", newJString(uploadType))
-  add(query_580261, "key", newJString(key))
-  add(query_580261, "$.xgafv", newJString(Xgafv))
-  add(path_580260, "resource", newJString(resource))
+  var path_589293 = newJObject()
+  var query_589294 = newJObject()
+  var body_589295 = newJObject()
+  add(query_589294, "upload_protocol", newJString(uploadProtocol))
+  add(query_589294, "fields", newJString(fields))
+  add(query_589294, "quotaUser", newJString(quotaUser))
+  add(query_589294, "alt", newJString(alt))
+  add(query_589294, "oauth_token", newJString(oauthToken))
+  add(query_589294, "callback", newJString(callback))
+  add(query_589294, "access_token", newJString(accessToken))
+  add(query_589294, "uploadType", newJString(uploadType))
+  add(query_589294, "key", newJString(key))
+  add(query_589294, "$.xgafv", newJString(Xgafv))
+  add(path_589293, "resource", newJString(resource))
   if body != nil:
-    body_580262 = body
-  add(query_580261, "prettyPrint", newJBool(prettyPrint))
-  result = call_580259.call(path_580260, query_580261, nil, nil, body_580262)
+    body_589295 = body
+  add(query_589294, "prettyPrint", newJBool(prettyPrint))
+  result = call_589292.call(path_589293, query_589294, nil, nil, body_589295)
 
-var cloudiotProjectsLocationsRegistriesGroupsSetIamPolicy* = Call_CloudiotProjectsLocationsRegistriesGroupsSetIamPolicy_580242(
+var cloudiotProjectsLocationsRegistriesGroupsSetIamPolicy* = Call_CloudiotProjectsLocationsRegistriesGroupsSetIamPolicy_589275(
     name: "cloudiotProjectsLocationsRegistriesGroupsSetIamPolicy",
     meth: HttpMethod.HttpPost, host: "cloudiot.googleapis.com",
     route: "/v1/{resource}:setIamPolicy",
-    validator: validate_CloudiotProjectsLocationsRegistriesGroupsSetIamPolicy_580243,
-    base: "/", url: url_CloudiotProjectsLocationsRegistriesGroupsSetIamPolicy_580244,
+    validator: validate_CloudiotProjectsLocationsRegistriesGroupsSetIamPolicy_589276,
+    base: "/", url: url_CloudiotProjectsLocationsRegistriesGroupsSetIamPolicy_589277,
     schemes: {Scheme.Https})
 type
-  Call_CloudiotProjectsLocationsRegistriesGroupsTestIamPermissions_580263 = ref object of OpenApiRestCall_579408
-proc url_CloudiotProjectsLocationsRegistriesGroupsTestIamPermissions_580265(
+  Call_CloudiotProjectsLocationsRegistriesGroupsTestIamPermissions_589296 = ref object of OpenApiRestCall_588441
+proc url_CloudiotProjectsLocationsRegistriesGroupsTestIamPermissions_589298(
     protocol: Scheme; host: string; base: string; route: string; path: JsonNode;
     query: JsonNode): Uri =
   result.scheme = $protocol
@@ -3382,7 +3382,7 @@ proc url_CloudiotProjectsLocationsRegistriesGroupsTestIamPermissions_580265(
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_CloudiotProjectsLocationsRegistriesGroupsTestIamPermissions_580264(
+proc validate_CloudiotProjectsLocationsRegistriesGroupsTestIamPermissions_589297(
     path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
     body: JsonNode): JsonNode =
   ## Returns permissions that a caller has on the specified resource.
@@ -3397,11 +3397,11 @@ proc validate_CloudiotProjectsLocationsRegistriesGroupsTestIamPermissions_580264
   ## See the operation documentation for the appropriate value for this field.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `resource` field"
-  var valid_580266 = path.getOrDefault("resource")
-  valid_580266 = validateParameter(valid_580266, JString, required = true,
+  var valid_589299 = path.getOrDefault("resource")
+  valid_589299 = validateParameter(valid_589299, JString, required = true,
                                  default = nil)
-  if valid_580266 != nil:
-    section.add "resource", valid_580266
+  if valid_589299 != nil:
+    section.add "resource", valid_589299
   result.add "path", section
   ## parameters in `query` object:
   ##   upload_protocol: JString
@@ -3427,61 +3427,61 @@ proc validate_CloudiotProjectsLocationsRegistriesGroupsTestIamPermissions_580264
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580267 = query.getOrDefault("upload_protocol")
-  valid_580267 = validateParameter(valid_580267, JString, required = false,
+  var valid_589300 = query.getOrDefault("upload_protocol")
+  valid_589300 = validateParameter(valid_589300, JString, required = false,
                                  default = nil)
-  if valid_580267 != nil:
-    section.add "upload_protocol", valid_580267
-  var valid_580268 = query.getOrDefault("fields")
-  valid_580268 = validateParameter(valid_580268, JString, required = false,
+  if valid_589300 != nil:
+    section.add "upload_protocol", valid_589300
+  var valid_589301 = query.getOrDefault("fields")
+  valid_589301 = validateParameter(valid_589301, JString, required = false,
                                  default = nil)
-  if valid_580268 != nil:
-    section.add "fields", valid_580268
-  var valid_580269 = query.getOrDefault("quotaUser")
-  valid_580269 = validateParameter(valid_580269, JString, required = false,
+  if valid_589301 != nil:
+    section.add "fields", valid_589301
+  var valid_589302 = query.getOrDefault("quotaUser")
+  valid_589302 = validateParameter(valid_589302, JString, required = false,
                                  default = nil)
-  if valid_580269 != nil:
-    section.add "quotaUser", valid_580269
-  var valid_580270 = query.getOrDefault("alt")
-  valid_580270 = validateParameter(valid_580270, JString, required = false,
+  if valid_589302 != nil:
+    section.add "quotaUser", valid_589302
+  var valid_589303 = query.getOrDefault("alt")
+  valid_589303 = validateParameter(valid_589303, JString, required = false,
                                  default = newJString("json"))
-  if valid_580270 != nil:
-    section.add "alt", valid_580270
-  var valid_580271 = query.getOrDefault("oauth_token")
-  valid_580271 = validateParameter(valid_580271, JString, required = false,
+  if valid_589303 != nil:
+    section.add "alt", valid_589303
+  var valid_589304 = query.getOrDefault("oauth_token")
+  valid_589304 = validateParameter(valid_589304, JString, required = false,
                                  default = nil)
-  if valid_580271 != nil:
-    section.add "oauth_token", valid_580271
-  var valid_580272 = query.getOrDefault("callback")
-  valid_580272 = validateParameter(valid_580272, JString, required = false,
+  if valid_589304 != nil:
+    section.add "oauth_token", valid_589304
+  var valid_589305 = query.getOrDefault("callback")
+  valid_589305 = validateParameter(valid_589305, JString, required = false,
                                  default = nil)
-  if valid_580272 != nil:
-    section.add "callback", valid_580272
-  var valid_580273 = query.getOrDefault("access_token")
-  valid_580273 = validateParameter(valid_580273, JString, required = false,
+  if valid_589305 != nil:
+    section.add "callback", valid_589305
+  var valid_589306 = query.getOrDefault("access_token")
+  valid_589306 = validateParameter(valid_589306, JString, required = false,
                                  default = nil)
-  if valid_580273 != nil:
-    section.add "access_token", valid_580273
-  var valid_580274 = query.getOrDefault("uploadType")
-  valid_580274 = validateParameter(valid_580274, JString, required = false,
+  if valid_589306 != nil:
+    section.add "access_token", valid_589306
+  var valid_589307 = query.getOrDefault("uploadType")
+  valid_589307 = validateParameter(valid_589307, JString, required = false,
                                  default = nil)
-  if valid_580274 != nil:
-    section.add "uploadType", valid_580274
-  var valid_580275 = query.getOrDefault("key")
-  valid_580275 = validateParameter(valid_580275, JString, required = false,
+  if valid_589307 != nil:
+    section.add "uploadType", valid_589307
+  var valid_589308 = query.getOrDefault("key")
+  valid_589308 = validateParameter(valid_589308, JString, required = false,
                                  default = nil)
-  if valid_580275 != nil:
-    section.add "key", valid_580275
-  var valid_580276 = query.getOrDefault("$.xgafv")
-  valid_580276 = validateParameter(valid_580276, JString, required = false,
+  if valid_589308 != nil:
+    section.add "key", valid_589308
+  var valid_589309 = query.getOrDefault("$.xgafv")
+  valid_589309 = validateParameter(valid_589309, JString, required = false,
                                  default = newJString("1"))
-  if valid_580276 != nil:
-    section.add "$.xgafv", valid_580276
-  var valid_580277 = query.getOrDefault("prettyPrint")
-  valid_580277 = validateParameter(valid_580277, JBool, required = false,
+  if valid_589309 != nil:
+    section.add "$.xgafv", valid_589309
+  var valid_589310 = query.getOrDefault("prettyPrint")
+  valid_589310 = validateParameter(valid_589310, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580277 != nil:
-    section.add "prettyPrint", valid_580277
+  if valid_589310 != nil:
+    section.add "prettyPrint", valid_589310
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -3493,23 +3493,23 @@ proc validate_CloudiotProjectsLocationsRegistriesGroupsTestIamPermissions_580264
   if body != nil:
     result.add "body", body
 
-proc call*(call_580279: Call_CloudiotProjectsLocationsRegistriesGroupsTestIamPermissions_580263;
+proc call*(call_589312: Call_CloudiotProjectsLocationsRegistriesGroupsTestIamPermissions_589296;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Returns permissions that a caller has on the specified resource.
   ## If the resource does not exist, this will return an empty set of
   ## permissions, not a NOT_FOUND error.
   ## 
-  let valid = call_580279.validator(path, query, header, formData, body)
-  let scheme = call_580279.pickScheme
+  let valid = call_589312.validator(path, query, header, formData, body)
+  let scheme = call_589312.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580279.url(scheme.get, call_580279.host, call_580279.base,
-                         call_580279.route, valid.getOrDefault("path"),
+  let url = call_589312.url(scheme.get, call_589312.host, call_589312.base,
+                         call_589312.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580279, url, valid)
+  result = hook(call_589312, url, valid)
 
-proc call*(call_580280: Call_CloudiotProjectsLocationsRegistriesGroupsTestIamPermissions_580263;
+proc call*(call_589313: Call_CloudiotProjectsLocationsRegistriesGroupsTestIamPermissions_589296;
           resource: string; uploadProtocol: string = ""; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           callback: string = ""; accessToken: string = ""; uploadType: string = "";
@@ -3545,31 +3545,31 @@ proc call*(call_580280: Call_CloudiotProjectsLocationsRegistriesGroupsTestIamPer
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_580281 = newJObject()
-  var query_580282 = newJObject()
-  var body_580283 = newJObject()
-  add(query_580282, "upload_protocol", newJString(uploadProtocol))
-  add(query_580282, "fields", newJString(fields))
-  add(query_580282, "quotaUser", newJString(quotaUser))
-  add(query_580282, "alt", newJString(alt))
-  add(query_580282, "oauth_token", newJString(oauthToken))
-  add(query_580282, "callback", newJString(callback))
-  add(query_580282, "access_token", newJString(accessToken))
-  add(query_580282, "uploadType", newJString(uploadType))
-  add(query_580282, "key", newJString(key))
-  add(query_580282, "$.xgafv", newJString(Xgafv))
-  add(path_580281, "resource", newJString(resource))
+  var path_589314 = newJObject()
+  var query_589315 = newJObject()
+  var body_589316 = newJObject()
+  add(query_589315, "upload_protocol", newJString(uploadProtocol))
+  add(query_589315, "fields", newJString(fields))
+  add(query_589315, "quotaUser", newJString(quotaUser))
+  add(query_589315, "alt", newJString(alt))
+  add(query_589315, "oauth_token", newJString(oauthToken))
+  add(query_589315, "callback", newJString(callback))
+  add(query_589315, "access_token", newJString(accessToken))
+  add(query_589315, "uploadType", newJString(uploadType))
+  add(query_589315, "key", newJString(key))
+  add(query_589315, "$.xgafv", newJString(Xgafv))
+  add(path_589314, "resource", newJString(resource))
   if body != nil:
-    body_580283 = body
-  add(query_580282, "prettyPrint", newJBool(prettyPrint))
-  result = call_580280.call(path_580281, query_580282, nil, nil, body_580283)
+    body_589316 = body
+  add(query_589315, "prettyPrint", newJBool(prettyPrint))
+  result = call_589313.call(path_589314, query_589315, nil, nil, body_589316)
 
-var cloudiotProjectsLocationsRegistriesGroupsTestIamPermissions* = Call_CloudiotProjectsLocationsRegistriesGroupsTestIamPermissions_580263(
+var cloudiotProjectsLocationsRegistriesGroupsTestIamPermissions* = Call_CloudiotProjectsLocationsRegistriesGroupsTestIamPermissions_589296(
     name: "cloudiotProjectsLocationsRegistriesGroupsTestIamPermissions",
     meth: HttpMethod.HttpPost, host: "cloudiot.googleapis.com",
-    route: "/v1/{resource}:testIamPermissions", validator: validate_CloudiotProjectsLocationsRegistriesGroupsTestIamPermissions_580264,
+    route: "/v1/{resource}:testIamPermissions", validator: validate_CloudiotProjectsLocationsRegistriesGroupsTestIamPermissions_589297,
     base: "/",
-    url: url_CloudiotProjectsLocationsRegistriesGroupsTestIamPermissions_580265,
+    url: url_CloudiotProjectsLocationsRegistriesGroupsTestIamPermissions_589298,
     schemes: {Scheme.Https})
 export
   rest
@@ -3612,7 +3612,7 @@ proc store(auth: var GoogleAuth; token: string; expiry: int; form: string) =
   auth.form = form
   auth.digest = auth.hash
 
-proc authenticate*(fresh: float64 = -3600.0; lifetime: int = 3600): Future[bool] {.async.} =
+proc authenticate*(fresh: float64 = 3600.0; lifetime: int = 3600): Future[bool] {.async.} =
   ## get or refresh an authentication token; provide `fresh`
   ## to ensure that the token won't expire in the next N seconds.
   ## provide `lifetime` to indicate how long the token should last.

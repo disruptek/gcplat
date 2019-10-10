@@ -29,15 +29,15 @@ type
     url*: proc (protocol: Scheme; host: string; base: string; route: string;
               path: JsonNode; query: JsonNode): Uri
 
-  OpenApiRestCall_579408 = ref object of OpenApiRestCall
+  OpenApiRestCall_588441 = ref object of OpenApiRestCall
 proc hash(scheme: Scheme): Hash {.used.} =
   result = hash(ord(scheme))
 
-proc clone[T: OpenApiRestCall_579408](t: T): T {.used.} =
+proc clone[T: OpenApiRestCall_588441](t: T): T {.used.} =
   result = T(name: t.name, meth: t.meth, host: t.host, base: t.base, route: t.route,
            schemes: t.schemes, validator: t.validator, url: t.url)
 
-proc pickScheme(t: OpenApiRestCall_579408): Option[Scheme] {.used.} =
+proc pickScheme(t: OpenApiRestCall_588441): Option[Scheme] {.used.} =
   ## select a supported scheme from a set of candidates
   for scheme in Scheme.low ..
       Scheme.high:
@@ -74,7 +74,7 @@ type
   PathTokenKind = enum
     ConstantSegment, VariableSegment
   PathToken = tuple[kind: PathTokenKind, value: string]
-proc queryString(query: JsonNode): string =
+proc queryString(query: JsonNode): string {.used.} =
   var qs: seq[KeyVal]
   if query == nil:
     return ""
@@ -82,7 +82,7 @@ proc queryString(query: JsonNode): string =
     qs.add (key: k, val: v.getStr)
   result = encodeQuery(qs)
 
-proc hydratePath(input: JsonNode; segments: seq[PathToken]): Option[string] =
+proc hydratePath(input: JsonNode; segments: seq[PathToken]): Option[string] {.used.} =
   ## reconstitute a path with constants and variable values taken from json
   var head: string
   if segments.len == 0:
@@ -108,15 +108,15 @@ const
 proc composeQueryString(query: JsonNode): string
 method hook(call: OpenApiRestCall; url: Uri; input: JsonNode): Recallable {.base.}
 type
-  Call_PagespeedonlinePagespeedapiRunpagespeed_579676 = ref object of OpenApiRestCall_579408
-proc url_PagespeedonlinePagespeedapiRunpagespeed_579678(protocol: Scheme;
+  Call_PagespeedonlinePagespeedapiRunpagespeed_588709 = ref object of OpenApiRestCall_588441
+proc url_PagespeedonlinePagespeedapiRunpagespeed_588711(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
   result.query = $composeQueryString(query)
   result.path = base & route
 
-proc validate_PagespeedonlinePagespeedapiRunpagespeed_579677(path: JsonNode;
+proc validate_PagespeedonlinePagespeedapiRunpagespeed_588710(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Runs PageSpeed analysis on the page at the specified URL, and returns PageSpeed scores, a list of suggestions to make that page faster, and other information.
   ## 
@@ -158,87 +158,87 @@ proc validate_PagespeedonlinePagespeedapiRunpagespeed_579677(path: JsonNode;
   ##   utm_campaign: JString
   ##               : Campaign name for analytics.
   section = newJObject()
-  var valid_579790 = query.getOrDefault("utm_source")
-  valid_579790 = validateParameter(valid_579790, JString, required = false,
+  var valid_588823 = query.getOrDefault("utm_source")
+  valid_588823 = validateParameter(valid_588823, JString, required = false,
                                  default = nil)
-  if valid_579790 != nil:
-    section.add "utm_source", valid_579790
-  var valid_579791 = query.getOrDefault("locale")
-  valid_579791 = validateParameter(valid_579791, JString, required = false,
+  if valid_588823 != nil:
+    section.add "utm_source", valid_588823
+  var valid_588824 = query.getOrDefault("locale")
+  valid_588824 = validateParameter(valid_588824, JString, required = false,
                                  default = nil)
-  if valid_579791 != nil:
-    section.add "locale", valid_579791
-  var valid_579805 = query.getOrDefault("snapshots")
-  valid_579805 = validateParameter(valid_579805, JBool, required = false,
+  if valid_588824 != nil:
+    section.add "locale", valid_588824
+  var valid_588838 = query.getOrDefault("snapshots")
+  valid_588838 = validateParameter(valid_588838, JBool, required = false,
                                  default = newJBool(false))
-  if valid_579805 != nil:
-    section.add "snapshots", valid_579805
-  var valid_579806 = query.getOrDefault("fields")
-  valid_579806 = validateParameter(valid_579806, JString, required = false,
+  if valid_588838 != nil:
+    section.add "snapshots", valid_588838
+  var valid_588839 = query.getOrDefault("fields")
+  valid_588839 = validateParameter(valid_588839, JString, required = false,
                                  default = nil)
-  if valid_579806 != nil:
-    section.add "fields", valid_579806
-  var valid_579807 = query.getOrDefault("quotaUser")
-  valid_579807 = validateParameter(valid_579807, JString, required = false,
+  if valid_588839 != nil:
+    section.add "fields", valid_588839
+  var valid_588840 = query.getOrDefault("quotaUser")
+  valid_588840 = validateParameter(valid_588840, JString, required = false,
                                  default = nil)
-  if valid_579807 != nil:
-    section.add "quotaUser", valid_579807
-  var valid_579808 = query.getOrDefault("alt")
-  valid_579808 = validateParameter(valid_579808, JString, required = false,
+  if valid_588840 != nil:
+    section.add "quotaUser", valid_588840
+  var valid_588841 = query.getOrDefault("alt")
+  valid_588841 = validateParameter(valid_588841, JString, required = false,
                                  default = newJString("json"))
-  if valid_579808 != nil:
-    section.add "alt", valid_579808
-  var valid_579809 = query.getOrDefault("oauth_token")
-  valid_579809 = validateParameter(valid_579809, JString, required = false,
+  if valid_588841 != nil:
+    section.add "alt", valid_588841
+  var valid_588842 = query.getOrDefault("oauth_token")
+  valid_588842 = validateParameter(valid_588842, JString, required = false,
                                  default = nil)
-  if valid_579809 != nil:
-    section.add "oauth_token", valid_579809
-  var valid_579810 = query.getOrDefault("userIp")
-  valid_579810 = validateParameter(valid_579810, JString, required = false,
+  if valid_588842 != nil:
+    section.add "oauth_token", valid_588842
+  var valid_588843 = query.getOrDefault("userIp")
+  valid_588843 = validateParameter(valid_588843, JString, required = false,
                                  default = nil)
-  if valid_579810 != nil:
-    section.add "userIp", valid_579810
-  var valid_579811 = query.getOrDefault("filter_third_party_resources")
-  valid_579811 = validateParameter(valid_579811, JBool, required = false,
+  if valid_588843 != nil:
+    section.add "userIp", valid_588843
+  var valid_588844 = query.getOrDefault("filter_third_party_resources")
+  valid_588844 = validateParameter(valid_588844, JBool, required = false,
                                  default = newJBool(false))
-  if valid_579811 != nil:
-    section.add "filter_third_party_resources", valid_579811
+  if valid_588844 != nil:
+    section.add "filter_third_party_resources", valid_588844
   assert query != nil, "query argument is necessary due to required `url` field"
-  var valid_579812 = query.getOrDefault("url")
-  valid_579812 = validateParameter(valid_579812, JString, required = true,
+  var valid_588845 = query.getOrDefault("url")
+  valid_588845 = validateParameter(valid_588845, JString, required = true,
                                  default = nil)
-  if valid_579812 != nil:
-    section.add "url", valid_579812
-  var valid_579813 = query.getOrDefault("key")
-  valid_579813 = validateParameter(valid_579813, JString, required = false,
+  if valid_588845 != nil:
+    section.add "url", valid_588845
+  var valid_588846 = query.getOrDefault("key")
+  valid_588846 = validateParameter(valid_588846, JString, required = false,
                                  default = nil)
-  if valid_579813 != nil:
-    section.add "key", valid_579813
-  var valid_579814 = query.getOrDefault("rule")
-  valid_579814 = validateParameter(valid_579814, JArray, required = false,
+  if valid_588846 != nil:
+    section.add "key", valid_588846
+  var valid_588847 = query.getOrDefault("rule")
+  valid_588847 = validateParameter(valid_588847, JArray, required = false,
                                  default = nil)
-  if valid_579814 != nil:
-    section.add "rule", valid_579814
-  var valid_579815 = query.getOrDefault("screenshot")
-  valid_579815 = validateParameter(valid_579815, JBool, required = false,
+  if valid_588847 != nil:
+    section.add "rule", valid_588847
+  var valid_588848 = query.getOrDefault("screenshot")
+  valid_588848 = validateParameter(valid_588848, JBool, required = false,
                                  default = newJBool(false))
-  if valid_579815 != nil:
-    section.add "screenshot", valid_579815
-  var valid_579816 = query.getOrDefault("prettyPrint")
-  valid_579816 = validateParameter(valid_579816, JBool, required = false,
+  if valid_588848 != nil:
+    section.add "screenshot", valid_588848
+  var valid_588849 = query.getOrDefault("prettyPrint")
+  valid_588849 = validateParameter(valid_588849, JBool, required = false,
                                  default = newJBool(true))
-  if valid_579816 != nil:
-    section.add "prettyPrint", valid_579816
-  var valid_579817 = query.getOrDefault("strategy")
-  valid_579817 = validateParameter(valid_579817, JString, required = false,
+  if valid_588849 != nil:
+    section.add "prettyPrint", valid_588849
+  var valid_588850 = query.getOrDefault("strategy")
+  valid_588850 = validateParameter(valid_588850, JString, required = false,
                                  default = newJString("desktop"))
-  if valid_579817 != nil:
-    section.add "strategy", valid_579817
-  var valid_579818 = query.getOrDefault("utm_campaign")
-  valid_579818 = validateParameter(valid_579818, JString, required = false,
+  if valid_588850 != nil:
+    section.add "strategy", valid_588850
+  var valid_588851 = query.getOrDefault("utm_campaign")
+  valid_588851 = validateParameter(valid_588851, JString, required = false,
                                  default = nil)
-  if valid_579818 != nil:
-    section.add "utm_campaign", valid_579818
+  if valid_588851 != nil:
+    section.add "utm_campaign", valid_588851
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -247,21 +247,21 @@ proc validate_PagespeedonlinePagespeedapiRunpagespeed_579677(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_579841: Call_PagespeedonlinePagespeedapiRunpagespeed_579676;
+proc call*(call_588874: Call_PagespeedonlinePagespeedapiRunpagespeed_588709;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Runs PageSpeed analysis on the page at the specified URL, and returns PageSpeed scores, a list of suggestions to make that page faster, and other information.
   ## 
-  let valid = call_579841.validator(path, query, header, formData, body)
-  let scheme = call_579841.pickScheme
+  let valid = call_588874.validator(path, query, header, formData, body)
+  let scheme = call_588874.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_579841.url(scheme.get, call_579841.host, call_579841.base,
-                         call_579841.route, valid.getOrDefault("path"),
+  let url = call_588874.url(scheme.get, call_588874.host, call_588874.base,
+                         call_588874.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_579841, url, valid)
+  result = hook(call_588874, url, valid)
 
-proc call*(call_579912: Call_PagespeedonlinePagespeedapiRunpagespeed_579676;
+proc call*(call_588945: Call_PagespeedonlinePagespeedapiRunpagespeed_588709;
           url: string; utmSource: string = ""; locale: string = "";
           snapshots: bool = false; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; userIp: string = "";
@@ -302,32 +302,32 @@ proc call*(call_579912: Call_PagespeedonlinePagespeedapiRunpagespeed_579676;
   ##           : The analysis strategy (desktop or mobile) to use, and desktop is the default
   ##   utmCampaign: string
   ##              : Campaign name for analytics.
-  var query_579913 = newJObject()
-  add(query_579913, "utm_source", newJString(utmSource))
-  add(query_579913, "locale", newJString(locale))
-  add(query_579913, "snapshots", newJBool(snapshots))
-  add(query_579913, "fields", newJString(fields))
-  add(query_579913, "quotaUser", newJString(quotaUser))
-  add(query_579913, "alt", newJString(alt))
-  add(query_579913, "oauth_token", newJString(oauthToken))
-  add(query_579913, "userIp", newJString(userIp))
-  add(query_579913, "filter_third_party_resources",
+  var query_588946 = newJObject()
+  add(query_588946, "utm_source", newJString(utmSource))
+  add(query_588946, "locale", newJString(locale))
+  add(query_588946, "snapshots", newJBool(snapshots))
+  add(query_588946, "fields", newJString(fields))
+  add(query_588946, "quotaUser", newJString(quotaUser))
+  add(query_588946, "alt", newJString(alt))
+  add(query_588946, "oauth_token", newJString(oauthToken))
+  add(query_588946, "userIp", newJString(userIp))
+  add(query_588946, "filter_third_party_resources",
       newJBool(filterThirdPartyResources))
-  add(query_579913, "url", newJString(url))
-  add(query_579913, "key", newJString(key))
+  add(query_588946, "url", newJString(url))
+  add(query_588946, "key", newJString(key))
   if rule != nil:
-    query_579913.add "rule", rule
-  add(query_579913, "screenshot", newJBool(screenshot))
-  add(query_579913, "prettyPrint", newJBool(prettyPrint))
-  add(query_579913, "strategy", newJString(strategy))
-  add(query_579913, "utm_campaign", newJString(utmCampaign))
-  result = call_579912.call(nil, query_579913, nil, nil, nil)
+    query_588946.add "rule", rule
+  add(query_588946, "screenshot", newJBool(screenshot))
+  add(query_588946, "prettyPrint", newJBool(prettyPrint))
+  add(query_588946, "strategy", newJString(strategy))
+  add(query_588946, "utm_campaign", newJString(utmCampaign))
+  result = call_588945.call(nil, query_588946, nil, nil, nil)
 
-var pagespeedonlinePagespeedapiRunpagespeed* = Call_PagespeedonlinePagespeedapiRunpagespeed_579676(
+var pagespeedonlinePagespeedapiRunpagespeed* = Call_PagespeedonlinePagespeedapiRunpagespeed_588709(
     name: "pagespeedonlinePagespeedapiRunpagespeed", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/runPagespeed",
-    validator: validate_PagespeedonlinePagespeedapiRunpagespeed_579677,
-    base: "/pagespeedonline/v4", url: url_PagespeedonlinePagespeedapiRunpagespeed_579678,
+    validator: validate_PagespeedonlinePagespeedapiRunpagespeed_588710,
+    base: "/pagespeedonline/v4", url: url_PagespeedonlinePagespeedapiRunpagespeed_588711,
     schemes: {Scheme.Https})
 export
   rest
@@ -370,7 +370,7 @@ proc store(auth: var GoogleAuth; token: string; expiry: int; form: string) =
   auth.form = form
   auth.digest = auth.hash
 
-proc authenticate*(fresh: float64 = -3600.0; lifetime: int = 3600): Future[bool] {.async.} =
+proc authenticate*(fresh: float64 = 3600.0; lifetime: int = 3600): Future[bool] {.async.} =
   ## get or refresh an authentication token; provide `fresh`
   ## to ensure that the token won't expire in the next N seconds.
   ## provide `lifetime` to indicate how long the token should last.

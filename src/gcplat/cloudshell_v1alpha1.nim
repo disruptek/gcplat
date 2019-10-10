@@ -30,15 +30,15 @@ type
     url*: proc (protocol: Scheme; host: string; base: string; route: string;
               path: JsonNode; query: JsonNode): Uri
 
-  OpenApiRestCall_579408 = ref object of OpenApiRestCall
+  OpenApiRestCall_588441 = ref object of OpenApiRestCall
 proc hash(scheme: Scheme): Hash {.used.} =
   result = hash(ord(scheme))
 
-proc clone[T: OpenApiRestCall_579408](t: T): T {.used.} =
+proc clone[T: OpenApiRestCall_588441](t: T): T {.used.} =
   result = T(name: t.name, meth: t.meth, host: t.host, base: t.base, route: t.route,
            schemes: t.schemes, validator: t.validator, url: t.url)
 
-proc pickScheme(t: OpenApiRestCall_579408): Option[Scheme] {.used.} =
+proc pickScheme(t: OpenApiRestCall_588441): Option[Scheme] {.used.} =
   ## select a supported scheme from a set of candidates
   for scheme in Scheme.low ..
       Scheme.high:
@@ -75,7 +75,7 @@ type
   PathTokenKind = enum
     ConstantSegment, VariableSegment
   PathToken = tuple[kind: PathTokenKind, value: string]
-proc queryString(query: JsonNode): string =
+proc queryString(query: JsonNode): string {.used.} =
   var qs: seq[KeyVal]
   if query == nil:
     return ""
@@ -83,7 +83,7 @@ proc queryString(query: JsonNode): string =
     qs.add (key: k, val: v.getStr)
   result = encodeQuery(qs)
 
-proc hydratePath(input: JsonNode; segments: seq[PathToken]): Option[string] =
+proc hydratePath(input: JsonNode; segments: seq[PathToken]): Option[string] {.used.} =
   ## reconstitute a path with constants and variable values taken from json
   var head: string
   if segments.len == 0:
@@ -109,8 +109,8 @@ const
 proc composeQueryString(query: JsonNode): string
 method hook(call: OpenApiRestCall; url: Uri; input: JsonNode): Recallable {.base.}
 type
-  Call_CloudshellUsersEnvironmentsGet_579677 = ref object of OpenApiRestCall_579408
-proc url_CloudshellUsersEnvironmentsGet_579679(protocol: Scheme; host: string;
+  Call_CloudshellUsersEnvironmentsGet_588710 = ref object of OpenApiRestCall_588441
+proc url_CloudshellUsersEnvironmentsGet_588712(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -125,7 +125,7 @@ proc url_CloudshellUsersEnvironmentsGet_579679(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_CloudshellUsersEnvironmentsGet_579678(path: JsonNode;
+proc validate_CloudshellUsersEnvironmentsGet_588711(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Gets an environment. Returns NOT_FOUND if the environment does not exist.
   ## 
@@ -137,11 +137,11 @@ proc validate_CloudshellUsersEnvironmentsGet_579678(path: JsonNode;
   ## or `users/someone@example.com/environments/default`.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `name` field"
-  var valid_579805 = path.getOrDefault("name")
-  valid_579805 = validateParameter(valid_579805, JString, required = true,
+  var valid_588838 = path.getOrDefault("name")
+  valid_588838 = validateParameter(valid_588838, JString, required = true,
                                  default = nil)
-  if valid_579805 != nil:
-    section.add "name", valid_579805
+  if valid_588838 != nil:
+    section.add "name", valid_588838
   result.add "path", section
   ## parameters in `query` object:
   ##   upload_protocol: JString
@@ -167,61 +167,61 @@ proc validate_CloudshellUsersEnvironmentsGet_579678(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_579806 = query.getOrDefault("upload_protocol")
-  valid_579806 = validateParameter(valid_579806, JString, required = false,
+  var valid_588839 = query.getOrDefault("upload_protocol")
+  valid_588839 = validateParameter(valid_588839, JString, required = false,
                                  default = nil)
-  if valid_579806 != nil:
-    section.add "upload_protocol", valid_579806
-  var valid_579807 = query.getOrDefault("fields")
-  valid_579807 = validateParameter(valid_579807, JString, required = false,
+  if valid_588839 != nil:
+    section.add "upload_protocol", valid_588839
+  var valid_588840 = query.getOrDefault("fields")
+  valid_588840 = validateParameter(valid_588840, JString, required = false,
                                  default = nil)
-  if valid_579807 != nil:
-    section.add "fields", valid_579807
-  var valid_579808 = query.getOrDefault("quotaUser")
-  valid_579808 = validateParameter(valid_579808, JString, required = false,
+  if valid_588840 != nil:
+    section.add "fields", valid_588840
+  var valid_588841 = query.getOrDefault("quotaUser")
+  valid_588841 = validateParameter(valid_588841, JString, required = false,
                                  default = nil)
-  if valid_579808 != nil:
-    section.add "quotaUser", valid_579808
-  var valid_579822 = query.getOrDefault("alt")
-  valid_579822 = validateParameter(valid_579822, JString, required = false,
+  if valid_588841 != nil:
+    section.add "quotaUser", valid_588841
+  var valid_588855 = query.getOrDefault("alt")
+  valid_588855 = validateParameter(valid_588855, JString, required = false,
                                  default = newJString("json"))
-  if valid_579822 != nil:
-    section.add "alt", valid_579822
-  var valid_579823 = query.getOrDefault("oauth_token")
-  valid_579823 = validateParameter(valid_579823, JString, required = false,
+  if valid_588855 != nil:
+    section.add "alt", valid_588855
+  var valid_588856 = query.getOrDefault("oauth_token")
+  valid_588856 = validateParameter(valid_588856, JString, required = false,
                                  default = nil)
-  if valid_579823 != nil:
-    section.add "oauth_token", valid_579823
-  var valid_579824 = query.getOrDefault("callback")
-  valid_579824 = validateParameter(valid_579824, JString, required = false,
+  if valid_588856 != nil:
+    section.add "oauth_token", valid_588856
+  var valid_588857 = query.getOrDefault("callback")
+  valid_588857 = validateParameter(valid_588857, JString, required = false,
                                  default = nil)
-  if valid_579824 != nil:
-    section.add "callback", valid_579824
-  var valid_579825 = query.getOrDefault("access_token")
-  valid_579825 = validateParameter(valid_579825, JString, required = false,
+  if valid_588857 != nil:
+    section.add "callback", valid_588857
+  var valid_588858 = query.getOrDefault("access_token")
+  valid_588858 = validateParameter(valid_588858, JString, required = false,
                                  default = nil)
-  if valid_579825 != nil:
-    section.add "access_token", valid_579825
-  var valid_579826 = query.getOrDefault("uploadType")
-  valid_579826 = validateParameter(valid_579826, JString, required = false,
+  if valid_588858 != nil:
+    section.add "access_token", valid_588858
+  var valid_588859 = query.getOrDefault("uploadType")
+  valid_588859 = validateParameter(valid_588859, JString, required = false,
                                  default = nil)
-  if valid_579826 != nil:
-    section.add "uploadType", valid_579826
-  var valid_579827 = query.getOrDefault("key")
-  valid_579827 = validateParameter(valid_579827, JString, required = false,
+  if valid_588859 != nil:
+    section.add "uploadType", valid_588859
+  var valid_588860 = query.getOrDefault("key")
+  valid_588860 = validateParameter(valid_588860, JString, required = false,
                                  default = nil)
-  if valid_579827 != nil:
-    section.add "key", valid_579827
-  var valid_579828 = query.getOrDefault("$.xgafv")
-  valid_579828 = validateParameter(valid_579828, JString, required = false,
+  if valid_588860 != nil:
+    section.add "key", valid_588860
+  var valid_588861 = query.getOrDefault("$.xgafv")
+  valid_588861 = validateParameter(valid_588861, JString, required = false,
                                  default = newJString("1"))
-  if valid_579828 != nil:
-    section.add "$.xgafv", valid_579828
-  var valid_579829 = query.getOrDefault("prettyPrint")
-  valid_579829 = validateParameter(valid_579829, JBool, required = false,
+  if valid_588861 != nil:
+    section.add "$.xgafv", valid_588861
+  var valid_588862 = query.getOrDefault("prettyPrint")
+  valid_588862 = validateParameter(valid_588862, JBool, required = false,
                                  default = newJBool(true))
-  if valid_579829 != nil:
-    section.add "prettyPrint", valid_579829
+  if valid_588862 != nil:
+    section.add "prettyPrint", valid_588862
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -230,20 +230,20 @@ proc validate_CloudshellUsersEnvironmentsGet_579678(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_579852: Call_CloudshellUsersEnvironmentsGet_579677; path: JsonNode;
+proc call*(call_588885: Call_CloudshellUsersEnvironmentsGet_588710; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Gets an environment. Returns NOT_FOUND if the environment does not exist.
   ## 
-  let valid = call_579852.validator(path, query, header, formData, body)
-  let scheme = call_579852.pickScheme
+  let valid = call_588885.validator(path, query, header, formData, body)
+  let scheme = call_588885.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_579852.url(scheme.get, call_579852.host, call_579852.base,
-                         call_579852.route, valid.getOrDefault("path"),
+  let url = call_588885.url(scheme.get, call_588885.host, call_588885.base,
+                         call_588885.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_579852, url, valid)
+  result = hook(call_588885, url, valid)
 
-proc call*(call_579923: Call_CloudshellUsersEnvironmentsGet_579677; name: string;
+proc call*(call_588956: Call_CloudshellUsersEnvironmentsGet_588710; name: string;
           uploadProtocol: string = ""; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; callback: string = "";
           accessToken: string = ""; uploadType: string = ""; key: string = "";
@@ -275,30 +275,30 @@ proc call*(call_579923: Call_CloudshellUsersEnvironmentsGet_579677; name: string
   ##        : V1 error format.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_579924 = newJObject()
-  var query_579926 = newJObject()
-  add(query_579926, "upload_protocol", newJString(uploadProtocol))
-  add(query_579926, "fields", newJString(fields))
-  add(query_579926, "quotaUser", newJString(quotaUser))
-  add(path_579924, "name", newJString(name))
-  add(query_579926, "alt", newJString(alt))
-  add(query_579926, "oauth_token", newJString(oauthToken))
-  add(query_579926, "callback", newJString(callback))
-  add(query_579926, "access_token", newJString(accessToken))
-  add(query_579926, "uploadType", newJString(uploadType))
-  add(query_579926, "key", newJString(key))
-  add(query_579926, "$.xgafv", newJString(Xgafv))
-  add(query_579926, "prettyPrint", newJBool(prettyPrint))
-  result = call_579923.call(path_579924, query_579926, nil, nil, nil)
+  var path_588957 = newJObject()
+  var query_588959 = newJObject()
+  add(query_588959, "upload_protocol", newJString(uploadProtocol))
+  add(query_588959, "fields", newJString(fields))
+  add(query_588959, "quotaUser", newJString(quotaUser))
+  add(path_588957, "name", newJString(name))
+  add(query_588959, "alt", newJString(alt))
+  add(query_588959, "oauth_token", newJString(oauthToken))
+  add(query_588959, "callback", newJString(callback))
+  add(query_588959, "access_token", newJString(accessToken))
+  add(query_588959, "uploadType", newJString(uploadType))
+  add(query_588959, "key", newJString(key))
+  add(query_588959, "$.xgafv", newJString(Xgafv))
+  add(query_588959, "prettyPrint", newJBool(prettyPrint))
+  result = call_588956.call(path_588957, query_588959, nil, nil, nil)
 
-var cloudshellUsersEnvironmentsGet* = Call_CloudshellUsersEnvironmentsGet_579677(
+var cloudshellUsersEnvironmentsGet* = Call_CloudshellUsersEnvironmentsGet_588710(
     name: "cloudshellUsersEnvironmentsGet", meth: HttpMethod.HttpGet,
     host: "cloudshell.googleapis.com", route: "/v1alpha1/{name}",
-    validator: validate_CloudshellUsersEnvironmentsGet_579678, base: "/",
-    url: url_CloudshellUsersEnvironmentsGet_579679, schemes: {Scheme.Https})
+    validator: validate_CloudshellUsersEnvironmentsGet_588711, base: "/",
+    url: url_CloudshellUsersEnvironmentsGet_588712, schemes: {Scheme.Https})
 type
-  Call_CloudshellUsersEnvironmentsPatch_579984 = ref object of OpenApiRestCall_579408
-proc url_CloudshellUsersEnvironmentsPatch_579986(protocol: Scheme; host: string;
+  Call_CloudshellUsersEnvironmentsPatch_589017 = ref object of OpenApiRestCall_588441
+proc url_CloudshellUsersEnvironmentsPatch_589019(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -313,7 +313,7 @@ proc url_CloudshellUsersEnvironmentsPatch_579986(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_CloudshellUsersEnvironmentsPatch_579985(path: JsonNode;
+proc validate_CloudshellUsersEnvironmentsPatch_589018(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Updates an existing environment.
   ## 
@@ -326,11 +326,11 @@ proc validate_CloudshellUsersEnvironmentsPatch_579985(path: JsonNode;
   ## `users/someone@example.com/environments/default`.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `name` field"
-  var valid_579987 = path.getOrDefault("name")
-  valid_579987 = validateParameter(valid_579987, JString, required = true,
+  var valid_589020 = path.getOrDefault("name")
+  valid_589020 = validateParameter(valid_589020, JString, required = true,
                                  default = nil)
-  if valid_579987 != nil:
-    section.add "name", valid_579987
+  if valid_589020 != nil:
+    section.add "name", valid_589020
   result.add "path", section
   ## parameters in `query` object:
   ##   upload_protocol: JString
@@ -358,66 +358,66 @@ proc validate_CloudshellUsersEnvironmentsPatch_579985(path: JsonNode;
   ##   updateMask: JString
   ##             : Mask specifying which fields in the environment should be updated.
   section = newJObject()
-  var valid_579988 = query.getOrDefault("upload_protocol")
-  valid_579988 = validateParameter(valid_579988, JString, required = false,
+  var valid_589021 = query.getOrDefault("upload_protocol")
+  valid_589021 = validateParameter(valid_589021, JString, required = false,
                                  default = nil)
-  if valid_579988 != nil:
-    section.add "upload_protocol", valid_579988
-  var valid_579989 = query.getOrDefault("fields")
-  valid_579989 = validateParameter(valid_579989, JString, required = false,
+  if valid_589021 != nil:
+    section.add "upload_protocol", valid_589021
+  var valid_589022 = query.getOrDefault("fields")
+  valid_589022 = validateParameter(valid_589022, JString, required = false,
                                  default = nil)
-  if valid_579989 != nil:
-    section.add "fields", valid_579989
-  var valid_579990 = query.getOrDefault("quotaUser")
-  valid_579990 = validateParameter(valid_579990, JString, required = false,
+  if valid_589022 != nil:
+    section.add "fields", valid_589022
+  var valid_589023 = query.getOrDefault("quotaUser")
+  valid_589023 = validateParameter(valid_589023, JString, required = false,
                                  default = nil)
-  if valid_579990 != nil:
-    section.add "quotaUser", valid_579990
-  var valid_579991 = query.getOrDefault("alt")
-  valid_579991 = validateParameter(valid_579991, JString, required = false,
+  if valid_589023 != nil:
+    section.add "quotaUser", valid_589023
+  var valid_589024 = query.getOrDefault("alt")
+  valid_589024 = validateParameter(valid_589024, JString, required = false,
                                  default = newJString("json"))
-  if valid_579991 != nil:
-    section.add "alt", valid_579991
-  var valid_579992 = query.getOrDefault("oauth_token")
-  valid_579992 = validateParameter(valid_579992, JString, required = false,
+  if valid_589024 != nil:
+    section.add "alt", valid_589024
+  var valid_589025 = query.getOrDefault("oauth_token")
+  valid_589025 = validateParameter(valid_589025, JString, required = false,
                                  default = nil)
-  if valid_579992 != nil:
-    section.add "oauth_token", valid_579992
-  var valid_579993 = query.getOrDefault("callback")
-  valid_579993 = validateParameter(valid_579993, JString, required = false,
+  if valid_589025 != nil:
+    section.add "oauth_token", valid_589025
+  var valid_589026 = query.getOrDefault("callback")
+  valid_589026 = validateParameter(valid_589026, JString, required = false,
                                  default = nil)
-  if valid_579993 != nil:
-    section.add "callback", valid_579993
-  var valid_579994 = query.getOrDefault("access_token")
-  valid_579994 = validateParameter(valid_579994, JString, required = false,
+  if valid_589026 != nil:
+    section.add "callback", valid_589026
+  var valid_589027 = query.getOrDefault("access_token")
+  valid_589027 = validateParameter(valid_589027, JString, required = false,
                                  default = nil)
-  if valid_579994 != nil:
-    section.add "access_token", valid_579994
-  var valid_579995 = query.getOrDefault("uploadType")
-  valid_579995 = validateParameter(valid_579995, JString, required = false,
+  if valid_589027 != nil:
+    section.add "access_token", valid_589027
+  var valid_589028 = query.getOrDefault("uploadType")
+  valid_589028 = validateParameter(valid_589028, JString, required = false,
                                  default = nil)
-  if valid_579995 != nil:
-    section.add "uploadType", valid_579995
-  var valid_579996 = query.getOrDefault("key")
-  valid_579996 = validateParameter(valid_579996, JString, required = false,
+  if valid_589028 != nil:
+    section.add "uploadType", valid_589028
+  var valid_589029 = query.getOrDefault("key")
+  valid_589029 = validateParameter(valid_589029, JString, required = false,
                                  default = nil)
-  if valid_579996 != nil:
-    section.add "key", valid_579996
-  var valid_579997 = query.getOrDefault("$.xgafv")
-  valid_579997 = validateParameter(valid_579997, JString, required = false,
+  if valid_589029 != nil:
+    section.add "key", valid_589029
+  var valid_589030 = query.getOrDefault("$.xgafv")
+  valid_589030 = validateParameter(valid_589030, JString, required = false,
                                  default = newJString("1"))
-  if valid_579997 != nil:
-    section.add "$.xgafv", valid_579997
-  var valid_579998 = query.getOrDefault("prettyPrint")
-  valid_579998 = validateParameter(valid_579998, JBool, required = false,
+  if valid_589030 != nil:
+    section.add "$.xgafv", valid_589030
+  var valid_589031 = query.getOrDefault("prettyPrint")
+  valid_589031 = validateParameter(valid_589031, JBool, required = false,
                                  default = newJBool(true))
-  if valid_579998 != nil:
-    section.add "prettyPrint", valid_579998
-  var valid_579999 = query.getOrDefault("updateMask")
-  valid_579999 = validateParameter(valid_579999, JString, required = false,
+  if valid_589031 != nil:
+    section.add "prettyPrint", valid_589031
+  var valid_589032 = query.getOrDefault("updateMask")
+  valid_589032 = validateParameter(valid_589032, JString, required = false,
                                  default = nil)
-  if valid_579999 != nil:
-    section.add "updateMask", valid_579999
+  if valid_589032 != nil:
+    section.add "updateMask", valid_589032
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -429,21 +429,21 @@ proc validate_CloudshellUsersEnvironmentsPatch_579985(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580001: Call_CloudshellUsersEnvironmentsPatch_579984;
+proc call*(call_589034: Call_CloudshellUsersEnvironmentsPatch_589017;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Updates an existing environment.
   ## 
-  let valid = call_580001.validator(path, query, header, formData, body)
-  let scheme = call_580001.pickScheme
+  let valid = call_589034.validator(path, query, header, formData, body)
+  let scheme = call_589034.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580001.url(scheme.get, call_580001.host, call_580001.base,
-                         call_580001.route, valid.getOrDefault("path"),
+  let url = call_589034.url(scheme.get, call_589034.host, call_589034.base,
+                         call_589034.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580001, url, valid)
+  result = hook(call_589034, url, valid)
 
-proc call*(call_580002: Call_CloudshellUsersEnvironmentsPatch_579984; name: string;
+proc call*(call_589035: Call_CloudshellUsersEnvironmentsPatch_589017; name: string;
           uploadProtocol: string = ""; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; callback: string = "";
           accessToken: string = ""; uploadType: string = ""; key: string = "";
@@ -480,34 +480,34 @@ proc call*(call_580002: Call_CloudshellUsersEnvironmentsPatch_579984; name: stri
   ##              : Returns response with indentations and line breaks.
   ##   updateMask: string
   ##             : Mask specifying which fields in the environment should be updated.
-  var path_580003 = newJObject()
-  var query_580004 = newJObject()
-  var body_580005 = newJObject()
-  add(query_580004, "upload_protocol", newJString(uploadProtocol))
-  add(query_580004, "fields", newJString(fields))
-  add(query_580004, "quotaUser", newJString(quotaUser))
-  add(path_580003, "name", newJString(name))
-  add(query_580004, "alt", newJString(alt))
-  add(query_580004, "oauth_token", newJString(oauthToken))
-  add(query_580004, "callback", newJString(callback))
-  add(query_580004, "access_token", newJString(accessToken))
-  add(query_580004, "uploadType", newJString(uploadType))
-  add(query_580004, "key", newJString(key))
-  add(query_580004, "$.xgafv", newJString(Xgafv))
+  var path_589036 = newJObject()
+  var query_589037 = newJObject()
+  var body_589038 = newJObject()
+  add(query_589037, "upload_protocol", newJString(uploadProtocol))
+  add(query_589037, "fields", newJString(fields))
+  add(query_589037, "quotaUser", newJString(quotaUser))
+  add(path_589036, "name", newJString(name))
+  add(query_589037, "alt", newJString(alt))
+  add(query_589037, "oauth_token", newJString(oauthToken))
+  add(query_589037, "callback", newJString(callback))
+  add(query_589037, "access_token", newJString(accessToken))
+  add(query_589037, "uploadType", newJString(uploadType))
+  add(query_589037, "key", newJString(key))
+  add(query_589037, "$.xgafv", newJString(Xgafv))
   if body != nil:
-    body_580005 = body
-  add(query_580004, "prettyPrint", newJBool(prettyPrint))
-  add(query_580004, "updateMask", newJString(updateMask))
-  result = call_580002.call(path_580003, query_580004, nil, nil, body_580005)
+    body_589038 = body
+  add(query_589037, "prettyPrint", newJBool(prettyPrint))
+  add(query_589037, "updateMask", newJString(updateMask))
+  result = call_589035.call(path_589036, query_589037, nil, nil, body_589038)
 
-var cloudshellUsersEnvironmentsPatch* = Call_CloudshellUsersEnvironmentsPatch_579984(
+var cloudshellUsersEnvironmentsPatch* = Call_CloudshellUsersEnvironmentsPatch_589017(
     name: "cloudshellUsersEnvironmentsPatch", meth: HttpMethod.HttpPatch,
     host: "cloudshell.googleapis.com", route: "/v1alpha1/{name}",
-    validator: validate_CloudshellUsersEnvironmentsPatch_579985, base: "/",
-    url: url_CloudshellUsersEnvironmentsPatch_579986, schemes: {Scheme.Https})
+    validator: validate_CloudshellUsersEnvironmentsPatch_589018, base: "/",
+    url: url_CloudshellUsersEnvironmentsPatch_589019, schemes: {Scheme.Https})
 type
-  Call_CloudshellUsersEnvironmentsPublicKeysDelete_579965 = ref object of OpenApiRestCall_579408
-proc url_CloudshellUsersEnvironmentsPublicKeysDelete_579967(protocol: Scheme;
+  Call_CloudshellUsersEnvironmentsPublicKeysDelete_588998 = ref object of OpenApiRestCall_588441
+proc url_CloudshellUsersEnvironmentsPublicKeysDelete_589000(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -522,7 +522,7 @@ proc url_CloudshellUsersEnvironmentsPublicKeysDelete_579967(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_CloudshellUsersEnvironmentsPublicKeysDelete_579966(path: JsonNode;
+proc validate_CloudshellUsersEnvironmentsPublicKeysDelete_588999(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Removes a public SSH key from an environment. Clients will no longer be
   ## able to connect to the environment using the corresponding private key.
@@ -535,11 +535,11 @@ proc validate_CloudshellUsersEnvironmentsPublicKeysDelete_579966(path: JsonNode;
   ## `users/me/environments/default/publicKeys/my-key`.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `name` field"
-  var valid_579968 = path.getOrDefault("name")
-  valid_579968 = validateParameter(valid_579968, JString, required = true,
+  var valid_589001 = path.getOrDefault("name")
+  valid_589001 = validateParameter(valid_589001, JString, required = true,
                                  default = nil)
-  if valid_579968 != nil:
-    section.add "name", valid_579968
+  if valid_589001 != nil:
+    section.add "name", valid_589001
   result.add "path", section
   ## parameters in `query` object:
   ##   upload_protocol: JString
@@ -565,61 +565,61 @@ proc validate_CloudshellUsersEnvironmentsPublicKeysDelete_579966(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_579969 = query.getOrDefault("upload_protocol")
-  valid_579969 = validateParameter(valid_579969, JString, required = false,
+  var valid_589002 = query.getOrDefault("upload_protocol")
+  valid_589002 = validateParameter(valid_589002, JString, required = false,
                                  default = nil)
-  if valid_579969 != nil:
-    section.add "upload_protocol", valid_579969
-  var valid_579970 = query.getOrDefault("fields")
-  valid_579970 = validateParameter(valid_579970, JString, required = false,
+  if valid_589002 != nil:
+    section.add "upload_protocol", valid_589002
+  var valid_589003 = query.getOrDefault("fields")
+  valid_589003 = validateParameter(valid_589003, JString, required = false,
                                  default = nil)
-  if valid_579970 != nil:
-    section.add "fields", valid_579970
-  var valid_579971 = query.getOrDefault("quotaUser")
-  valid_579971 = validateParameter(valid_579971, JString, required = false,
+  if valid_589003 != nil:
+    section.add "fields", valid_589003
+  var valid_589004 = query.getOrDefault("quotaUser")
+  valid_589004 = validateParameter(valid_589004, JString, required = false,
                                  default = nil)
-  if valid_579971 != nil:
-    section.add "quotaUser", valid_579971
-  var valid_579972 = query.getOrDefault("alt")
-  valid_579972 = validateParameter(valid_579972, JString, required = false,
+  if valid_589004 != nil:
+    section.add "quotaUser", valid_589004
+  var valid_589005 = query.getOrDefault("alt")
+  valid_589005 = validateParameter(valid_589005, JString, required = false,
                                  default = newJString("json"))
-  if valid_579972 != nil:
-    section.add "alt", valid_579972
-  var valid_579973 = query.getOrDefault("oauth_token")
-  valid_579973 = validateParameter(valid_579973, JString, required = false,
+  if valid_589005 != nil:
+    section.add "alt", valid_589005
+  var valid_589006 = query.getOrDefault("oauth_token")
+  valid_589006 = validateParameter(valid_589006, JString, required = false,
                                  default = nil)
-  if valid_579973 != nil:
-    section.add "oauth_token", valid_579973
-  var valid_579974 = query.getOrDefault("callback")
-  valid_579974 = validateParameter(valid_579974, JString, required = false,
+  if valid_589006 != nil:
+    section.add "oauth_token", valid_589006
+  var valid_589007 = query.getOrDefault("callback")
+  valid_589007 = validateParameter(valid_589007, JString, required = false,
                                  default = nil)
-  if valid_579974 != nil:
-    section.add "callback", valid_579974
-  var valid_579975 = query.getOrDefault("access_token")
-  valid_579975 = validateParameter(valid_579975, JString, required = false,
+  if valid_589007 != nil:
+    section.add "callback", valid_589007
+  var valid_589008 = query.getOrDefault("access_token")
+  valid_589008 = validateParameter(valid_589008, JString, required = false,
                                  default = nil)
-  if valid_579975 != nil:
-    section.add "access_token", valid_579975
-  var valid_579976 = query.getOrDefault("uploadType")
-  valid_579976 = validateParameter(valid_579976, JString, required = false,
+  if valid_589008 != nil:
+    section.add "access_token", valid_589008
+  var valid_589009 = query.getOrDefault("uploadType")
+  valid_589009 = validateParameter(valid_589009, JString, required = false,
                                  default = nil)
-  if valid_579976 != nil:
-    section.add "uploadType", valid_579976
-  var valid_579977 = query.getOrDefault("key")
-  valid_579977 = validateParameter(valid_579977, JString, required = false,
+  if valid_589009 != nil:
+    section.add "uploadType", valid_589009
+  var valid_589010 = query.getOrDefault("key")
+  valid_589010 = validateParameter(valid_589010, JString, required = false,
                                  default = nil)
-  if valid_579977 != nil:
-    section.add "key", valid_579977
-  var valid_579978 = query.getOrDefault("$.xgafv")
-  valid_579978 = validateParameter(valid_579978, JString, required = false,
+  if valid_589010 != nil:
+    section.add "key", valid_589010
+  var valid_589011 = query.getOrDefault("$.xgafv")
+  valid_589011 = validateParameter(valid_589011, JString, required = false,
                                  default = newJString("1"))
-  if valid_579978 != nil:
-    section.add "$.xgafv", valid_579978
-  var valid_579979 = query.getOrDefault("prettyPrint")
-  valid_579979 = validateParameter(valid_579979, JBool, required = false,
+  if valid_589011 != nil:
+    section.add "$.xgafv", valid_589011
+  var valid_589012 = query.getOrDefault("prettyPrint")
+  valid_589012 = validateParameter(valid_589012, JBool, required = false,
                                  default = newJBool(true))
-  if valid_579979 != nil:
-    section.add "prettyPrint", valid_579979
+  if valid_589012 != nil:
+    section.add "prettyPrint", valid_589012
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -628,22 +628,22 @@ proc validate_CloudshellUsersEnvironmentsPublicKeysDelete_579966(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_579980: Call_CloudshellUsersEnvironmentsPublicKeysDelete_579965;
+proc call*(call_589013: Call_CloudshellUsersEnvironmentsPublicKeysDelete_588998;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Removes a public SSH key from an environment. Clients will no longer be
   ## able to connect to the environment using the corresponding private key.
   ## 
-  let valid = call_579980.validator(path, query, header, formData, body)
-  let scheme = call_579980.pickScheme
+  let valid = call_589013.validator(path, query, header, formData, body)
+  let scheme = call_589013.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_579980.url(scheme.get, call_579980.host, call_579980.base,
-                         call_579980.route, valid.getOrDefault("path"),
+  let url = call_589013.url(scheme.get, call_589013.host, call_589013.base,
+                         call_589013.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_579980, url, valid)
+  result = hook(call_589013, url, valid)
 
-proc call*(call_579981: Call_CloudshellUsersEnvironmentsPublicKeysDelete_579965;
+proc call*(call_589014: Call_CloudshellUsersEnvironmentsPublicKeysDelete_588998;
           name: string; uploadProtocol: string = ""; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           callback: string = ""; accessToken: string = ""; uploadType: string = "";
@@ -676,32 +676,32 @@ proc call*(call_579981: Call_CloudshellUsersEnvironmentsPublicKeysDelete_579965;
   ##        : V1 error format.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_579982 = newJObject()
-  var query_579983 = newJObject()
-  add(query_579983, "upload_protocol", newJString(uploadProtocol))
-  add(query_579983, "fields", newJString(fields))
-  add(query_579983, "quotaUser", newJString(quotaUser))
-  add(path_579982, "name", newJString(name))
-  add(query_579983, "alt", newJString(alt))
-  add(query_579983, "oauth_token", newJString(oauthToken))
-  add(query_579983, "callback", newJString(callback))
-  add(query_579983, "access_token", newJString(accessToken))
-  add(query_579983, "uploadType", newJString(uploadType))
-  add(query_579983, "key", newJString(key))
-  add(query_579983, "$.xgafv", newJString(Xgafv))
-  add(query_579983, "prettyPrint", newJBool(prettyPrint))
-  result = call_579981.call(path_579982, query_579983, nil, nil, nil)
+  var path_589015 = newJObject()
+  var query_589016 = newJObject()
+  add(query_589016, "upload_protocol", newJString(uploadProtocol))
+  add(query_589016, "fields", newJString(fields))
+  add(query_589016, "quotaUser", newJString(quotaUser))
+  add(path_589015, "name", newJString(name))
+  add(query_589016, "alt", newJString(alt))
+  add(query_589016, "oauth_token", newJString(oauthToken))
+  add(query_589016, "callback", newJString(callback))
+  add(query_589016, "access_token", newJString(accessToken))
+  add(query_589016, "uploadType", newJString(uploadType))
+  add(query_589016, "key", newJString(key))
+  add(query_589016, "$.xgafv", newJString(Xgafv))
+  add(query_589016, "prettyPrint", newJBool(prettyPrint))
+  result = call_589014.call(path_589015, query_589016, nil, nil, nil)
 
-var cloudshellUsersEnvironmentsPublicKeysDelete* = Call_CloudshellUsersEnvironmentsPublicKeysDelete_579965(
+var cloudshellUsersEnvironmentsPublicKeysDelete* = Call_CloudshellUsersEnvironmentsPublicKeysDelete_588998(
     name: "cloudshellUsersEnvironmentsPublicKeysDelete",
     meth: HttpMethod.HttpDelete, host: "cloudshell.googleapis.com",
     route: "/v1alpha1/{name}",
-    validator: validate_CloudshellUsersEnvironmentsPublicKeysDelete_579966,
-    base: "/", url: url_CloudshellUsersEnvironmentsPublicKeysDelete_579967,
+    validator: validate_CloudshellUsersEnvironmentsPublicKeysDelete_588999,
+    base: "/", url: url_CloudshellUsersEnvironmentsPublicKeysDelete_589000,
     schemes: {Scheme.Https})
 type
-  Call_CloudshellUsersEnvironmentsAuthorize_580006 = ref object of OpenApiRestCall_579408
-proc url_CloudshellUsersEnvironmentsAuthorize_580008(protocol: Scheme;
+  Call_CloudshellUsersEnvironmentsAuthorize_589039 = ref object of OpenApiRestCall_588441
+proc url_CloudshellUsersEnvironmentsAuthorize_589041(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -717,7 +717,7 @@ proc url_CloudshellUsersEnvironmentsAuthorize_580008(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_CloudshellUsersEnvironmentsAuthorize_580007(path: JsonNode;
+proc validate_CloudshellUsersEnvironmentsAuthorize_589040(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Sends OAuth credentials to a running environment on behalf of a user. When
   ## this completes, the environment will be authorized to run various Google
@@ -733,11 +733,11 @@ proc validate_CloudshellUsersEnvironmentsAuthorize_580007(path: JsonNode;
   ## `users/someone@example.com/environments/default`.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `name` field"
-  var valid_580009 = path.getOrDefault("name")
-  valid_580009 = validateParameter(valid_580009, JString, required = true,
+  var valid_589042 = path.getOrDefault("name")
+  valid_589042 = validateParameter(valid_589042, JString, required = true,
                                  default = nil)
-  if valid_580009 != nil:
-    section.add "name", valid_580009
+  if valid_589042 != nil:
+    section.add "name", valid_589042
   result.add "path", section
   ## parameters in `query` object:
   ##   upload_protocol: JString
@@ -763,61 +763,61 @@ proc validate_CloudshellUsersEnvironmentsAuthorize_580007(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580010 = query.getOrDefault("upload_protocol")
-  valid_580010 = validateParameter(valid_580010, JString, required = false,
+  var valid_589043 = query.getOrDefault("upload_protocol")
+  valid_589043 = validateParameter(valid_589043, JString, required = false,
                                  default = nil)
-  if valid_580010 != nil:
-    section.add "upload_protocol", valid_580010
-  var valid_580011 = query.getOrDefault("fields")
-  valid_580011 = validateParameter(valid_580011, JString, required = false,
+  if valid_589043 != nil:
+    section.add "upload_protocol", valid_589043
+  var valid_589044 = query.getOrDefault("fields")
+  valid_589044 = validateParameter(valid_589044, JString, required = false,
                                  default = nil)
-  if valid_580011 != nil:
-    section.add "fields", valid_580011
-  var valid_580012 = query.getOrDefault("quotaUser")
-  valid_580012 = validateParameter(valid_580012, JString, required = false,
+  if valid_589044 != nil:
+    section.add "fields", valid_589044
+  var valid_589045 = query.getOrDefault("quotaUser")
+  valid_589045 = validateParameter(valid_589045, JString, required = false,
                                  default = nil)
-  if valid_580012 != nil:
-    section.add "quotaUser", valid_580012
-  var valid_580013 = query.getOrDefault("alt")
-  valid_580013 = validateParameter(valid_580013, JString, required = false,
+  if valid_589045 != nil:
+    section.add "quotaUser", valid_589045
+  var valid_589046 = query.getOrDefault("alt")
+  valid_589046 = validateParameter(valid_589046, JString, required = false,
                                  default = newJString("json"))
-  if valid_580013 != nil:
-    section.add "alt", valid_580013
-  var valid_580014 = query.getOrDefault("oauth_token")
-  valid_580014 = validateParameter(valid_580014, JString, required = false,
+  if valid_589046 != nil:
+    section.add "alt", valid_589046
+  var valid_589047 = query.getOrDefault("oauth_token")
+  valid_589047 = validateParameter(valid_589047, JString, required = false,
                                  default = nil)
-  if valid_580014 != nil:
-    section.add "oauth_token", valid_580014
-  var valid_580015 = query.getOrDefault("callback")
-  valid_580015 = validateParameter(valid_580015, JString, required = false,
+  if valid_589047 != nil:
+    section.add "oauth_token", valid_589047
+  var valid_589048 = query.getOrDefault("callback")
+  valid_589048 = validateParameter(valid_589048, JString, required = false,
                                  default = nil)
-  if valid_580015 != nil:
-    section.add "callback", valid_580015
-  var valid_580016 = query.getOrDefault("access_token")
-  valid_580016 = validateParameter(valid_580016, JString, required = false,
+  if valid_589048 != nil:
+    section.add "callback", valid_589048
+  var valid_589049 = query.getOrDefault("access_token")
+  valid_589049 = validateParameter(valid_589049, JString, required = false,
                                  default = nil)
-  if valid_580016 != nil:
-    section.add "access_token", valid_580016
-  var valid_580017 = query.getOrDefault("uploadType")
-  valid_580017 = validateParameter(valid_580017, JString, required = false,
+  if valid_589049 != nil:
+    section.add "access_token", valid_589049
+  var valid_589050 = query.getOrDefault("uploadType")
+  valid_589050 = validateParameter(valid_589050, JString, required = false,
                                  default = nil)
-  if valid_580017 != nil:
-    section.add "uploadType", valid_580017
-  var valid_580018 = query.getOrDefault("key")
-  valid_580018 = validateParameter(valid_580018, JString, required = false,
+  if valid_589050 != nil:
+    section.add "uploadType", valid_589050
+  var valid_589051 = query.getOrDefault("key")
+  valid_589051 = validateParameter(valid_589051, JString, required = false,
                                  default = nil)
-  if valid_580018 != nil:
-    section.add "key", valid_580018
-  var valid_580019 = query.getOrDefault("$.xgafv")
-  valid_580019 = validateParameter(valid_580019, JString, required = false,
+  if valid_589051 != nil:
+    section.add "key", valid_589051
+  var valid_589052 = query.getOrDefault("$.xgafv")
+  valid_589052 = validateParameter(valid_589052, JString, required = false,
                                  default = newJString("1"))
-  if valid_580019 != nil:
-    section.add "$.xgafv", valid_580019
-  var valid_580020 = query.getOrDefault("prettyPrint")
-  valid_580020 = validateParameter(valid_580020, JBool, required = false,
+  if valid_589052 != nil:
+    section.add "$.xgafv", valid_589052
+  var valid_589053 = query.getOrDefault("prettyPrint")
+  valid_589053 = validateParameter(valid_589053, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580020 != nil:
-    section.add "prettyPrint", valid_580020
+  if valid_589053 != nil:
+    section.add "prettyPrint", valid_589053
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -829,7 +829,7 @@ proc validate_CloudshellUsersEnvironmentsAuthorize_580007(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580022: Call_CloudshellUsersEnvironmentsAuthorize_580006;
+proc call*(call_589055: Call_CloudshellUsersEnvironmentsAuthorize_589039;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Sends OAuth credentials to a running environment on behalf of a user. When
@@ -837,16 +837,16 @@ proc call*(call_580022: Call_CloudshellUsersEnvironmentsAuthorize_580006;
   ## Cloud command line tools without requiring the user to manually
   ## authenticate.
   ## 
-  let valid = call_580022.validator(path, query, header, formData, body)
-  let scheme = call_580022.pickScheme
+  let valid = call_589055.validator(path, query, header, formData, body)
+  let scheme = call_589055.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580022.url(scheme.get, call_580022.host, call_580022.base,
-                         call_580022.route, valid.getOrDefault("path"),
+  let url = call_589055.url(scheme.get, call_589055.host, call_589055.base,
+                         call_589055.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580022, url, valid)
+  result = hook(call_589055, url, valid)
 
-proc call*(call_580023: Call_CloudshellUsersEnvironmentsAuthorize_580006;
+proc call*(call_589056: Call_CloudshellUsersEnvironmentsAuthorize_589039;
           name: string; uploadProtocol: string = ""; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           callback: string = ""; accessToken: string = ""; uploadType: string = "";
@@ -884,33 +884,33 @@ proc call*(call_580023: Call_CloudshellUsersEnvironmentsAuthorize_580006;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_580024 = newJObject()
-  var query_580025 = newJObject()
-  var body_580026 = newJObject()
-  add(query_580025, "upload_protocol", newJString(uploadProtocol))
-  add(query_580025, "fields", newJString(fields))
-  add(query_580025, "quotaUser", newJString(quotaUser))
-  add(path_580024, "name", newJString(name))
-  add(query_580025, "alt", newJString(alt))
-  add(query_580025, "oauth_token", newJString(oauthToken))
-  add(query_580025, "callback", newJString(callback))
-  add(query_580025, "access_token", newJString(accessToken))
-  add(query_580025, "uploadType", newJString(uploadType))
-  add(query_580025, "key", newJString(key))
-  add(query_580025, "$.xgafv", newJString(Xgafv))
+  var path_589057 = newJObject()
+  var query_589058 = newJObject()
+  var body_589059 = newJObject()
+  add(query_589058, "upload_protocol", newJString(uploadProtocol))
+  add(query_589058, "fields", newJString(fields))
+  add(query_589058, "quotaUser", newJString(quotaUser))
+  add(path_589057, "name", newJString(name))
+  add(query_589058, "alt", newJString(alt))
+  add(query_589058, "oauth_token", newJString(oauthToken))
+  add(query_589058, "callback", newJString(callback))
+  add(query_589058, "access_token", newJString(accessToken))
+  add(query_589058, "uploadType", newJString(uploadType))
+  add(query_589058, "key", newJString(key))
+  add(query_589058, "$.xgafv", newJString(Xgafv))
   if body != nil:
-    body_580026 = body
-  add(query_580025, "prettyPrint", newJBool(prettyPrint))
-  result = call_580023.call(path_580024, query_580025, nil, nil, body_580026)
+    body_589059 = body
+  add(query_589058, "prettyPrint", newJBool(prettyPrint))
+  result = call_589056.call(path_589057, query_589058, nil, nil, body_589059)
 
-var cloudshellUsersEnvironmentsAuthorize* = Call_CloudshellUsersEnvironmentsAuthorize_580006(
+var cloudshellUsersEnvironmentsAuthorize* = Call_CloudshellUsersEnvironmentsAuthorize_589039(
     name: "cloudshellUsersEnvironmentsAuthorize", meth: HttpMethod.HttpPost,
     host: "cloudshell.googleapis.com", route: "/v1alpha1/{name}:authorize",
-    validator: validate_CloudshellUsersEnvironmentsAuthorize_580007, base: "/",
-    url: url_CloudshellUsersEnvironmentsAuthorize_580008, schemes: {Scheme.Https})
+    validator: validate_CloudshellUsersEnvironmentsAuthorize_589040, base: "/",
+    url: url_CloudshellUsersEnvironmentsAuthorize_589041, schemes: {Scheme.Https})
 type
-  Call_CloudshellUsersEnvironmentsStart_580027 = ref object of OpenApiRestCall_579408
-proc url_CloudshellUsersEnvironmentsStart_580029(protocol: Scheme; host: string;
+  Call_CloudshellUsersEnvironmentsStart_589060 = ref object of OpenApiRestCall_588441
+proc url_CloudshellUsersEnvironmentsStart_589062(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -926,7 +926,7 @@ proc url_CloudshellUsersEnvironmentsStart_580029(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_CloudshellUsersEnvironmentsStart_580028(path: JsonNode;
+proc validate_CloudshellUsersEnvironmentsStart_589061(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Starts an existing environment, allowing clients to connect to it. The
   ## returned operation will contain an instance of StartEnvironmentMetadata in
@@ -944,11 +944,11 @@ proc validate_CloudshellUsersEnvironmentsStart_580028(path: JsonNode;
   ## `users/someone@example.com/environments/default`.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `name` field"
-  var valid_580030 = path.getOrDefault("name")
-  valid_580030 = validateParameter(valid_580030, JString, required = true,
+  var valid_589063 = path.getOrDefault("name")
+  valid_589063 = validateParameter(valid_589063, JString, required = true,
                                  default = nil)
-  if valid_580030 != nil:
-    section.add "name", valid_580030
+  if valid_589063 != nil:
+    section.add "name", valid_589063
   result.add "path", section
   ## parameters in `query` object:
   ##   upload_protocol: JString
@@ -974,61 +974,61 @@ proc validate_CloudshellUsersEnvironmentsStart_580028(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580031 = query.getOrDefault("upload_protocol")
-  valid_580031 = validateParameter(valid_580031, JString, required = false,
+  var valid_589064 = query.getOrDefault("upload_protocol")
+  valid_589064 = validateParameter(valid_589064, JString, required = false,
                                  default = nil)
-  if valid_580031 != nil:
-    section.add "upload_protocol", valid_580031
-  var valid_580032 = query.getOrDefault("fields")
-  valid_580032 = validateParameter(valid_580032, JString, required = false,
+  if valid_589064 != nil:
+    section.add "upload_protocol", valid_589064
+  var valid_589065 = query.getOrDefault("fields")
+  valid_589065 = validateParameter(valid_589065, JString, required = false,
                                  default = nil)
-  if valid_580032 != nil:
-    section.add "fields", valid_580032
-  var valid_580033 = query.getOrDefault("quotaUser")
-  valid_580033 = validateParameter(valid_580033, JString, required = false,
+  if valid_589065 != nil:
+    section.add "fields", valid_589065
+  var valid_589066 = query.getOrDefault("quotaUser")
+  valid_589066 = validateParameter(valid_589066, JString, required = false,
                                  default = nil)
-  if valid_580033 != nil:
-    section.add "quotaUser", valid_580033
-  var valid_580034 = query.getOrDefault("alt")
-  valid_580034 = validateParameter(valid_580034, JString, required = false,
+  if valid_589066 != nil:
+    section.add "quotaUser", valid_589066
+  var valid_589067 = query.getOrDefault("alt")
+  valid_589067 = validateParameter(valid_589067, JString, required = false,
                                  default = newJString("json"))
-  if valid_580034 != nil:
-    section.add "alt", valid_580034
-  var valid_580035 = query.getOrDefault("oauth_token")
-  valid_580035 = validateParameter(valid_580035, JString, required = false,
+  if valid_589067 != nil:
+    section.add "alt", valid_589067
+  var valid_589068 = query.getOrDefault("oauth_token")
+  valid_589068 = validateParameter(valid_589068, JString, required = false,
                                  default = nil)
-  if valid_580035 != nil:
-    section.add "oauth_token", valid_580035
-  var valid_580036 = query.getOrDefault("callback")
-  valid_580036 = validateParameter(valid_580036, JString, required = false,
+  if valid_589068 != nil:
+    section.add "oauth_token", valid_589068
+  var valid_589069 = query.getOrDefault("callback")
+  valid_589069 = validateParameter(valid_589069, JString, required = false,
                                  default = nil)
-  if valid_580036 != nil:
-    section.add "callback", valid_580036
-  var valid_580037 = query.getOrDefault("access_token")
-  valid_580037 = validateParameter(valid_580037, JString, required = false,
+  if valid_589069 != nil:
+    section.add "callback", valid_589069
+  var valid_589070 = query.getOrDefault("access_token")
+  valid_589070 = validateParameter(valid_589070, JString, required = false,
                                  default = nil)
-  if valid_580037 != nil:
-    section.add "access_token", valid_580037
-  var valid_580038 = query.getOrDefault("uploadType")
-  valid_580038 = validateParameter(valid_580038, JString, required = false,
+  if valid_589070 != nil:
+    section.add "access_token", valid_589070
+  var valid_589071 = query.getOrDefault("uploadType")
+  valid_589071 = validateParameter(valid_589071, JString, required = false,
                                  default = nil)
-  if valid_580038 != nil:
-    section.add "uploadType", valid_580038
-  var valid_580039 = query.getOrDefault("key")
-  valid_580039 = validateParameter(valid_580039, JString, required = false,
+  if valid_589071 != nil:
+    section.add "uploadType", valid_589071
+  var valid_589072 = query.getOrDefault("key")
+  valid_589072 = validateParameter(valid_589072, JString, required = false,
                                  default = nil)
-  if valid_580039 != nil:
-    section.add "key", valid_580039
-  var valid_580040 = query.getOrDefault("$.xgafv")
-  valid_580040 = validateParameter(valid_580040, JString, required = false,
+  if valid_589072 != nil:
+    section.add "key", valid_589072
+  var valid_589073 = query.getOrDefault("$.xgafv")
+  valid_589073 = validateParameter(valid_589073, JString, required = false,
                                  default = newJString("1"))
-  if valid_580040 != nil:
-    section.add "$.xgafv", valid_580040
-  var valid_580041 = query.getOrDefault("prettyPrint")
-  valid_580041 = validateParameter(valid_580041, JBool, required = false,
+  if valid_589073 != nil:
+    section.add "$.xgafv", valid_589073
+  var valid_589074 = query.getOrDefault("prettyPrint")
+  valid_589074 = validateParameter(valid_589074, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580041 != nil:
-    section.add "prettyPrint", valid_580041
+  if valid_589074 != nil:
+    section.add "prettyPrint", valid_589074
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1040,7 +1040,7 @@ proc validate_CloudshellUsersEnvironmentsStart_580028(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580043: Call_CloudshellUsersEnvironmentsStart_580027;
+proc call*(call_589076: Call_CloudshellUsersEnvironmentsStart_589060;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Starts an existing environment, allowing clients to connect to it. The
@@ -1050,16 +1050,16 @@ proc call*(call_580043: Call_CloudshellUsersEnvironmentsStart_580027;
   ## and is ready to accept connections, the operation will contain a
   ## StartEnvironmentResponse in its response field.
   ## 
-  let valid = call_580043.validator(path, query, header, formData, body)
-  let scheme = call_580043.pickScheme
+  let valid = call_589076.validator(path, query, header, formData, body)
+  let scheme = call_589076.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580043.url(scheme.get, call_580043.host, call_580043.base,
-                         call_580043.route, valid.getOrDefault("path"),
+  let url = call_589076.url(scheme.get, call_589076.host, call_589076.base,
+                         call_589076.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580043, url, valid)
+  result = hook(call_589076, url, valid)
 
-proc call*(call_580044: Call_CloudshellUsersEnvironmentsStart_580027; name: string;
+proc call*(call_589077: Call_CloudshellUsersEnvironmentsStart_589060; name: string;
           uploadProtocol: string = ""; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; callback: string = "";
           accessToken: string = ""; uploadType: string = ""; key: string = "";
@@ -1098,33 +1098,33 @@ proc call*(call_580044: Call_CloudshellUsersEnvironmentsStart_580027; name: stri
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_580045 = newJObject()
-  var query_580046 = newJObject()
-  var body_580047 = newJObject()
-  add(query_580046, "upload_protocol", newJString(uploadProtocol))
-  add(query_580046, "fields", newJString(fields))
-  add(query_580046, "quotaUser", newJString(quotaUser))
-  add(path_580045, "name", newJString(name))
-  add(query_580046, "alt", newJString(alt))
-  add(query_580046, "oauth_token", newJString(oauthToken))
-  add(query_580046, "callback", newJString(callback))
-  add(query_580046, "access_token", newJString(accessToken))
-  add(query_580046, "uploadType", newJString(uploadType))
-  add(query_580046, "key", newJString(key))
-  add(query_580046, "$.xgafv", newJString(Xgafv))
+  var path_589078 = newJObject()
+  var query_589079 = newJObject()
+  var body_589080 = newJObject()
+  add(query_589079, "upload_protocol", newJString(uploadProtocol))
+  add(query_589079, "fields", newJString(fields))
+  add(query_589079, "quotaUser", newJString(quotaUser))
+  add(path_589078, "name", newJString(name))
+  add(query_589079, "alt", newJString(alt))
+  add(query_589079, "oauth_token", newJString(oauthToken))
+  add(query_589079, "callback", newJString(callback))
+  add(query_589079, "access_token", newJString(accessToken))
+  add(query_589079, "uploadType", newJString(uploadType))
+  add(query_589079, "key", newJString(key))
+  add(query_589079, "$.xgafv", newJString(Xgafv))
   if body != nil:
-    body_580047 = body
-  add(query_580046, "prettyPrint", newJBool(prettyPrint))
-  result = call_580044.call(path_580045, query_580046, nil, nil, body_580047)
+    body_589080 = body
+  add(query_589079, "prettyPrint", newJBool(prettyPrint))
+  result = call_589077.call(path_589078, query_589079, nil, nil, body_589080)
 
-var cloudshellUsersEnvironmentsStart* = Call_CloudshellUsersEnvironmentsStart_580027(
+var cloudshellUsersEnvironmentsStart* = Call_CloudshellUsersEnvironmentsStart_589060(
     name: "cloudshellUsersEnvironmentsStart", meth: HttpMethod.HttpPost,
     host: "cloudshell.googleapis.com", route: "/v1alpha1/{name}:start",
-    validator: validate_CloudshellUsersEnvironmentsStart_580028, base: "/",
-    url: url_CloudshellUsersEnvironmentsStart_580029, schemes: {Scheme.Https})
+    validator: validate_CloudshellUsersEnvironmentsStart_589061, base: "/",
+    url: url_CloudshellUsersEnvironmentsStart_589062, schemes: {Scheme.Https})
 type
-  Call_CloudshellUsersEnvironmentsPublicKeysCreate_580048 = ref object of OpenApiRestCall_579408
-proc url_CloudshellUsersEnvironmentsPublicKeysCreate_580050(protocol: Scheme;
+  Call_CloudshellUsersEnvironmentsPublicKeysCreate_589081 = ref object of OpenApiRestCall_588441
+proc url_CloudshellUsersEnvironmentsPublicKeysCreate_589083(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -1140,7 +1140,7 @@ proc url_CloudshellUsersEnvironmentsPublicKeysCreate_580050(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_CloudshellUsersEnvironmentsPublicKeysCreate_580049(path: JsonNode;
+proc validate_CloudshellUsersEnvironmentsPublicKeysCreate_589082(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Adds a public SSH key to an environment, allowing clients with the
   ## corresponding private key to connect to that environment via SSH. If a key
@@ -1154,11 +1154,11 @@ proc validate_CloudshellUsersEnvironmentsPublicKeysCreate_580049(path: JsonNode;
   ##         : Parent resource name, e.g. `users/me/environments/default`.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `parent` field"
-  var valid_580051 = path.getOrDefault("parent")
-  valid_580051 = validateParameter(valid_580051, JString, required = true,
+  var valid_589084 = path.getOrDefault("parent")
+  valid_589084 = validateParameter(valid_589084, JString, required = true,
                                  default = nil)
-  if valid_580051 != nil:
-    section.add "parent", valid_580051
+  if valid_589084 != nil:
+    section.add "parent", valid_589084
   result.add "path", section
   ## parameters in `query` object:
   ##   upload_protocol: JString
@@ -1184,61 +1184,61 @@ proc validate_CloudshellUsersEnvironmentsPublicKeysCreate_580049(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580052 = query.getOrDefault("upload_protocol")
-  valid_580052 = validateParameter(valid_580052, JString, required = false,
+  var valid_589085 = query.getOrDefault("upload_protocol")
+  valid_589085 = validateParameter(valid_589085, JString, required = false,
                                  default = nil)
-  if valid_580052 != nil:
-    section.add "upload_protocol", valid_580052
-  var valid_580053 = query.getOrDefault("fields")
-  valid_580053 = validateParameter(valid_580053, JString, required = false,
+  if valid_589085 != nil:
+    section.add "upload_protocol", valid_589085
+  var valid_589086 = query.getOrDefault("fields")
+  valid_589086 = validateParameter(valid_589086, JString, required = false,
                                  default = nil)
-  if valid_580053 != nil:
-    section.add "fields", valid_580053
-  var valid_580054 = query.getOrDefault("quotaUser")
-  valid_580054 = validateParameter(valid_580054, JString, required = false,
+  if valid_589086 != nil:
+    section.add "fields", valid_589086
+  var valid_589087 = query.getOrDefault("quotaUser")
+  valid_589087 = validateParameter(valid_589087, JString, required = false,
                                  default = nil)
-  if valid_580054 != nil:
-    section.add "quotaUser", valid_580054
-  var valid_580055 = query.getOrDefault("alt")
-  valid_580055 = validateParameter(valid_580055, JString, required = false,
+  if valid_589087 != nil:
+    section.add "quotaUser", valid_589087
+  var valid_589088 = query.getOrDefault("alt")
+  valid_589088 = validateParameter(valid_589088, JString, required = false,
                                  default = newJString("json"))
-  if valid_580055 != nil:
-    section.add "alt", valid_580055
-  var valid_580056 = query.getOrDefault("oauth_token")
-  valid_580056 = validateParameter(valid_580056, JString, required = false,
+  if valid_589088 != nil:
+    section.add "alt", valid_589088
+  var valid_589089 = query.getOrDefault("oauth_token")
+  valid_589089 = validateParameter(valid_589089, JString, required = false,
                                  default = nil)
-  if valid_580056 != nil:
-    section.add "oauth_token", valid_580056
-  var valid_580057 = query.getOrDefault("callback")
-  valid_580057 = validateParameter(valid_580057, JString, required = false,
+  if valid_589089 != nil:
+    section.add "oauth_token", valid_589089
+  var valid_589090 = query.getOrDefault("callback")
+  valid_589090 = validateParameter(valid_589090, JString, required = false,
                                  default = nil)
-  if valid_580057 != nil:
-    section.add "callback", valid_580057
-  var valid_580058 = query.getOrDefault("access_token")
-  valid_580058 = validateParameter(valid_580058, JString, required = false,
+  if valid_589090 != nil:
+    section.add "callback", valid_589090
+  var valid_589091 = query.getOrDefault("access_token")
+  valid_589091 = validateParameter(valid_589091, JString, required = false,
                                  default = nil)
-  if valid_580058 != nil:
-    section.add "access_token", valid_580058
-  var valid_580059 = query.getOrDefault("uploadType")
-  valid_580059 = validateParameter(valid_580059, JString, required = false,
+  if valid_589091 != nil:
+    section.add "access_token", valid_589091
+  var valid_589092 = query.getOrDefault("uploadType")
+  valid_589092 = validateParameter(valid_589092, JString, required = false,
                                  default = nil)
-  if valid_580059 != nil:
-    section.add "uploadType", valid_580059
-  var valid_580060 = query.getOrDefault("key")
-  valid_580060 = validateParameter(valid_580060, JString, required = false,
+  if valid_589092 != nil:
+    section.add "uploadType", valid_589092
+  var valid_589093 = query.getOrDefault("key")
+  valid_589093 = validateParameter(valid_589093, JString, required = false,
                                  default = nil)
-  if valid_580060 != nil:
-    section.add "key", valid_580060
-  var valid_580061 = query.getOrDefault("$.xgafv")
-  valid_580061 = validateParameter(valid_580061, JString, required = false,
+  if valid_589093 != nil:
+    section.add "key", valid_589093
+  var valid_589094 = query.getOrDefault("$.xgafv")
+  valid_589094 = validateParameter(valid_589094, JString, required = false,
                                  default = newJString("1"))
-  if valid_580061 != nil:
-    section.add "$.xgafv", valid_580061
-  var valid_580062 = query.getOrDefault("prettyPrint")
-  valid_580062 = validateParameter(valid_580062, JBool, required = false,
+  if valid_589094 != nil:
+    section.add "$.xgafv", valid_589094
+  var valid_589095 = query.getOrDefault("prettyPrint")
+  valid_589095 = validateParameter(valid_589095, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580062 != nil:
-    section.add "prettyPrint", valid_580062
+  if valid_589095 != nil:
+    section.add "prettyPrint", valid_589095
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1250,7 +1250,7 @@ proc validate_CloudshellUsersEnvironmentsPublicKeysCreate_580049(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580064: Call_CloudshellUsersEnvironmentsPublicKeysCreate_580048;
+proc call*(call_589097: Call_CloudshellUsersEnvironmentsPublicKeysCreate_589081;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Adds a public SSH key to an environment, allowing clients with the
@@ -1258,16 +1258,16 @@ proc call*(call_580064: Call_CloudshellUsersEnvironmentsPublicKeysCreate_580048;
   ## with the same format and content already exists, this will return the
   ## existing key.
   ## 
-  let valid = call_580064.validator(path, query, header, formData, body)
-  let scheme = call_580064.pickScheme
+  let valid = call_589097.validator(path, query, header, formData, body)
+  let scheme = call_589097.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580064.url(scheme.get, call_580064.host, call_580064.base,
-                         call_580064.route, valid.getOrDefault("path"),
+  let url = call_589097.url(scheme.get, call_589097.host, call_589097.base,
+                         call_589097.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580064, url, valid)
+  result = hook(call_589097, url, valid)
 
-proc call*(call_580065: Call_CloudshellUsersEnvironmentsPublicKeysCreate_580048;
+proc call*(call_589098: Call_CloudshellUsersEnvironmentsPublicKeysCreate_589081;
           parent: string; uploadProtocol: string = ""; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           callback: string = ""; accessToken: string = ""; uploadType: string = "";
@@ -1303,31 +1303,31 @@ proc call*(call_580065: Call_CloudshellUsersEnvironmentsPublicKeysCreate_580048;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_580066 = newJObject()
-  var query_580067 = newJObject()
-  var body_580068 = newJObject()
-  add(query_580067, "upload_protocol", newJString(uploadProtocol))
-  add(query_580067, "fields", newJString(fields))
-  add(query_580067, "quotaUser", newJString(quotaUser))
-  add(query_580067, "alt", newJString(alt))
-  add(query_580067, "oauth_token", newJString(oauthToken))
-  add(query_580067, "callback", newJString(callback))
-  add(query_580067, "access_token", newJString(accessToken))
-  add(query_580067, "uploadType", newJString(uploadType))
-  add(path_580066, "parent", newJString(parent))
-  add(query_580067, "key", newJString(key))
-  add(query_580067, "$.xgafv", newJString(Xgafv))
+  var path_589099 = newJObject()
+  var query_589100 = newJObject()
+  var body_589101 = newJObject()
+  add(query_589100, "upload_protocol", newJString(uploadProtocol))
+  add(query_589100, "fields", newJString(fields))
+  add(query_589100, "quotaUser", newJString(quotaUser))
+  add(query_589100, "alt", newJString(alt))
+  add(query_589100, "oauth_token", newJString(oauthToken))
+  add(query_589100, "callback", newJString(callback))
+  add(query_589100, "access_token", newJString(accessToken))
+  add(query_589100, "uploadType", newJString(uploadType))
+  add(path_589099, "parent", newJString(parent))
+  add(query_589100, "key", newJString(key))
+  add(query_589100, "$.xgafv", newJString(Xgafv))
   if body != nil:
-    body_580068 = body
-  add(query_580067, "prettyPrint", newJBool(prettyPrint))
-  result = call_580065.call(path_580066, query_580067, nil, nil, body_580068)
+    body_589101 = body
+  add(query_589100, "prettyPrint", newJBool(prettyPrint))
+  result = call_589098.call(path_589099, query_589100, nil, nil, body_589101)
 
-var cloudshellUsersEnvironmentsPublicKeysCreate* = Call_CloudshellUsersEnvironmentsPublicKeysCreate_580048(
+var cloudshellUsersEnvironmentsPublicKeysCreate* = Call_CloudshellUsersEnvironmentsPublicKeysCreate_589081(
     name: "cloudshellUsersEnvironmentsPublicKeysCreate",
     meth: HttpMethod.HttpPost, host: "cloudshell.googleapis.com",
     route: "/v1alpha1/{parent}/publicKeys",
-    validator: validate_CloudshellUsersEnvironmentsPublicKeysCreate_580049,
-    base: "/", url: url_CloudshellUsersEnvironmentsPublicKeysCreate_580050,
+    validator: validate_CloudshellUsersEnvironmentsPublicKeysCreate_589082,
+    base: "/", url: url_CloudshellUsersEnvironmentsPublicKeysCreate_589083,
     schemes: {Scheme.Https})
 export
   rest
@@ -1370,7 +1370,7 @@ proc store(auth: var GoogleAuth; token: string; expiry: int; form: string) =
   auth.form = form
   auth.digest = auth.hash
 
-proc authenticate*(fresh: float64 = -3600.0; lifetime: int = 3600): Future[bool] {.async.} =
+proc authenticate*(fresh: float64 = 3600.0; lifetime: int = 3600): Future[bool] {.async.} =
   ## get or refresh an authentication token; provide `fresh`
   ## to ensure that the token won't expire in the next N seconds.
   ## provide `lifetime` to indicate how long the token should last.

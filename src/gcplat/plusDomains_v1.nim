@@ -29,15 +29,15 @@ type
     url*: proc (protocol: Scheme; host: string; base: string; route: string;
               path: JsonNode; query: JsonNode): Uri
 
-  OpenApiRestCall_579424 = ref object of OpenApiRestCall
+  OpenApiRestCall_588457 = ref object of OpenApiRestCall
 proc hash(scheme: Scheme): Hash {.used.} =
   result = hash(ord(scheme))
 
-proc clone[T: OpenApiRestCall_579424](t: T): T {.used.} =
+proc clone[T: OpenApiRestCall_588457](t: T): T {.used.} =
   result = T(name: t.name, meth: t.meth, host: t.host, base: t.base, route: t.route,
            schemes: t.schemes, validator: t.validator, url: t.url)
 
-proc pickScheme(t: OpenApiRestCall_579424): Option[Scheme] {.used.} =
+proc pickScheme(t: OpenApiRestCall_588457): Option[Scheme] {.used.} =
   ## select a supported scheme from a set of candidates
   for scheme in Scheme.low ..
       Scheme.high:
@@ -74,7 +74,7 @@ type
   PathTokenKind = enum
     ConstantSegment, VariableSegment
   PathToken = tuple[kind: PathTokenKind, value: string]
-proc queryString(query: JsonNode): string =
+proc queryString(query: JsonNode): string {.used.} =
   var qs: seq[KeyVal]
   if query == nil:
     return ""
@@ -82,7 +82,7 @@ proc queryString(query: JsonNode): string =
     qs.add (key: k, val: v.getStr)
   result = encodeQuery(qs)
 
-proc hydratePath(input: JsonNode; segments: seq[PathToken]): Option[string] =
+proc hydratePath(input: JsonNode; segments: seq[PathToken]): Option[string] {.used.} =
   ## reconstitute a path with constants and variable values taken from json
   var head: string
   if segments.len == 0:
@@ -108,8 +108,8 @@ const
 proc composeQueryString(query: JsonNode): string
 method hook(call: OpenApiRestCall; url: Uri; input: JsonNode): Recallable {.base.}
 type
-  Call_PlusDomainsActivitiesGet_579692 = ref object of OpenApiRestCall_579424
-proc url_PlusDomainsActivitiesGet_579694(protocol: Scheme; host: string;
+  Call_PlusDomainsActivitiesGet_588725 = ref object of OpenApiRestCall_588457
+proc url_PlusDomainsActivitiesGet_588727(protocol: Scheme; host: string;
                                         base: string; route: string; path: JsonNode;
                                         query: JsonNode): Uri =
   result.scheme = $protocol
@@ -125,7 +125,7 @@ proc url_PlusDomainsActivitiesGet_579694(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_PlusDomainsActivitiesGet_579693(path: JsonNode; query: JsonNode;
+proc validate_PlusDomainsActivitiesGet_588726(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Shut down. See https://developers.google.com/+/api-shutdown for more details.
   ## 
@@ -137,11 +137,11 @@ proc validate_PlusDomainsActivitiesGet_579693(path: JsonNode; query: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `activityId` field"
-  var valid_579820 = path.getOrDefault("activityId")
-  valid_579820 = validateParameter(valid_579820, JString, required = true,
+  var valid_588853 = path.getOrDefault("activityId")
+  valid_588853 = validateParameter(valid_588853, JString, required = true,
                                  default = nil)
-  if valid_579820 != nil:
-    section.add "activityId", valid_579820
+  if valid_588853 != nil:
+    section.add "activityId", valid_588853
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -159,41 +159,41 @@ proc validate_PlusDomainsActivitiesGet_579693(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_579821 = query.getOrDefault("fields")
-  valid_579821 = validateParameter(valid_579821, JString, required = false,
+  var valid_588854 = query.getOrDefault("fields")
+  valid_588854 = validateParameter(valid_588854, JString, required = false,
                                  default = nil)
-  if valid_579821 != nil:
-    section.add "fields", valid_579821
-  var valid_579822 = query.getOrDefault("quotaUser")
-  valid_579822 = validateParameter(valid_579822, JString, required = false,
+  if valid_588854 != nil:
+    section.add "fields", valid_588854
+  var valid_588855 = query.getOrDefault("quotaUser")
+  valid_588855 = validateParameter(valid_588855, JString, required = false,
                                  default = nil)
-  if valid_579822 != nil:
-    section.add "quotaUser", valid_579822
-  var valid_579836 = query.getOrDefault("alt")
-  valid_579836 = validateParameter(valid_579836, JString, required = false,
+  if valid_588855 != nil:
+    section.add "quotaUser", valid_588855
+  var valid_588869 = query.getOrDefault("alt")
+  valid_588869 = validateParameter(valid_588869, JString, required = false,
                                  default = newJString("json"))
-  if valid_579836 != nil:
-    section.add "alt", valid_579836
-  var valid_579837 = query.getOrDefault("oauth_token")
-  valid_579837 = validateParameter(valid_579837, JString, required = false,
+  if valid_588869 != nil:
+    section.add "alt", valid_588869
+  var valid_588870 = query.getOrDefault("oauth_token")
+  valid_588870 = validateParameter(valid_588870, JString, required = false,
                                  default = nil)
-  if valid_579837 != nil:
-    section.add "oauth_token", valid_579837
-  var valid_579838 = query.getOrDefault("userIp")
-  valid_579838 = validateParameter(valid_579838, JString, required = false,
+  if valid_588870 != nil:
+    section.add "oauth_token", valid_588870
+  var valid_588871 = query.getOrDefault("userIp")
+  valid_588871 = validateParameter(valid_588871, JString, required = false,
                                  default = nil)
-  if valid_579838 != nil:
-    section.add "userIp", valid_579838
-  var valid_579839 = query.getOrDefault("key")
-  valid_579839 = validateParameter(valid_579839, JString, required = false,
+  if valid_588871 != nil:
+    section.add "userIp", valid_588871
+  var valid_588872 = query.getOrDefault("key")
+  valid_588872 = validateParameter(valid_588872, JString, required = false,
                                  default = nil)
-  if valid_579839 != nil:
-    section.add "key", valid_579839
-  var valid_579840 = query.getOrDefault("prettyPrint")
-  valid_579840 = validateParameter(valid_579840, JBool, required = false,
+  if valid_588872 != nil:
+    section.add "key", valid_588872
+  var valid_588873 = query.getOrDefault("prettyPrint")
+  valid_588873 = validateParameter(valid_588873, JBool, required = false,
                                  default = newJBool(true))
-  if valid_579840 != nil:
-    section.add "prettyPrint", valid_579840
+  if valid_588873 != nil:
+    section.add "prettyPrint", valid_588873
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -202,20 +202,20 @@ proc validate_PlusDomainsActivitiesGet_579693(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_579863: Call_PlusDomainsActivitiesGet_579692; path: JsonNode;
+proc call*(call_588896: Call_PlusDomainsActivitiesGet_588725; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Shut down. See https://developers.google.com/+/api-shutdown for more details.
   ## 
-  let valid = call_579863.validator(path, query, header, formData, body)
-  let scheme = call_579863.pickScheme
+  let valid = call_588896.validator(path, query, header, formData, body)
+  let scheme = call_588896.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_579863.url(scheme.get, call_579863.host, call_579863.base,
-                         call_579863.route, valid.getOrDefault("path"),
+  let url = call_588896.url(scheme.get, call_588896.host, call_588896.base,
+                         call_588896.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_579863, url, valid)
+  result = hook(call_588896, url, valid)
 
-proc call*(call_579934: Call_PlusDomainsActivitiesGet_579692; activityId: string;
+proc call*(call_588967: Call_PlusDomainsActivitiesGet_588725; activityId: string;
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           oauthToken: string = ""; userIp: string = ""; key: string = "";
           prettyPrint: bool = true): Recallable =
@@ -237,26 +237,26 @@ proc call*(call_579934: Call_PlusDomainsActivitiesGet_579692; activityId: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_579935 = newJObject()
-  var query_579937 = newJObject()
-  add(query_579937, "fields", newJString(fields))
-  add(query_579937, "quotaUser", newJString(quotaUser))
-  add(query_579937, "alt", newJString(alt))
-  add(query_579937, "oauth_token", newJString(oauthToken))
-  add(path_579935, "activityId", newJString(activityId))
-  add(query_579937, "userIp", newJString(userIp))
-  add(query_579937, "key", newJString(key))
-  add(query_579937, "prettyPrint", newJBool(prettyPrint))
-  result = call_579934.call(path_579935, query_579937, nil, nil, nil)
+  var path_588968 = newJObject()
+  var query_588970 = newJObject()
+  add(query_588970, "fields", newJString(fields))
+  add(query_588970, "quotaUser", newJString(quotaUser))
+  add(query_588970, "alt", newJString(alt))
+  add(query_588970, "oauth_token", newJString(oauthToken))
+  add(path_588968, "activityId", newJString(activityId))
+  add(query_588970, "userIp", newJString(userIp))
+  add(query_588970, "key", newJString(key))
+  add(query_588970, "prettyPrint", newJBool(prettyPrint))
+  result = call_588967.call(path_588968, query_588970, nil, nil, nil)
 
-var plusDomainsActivitiesGet* = Call_PlusDomainsActivitiesGet_579692(
+var plusDomainsActivitiesGet* = Call_PlusDomainsActivitiesGet_588725(
     name: "plusDomainsActivitiesGet", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/activities/{activityId}",
-    validator: validate_PlusDomainsActivitiesGet_579693, base: "/plusDomains/v1",
-    url: url_PlusDomainsActivitiesGet_579694, schemes: {Scheme.Https})
+    validator: validate_PlusDomainsActivitiesGet_588726, base: "/plusDomains/v1",
+    url: url_PlusDomainsActivitiesGet_588727, schemes: {Scheme.Https})
 type
-  Call_PlusDomainsCommentsList_579976 = ref object of OpenApiRestCall_579424
-proc url_PlusDomainsCommentsList_579978(protocol: Scheme; host: string; base: string;
+  Call_PlusDomainsCommentsList_589009 = ref object of OpenApiRestCall_588457
+proc url_PlusDomainsCommentsList_589011(protocol: Scheme; host: string; base: string;
                                        route: string; path: JsonNode;
                                        query: JsonNode): Uri =
   result.scheme = $protocol
@@ -273,7 +273,7 @@ proc url_PlusDomainsCommentsList_579978(protocol: Scheme; host: string; base: st
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_PlusDomainsCommentsList_579977(path: JsonNode; query: JsonNode;
+proc validate_PlusDomainsCommentsList_589010(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Shut down. See https://developers.google.com/+/api-shutdown for more details.
   ## 
@@ -285,11 +285,11 @@ proc validate_PlusDomainsCommentsList_579977(path: JsonNode; query: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `activityId` field"
-  var valid_579979 = path.getOrDefault("activityId")
-  valid_579979 = validateParameter(valid_579979, JString, required = true,
+  var valid_589012 = path.getOrDefault("activityId")
+  valid_589012 = validateParameter(valid_589012, JString, required = true,
                                  default = nil)
-  if valid_579979 != nil:
-    section.add "activityId", valid_579979
+  if valid_589012 != nil:
+    section.add "activityId", valid_589012
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -313,56 +313,56 @@ proc validate_PlusDomainsCommentsList_579977(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_579980 = query.getOrDefault("fields")
-  valid_579980 = validateParameter(valid_579980, JString, required = false,
+  var valid_589013 = query.getOrDefault("fields")
+  valid_589013 = validateParameter(valid_589013, JString, required = false,
                                  default = nil)
-  if valid_579980 != nil:
-    section.add "fields", valid_579980
-  var valid_579981 = query.getOrDefault("pageToken")
-  valid_579981 = validateParameter(valid_579981, JString, required = false,
+  if valid_589013 != nil:
+    section.add "fields", valid_589013
+  var valid_589014 = query.getOrDefault("pageToken")
+  valid_589014 = validateParameter(valid_589014, JString, required = false,
                                  default = nil)
-  if valid_579981 != nil:
-    section.add "pageToken", valid_579981
-  var valid_579982 = query.getOrDefault("quotaUser")
-  valid_579982 = validateParameter(valid_579982, JString, required = false,
+  if valid_589014 != nil:
+    section.add "pageToken", valid_589014
+  var valid_589015 = query.getOrDefault("quotaUser")
+  valid_589015 = validateParameter(valid_589015, JString, required = false,
                                  default = nil)
-  if valid_579982 != nil:
-    section.add "quotaUser", valid_579982
-  var valid_579983 = query.getOrDefault("alt")
-  valid_579983 = validateParameter(valid_579983, JString, required = false,
+  if valid_589015 != nil:
+    section.add "quotaUser", valid_589015
+  var valid_589016 = query.getOrDefault("alt")
+  valid_589016 = validateParameter(valid_589016, JString, required = false,
                                  default = newJString("json"))
-  if valid_579983 != nil:
-    section.add "alt", valid_579983
-  var valid_579984 = query.getOrDefault("oauth_token")
-  valid_579984 = validateParameter(valid_579984, JString, required = false,
+  if valid_589016 != nil:
+    section.add "alt", valid_589016
+  var valid_589017 = query.getOrDefault("oauth_token")
+  valid_589017 = validateParameter(valid_589017, JString, required = false,
                                  default = nil)
-  if valid_579984 != nil:
-    section.add "oauth_token", valid_579984
-  var valid_579985 = query.getOrDefault("userIp")
-  valid_579985 = validateParameter(valid_579985, JString, required = false,
+  if valid_589017 != nil:
+    section.add "oauth_token", valid_589017
+  var valid_589018 = query.getOrDefault("userIp")
+  valid_589018 = validateParameter(valid_589018, JString, required = false,
                                  default = nil)
-  if valid_579985 != nil:
-    section.add "userIp", valid_579985
-  var valid_579987 = query.getOrDefault("maxResults")
-  valid_579987 = validateParameter(valid_579987, JInt, required = false,
+  if valid_589018 != nil:
+    section.add "userIp", valid_589018
+  var valid_589020 = query.getOrDefault("maxResults")
+  valid_589020 = validateParameter(valid_589020, JInt, required = false,
                                  default = newJInt(20))
-  if valid_579987 != nil:
-    section.add "maxResults", valid_579987
-  var valid_579988 = query.getOrDefault("key")
-  valid_579988 = validateParameter(valid_579988, JString, required = false,
+  if valid_589020 != nil:
+    section.add "maxResults", valid_589020
+  var valid_589021 = query.getOrDefault("key")
+  valid_589021 = validateParameter(valid_589021, JString, required = false,
                                  default = nil)
-  if valid_579988 != nil:
-    section.add "key", valid_579988
-  var valid_579989 = query.getOrDefault("sortOrder")
-  valid_579989 = validateParameter(valid_579989, JString, required = false,
+  if valid_589021 != nil:
+    section.add "key", valid_589021
+  var valid_589022 = query.getOrDefault("sortOrder")
+  valid_589022 = validateParameter(valid_589022, JString, required = false,
                                  default = newJString("ascending"))
-  if valid_579989 != nil:
-    section.add "sortOrder", valid_579989
-  var valid_579990 = query.getOrDefault("prettyPrint")
-  valid_579990 = validateParameter(valid_579990, JBool, required = false,
+  if valid_589022 != nil:
+    section.add "sortOrder", valid_589022
+  var valid_589023 = query.getOrDefault("prettyPrint")
+  valid_589023 = validateParameter(valid_589023, JBool, required = false,
                                  default = newJBool(true))
-  if valid_579990 != nil:
-    section.add "prettyPrint", valid_579990
+  if valid_589023 != nil:
+    section.add "prettyPrint", valid_589023
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -371,20 +371,20 @@ proc validate_PlusDomainsCommentsList_579977(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_579991: Call_PlusDomainsCommentsList_579976; path: JsonNode;
+proc call*(call_589024: Call_PlusDomainsCommentsList_589009; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Shut down. See https://developers.google.com/+/api-shutdown for more details.
   ## 
-  let valid = call_579991.validator(path, query, header, formData, body)
-  let scheme = call_579991.pickScheme
+  let valid = call_589024.validator(path, query, header, formData, body)
+  let scheme = call_589024.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_579991.url(scheme.get, call_579991.host, call_579991.base,
-                         call_579991.route, valid.getOrDefault("path"),
+  let url = call_589024.url(scheme.get, call_589024.host, call_589024.base,
+                         call_589024.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_579991, url, valid)
+  result = hook(call_589024, url, valid)
 
-proc call*(call_579992: Call_PlusDomainsCommentsList_579976; activityId: string;
+proc call*(call_589025: Call_PlusDomainsCommentsList_589009; activityId: string;
           fields: string = ""; pageToken: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; userIp: string = "";
           maxResults: int = 20; key: string = ""; sortOrder: string = "ascending";
@@ -413,29 +413,29 @@ proc call*(call_579992: Call_PlusDomainsCommentsList_579976; activityId: string;
   ##            : The order in which to sort the list of comments.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_579993 = newJObject()
-  var query_579994 = newJObject()
-  add(query_579994, "fields", newJString(fields))
-  add(query_579994, "pageToken", newJString(pageToken))
-  add(query_579994, "quotaUser", newJString(quotaUser))
-  add(query_579994, "alt", newJString(alt))
-  add(query_579994, "oauth_token", newJString(oauthToken))
-  add(path_579993, "activityId", newJString(activityId))
-  add(query_579994, "userIp", newJString(userIp))
-  add(query_579994, "maxResults", newJInt(maxResults))
-  add(query_579994, "key", newJString(key))
-  add(query_579994, "sortOrder", newJString(sortOrder))
-  add(query_579994, "prettyPrint", newJBool(prettyPrint))
-  result = call_579992.call(path_579993, query_579994, nil, nil, nil)
+  var path_589026 = newJObject()
+  var query_589027 = newJObject()
+  add(query_589027, "fields", newJString(fields))
+  add(query_589027, "pageToken", newJString(pageToken))
+  add(query_589027, "quotaUser", newJString(quotaUser))
+  add(query_589027, "alt", newJString(alt))
+  add(query_589027, "oauth_token", newJString(oauthToken))
+  add(path_589026, "activityId", newJString(activityId))
+  add(query_589027, "userIp", newJString(userIp))
+  add(query_589027, "maxResults", newJInt(maxResults))
+  add(query_589027, "key", newJString(key))
+  add(query_589027, "sortOrder", newJString(sortOrder))
+  add(query_589027, "prettyPrint", newJBool(prettyPrint))
+  result = call_589025.call(path_589026, query_589027, nil, nil, nil)
 
-var plusDomainsCommentsList* = Call_PlusDomainsCommentsList_579976(
+var plusDomainsCommentsList* = Call_PlusDomainsCommentsList_589009(
     name: "plusDomainsCommentsList", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/activities/{activityId}/comments",
-    validator: validate_PlusDomainsCommentsList_579977, base: "/plusDomains/v1",
-    url: url_PlusDomainsCommentsList_579978, schemes: {Scheme.Https})
+    validator: validate_PlusDomainsCommentsList_589010, base: "/plusDomains/v1",
+    url: url_PlusDomainsCommentsList_589011, schemes: {Scheme.Https})
 type
-  Call_PlusDomainsPeopleListByActivity_579995 = ref object of OpenApiRestCall_579424
-proc url_PlusDomainsPeopleListByActivity_579997(protocol: Scheme; host: string;
+  Call_PlusDomainsPeopleListByActivity_589028 = ref object of OpenApiRestCall_588457
+proc url_PlusDomainsPeopleListByActivity_589030(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -453,7 +453,7 @@ proc url_PlusDomainsPeopleListByActivity_579997(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_PlusDomainsPeopleListByActivity_579996(path: JsonNode;
+proc validate_PlusDomainsPeopleListByActivity_589029(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Shut down. See https://developers.google.com/+/api-shutdown for more details.
   ## 
@@ -467,16 +467,16 @@ proc validate_PlusDomainsPeopleListByActivity_579996(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `activityId` field"
-  var valid_579998 = path.getOrDefault("activityId")
-  valid_579998 = validateParameter(valid_579998, JString, required = true,
+  var valid_589031 = path.getOrDefault("activityId")
+  valid_589031 = validateParameter(valid_589031, JString, required = true,
                                  default = nil)
-  if valid_579998 != nil:
-    section.add "activityId", valid_579998
-  var valid_579999 = path.getOrDefault("collection")
-  valid_579999 = validateParameter(valid_579999, JString, required = true,
+  if valid_589031 != nil:
+    section.add "activityId", valid_589031
+  var valid_589032 = path.getOrDefault("collection")
+  valid_589032 = validateParameter(valid_589032, JString, required = true,
                                  default = newJString("plusoners"))
-  if valid_579999 != nil:
-    section.add "collection", valid_579999
+  if valid_589032 != nil:
+    section.add "collection", valid_589032
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -498,51 +498,51 @@ proc validate_PlusDomainsPeopleListByActivity_579996(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580000 = query.getOrDefault("fields")
-  valid_580000 = validateParameter(valid_580000, JString, required = false,
+  var valid_589033 = query.getOrDefault("fields")
+  valid_589033 = validateParameter(valid_589033, JString, required = false,
                                  default = nil)
-  if valid_580000 != nil:
-    section.add "fields", valid_580000
-  var valid_580001 = query.getOrDefault("pageToken")
-  valid_580001 = validateParameter(valid_580001, JString, required = false,
+  if valid_589033 != nil:
+    section.add "fields", valid_589033
+  var valid_589034 = query.getOrDefault("pageToken")
+  valid_589034 = validateParameter(valid_589034, JString, required = false,
                                  default = nil)
-  if valid_580001 != nil:
-    section.add "pageToken", valid_580001
-  var valid_580002 = query.getOrDefault("quotaUser")
-  valid_580002 = validateParameter(valid_580002, JString, required = false,
+  if valid_589034 != nil:
+    section.add "pageToken", valid_589034
+  var valid_589035 = query.getOrDefault("quotaUser")
+  valid_589035 = validateParameter(valid_589035, JString, required = false,
                                  default = nil)
-  if valid_580002 != nil:
-    section.add "quotaUser", valid_580002
-  var valid_580003 = query.getOrDefault("alt")
-  valid_580003 = validateParameter(valid_580003, JString, required = false,
+  if valid_589035 != nil:
+    section.add "quotaUser", valid_589035
+  var valid_589036 = query.getOrDefault("alt")
+  valid_589036 = validateParameter(valid_589036, JString, required = false,
                                  default = newJString("json"))
-  if valid_580003 != nil:
-    section.add "alt", valid_580003
-  var valid_580004 = query.getOrDefault("oauth_token")
-  valid_580004 = validateParameter(valid_580004, JString, required = false,
+  if valid_589036 != nil:
+    section.add "alt", valid_589036
+  var valid_589037 = query.getOrDefault("oauth_token")
+  valid_589037 = validateParameter(valid_589037, JString, required = false,
                                  default = nil)
-  if valid_580004 != nil:
-    section.add "oauth_token", valid_580004
-  var valid_580005 = query.getOrDefault("userIp")
-  valid_580005 = validateParameter(valid_580005, JString, required = false,
+  if valid_589037 != nil:
+    section.add "oauth_token", valid_589037
+  var valid_589038 = query.getOrDefault("userIp")
+  valid_589038 = validateParameter(valid_589038, JString, required = false,
                                  default = nil)
-  if valid_580005 != nil:
-    section.add "userIp", valid_580005
-  var valid_580006 = query.getOrDefault("maxResults")
-  valid_580006 = validateParameter(valid_580006, JInt, required = false,
+  if valid_589038 != nil:
+    section.add "userIp", valid_589038
+  var valid_589039 = query.getOrDefault("maxResults")
+  valid_589039 = validateParameter(valid_589039, JInt, required = false,
                                  default = newJInt(20))
-  if valid_580006 != nil:
-    section.add "maxResults", valid_580006
-  var valid_580007 = query.getOrDefault("key")
-  valid_580007 = validateParameter(valid_580007, JString, required = false,
+  if valid_589039 != nil:
+    section.add "maxResults", valid_589039
+  var valid_589040 = query.getOrDefault("key")
+  valid_589040 = validateParameter(valid_589040, JString, required = false,
                                  default = nil)
-  if valid_580007 != nil:
-    section.add "key", valid_580007
-  var valid_580008 = query.getOrDefault("prettyPrint")
-  valid_580008 = validateParameter(valid_580008, JBool, required = false,
+  if valid_589040 != nil:
+    section.add "key", valid_589040
+  var valid_589041 = query.getOrDefault("prettyPrint")
+  valid_589041 = validateParameter(valid_589041, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580008 != nil:
-    section.add "prettyPrint", valid_580008
+  if valid_589041 != nil:
+    section.add "prettyPrint", valid_589041
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -551,21 +551,21 @@ proc validate_PlusDomainsPeopleListByActivity_579996(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580009: Call_PlusDomainsPeopleListByActivity_579995;
+proc call*(call_589042: Call_PlusDomainsPeopleListByActivity_589028;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Shut down. See https://developers.google.com/+/api-shutdown for more details.
   ## 
-  let valid = call_580009.validator(path, query, header, formData, body)
-  let scheme = call_580009.pickScheme
+  let valid = call_589042.validator(path, query, header, formData, body)
+  let scheme = call_589042.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580009.url(scheme.get, call_580009.host, call_580009.base,
-                         call_580009.route, valid.getOrDefault("path"),
+  let url = call_589042.url(scheme.get, call_589042.host, call_589042.base,
+                         call_589042.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580009, url, valid)
+  result = hook(call_589042, url, valid)
 
-proc call*(call_580010: Call_PlusDomainsPeopleListByActivity_579995;
+proc call*(call_589043: Call_PlusDomainsPeopleListByActivity_589028;
           activityId: string; fields: string = ""; pageToken: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           collection: string = "plusoners"; userIp: string = ""; maxResults: int = 20;
@@ -594,31 +594,31 @@ proc call*(call_580010: Call_PlusDomainsPeopleListByActivity_579995;
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_580011 = newJObject()
-  var query_580012 = newJObject()
-  add(query_580012, "fields", newJString(fields))
-  add(query_580012, "pageToken", newJString(pageToken))
-  add(query_580012, "quotaUser", newJString(quotaUser))
-  add(query_580012, "alt", newJString(alt))
-  add(query_580012, "oauth_token", newJString(oauthToken))
-  add(path_580011, "activityId", newJString(activityId))
-  add(path_580011, "collection", newJString(collection))
-  add(query_580012, "userIp", newJString(userIp))
-  add(query_580012, "maxResults", newJInt(maxResults))
-  add(query_580012, "key", newJString(key))
-  add(query_580012, "prettyPrint", newJBool(prettyPrint))
-  result = call_580010.call(path_580011, query_580012, nil, nil, nil)
+  var path_589044 = newJObject()
+  var query_589045 = newJObject()
+  add(query_589045, "fields", newJString(fields))
+  add(query_589045, "pageToken", newJString(pageToken))
+  add(query_589045, "quotaUser", newJString(quotaUser))
+  add(query_589045, "alt", newJString(alt))
+  add(query_589045, "oauth_token", newJString(oauthToken))
+  add(path_589044, "activityId", newJString(activityId))
+  add(path_589044, "collection", newJString(collection))
+  add(query_589045, "userIp", newJString(userIp))
+  add(query_589045, "maxResults", newJInt(maxResults))
+  add(query_589045, "key", newJString(key))
+  add(query_589045, "prettyPrint", newJBool(prettyPrint))
+  result = call_589043.call(path_589044, query_589045, nil, nil, nil)
 
-var plusDomainsPeopleListByActivity* = Call_PlusDomainsPeopleListByActivity_579995(
+var plusDomainsPeopleListByActivity* = Call_PlusDomainsPeopleListByActivity_589028(
     name: "plusDomainsPeopleListByActivity", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com",
     route: "/activities/{activityId}/people/{collection}",
-    validator: validate_PlusDomainsPeopleListByActivity_579996,
-    base: "/plusDomains/v1", url: url_PlusDomainsPeopleListByActivity_579997,
+    validator: validate_PlusDomainsPeopleListByActivity_589029,
+    base: "/plusDomains/v1", url: url_PlusDomainsPeopleListByActivity_589030,
     schemes: {Scheme.Https})
 type
-  Call_PlusDomainsCommentsGet_580013 = ref object of OpenApiRestCall_579424
-proc url_PlusDomainsCommentsGet_580015(protocol: Scheme; host: string; base: string;
+  Call_PlusDomainsCommentsGet_589046 = ref object of OpenApiRestCall_588457
+proc url_PlusDomainsCommentsGet_589048(protocol: Scheme; host: string; base: string;
                                       route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -633,7 +633,7 @@ proc url_PlusDomainsCommentsGet_580015(protocol: Scheme; host: string; base: str
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_PlusDomainsCommentsGet_580014(path: JsonNode; query: JsonNode;
+proc validate_PlusDomainsCommentsGet_589047(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Shut down. See https://developers.google.com/+/api-shutdown for more details.
   ## 
@@ -644,11 +644,11 @@ proc validate_PlusDomainsCommentsGet_580014(path: JsonNode; query: JsonNode;
   ##            : The ID of the comment to get.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `commentId` field"
-  var valid_580016 = path.getOrDefault("commentId")
-  valid_580016 = validateParameter(valid_580016, JString, required = true,
+  var valid_589049 = path.getOrDefault("commentId")
+  valid_589049 = validateParameter(valid_589049, JString, required = true,
                                  default = nil)
-  if valid_580016 != nil:
-    section.add "commentId", valid_580016
+  if valid_589049 != nil:
+    section.add "commentId", valid_589049
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -666,41 +666,41 @@ proc validate_PlusDomainsCommentsGet_580014(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580017 = query.getOrDefault("fields")
-  valid_580017 = validateParameter(valid_580017, JString, required = false,
+  var valid_589050 = query.getOrDefault("fields")
+  valid_589050 = validateParameter(valid_589050, JString, required = false,
                                  default = nil)
-  if valid_580017 != nil:
-    section.add "fields", valid_580017
-  var valid_580018 = query.getOrDefault("quotaUser")
-  valid_580018 = validateParameter(valid_580018, JString, required = false,
+  if valid_589050 != nil:
+    section.add "fields", valid_589050
+  var valid_589051 = query.getOrDefault("quotaUser")
+  valid_589051 = validateParameter(valid_589051, JString, required = false,
                                  default = nil)
-  if valid_580018 != nil:
-    section.add "quotaUser", valid_580018
-  var valid_580019 = query.getOrDefault("alt")
-  valid_580019 = validateParameter(valid_580019, JString, required = false,
+  if valid_589051 != nil:
+    section.add "quotaUser", valid_589051
+  var valid_589052 = query.getOrDefault("alt")
+  valid_589052 = validateParameter(valid_589052, JString, required = false,
                                  default = newJString("json"))
-  if valid_580019 != nil:
-    section.add "alt", valid_580019
-  var valid_580020 = query.getOrDefault("oauth_token")
-  valid_580020 = validateParameter(valid_580020, JString, required = false,
+  if valid_589052 != nil:
+    section.add "alt", valid_589052
+  var valid_589053 = query.getOrDefault("oauth_token")
+  valid_589053 = validateParameter(valid_589053, JString, required = false,
                                  default = nil)
-  if valid_580020 != nil:
-    section.add "oauth_token", valid_580020
-  var valid_580021 = query.getOrDefault("userIp")
-  valid_580021 = validateParameter(valid_580021, JString, required = false,
+  if valid_589053 != nil:
+    section.add "oauth_token", valid_589053
+  var valid_589054 = query.getOrDefault("userIp")
+  valid_589054 = validateParameter(valid_589054, JString, required = false,
                                  default = nil)
-  if valid_580021 != nil:
-    section.add "userIp", valid_580021
-  var valid_580022 = query.getOrDefault("key")
-  valid_580022 = validateParameter(valid_580022, JString, required = false,
+  if valid_589054 != nil:
+    section.add "userIp", valid_589054
+  var valid_589055 = query.getOrDefault("key")
+  valid_589055 = validateParameter(valid_589055, JString, required = false,
                                  default = nil)
-  if valid_580022 != nil:
-    section.add "key", valid_580022
-  var valid_580023 = query.getOrDefault("prettyPrint")
-  valid_580023 = validateParameter(valid_580023, JBool, required = false,
+  if valid_589055 != nil:
+    section.add "key", valid_589055
+  var valid_589056 = query.getOrDefault("prettyPrint")
+  valid_589056 = validateParameter(valid_589056, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580023 != nil:
-    section.add "prettyPrint", valid_580023
+  if valid_589056 != nil:
+    section.add "prettyPrint", valid_589056
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -709,20 +709,20 @@ proc validate_PlusDomainsCommentsGet_580014(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580024: Call_PlusDomainsCommentsGet_580013; path: JsonNode;
+proc call*(call_589057: Call_PlusDomainsCommentsGet_589046; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Shut down. See https://developers.google.com/+/api-shutdown for more details.
   ## 
-  let valid = call_580024.validator(path, query, header, formData, body)
-  let scheme = call_580024.pickScheme
+  let valid = call_589057.validator(path, query, header, formData, body)
+  let scheme = call_589057.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580024.url(scheme.get, call_580024.host, call_580024.base,
-                         call_580024.route, valid.getOrDefault("path"),
+  let url = call_589057.url(scheme.get, call_589057.host, call_589057.base,
+                         call_589057.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580024, url, valid)
+  result = hook(call_589057, url, valid)
 
-proc call*(call_580025: Call_PlusDomainsCommentsGet_580013; commentId: string;
+proc call*(call_589058: Call_PlusDomainsCommentsGet_589046; commentId: string;
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           oauthToken: string = ""; userIp: string = ""; key: string = "";
           prettyPrint: bool = true): Recallable =
@@ -744,26 +744,26 @@ proc call*(call_580025: Call_PlusDomainsCommentsGet_580013; commentId: string;
   ##            : The ID of the comment to get.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_580026 = newJObject()
-  var query_580027 = newJObject()
-  add(query_580027, "fields", newJString(fields))
-  add(query_580027, "quotaUser", newJString(quotaUser))
-  add(query_580027, "alt", newJString(alt))
-  add(query_580027, "oauth_token", newJString(oauthToken))
-  add(query_580027, "userIp", newJString(userIp))
-  add(query_580027, "key", newJString(key))
-  add(path_580026, "commentId", newJString(commentId))
-  add(query_580027, "prettyPrint", newJBool(prettyPrint))
-  result = call_580025.call(path_580026, query_580027, nil, nil, nil)
+  var path_589059 = newJObject()
+  var query_589060 = newJObject()
+  add(query_589060, "fields", newJString(fields))
+  add(query_589060, "quotaUser", newJString(quotaUser))
+  add(query_589060, "alt", newJString(alt))
+  add(query_589060, "oauth_token", newJString(oauthToken))
+  add(query_589060, "userIp", newJString(userIp))
+  add(query_589060, "key", newJString(key))
+  add(path_589059, "commentId", newJString(commentId))
+  add(query_589060, "prettyPrint", newJBool(prettyPrint))
+  result = call_589058.call(path_589059, query_589060, nil, nil, nil)
 
-var plusDomainsCommentsGet* = Call_PlusDomainsCommentsGet_580013(
+var plusDomainsCommentsGet* = Call_PlusDomainsCommentsGet_589046(
     name: "plusDomainsCommentsGet", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/comments/{commentId}",
-    validator: validate_PlusDomainsCommentsGet_580014, base: "/plusDomains/v1",
-    url: url_PlusDomainsCommentsGet_580015, schemes: {Scheme.Https})
+    validator: validate_PlusDomainsCommentsGet_589047, base: "/plusDomains/v1",
+    url: url_PlusDomainsCommentsGet_589048, schemes: {Scheme.Https})
 type
-  Call_PlusDomainsPeopleGet_580028 = ref object of OpenApiRestCall_579424
-proc url_PlusDomainsPeopleGet_580030(protocol: Scheme; host: string; base: string;
+  Call_PlusDomainsPeopleGet_589061 = ref object of OpenApiRestCall_588457
+proc url_PlusDomainsPeopleGet_589063(protocol: Scheme; host: string; base: string;
                                     route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -778,7 +778,7 @@ proc url_PlusDomainsPeopleGet_580030(protocol: Scheme; host: string; base: strin
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_PlusDomainsPeopleGet_580029(path: JsonNode; query: JsonNode;
+proc validate_PlusDomainsPeopleGet_589062(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Get a person's profile.
   ## 
@@ -789,11 +789,11 @@ proc validate_PlusDomainsPeopleGet_580029(path: JsonNode; query: JsonNode;
   ##         : The ID of the person to get the profile for. The special value "me" can be used to indicate the authenticated user.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `userId` field"
-  var valid_580031 = path.getOrDefault("userId")
-  valid_580031 = validateParameter(valid_580031, JString, required = true,
+  var valid_589064 = path.getOrDefault("userId")
+  valid_589064 = validateParameter(valid_589064, JString, required = true,
                                  default = nil)
-  if valid_580031 != nil:
-    section.add "userId", valid_580031
+  if valid_589064 != nil:
+    section.add "userId", valid_589064
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -811,41 +811,41 @@ proc validate_PlusDomainsPeopleGet_580029(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580032 = query.getOrDefault("fields")
-  valid_580032 = validateParameter(valid_580032, JString, required = false,
+  var valid_589065 = query.getOrDefault("fields")
+  valid_589065 = validateParameter(valid_589065, JString, required = false,
                                  default = nil)
-  if valid_580032 != nil:
-    section.add "fields", valid_580032
-  var valid_580033 = query.getOrDefault("quotaUser")
-  valid_580033 = validateParameter(valid_580033, JString, required = false,
+  if valid_589065 != nil:
+    section.add "fields", valid_589065
+  var valid_589066 = query.getOrDefault("quotaUser")
+  valid_589066 = validateParameter(valid_589066, JString, required = false,
                                  default = nil)
-  if valid_580033 != nil:
-    section.add "quotaUser", valid_580033
-  var valid_580034 = query.getOrDefault("alt")
-  valid_580034 = validateParameter(valid_580034, JString, required = false,
+  if valid_589066 != nil:
+    section.add "quotaUser", valid_589066
+  var valid_589067 = query.getOrDefault("alt")
+  valid_589067 = validateParameter(valid_589067, JString, required = false,
                                  default = newJString("json"))
-  if valid_580034 != nil:
-    section.add "alt", valid_580034
-  var valid_580035 = query.getOrDefault("oauth_token")
-  valid_580035 = validateParameter(valid_580035, JString, required = false,
+  if valid_589067 != nil:
+    section.add "alt", valid_589067
+  var valid_589068 = query.getOrDefault("oauth_token")
+  valid_589068 = validateParameter(valid_589068, JString, required = false,
                                  default = nil)
-  if valid_580035 != nil:
-    section.add "oauth_token", valid_580035
-  var valid_580036 = query.getOrDefault("userIp")
-  valid_580036 = validateParameter(valid_580036, JString, required = false,
+  if valid_589068 != nil:
+    section.add "oauth_token", valid_589068
+  var valid_589069 = query.getOrDefault("userIp")
+  valid_589069 = validateParameter(valid_589069, JString, required = false,
                                  default = nil)
-  if valid_580036 != nil:
-    section.add "userIp", valid_580036
-  var valid_580037 = query.getOrDefault("key")
-  valid_580037 = validateParameter(valid_580037, JString, required = false,
+  if valid_589069 != nil:
+    section.add "userIp", valid_589069
+  var valid_589070 = query.getOrDefault("key")
+  valid_589070 = validateParameter(valid_589070, JString, required = false,
                                  default = nil)
-  if valid_580037 != nil:
-    section.add "key", valid_580037
-  var valid_580038 = query.getOrDefault("prettyPrint")
-  valid_580038 = validateParameter(valid_580038, JBool, required = false,
+  if valid_589070 != nil:
+    section.add "key", valid_589070
+  var valid_589071 = query.getOrDefault("prettyPrint")
+  valid_589071 = validateParameter(valid_589071, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580038 != nil:
-    section.add "prettyPrint", valid_580038
+  if valid_589071 != nil:
+    section.add "prettyPrint", valid_589071
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -854,20 +854,20 @@ proc validate_PlusDomainsPeopleGet_580029(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580039: Call_PlusDomainsPeopleGet_580028; path: JsonNode;
+proc call*(call_589072: Call_PlusDomainsPeopleGet_589061; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Get a person's profile.
   ## 
-  let valid = call_580039.validator(path, query, header, formData, body)
-  let scheme = call_580039.pickScheme
+  let valid = call_589072.validator(path, query, header, formData, body)
+  let scheme = call_589072.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580039.url(scheme.get, call_580039.host, call_580039.base,
-                         call_580039.route, valid.getOrDefault("path"),
+  let url = call_589072.url(scheme.get, call_589072.host, call_589072.base,
+                         call_589072.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580039, url, valid)
+  result = hook(call_589072, url, valid)
 
-proc call*(call_580040: Call_PlusDomainsPeopleGet_580028; userId: string;
+proc call*(call_589073: Call_PlusDomainsPeopleGet_589061; userId: string;
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           oauthToken: string = ""; userIp: string = ""; key: string = "";
           prettyPrint: bool = true): Recallable =
@@ -889,26 +889,26 @@ proc call*(call_580040: Call_PlusDomainsPeopleGet_580028; userId: string;
   ##              : Returns response with indentations and line breaks.
   ##   userId: string (required)
   ##         : The ID of the person to get the profile for. The special value "me" can be used to indicate the authenticated user.
-  var path_580041 = newJObject()
-  var query_580042 = newJObject()
-  add(query_580042, "fields", newJString(fields))
-  add(query_580042, "quotaUser", newJString(quotaUser))
-  add(query_580042, "alt", newJString(alt))
-  add(query_580042, "oauth_token", newJString(oauthToken))
-  add(query_580042, "userIp", newJString(userIp))
-  add(query_580042, "key", newJString(key))
-  add(query_580042, "prettyPrint", newJBool(prettyPrint))
-  add(path_580041, "userId", newJString(userId))
-  result = call_580040.call(path_580041, query_580042, nil, nil, nil)
+  var path_589074 = newJObject()
+  var query_589075 = newJObject()
+  add(query_589075, "fields", newJString(fields))
+  add(query_589075, "quotaUser", newJString(quotaUser))
+  add(query_589075, "alt", newJString(alt))
+  add(query_589075, "oauth_token", newJString(oauthToken))
+  add(query_589075, "userIp", newJString(userIp))
+  add(query_589075, "key", newJString(key))
+  add(query_589075, "prettyPrint", newJBool(prettyPrint))
+  add(path_589074, "userId", newJString(userId))
+  result = call_589073.call(path_589074, query_589075, nil, nil, nil)
 
-var plusDomainsPeopleGet* = Call_PlusDomainsPeopleGet_580028(
+var plusDomainsPeopleGet* = Call_PlusDomainsPeopleGet_589061(
     name: "plusDomainsPeopleGet", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/people/{userId}",
-    validator: validate_PlusDomainsPeopleGet_580029, base: "/plusDomains/v1",
-    url: url_PlusDomainsPeopleGet_580030, schemes: {Scheme.Https})
+    validator: validate_PlusDomainsPeopleGet_589062, base: "/plusDomains/v1",
+    url: url_PlusDomainsPeopleGet_589063, schemes: {Scheme.Https})
 type
-  Call_PlusDomainsActivitiesList_580043 = ref object of OpenApiRestCall_579424
-proc url_PlusDomainsActivitiesList_580045(protocol: Scheme; host: string;
+  Call_PlusDomainsActivitiesList_589076 = ref object of OpenApiRestCall_588457
+proc url_PlusDomainsActivitiesList_589078(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -926,7 +926,7 @@ proc url_PlusDomainsActivitiesList_580045(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_PlusDomainsActivitiesList_580044(path: JsonNode; query: JsonNode;
+proc validate_PlusDomainsActivitiesList_589077(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Shut down. See https://developers.google.com/+/api-shutdown for more details.
   ## 
@@ -940,16 +940,16 @@ proc validate_PlusDomainsActivitiesList_580044(path: JsonNode; query: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `collection` field"
-  var valid_580046 = path.getOrDefault("collection")
-  valid_580046 = validateParameter(valid_580046, JString, required = true,
+  var valid_589079 = path.getOrDefault("collection")
+  valid_589079 = validateParameter(valid_589079, JString, required = true,
                                  default = newJString("user"))
-  if valid_580046 != nil:
-    section.add "collection", valid_580046
-  var valid_580047 = path.getOrDefault("userId")
-  valid_580047 = validateParameter(valid_580047, JString, required = true,
+  if valid_589079 != nil:
+    section.add "collection", valid_589079
+  var valid_589080 = path.getOrDefault("userId")
+  valid_589080 = validateParameter(valid_589080, JString, required = true,
                                  default = nil)
-  if valid_580047 != nil:
-    section.add "userId", valid_580047
+  if valid_589080 != nil:
+    section.add "userId", valid_589080
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -971,51 +971,51 @@ proc validate_PlusDomainsActivitiesList_580044(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580048 = query.getOrDefault("fields")
-  valid_580048 = validateParameter(valid_580048, JString, required = false,
+  var valid_589081 = query.getOrDefault("fields")
+  valid_589081 = validateParameter(valid_589081, JString, required = false,
                                  default = nil)
-  if valid_580048 != nil:
-    section.add "fields", valid_580048
-  var valid_580049 = query.getOrDefault("pageToken")
-  valid_580049 = validateParameter(valid_580049, JString, required = false,
+  if valid_589081 != nil:
+    section.add "fields", valid_589081
+  var valid_589082 = query.getOrDefault("pageToken")
+  valid_589082 = validateParameter(valid_589082, JString, required = false,
                                  default = nil)
-  if valid_580049 != nil:
-    section.add "pageToken", valid_580049
-  var valid_580050 = query.getOrDefault("quotaUser")
-  valid_580050 = validateParameter(valid_580050, JString, required = false,
+  if valid_589082 != nil:
+    section.add "pageToken", valid_589082
+  var valid_589083 = query.getOrDefault("quotaUser")
+  valid_589083 = validateParameter(valid_589083, JString, required = false,
                                  default = nil)
-  if valid_580050 != nil:
-    section.add "quotaUser", valid_580050
-  var valid_580051 = query.getOrDefault("alt")
-  valid_580051 = validateParameter(valid_580051, JString, required = false,
+  if valid_589083 != nil:
+    section.add "quotaUser", valid_589083
+  var valid_589084 = query.getOrDefault("alt")
+  valid_589084 = validateParameter(valid_589084, JString, required = false,
                                  default = newJString("json"))
-  if valid_580051 != nil:
-    section.add "alt", valid_580051
-  var valid_580052 = query.getOrDefault("oauth_token")
-  valid_580052 = validateParameter(valid_580052, JString, required = false,
+  if valid_589084 != nil:
+    section.add "alt", valid_589084
+  var valid_589085 = query.getOrDefault("oauth_token")
+  valid_589085 = validateParameter(valid_589085, JString, required = false,
                                  default = nil)
-  if valid_580052 != nil:
-    section.add "oauth_token", valid_580052
-  var valid_580053 = query.getOrDefault("userIp")
-  valid_580053 = validateParameter(valid_580053, JString, required = false,
+  if valid_589085 != nil:
+    section.add "oauth_token", valid_589085
+  var valid_589086 = query.getOrDefault("userIp")
+  valid_589086 = validateParameter(valid_589086, JString, required = false,
                                  default = nil)
-  if valid_580053 != nil:
-    section.add "userIp", valid_580053
-  var valid_580054 = query.getOrDefault("maxResults")
-  valid_580054 = validateParameter(valid_580054, JInt, required = false,
+  if valid_589086 != nil:
+    section.add "userIp", valid_589086
+  var valid_589087 = query.getOrDefault("maxResults")
+  valid_589087 = validateParameter(valid_589087, JInt, required = false,
                                  default = newJInt(20))
-  if valid_580054 != nil:
-    section.add "maxResults", valid_580054
-  var valid_580055 = query.getOrDefault("key")
-  valid_580055 = validateParameter(valid_580055, JString, required = false,
+  if valid_589087 != nil:
+    section.add "maxResults", valid_589087
+  var valid_589088 = query.getOrDefault("key")
+  valid_589088 = validateParameter(valid_589088, JString, required = false,
                                  default = nil)
-  if valid_580055 != nil:
-    section.add "key", valid_580055
-  var valid_580056 = query.getOrDefault("prettyPrint")
-  valid_580056 = validateParameter(valid_580056, JBool, required = false,
+  if valid_589088 != nil:
+    section.add "key", valid_589088
+  var valid_589089 = query.getOrDefault("prettyPrint")
+  valid_589089 = validateParameter(valid_589089, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580056 != nil:
-    section.add "prettyPrint", valid_580056
+  if valid_589089 != nil:
+    section.add "prettyPrint", valid_589089
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1024,20 +1024,20 @@ proc validate_PlusDomainsActivitiesList_580044(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580057: Call_PlusDomainsActivitiesList_580043; path: JsonNode;
+proc call*(call_589090: Call_PlusDomainsActivitiesList_589076; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Shut down. See https://developers.google.com/+/api-shutdown for more details.
   ## 
-  let valid = call_580057.validator(path, query, header, formData, body)
-  let scheme = call_580057.pickScheme
+  let valid = call_589090.validator(path, query, header, formData, body)
+  let scheme = call_589090.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580057.url(scheme.get, call_580057.host, call_580057.base,
-                         call_580057.route, valid.getOrDefault("path"),
+  let url = call_589090.url(scheme.get, call_589090.host, call_589090.base,
+                         call_589090.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580057, url, valid)
+  result = hook(call_589090, url, valid)
 
-proc call*(call_580058: Call_PlusDomainsActivitiesList_580043; userId: string;
+proc call*(call_589091: Call_PlusDomainsActivitiesList_589076; userId: string;
           fields: string = ""; pageToken: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; collection: string = "user";
           userIp: string = ""; maxResults: int = 20; key: string = "";
@@ -1066,29 +1066,29 @@ proc call*(call_580058: Call_PlusDomainsActivitiesList_580043; userId: string;
   ##              : Returns response with indentations and line breaks.
   ##   userId: string (required)
   ##         : The ID of the user to get activities for. The special value "me" can be used to indicate the authenticated user.
-  var path_580059 = newJObject()
-  var query_580060 = newJObject()
-  add(query_580060, "fields", newJString(fields))
-  add(query_580060, "pageToken", newJString(pageToken))
-  add(query_580060, "quotaUser", newJString(quotaUser))
-  add(query_580060, "alt", newJString(alt))
-  add(query_580060, "oauth_token", newJString(oauthToken))
-  add(path_580059, "collection", newJString(collection))
-  add(query_580060, "userIp", newJString(userIp))
-  add(query_580060, "maxResults", newJInt(maxResults))
-  add(query_580060, "key", newJString(key))
-  add(query_580060, "prettyPrint", newJBool(prettyPrint))
-  add(path_580059, "userId", newJString(userId))
-  result = call_580058.call(path_580059, query_580060, nil, nil, nil)
+  var path_589092 = newJObject()
+  var query_589093 = newJObject()
+  add(query_589093, "fields", newJString(fields))
+  add(query_589093, "pageToken", newJString(pageToken))
+  add(query_589093, "quotaUser", newJString(quotaUser))
+  add(query_589093, "alt", newJString(alt))
+  add(query_589093, "oauth_token", newJString(oauthToken))
+  add(path_589092, "collection", newJString(collection))
+  add(query_589093, "userIp", newJString(userIp))
+  add(query_589093, "maxResults", newJInt(maxResults))
+  add(query_589093, "key", newJString(key))
+  add(query_589093, "prettyPrint", newJBool(prettyPrint))
+  add(path_589092, "userId", newJString(userId))
+  result = call_589091.call(path_589092, query_589093, nil, nil, nil)
 
-var plusDomainsActivitiesList* = Call_PlusDomainsActivitiesList_580043(
+var plusDomainsActivitiesList* = Call_PlusDomainsActivitiesList_589076(
     name: "plusDomainsActivitiesList", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/people/{userId}/activities/{collection}",
-    validator: validate_PlusDomainsActivitiesList_580044, base: "/plusDomains/v1",
-    url: url_PlusDomainsActivitiesList_580045, schemes: {Scheme.Https})
+    validator: validate_PlusDomainsActivitiesList_589077, base: "/plusDomains/v1",
+    url: url_PlusDomainsActivitiesList_589078, schemes: {Scheme.Https})
 type
-  Call_PlusDomainsAudiencesList_580061 = ref object of OpenApiRestCall_579424
-proc url_PlusDomainsAudiencesList_580063(protocol: Scheme; host: string;
+  Call_PlusDomainsAudiencesList_589094 = ref object of OpenApiRestCall_588457
+proc url_PlusDomainsAudiencesList_589096(protocol: Scheme; host: string;
                                         base: string; route: string; path: JsonNode;
                                         query: JsonNode): Uri =
   result.scheme = $protocol
@@ -1105,7 +1105,7 @@ proc url_PlusDomainsAudiencesList_580063(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_PlusDomainsAudiencesList_580062(path: JsonNode; query: JsonNode;
+proc validate_PlusDomainsAudiencesList_589095(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Shut down. See https://developers.google.com/+/api-shutdown for more details.
   ## 
@@ -1116,11 +1116,11 @@ proc validate_PlusDomainsAudiencesList_580062(path: JsonNode; query: JsonNode;
   ##         : The ID of the user to get audiences for. The special value "me" can be used to indicate the authenticated user.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `userId` field"
-  var valid_580064 = path.getOrDefault("userId")
-  valid_580064 = validateParameter(valid_580064, JString, required = true,
+  var valid_589097 = path.getOrDefault("userId")
+  valid_589097 = validateParameter(valid_589097, JString, required = true,
                                  default = nil)
-  if valid_580064 != nil:
-    section.add "userId", valid_580064
+  if valid_589097 != nil:
+    section.add "userId", valid_589097
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -1142,51 +1142,51 @@ proc validate_PlusDomainsAudiencesList_580062(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580065 = query.getOrDefault("fields")
-  valid_580065 = validateParameter(valid_580065, JString, required = false,
+  var valid_589098 = query.getOrDefault("fields")
+  valid_589098 = validateParameter(valid_589098, JString, required = false,
                                  default = nil)
-  if valid_580065 != nil:
-    section.add "fields", valid_580065
-  var valid_580066 = query.getOrDefault("pageToken")
-  valid_580066 = validateParameter(valid_580066, JString, required = false,
+  if valid_589098 != nil:
+    section.add "fields", valid_589098
+  var valid_589099 = query.getOrDefault("pageToken")
+  valid_589099 = validateParameter(valid_589099, JString, required = false,
                                  default = nil)
-  if valid_580066 != nil:
-    section.add "pageToken", valid_580066
-  var valid_580067 = query.getOrDefault("quotaUser")
-  valid_580067 = validateParameter(valid_580067, JString, required = false,
+  if valid_589099 != nil:
+    section.add "pageToken", valid_589099
+  var valid_589100 = query.getOrDefault("quotaUser")
+  valid_589100 = validateParameter(valid_589100, JString, required = false,
                                  default = nil)
-  if valid_580067 != nil:
-    section.add "quotaUser", valid_580067
-  var valid_580068 = query.getOrDefault("alt")
-  valid_580068 = validateParameter(valid_580068, JString, required = false,
+  if valid_589100 != nil:
+    section.add "quotaUser", valid_589100
+  var valid_589101 = query.getOrDefault("alt")
+  valid_589101 = validateParameter(valid_589101, JString, required = false,
                                  default = newJString("json"))
-  if valid_580068 != nil:
-    section.add "alt", valid_580068
-  var valid_580069 = query.getOrDefault("oauth_token")
-  valid_580069 = validateParameter(valid_580069, JString, required = false,
+  if valid_589101 != nil:
+    section.add "alt", valid_589101
+  var valid_589102 = query.getOrDefault("oauth_token")
+  valid_589102 = validateParameter(valid_589102, JString, required = false,
                                  default = nil)
-  if valid_580069 != nil:
-    section.add "oauth_token", valid_580069
-  var valid_580070 = query.getOrDefault("userIp")
-  valid_580070 = validateParameter(valid_580070, JString, required = false,
+  if valid_589102 != nil:
+    section.add "oauth_token", valid_589102
+  var valid_589103 = query.getOrDefault("userIp")
+  valid_589103 = validateParameter(valid_589103, JString, required = false,
                                  default = nil)
-  if valid_580070 != nil:
-    section.add "userIp", valid_580070
-  var valid_580071 = query.getOrDefault("maxResults")
-  valid_580071 = validateParameter(valid_580071, JInt, required = false,
+  if valid_589103 != nil:
+    section.add "userIp", valid_589103
+  var valid_589104 = query.getOrDefault("maxResults")
+  valid_589104 = validateParameter(valid_589104, JInt, required = false,
                                  default = newJInt(20))
-  if valid_580071 != nil:
-    section.add "maxResults", valid_580071
-  var valid_580072 = query.getOrDefault("key")
-  valid_580072 = validateParameter(valid_580072, JString, required = false,
+  if valid_589104 != nil:
+    section.add "maxResults", valid_589104
+  var valid_589105 = query.getOrDefault("key")
+  valid_589105 = validateParameter(valid_589105, JString, required = false,
                                  default = nil)
-  if valid_580072 != nil:
-    section.add "key", valid_580072
-  var valid_580073 = query.getOrDefault("prettyPrint")
-  valid_580073 = validateParameter(valid_580073, JBool, required = false,
+  if valid_589105 != nil:
+    section.add "key", valid_589105
+  var valid_589106 = query.getOrDefault("prettyPrint")
+  valid_589106 = validateParameter(valid_589106, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580073 != nil:
-    section.add "prettyPrint", valid_580073
+  if valid_589106 != nil:
+    section.add "prettyPrint", valid_589106
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1195,20 +1195,20 @@ proc validate_PlusDomainsAudiencesList_580062(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580074: Call_PlusDomainsAudiencesList_580061; path: JsonNode;
+proc call*(call_589107: Call_PlusDomainsAudiencesList_589094; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Shut down. See https://developers.google.com/+/api-shutdown for more details.
   ## 
-  let valid = call_580074.validator(path, query, header, formData, body)
-  let scheme = call_580074.pickScheme
+  let valid = call_589107.validator(path, query, header, formData, body)
+  let scheme = call_589107.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580074.url(scheme.get, call_580074.host, call_580074.base,
-                         call_580074.route, valid.getOrDefault("path"),
+  let url = call_589107.url(scheme.get, call_589107.host, call_589107.base,
+                         call_589107.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580074, url, valid)
+  result = hook(call_589107, url, valid)
 
-proc call*(call_580075: Call_PlusDomainsAudiencesList_580061; userId: string;
+proc call*(call_589108: Call_PlusDomainsAudiencesList_589094; userId: string;
           fields: string = ""; pageToken: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; userIp: string = "";
           maxResults: int = 20; key: string = ""; prettyPrint: bool = true): Recallable =
@@ -1234,28 +1234,28 @@ proc call*(call_580075: Call_PlusDomainsAudiencesList_580061; userId: string;
   ##              : Returns response with indentations and line breaks.
   ##   userId: string (required)
   ##         : The ID of the user to get audiences for. The special value "me" can be used to indicate the authenticated user.
-  var path_580076 = newJObject()
-  var query_580077 = newJObject()
-  add(query_580077, "fields", newJString(fields))
-  add(query_580077, "pageToken", newJString(pageToken))
-  add(query_580077, "quotaUser", newJString(quotaUser))
-  add(query_580077, "alt", newJString(alt))
-  add(query_580077, "oauth_token", newJString(oauthToken))
-  add(query_580077, "userIp", newJString(userIp))
-  add(query_580077, "maxResults", newJInt(maxResults))
-  add(query_580077, "key", newJString(key))
-  add(query_580077, "prettyPrint", newJBool(prettyPrint))
-  add(path_580076, "userId", newJString(userId))
-  result = call_580075.call(path_580076, query_580077, nil, nil, nil)
+  var path_589109 = newJObject()
+  var query_589110 = newJObject()
+  add(query_589110, "fields", newJString(fields))
+  add(query_589110, "pageToken", newJString(pageToken))
+  add(query_589110, "quotaUser", newJString(quotaUser))
+  add(query_589110, "alt", newJString(alt))
+  add(query_589110, "oauth_token", newJString(oauthToken))
+  add(query_589110, "userIp", newJString(userIp))
+  add(query_589110, "maxResults", newJInt(maxResults))
+  add(query_589110, "key", newJString(key))
+  add(query_589110, "prettyPrint", newJBool(prettyPrint))
+  add(path_589109, "userId", newJString(userId))
+  result = call_589108.call(path_589109, query_589110, nil, nil, nil)
 
-var plusDomainsAudiencesList* = Call_PlusDomainsAudiencesList_580061(
+var plusDomainsAudiencesList* = Call_PlusDomainsAudiencesList_589094(
     name: "plusDomainsAudiencesList", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/people/{userId}/audiences",
-    validator: validate_PlusDomainsAudiencesList_580062, base: "/plusDomains/v1",
-    url: url_PlusDomainsAudiencesList_580063, schemes: {Scheme.Https})
+    validator: validate_PlusDomainsAudiencesList_589095, base: "/plusDomains/v1",
+    url: url_PlusDomainsAudiencesList_589096, schemes: {Scheme.Https})
 type
-  Call_PlusDomainsCirclesList_580078 = ref object of OpenApiRestCall_579424
-proc url_PlusDomainsCirclesList_580080(protocol: Scheme; host: string; base: string;
+  Call_PlusDomainsCirclesList_589111 = ref object of OpenApiRestCall_588457
+proc url_PlusDomainsCirclesList_589113(protocol: Scheme; host: string; base: string;
                                       route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -1271,7 +1271,7 @@ proc url_PlusDomainsCirclesList_580080(protocol: Scheme; host: string; base: str
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_PlusDomainsCirclesList_580079(path: JsonNode; query: JsonNode;
+proc validate_PlusDomainsCirclesList_589112(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Shut down. See https://developers.google.com/+/api-shutdown for more details.
   ## 
@@ -1282,11 +1282,11 @@ proc validate_PlusDomainsCirclesList_580079(path: JsonNode; query: JsonNode;
   ##         : The ID of the user to get circles for. The special value "me" can be used to indicate the authenticated user.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `userId` field"
-  var valid_580081 = path.getOrDefault("userId")
-  valid_580081 = validateParameter(valid_580081, JString, required = true,
+  var valid_589114 = path.getOrDefault("userId")
+  valid_589114 = validateParameter(valid_589114, JString, required = true,
                                  default = nil)
-  if valid_580081 != nil:
-    section.add "userId", valid_580081
+  if valid_589114 != nil:
+    section.add "userId", valid_589114
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -1308,51 +1308,51 @@ proc validate_PlusDomainsCirclesList_580079(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580082 = query.getOrDefault("fields")
-  valid_580082 = validateParameter(valid_580082, JString, required = false,
+  var valid_589115 = query.getOrDefault("fields")
+  valid_589115 = validateParameter(valid_589115, JString, required = false,
                                  default = nil)
-  if valid_580082 != nil:
-    section.add "fields", valid_580082
-  var valid_580083 = query.getOrDefault("pageToken")
-  valid_580083 = validateParameter(valid_580083, JString, required = false,
+  if valid_589115 != nil:
+    section.add "fields", valid_589115
+  var valid_589116 = query.getOrDefault("pageToken")
+  valid_589116 = validateParameter(valid_589116, JString, required = false,
                                  default = nil)
-  if valid_580083 != nil:
-    section.add "pageToken", valid_580083
-  var valid_580084 = query.getOrDefault("quotaUser")
-  valid_580084 = validateParameter(valid_580084, JString, required = false,
+  if valid_589116 != nil:
+    section.add "pageToken", valid_589116
+  var valid_589117 = query.getOrDefault("quotaUser")
+  valid_589117 = validateParameter(valid_589117, JString, required = false,
                                  default = nil)
-  if valid_580084 != nil:
-    section.add "quotaUser", valid_580084
-  var valid_580085 = query.getOrDefault("alt")
-  valid_580085 = validateParameter(valid_580085, JString, required = false,
+  if valid_589117 != nil:
+    section.add "quotaUser", valid_589117
+  var valid_589118 = query.getOrDefault("alt")
+  valid_589118 = validateParameter(valid_589118, JString, required = false,
                                  default = newJString("json"))
-  if valid_580085 != nil:
-    section.add "alt", valid_580085
-  var valid_580086 = query.getOrDefault("oauth_token")
-  valid_580086 = validateParameter(valid_580086, JString, required = false,
+  if valid_589118 != nil:
+    section.add "alt", valid_589118
+  var valid_589119 = query.getOrDefault("oauth_token")
+  valid_589119 = validateParameter(valid_589119, JString, required = false,
                                  default = nil)
-  if valid_580086 != nil:
-    section.add "oauth_token", valid_580086
-  var valid_580087 = query.getOrDefault("userIp")
-  valid_580087 = validateParameter(valid_580087, JString, required = false,
+  if valid_589119 != nil:
+    section.add "oauth_token", valid_589119
+  var valid_589120 = query.getOrDefault("userIp")
+  valid_589120 = validateParameter(valid_589120, JString, required = false,
                                  default = nil)
-  if valid_580087 != nil:
-    section.add "userIp", valid_580087
-  var valid_580088 = query.getOrDefault("maxResults")
-  valid_580088 = validateParameter(valid_580088, JInt, required = false,
+  if valid_589120 != nil:
+    section.add "userIp", valid_589120
+  var valid_589121 = query.getOrDefault("maxResults")
+  valid_589121 = validateParameter(valid_589121, JInt, required = false,
                                  default = newJInt(20))
-  if valid_580088 != nil:
-    section.add "maxResults", valid_580088
-  var valid_580089 = query.getOrDefault("key")
-  valid_580089 = validateParameter(valid_580089, JString, required = false,
+  if valid_589121 != nil:
+    section.add "maxResults", valid_589121
+  var valid_589122 = query.getOrDefault("key")
+  valid_589122 = validateParameter(valid_589122, JString, required = false,
                                  default = nil)
-  if valid_580089 != nil:
-    section.add "key", valid_580089
-  var valid_580090 = query.getOrDefault("prettyPrint")
-  valid_580090 = validateParameter(valid_580090, JBool, required = false,
+  if valid_589122 != nil:
+    section.add "key", valid_589122
+  var valid_589123 = query.getOrDefault("prettyPrint")
+  valid_589123 = validateParameter(valid_589123, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580090 != nil:
-    section.add "prettyPrint", valid_580090
+  if valid_589123 != nil:
+    section.add "prettyPrint", valid_589123
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1361,20 +1361,20 @@ proc validate_PlusDomainsCirclesList_580079(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580091: Call_PlusDomainsCirclesList_580078; path: JsonNode;
+proc call*(call_589124: Call_PlusDomainsCirclesList_589111; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Shut down. See https://developers.google.com/+/api-shutdown for more details.
   ## 
-  let valid = call_580091.validator(path, query, header, formData, body)
-  let scheme = call_580091.pickScheme
+  let valid = call_589124.validator(path, query, header, formData, body)
+  let scheme = call_589124.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580091.url(scheme.get, call_580091.host, call_580091.base,
-                         call_580091.route, valid.getOrDefault("path"),
+  let url = call_589124.url(scheme.get, call_589124.host, call_589124.base,
+                         call_589124.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580091, url, valid)
+  result = hook(call_589124, url, valid)
 
-proc call*(call_580092: Call_PlusDomainsCirclesList_580078; userId: string;
+proc call*(call_589125: Call_PlusDomainsCirclesList_589111; userId: string;
           fields: string = ""; pageToken: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; userIp: string = "";
           maxResults: int = 20; key: string = ""; prettyPrint: bool = true): Recallable =
@@ -1400,28 +1400,28 @@ proc call*(call_580092: Call_PlusDomainsCirclesList_580078; userId: string;
   ##              : Returns response with indentations and line breaks.
   ##   userId: string (required)
   ##         : The ID of the user to get circles for. The special value "me" can be used to indicate the authenticated user.
-  var path_580093 = newJObject()
-  var query_580094 = newJObject()
-  add(query_580094, "fields", newJString(fields))
-  add(query_580094, "pageToken", newJString(pageToken))
-  add(query_580094, "quotaUser", newJString(quotaUser))
-  add(query_580094, "alt", newJString(alt))
-  add(query_580094, "oauth_token", newJString(oauthToken))
-  add(query_580094, "userIp", newJString(userIp))
-  add(query_580094, "maxResults", newJInt(maxResults))
-  add(query_580094, "key", newJString(key))
-  add(query_580094, "prettyPrint", newJBool(prettyPrint))
-  add(path_580093, "userId", newJString(userId))
-  result = call_580092.call(path_580093, query_580094, nil, nil, nil)
+  var path_589126 = newJObject()
+  var query_589127 = newJObject()
+  add(query_589127, "fields", newJString(fields))
+  add(query_589127, "pageToken", newJString(pageToken))
+  add(query_589127, "quotaUser", newJString(quotaUser))
+  add(query_589127, "alt", newJString(alt))
+  add(query_589127, "oauth_token", newJString(oauthToken))
+  add(query_589127, "userIp", newJString(userIp))
+  add(query_589127, "maxResults", newJInt(maxResults))
+  add(query_589127, "key", newJString(key))
+  add(query_589127, "prettyPrint", newJBool(prettyPrint))
+  add(path_589126, "userId", newJString(userId))
+  result = call_589125.call(path_589126, query_589127, nil, nil, nil)
 
-var plusDomainsCirclesList* = Call_PlusDomainsCirclesList_580078(
+var plusDomainsCirclesList* = Call_PlusDomainsCirclesList_589111(
     name: "plusDomainsCirclesList", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/people/{userId}/circles",
-    validator: validate_PlusDomainsCirclesList_580079, base: "/plusDomains/v1",
-    url: url_PlusDomainsCirclesList_580080, schemes: {Scheme.Https})
+    validator: validate_PlusDomainsCirclesList_589112, base: "/plusDomains/v1",
+    url: url_PlusDomainsCirclesList_589113, schemes: {Scheme.Https})
 type
-  Call_PlusDomainsMediaInsert_580095 = ref object of OpenApiRestCall_579424
-proc url_PlusDomainsMediaInsert_580097(protocol: Scheme; host: string; base: string;
+  Call_PlusDomainsMediaInsert_589128 = ref object of OpenApiRestCall_588457
+proc url_PlusDomainsMediaInsert_589130(protocol: Scheme; host: string; base: string;
                                       route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -1439,7 +1439,7 @@ proc url_PlusDomainsMediaInsert_580097(protocol: Scheme; host: string; base: str
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_PlusDomainsMediaInsert_580096(path: JsonNode; query: JsonNode;
+proc validate_PlusDomainsMediaInsert_589129(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Shut down. See https://developers.google.com/+/api-shutdown for more details.
   ## 
@@ -1452,16 +1452,16 @@ proc validate_PlusDomainsMediaInsert_580096(path: JsonNode; query: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `collection` field"
-  var valid_580098 = path.getOrDefault("collection")
-  valid_580098 = validateParameter(valid_580098, JString, required = true,
+  var valid_589131 = path.getOrDefault("collection")
+  valid_589131 = validateParameter(valid_589131, JString, required = true,
                                  default = newJString("cloud"))
-  if valid_580098 != nil:
-    section.add "collection", valid_580098
-  var valid_580099 = path.getOrDefault("userId")
-  valid_580099 = validateParameter(valid_580099, JString, required = true,
+  if valid_589131 != nil:
+    section.add "collection", valid_589131
+  var valid_589132 = path.getOrDefault("userId")
+  valid_589132 = validateParameter(valid_589132, JString, required = true,
                                  default = nil)
-  if valid_580099 != nil:
-    section.add "userId", valid_580099
+  if valid_589132 != nil:
+    section.add "userId", valid_589132
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -1479,41 +1479,41 @@ proc validate_PlusDomainsMediaInsert_580096(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580100 = query.getOrDefault("fields")
-  valid_580100 = validateParameter(valid_580100, JString, required = false,
+  var valid_589133 = query.getOrDefault("fields")
+  valid_589133 = validateParameter(valid_589133, JString, required = false,
                                  default = nil)
-  if valid_580100 != nil:
-    section.add "fields", valid_580100
-  var valid_580101 = query.getOrDefault("quotaUser")
-  valid_580101 = validateParameter(valid_580101, JString, required = false,
+  if valid_589133 != nil:
+    section.add "fields", valid_589133
+  var valid_589134 = query.getOrDefault("quotaUser")
+  valid_589134 = validateParameter(valid_589134, JString, required = false,
                                  default = nil)
-  if valid_580101 != nil:
-    section.add "quotaUser", valid_580101
-  var valid_580102 = query.getOrDefault("alt")
-  valid_580102 = validateParameter(valid_580102, JString, required = false,
+  if valid_589134 != nil:
+    section.add "quotaUser", valid_589134
+  var valid_589135 = query.getOrDefault("alt")
+  valid_589135 = validateParameter(valid_589135, JString, required = false,
                                  default = newJString("json"))
-  if valid_580102 != nil:
-    section.add "alt", valid_580102
-  var valid_580103 = query.getOrDefault("oauth_token")
-  valid_580103 = validateParameter(valid_580103, JString, required = false,
+  if valid_589135 != nil:
+    section.add "alt", valid_589135
+  var valid_589136 = query.getOrDefault("oauth_token")
+  valid_589136 = validateParameter(valid_589136, JString, required = false,
                                  default = nil)
-  if valid_580103 != nil:
-    section.add "oauth_token", valid_580103
-  var valid_580104 = query.getOrDefault("userIp")
-  valid_580104 = validateParameter(valid_580104, JString, required = false,
+  if valid_589136 != nil:
+    section.add "oauth_token", valid_589136
+  var valid_589137 = query.getOrDefault("userIp")
+  valid_589137 = validateParameter(valid_589137, JString, required = false,
                                  default = nil)
-  if valid_580104 != nil:
-    section.add "userIp", valid_580104
-  var valid_580105 = query.getOrDefault("key")
-  valid_580105 = validateParameter(valid_580105, JString, required = false,
+  if valid_589137 != nil:
+    section.add "userIp", valid_589137
+  var valid_589138 = query.getOrDefault("key")
+  valid_589138 = validateParameter(valid_589138, JString, required = false,
                                  default = nil)
-  if valid_580105 != nil:
-    section.add "key", valid_580105
-  var valid_580106 = query.getOrDefault("prettyPrint")
-  valid_580106 = validateParameter(valid_580106, JBool, required = false,
+  if valid_589138 != nil:
+    section.add "key", valid_589138
+  var valid_589139 = query.getOrDefault("prettyPrint")
+  valid_589139 = validateParameter(valid_589139, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580106 != nil:
-    section.add "prettyPrint", valid_580106
+  if valid_589139 != nil:
+    section.add "prettyPrint", valid_589139
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1525,20 +1525,20 @@ proc validate_PlusDomainsMediaInsert_580096(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580108: Call_PlusDomainsMediaInsert_580095; path: JsonNode;
+proc call*(call_589141: Call_PlusDomainsMediaInsert_589128; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Shut down. See https://developers.google.com/+/api-shutdown for more details.
   ## 
-  let valid = call_580108.validator(path, query, header, formData, body)
-  let scheme = call_580108.pickScheme
+  let valid = call_589141.validator(path, query, header, formData, body)
+  let scheme = call_589141.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580108.url(scheme.get, call_580108.host, call_580108.base,
-                         call_580108.route, valid.getOrDefault("path"),
+  let url = call_589141.url(scheme.get, call_589141.host, call_589141.base,
+                         call_589141.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580108, url, valid)
+  result = hook(call_589141, url, valid)
 
-proc call*(call_580109: Call_PlusDomainsMediaInsert_580095; userId: string;
+proc call*(call_589142: Call_PlusDomainsMediaInsert_589128; userId: string;
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           oauthToken: string = ""; collection: string = "cloud"; userIp: string = "";
           key: string = ""; body: JsonNode = nil; prettyPrint: bool = true): Recallable =
@@ -1562,30 +1562,30 @@ proc call*(call_580109: Call_PlusDomainsMediaInsert_580095; userId: string;
   ##              : Returns response with indentations and line breaks.
   ##   userId: string (required)
   ##         : The ID of the user to create the activity on behalf of.
-  var path_580110 = newJObject()
-  var query_580111 = newJObject()
-  var body_580112 = newJObject()
-  add(query_580111, "fields", newJString(fields))
-  add(query_580111, "quotaUser", newJString(quotaUser))
-  add(query_580111, "alt", newJString(alt))
-  add(query_580111, "oauth_token", newJString(oauthToken))
-  add(path_580110, "collection", newJString(collection))
-  add(query_580111, "userIp", newJString(userIp))
-  add(query_580111, "key", newJString(key))
+  var path_589143 = newJObject()
+  var query_589144 = newJObject()
+  var body_589145 = newJObject()
+  add(query_589144, "fields", newJString(fields))
+  add(query_589144, "quotaUser", newJString(quotaUser))
+  add(query_589144, "alt", newJString(alt))
+  add(query_589144, "oauth_token", newJString(oauthToken))
+  add(path_589143, "collection", newJString(collection))
+  add(query_589144, "userIp", newJString(userIp))
+  add(query_589144, "key", newJString(key))
   if body != nil:
-    body_580112 = body
-  add(query_580111, "prettyPrint", newJBool(prettyPrint))
-  add(path_580110, "userId", newJString(userId))
-  result = call_580109.call(path_580110, query_580111, nil, nil, body_580112)
+    body_589145 = body
+  add(query_589144, "prettyPrint", newJBool(prettyPrint))
+  add(path_589143, "userId", newJString(userId))
+  result = call_589142.call(path_589143, query_589144, nil, nil, body_589145)
 
-var plusDomainsMediaInsert* = Call_PlusDomainsMediaInsert_580095(
+var plusDomainsMediaInsert* = Call_PlusDomainsMediaInsert_589128(
     name: "plusDomainsMediaInsert", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com", route: "/people/{userId}/media/{collection}",
-    validator: validate_PlusDomainsMediaInsert_580096, base: "/plusDomains/v1",
-    url: url_PlusDomainsMediaInsert_580097, schemes: {Scheme.Https})
+    validator: validate_PlusDomainsMediaInsert_589129, base: "/plusDomains/v1",
+    url: url_PlusDomainsMediaInsert_589130, schemes: {Scheme.Https})
 type
-  Call_PlusDomainsPeopleList_580113 = ref object of OpenApiRestCall_579424
-proc url_PlusDomainsPeopleList_580115(protocol: Scheme; host: string; base: string;
+  Call_PlusDomainsPeopleList_589146 = ref object of OpenApiRestCall_588457
+proc url_PlusDomainsPeopleList_589148(protocol: Scheme; host: string; base: string;
                                      route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -1603,7 +1603,7 @@ proc url_PlusDomainsPeopleList_580115(protocol: Scheme; host: string; base: stri
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_PlusDomainsPeopleList_580114(path: JsonNode; query: JsonNode;
+proc validate_PlusDomainsPeopleList_589147(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## List all of the people in the specified collection.
   ## 
@@ -1617,16 +1617,16 @@ proc validate_PlusDomainsPeopleList_580114(path: JsonNode; query: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `collection` field"
-  var valid_580116 = path.getOrDefault("collection")
-  valid_580116 = validateParameter(valid_580116, JString, required = true,
+  var valid_589149 = path.getOrDefault("collection")
+  valid_589149 = validateParameter(valid_589149, JString, required = true,
                                  default = newJString("circled"))
-  if valid_580116 != nil:
-    section.add "collection", valid_580116
-  var valid_580117 = path.getOrDefault("userId")
-  valid_580117 = validateParameter(valid_580117, JString, required = true,
+  if valid_589149 != nil:
+    section.add "collection", valid_589149
+  var valid_589150 = path.getOrDefault("userId")
+  valid_589150 = validateParameter(valid_589150, JString, required = true,
                                  default = nil)
-  if valid_580117 != nil:
-    section.add "userId", valid_580117
+  if valid_589150 != nil:
+    section.add "userId", valid_589150
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -1650,56 +1650,56 @@ proc validate_PlusDomainsPeopleList_580114(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580118 = query.getOrDefault("fields")
-  valid_580118 = validateParameter(valid_580118, JString, required = false,
+  var valid_589151 = query.getOrDefault("fields")
+  valid_589151 = validateParameter(valid_589151, JString, required = false,
                                  default = nil)
-  if valid_580118 != nil:
-    section.add "fields", valid_580118
-  var valid_580119 = query.getOrDefault("pageToken")
-  valid_580119 = validateParameter(valid_580119, JString, required = false,
+  if valid_589151 != nil:
+    section.add "fields", valid_589151
+  var valid_589152 = query.getOrDefault("pageToken")
+  valid_589152 = validateParameter(valid_589152, JString, required = false,
                                  default = nil)
-  if valid_580119 != nil:
-    section.add "pageToken", valid_580119
-  var valid_580120 = query.getOrDefault("quotaUser")
-  valid_580120 = validateParameter(valid_580120, JString, required = false,
+  if valid_589152 != nil:
+    section.add "pageToken", valid_589152
+  var valid_589153 = query.getOrDefault("quotaUser")
+  valid_589153 = validateParameter(valid_589153, JString, required = false,
                                  default = nil)
-  if valid_580120 != nil:
-    section.add "quotaUser", valid_580120
-  var valid_580121 = query.getOrDefault("alt")
-  valid_580121 = validateParameter(valid_580121, JString, required = false,
+  if valid_589153 != nil:
+    section.add "quotaUser", valid_589153
+  var valid_589154 = query.getOrDefault("alt")
+  valid_589154 = validateParameter(valid_589154, JString, required = false,
                                  default = newJString("json"))
-  if valid_580121 != nil:
-    section.add "alt", valid_580121
-  var valid_580122 = query.getOrDefault("oauth_token")
-  valid_580122 = validateParameter(valid_580122, JString, required = false,
+  if valid_589154 != nil:
+    section.add "alt", valid_589154
+  var valid_589155 = query.getOrDefault("oauth_token")
+  valid_589155 = validateParameter(valid_589155, JString, required = false,
                                  default = nil)
-  if valid_580122 != nil:
-    section.add "oauth_token", valid_580122
-  var valid_580123 = query.getOrDefault("userIp")
-  valid_580123 = validateParameter(valid_580123, JString, required = false,
+  if valid_589155 != nil:
+    section.add "oauth_token", valid_589155
+  var valid_589156 = query.getOrDefault("userIp")
+  valid_589156 = validateParameter(valid_589156, JString, required = false,
                                  default = nil)
-  if valid_580123 != nil:
-    section.add "userIp", valid_580123
-  var valid_580124 = query.getOrDefault("maxResults")
-  valid_580124 = validateParameter(valid_580124, JInt, required = false,
+  if valid_589156 != nil:
+    section.add "userIp", valid_589156
+  var valid_589157 = query.getOrDefault("maxResults")
+  valid_589157 = validateParameter(valid_589157, JInt, required = false,
                                  default = newJInt(100))
-  if valid_580124 != nil:
-    section.add "maxResults", valid_580124
-  var valid_580125 = query.getOrDefault("orderBy")
-  valid_580125 = validateParameter(valid_580125, JString, required = false,
+  if valid_589157 != nil:
+    section.add "maxResults", valid_589157
+  var valid_589158 = query.getOrDefault("orderBy")
+  valid_589158 = validateParameter(valid_589158, JString, required = false,
                                  default = newJString("alphabetical"))
-  if valid_580125 != nil:
-    section.add "orderBy", valid_580125
-  var valid_580126 = query.getOrDefault("key")
-  valid_580126 = validateParameter(valid_580126, JString, required = false,
+  if valid_589158 != nil:
+    section.add "orderBy", valid_589158
+  var valid_589159 = query.getOrDefault("key")
+  valid_589159 = validateParameter(valid_589159, JString, required = false,
                                  default = nil)
-  if valid_580126 != nil:
-    section.add "key", valid_580126
-  var valid_580127 = query.getOrDefault("prettyPrint")
-  valid_580127 = validateParameter(valid_580127, JBool, required = false,
+  if valid_589159 != nil:
+    section.add "key", valid_589159
+  var valid_589160 = query.getOrDefault("prettyPrint")
+  valid_589160 = validateParameter(valid_589160, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580127 != nil:
-    section.add "prettyPrint", valid_580127
+  if valid_589160 != nil:
+    section.add "prettyPrint", valid_589160
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1708,20 +1708,20 @@ proc validate_PlusDomainsPeopleList_580114(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580128: Call_PlusDomainsPeopleList_580113; path: JsonNode;
+proc call*(call_589161: Call_PlusDomainsPeopleList_589146; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## List all of the people in the specified collection.
   ## 
-  let valid = call_580128.validator(path, query, header, formData, body)
-  let scheme = call_580128.pickScheme
+  let valid = call_589161.validator(path, query, header, formData, body)
+  let scheme = call_589161.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580128.url(scheme.get, call_580128.host, call_580128.base,
-                         call_580128.route, valid.getOrDefault("path"),
+  let url = call_589161.url(scheme.get, call_589161.host, call_589161.base,
+                         call_589161.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580128, url, valid)
+  result = hook(call_589161, url, valid)
 
-proc call*(call_580129: Call_PlusDomainsPeopleList_580113; userId: string;
+proc call*(call_589162: Call_PlusDomainsPeopleList_589146; userId: string;
           fields: string = ""; pageToken: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; collection: string = "circled";
           userIp: string = ""; maxResults: int = 100; orderBy: string = "alphabetical";
@@ -1752,27 +1752,27 @@ proc call*(call_580129: Call_PlusDomainsPeopleList_580113; userId: string;
   ##              : Returns response with indentations and line breaks.
   ##   userId: string (required)
   ##         : Get the collection of people for the person identified. Use "me" to indicate the authenticated user.
-  var path_580130 = newJObject()
-  var query_580131 = newJObject()
-  add(query_580131, "fields", newJString(fields))
-  add(query_580131, "pageToken", newJString(pageToken))
-  add(query_580131, "quotaUser", newJString(quotaUser))
-  add(query_580131, "alt", newJString(alt))
-  add(query_580131, "oauth_token", newJString(oauthToken))
-  add(path_580130, "collection", newJString(collection))
-  add(query_580131, "userIp", newJString(userIp))
-  add(query_580131, "maxResults", newJInt(maxResults))
-  add(query_580131, "orderBy", newJString(orderBy))
-  add(query_580131, "key", newJString(key))
-  add(query_580131, "prettyPrint", newJBool(prettyPrint))
-  add(path_580130, "userId", newJString(userId))
-  result = call_580129.call(path_580130, query_580131, nil, nil, nil)
+  var path_589163 = newJObject()
+  var query_589164 = newJObject()
+  add(query_589164, "fields", newJString(fields))
+  add(query_589164, "pageToken", newJString(pageToken))
+  add(query_589164, "quotaUser", newJString(quotaUser))
+  add(query_589164, "alt", newJString(alt))
+  add(query_589164, "oauth_token", newJString(oauthToken))
+  add(path_589163, "collection", newJString(collection))
+  add(query_589164, "userIp", newJString(userIp))
+  add(query_589164, "maxResults", newJInt(maxResults))
+  add(query_589164, "orderBy", newJString(orderBy))
+  add(query_589164, "key", newJString(key))
+  add(query_589164, "prettyPrint", newJBool(prettyPrint))
+  add(path_589163, "userId", newJString(userId))
+  result = call_589162.call(path_589163, query_589164, nil, nil, nil)
 
-var plusDomainsPeopleList* = Call_PlusDomainsPeopleList_580113(
+var plusDomainsPeopleList* = Call_PlusDomainsPeopleList_589146(
     name: "plusDomainsPeopleList", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/people/{userId}/people/{collection}",
-    validator: validate_PlusDomainsPeopleList_580114, base: "/plusDomains/v1",
-    url: url_PlusDomainsPeopleList_580115, schemes: {Scheme.Https})
+    validator: validate_PlusDomainsPeopleList_589147, base: "/plusDomains/v1",
+    url: url_PlusDomainsPeopleList_589148, schemes: {Scheme.Https})
 export
   rest
 
@@ -1814,7 +1814,7 @@ proc store(auth: var GoogleAuth; token: string; expiry: int; form: string) =
   auth.form = form
   auth.digest = auth.hash
 
-proc authenticate*(fresh: float64 = -3600.0; lifetime: int = 3600): Future[bool] {.async.} =
+proc authenticate*(fresh: float64 = 3600.0; lifetime: int = 3600): Future[bool] {.async.} =
   ## get or refresh an authentication token; provide `fresh`
   ## to ensure that the token won't expire in the next N seconds.
   ## provide `lifetime` to indicate how long the token should last.

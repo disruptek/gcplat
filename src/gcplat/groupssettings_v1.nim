@@ -29,15 +29,15 @@ type
     url*: proc (protocol: Scheme; host: string; base: string; route: string;
               path: JsonNode; query: JsonNode): Uri
 
-  OpenApiRestCall_579408 = ref object of OpenApiRestCall
+  OpenApiRestCall_588441 = ref object of OpenApiRestCall
 proc hash(scheme: Scheme): Hash {.used.} =
   result = hash(ord(scheme))
 
-proc clone[T: OpenApiRestCall_579408](t: T): T {.used.} =
+proc clone[T: OpenApiRestCall_588441](t: T): T {.used.} =
   result = T(name: t.name, meth: t.meth, host: t.host, base: t.base, route: t.route,
            schemes: t.schemes, validator: t.validator, url: t.url)
 
-proc pickScheme(t: OpenApiRestCall_579408): Option[Scheme] {.used.} =
+proc pickScheme(t: OpenApiRestCall_588441): Option[Scheme] {.used.} =
   ## select a supported scheme from a set of candidates
   for scheme in Scheme.low ..
       Scheme.high:
@@ -74,7 +74,7 @@ type
   PathTokenKind = enum
     ConstantSegment, VariableSegment
   PathToken = tuple[kind: PathTokenKind, value: string]
-proc queryString(query: JsonNode): string =
+proc queryString(query: JsonNode): string {.used.} =
   var qs: seq[KeyVal]
   if query == nil:
     return ""
@@ -82,7 +82,7 @@ proc queryString(query: JsonNode): string =
     qs.add (key: k, val: v.getStr)
   result = encodeQuery(qs)
 
-proc hydratePath(input: JsonNode; segments: seq[PathToken]): Option[string] =
+proc hydratePath(input: JsonNode; segments: seq[PathToken]): Option[string] {.used.} =
   ## reconstitute a path with constants and variable values taken from json
   var head: string
   if segments.len == 0:
@@ -108,8 +108,8 @@ const
 proc composeQueryString(query: JsonNode): string
 method hook(call: OpenApiRestCall; url: Uri; input: JsonNode): Recallable {.base.}
 type
-  Call_GroupsSettingsGroupsUpdate_579960 = ref object of OpenApiRestCall_579408
-proc url_GroupsSettingsGroupsUpdate_579962(protocol: Scheme; host: string;
+  Call_GroupsSettingsGroupsUpdate_588993 = ref object of OpenApiRestCall_588441
+proc url_GroupsSettingsGroupsUpdate_588995(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -124,7 +124,7 @@ proc url_GroupsSettingsGroupsUpdate_579962(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_GroupsSettingsGroupsUpdate_579961(path: JsonNode; query: JsonNode;
+proc validate_GroupsSettingsGroupsUpdate_588994(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Updates an existing resource.
   ## 
@@ -136,11 +136,11 @@ proc validate_GroupsSettingsGroupsUpdate_579961(path: JsonNode; query: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `groupUniqueId` field"
-  var valid_579963 = path.getOrDefault("groupUniqueId")
-  valid_579963 = validateParameter(valid_579963, JString, required = true,
+  var valid_588996 = path.getOrDefault("groupUniqueId")
+  valid_588996 = validateParameter(valid_588996, JString, required = true,
                                  default = nil)
-  if valid_579963 != nil:
-    section.add "groupUniqueId", valid_579963
+  if valid_588996 != nil:
+    section.add "groupUniqueId", valid_588996
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -158,41 +158,41 @@ proc validate_GroupsSettingsGroupsUpdate_579961(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_579964 = query.getOrDefault("fields")
-  valid_579964 = validateParameter(valid_579964, JString, required = false,
+  var valid_588997 = query.getOrDefault("fields")
+  valid_588997 = validateParameter(valid_588997, JString, required = false,
                                  default = nil)
-  if valid_579964 != nil:
-    section.add "fields", valid_579964
-  var valid_579965 = query.getOrDefault("quotaUser")
-  valid_579965 = validateParameter(valid_579965, JString, required = false,
+  if valid_588997 != nil:
+    section.add "fields", valid_588997
+  var valid_588998 = query.getOrDefault("quotaUser")
+  valid_588998 = validateParameter(valid_588998, JString, required = false,
                                  default = nil)
-  if valid_579965 != nil:
-    section.add "quotaUser", valid_579965
-  var valid_579966 = query.getOrDefault("alt")
-  valid_579966 = validateParameter(valid_579966, JString, required = false,
+  if valid_588998 != nil:
+    section.add "quotaUser", valid_588998
+  var valid_588999 = query.getOrDefault("alt")
+  valid_588999 = validateParameter(valid_588999, JString, required = false,
                                  default = newJString("atom"))
-  if valid_579966 != nil:
-    section.add "alt", valid_579966
-  var valid_579967 = query.getOrDefault("oauth_token")
-  valid_579967 = validateParameter(valid_579967, JString, required = false,
+  if valid_588999 != nil:
+    section.add "alt", valid_588999
+  var valid_589000 = query.getOrDefault("oauth_token")
+  valid_589000 = validateParameter(valid_589000, JString, required = false,
                                  default = nil)
-  if valid_579967 != nil:
-    section.add "oauth_token", valid_579967
-  var valid_579968 = query.getOrDefault("userIp")
-  valid_579968 = validateParameter(valid_579968, JString, required = false,
+  if valid_589000 != nil:
+    section.add "oauth_token", valid_589000
+  var valid_589001 = query.getOrDefault("userIp")
+  valid_589001 = validateParameter(valid_589001, JString, required = false,
                                  default = nil)
-  if valid_579968 != nil:
-    section.add "userIp", valid_579968
-  var valid_579969 = query.getOrDefault("key")
-  valid_579969 = validateParameter(valid_579969, JString, required = false,
+  if valid_589001 != nil:
+    section.add "userIp", valid_589001
+  var valid_589002 = query.getOrDefault("key")
+  valid_589002 = validateParameter(valid_589002, JString, required = false,
                                  default = nil)
-  if valid_579969 != nil:
-    section.add "key", valid_579969
-  var valid_579970 = query.getOrDefault("prettyPrint")
-  valid_579970 = validateParameter(valid_579970, JBool, required = false,
+  if valid_589002 != nil:
+    section.add "key", valid_589002
+  var valid_589003 = query.getOrDefault("prettyPrint")
+  valid_589003 = validateParameter(valid_589003, JBool, required = false,
                                  default = newJBool(true))
-  if valid_579970 != nil:
-    section.add "prettyPrint", valid_579970
+  if valid_589003 != nil:
+    section.add "prettyPrint", valid_589003
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -204,20 +204,20 @@ proc validate_GroupsSettingsGroupsUpdate_579961(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_579972: Call_GroupsSettingsGroupsUpdate_579960; path: JsonNode;
+proc call*(call_589005: Call_GroupsSettingsGroupsUpdate_588993; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Updates an existing resource.
   ## 
-  let valid = call_579972.validator(path, query, header, formData, body)
-  let scheme = call_579972.pickScheme
+  let valid = call_589005.validator(path, query, header, formData, body)
+  let scheme = call_589005.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_579972.url(scheme.get, call_579972.host, call_579972.base,
-                         call_579972.route, valid.getOrDefault("path"),
+  let url = call_589005.url(scheme.get, call_589005.host, call_589005.base,
+                         call_589005.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_579972, url, valid)
+  result = hook(call_589005, url, valid)
 
-proc call*(call_579973: Call_GroupsSettingsGroupsUpdate_579960;
+proc call*(call_589006: Call_GroupsSettingsGroupsUpdate_588993;
           groupUniqueId: string; fields: string = ""; quotaUser: string = "";
           alt: string = "atom"; oauthToken: string = ""; userIp: string = "";
           key: string = ""; body: JsonNode = nil; prettyPrint: bool = true): Recallable =
@@ -240,30 +240,30 @@ proc call*(call_579973: Call_GroupsSettingsGroupsUpdate_579960;
   ##              : Returns response with indentations and line breaks.
   ##   groupUniqueId: string (required)
   ##                : The group's email address.
-  var path_579974 = newJObject()
-  var query_579975 = newJObject()
-  var body_579976 = newJObject()
-  add(query_579975, "fields", newJString(fields))
-  add(query_579975, "quotaUser", newJString(quotaUser))
-  add(query_579975, "alt", newJString(alt))
-  add(query_579975, "oauth_token", newJString(oauthToken))
-  add(query_579975, "userIp", newJString(userIp))
-  add(query_579975, "key", newJString(key))
+  var path_589007 = newJObject()
+  var query_589008 = newJObject()
+  var body_589009 = newJObject()
+  add(query_589008, "fields", newJString(fields))
+  add(query_589008, "quotaUser", newJString(quotaUser))
+  add(query_589008, "alt", newJString(alt))
+  add(query_589008, "oauth_token", newJString(oauthToken))
+  add(query_589008, "userIp", newJString(userIp))
+  add(query_589008, "key", newJString(key))
   if body != nil:
-    body_579976 = body
-  add(query_579975, "prettyPrint", newJBool(prettyPrint))
-  add(path_579974, "groupUniqueId", newJString(groupUniqueId))
-  result = call_579973.call(path_579974, query_579975, nil, nil, body_579976)
+    body_589009 = body
+  add(query_589008, "prettyPrint", newJBool(prettyPrint))
+  add(path_589007, "groupUniqueId", newJString(groupUniqueId))
+  result = call_589006.call(path_589007, query_589008, nil, nil, body_589009)
 
-var groupsSettingsGroupsUpdate* = Call_GroupsSettingsGroupsUpdate_579960(
+var groupsSettingsGroupsUpdate* = Call_GroupsSettingsGroupsUpdate_588993(
     name: "groupsSettingsGroupsUpdate", meth: HttpMethod.HttpPut,
     host: "www.googleapis.com", route: "/{groupUniqueId}",
-    validator: validate_GroupsSettingsGroupsUpdate_579961,
-    base: "/groups/v1/groups", url: url_GroupsSettingsGroupsUpdate_579962,
+    validator: validate_GroupsSettingsGroupsUpdate_588994,
+    base: "/groups/v1/groups", url: url_GroupsSettingsGroupsUpdate_588995,
     schemes: {Scheme.Https})
 type
-  Call_GroupsSettingsGroupsGet_579676 = ref object of OpenApiRestCall_579408
-proc url_GroupsSettingsGroupsGet_579678(protocol: Scheme; host: string; base: string;
+  Call_GroupsSettingsGroupsGet_588709 = ref object of OpenApiRestCall_588441
+proc url_GroupsSettingsGroupsGet_588711(protocol: Scheme; host: string; base: string;
                                        route: string; path: JsonNode;
                                        query: JsonNode): Uri =
   result.scheme = $protocol
@@ -279,7 +279,7 @@ proc url_GroupsSettingsGroupsGet_579678(protocol: Scheme; host: string; base: st
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_GroupsSettingsGroupsGet_579677(path: JsonNode; query: JsonNode;
+proc validate_GroupsSettingsGroupsGet_588710(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Gets one resource by id.
   ## 
@@ -291,11 +291,11 @@ proc validate_GroupsSettingsGroupsGet_579677(path: JsonNode; query: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `groupUniqueId` field"
-  var valid_579804 = path.getOrDefault("groupUniqueId")
-  valid_579804 = validateParameter(valid_579804, JString, required = true,
+  var valid_588837 = path.getOrDefault("groupUniqueId")
+  valid_588837 = validateParameter(valid_588837, JString, required = true,
                                  default = nil)
-  if valid_579804 != nil:
-    section.add "groupUniqueId", valid_579804
+  if valid_588837 != nil:
+    section.add "groupUniqueId", valid_588837
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -313,41 +313,41 @@ proc validate_GroupsSettingsGroupsGet_579677(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_579805 = query.getOrDefault("fields")
-  valid_579805 = validateParameter(valid_579805, JString, required = false,
+  var valid_588838 = query.getOrDefault("fields")
+  valid_588838 = validateParameter(valid_588838, JString, required = false,
                                  default = nil)
-  if valid_579805 != nil:
-    section.add "fields", valid_579805
-  var valid_579806 = query.getOrDefault("quotaUser")
-  valid_579806 = validateParameter(valid_579806, JString, required = false,
+  if valid_588838 != nil:
+    section.add "fields", valid_588838
+  var valid_588839 = query.getOrDefault("quotaUser")
+  valid_588839 = validateParameter(valid_588839, JString, required = false,
                                  default = nil)
-  if valid_579806 != nil:
-    section.add "quotaUser", valid_579806
-  var valid_579820 = query.getOrDefault("alt")
-  valid_579820 = validateParameter(valid_579820, JString, required = false,
+  if valid_588839 != nil:
+    section.add "quotaUser", valid_588839
+  var valid_588853 = query.getOrDefault("alt")
+  valid_588853 = validateParameter(valid_588853, JString, required = false,
                                  default = newJString("atom"))
-  if valid_579820 != nil:
-    section.add "alt", valid_579820
-  var valid_579821 = query.getOrDefault("oauth_token")
-  valid_579821 = validateParameter(valid_579821, JString, required = false,
+  if valid_588853 != nil:
+    section.add "alt", valid_588853
+  var valid_588854 = query.getOrDefault("oauth_token")
+  valid_588854 = validateParameter(valid_588854, JString, required = false,
                                  default = nil)
-  if valid_579821 != nil:
-    section.add "oauth_token", valid_579821
-  var valid_579822 = query.getOrDefault("userIp")
-  valid_579822 = validateParameter(valid_579822, JString, required = false,
+  if valid_588854 != nil:
+    section.add "oauth_token", valid_588854
+  var valid_588855 = query.getOrDefault("userIp")
+  valid_588855 = validateParameter(valid_588855, JString, required = false,
                                  default = nil)
-  if valid_579822 != nil:
-    section.add "userIp", valid_579822
-  var valid_579823 = query.getOrDefault("key")
-  valid_579823 = validateParameter(valid_579823, JString, required = false,
+  if valid_588855 != nil:
+    section.add "userIp", valid_588855
+  var valid_588856 = query.getOrDefault("key")
+  valid_588856 = validateParameter(valid_588856, JString, required = false,
                                  default = nil)
-  if valid_579823 != nil:
-    section.add "key", valid_579823
-  var valid_579824 = query.getOrDefault("prettyPrint")
-  valid_579824 = validateParameter(valid_579824, JBool, required = false,
+  if valid_588856 != nil:
+    section.add "key", valid_588856
+  var valid_588857 = query.getOrDefault("prettyPrint")
+  valid_588857 = validateParameter(valid_588857, JBool, required = false,
                                  default = newJBool(true))
-  if valid_579824 != nil:
-    section.add "prettyPrint", valid_579824
+  if valid_588857 != nil:
+    section.add "prettyPrint", valid_588857
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -356,20 +356,20 @@ proc validate_GroupsSettingsGroupsGet_579677(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_579847: Call_GroupsSettingsGroupsGet_579676; path: JsonNode;
+proc call*(call_588880: Call_GroupsSettingsGroupsGet_588709; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Gets one resource by id.
   ## 
-  let valid = call_579847.validator(path, query, header, formData, body)
-  let scheme = call_579847.pickScheme
+  let valid = call_588880.validator(path, query, header, formData, body)
+  let scheme = call_588880.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_579847.url(scheme.get, call_579847.host, call_579847.base,
-                         call_579847.route, valid.getOrDefault("path"),
+  let url = call_588880.url(scheme.get, call_588880.host, call_588880.base,
+                         call_588880.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_579847, url, valid)
+  result = hook(call_588880, url, valid)
 
-proc call*(call_579918: Call_GroupsSettingsGroupsGet_579676; groupUniqueId: string;
+proc call*(call_588951: Call_GroupsSettingsGroupsGet_588709; groupUniqueId: string;
           fields: string = ""; quotaUser: string = ""; alt: string = "atom";
           oauthToken: string = ""; userIp: string = ""; key: string = "";
           prettyPrint: bool = true): Recallable =
@@ -391,26 +391,26 @@ proc call*(call_579918: Call_GroupsSettingsGroupsGet_579676; groupUniqueId: stri
   ##              : Returns response with indentations and line breaks.
   ##   groupUniqueId: string (required)
   ##                : The group's email address.
-  var path_579919 = newJObject()
-  var query_579921 = newJObject()
-  add(query_579921, "fields", newJString(fields))
-  add(query_579921, "quotaUser", newJString(quotaUser))
-  add(query_579921, "alt", newJString(alt))
-  add(query_579921, "oauth_token", newJString(oauthToken))
-  add(query_579921, "userIp", newJString(userIp))
-  add(query_579921, "key", newJString(key))
-  add(query_579921, "prettyPrint", newJBool(prettyPrint))
-  add(path_579919, "groupUniqueId", newJString(groupUniqueId))
-  result = call_579918.call(path_579919, query_579921, nil, nil, nil)
+  var path_588952 = newJObject()
+  var query_588954 = newJObject()
+  add(query_588954, "fields", newJString(fields))
+  add(query_588954, "quotaUser", newJString(quotaUser))
+  add(query_588954, "alt", newJString(alt))
+  add(query_588954, "oauth_token", newJString(oauthToken))
+  add(query_588954, "userIp", newJString(userIp))
+  add(query_588954, "key", newJString(key))
+  add(query_588954, "prettyPrint", newJBool(prettyPrint))
+  add(path_588952, "groupUniqueId", newJString(groupUniqueId))
+  result = call_588951.call(path_588952, query_588954, nil, nil, nil)
 
-var groupsSettingsGroupsGet* = Call_GroupsSettingsGroupsGet_579676(
+var groupsSettingsGroupsGet* = Call_GroupsSettingsGroupsGet_588709(
     name: "groupsSettingsGroupsGet", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/{groupUniqueId}",
-    validator: validate_GroupsSettingsGroupsGet_579677, base: "/groups/v1/groups",
-    url: url_GroupsSettingsGroupsGet_579678, schemes: {Scheme.Https})
+    validator: validate_GroupsSettingsGroupsGet_588710, base: "/groups/v1/groups",
+    url: url_GroupsSettingsGroupsGet_588711, schemes: {Scheme.Https})
 type
-  Call_GroupsSettingsGroupsPatch_579977 = ref object of OpenApiRestCall_579408
-proc url_GroupsSettingsGroupsPatch_579979(protocol: Scheme; host: string;
+  Call_GroupsSettingsGroupsPatch_589010 = ref object of OpenApiRestCall_588441
+proc url_GroupsSettingsGroupsPatch_589012(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -425,7 +425,7 @@ proc url_GroupsSettingsGroupsPatch_579979(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_GroupsSettingsGroupsPatch_579978(path: JsonNode; query: JsonNode;
+proc validate_GroupsSettingsGroupsPatch_589011(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Updates an existing resource. This method supports patch semantics.
   ## 
@@ -437,11 +437,11 @@ proc validate_GroupsSettingsGroupsPatch_579978(path: JsonNode; query: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `groupUniqueId` field"
-  var valid_579980 = path.getOrDefault("groupUniqueId")
-  valid_579980 = validateParameter(valid_579980, JString, required = true,
+  var valid_589013 = path.getOrDefault("groupUniqueId")
+  valid_589013 = validateParameter(valid_589013, JString, required = true,
                                  default = nil)
-  if valid_579980 != nil:
-    section.add "groupUniqueId", valid_579980
+  if valid_589013 != nil:
+    section.add "groupUniqueId", valid_589013
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -459,41 +459,41 @@ proc validate_GroupsSettingsGroupsPatch_579978(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_579981 = query.getOrDefault("fields")
-  valid_579981 = validateParameter(valid_579981, JString, required = false,
+  var valid_589014 = query.getOrDefault("fields")
+  valid_589014 = validateParameter(valid_589014, JString, required = false,
                                  default = nil)
-  if valid_579981 != nil:
-    section.add "fields", valid_579981
-  var valid_579982 = query.getOrDefault("quotaUser")
-  valid_579982 = validateParameter(valid_579982, JString, required = false,
+  if valid_589014 != nil:
+    section.add "fields", valid_589014
+  var valid_589015 = query.getOrDefault("quotaUser")
+  valid_589015 = validateParameter(valid_589015, JString, required = false,
                                  default = nil)
-  if valid_579982 != nil:
-    section.add "quotaUser", valid_579982
-  var valid_579983 = query.getOrDefault("alt")
-  valid_579983 = validateParameter(valid_579983, JString, required = false,
+  if valid_589015 != nil:
+    section.add "quotaUser", valid_589015
+  var valid_589016 = query.getOrDefault("alt")
+  valid_589016 = validateParameter(valid_589016, JString, required = false,
                                  default = newJString("atom"))
-  if valid_579983 != nil:
-    section.add "alt", valid_579983
-  var valid_579984 = query.getOrDefault("oauth_token")
-  valid_579984 = validateParameter(valid_579984, JString, required = false,
+  if valid_589016 != nil:
+    section.add "alt", valid_589016
+  var valid_589017 = query.getOrDefault("oauth_token")
+  valid_589017 = validateParameter(valid_589017, JString, required = false,
                                  default = nil)
-  if valid_579984 != nil:
-    section.add "oauth_token", valid_579984
-  var valid_579985 = query.getOrDefault("userIp")
-  valid_579985 = validateParameter(valid_579985, JString, required = false,
+  if valid_589017 != nil:
+    section.add "oauth_token", valid_589017
+  var valid_589018 = query.getOrDefault("userIp")
+  valid_589018 = validateParameter(valid_589018, JString, required = false,
                                  default = nil)
-  if valid_579985 != nil:
-    section.add "userIp", valid_579985
-  var valid_579986 = query.getOrDefault("key")
-  valid_579986 = validateParameter(valid_579986, JString, required = false,
+  if valid_589018 != nil:
+    section.add "userIp", valid_589018
+  var valid_589019 = query.getOrDefault("key")
+  valid_589019 = validateParameter(valid_589019, JString, required = false,
                                  default = nil)
-  if valid_579986 != nil:
-    section.add "key", valid_579986
-  var valid_579987 = query.getOrDefault("prettyPrint")
-  valid_579987 = validateParameter(valid_579987, JBool, required = false,
+  if valid_589019 != nil:
+    section.add "key", valid_589019
+  var valid_589020 = query.getOrDefault("prettyPrint")
+  valid_589020 = validateParameter(valid_589020, JBool, required = false,
                                  default = newJBool(true))
-  if valid_579987 != nil:
-    section.add "prettyPrint", valid_579987
+  if valid_589020 != nil:
+    section.add "prettyPrint", valid_589020
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -505,20 +505,20 @@ proc validate_GroupsSettingsGroupsPatch_579978(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_579989: Call_GroupsSettingsGroupsPatch_579977; path: JsonNode;
+proc call*(call_589022: Call_GroupsSettingsGroupsPatch_589010; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Updates an existing resource. This method supports patch semantics.
   ## 
-  let valid = call_579989.validator(path, query, header, formData, body)
-  let scheme = call_579989.pickScheme
+  let valid = call_589022.validator(path, query, header, formData, body)
+  let scheme = call_589022.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_579989.url(scheme.get, call_579989.host, call_579989.base,
-                         call_579989.route, valid.getOrDefault("path"),
+  let url = call_589022.url(scheme.get, call_589022.host, call_589022.base,
+                         call_589022.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_579989, url, valid)
+  result = hook(call_589022, url, valid)
 
-proc call*(call_579990: Call_GroupsSettingsGroupsPatch_579977;
+proc call*(call_589023: Call_GroupsSettingsGroupsPatch_589010;
           groupUniqueId: string; fields: string = ""; quotaUser: string = "";
           alt: string = "atom"; oauthToken: string = ""; userIp: string = "";
           key: string = ""; body: JsonNode = nil; prettyPrint: bool = true): Recallable =
@@ -541,26 +541,26 @@ proc call*(call_579990: Call_GroupsSettingsGroupsPatch_579977;
   ##              : Returns response with indentations and line breaks.
   ##   groupUniqueId: string (required)
   ##                : The group's email address.
-  var path_579991 = newJObject()
-  var query_579992 = newJObject()
-  var body_579993 = newJObject()
-  add(query_579992, "fields", newJString(fields))
-  add(query_579992, "quotaUser", newJString(quotaUser))
-  add(query_579992, "alt", newJString(alt))
-  add(query_579992, "oauth_token", newJString(oauthToken))
-  add(query_579992, "userIp", newJString(userIp))
-  add(query_579992, "key", newJString(key))
+  var path_589024 = newJObject()
+  var query_589025 = newJObject()
+  var body_589026 = newJObject()
+  add(query_589025, "fields", newJString(fields))
+  add(query_589025, "quotaUser", newJString(quotaUser))
+  add(query_589025, "alt", newJString(alt))
+  add(query_589025, "oauth_token", newJString(oauthToken))
+  add(query_589025, "userIp", newJString(userIp))
+  add(query_589025, "key", newJString(key))
   if body != nil:
-    body_579993 = body
-  add(query_579992, "prettyPrint", newJBool(prettyPrint))
-  add(path_579991, "groupUniqueId", newJString(groupUniqueId))
-  result = call_579990.call(path_579991, query_579992, nil, nil, body_579993)
+    body_589026 = body
+  add(query_589025, "prettyPrint", newJBool(prettyPrint))
+  add(path_589024, "groupUniqueId", newJString(groupUniqueId))
+  result = call_589023.call(path_589024, query_589025, nil, nil, body_589026)
 
-var groupsSettingsGroupsPatch* = Call_GroupsSettingsGroupsPatch_579977(
+var groupsSettingsGroupsPatch* = Call_GroupsSettingsGroupsPatch_589010(
     name: "groupsSettingsGroupsPatch", meth: HttpMethod.HttpPatch,
     host: "www.googleapis.com", route: "/{groupUniqueId}",
-    validator: validate_GroupsSettingsGroupsPatch_579978,
-    base: "/groups/v1/groups", url: url_GroupsSettingsGroupsPatch_579979,
+    validator: validate_GroupsSettingsGroupsPatch_589011,
+    base: "/groups/v1/groups", url: url_GroupsSettingsGroupsPatch_589012,
     schemes: {Scheme.Https})
 export
   rest
@@ -603,7 +603,7 @@ proc store(auth: var GoogleAuth; token: string; expiry: int; form: string) =
   auth.form = form
   auth.digest = auth.hash
 
-proc authenticate*(fresh: float64 = -3600.0; lifetime: int = 3600): Future[bool] {.async.} =
+proc authenticate*(fresh: float64 = 3600.0; lifetime: int = 3600): Future[bool] {.async.} =
   ## get or refresh an authentication token; provide `fresh`
   ## to ensure that the token won't expire in the next N seconds.
   ## provide `lifetime` to indicate how long the token should last.

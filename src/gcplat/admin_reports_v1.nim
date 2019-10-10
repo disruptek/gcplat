@@ -29,15 +29,15 @@ type
     url*: proc (protocol: Scheme; host: string; base: string; route: string;
               path: JsonNode; query: JsonNode): Uri
 
-  OpenApiRestCall_579424 = ref object of OpenApiRestCall
+  OpenApiRestCall_588457 = ref object of OpenApiRestCall
 proc hash(scheme: Scheme): Hash {.used.} =
   result = hash(ord(scheme))
 
-proc clone[T: OpenApiRestCall_579424](t: T): T {.used.} =
+proc clone[T: OpenApiRestCall_588457](t: T): T {.used.} =
   result = T(name: t.name, meth: t.meth, host: t.host, base: t.base, route: t.route,
            schemes: t.schemes, validator: t.validator, url: t.url)
 
-proc pickScheme(t: OpenApiRestCall_579424): Option[Scheme] {.used.} =
+proc pickScheme(t: OpenApiRestCall_588457): Option[Scheme] {.used.} =
   ## select a supported scheme from a set of candidates
   for scheme in Scheme.low ..
       Scheme.high:
@@ -74,7 +74,7 @@ type
   PathTokenKind = enum
     ConstantSegment, VariableSegment
   PathToken = tuple[kind: PathTokenKind, value: string]
-proc queryString(query: JsonNode): string =
+proc queryString(query: JsonNode): string {.used.} =
   var qs: seq[KeyVal]
   if query == nil:
     return ""
@@ -82,7 +82,7 @@ proc queryString(query: JsonNode): string =
     qs.add (key: k, val: v.getStr)
   result = encodeQuery(qs)
 
-proc hydratePath(input: JsonNode; segments: seq[PathToken]): Option[string] =
+proc hydratePath(input: JsonNode; segments: seq[PathToken]): Option[string] {.used.} =
   ## reconstitute a path with constants and variable values taken from json
   var head: string
   if segments.len == 0:
@@ -108,8 +108,8 @@ const
 proc composeQueryString(query: JsonNode): string
 method hook(call: OpenApiRestCall; url: Uri; input: JsonNode): Recallable {.base.}
 type
-  Call_ReportsActivitiesList_579692 = ref object of OpenApiRestCall_579424
-proc url_ReportsActivitiesList_579694(protocol: Scheme; host: string; base: string;
+  Call_ReportsActivitiesList_588725 = ref object of OpenApiRestCall_588457
+proc url_ReportsActivitiesList_588727(protocol: Scheme; host: string; base: string;
                                      route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -127,7 +127,7 @@ proc url_ReportsActivitiesList_579694(protocol: Scheme; host: string; base: stri
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_ReportsActivitiesList_579693(path: JsonNode; query: JsonNode;
+proc validate_ReportsActivitiesList_588726(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Retrieves a list of activities for a specific customer and application.
   ## 
@@ -141,16 +141,16 @@ proc validate_ReportsActivitiesList_579693(path: JsonNode; query: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `applicationName` field"
-  var valid_579820 = path.getOrDefault("applicationName")
-  valid_579820 = validateParameter(valid_579820, JString, required = true,
+  var valid_588853 = path.getOrDefault("applicationName")
+  valid_588853 = validateParameter(valid_588853, JString, required = true,
                                  default = nil)
-  if valid_579820 != nil:
-    section.add "applicationName", valid_579820
-  var valid_579821 = path.getOrDefault("userKey")
-  valid_579821 = validateParameter(valid_579821, JString, required = true,
+  if valid_588853 != nil:
+    section.add "applicationName", valid_588853
+  var valid_588854 = path.getOrDefault("userKey")
+  valid_588854 = validateParameter(valid_588854, JString, required = true,
                                  default = nil)
-  if valid_579821 != nil:
-    section.add "userKey", valid_579821
+  if valid_588854 != nil:
+    section.add "userKey", valid_588854
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -186,85 +186,85 @@ proc validate_ReportsActivitiesList_579693(path: JsonNode; query: JsonNode;
   ##   orgUnitID: JString
   ##            : the organizational unit's(OU) ID to filter activities from users belonging to a specific OU or one of its sub-OU(s)
   section = newJObject()
-  var valid_579822 = query.getOrDefault("fields")
-  valid_579822 = validateParameter(valid_579822, JString, required = false,
+  var valid_588855 = query.getOrDefault("fields")
+  valid_588855 = validateParameter(valid_588855, JString, required = false,
                                  default = nil)
-  if valid_579822 != nil:
-    section.add "fields", valid_579822
-  var valid_579823 = query.getOrDefault("pageToken")
-  valid_579823 = validateParameter(valid_579823, JString, required = false,
+  if valid_588855 != nil:
+    section.add "fields", valid_588855
+  var valid_588856 = query.getOrDefault("pageToken")
+  valid_588856 = validateParameter(valid_588856, JString, required = false,
                                  default = nil)
-  if valid_579823 != nil:
-    section.add "pageToken", valid_579823
-  var valid_579824 = query.getOrDefault("quotaUser")
-  valid_579824 = validateParameter(valid_579824, JString, required = false,
+  if valid_588856 != nil:
+    section.add "pageToken", valid_588856
+  var valid_588857 = query.getOrDefault("quotaUser")
+  valid_588857 = validateParameter(valid_588857, JString, required = false,
                                  default = nil)
-  if valid_579824 != nil:
-    section.add "quotaUser", valid_579824
-  var valid_579838 = query.getOrDefault("alt")
-  valid_579838 = validateParameter(valid_579838, JString, required = false,
+  if valid_588857 != nil:
+    section.add "quotaUser", valid_588857
+  var valid_588871 = query.getOrDefault("alt")
+  valid_588871 = validateParameter(valid_588871, JString, required = false,
                                  default = newJString("json"))
-  if valid_579838 != nil:
-    section.add "alt", valid_579838
-  var valid_579839 = query.getOrDefault("customerId")
-  valid_579839 = validateParameter(valid_579839, JString, required = false,
+  if valid_588871 != nil:
+    section.add "alt", valid_588871
+  var valid_588872 = query.getOrDefault("customerId")
+  valid_588872 = validateParameter(valid_588872, JString, required = false,
                                  default = nil)
-  if valid_579839 != nil:
-    section.add "customerId", valid_579839
-  var valid_579840 = query.getOrDefault("oauth_token")
-  valid_579840 = validateParameter(valid_579840, JString, required = false,
+  if valid_588872 != nil:
+    section.add "customerId", valid_588872
+  var valid_588873 = query.getOrDefault("oauth_token")
+  valid_588873 = validateParameter(valid_588873, JString, required = false,
                                  default = nil)
-  if valid_579840 != nil:
-    section.add "oauth_token", valid_579840
-  var valid_579841 = query.getOrDefault("endTime")
-  valid_579841 = validateParameter(valid_579841, JString, required = false,
+  if valid_588873 != nil:
+    section.add "oauth_token", valid_588873
+  var valid_588874 = query.getOrDefault("endTime")
+  valid_588874 = validateParameter(valid_588874, JString, required = false,
                                  default = nil)
-  if valid_579841 != nil:
-    section.add "endTime", valid_579841
-  var valid_579842 = query.getOrDefault("userIp")
-  valid_579842 = validateParameter(valid_579842, JString, required = false,
+  if valid_588874 != nil:
+    section.add "endTime", valid_588874
+  var valid_588875 = query.getOrDefault("userIp")
+  valid_588875 = validateParameter(valid_588875, JString, required = false,
                                  default = nil)
-  if valid_579842 != nil:
-    section.add "userIp", valid_579842
-  var valid_579843 = query.getOrDefault("maxResults")
-  valid_579843 = validateParameter(valid_579843, JInt, required = false, default = nil)
-  if valid_579843 != nil:
-    section.add "maxResults", valid_579843
-  var valid_579844 = query.getOrDefault("key")
-  valid_579844 = validateParameter(valid_579844, JString, required = false,
+  if valid_588875 != nil:
+    section.add "userIp", valid_588875
+  var valid_588876 = query.getOrDefault("maxResults")
+  valid_588876 = validateParameter(valid_588876, JInt, required = false, default = nil)
+  if valid_588876 != nil:
+    section.add "maxResults", valid_588876
+  var valid_588877 = query.getOrDefault("key")
+  valid_588877 = validateParameter(valid_588877, JString, required = false,
                                  default = nil)
-  if valid_579844 != nil:
-    section.add "key", valid_579844
-  var valid_579845 = query.getOrDefault("filters")
-  valid_579845 = validateParameter(valid_579845, JString, required = false,
+  if valid_588877 != nil:
+    section.add "key", valid_588877
+  var valid_588878 = query.getOrDefault("filters")
+  valid_588878 = validateParameter(valid_588878, JString, required = false,
                                  default = nil)
-  if valid_579845 != nil:
-    section.add "filters", valid_579845
-  var valid_579846 = query.getOrDefault("eventName")
-  valid_579846 = validateParameter(valid_579846, JString, required = false,
+  if valid_588878 != nil:
+    section.add "filters", valid_588878
+  var valid_588879 = query.getOrDefault("eventName")
+  valid_588879 = validateParameter(valid_588879, JString, required = false,
                                  default = nil)
-  if valid_579846 != nil:
-    section.add "eventName", valid_579846
-  var valid_579847 = query.getOrDefault("actorIpAddress")
-  valid_579847 = validateParameter(valid_579847, JString, required = false,
+  if valid_588879 != nil:
+    section.add "eventName", valid_588879
+  var valid_588880 = query.getOrDefault("actorIpAddress")
+  valid_588880 = validateParameter(valid_588880, JString, required = false,
                                  default = nil)
-  if valid_579847 != nil:
-    section.add "actorIpAddress", valid_579847
-  var valid_579848 = query.getOrDefault("prettyPrint")
-  valid_579848 = validateParameter(valid_579848, JBool, required = false,
+  if valid_588880 != nil:
+    section.add "actorIpAddress", valid_588880
+  var valid_588881 = query.getOrDefault("prettyPrint")
+  valid_588881 = validateParameter(valid_588881, JBool, required = false,
                                  default = newJBool(true))
-  if valid_579848 != nil:
-    section.add "prettyPrint", valid_579848
-  var valid_579849 = query.getOrDefault("startTime")
-  valid_579849 = validateParameter(valid_579849, JString, required = false,
+  if valid_588881 != nil:
+    section.add "prettyPrint", valid_588881
+  var valid_588882 = query.getOrDefault("startTime")
+  valid_588882 = validateParameter(valid_588882, JString, required = false,
                                  default = nil)
-  if valid_579849 != nil:
-    section.add "startTime", valid_579849
-  var valid_579850 = query.getOrDefault("orgUnitID")
-  valid_579850 = validateParameter(valid_579850, JString, required = false,
+  if valid_588882 != nil:
+    section.add "startTime", valid_588882
+  var valid_588883 = query.getOrDefault("orgUnitID")
+  valid_588883 = validateParameter(valid_588883, JString, required = false,
                                  default = newJString(""))
-  if valid_579850 != nil:
-    section.add "orgUnitID", valid_579850
+  if valid_588883 != nil:
+    section.add "orgUnitID", valid_588883
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -273,20 +273,20 @@ proc validate_ReportsActivitiesList_579693(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_579873: Call_ReportsActivitiesList_579692; path: JsonNode;
+proc call*(call_588906: Call_ReportsActivitiesList_588725; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Retrieves a list of activities for a specific customer and application.
   ## 
-  let valid = call_579873.validator(path, query, header, formData, body)
-  let scheme = call_579873.pickScheme
+  let valid = call_588906.validator(path, query, header, formData, body)
+  let scheme = call_588906.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_579873.url(scheme.get, call_579873.host, call_579873.base,
-                         call_579873.route, valid.getOrDefault("path"),
+  let url = call_588906.url(scheme.get, call_588906.host, call_588906.base,
+                         call_588906.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_579873, url, valid)
+  result = hook(call_588906, url, valid)
 
-proc call*(call_579944: Call_ReportsActivitiesList_579692; applicationName: string;
+proc call*(call_588977: Call_ReportsActivitiesList_588725; applicationName: string;
           userKey: string; fields: string = ""; pageToken: string = "";
           quotaUser: string = ""; alt: string = "json"; customerId: string = "";
           oauthToken: string = ""; endTime: string = ""; userIp: string = "";
@@ -331,37 +331,37 @@ proc call*(call_579944: Call_ReportsActivitiesList_579692; applicationName: stri
   ##            : Return events which occurred at or after this time.
   ##   orgUnitID: string
   ##            : the organizational unit's(OU) ID to filter activities from users belonging to a specific OU or one of its sub-OU(s)
-  var path_579945 = newJObject()
-  var query_579947 = newJObject()
-  add(query_579947, "fields", newJString(fields))
-  add(query_579947, "pageToken", newJString(pageToken))
-  add(query_579947, "quotaUser", newJString(quotaUser))
-  add(path_579945, "applicationName", newJString(applicationName))
-  add(query_579947, "alt", newJString(alt))
-  add(query_579947, "customerId", newJString(customerId))
-  add(query_579947, "oauth_token", newJString(oauthToken))
-  add(query_579947, "endTime", newJString(endTime))
-  add(query_579947, "userIp", newJString(userIp))
-  add(path_579945, "userKey", newJString(userKey))
-  add(query_579947, "maxResults", newJInt(maxResults))
-  add(query_579947, "key", newJString(key))
-  add(query_579947, "filters", newJString(filters))
-  add(query_579947, "eventName", newJString(eventName))
-  add(query_579947, "actorIpAddress", newJString(actorIpAddress))
-  add(query_579947, "prettyPrint", newJBool(prettyPrint))
-  add(query_579947, "startTime", newJString(startTime))
-  add(query_579947, "orgUnitID", newJString(orgUnitID))
-  result = call_579944.call(path_579945, query_579947, nil, nil, nil)
+  var path_588978 = newJObject()
+  var query_588980 = newJObject()
+  add(query_588980, "fields", newJString(fields))
+  add(query_588980, "pageToken", newJString(pageToken))
+  add(query_588980, "quotaUser", newJString(quotaUser))
+  add(path_588978, "applicationName", newJString(applicationName))
+  add(query_588980, "alt", newJString(alt))
+  add(query_588980, "customerId", newJString(customerId))
+  add(query_588980, "oauth_token", newJString(oauthToken))
+  add(query_588980, "endTime", newJString(endTime))
+  add(query_588980, "userIp", newJString(userIp))
+  add(path_588978, "userKey", newJString(userKey))
+  add(query_588980, "maxResults", newJInt(maxResults))
+  add(query_588980, "key", newJString(key))
+  add(query_588980, "filters", newJString(filters))
+  add(query_588980, "eventName", newJString(eventName))
+  add(query_588980, "actorIpAddress", newJString(actorIpAddress))
+  add(query_588980, "prettyPrint", newJBool(prettyPrint))
+  add(query_588980, "startTime", newJString(startTime))
+  add(query_588980, "orgUnitID", newJString(orgUnitID))
+  result = call_588977.call(path_588978, query_588980, nil, nil, nil)
 
-var reportsActivitiesList* = Call_ReportsActivitiesList_579692(
+var reportsActivitiesList* = Call_ReportsActivitiesList_588725(
     name: "reportsActivitiesList", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com",
     route: "/activity/users/{userKey}/applications/{applicationName}",
-    validator: validate_ReportsActivitiesList_579693, base: "/admin/reports/v1",
-    url: url_ReportsActivitiesList_579694, schemes: {Scheme.Https})
+    validator: validate_ReportsActivitiesList_588726, base: "/admin/reports/v1",
+    url: url_ReportsActivitiesList_588727, schemes: {Scheme.Https})
 type
-  Call_ReportsActivitiesWatch_579986 = ref object of OpenApiRestCall_579424
-proc url_ReportsActivitiesWatch_579988(protocol: Scheme; host: string; base: string;
+  Call_ReportsActivitiesWatch_589019 = ref object of OpenApiRestCall_588457
+proc url_ReportsActivitiesWatch_589021(protocol: Scheme; host: string; base: string;
                                       route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -380,7 +380,7 @@ proc url_ReportsActivitiesWatch_579988(protocol: Scheme; host: string; base: str
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_ReportsActivitiesWatch_579987(path: JsonNode; query: JsonNode;
+proc validate_ReportsActivitiesWatch_589020(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Push changes to activities
   ## 
@@ -394,16 +394,16 @@ proc validate_ReportsActivitiesWatch_579987(path: JsonNode; query: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `applicationName` field"
-  var valid_579989 = path.getOrDefault("applicationName")
-  valid_579989 = validateParameter(valid_579989, JString, required = true,
+  var valid_589022 = path.getOrDefault("applicationName")
+  valid_589022 = validateParameter(valid_589022, JString, required = true,
                                  default = nil)
-  if valid_579989 != nil:
-    section.add "applicationName", valid_579989
-  var valid_579990 = path.getOrDefault("userKey")
-  valid_579990 = validateParameter(valid_579990, JString, required = true,
+  if valid_589022 != nil:
+    section.add "applicationName", valid_589022
+  var valid_589023 = path.getOrDefault("userKey")
+  valid_589023 = validateParameter(valid_589023, JString, required = true,
                                  default = nil)
-  if valid_579990 != nil:
-    section.add "userKey", valid_579990
+  if valid_589023 != nil:
+    section.add "userKey", valid_589023
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -439,85 +439,85 @@ proc validate_ReportsActivitiesWatch_579987(path: JsonNode; query: JsonNode;
   ##   orgUnitID: JString
   ##            : the organizational unit's(OU) ID to filter activities from users belonging to a specific OU or one of its sub-OU(s)
   section = newJObject()
-  var valid_579991 = query.getOrDefault("fields")
-  valid_579991 = validateParameter(valid_579991, JString, required = false,
+  var valid_589024 = query.getOrDefault("fields")
+  valid_589024 = validateParameter(valid_589024, JString, required = false,
                                  default = nil)
-  if valid_579991 != nil:
-    section.add "fields", valid_579991
-  var valid_579992 = query.getOrDefault("pageToken")
-  valid_579992 = validateParameter(valid_579992, JString, required = false,
+  if valid_589024 != nil:
+    section.add "fields", valid_589024
+  var valid_589025 = query.getOrDefault("pageToken")
+  valid_589025 = validateParameter(valid_589025, JString, required = false,
                                  default = nil)
-  if valid_579992 != nil:
-    section.add "pageToken", valid_579992
-  var valid_579993 = query.getOrDefault("quotaUser")
-  valid_579993 = validateParameter(valid_579993, JString, required = false,
+  if valid_589025 != nil:
+    section.add "pageToken", valid_589025
+  var valid_589026 = query.getOrDefault("quotaUser")
+  valid_589026 = validateParameter(valid_589026, JString, required = false,
                                  default = nil)
-  if valid_579993 != nil:
-    section.add "quotaUser", valid_579993
-  var valid_579994 = query.getOrDefault("alt")
-  valid_579994 = validateParameter(valid_579994, JString, required = false,
+  if valid_589026 != nil:
+    section.add "quotaUser", valid_589026
+  var valid_589027 = query.getOrDefault("alt")
+  valid_589027 = validateParameter(valid_589027, JString, required = false,
                                  default = newJString("json"))
-  if valid_579994 != nil:
-    section.add "alt", valid_579994
-  var valid_579995 = query.getOrDefault("customerId")
-  valid_579995 = validateParameter(valid_579995, JString, required = false,
+  if valid_589027 != nil:
+    section.add "alt", valid_589027
+  var valid_589028 = query.getOrDefault("customerId")
+  valid_589028 = validateParameter(valid_589028, JString, required = false,
                                  default = nil)
-  if valid_579995 != nil:
-    section.add "customerId", valid_579995
-  var valid_579996 = query.getOrDefault("oauth_token")
-  valid_579996 = validateParameter(valid_579996, JString, required = false,
+  if valid_589028 != nil:
+    section.add "customerId", valid_589028
+  var valid_589029 = query.getOrDefault("oauth_token")
+  valid_589029 = validateParameter(valid_589029, JString, required = false,
                                  default = nil)
-  if valid_579996 != nil:
-    section.add "oauth_token", valid_579996
-  var valid_579997 = query.getOrDefault("endTime")
-  valid_579997 = validateParameter(valid_579997, JString, required = false,
+  if valid_589029 != nil:
+    section.add "oauth_token", valid_589029
+  var valid_589030 = query.getOrDefault("endTime")
+  valid_589030 = validateParameter(valid_589030, JString, required = false,
                                  default = nil)
-  if valid_579997 != nil:
-    section.add "endTime", valid_579997
-  var valid_579998 = query.getOrDefault("userIp")
-  valid_579998 = validateParameter(valid_579998, JString, required = false,
+  if valid_589030 != nil:
+    section.add "endTime", valid_589030
+  var valid_589031 = query.getOrDefault("userIp")
+  valid_589031 = validateParameter(valid_589031, JString, required = false,
                                  default = nil)
-  if valid_579998 != nil:
-    section.add "userIp", valid_579998
-  var valid_579999 = query.getOrDefault("maxResults")
-  valid_579999 = validateParameter(valid_579999, JInt, required = false, default = nil)
-  if valid_579999 != nil:
-    section.add "maxResults", valid_579999
-  var valid_580000 = query.getOrDefault("key")
-  valid_580000 = validateParameter(valid_580000, JString, required = false,
+  if valid_589031 != nil:
+    section.add "userIp", valid_589031
+  var valid_589032 = query.getOrDefault("maxResults")
+  valid_589032 = validateParameter(valid_589032, JInt, required = false, default = nil)
+  if valid_589032 != nil:
+    section.add "maxResults", valid_589032
+  var valid_589033 = query.getOrDefault("key")
+  valid_589033 = validateParameter(valid_589033, JString, required = false,
                                  default = nil)
-  if valid_580000 != nil:
-    section.add "key", valid_580000
-  var valid_580001 = query.getOrDefault("filters")
-  valid_580001 = validateParameter(valid_580001, JString, required = false,
+  if valid_589033 != nil:
+    section.add "key", valid_589033
+  var valid_589034 = query.getOrDefault("filters")
+  valid_589034 = validateParameter(valid_589034, JString, required = false,
                                  default = nil)
-  if valid_580001 != nil:
-    section.add "filters", valid_580001
-  var valid_580002 = query.getOrDefault("eventName")
-  valid_580002 = validateParameter(valid_580002, JString, required = false,
+  if valid_589034 != nil:
+    section.add "filters", valid_589034
+  var valid_589035 = query.getOrDefault("eventName")
+  valid_589035 = validateParameter(valid_589035, JString, required = false,
                                  default = nil)
-  if valid_580002 != nil:
-    section.add "eventName", valid_580002
-  var valid_580003 = query.getOrDefault("actorIpAddress")
-  valid_580003 = validateParameter(valid_580003, JString, required = false,
+  if valid_589035 != nil:
+    section.add "eventName", valid_589035
+  var valid_589036 = query.getOrDefault("actorIpAddress")
+  valid_589036 = validateParameter(valid_589036, JString, required = false,
                                  default = nil)
-  if valid_580003 != nil:
-    section.add "actorIpAddress", valid_580003
-  var valid_580004 = query.getOrDefault("prettyPrint")
-  valid_580004 = validateParameter(valid_580004, JBool, required = false,
+  if valid_589036 != nil:
+    section.add "actorIpAddress", valid_589036
+  var valid_589037 = query.getOrDefault("prettyPrint")
+  valid_589037 = validateParameter(valid_589037, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580004 != nil:
-    section.add "prettyPrint", valid_580004
-  var valid_580005 = query.getOrDefault("startTime")
-  valid_580005 = validateParameter(valid_580005, JString, required = false,
+  if valid_589037 != nil:
+    section.add "prettyPrint", valid_589037
+  var valid_589038 = query.getOrDefault("startTime")
+  valid_589038 = validateParameter(valid_589038, JString, required = false,
                                  default = nil)
-  if valid_580005 != nil:
-    section.add "startTime", valid_580005
-  var valid_580006 = query.getOrDefault("orgUnitID")
-  valid_580006 = validateParameter(valid_580006, JString, required = false,
+  if valid_589038 != nil:
+    section.add "startTime", valid_589038
+  var valid_589039 = query.getOrDefault("orgUnitID")
+  valid_589039 = validateParameter(valid_589039, JString, required = false,
                                  default = newJString(""))
-  if valid_580006 != nil:
-    section.add "orgUnitID", valid_580006
+  if valid_589039 != nil:
+    section.add "orgUnitID", valid_589039
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -529,20 +529,20 @@ proc validate_ReportsActivitiesWatch_579987(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580008: Call_ReportsActivitiesWatch_579986; path: JsonNode;
+proc call*(call_589041: Call_ReportsActivitiesWatch_589019; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Push changes to activities
   ## 
-  let valid = call_580008.validator(path, query, header, formData, body)
-  let scheme = call_580008.pickScheme
+  let valid = call_589041.validator(path, query, header, formData, body)
+  let scheme = call_589041.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580008.url(scheme.get, call_580008.host, call_580008.base,
-                         call_580008.route, valid.getOrDefault("path"),
+  let url = call_589041.url(scheme.get, call_589041.host, call_589041.base,
+                         call_589041.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580008, url, valid)
+  result = hook(call_589041, url, valid)
 
-proc call*(call_580009: Call_ReportsActivitiesWatch_579986;
+proc call*(call_589042: Call_ReportsActivitiesWatch_589019;
           applicationName: string; userKey: string; fields: string = "";
           pageToken: string = ""; quotaUser: string = ""; alt: string = "json";
           customerId: string = ""; oauthToken: string = ""; endTime: string = "";
@@ -588,47 +588,47 @@ proc call*(call_580009: Call_ReportsActivitiesWatch_579986;
   ##            : Return events which occurred at or after this time.
   ##   orgUnitID: string
   ##            : the organizational unit's(OU) ID to filter activities from users belonging to a specific OU or one of its sub-OU(s)
-  var path_580010 = newJObject()
-  var query_580011 = newJObject()
-  var body_580012 = newJObject()
-  add(query_580011, "fields", newJString(fields))
-  add(query_580011, "pageToken", newJString(pageToken))
-  add(query_580011, "quotaUser", newJString(quotaUser))
-  add(path_580010, "applicationName", newJString(applicationName))
-  add(query_580011, "alt", newJString(alt))
-  add(query_580011, "customerId", newJString(customerId))
-  add(query_580011, "oauth_token", newJString(oauthToken))
-  add(query_580011, "endTime", newJString(endTime))
-  add(query_580011, "userIp", newJString(userIp))
-  add(path_580010, "userKey", newJString(userKey))
-  add(query_580011, "maxResults", newJInt(maxResults))
-  add(query_580011, "key", newJString(key))
-  add(query_580011, "filters", newJString(filters))
+  var path_589043 = newJObject()
+  var query_589044 = newJObject()
+  var body_589045 = newJObject()
+  add(query_589044, "fields", newJString(fields))
+  add(query_589044, "pageToken", newJString(pageToken))
+  add(query_589044, "quotaUser", newJString(quotaUser))
+  add(path_589043, "applicationName", newJString(applicationName))
+  add(query_589044, "alt", newJString(alt))
+  add(query_589044, "customerId", newJString(customerId))
+  add(query_589044, "oauth_token", newJString(oauthToken))
+  add(query_589044, "endTime", newJString(endTime))
+  add(query_589044, "userIp", newJString(userIp))
+  add(path_589043, "userKey", newJString(userKey))
+  add(query_589044, "maxResults", newJInt(maxResults))
+  add(query_589044, "key", newJString(key))
+  add(query_589044, "filters", newJString(filters))
   if resource != nil:
-    body_580012 = resource
-  add(query_580011, "eventName", newJString(eventName))
-  add(query_580011, "actorIpAddress", newJString(actorIpAddress))
-  add(query_580011, "prettyPrint", newJBool(prettyPrint))
-  add(query_580011, "startTime", newJString(startTime))
-  add(query_580011, "orgUnitID", newJString(orgUnitID))
-  result = call_580009.call(path_580010, query_580011, nil, nil, body_580012)
+    body_589045 = resource
+  add(query_589044, "eventName", newJString(eventName))
+  add(query_589044, "actorIpAddress", newJString(actorIpAddress))
+  add(query_589044, "prettyPrint", newJBool(prettyPrint))
+  add(query_589044, "startTime", newJString(startTime))
+  add(query_589044, "orgUnitID", newJString(orgUnitID))
+  result = call_589042.call(path_589043, query_589044, nil, nil, body_589045)
 
-var reportsActivitiesWatch* = Call_ReportsActivitiesWatch_579986(
+var reportsActivitiesWatch* = Call_ReportsActivitiesWatch_589019(
     name: "reportsActivitiesWatch", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com",
     route: "/activity/users/{userKey}/applications/{applicationName}/watch",
-    validator: validate_ReportsActivitiesWatch_579987, base: "/admin/reports/v1",
-    url: url_ReportsActivitiesWatch_579988, schemes: {Scheme.Https})
+    validator: validate_ReportsActivitiesWatch_589020, base: "/admin/reports/v1",
+    url: url_ReportsActivitiesWatch_589021, schemes: {Scheme.Https})
 type
-  Call_AdminChannelsStop_580013 = ref object of OpenApiRestCall_579424
-proc url_AdminChannelsStop_580015(protocol: Scheme; host: string; base: string;
+  Call_AdminChannelsStop_589046 = ref object of OpenApiRestCall_588457
+proc url_AdminChannelsStop_589048(protocol: Scheme; host: string; base: string;
                                  route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
   result.query = $composeQueryString(query)
   result.path = base & route
 
-proc validate_AdminChannelsStop_580014(path: JsonNode; query: JsonNode;
+proc validate_AdminChannelsStop_589047(path: JsonNode; query: JsonNode;
                                       header: JsonNode; formData: JsonNode;
                                       body: JsonNode): JsonNode =
   ## Stop watching resources through this channel
@@ -653,41 +653,41 @@ proc validate_AdminChannelsStop_580014(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580016 = query.getOrDefault("fields")
-  valid_580016 = validateParameter(valid_580016, JString, required = false,
+  var valid_589049 = query.getOrDefault("fields")
+  valid_589049 = validateParameter(valid_589049, JString, required = false,
                                  default = nil)
-  if valid_580016 != nil:
-    section.add "fields", valid_580016
-  var valid_580017 = query.getOrDefault("quotaUser")
-  valid_580017 = validateParameter(valid_580017, JString, required = false,
+  if valid_589049 != nil:
+    section.add "fields", valid_589049
+  var valid_589050 = query.getOrDefault("quotaUser")
+  valid_589050 = validateParameter(valid_589050, JString, required = false,
                                  default = nil)
-  if valid_580017 != nil:
-    section.add "quotaUser", valid_580017
-  var valid_580018 = query.getOrDefault("alt")
-  valid_580018 = validateParameter(valid_580018, JString, required = false,
+  if valid_589050 != nil:
+    section.add "quotaUser", valid_589050
+  var valid_589051 = query.getOrDefault("alt")
+  valid_589051 = validateParameter(valid_589051, JString, required = false,
                                  default = newJString("json"))
-  if valid_580018 != nil:
-    section.add "alt", valid_580018
-  var valid_580019 = query.getOrDefault("oauth_token")
-  valid_580019 = validateParameter(valid_580019, JString, required = false,
+  if valid_589051 != nil:
+    section.add "alt", valid_589051
+  var valid_589052 = query.getOrDefault("oauth_token")
+  valid_589052 = validateParameter(valid_589052, JString, required = false,
                                  default = nil)
-  if valid_580019 != nil:
-    section.add "oauth_token", valid_580019
-  var valid_580020 = query.getOrDefault("userIp")
-  valid_580020 = validateParameter(valid_580020, JString, required = false,
+  if valid_589052 != nil:
+    section.add "oauth_token", valid_589052
+  var valid_589053 = query.getOrDefault("userIp")
+  valid_589053 = validateParameter(valid_589053, JString, required = false,
                                  default = nil)
-  if valid_580020 != nil:
-    section.add "userIp", valid_580020
-  var valid_580021 = query.getOrDefault("key")
-  valid_580021 = validateParameter(valid_580021, JString, required = false,
+  if valid_589053 != nil:
+    section.add "userIp", valid_589053
+  var valid_589054 = query.getOrDefault("key")
+  valid_589054 = validateParameter(valid_589054, JString, required = false,
                                  default = nil)
-  if valid_580021 != nil:
-    section.add "key", valid_580021
-  var valid_580022 = query.getOrDefault("prettyPrint")
-  valid_580022 = validateParameter(valid_580022, JBool, required = false,
+  if valid_589054 != nil:
+    section.add "key", valid_589054
+  var valid_589055 = query.getOrDefault("prettyPrint")
+  valid_589055 = validateParameter(valid_589055, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580022 != nil:
-    section.add "prettyPrint", valid_580022
+  if valid_589055 != nil:
+    section.add "prettyPrint", valid_589055
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -699,20 +699,20 @@ proc validate_AdminChannelsStop_580014(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580024: Call_AdminChannelsStop_580013; path: JsonNode;
+proc call*(call_589057: Call_AdminChannelsStop_589046; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Stop watching resources through this channel
   ## 
-  let valid = call_580024.validator(path, query, header, formData, body)
-  let scheme = call_580024.pickScheme
+  let valid = call_589057.validator(path, query, header, formData, body)
+  let scheme = call_589057.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580024.url(scheme.get, call_580024.host, call_580024.base,
-                         call_580024.route, valid.getOrDefault("path"),
+  let url = call_589057.url(scheme.get, call_589057.host, call_589057.base,
+                         call_589057.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580024, url, valid)
+  result = hook(call_589057, url, valid)
 
-proc call*(call_580025: Call_AdminChannelsStop_580013; fields: string = "";
+proc call*(call_589058: Call_AdminChannelsStop_589046; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; key: string = ""; resource: JsonNode = nil;
           prettyPrint: bool = true): Recallable =
@@ -733,27 +733,27 @@ proc call*(call_580025: Call_AdminChannelsStop_580013; fields: string = "";
   ##   resource: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var query_580026 = newJObject()
-  var body_580027 = newJObject()
-  add(query_580026, "fields", newJString(fields))
-  add(query_580026, "quotaUser", newJString(quotaUser))
-  add(query_580026, "alt", newJString(alt))
-  add(query_580026, "oauth_token", newJString(oauthToken))
-  add(query_580026, "userIp", newJString(userIp))
-  add(query_580026, "key", newJString(key))
+  var query_589059 = newJObject()
+  var body_589060 = newJObject()
+  add(query_589059, "fields", newJString(fields))
+  add(query_589059, "quotaUser", newJString(quotaUser))
+  add(query_589059, "alt", newJString(alt))
+  add(query_589059, "oauth_token", newJString(oauthToken))
+  add(query_589059, "userIp", newJString(userIp))
+  add(query_589059, "key", newJString(key))
   if resource != nil:
-    body_580027 = resource
-  add(query_580026, "prettyPrint", newJBool(prettyPrint))
-  result = call_580025.call(nil, query_580026, nil, nil, body_580027)
+    body_589060 = resource
+  add(query_589059, "prettyPrint", newJBool(prettyPrint))
+  result = call_589058.call(nil, query_589059, nil, nil, body_589060)
 
-var adminChannelsStop* = Call_AdminChannelsStop_580013(name: "adminChannelsStop",
+var adminChannelsStop* = Call_AdminChannelsStop_589046(name: "adminChannelsStop",
     meth: HttpMethod.HttpPost, host: "www.googleapis.com",
     route: "/admin/reports_v1/channels/stop",
-    validator: validate_AdminChannelsStop_580014, base: "/admin/reports/v1",
-    url: url_AdminChannelsStop_580015, schemes: {Scheme.Https})
+    validator: validate_AdminChannelsStop_589047, base: "/admin/reports/v1",
+    url: url_AdminChannelsStop_589048, schemes: {Scheme.Https})
 type
-  Call_ReportsCustomerUsageReportsGet_580028 = ref object of OpenApiRestCall_579424
-proc url_ReportsCustomerUsageReportsGet_580030(protocol: Scheme; host: string;
+  Call_ReportsCustomerUsageReportsGet_589061 = ref object of OpenApiRestCall_588457
+proc url_ReportsCustomerUsageReportsGet_589063(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -768,7 +768,7 @@ proc url_ReportsCustomerUsageReportsGet_580030(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_ReportsCustomerUsageReportsGet_580029(path: JsonNode;
+proc validate_ReportsCustomerUsageReportsGet_589062(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Retrieves a report which is a collection of properties / statistics for a specific customer.
   ## 
@@ -779,11 +779,11 @@ proc validate_ReportsCustomerUsageReportsGet_580029(path: JsonNode;
   ##       : Represents the date in yyyy-mm-dd format for which the data is to be fetched.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `date` field"
-  var valid_580031 = path.getOrDefault("date")
-  valid_580031 = validateParameter(valid_580031, JString, required = true,
+  var valid_589064 = path.getOrDefault("date")
+  valid_589064 = validateParameter(valid_589064, JString, required = true,
                                  default = nil)
-  if valid_580031 != nil:
-    section.add "date", valid_580031
+  if valid_589064 != nil:
+    section.add "date", valid_589064
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -807,56 +807,56 @@ proc validate_ReportsCustomerUsageReportsGet_580029(path: JsonNode;
   ##   parameters: JString
   ##             : Represents the application name, parameter name pairs to fetch in csv as app_name1:param_name1, app_name2:param_name2.
   section = newJObject()
-  var valid_580032 = query.getOrDefault("fields")
-  valid_580032 = validateParameter(valid_580032, JString, required = false,
+  var valid_589065 = query.getOrDefault("fields")
+  valid_589065 = validateParameter(valid_589065, JString, required = false,
                                  default = nil)
-  if valid_580032 != nil:
-    section.add "fields", valid_580032
-  var valid_580033 = query.getOrDefault("pageToken")
-  valid_580033 = validateParameter(valid_580033, JString, required = false,
+  if valid_589065 != nil:
+    section.add "fields", valid_589065
+  var valid_589066 = query.getOrDefault("pageToken")
+  valid_589066 = validateParameter(valid_589066, JString, required = false,
                                  default = nil)
-  if valid_580033 != nil:
-    section.add "pageToken", valid_580033
-  var valid_580034 = query.getOrDefault("quotaUser")
-  valid_580034 = validateParameter(valid_580034, JString, required = false,
+  if valid_589066 != nil:
+    section.add "pageToken", valid_589066
+  var valid_589067 = query.getOrDefault("quotaUser")
+  valid_589067 = validateParameter(valid_589067, JString, required = false,
                                  default = nil)
-  if valid_580034 != nil:
-    section.add "quotaUser", valid_580034
-  var valid_580035 = query.getOrDefault("alt")
-  valid_580035 = validateParameter(valid_580035, JString, required = false,
+  if valid_589067 != nil:
+    section.add "quotaUser", valid_589067
+  var valid_589068 = query.getOrDefault("alt")
+  valid_589068 = validateParameter(valid_589068, JString, required = false,
                                  default = newJString("json"))
-  if valid_580035 != nil:
-    section.add "alt", valid_580035
-  var valid_580036 = query.getOrDefault("customerId")
-  valid_580036 = validateParameter(valid_580036, JString, required = false,
+  if valid_589068 != nil:
+    section.add "alt", valid_589068
+  var valid_589069 = query.getOrDefault("customerId")
+  valid_589069 = validateParameter(valid_589069, JString, required = false,
                                  default = nil)
-  if valid_580036 != nil:
-    section.add "customerId", valid_580036
-  var valid_580037 = query.getOrDefault("oauth_token")
-  valid_580037 = validateParameter(valid_580037, JString, required = false,
+  if valid_589069 != nil:
+    section.add "customerId", valid_589069
+  var valid_589070 = query.getOrDefault("oauth_token")
+  valid_589070 = validateParameter(valid_589070, JString, required = false,
                                  default = nil)
-  if valid_580037 != nil:
-    section.add "oauth_token", valid_580037
-  var valid_580038 = query.getOrDefault("userIp")
-  valid_580038 = validateParameter(valid_580038, JString, required = false,
+  if valid_589070 != nil:
+    section.add "oauth_token", valid_589070
+  var valid_589071 = query.getOrDefault("userIp")
+  valid_589071 = validateParameter(valid_589071, JString, required = false,
                                  default = nil)
-  if valid_580038 != nil:
-    section.add "userIp", valid_580038
-  var valid_580039 = query.getOrDefault("key")
-  valid_580039 = validateParameter(valid_580039, JString, required = false,
+  if valid_589071 != nil:
+    section.add "userIp", valid_589071
+  var valid_589072 = query.getOrDefault("key")
+  valid_589072 = validateParameter(valid_589072, JString, required = false,
                                  default = nil)
-  if valid_580039 != nil:
-    section.add "key", valid_580039
-  var valid_580040 = query.getOrDefault("prettyPrint")
-  valid_580040 = validateParameter(valid_580040, JBool, required = false,
+  if valid_589072 != nil:
+    section.add "key", valid_589072
+  var valid_589073 = query.getOrDefault("prettyPrint")
+  valid_589073 = validateParameter(valid_589073, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580040 != nil:
-    section.add "prettyPrint", valid_580040
-  var valid_580041 = query.getOrDefault("parameters")
-  valid_580041 = validateParameter(valid_580041, JString, required = false,
+  if valid_589073 != nil:
+    section.add "prettyPrint", valid_589073
+  var valid_589074 = query.getOrDefault("parameters")
+  valid_589074 = validateParameter(valid_589074, JString, required = false,
                                  default = nil)
-  if valid_580041 != nil:
-    section.add "parameters", valid_580041
+  if valid_589074 != nil:
+    section.add "parameters", valid_589074
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -865,20 +865,20 @@ proc validate_ReportsCustomerUsageReportsGet_580029(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580042: Call_ReportsCustomerUsageReportsGet_580028; path: JsonNode;
+proc call*(call_589075: Call_ReportsCustomerUsageReportsGet_589061; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Retrieves a report which is a collection of properties / statistics for a specific customer.
   ## 
-  let valid = call_580042.validator(path, query, header, formData, body)
-  let scheme = call_580042.pickScheme
+  let valid = call_589075.validator(path, query, header, formData, body)
+  let scheme = call_589075.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580042.url(scheme.get, call_580042.host, call_580042.base,
-                         call_580042.route, valid.getOrDefault("path"),
+  let url = call_589075.url(scheme.get, call_589075.host, call_589075.base,
+                         call_589075.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580042, url, valid)
+  result = hook(call_589075, url, valid)
 
-proc call*(call_580043: Call_ReportsCustomerUsageReportsGet_580028; date: string;
+proc call*(call_589076: Call_ReportsCustomerUsageReportsGet_589061; date: string;
           fields: string = ""; pageToken: string = ""; quotaUser: string = "";
           alt: string = "json"; customerId: string = ""; oauthToken: string = "";
           userIp: string = ""; key: string = ""; prettyPrint: bool = true;
@@ -907,30 +907,30 @@ proc call*(call_580043: Call_ReportsCustomerUsageReportsGet_580028; date: string
   ##              : Returns response with indentations and line breaks.
   ##   parameters: string
   ##             : Represents the application name, parameter name pairs to fetch in csv as app_name1:param_name1, app_name2:param_name2.
-  var path_580044 = newJObject()
-  var query_580045 = newJObject()
-  add(query_580045, "fields", newJString(fields))
-  add(query_580045, "pageToken", newJString(pageToken))
-  add(query_580045, "quotaUser", newJString(quotaUser))
-  add(query_580045, "alt", newJString(alt))
-  add(query_580045, "customerId", newJString(customerId))
-  add(query_580045, "oauth_token", newJString(oauthToken))
-  add(query_580045, "userIp", newJString(userIp))
-  add(query_580045, "key", newJString(key))
-  add(path_580044, "date", newJString(date))
-  add(query_580045, "prettyPrint", newJBool(prettyPrint))
-  add(query_580045, "parameters", newJString(parameters))
-  result = call_580043.call(path_580044, query_580045, nil, nil, nil)
+  var path_589077 = newJObject()
+  var query_589078 = newJObject()
+  add(query_589078, "fields", newJString(fields))
+  add(query_589078, "pageToken", newJString(pageToken))
+  add(query_589078, "quotaUser", newJString(quotaUser))
+  add(query_589078, "alt", newJString(alt))
+  add(query_589078, "customerId", newJString(customerId))
+  add(query_589078, "oauth_token", newJString(oauthToken))
+  add(query_589078, "userIp", newJString(userIp))
+  add(query_589078, "key", newJString(key))
+  add(path_589077, "date", newJString(date))
+  add(query_589078, "prettyPrint", newJBool(prettyPrint))
+  add(query_589078, "parameters", newJString(parameters))
+  result = call_589076.call(path_589077, query_589078, nil, nil, nil)
 
-var reportsCustomerUsageReportsGet* = Call_ReportsCustomerUsageReportsGet_580028(
+var reportsCustomerUsageReportsGet* = Call_ReportsCustomerUsageReportsGet_589061(
     name: "reportsCustomerUsageReportsGet", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/usage/dates/{date}",
-    validator: validate_ReportsCustomerUsageReportsGet_580029,
-    base: "/admin/reports/v1", url: url_ReportsCustomerUsageReportsGet_580030,
+    validator: validate_ReportsCustomerUsageReportsGet_589062,
+    base: "/admin/reports/v1", url: url_ReportsCustomerUsageReportsGet_589063,
     schemes: {Scheme.Https})
 type
-  Call_ReportsUserUsageReportGet_580046 = ref object of OpenApiRestCall_579424
-proc url_ReportsUserUsageReportGet_580048(protocol: Scheme; host: string;
+  Call_ReportsUserUsageReportGet_589079 = ref object of OpenApiRestCall_588457
+proc url_ReportsUserUsageReportGet_589081(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -948,7 +948,7 @@ proc url_ReportsUserUsageReportGet_580048(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_ReportsUserUsageReportGet_580047(path: JsonNode; query: JsonNode;
+proc validate_ReportsUserUsageReportGet_589080(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Retrieves a report which is a collection of properties / statistics for a set of users.
   ## 
@@ -961,16 +961,16 @@ proc validate_ReportsUserUsageReportGet_580047(path: JsonNode; query: JsonNode;
   ##       : Represents the date in yyyy-mm-dd format for which the data is to be fetched.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `userKey` field"
-  var valid_580049 = path.getOrDefault("userKey")
-  valid_580049 = validateParameter(valid_580049, JString, required = true,
+  var valid_589082 = path.getOrDefault("userKey")
+  valid_589082 = validateParameter(valid_589082, JString, required = true,
                                  default = nil)
-  if valid_580049 != nil:
-    section.add "userKey", valid_580049
-  var valid_580050 = path.getOrDefault("date")
-  valid_580050 = validateParameter(valid_580050, JString, required = true,
+  if valid_589082 != nil:
+    section.add "userKey", valid_589082
+  var valid_589083 = path.getOrDefault("date")
+  valid_589083 = validateParameter(valid_589083, JString, required = true,
                                  default = nil)
-  if valid_580050 != nil:
-    section.add "date", valid_580050
+  if valid_589083 != nil:
+    section.add "date", valid_589083
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -1000,70 +1000,70 @@ proc validate_ReportsUserUsageReportGet_580047(path: JsonNode; query: JsonNode;
   ##   parameters: JString
   ##             : Represents the application name, parameter name pairs to fetch in csv as app_name1:param_name1, app_name2:param_name2.
   section = newJObject()
-  var valid_580051 = query.getOrDefault("fields")
-  valid_580051 = validateParameter(valid_580051, JString, required = false,
+  var valid_589084 = query.getOrDefault("fields")
+  valid_589084 = validateParameter(valid_589084, JString, required = false,
                                  default = nil)
-  if valid_580051 != nil:
-    section.add "fields", valid_580051
-  var valid_580052 = query.getOrDefault("pageToken")
-  valid_580052 = validateParameter(valid_580052, JString, required = false,
+  if valid_589084 != nil:
+    section.add "fields", valid_589084
+  var valid_589085 = query.getOrDefault("pageToken")
+  valid_589085 = validateParameter(valid_589085, JString, required = false,
                                  default = nil)
-  if valid_580052 != nil:
-    section.add "pageToken", valid_580052
-  var valid_580053 = query.getOrDefault("quotaUser")
-  valid_580053 = validateParameter(valid_580053, JString, required = false,
+  if valid_589085 != nil:
+    section.add "pageToken", valid_589085
+  var valid_589086 = query.getOrDefault("quotaUser")
+  valid_589086 = validateParameter(valid_589086, JString, required = false,
                                  default = nil)
-  if valid_580053 != nil:
-    section.add "quotaUser", valid_580053
-  var valid_580054 = query.getOrDefault("alt")
-  valid_580054 = validateParameter(valid_580054, JString, required = false,
+  if valid_589086 != nil:
+    section.add "quotaUser", valid_589086
+  var valid_589087 = query.getOrDefault("alt")
+  valid_589087 = validateParameter(valid_589087, JString, required = false,
                                  default = newJString("json"))
-  if valid_580054 != nil:
-    section.add "alt", valid_580054
-  var valid_580055 = query.getOrDefault("customerId")
-  valid_580055 = validateParameter(valid_580055, JString, required = false,
+  if valid_589087 != nil:
+    section.add "alt", valid_589087
+  var valid_589088 = query.getOrDefault("customerId")
+  valid_589088 = validateParameter(valid_589088, JString, required = false,
                                  default = nil)
-  if valid_580055 != nil:
-    section.add "customerId", valid_580055
-  var valid_580056 = query.getOrDefault("oauth_token")
-  valid_580056 = validateParameter(valid_580056, JString, required = false,
+  if valid_589088 != nil:
+    section.add "customerId", valid_589088
+  var valid_589089 = query.getOrDefault("oauth_token")
+  valid_589089 = validateParameter(valid_589089, JString, required = false,
                                  default = nil)
-  if valid_580056 != nil:
-    section.add "oauth_token", valid_580056
-  var valid_580057 = query.getOrDefault("userIp")
-  valid_580057 = validateParameter(valid_580057, JString, required = false,
+  if valid_589089 != nil:
+    section.add "oauth_token", valid_589089
+  var valid_589090 = query.getOrDefault("userIp")
+  valid_589090 = validateParameter(valid_589090, JString, required = false,
                                  default = nil)
-  if valid_580057 != nil:
-    section.add "userIp", valid_580057
-  var valid_580058 = query.getOrDefault("maxResults")
-  valid_580058 = validateParameter(valid_580058, JInt, required = false, default = nil)
-  if valid_580058 != nil:
-    section.add "maxResults", valid_580058
-  var valid_580059 = query.getOrDefault("key")
-  valid_580059 = validateParameter(valid_580059, JString, required = false,
+  if valid_589090 != nil:
+    section.add "userIp", valid_589090
+  var valid_589091 = query.getOrDefault("maxResults")
+  valid_589091 = validateParameter(valid_589091, JInt, required = false, default = nil)
+  if valid_589091 != nil:
+    section.add "maxResults", valid_589091
+  var valid_589092 = query.getOrDefault("key")
+  valid_589092 = validateParameter(valid_589092, JString, required = false,
                                  default = nil)
-  if valid_580059 != nil:
-    section.add "key", valid_580059
-  var valid_580060 = query.getOrDefault("filters")
-  valid_580060 = validateParameter(valid_580060, JString, required = false,
+  if valid_589092 != nil:
+    section.add "key", valid_589092
+  var valid_589093 = query.getOrDefault("filters")
+  valid_589093 = validateParameter(valid_589093, JString, required = false,
                                  default = nil)
-  if valid_580060 != nil:
-    section.add "filters", valid_580060
-  var valid_580061 = query.getOrDefault("prettyPrint")
-  valid_580061 = validateParameter(valid_580061, JBool, required = false,
+  if valid_589093 != nil:
+    section.add "filters", valid_589093
+  var valid_589094 = query.getOrDefault("prettyPrint")
+  valid_589094 = validateParameter(valid_589094, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580061 != nil:
-    section.add "prettyPrint", valid_580061
-  var valid_580062 = query.getOrDefault("orgUnitID")
-  valid_580062 = validateParameter(valid_580062, JString, required = false,
+  if valid_589094 != nil:
+    section.add "prettyPrint", valid_589094
+  var valid_589095 = query.getOrDefault("orgUnitID")
+  valid_589095 = validateParameter(valid_589095, JString, required = false,
                                  default = newJString(""))
-  if valid_580062 != nil:
-    section.add "orgUnitID", valid_580062
-  var valid_580063 = query.getOrDefault("parameters")
-  valid_580063 = validateParameter(valid_580063, JString, required = false,
+  if valid_589095 != nil:
+    section.add "orgUnitID", valid_589095
+  var valid_589096 = query.getOrDefault("parameters")
+  valid_589096 = validateParameter(valid_589096, JString, required = false,
                                  default = nil)
-  if valid_580063 != nil:
-    section.add "parameters", valid_580063
+  if valid_589096 != nil:
+    section.add "parameters", valid_589096
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1072,20 +1072,20 @@ proc validate_ReportsUserUsageReportGet_580047(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580064: Call_ReportsUserUsageReportGet_580046; path: JsonNode;
+proc call*(call_589097: Call_ReportsUserUsageReportGet_589079; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Retrieves a report which is a collection of properties / statistics for a set of users.
   ## 
-  let valid = call_580064.validator(path, query, header, formData, body)
-  let scheme = call_580064.pickScheme
+  let valid = call_589097.validator(path, query, header, formData, body)
+  let scheme = call_589097.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580064.url(scheme.get, call_580064.host, call_580064.base,
-                         call_580064.route, valid.getOrDefault("path"),
+  let url = call_589097.url(scheme.get, call_589097.host, call_589097.base,
+                         call_589097.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580064, url, valid)
+  result = hook(call_589097, url, valid)
 
-proc call*(call_580065: Call_ReportsUserUsageReportGet_580046; userKey: string;
+proc call*(call_589098: Call_ReportsUserUsageReportGet_589079; userKey: string;
           date: string; fields: string = ""; pageToken: string = "";
           quotaUser: string = ""; alt: string = "json"; customerId: string = "";
           oauthToken: string = ""; userIp: string = ""; maxResults: int = 0;
@@ -1123,34 +1123,34 @@ proc call*(call_580065: Call_ReportsUserUsageReportGet_580046; userKey: string;
   ##            : the organizational unit's ID to filter usage parameters from users belonging to a specific OU or one of its sub-OU(s).
   ##   parameters: string
   ##             : Represents the application name, parameter name pairs to fetch in csv as app_name1:param_name1, app_name2:param_name2.
-  var path_580066 = newJObject()
-  var query_580067 = newJObject()
-  add(query_580067, "fields", newJString(fields))
-  add(query_580067, "pageToken", newJString(pageToken))
-  add(query_580067, "quotaUser", newJString(quotaUser))
-  add(query_580067, "alt", newJString(alt))
-  add(query_580067, "customerId", newJString(customerId))
-  add(query_580067, "oauth_token", newJString(oauthToken))
-  add(query_580067, "userIp", newJString(userIp))
-  add(path_580066, "userKey", newJString(userKey))
-  add(query_580067, "maxResults", newJInt(maxResults))
-  add(query_580067, "key", newJString(key))
-  add(query_580067, "filters", newJString(filters))
-  add(path_580066, "date", newJString(date))
-  add(query_580067, "prettyPrint", newJBool(prettyPrint))
-  add(query_580067, "orgUnitID", newJString(orgUnitID))
-  add(query_580067, "parameters", newJString(parameters))
-  result = call_580065.call(path_580066, query_580067, nil, nil, nil)
+  var path_589099 = newJObject()
+  var query_589100 = newJObject()
+  add(query_589100, "fields", newJString(fields))
+  add(query_589100, "pageToken", newJString(pageToken))
+  add(query_589100, "quotaUser", newJString(quotaUser))
+  add(query_589100, "alt", newJString(alt))
+  add(query_589100, "customerId", newJString(customerId))
+  add(query_589100, "oauth_token", newJString(oauthToken))
+  add(query_589100, "userIp", newJString(userIp))
+  add(path_589099, "userKey", newJString(userKey))
+  add(query_589100, "maxResults", newJInt(maxResults))
+  add(query_589100, "key", newJString(key))
+  add(query_589100, "filters", newJString(filters))
+  add(path_589099, "date", newJString(date))
+  add(query_589100, "prettyPrint", newJBool(prettyPrint))
+  add(query_589100, "orgUnitID", newJString(orgUnitID))
+  add(query_589100, "parameters", newJString(parameters))
+  result = call_589098.call(path_589099, query_589100, nil, nil, nil)
 
-var reportsUserUsageReportGet* = Call_ReportsUserUsageReportGet_580046(
+var reportsUserUsageReportGet* = Call_ReportsUserUsageReportGet_589079(
     name: "reportsUserUsageReportGet", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/usage/users/{userKey}/dates/{date}",
-    validator: validate_ReportsUserUsageReportGet_580047,
-    base: "/admin/reports/v1", url: url_ReportsUserUsageReportGet_580048,
+    validator: validate_ReportsUserUsageReportGet_589080,
+    base: "/admin/reports/v1", url: url_ReportsUserUsageReportGet_589081,
     schemes: {Scheme.Https})
 type
-  Call_ReportsEntityUsageReportsGet_580068 = ref object of OpenApiRestCall_579424
-proc url_ReportsEntityUsageReportsGet_580070(protocol: Scheme; host: string;
+  Call_ReportsEntityUsageReportsGet_589101 = ref object of OpenApiRestCall_588457
+proc url_ReportsEntityUsageReportsGet_589103(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -1171,7 +1171,7 @@ proc url_ReportsEntityUsageReportsGet_580070(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_ReportsEntityUsageReportsGet_580069(path: JsonNode; query: JsonNode;
+proc validate_ReportsEntityUsageReportsGet_589102(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Retrieves a report which is a collection of properties / statistics for a set of objects.
   ## 
@@ -1187,21 +1187,21 @@ proc validate_ReportsEntityUsageReportsGet_580069(path: JsonNode; query: JsonNod
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `entityType` field"
-  var valid_580071 = path.getOrDefault("entityType")
-  valid_580071 = validateParameter(valid_580071, JString, required = true,
+  var valid_589104 = path.getOrDefault("entityType")
+  valid_589104 = validateParameter(valid_589104, JString, required = true,
                                  default = nil)
-  if valid_580071 != nil:
-    section.add "entityType", valid_580071
-  var valid_580072 = path.getOrDefault("entityKey")
-  valid_580072 = validateParameter(valid_580072, JString, required = true,
+  if valid_589104 != nil:
+    section.add "entityType", valid_589104
+  var valid_589105 = path.getOrDefault("entityKey")
+  valid_589105 = validateParameter(valid_589105, JString, required = true,
                                  default = nil)
-  if valid_580072 != nil:
-    section.add "entityKey", valid_580072
-  var valid_580073 = path.getOrDefault("date")
-  valid_580073 = validateParameter(valid_580073, JString, required = true,
+  if valid_589105 != nil:
+    section.add "entityKey", valid_589105
+  var valid_589106 = path.getOrDefault("date")
+  valid_589106 = validateParameter(valid_589106, JString, required = true,
                                  default = nil)
-  if valid_580073 != nil:
-    section.add "date", valid_580073
+  if valid_589106 != nil:
+    section.add "date", valid_589106
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -1229,65 +1229,65 @@ proc validate_ReportsEntityUsageReportsGet_580069(path: JsonNode; query: JsonNod
   ##   parameters: JString
   ##             : Represents the application name, parameter name pairs to fetch in csv as app_name1:param_name1, app_name2:param_name2.
   section = newJObject()
-  var valid_580074 = query.getOrDefault("fields")
-  valid_580074 = validateParameter(valid_580074, JString, required = false,
+  var valid_589107 = query.getOrDefault("fields")
+  valid_589107 = validateParameter(valid_589107, JString, required = false,
                                  default = nil)
-  if valid_580074 != nil:
-    section.add "fields", valid_580074
-  var valid_580075 = query.getOrDefault("pageToken")
-  valid_580075 = validateParameter(valid_580075, JString, required = false,
+  if valid_589107 != nil:
+    section.add "fields", valid_589107
+  var valid_589108 = query.getOrDefault("pageToken")
+  valid_589108 = validateParameter(valid_589108, JString, required = false,
                                  default = nil)
-  if valid_580075 != nil:
-    section.add "pageToken", valid_580075
-  var valid_580076 = query.getOrDefault("quotaUser")
-  valid_580076 = validateParameter(valid_580076, JString, required = false,
+  if valid_589108 != nil:
+    section.add "pageToken", valid_589108
+  var valid_589109 = query.getOrDefault("quotaUser")
+  valid_589109 = validateParameter(valid_589109, JString, required = false,
                                  default = nil)
-  if valid_580076 != nil:
-    section.add "quotaUser", valid_580076
-  var valid_580077 = query.getOrDefault("alt")
-  valid_580077 = validateParameter(valid_580077, JString, required = false,
+  if valid_589109 != nil:
+    section.add "quotaUser", valid_589109
+  var valid_589110 = query.getOrDefault("alt")
+  valid_589110 = validateParameter(valid_589110, JString, required = false,
                                  default = newJString("json"))
-  if valid_580077 != nil:
-    section.add "alt", valid_580077
-  var valid_580078 = query.getOrDefault("customerId")
-  valid_580078 = validateParameter(valid_580078, JString, required = false,
+  if valid_589110 != nil:
+    section.add "alt", valid_589110
+  var valid_589111 = query.getOrDefault("customerId")
+  valid_589111 = validateParameter(valid_589111, JString, required = false,
                                  default = nil)
-  if valid_580078 != nil:
-    section.add "customerId", valid_580078
-  var valid_580079 = query.getOrDefault("oauth_token")
-  valid_580079 = validateParameter(valid_580079, JString, required = false,
+  if valid_589111 != nil:
+    section.add "customerId", valid_589111
+  var valid_589112 = query.getOrDefault("oauth_token")
+  valid_589112 = validateParameter(valid_589112, JString, required = false,
                                  default = nil)
-  if valid_580079 != nil:
-    section.add "oauth_token", valid_580079
-  var valid_580080 = query.getOrDefault("userIp")
-  valid_580080 = validateParameter(valid_580080, JString, required = false,
+  if valid_589112 != nil:
+    section.add "oauth_token", valid_589112
+  var valid_589113 = query.getOrDefault("userIp")
+  valid_589113 = validateParameter(valid_589113, JString, required = false,
                                  default = nil)
-  if valid_580080 != nil:
-    section.add "userIp", valid_580080
-  var valid_580081 = query.getOrDefault("maxResults")
-  valid_580081 = validateParameter(valid_580081, JInt, required = false, default = nil)
-  if valid_580081 != nil:
-    section.add "maxResults", valid_580081
-  var valid_580082 = query.getOrDefault("key")
-  valid_580082 = validateParameter(valid_580082, JString, required = false,
+  if valid_589113 != nil:
+    section.add "userIp", valid_589113
+  var valid_589114 = query.getOrDefault("maxResults")
+  valid_589114 = validateParameter(valid_589114, JInt, required = false, default = nil)
+  if valid_589114 != nil:
+    section.add "maxResults", valid_589114
+  var valid_589115 = query.getOrDefault("key")
+  valid_589115 = validateParameter(valid_589115, JString, required = false,
                                  default = nil)
-  if valid_580082 != nil:
-    section.add "key", valid_580082
-  var valid_580083 = query.getOrDefault("filters")
-  valid_580083 = validateParameter(valid_580083, JString, required = false,
+  if valid_589115 != nil:
+    section.add "key", valid_589115
+  var valid_589116 = query.getOrDefault("filters")
+  valid_589116 = validateParameter(valid_589116, JString, required = false,
                                  default = nil)
-  if valid_580083 != nil:
-    section.add "filters", valid_580083
-  var valid_580084 = query.getOrDefault("prettyPrint")
-  valid_580084 = validateParameter(valid_580084, JBool, required = false,
+  if valid_589116 != nil:
+    section.add "filters", valid_589116
+  var valid_589117 = query.getOrDefault("prettyPrint")
+  valid_589117 = validateParameter(valid_589117, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580084 != nil:
-    section.add "prettyPrint", valid_580084
-  var valid_580085 = query.getOrDefault("parameters")
-  valid_580085 = validateParameter(valid_580085, JString, required = false,
+  if valid_589117 != nil:
+    section.add "prettyPrint", valid_589117
+  var valid_589118 = query.getOrDefault("parameters")
+  valid_589118 = validateParameter(valid_589118, JString, required = false,
                                  default = nil)
-  if valid_580085 != nil:
-    section.add "parameters", valid_580085
+  if valid_589118 != nil:
+    section.add "parameters", valid_589118
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1296,20 +1296,20 @@ proc validate_ReportsEntityUsageReportsGet_580069(path: JsonNode; query: JsonNod
   if body != nil:
     result.add "body", body
 
-proc call*(call_580086: Call_ReportsEntityUsageReportsGet_580068; path: JsonNode;
+proc call*(call_589119: Call_ReportsEntityUsageReportsGet_589101; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Retrieves a report which is a collection of properties / statistics for a set of objects.
   ## 
-  let valid = call_580086.validator(path, query, header, formData, body)
-  let scheme = call_580086.pickScheme
+  let valid = call_589119.validator(path, query, header, formData, body)
+  let scheme = call_589119.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580086.url(scheme.get, call_580086.host, call_580086.base,
-                         call_580086.route, valid.getOrDefault("path"),
+  let url = call_589119.url(scheme.get, call_589119.host, call_589119.base,
+                         call_589119.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580086, url, valid)
+  result = hook(call_589119, url, valid)
 
-proc call*(call_580087: Call_ReportsEntityUsageReportsGet_580068;
+proc call*(call_589120: Call_ReportsEntityUsageReportsGet_589101;
           entityType: string; entityKey: string; date: string; fields: string = "";
           pageToken: string = ""; quotaUser: string = ""; alt: string = "json";
           customerId: string = ""; oauthToken: string = ""; userIp: string = "";
@@ -1347,31 +1347,31 @@ proc call*(call_580087: Call_ReportsEntityUsageReportsGet_580068;
   ##              : Returns response with indentations and line breaks.
   ##   parameters: string
   ##             : Represents the application name, parameter name pairs to fetch in csv as app_name1:param_name1, app_name2:param_name2.
-  var path_580088 = newJObject()
-  var query_580089 = newJObject()
-  add(query_580089, "fields", newJString(fields))
-  add(query_580089, "pageToken", newJString(pageToken))
-  add(query_580089, "quotaUser", newJString(quotaUser))
-  add(query_580089, "alt", newJString(alt))
-  add(query_580089, "customerId", newJString(customerId))
-  add(query_580089, "oauth_token", newJString(oauthToken))
-  add(query_580089, "userIp", newJString(userIp))
-  add(query_580089, "maxResults", newJInt(maxResults))
-  add(query_580089, "key", newJString(key))
-  add(path_580088, "entityType", newJString(entityType))
-  add(path_580088, "entityKey", newJString(entityKey))
-  add(query_580089, "filters", newJString(filters))
-  add(path_580088, "date", newJString(date))
-  add(query_580089, "prettyPrint", newJBool(prettyPrint))
-  add(query_580089, "parameters", newJString(parameters))
-  result = call_580087.call(path_580088, query_580089, nil, nil, nil)
+  var path_589121 = newJObject()
+  var query_589122 = newJObject()
+  add(query_589122, "fields", newJString(fields))
+  add(query_589122, "pageToken", newJString(pageToken))
+  add(query_589122, "quotaUser", newJString(quotaUser))
+  add(query_589122, "alt", newJString(alt))
+  add(query_589122, "customerId", newJString(customerId))
+  add(query_589122, "oauth_token", newJString(oauthToken))
+  add(query_589122, "userIp", newJString(userIp))
+  add(query_589122, "maxResults", newJInt(maxResults))
+  add(query_589122, "key", newJString(key))
+  add(path_589121, "entityType", newJString(entityType))
+  add(path_589121, "entityKey", newJString(entityKey))
+  add(query_589122, "filters", newJString(filters))
+  add(path_589121, "date", newJString(date))
+  add(query_589122, "prettyPrint", newJBool(prettyPrint))
+  add(query_589122, "parameters", newJString(parameters))
+  result = call_589120.call(path_589121, query_589122, nil, nil, nil)
 
-var reportsEntityUsageReportsGet* = Call_ReportsEntityUsageReportsGet_580068(
+var reportsEntityUsageReportsGet* = Call_ReportsEntityUsageReportsGet_589101(
     name: "reportsEntityUsageReportsGet", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com",
     route: "/usage/{entityType}/{entityKey}/dates/{date}",
-    validator: validate_ReportsEntityUsageReportsGet_580069,
-    base: "/admin/reports/v1", url: url_ReportsEntityUsageReportsGet_580070,
+    validator: validate_ReportsEntityUsageReportsGet_589102,
+    base: "/admin/reports/v1", url: url_ReportsEntityUsageReportsGet_589103,
     schemes: {Scheme.Https})
 export
   rest
@@ -1414,7 +1414,7 @@ proc store(auth: var GoogleAuth; token: string; expiry: int; form: string) =
   auth.form = form
   auth.digest = auth.hash
 
-proc authenticate*(fresh: float64 = -3600.0; lifetime: int = 3600): Future[bool] {.async.} =
+proc authenticate*(fresh: float64 = 3600.0; lifetime: int = 3600): Future[bool] {.async.} =
   ## get or refresh an authentication token; provide `fresh`
   ## to ensure that the token won't expire in the next N seconds.
   ## provide `lifetime` to indicate how long the token should last.

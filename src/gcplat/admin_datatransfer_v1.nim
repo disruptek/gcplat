@@ -29,15 +29,15 @@ type
     url*: proc (protocol: Scheme; host: string; base: string; route: string;
               path: JsonNode; query: JsonNode): Uri
 
-  OpenApiRestCall_579424 = ref object of OpenApiRestCall
+  OpenApiRestCall_588457 = ref object of OpenApiRestCall
 proc hash(scheme: Scheme): Hash {.used.} =
   result = hash(ord(scheme))
 
-proc clone[T: OpenApiRestCall_579424](t: T): T {.used.} =
+proc clone[T: OpenApiRestCall_588457](t: T): T {.used.} =
   result = T(name: t.name, meth: t.meth, host: t.host, base: t.base, route: t.route,
            schemes: t.schemes, validator: t.validator, url: t.url)
 
-proc pickScheme(t: OpenApiRestCall_579424): Option[Scheme] {.used.} =
+proc pickScheme(t: OpenApiRestCall_588457): Option[Scheme] {.used.} =
   ## select a supported scheme from a set of candidates
   for scheme in Scheme.low ..
       Scheme.high:
@@ -74,7 +74,7 @@ type
   PathTokenKind = enum
     ConstantSegment, VariableSegment
   PathToken = tuple[kind: PathTokenKind, value: string]
-proc queryString(query: JsonNode): string =
+proc queryString(query: JsonNode): string {.used.} =
   var qs: seq[KeyVal]
   if query == nil:
     return ""
@@ -82,7 +82,7 @@ proc queryString(query: JsonNode): string =
     qs.add (key: k, val: v.getStr)
   result = encodeQuery(qs)
 
-proc hydratePath(input: JsonNode; segments: seq[PathToken]): Option[string] =
+proc hydratePath(input: JsonNode; segments: seq[PathToken]): Option[string] {.used.} =
   ## reconstitute a path with constants and variable values taken from json
   var head: string
   if segments.len == 0:
@@ -108,15 +108,15 @@ const
 proc composeQueryString(query: JsonNode): string
 method hook(call: OpenApiRestCall; url: Uri; input: JsonNode): Recallable {.base.}
 type
-  Call_DatatransferApplicationsList_579692 = ref object of OpenApiRestCall_579424
-proc url_DatatransferApplicationsList_579694(protocol: Scheme; host: string;
+  Call_DatatransferApplicationsList_588725 = ref object of OpenApiRestCall_588457
+proc url_DatatransferApplicationsList_588727(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
   result.query = $composeQueryString(query)
   result.path = base & route
 
-proc validate_DatatransferApplicationsList_579693(path: JsonNode; query: JsonNode;
+proc validate_DatatransferApplicationsList_588726(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Lists the applications available for data transfer for a customer.
   ## 
@@ -146,55 +146,55 @@ proc validate_DatatransferApplicationsList_579693(path: JsonNode; query: JsonNod
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_579806 = query.getOrDefault("fields")
-  valid_579806 = validateParameter(valid_579806, JString, required = false,
+  var valid_588839 = query.getOrDefault("fields")
+  valid_588839 = validateParameter(valid_588839, JString, required = false,
                                  default = nil)
-  if valid_579806 != nil:
-    section.add "fields", valid_579806
-  var valid_579807 = query.getOrDefault("pageToken")
-  valid_579807 = validateParameter(valid_579807, JString, required = false,
+  if valid_588839 != nil:
+    section.add "fields", valid_588839
+  var valid_588840 = query.getOrDefault("pageToken")
+  valid_588840 = validateParameter(valid_588840, JString, required = false,
                                  default = nil)
-  if valid_579807 != nil:
-    section.add "pageToken", valid_579807
-  var valid_579808 = query.getOrDefault("quotaUser")
-  valid_579808 = validateParameter(valid_579808, JString, required = false,
+  if valid_588840 != nil:
+    section.add "pageToken", valid_588840
+  var valid_588841 = query.getOrDefault("quotaUser")
+  valid_588841 = validateParameter(valid_588841, JString, required = false,
                                  default = nil)
-  if valid_579808 != nil:
-    section.add "quotaUser", valid_579808
-  var valid_579822 = query.getOrDefault("alt")
-  valid_579822 = validateParameter(valid_579822, JString, required = false,
+  if valid_588841 != nil:
+    section.add "quotaUser", valid_588841
+  var valid_588855 = query.getOrDefault("alt")
+  valid_588855 = validateParameter(valid_588855, JString, required = false,
                                  default = newJString("json"))
-  if valid_579822 != nil:
-    section.add "alt", valid_579822
-  var valid_579823 = query.getOrDefault("customerId")
-  valid_579823 = validateParameter(valid_579823, JString, required = false,
+  if valid_588855 != nil:
+    section.add "alt", valid_588855
+  var valid_588856 = query.getOrDefault("customerId")
+  valid_588856 = validateParameter(valid_588856, JString, required = false,
                                  default = nil)
-  if valid_579823 != nil:
-    section.add "customerId", valid_579823
-  var valid_579824 = query.getOrDefault("oauth_token")
-  valid_579824 = validateParameter(valid_579824, JString, required = false,
+  if valid_588856 != nil:
+    section.add "customerId", valid_588856
+  var valid_588857 = query.getOrDefault("oauth_token")
+  valid_588857 = validateParameter(valid_588857, JString, required = false,
                                  default = nil)
-  if valid_579824 != nil:
-    section.add "oauth_token", valid_579824
-  var valid_579825 = query.getOrDefault("userIp")
-  valid_579825 = validateParameter(valid_579825, JString, required = false,
+  if valid_588857 != nil:
+    section.add "oauth_token", valid_588857
+  var valid_588858 = query.getOrDefault("userIp")
+  valid_588858 = validateParameter(valid_588858, JString, required = false,
                                  default = nil)
-  if valid_579825 != nil:
-    section.add "userIp", valid_579825
-  var valid_579826 = query.getOrDefault("maxResults")
-  valid_579826 = validateParameter(valid_579826, JInt, required = false, default = nil)
-  if valid_579826 != nil:
-    section.add "maxResults", valid_579826
-  var valid_579827 = query.getOrDefault("key")
-  valid_579827 = validateParameter(valid_579827, JString, required = false,
+  if valid_588858 != nil:
+    section.add "userIp", valid_588858
+  var valid_588859 = query.getOrDefault("maxResults")
+  valid_588859 = validateParameter(valid_588859, JInt, required = false, default = nil)
+  if valid_588859 != nil:
+    section.add "maxResults", valid_588859
+  var valid_588860 = query.getOrDefault("key")
+  valid_588860 = validateParameter(valid_588860, JString, required = false,
                                  default = nil)
-  if valid_579827 != nil:
-    section.add "key", valid_579827
-  var valid_579828 = query.getOrDefault("prettyPrint")
-  valid_579828 = validateParameter(valid_579828, JBool, required = false,
+  if valid_588860 != nil:
+    section.add "key", valid_588860
+  var valid_588861 = query.getOrDefault("prettyPrint")
+  valid_588861 = validateParameter(valid_588861, JBool, required = false,
                                  default = newJBool(true))
-  if valid_579828 != nil:
-    section.add "prettyPrint", valid_579828
+  if valid_588861 != nil:
+    section.add "prettyPrint", valid_588861
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -203,20 +203,20 @@ proc validate_DatatransferApplicationsList_579693(path: JsonNode; query: JsonNod
   if body != nil:
     result.add "body", body
 
-proc call*(call_579851: Call_DatatransferApplicationsList_579692; path: JsonNode;
+proc call*(call_588884: Call_DatatransferApplicationsList_588725; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Lists the applications available for data transfer for a customer.
   ## 
-  let valid = call_579851.validator(path, query, header, formData, body)
-  let scheme = call_579851.pickScheme
+  let valid = call_588884.validator(path, query, header, formData, body)
+  let scheme = call_588884.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_579851.url(scheme.get, call_579851.host, call_579851.base,
-                         call_579851.route, valid.getOrDefault("path"),
+  let url = call_588884.url(scheme.get, call_588884.host, call_588884.base,
+                         call_588884.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_579851, url, valid)
+  result = hook(call_588884, url, valid)
 
-proc call*(call_579922: Call_DatatransferApplicationsList_579692;
+proc call*(call_588955: Call_DatatransferApplicationsList_588725;
           fields: string = ""; pageToken: string = ""; quotaUser: string = "";
           alt: string = "json"; customerId: string = ""; oauthToken: string = "";
           userIp: string = ""; maxResults: int = 0; key: string = "";
@@ -243,28 +243,28 @@ proc call*(call_579922: Call_DatatransferApplicationsList_579692;
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var query_579923 = newJObject()
-  add(query_579923, "fields", newJString(fields))
-  add(query_579923, "pageToken", newJString(pageToken))
-  add(query_579923, "quotaUser", newJString(quotaUser))
-  add(query_579923, "alt", newJString(alt))
-  add(query_579923, "customerId", newJString(customerId))
-  add(query_579923, "oauth_token", newJString(oauthToken))
-  add(query_579923, "userIp", newJString(userIp))
-  add(query_579923, "maxResults", newJInt(maxResults))
-  add(query_579923, "key", newJString(key))
-  add(query_579923, "prettyPrint", newJBool(prettyPrint))
-  result = call_579922.call(nil, query_579923, nil, nil, nil)
+  var query_588956 = newJObject()
+  add(query_588956, "fields", newJString(fields))
+  add(query_588956, "pageToken", newJString(pageToken))
+  add(query_588956, "quotaUser", newJString(quotaUser))
+  add(query_588956, "alt", newJString(alt))
+  add(query_588956, "customerId", newJString(customerId))
+  add(query_588956, "oauth_token", newJString(oauthToken))
+  add(query_588956, "userIp", newJString(userIp))
+  add(query_588956, "maxResults", newJInt(maxResults))
+  add(query_588956, "key", newJString(key))
+  add(query_588956, "prettyPrint", newJBool(prettyPrint))
+  result = call_588955.call(nil, query_588956, nil, nil, nil)
 
-var datatransferApplicationsList* = Call_DatatransferApplicationsList_579692(
+var datatransferApplicationsList* = Call_DatatransferApplicationsList_588725(
     name: "datatransferApplicationsList", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/applications",
-    validator: validate_DatatransferApplicationsList_579693,
-    base: "/admin/datatransfer/v1", url: url_DatatransferApplicationsList_579694,
+    validator: validate_DatatransferApplicationsList_588726,
+    base: "/admin/datatransfer/v1", url: url_DatatransferApplicationsList_588727,
     schemes: {Scheme.Https})
 type
-  Call_DatatransferApplicationsGet_579963 = ref object of OpenApiRestCall_579424
-proc url_DatatransferApplicationsGet_579965(protocol: Scheme; host: string;
+  Call_DatatransferApplicationsGet_588996 = ref object of OpenApiRestCall_588457
+proc url_DatatransferApplicationsGet_588998(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -279,7 +279,7 @@ proc url_DatatransferApplicationsGet_579965(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_DatatransferApplicationsGet_579964(path: JsonNode; query: JsonNode;
+proc validate_DatatransferApplicationsGet_588997(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Retrieves information about an application for the given application ID.
   ## 
@@ -291,11 +291,11 @@ proc validate_DatatransferApplicationsGet_579964(path: JsonNode; query: JsonNode
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `applicationId` field"
-  var valid_579980 = path.getOrDefault("applicationId")
-  valid_579980 = validateParameter(valid_579980, JString, required = true,
+  var valid_589013 = path.getOrDefault("applicationId")
+  valid_589013 = validateParameter(valid_589013, JString, required = true,
                                  default = nil)
-  if valid_579980 != nil:
-    section.add "applicationId", valid_579980
+  if valid_589013 != nil:
+    section.add "applicationId", valid_589013
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -313,41 +313,41 @@ proc validate_DatatransferApplicationsGet_579964(path: JsonNode; query: JsonNode
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_579981 = query.getOrDefault("fields")
-  valid_579981 = validateParameter(valid_579981, JString, required = false,
+  var valid_589014 = query.getOrDefault("fields")
+  valid_589014 = validateParameter(valid_589014, JString, required = false,
                                  default = nil)
-  if valid_579981 != nil:
-    section.add "fields", valid_579981
-  var valid_579982 = query.getOrDefault("quotaUser")
-  valid_579982 = validateParameter(valid_579982, JString, required = false,
+  if valid_589014 != nil:
+    section.add "fields", valid_589014
+  var valid_589015 = query.getOrDefault("quotaUser")
+  valid_589015 = validateParameter(valid_589015, JString, required = false,
                                  default = nil)
-  if valid_579982 != nil:
-    section.add "quotaUser", valid_579982
-  var valid_579983 = query.getOrDefault("alt")
-  valid_579983 = validateParameter(valid_579983, JString, required = false,
+  if valid_589015 != nil:
+    section.add "quotaUser", valid_589015
+  var valid_589016 = query.getOrDefault("alt")
+  valid_589016 = validateParameter(valid_589016, JString, required = false,
                                  default = newJString("json"))
-  if valid_579983 != nil:
-    section.add "alt", valid_579983
-  var valid_579984 = query.getOrDefault("oauth_token")
-  valid_579984 = validateParameter(valid_579984, JString, required = false,
+  if valid_589016 != nil:
+    section.add "alt", valid_589016
+  var valid_589017 = query.getOrDefault("oauth_token")
+  valid_589017 = validateParameter(valid_589017, JString, required = false,
                                  default = nil)
-  if valid_579984 != nil:
-    section.add "oauth_token", valid_579984
-  var valid_579985 = query.getOrDefault("userIp")
-  valid_579985 = validateParameter(valid_579985, JString, required = false,
+  if valid_589017 != nil:
+    section.add "oauth_token", valid_589017
+  var valid_589018 = query.getOrDefault("userIp")
+  valid_589018 = validateParameter(valid_589018, JString, required = false,
                                  default = nil)
-  if valid_579985 != nil:
-    section.add "userIp", valid_579985
-  var valid_579986 = query.getOrDefault("key")
-  valid_579986 = validateParameter(valid_579986, JString, required = false,
+  if valid_589018 != nil:
+    section.add "userIp", valid_589018
+  var valid_589019 = query.getOrDefault("key")
+  valid_589019 = validateParameter(valid_589019, JString, required = false,
                                  default = nil)
-  if valid_579986 != nil:
-    section.add "key", valid_579986
-  var valid_579987 = query.getOrDefault("prettyPrint")
-  valid_579987 = validateParameter(valid_579987, JBool, required = false,
+  if valid_589019 != nil:
+    section.add "key", valid_589019
+  var valid_589020 = query.getOrDefault("prettyPrint")
+  valid_589020 = validateParameter(valid_589020, JBool, required = false,
                                  default = newJBool(true))
-  if valid_579987 != nil:
-    section.add "prettyPrint", valid_579987
+  if valid_589020 != nil:
+    section.add "prettyPrint", valid_589020
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -356,20 +356,20 @@ proc validate_DatatransferApplicationsGet_579964(path: JsonNode; query: JsonNode
   if body != nil:
     result.add "body", body
 
-proc call*(call_579988: Call_DatatransferApplicationsGet_579963; path: JsonNode;
+proc call*(call_589021: Call_DatatransferApplicationsGet_588996; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Retrieves information about an application for the given application ID.
   ## 
-  let valid = call_579988.validator(path, query, header, formData, body)
-  let scheme = call_579988.pickScheme
+  let valid = call_589021.validator(path, query, header, formData, body)
+  let scheme = call_589021.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_579988.url(scheme.get, call_579988.host, call_579988.base,
-                         call_579988.route, valid.getOrDefault("path"),
+  let url = call_589021.url(scheme.get, call_589021.host, call_589021.base,
+                         call_589021.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_579988, url, valid)
+  result = hook(call_589021, url, valid)
 
-proc call*(call_579989: Call_DatatransferApplicationsGet_579963;
+proc call*(call_589022: Call_DatatransferApplicationsGet_588996;
           applicationId: string; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; userIp: string = "";
           key: string = ""; prettyPrint: bool = true): Recallable =
@@ -391,34 +391,34 @@ proc call*(call_579989: Call_DatatransferApplicationsGet_579963;
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_579990 = newJObject()
-  var query_579991 = newJObject()
-  add(query_579991, "fields", newJString(fields))
-  add(query_579991, "quotaUser", newJString(quotaUser))
-  add(query_579991, "alt", newJString(alt))
-  add(query_579991, "oauth_token", newJString(oauthToken))
-  add(query_579991, "userIp", newJString(userIp))
-  add(path_579990, "applicationId", newJString(applicationId))
-  add(query_579991, "key", newJString(key))
-  add(query_579991, "prettyPrint", newJBool(prettyPrint))
-  result = call_579989.call(path_579990, query_579991, nil, nil, nil)
+  var path_589023 = newJObject()
+  var query_589024 = newJObject()
+  add(query_589024, "fields", newJString(fields))
+  add(query_589024, "quotaUser", newJString(quotaUser))
+  add(query_589024, "alt", newJString(alt))
+  add(query_589024, "oauth_token", newJString(oauthToken))
+  add(query_589024, "userIp", newJString(userIp))
+  add(path_589023, "applicationId", newJString(applicationId))
+  add(query_589024, "key", newJString(key))
+  add(query_589024, "prettyPrint", newJBool(prettyPrint))
+  result = call_589022.call(path_589023, query_589024, nil, nil, nil)
 
-var datatransferApplicationsGet* = Call_DatatransferApplicationsGet_579963(
+var datatransferApplicationsGet* = Call_DatatransferApplicationsGet_588996(
     name: "datatransferApplicationsGet", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/applications/{applicationId}",
-    validator: validate_DatatransferApplicationsGet_579964,
-    base: "/admin/datatransfer/v1", url: url_DatatransferApplicationsGet_579965,
+    validator: validate_DatatransferApplicationsGet_588997,
+    base: "/admin/datatransfer/v1", url: url_DatatransferApplicationsGet_588998,
     schemes: {Scheme.Https})
 type
-  Call_DatatransferTransfersInsert_580011 = ref object of OpenApiRestCall_579424
-proc url_DatatransferTransfersInsert_580013(protocol: Scheme; host: string;
+  Call_DatatransferTransfersInsert_589044 = ref object of OpenApiRestCall_588457
+proc url_DatatransferTransfersInsert_589046(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
   result.query = $composeQueryString(query)
   result.path = base & route
 
-proc validate_DatatransferTransfersInsert_580012(path: JsonNode; query: JsonNode;
+proc validate_DatatransferTransfersInsert_589045(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Inserts a data transfer request.
   ## 
@@ -442,41 +442,41 @@ proc validate_DatatransferTransfersInsert_580012(path: JsonNode; query: JsonNode
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580014 = query.getOrDefault("fields")
-  valid_580014 = validateParameter(valid_580014, JString, required = false,
+  var valid_589047 = query.getOrDefault("fields")
+  valid_589047 = validateParameter(valid_589047, JString, required = false,
                                  default = nil)
-  if valid_580014 != nil:
-    section.add "fields", valid_580014
-  var valid_580015 = query.getOrDefault("quotaUser")
-  valid_580015 = validateParameter(valid_580015, JString, required = false,
+  if valid_589047 != nil:
+    section.add "fields", valid_589047
+  var valid_589048 = query.getOrDefault("quotaUser")
+  valid_589048 = validateParameter(valid_589048, JString, required = false,
                                  default = nil)
-  if valid_580015 != nil:
-    section.add "quotaUser", valid_580015
-  var valid_580016 = query.getOrDefault("alt")
-  valid_580016 = validateParameter(valid_580016, JString, required = false,
+  if valid_589048 != nil:
+    section.add "quotaUser", valid_589048
+  var valid_589049 = query.getOrDefault("alt")
+  valid_589049 = validateParameter(valid_589049, JString, required = false,
                                  default = newJString("json"))
-  if valid_580016 != nil:
-    section.add "alt", valid_580016
-  var valid_580017 = query.getOrDefault("oauth_token")
-  valid_580017 = validateParameter(valid_580017, JString, required = false,
+  if valid_589049 != nil:
+    section.add "alt", valid_589049
+  var valid_589050 = query.getOrDefault("oauth_token")
+  valid_589050 = validateParameter(valid_589050, JString, required = false,
                                  default = nil)
-  if valid_580017 != nil:
-    section.add "oauth_token", valid_580017
-  var valid_580018 = query.getOrDefault("userIp")
-  valid_580018 = validateParameter(valid_580018, JString, required = false,
+  if valid_589050 != nil:
+    section.add "oauth_token", valid_589050
+  var valid_589051 = query.getOrDefault("userIp")
+  valid_589051 = validateParameter(valid_589051, JString, required = false,
                                  default = nil)
-  if valid_580018 != nil:
-    section.add "userIp", valid_580018
-  var valid_580019 = query.getOrDefault("key")
-  valid_580019 = validateParameter(valid_580019, JString, required = false,
+  if valid_589051 != nil:
+    section.add "userIp", valid_589051
+  var valid_589052 = query.getOrDefault("key")
+  valid_589052 = validateParameter(valid_589052, JString, required = false,
                                  default = nil)
-  if valid_580019 != nil:
-    section.add "key", valid_580019
-  var valid_580020 = query.getOrDefault("prettyPrint")
-  valid_580020 = validateParameter(valid_580020, JBool, required = false,
+  if valid_589052 != nil:
+    section.add "key", valid_589052
+  var valid_589053 = query.getOrDefault("prettyPrint")
+  valid_589053 = validateParameter(valid_589053, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580020 != nil:
-    section.add "prettyPrint", valid_580020
+  if valid_589053 != nil:
+    section.add "prettyPrint", valid_589053
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -488,20 +488,20 @@ proc validate_DatatransferTransfersInsert_580012(path: JsonNode; query: JsonNode
   if body != nil:
     result.add "body", body
 
-proc call*(call_580022: Call_DatatransferTransfersInsert_580011; path: JsonNode;
+proc call*(call_589055: Call_DatatransferTransfersInsert_589044; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Inserts a data transfer request.
   ## 
-  let valid = call_580022.validator(path, query, header, formData, body)
-  let scheme = call_580022.pickScheme
+  let valid = call_589055.validator(path, query, header, formData, body)
+  let scheme = call_589055.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580022.url(scheme.get, call_580022.host, call_580022.base,
-                         call_580022.route, valid.getOrDefault("path"),
+  let url = call_589055.url(scheme.get, call_589055.host, call_589055.base,
+                         call_589055.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580022, url, valid)
+  result = hook(call_589055, url, valid)
 
-proc call*(call_580023: Call_DatatransferTransfersInsert_580011;
+proc call*(call_589056: Call_DatatransferTransfersInsert_589044;
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           oauthToken: string = ""; userIp: string = ""; key: string = "";
           body: JsonNode = nil; prettyPrint: bool = true): Recallable =
@@ -522,35 +522,35 @@ proc call*(call_580023: Call_DatatransferTransfersInsert_580011;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var query_580024 = newJObject()
-  var body_580025 = newJObject()
-  add(query_580024, "fields", newJString(fields))
-  add(query_580024, "quotaUser", newJString(quotaUser))
-  add(query_580024, "alt", newJString(alt))
-  add(query_580024, "oauth_token", newJString(oauthToken))
-  add(query_580024, "userIp", newJString(userIp))
-  add(query_580024, "key", newJString(key))
+  var query_589057 = newJObject()
+  var body_589058 = newJObject()
+  add(query_589057, "fields", newJString(fields))
+  add(query_589057, "quotaUser", newJString(quotaUser))
+  add(query_589057, "alt", newJString(alt))
+  add(query_589057, "oauth_token", newJString(oauthToken))
+  add(query_589057, "userIp", newJString(userIp))
+  add(query_589057, "key", newJString(key))
   if body != nil:
-    body_580025 = body
-  add(query_580024, "prettyPrint", newJBool(prettyPrint))
-  result = call_580023.call(nil, query_580024, nil, nil, body_580025)
+    body_589058 = body
+  add(query_589057, "prettyPrint", newJBool(prettyPrint))
+  result = call_589056.call(nil, query_589057, nil, nil, body_589058)
 
-var datatransferTransfersInsert* = Call_DatatransferTransfersInsert_580011(
+var datatransferTransfersInsert* = Call_DatatransferTransfersInsert_589044(
     name: "datatransferTransfersInsert", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com", route: "/transfers",
-    validator: validate_DatatransferTransfersInsert_580012,
-    base: "/admin/datatransfer/v1", url: url_DatatransferTransfersInsert_580013,
+    validator: validate_DatatransferTransfersInsert_589045,
+    base: "/admin/datatransfer/v1", url: url_DatatransferTransfersInsert_589046,
     schemes: {Scheme.Https})
 type
-  Call_DatatransferTransfersList_579992 = ref object of OpenApiRestCall_579424
-proc url_DatatransferTransfersList_579994(protocol: Scheme; host: string;
+  Call_DatatransferTransfersList_589025 = ref object of OpenApiRestCall_588457
+proc url_DatatransferTransfersList_589027(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
   result.query = $composeQueryString(query)
   result.path = base & route
 
-proc validate_DatatransferTransfersList_579993(path: JsonNode; query: JsonNode;
+proc validate_DatatransferTransfersList_589026(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Lists the transfers for a customer by source user, destination user, or status.
   ## 
@@ -586,70 +586,70 @@ proc validate_DatatransferTransfersList_579993(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_579995 = query.getOrDefault("newOwnerUserId")
-  valid_579995 = validateParameter(valid_579995, JString, required = false,
+  var valid_589028 = query.getOrDefault("newOwnerUserId")
+  valid_589028 = validateParameter(valid_589028, JString, required = false,
                                  default = nil)
-  if valid_579995 != nil:
-    section.add "newOwnerUserId", valid_579995
-  var valid_579996 = query.getOrDefault("fields")
-  valid_579996 = validateParameter(valid_579996, JString, required = false,
+  if valid_589028 != nil:
+    section.add "newOwnerUserId", valid_589028
+  var valid_589029 = query.getOrDefault("fields")
+  valid_589029 = validateParameter(valid_589029, JString, required = false,
                                  default = nil)
-  if valid_579996 != nil:
-    section.add "fields", valid_579996
-  var valid_579997 = query.getOrDefault("pageToken")
-  valid_579997 = validateParameter(valid_579997, JString, required = false,
+  if valid_589029 != nil:
+    section.add "fields", valid_589029
+  var valid_589030 = query.getOrDefault("pageToken")
+  valid_589030 = validateParameter(valid_589030, JString, required = false,
                                  default = nil)
-  if valid_579997 != nil:
-    section.add "pageToken", valid_579997
-  var valid_579998 = query.getOrDefault("quotaUser")
-  valid_579998 = validateParameter(valid_579998, JString, required = false,
+  if valid_589030 != nil:
+    section.add "pageToken", valid_589030
+  var valid_589031 = query.getOrDefault("quotaUser")
+  valid_589031 = validateParameter(valid_589031, JString, required = false,
                                  default = nil)
-  if valid_579998 != nil:
-    section.add "quotaUser", valid_579998
-  var valid_579999 = query.getOrDefault("alt")
-  valid_579999 = validateParameter(valid_579999, JString, required = false,
+  if valid_589031 != nil:
+    section.add "quotaUser", valid_589031
+  var valid_589032 = query.getOrDefault("alt")
+  valid_589032 = validateParameter(valid_589032, JString, required = false,
                                  default = newJString("json"))
-  if valid_579999 != nil:
-    section.add "alt", valid_579999
-  var valid_580000 = query.getOrDefault("customerId")
-  valid_580000 = validateParameter(valid_580000, JString, required = false,
+  if valid_589032 != nil:
+    section.add "alt", valid_589032
+  var valid_589033 = query.getOrDefault("customerId")
+  valid_589033 = validateParameter(valid_589033, JString, required = false,
                                  default = nil)
-  if valid_580000 != nil:
-    section.add "customerId", valid_580000
-  var valid_580001 = query.getOrDefault("oauth_token")
-  valid_580001 = validateParameter(valid_580001, JString, required = false,
+  if valid_589033 != nil:
+    section.add "customerId", valid_589033
+  var valid_589034 = query.getOrDefault("oauth_token")
+  valid_589034 = validateParameter(valid_589034, JString, required = false,
                                  default = nil)
-  if valid_580001 != nil:
-    section.add "oauth_token", valid_580001
-  var valid_580002 = query.getOrDefault("userIp")
-  valid_580002 = validateParameter(valid_580002, JString, required = false,
+  if valid_589034 != nil:
+    section.add "oauth_token", valid_589034
+  var valid_589035 = query.getOrDefault("userIp")
+  valid_589035 = validateParameter(valid_589035, JString, required = false,
                                  default = nil)
-  if valid_580002 != nil:
-    section.add "userIp", valid_580002
-  var valid_580003 = query.getOrDefault("oldOwnerUserId")
-  valid_580003 = validateParameter(valid_580003, JString, required = false,
+  if valid_589035 != nil:
+    section.add "userIp", valid_589035
+  var valid_589036 = query.getOrDefault("oldOwnerUserId")
+  valid_589036 = validateParameter(valid_589036, JString, required = false,
                                  default = nil)
-  if valid_580003 != nil:
-    section.add "oldOwnerUserId", valid_580003
-  var valid_580004 = query.getOrDefault("maxResults")
-  valid_580004 = validateParameter(valid_580004, JInt, required = false, default = nil)
-  if valid_580004 != nil:
-    section.add "maxResults", valid_580004
-  var valid_580005 = query.getOrDefault("key")
-  valid_580005 = validateParameter(valid_580005, JString, required = false,
+  if valid_589036 != nil:
+    section.add "oldOwnerUserId", valid_589036
+  var valid_589037 = query.getOrDefault("maxResults")
+  valid_589037 = validateParameter(valid_589037, JInt, required = false, default = nil)
+  if valid_589037 != nil:
+    section.add "maxResults", valid_589037
+  var valid_589038 = query.getOrDefault("key")
+  valid_589038 = validateParameter(valid_589038, JString, required = false,
                                  default = nil)
-  if valid_580005 != nil:
-    section.add "key", valid_580005
-  var valid_580006 = query.getOrDefault("status")
-  valid_580006 = validateParameter(valid_580006, JString, required = false,
+  if valid_589038 != nil:
+    section.add "key", valid_589038
+  var valid_589039 = query.getOrDefault("status")
+  valid_589039 = validateParameter(valid_589039, JString, required = false,
                                  default = nil)
-  if valid_580006 != nil:
-    section.add "status", valid_580006
-  var valid_580007 = query.getOrDefault("prettyPrint")
-  valid_580007 = validateParameter(valid_580007, JBool, required = false,
+  if valid_589039 != nil:
+    section.add "status", valid_589039
+  var valid_589040 = query.getOrDefault("prettyPrint")
+  valid_589040 = validateParameter(valid_589040, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580007 != nil:
-    section.add "prettyPrint", valid_580007
+  if valid_589040 != nil:
+    section.add "prettyPrint", valid_589040
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -658,20 +658,20 @@ proc validate_DatatransferTransfersList_579993(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580008: Call_DatatransferTransfersList_579992; path: JsonNode;
+proc call*(call_589041: Call_DatatransferTransfersList_589025; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Lists the transfers for a customer by source user, destination user, or status.
   ## 
-  let valid = call_580008.validator(path, query, header, formData, body)
-  let scheme = call_580008.pickScheme
+  let valid = call_589041.validator(path, query, header, formData, body)
+  let scheme = call_589041.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580008.url(scheme.get, call_580008.host, call_580008.base,
-                         call_580008.route, valid.getOrDefault("path"),
+  let url = call_589041.url(scheme.get, call_589041.host, call_589041.base,
+                         call_589041.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580008, url, valid)
+  result = hook(call_589041, url, valid)
 
-proc call*(call_580009: Call_DatatransferTransfersList_579992;
+proc call*(call_589042: Call_DatatransferTransfersList_589025;
           newOwnerUserId: string = ""; fields: string = ""; pageToken: string = "";
           quotaUser: string = ""; alt: string = "json"; customerId: string = "";
           oauthToken: string = ""; userIp: string = ""; oldOwnerUserId: string = "";
@@ -705,31 +705,31 @@ proc call*(call_580009: Call_DatatransferTransfersList_579992;
   ##         : Status of the transfer.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var query_580010 = newJObject()
-  add(query_580010, "newOwnerUserId", newJString(newOwnerUserId))
-  add(query_580010, "fields", newJString(fields))
-  add(query_580010, "pageToken", newJString(pageToken))
-  add(query_580010, "quotaUser", newJString(quotaUser))
-  add(query_580010, "alt", newJString(alt))
-  add(query_580010, "customerId", newJString(customerId))
-  add(query_580010, "oauth_token", newJString(oauthToken))
-  add(query_580010, "userIp", newJString(userIp))
-  add(query_580010, "oldOwnerUserId", newJString(oldOwnerUserId))
-  add(query_580010, "maxResults", newJInt(maxResults))
-  add(query_580010, "key", newJString(key))
-  add(query_580010, "status", newJString(status))
-  add(query_580010, "prettyPrint", newJBool(prettyPrint))
-  result = call_580009.call(nil, query_580010, nil, nil, nil)
+  var query_589043 = newJObject()
+  add(query_589043, "newOwnerUserId", newJString(newOwnerUserId))
+  add(query_589043, "fields", newJString(fields))
+  add(query_589043, "pageToken", newJString(pageToken))
+  add(query_589043, "quotaUser", newJString(quotaUser))
+  add(query_589043, "alt", newJString(alt))
+  add(query_589043, "customerId", newJString(customerId))
+  add(query_589043, "oauth_token", newJString(oauthToken))
+  add(query_589043, "userIp", newJString(userIp))
+  add(query_589043, "oldOwnerUserId", newJString(oldOwnerUserId))
+  add(query_589043, "maxResults", newJInt(maxResults))
+  add(query_589043, "key", newJString(key))
+  add(query_589043, "status", newJString(status))
+  add(query_589043, "prettyPrint", newJBool(prettyPrint))
+  result = call_589042.call(nil, query_589043, nil, nil, nil)
 
-var datatransferTransfersList* = Call_DatatransferTransfersList_579992(
+var datatransferTransfersList* = Call_DatatransferTransfersList_589025(
     name: "datatransferTransfersList", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/transfers",
-    validator: validate_DatatransferTransfersList_579993,
-    base: "/admin/datatransfer/v1", url: url_DatatransferTransfersList_579994,
+    validator: validate_DatatransferTransfersList_589026,
+    base: "/admin/datatransfer/v1", url: url_DatatransferTransfersList_589027,
     schemes: {Scheme.Https})
 type
-  Call_DatatransferTransfersGet_580026 = ref object of OpenApiRestCall_579424
-proc url_DatatransferTransfersGet_580028(protocol: Scheme; host: string;
+  Call_DatatransferTransfersGet_589059 = ref object of OpenApiRestCall_588457
+proc url_DatatransferTransfersGet_589061(protocol: Scheme; host: string;
                                         base: string; route: string; path: JsonNode;
                                         query: JsonNode): Uri =
   result.scheme = $protocol
@@ -745,7 +745,7 @@ proc url_DatatransferTransfersGet_580028(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_DatatransferTransfersGet_580027(path: JsonNode; query: JsonNode;
+proc validate_DatatransferTransfersGet_589060(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Retrieves a data transfer request by its resource ID.
   ## 
@@ -757,11 +757,11 @@ proc validate_DatatransferTransfersGet_580027(path: JsonNode; query: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `dataTransferId` field"
-  var valid_580029 = path.getOrDefault("dataTransferId")
-  valid_580029 = validateParameter(valid_580029, JString, required = true,
+  var valid_589062 = path.getOrDefault("dataTransferId")
+  valid_589062 = validateParameter(valid_589062, JString, required = true,
                                  default = nil)
-  if valid_580029 != nil:
-    section.add "dataTransferId", valid_580029
+  if valid_589062 != nil:
+    section.add "dataTransferId", valid_589062
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -779,41 +779,41 @@ proc validate_DatatransferTransfersGet_580027(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580030 = query.getOrDefault("fields")
-  valid_580030 = validateParameter(valid_580030, JString, required = false,
+  var valid_589063 = query.getOrDefault("fields")
+  valid_589063 = validateParameter(valid_589063, JString, required = false,
                                  default = nil)
-  if valid_580030 != nil:
-    section.add "fields", valid_580030
-  var valid_580031 = query.getOrDefault("quotaUser")
-  valid_580031 = validateParameter(valid_580031, JString, required = false,
+  if valid_589063 != nil:
+    section.add "fields", valid_589063
+  var valid_589064 = query.getOrDefault("quotaUser")
+  valid_589064 = validateParameter(valid_589064, JString, required = false,
                                  default = nil)
-  if valid_580031 != nil:
-    section.add "quotaUser", valid_580031
-  var valid_580032 = query.getOrDefault("alt")
-  valid_580032 = validateParameter(valid_580032, JString, required = false,
+  if valid_589064 != nil:
+    section.add "quotaUser", valid_589064
+  var valid_589065 = query.getOrDefault("alt")
+  valid_589065 = validateParameter(valid_589065, JString, required = false,
                                  default = newJString("json"))
-  if valid_580032 != nil:
-    section.add "alt", valid_580032
-  var valid_580033 = query.getOrDefault("oauth_token")
-  valid_580033 = validateParameter(valid_580033, JString, required = false,
+  if valid_589065 != nil:
+    section.add "alt", valid_589065
+  var valid_589066 = query.getOrDefault("oauth_token")
+  valid_589066 = validateParameter(valid_589066, JString, required = false,
                                  default = nil)
-  if valid_580033 != nil:
-    section.add "oauth_token", valid_580033
-  var valid_580034 = query.getOrDefault("userIp")
-  valid_580034 = validateParameter(valid_580034, JString, required = false,
+  if valid_589066 != nil:
+    section.add "oauth_token", valid_589066
+  var valid_589067 = query.getOrDefault("userIp")
+  valid_589067 = validateParameter(valid_589067, JString, required = false,
                                  default = nil)
-  if valid_580034 != nil:
-    section.add "userIp", valid_580034
-  var valid_580035 = query.getOrDefault("key")
-  valid_580035 = validateParameter(valid_580035, JString, required = false,
+  if valid_589067 != nil:
+    section.add "userIp", valid_589067
+  var valid_589068 = query.getOrDefault("key")
+  valid_589068 = validateParameter(valid_589068, JString, required = false,
                                  default = nil)
-  if valid_580035 != nil:
-    section.add "key", valid_580035
-  var valid_580036 = query.getOrDefault("prettyPrint")
-  valid_580036 = validateParameter(valid_580036, JBool, required = false,
+  if valid_589068 != nil:
+    section.add "key", valid_589068
+  var valid_589069 = query.getOrDefault("prettyPrint")
+  valid_589069 = validateParameter(valid_589069, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580036 != nil:
-    section.add "prettyPrint", valid_580036
+  if valid_589069 != nil:
+    section.add "prettyPrint", valid_589069
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -822,20 +822,20 @@ proc validate_DatatransferTransfersGet_580027(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580037: Call_DatatransferTransfersGet_580026; path: JsonNode;
+proc call*(call_589070: Call_DatatransferTransfersGet_589059; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Retrieves a data transfer request by its resource ID.
   ## 
-  let valid = call_580037.validator(path, query, header, formData, body)
-  let scheme = call_580037.pickScheme
+  let valid = call_589070.validator(path, query, header, formData, body)
+  let scheme = call_589070.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580037.url(scheme.get, call_580037.host, call_580037.base,
-                         call_580037.route, valid.getOrDefault("path"),
+  let url = call_589070.url(scheme.get, call_589070.host, call_589070.base,
+                         call_589070.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580037, url, valid)
+  result = hook(call_589070, url, valid)
 
-proc call*(call_580038: Call_DatatransferTransfersGet_580026;
+proc call*(call_589071: Call_DatatransferTransfersGet_589059;
           dataTransferId: string; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; userIp: string = "";
           key: string = ""; prettyPrint: bool = true): Recallable =
@@ -857,23 +857,23 @@ proc call*(call_580038: Call_DatatransferTransfersGet_580026;
   ##                 : ID of the resource to be retrieved. This is returned in the response from the insert method.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_580039 = newJObject()
-  var query_580040 = newJObject()
-  add(query_580040, "fields", newJString(fields))
-  add(query_580040, "quotaUser", newJString(quotaUser))
-  add(query_580040, "alt", newJString(alt))
-  add(query_580040, "oauth_token", newJString(oauthToken))
-  add(query_580040, "userIp", newJString(userIp))
-  add(query_580040, "key", newJString(key))
-  add(path_580039, "dataTransferId", newJString(dataTransferId))
-  add(query_580040, "prettyPrint", newJBool(prettyPrint))
-  result = call_580038.call(path_580039, query_580040, nil, nil, nil)
+  var path_589072 = newJObject()
+  var query_589073 = newJObject()
+  add(query_589073, "fields", newJString(fields))
+  add(query_589073, "quotaUser", newJString(quotaUser))
+  add(query_589073, "alt", newJString(alt))
+  add(query_589073, "oauth_token", newJString(oauthToken))
+  add(query_589073, "userIp", newJString(userIp))
+  add(query_589073, "key", newJString(key))
+  add(path_589072, "dataTransferId", newJString(dataTransferId))
+  add(query_589073, "prettyPrint", newJBool(prettyPrint))
+  result = call_589071.call(path_589072, query_589073, nil, nil, nil)
 
-var datatransferTransfersGet* = Call_DatatransferTransfersGet_580026(
+var datatransferTransfersGet* = Call_DatatransferTransfersGet_589059(
     name: "datatransferTransfersGet", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/transfers/{dataTransferId}",
-    validator: validate_DatatransferTransfersGet_580027,
-    base: "/admin/datatransfer/v1", url: url_DatatransferTransfersGet_580028,
+    validator: validate_DatatransferTransfersGet_589060,
+    base: "/admin/datatransfer/v1", url: url_DatatransferTransfersGet_589061,
     schemes: {Scheme.Https})
 export
   rest
@@ -916,7 +916,7 @@ proc store(auth: var GoogleAuth; token: string; expiry: int; form: string) =
   auth.form = form
   auth.digest = auth.hash
 
-proc authenticate*(fresh: float64 = -3600.0; lifetime: int = 3600): Future[bool] {.async.} =
+proc authenticate*(fresh: float64 = 3600.0; lifetime: int = 3600): Future[bool] {.async.} =
   ## get or refresh an authentication token; provide `fresh`
   ## to ensure that the token won't expire in the next N seconds.
   ## provide `lifetime` to indicate how long the token should last.

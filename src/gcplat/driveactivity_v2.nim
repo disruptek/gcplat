@@ -29,15 +29,15 @@ type
     url*: proc (protocol: Scheme; host: string; base: string; route: string;
               path: JsonNode; query: JsonNode): Uri
 
-  OpenApiRestCall_579421 = ref object of OpenApiRestCall
+  OpenApiRestCall_588450 = ref object of OpenApiRestCall
 proc hash(scheme: Scheme): Hash {.used.} =
   result = hash(ord(scheme))
 
-proc clone[T: OpenApiRestCall_579421](t: T): T {.used.} =
+proc clone[T: OpenApiRestCall_588450](t: T): T {.used.} =
   result = T(name: t.name, meth: t.meth, host: t.host, base: t.base, route: t.route,
            schemes: t.schemes, validator: t.validator, url: t.url)
 
-proc pickScheme(t: OpenApiRestCall_579421): Option[Scheme] {.used.} =
+proc pickScheme(t: OpenApiRestCall_588450): Option[Scheme] {.used.} =
   ## select a supported scheme from a set of candidates
   for scheme in Scheme.low ..
       Scheme.high:
@@ -74,7 +74,7 @@ type
   PathTokenKind = enum
     ConstantSegment, VariableSegment
   PathToken = tuple[kind: PathTokenKind, value: string]
-proc queryString(query: JsonNode): string =
+proc queryString(query: JsonNode): string {.used.} =
   var qs: seq[KeyVal]
   if query == nil:
     return ""
@@ -82,7 +82,7 @@ proc queryString(query: JsonNode): string =
     qs.add (key: k, val: v.getStr)
   result = encodeQuery(qs)
 
-proc hydratePath(input: JsonNode; segments: seq[PathToken]): Option[string] =
+proc hydratePath(input: JsonNode; segments: seq[PathToken]): Option[string] {.used.} =
   ## reconstitute a path with constants and variable values taken from json
   var head: string
   if segments.len == 0:
@@ -108,15 +108,15 @@ const
 proc composeQueryString(query: JsonNode): string
 method hook(call: OpenApiRestCall; url: Uri; input: JsonNode): Recallable {.base.}
 type
-  Call_DriveactivityActivityQuery_579690 = ref object of OpenApiRestCall_579421
-proc url_DriveactivityActivityQuery_579692(protocol: Scheme; host: string;
+  Call_DriveactivityActivityQuery_588719 = ref object of OpenApiRestCall_588450
+proc url_DriveactivityActivityQuery_588721(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
   result.query = $composeQueryString(query)
   result.path = base & route
 
-proc validate_DriveactivityActivityQuery_579691(path: JsonNode; query: JsonNode;
+proc validate_DriveactivityActivityQuery_588720(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Query past activity in Google Drive.
   ## 
@@ -148,61 +148,61 @@ proc validate_DriveactivityActivityQuery_579691(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_579804 = query.getOrDefault("upload_protocol")
-  valid_579804 = validateParameter(valid_579804, JString, required = false,
+  var valid_588833 = query.getOrDefault("upload_protocol")
+  valid_588833 = validateParameter(valid_588833, JString, required = false,
                                  default = nil)
-  if valid_579804 != nil:
-    section.add "upload_protocol", valid_579804
-  var valid_579805 = query.getOrDefault("fields")
-  valid_579805 = validateParameter(valid_579805, JString, required = false,
+  if valid_588833 != nil:
+    section.add "upload_protocol", valid_588833
+  var valid_588834 = query.getOrDefault("fields")
+  valid_588834 = validateParameter(valid_588834, JString, required = false,
                                  default = nil)
-  if valid_579805 != nil:
-    section.add "fields", valid_579805
-  var valid_579806 = query.getOrDefault("quotaUser")
-  valid_579806 = validateParameter(valid_579806, JString, required = false,
+  if valid_588834 != nil:
+    section.add "fields", valid_588834
+  var valid_588835 = query.getOrDefault("quotaUser")
+  valid_588835 = validateParameter(valid_588835, JString, required = false,
                                  default = nil)
-  if valid_579806 != nil:
-    section.add "quotaUser", valid_579806
-  var valid_579820 = query.getOrDefault("alt")
-  valid_579820 = validateParameter(valid_579820, JString, required = false,
+  if valid_588835 != nil:
+    section.add "quotaUser", valid_588835
+  var valid_588849 = query.getOrDefault("alt")
+  valid_588849 = validateParameter(valid_588849, JString, required = false,
                                  default = newJString("json"))
-  if valid_579820 != nil:
-    section.add "alt", valid_579820
-  var valid_579821 = query.getOrDefault("oauth_token")
-  valid_579821 = validateParameter(valid_579821, JString, required = false,
+  if valid_588849 != nil:
+    section.add "alt", valid_588849
+  var valid_588850 = query.getOrDefault("oauth_token")
+  valid_588850 = validateParameter(valid_588850, JString, required = false,
                                  default = nil)
-  if valid_579821 != nil:
-    section.add "oauth_token", valid_579821
-  var valid_579822 = query.getOrDefault("callback")
-  valid_579822 = validateParameter(valid_579822, JString, required = false,
+  if valid_588850 != nil:
+    section.add "oauth_token", valid_588850
+  var valid_588851 = query.getOrDefault("callback")
+  valid_588851 = validateParameter(valid_588851, JString, required = false,
                                  default = nil)
-  if valid_579822 != nil:
-    section.add "callback", valid_579822
-  var valid_579823 = query.getOrDefault("access_token")
-  valid_579823 = validateParameter(valid_579823, JString, required = false,
+  if valid_588851 != nil:
+    section.add "callback", valid_588851
+  var valid_588852 = query.getOrDefault("access_token")
+  valid_588852 = validateParameter(valid_588852, JString, required = false,
                                  default = nil)
-  if valid_579823 != nil:
-    section.add "access_token", valid_579823
-  var valid_579824 = query.getOrDefault("uploadType")
-  valid_579824 = validateParameter(valid_579824, JString, required = false,
+  if valid_588852 != nil:
+    section.add "access_token", valid_588852
+  var valid_588853 = query.getOrDefault("uploadType")
+  valid_588853 = validateParameter(valid_588853, JString, required = false,
                                  default = nil)
-  if valid_579824 != nil:
-    section.add "uploadType", valid_579824
-  var valid_579825 = query.getOrDefault("key")
-  valid_579825 = validateParameter(valid_579825, JString, required = false,
+  if valid_588853 != nil:
+    section.add "uploadType", valid_588853
+  var valid_588854 = query.getOrDefault("key")
+  valid_588854 = validateParameter(valid_588854, JString, required = false,
                                  default = nil)
-  if valid_579825 != nil:
-    section.add "key", valid_579825
-  var valid_579826 = query.getOrDefault("$.xgafv")
-  valid_579826 = validateParameter(valid_579826, JString, required = false,
+  if valid_588854 != nil:
+    section.add "key", valid_588854
+  var valid_588855 = query.getOrDefault("$.xgafv")
+  valid_588855 = validateParameter(valid_588855, JString, required = false,
                                  default = newJString("1"))
-  if valid_579826 != nil:
-    section.add "$.xgafv", valid_579826
-  var valid_579827 = query.getOrDefault("prettyPrint")
-  valid_579827 = validateParameter(valid_579827, JBool, required = false,
+  if valid_588855 != nil:
+    section.add "$.xgafv", valid_588855
+  var valid_588856 = query.getOrDefault("prettyPrint")
+  valid_588856 = validateParameter(valid_588856, JBool, required = false,
                                  default = newJBool(true))
-  if valid_579827 != nil:
-    section.add "prettyPrint", valid_579827
+  if valid_588856 != nil:
+    section.add "prettyPrint", valid_588856
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -214,20 +214,20 @@ proc validate_DriveactivityActivityQuery_579691(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_579851: Call_DriveactivityActivityQuery_579690; path: JsonNode;
+proc call*(call_588880: Call_DriveactivityActivityQuery_588719; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Query past activity in Google Drive.
   ## 
-  let valid = call_579851.validator(path, query, header, formData, body)
-  let scheme = call_579851.pickScheme
+  let valid = call_588880.validator(path, query, header, formData, body)
+  let scheme = call_588880.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_579851.url(scheme.get, call_579851.host, call_579851.base,
-                         call_579851.route, valid.getOrDefault("path"),
+  let url = call_588880.url(scheme.get, call_588880.host, call_588880.base,
+                         call_588880.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_579851, url, valid)
+  result = hook(call_588880, url, valid)
 
-proc call*(call_579922: Call_DriveactivityActivityQuery_579690;
+proc call*(call_588951: Call_DriveactivityActivityQuery_588719;
           uploadProtocol: string = ""; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; callback: string = "";
           accessToken: string = ""; uploadType: string = ""; key: string = "";
@@ -257,28 +257,28 @@ proc call*(call_579922: Call_DriveactivityActivityQuery_579690;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var query_579923 = newJObject()
-  var body_579925 = newJObject()
-  add(query_579923, "upload_protocol", newJString(uploadProtocol))
-  add(query_579923, "fields", newJString(fields))
-  add(query_579923, "quotaUser", newJString(quotaUser))
-  add(query_579923, "alt", newJString(alt))
-  add(query_579923, "oauth_token", newJString(oauthToken))
-  add(query_579923, "callback", newJString(callback))
-  add(query_579923, "access_token", newJString(accessToken))
-  add(query_579923, "uploadType", newJString(uploadType))
-  add(query_579923, "key", newJString(key))
-  add(query_579923, "$.xgafv", newJString(Xgafv))
+  var query_588952 = newJObject()
+  var body_588954 = newJObject()
+  add(query_588952, "upload_protocol", newJString(uploadProtocol))
+  add(query_588952, "fields", newJString(fields))
+  add(query_588952, "quotaUser", newJString(quotaUser))
+  add(query_588952, "alt", newJString(alt))
+  add(query_588952, "oauth_token", newJString(oauthToken))
+  add(query_588952, "callback", newJString(callback))
+  add(query_588952, "access_token", newJString(accessToken))
+  add(query_588952, "uploadType", newJString(uploadType))
+  add(query_588952, "key", newJString(key))
+  add(query_588952, "$.xgafv", newJString(Xgafv))
   if body != nil:
-    body_579925 = body
-  add(query_579923, "prettyPrint", newJBool(prettyPrint))
-  result = call_579922.call(nil, query_579923, nil, nil, body_579925)
+    body_588954 = body
+  add(query_588952, "prettyPrint", newJBool(prettyPrint))
+  result = call_588951.call(nil, query_588952, nil, nil, body_588954)
 
-var driveactivityActivityQuery* = Call_DriveactivityActivityQuery_579690(
+var driveactivityActivityQuery* = Call_DriveactivityActivityQuery_588719(
     name: "driveactivityActivityQuery", meth: HttpMethod.HttpPost,
     host: "driveactivity.googleapis.com", route: "/v2/activity:query",
-    validator: validate_DriveactivityActivityQuery_579691, base: "/",
-    url: url_DriveactivityActivityQuery_579692, schemes: {Scheme.Https})
+    validator: validate_DriveactivityActivityQuery_588720, base: "/",
+    url: url_DriveactivityActivityQuery_588721, schemes: {Scheme.Https})
 export
   rest
 
@@ -320,7 +320,7 @@ proc store(auth: var GoogleAuth; token: string; expiry: int; form: string) =
   auth.form = form
   auth.digest = auth.hash
 
-proc authenticate*(fresh: float64 = -3600.0; lifetime: int = 3600): Future[bool] {.async.} =
+proc authenticate*(fresh: float64 = 3600.0; lifetime: int = 3600): Future[bool] {.async.} =
   ## get or refresh an authentication token; provide `fresh`
   ## to ensure that the token won't expire in the next N seconds.
   ## provide `lifetime` to indicate how long the token should last.

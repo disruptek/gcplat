@@ -29,15 +29,15 @@ type
     url*: proc (protocol: Scheme; host: string; base: string; route: string;
               path: JsonNode; query: JsonNode): Uri
 
-  OpenApiRestCall_579408 = ref object of OpenApiRestCall
+  OpenApiRestCall_588441 = ref object of OpenApiRestCall
 proc hash(scheme: Scheme): Hash {.used.} =
   result = hash(ord(scheme))
 
-proc clone[T: OpenApiRestCall_579408](t: T): T {.used.} =
+proc clone[T: OpenApiRestCall_588441](t: T): T {.used.} =
   result = T(name: t.name, meth: t.meth, host: t.host, base: t.base, route: t.route,
            schemes: t.schemes, validator: t.validator, url: t.url)
 
-proc pickScheme(t: OpenApiRestCall_579408): Option[Scheme] {.used.} =
+proc pickScheme(t: OpenApiRestCall_588441): Option[Scheme] {.used.} =
   ## select a supported scheme from a set of candidates
   for scheme in Scheme.low ..
       Scheme.high:
@@ -74,7 +74,7 @@ type
   PathTokenKind = enum
     ConstantSegment, VariableSegment
   PathToken = tuple[kind: PathTokenKind, value: string]
-proc queryString(query: JsonNode): string =
+proc queryString(query: JsonNode): string {.used.} =
   var qs: seq[KeyVal]
   if query == nil:
     return ""
@@ -82,7 +82,7 @@ proc queryString(query: JsonNode): string =
     qs.add (key: k, val: v.getStr)
   result = encodeQuery(qs)
 
-proc hydratePath(input: JsonNode; segments: seq[PathToken]): Option[string] =
+proc hydratePath(input: JsonNode; segments: seq[PathToken]): Option[string] {.used.} =
   ## reconstitute a path with constants and variable values taken from json
   var head: string
   if segments.len == 0:
@@ -108,8 +108,8 @@ const
 proc composeQueryString(query: JsonNode): string
 method hook(call: OpenApiRestCall; url: Uri; input: JsonNode): Recallable {.base.}
 type
-  Call_GroupsmigrationArchiveInsert_579676 = ref object of OpenApiRestCall_579408
-proc url_GroupsmigrationArchiveInsert_579678(protocol: Scheme; host: string;
+  Call_GroupsmigrationArchiveInsert_588709 = ref object of OpenApiRestCall_588441
+proc url_GroupsmigrationArchiveInsert_588711(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -125,7 +125,7 @@ proc url_GroupsmigrationArchiveInsert_579678(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_GroupsmigrationArchiveInsert_579677(path: JsonNode; query: JsonNode;
+proc validate_GroupsmigrationArchiveInsert_588710(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Inserts a new mail into the archive of the Google group.
   ## 
@@ -136,11 +136,11 @@ proc validate_GroupsmigrationArchiveInsert_579677(path: JsonNode; query: JsonNod
   ##          : The group ID
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `groupId` field"
-  var valid_579804 = path.getOrDefault("groupId")
-  valid_579804 = validateParameter(valid_579804, JString, required = true,
+  var valid_588837 = path.getOrDefault("groupId")
+  valid_588837 = validateParameter(valid_588837, JString, required = true,
                                  default = nil)
-  if valid_579804 != nil:
-    section.add "groupId", valid_579804
+  if valid_588837 != nil:
+    section.add "groupId", valid_588837
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -158,41 +158,41 @@ proc validate_GroupsmigrationArchiveInsert_579677(path: JsonNode; query: JsonNod
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_579805 = query.getOrDefault("fields")
-  valid_579805 = validateParameter(valid_579805, JString, required = false,
+  var valid_588838 = query.getOrDefault("fields")
+  valid_588838 = validateParameter(valid_588838, JString, required = false,
                                  default = nil)
-  if valid_579805 != nil:
-    section.add "fields", valid_579805
-  var valid_579806 = query.getOrDefault("quotaUser")
-  valid_579806 = validateParameter(valid_579806, JString, required = false,
+  if valid_588838 != nil:
+    section.add "fields", valid_588838
+  var valid_588839 = query.getOrDefault("quotaUser")
+  valid_588839 = validateParameter(valid_588839, JString, required = false,
                                  default = nil)
-  if valid_579806 != nil:
-    section.add "quotaUser", valid_579806
-  var valid_579820 = query.getOrDefault("alt")
-  valid_579820 = validateParameter(valid_579820, JString, required = false,
+  if valid_588839 != nil:
+    section.add "quotaUser", valid_588839
+  var valid_588853 = query.getOrDefault("alt")
+  valid_588853 = validateParameter(valid_588853, JString, required = false,
                                  default = newJString("json"))
-  if valid_579820 != nil:
-    section.add "alt", valid_579820
-  var valid_579821 = query.getOrDefault("oauth_token")
-  valid_579821 = validateParameter(valid_579821, JString, required = false,
+  if valid_588853 != nil:
+    section.add "alt", valid_588853
+  var valid_588854 = query.getOrDefault("oauth_token")
+  valid_588854 = validateParameter(valid_588854, JString, required = false,
                                  default = nil)
-  if valid_579821 != nil:
-    section.add "oauth_token", valid_579821
-  var valid_579822 = query.getOrDefault("userIp")
-  valid_579822 = validateParameter(valid_579822, JString, required = false,
+  if valid_588854 != nil:
+    section.add "oauth_token", valid_588854
+  var valid_588855 = query.getOrDefault("userIp")
+  valid_588855 = validateParameter(valid_588855, JString, required = false,
                                  default = nil)
-  if valid_579822 != nil:
-    section.add "userIp", valid_579822
-  var valid_579823 = query.getOrDefault("key")
-  valid_579823 = validateParameter(valid_579823, JString, required = false,
+  if valid_588855 != nil:
+    section.add "userIp", valid_588855
+  var valid_588856 = query.getOrDefault("key")
+  valid_588856 = validateParameter(valid_588856, JString, required = false,
                                  default = nil)
-  if valid_579823 != nil:
-    section.add "key", valid_579823
-  var valid_579824 = query.getOrDefault("prettyPrint")
-  valid_579824 = validateParameter(valid_579824, JBool, required = false,
+  if valid_588856 != nil:
+    section.add "key", valid_588856
+  var valid_588857 = query.getOrDefault("prettyPrint")
+  valid_588857 = validateParameter(valid_588857, JBool, required = false,
                                  default = newJBool(true))
-  if valid_579824 != nil:
-    section.add "prettyPrint", valid_579824
+  if valid_588857 != nil:
+    section.add "prettyPrint", valid_588857
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -201,20 +201,20 @@ proc validate_GroupsmigrationArchiveInsert_579677(path: JsonNode; query: JsonNod
   if body != nil:
     result.add "body", body
 
-proc call*(call_579847: Call_GroupsmigrationArchiveInsert_579676; path: JsonNode;
+proc call*(call_588880: Call_GroupsmigrationArchiveInsert_588709; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Inserts a new mail into the archive of the Google group.
   ## 
-  let valid = call_579847.validator(path, query, header, formData, body)
-  let scheme = call_579847.pickScheme
+  let valid = call_588880.validator(path, query, header, formData, body)
+  let scheme = call_588880.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_579847.url(scheme.get, call_579847.host, call_579847.base,
-                         call_579847.route, valid.getOrDefault("path"),
+  let url = call_588880.url(scheme.get, call_588880.host, call_588880.base,
+                         call_588880.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_579847, url, valid)
+  result = hook(call_588880, url, valid)
 
-proc call*(call_579918: Call_GroupsmigrationArchiveInsert_579676; groupId: string;
+proc call*(call_588951: Call_GroupsmigrationArchiveInsert_588709; groupId: string;
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           oauthToken: string = ""; userIp: string = ""; key: string = "";
           prettyPrint: bool = true): Recallable =
@@ -236,23 +236,23 @@ proc call*(call_579918: Call_GroupsmigrationArchiveInsert_579676; groupId: strin
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_579919 = newJObject()
-  var query_579921 = newJObject()
-  add(path_579919, "groupId", newJString(groupId))
-  add(query_579921, "fields", newJString(fields))
-  add(query_579921, "quotaUser", newJString(quotaUser))
-  add(query_579921, "alt", newJString(alt))
-  add(query_579921, "oauth_token", newJString(oauthToken))
-  add(query_579921, "userIp", newJString(userIp))
-  add(query_579921, "key", newJString(key))
-  add(query_579921, "prettyPrint", newJBool(prettyPrint))
-  result = call_579918.call(path_579919, query_579921, nil, nil, nil)
+  var path_588952 = newJObject()
+  var query_588954 = newJObject()
+  add(path_588952, "groupId", newJString(groupId))
+  add(query_588954, "fields", newJString(fields))
+  add(query_588954, "quotaUser", newJString(quotaUser))
+  add(query_588954, "alt", newJString(alt))
+  add(query_588954, "oauth_token", newJString(oauthToken))
+  add(query_588954, "userIp", newJString(userIp))
+  add(query_588954, "key", newJString(key))
+  add(query_588954, "prettyPrint", newJBool(prettyPrint))
+  result = call_588951.call(path_588952, query_588954, nil, nil, nil)
 
-var groupsmigrationArchiveInsert* = Call_GroupsmigrationArchiveInsert_579676(
+var groupsmigrationArchiveInsert* = Call_GroupsmigrationArchiveInsert_588709(
     name: "groupsmigrationArchiveInsert", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com", route: "/{groupId}/archive",
-    validator: validate_GroupsmigrationArchiveInsert_579677,
-    base: "/groups/v1/groups", url: url_GroupsmigrationArchiveInsert_579678,
+    validator: validate_GroupsmigrationArchiveInsert_588710,
+    base: "/groups/v1/groups", url: url_GroupsmigrationArchiveInsert_588711,
     schemes: {Scheme.Https})
 export
   rest
@@ -295,7 +295,7 @@ proc store(auth: var GoogleAuth; token: string; expiry: int; form: string) =
   auth.form = form
   auth.digest = auth.hash
 
-proc authenticate*(fresh: float64 = -3600.0; lifetime: int = 3600): Future[bool] {.async.} =
+proc authenticate*(fresh: float64 = 3600.0; lifetime: int = 3600): Future[bool] {.async.} =
   ## get or refresh an authentication token; provide `fresh`
   ## to ensure that the token won't expire in the next N seconds.
   ## provide `lifetime` to indicate how long the token should last.

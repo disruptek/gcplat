@@ -29,15 +29,15 @@ type
     url*: proc (protocol: Scheme; host: string; base: string; route: string;
               path: JsonNode; query: JsonNode): Uri
 
-  OpenApiRestCall_579408 = ref object of OpenApiRestCall
+  OpenApiRestCall_588441 = ref object of OpenApiRestCall
 proc hash(scheme: Scheme): Hash {.used.} =
   result = hash(ord(scheme))
 
-proc clone[T: OpenApiRestCall_579408](t: T): T {.used.} =
+proc clone[T: OpenApiRestCall_588441](t: T): T {.used.} =
   result = T(name: t.name, meth: t.meth, host: t.host, base: t.base, route: t.route,
            schemes: t.schemes, validator: t.validator, url: t.url)
 
-proc pickScheme(t: OpenApiRestCall_579408): Option[Scheme] {.used.} =
+proc pickScheme(t: OpenApiRestCall_588441): Option[Scheme] {.used.} =
   ## select a supported scheme from a set of candidates
   for scheme in Scheme.low ..
       Scheme.high:
@@ -74,7 +74,7 @@ type
   PathTokenKind = enum
     ConstantSegment, VariableSegment
   PathToken = tuple[kind: PathTokenKind, value: string]
-proc queryString(query: JsonNode): string =
+proc queryString(query: JsonNode): string {.used.} =
   var qs: seq[KeyVal]
   if query == nil:
     return ""
@@ -82,7 +82,7 @@ proc queryString(query: JsonNode): string =
     qs.add (key: k, val: v.getStr)
   result = encodeQuery(qs)
 
-proc hydratePath(input: JsonNode; segments: seq[PathToken]): Option[string] =
+proc hydratePath(input: JsonNode; segments: seq[PathToken]): Option[string] {.used.} =
   ## reconstitute a path with constants and variable values taken from json
   var head: string
   if segments.len == 0:
@@ -108,15 +108,15 @@ const
 proc composeQueryString(query: JsonNode): string
 method hook(call: OpenApiRestCall; url: Uri; input: JsonNode): Recallable {.base.}
 type
-  Call_IdentitytoolkitRelyingpartyCreateAuthUri_579676 = ref object of OpenApiRestCall_579408
-proc url_IdentitytoolkitRelyingpartyCreateAuthUri_579678(protocol: Scheme;
+  Call_IdentitytoolkitRelyingpartyCreateAuthUri_588709 = ref object of OpenApiRestCall_588441
+proc url_IdentitytoolkitRelyingpartyCreateAuthUri_588711(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
   result.query = $composeQueryString(query)
   result.path = base & route
 
-proc validate_IdentitytoolkitRelyingpartyCreateAuthUri_579677(path: JsonNode;
+proc validate_IdentitytoolkitRelyingpartyCreateAuthUri_588710(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Creates the URI used by the IdP to authenticate the user.
   ## 
@@ -140,41 +140,41 @@ proc validate_IdentitytoolkitRelyingpartyCreateAuthUri_579677(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_579790 = query.getOrDefault("fields")
-  valid_579790 = validateParameter(valid_579790, JString, required = false,
+  var valid_588823 = query.getOrDefault("fields")
+  valid_588823 = validateParameter(valid_588823, JString, required = false,
                                  default = nil)
-  if valid_579790 != nil:
-    section.add "fields", valid_579790
-  var valid_579791 = query.getOrDefault("quotaUser")
-  valid_579791 = validateParameter(valid_579791, JString, required = false,
+  if valid_588823 != nil:
+    section.add "fields", valid_588823
+  var valid_588824 = query.getOrDefault("quotaUser")
+  valid_588824 = validateParameter(valid_588824, JString, required = false,
                                  default = nil)
-  if valid_579791 != nil:
-    section.add "quotaUser", valid_579791
-  var valid_579805 = query.getOrDefault("alt")
-  valid_579805 = validateParameter(valid_579805, JString, required = false,
+  if valid_588824 != nil:
+    section.add "quotaUser", valid_588824
+  var valid_588838 = query.getOrDefault("alt")
+  valid_588838 = validateParameter(valid_588838, JString, required = false,
                                  default = newJString("json"))
-  if valid_579805 != nil:
-    section.add "alt", valid_579805
-  var valid_579806 = query.getOrDefault("oauth_token")
-  valid_579806 = validateParameter(valid_579806, JString, required = false,
+  if valid_588838 != nil:
+    section.add "alt", valid_588838
+  var valid_588839 = query.getOrDefault("oauth_token")
+  valid_588839 = validateParameter(valid_588839, JString, required = false,
                                  default = nil)
-  if valid_579806 != nil:
-    section.add "oauth_token", valid_579806
-  var valid_579807 = query.getOrDefault("userIp")
-  valid_579807 = validateParameter(valid_579807, JString, required = false,
+  if valid_588839 != nil:
+    section.add "oauth_token", valid_588839
+  var valid_588840 = query.getOrDefault("userIp")
+  valid_588840 = validateParameter(valid_588840, JString, required = false,
                                  default = nil)
-  if valid_579807 != nil:
-    section.add "userIp", valid_579807
-  var valid_579808 = query.getOrDefault("key")
-  valid_579808 = validateParameter(valid_579808, JString, required = false,
+  if valid_588840 != nil:
+    section.add "userIp", valid_588840
+  var valid_588841 = query.getOrDefault("key")
+  valid_588841 = validateParameter(valid_588841, JString, required = false,
                                  default = nil)
-  if valid_579808 != nil:
-    section.add "key", valid_579808
-  var valid_579809 = query.getOrDefault("prettyPrint")
-  valid_579809 = validateParameter(valid_579809, JBool, required = false,
+  if valid_588841 != nil:
+    section.add "key", valid_588841
+  var valid_588842 = query.getOrDefault("prettyPrint")
+  valid_588842 = validateParameter(valid_588842, JBool, required = false,
                                  default = newJBool(true))
-  if valid_579809 != nil:
-    section.add "prettyPrint", valid_579809
+  if valid_588842 != nil:
+    section.add "prettyPrint", valid_588842
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -186,21 +186,21 @@ proc validate_IdentitytoolkitRelyingpartyCreateAuthUri_579677(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_579833: Call_IdentitytoolkitRelyingpartyCreateAuthUri_579676;
+proc call*(call_588866: Call_IdentitytoolkitRelyingpartyCreateAuthUri_588709;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Creates the URI used by the IdP to authenticate the user.
   ## 
-  let valid = call_579833.validator(path, query, header, formData, body)
-  let scheme = call_579833.pickScheme
+  let valid = call_588866.validator(path, query, header, formData, body)
+  let scheme = call_588866.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_579833.url(scheme.get, call_579833.host, call_579833.base,
-                         call_579833.route, valid.getOrDefault("path"),
+  let url = call_588866.url(scheme.get, call_588866.host, call_588866.base,
+                         call_588866.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_579833, url, valid)
+  result = hook(call_588866, url, valid)
 
-proc call*(call_579904: Call_IdentitytoolkitRelyingpartyCreateAuthUri_579676;
+proc call*(call_588937: Call_IdentitytoolkitRelyingpartyCreateAuthUri_588709;
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           oauthToken: string = ""; userIp: string = ""; key: string = "";
           body: JsonNode = nil; prettyPrint: bool = true): Recallable =
@@ -221,36 +221,36 @@ proc call*(call_579904: Call_IdentitytoolkitRelyingpartyCreateAuthUri_579676;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var query_579905 = newJObject()
-  var body_579907 = newJObject()
-  add(query_579905, "fields", newJString(fields))
-  add(query_579905, "quotaUser", newJString(quotaUser))
-  add(query_579905, "alt", newJString(alt))
-  add(query_579905, "oauth_token", newJString(oauthToken))
-  add(query_579905, "userIp", newJString(userIp))
-  add(query_579905, "key", newJString(key))
+  var query_588938 = newJObject()
+  var body_588940 = newJObject()
+  add(query_588938, "fields", newJString(fields))
+  add(query_588938, "quotaUser", newJString(quotaUser))
+  add(query_588938, "alt", newJString(alt))
+  add(query_588938, "oauth_token", newJString(oauthToken))
+  add(query_588938, "userIp", newJString(userIp))
+  add(query_588938, "key", newJString(key))
   if body != nil:
-    body_579907 = body
-  add(query_579905, "prettyPrint", newJBool(prettyPrint))
-  result = call_579904.call(nil, query_579905, nil, nil, body_579907)
+    body_588940 = body
+  add(query_588938, "prettyPrint", newJBool(prettyPrint))
+  result = call_588937.call(nil, query_588938, nil, nil, body_588940)
 
-var identitytoolkitRelyingpartyCreateAuthUri* = Call_IdentitytoolkitRelyingpartyCreateAuthUri_579676(
+var identitytoolkitRelyingpartyCreateAuthUri* = Call_IdentitytoolkitRelyingpartyCreateAuthUri_588709(
     name: "identitytoolkitRelyingpartyCreateAuthUri", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com", route: "/createAuthUri",
-    validator: validate_IdentitytoolkitRelyingpartyCreateAuthUri_579677,
+    validator: validate_IdentitytoolkitRelyingpartyCreateAuthUri_588710,
     base: "/identitytoolkit/v3/relyingparty",
-    url: url_IdentitytoolkitRelyingpartyCreateAuthUri_579678,
+    url: url_IdentitytoolkitRelyingpartyCreateAuthUri_588711,
     schemes: {Scheme.Https})
 type
-  Call_IdentitytoolkitRelyingpartyDeleteAccount_579946 = ref object of OpenApiRestCall_579408
-proc url_IdentitytoolkitRelyingpartyDeleteAccount_579948(protocol: Scheme;
+  Call_IdentitytoolkitRelyingpartyDeleteAccount_588979 = ref object of OpenApiRestCall_588441
+proc url_IdentitytoolkitRelyingpartyDeleteAccount_588981(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
   result.query = $composeQueryString(query)
   result.path = base & route
 
-proc validate_IdentitytoolkitRelyingpartyDeleteAccount_579947(path: JsonNode;
+proc validate_IdentitytoolkitRelyingpartyDeleteAccount_588980(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Delete user account.
   ## 
@@ -274,41 +274,41 @@ proc validate_IdentitytoolkitRelyingpartyDeleteAccount_579947(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_579949 = query.getOrDefault("fields")
-  valid_579949 = validateParameter(valid_579949, JString, required = false,
+  var valid_588982 = query.getOrDefault("fields")
+  valid_588982 = validateParameter(valid_588982, JString, required = false,
                                  default = nil)
-  if valid_579949 != nil:
-    section.add "fields", valid_579949
-  var valid_579950 = query.getOrDefault("quotaUser")
-  valid_579950 = validateParameter(valid_579950, JString, required = false,
+  if valid_588982 != nil:
+    section.add "fields", valid_588982
+  var valid_588983 = query.getOrDefault("quotaUser")
+  valid_588983 = validateParameter(valid_588983, JString, required = false,
                                  default = nil)
-  if valid_579950 != nil:
-    section.add "quotaUser", valid_579950
-  var valid_579951 = query.getOrDefault("alt")
-  valid_579951 = validateParameter(valid_579951, JString, required = false,
+  if valid_588983 != nil:
+    section.add "quotaUser", valid_588983
+  var valid_588984 = query.getOrDefault("alt")
+  valid_588984 = validateParameter(valid_588984, JString, required = false,
                                  default = newJString("json"))
-  if valid_579951 != nil:
-    section.add "alt", valid_579951
-  var valid_579952 = query.getOrDefault("oauth_token")
-  valid_579952 = validateParameter(valid_579952, JString, required = false,
+  if valid_588984 != nil:
+    section.add "alt", valid_588984
+  var valid_588985 = query.getOrDefault("oauth_token")
+  valid_588985 = validateParameter(valid_588985, JString, required = false,
                                  default = nil)
-  if valid_579952 != nil:
-    section.add "oauth_token", valid_579952
-  var valid_579953 = query.getOrDefault("userIp")
-  valid_579953 = validateParameter(valid_579953, JString, required = false,
+  if valid_588985 != nil:
+    section.add "oauth_token", valid_588985
+  var valid_588986 = query.getOrDefault("userIp")
+  valid_588986 = validateParameter(valid_588986, JString, required = false,
                                  default = nil)
-  if valid_579953 != nil:
-    section.add "userIp", valid_579953
-  var valid_579954 = query.getOrDefault("key")
-  valid_579954 = validateParameter(valid_579954, JString, required = false,
+  if valid_588986 != nil:
+    section.add "userIp", valid_588986
+  var valid_588987 = query.getOrDefault("key")
+  valid_588987 = validateParameter(valid_588987, JString, required = false,
                                  default = nil)
-  if valid_579954 != nil:
-    section.add "key", valid_579954
-  var valid_579955 = query.getOrDefault("prettyPrint")
-  valid_579955 = validateParameter(valid_579955, JBool, required = false,
+  if valid_588987 != nil:
+    section.add "key", valid_588987
+  var valid_588988 = query.getOrDefault("prettyPrint")
+  valid_588988 = validateParameter(valid_588988, JBool, required = false,
                                  default = newJBool(true))
-  if valid_579955 != nil:
-    section.add "prettyPrint", valid_579955
+  if valid_588988 != nil:
+    section.add "prettyPrint", valid_588988
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -320,21 +320,21 @@ proc validate_IdentitytoolkitRelyingpartyDeleteAccount_579947(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_579957: Call_IdentitytoolkitRelyingpartyDeleteAccount_579946;
+proc call*(call_588990: Call_IdentitytoolkitRelyingpartyDeleteAccount_588979;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Delete user account.
   ## 
-  let valid = call_579957.validator(path, query, header, formData, body)
-  let scheme = call_579957.pickScheme
+  let valid = call_588990.validator(path, query, header, formData, body)
+  let scheme = call_588990.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_579957.url(scheme.get, call_579957.host, call_579957.base,
-                         call_579957.route, valid.getOrDefault("path"),
+  let url = call_588990.url(scheme.get, call_588990.host, call_588990.base,
+                         call_588990.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_579957, url, valid)
+  result = hook(call_588990, url, valid)
 
-proc call*(call_579958: Call_IdentitytoolkitRelyingpartyDeleteAccount_579946;
+proc call*(call_588991: Call_IdentitytoolkitRelyingpartyDeleteAccount_588979;
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           oauthToken: string = ""; userIp: string = ""; key: string = "";
           body: JsonNode = nil; prettyPrint: bool = true): Recallable =
@@ -355,36 +355,36 @@ proc call*(call_579958: Call_IdentitytoolkitRelyingpartyDeleteAccount_579946;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var query_579959 = newJObject()
-  var body_579960 = newJObject()
-  add(query_579959, "fields", newJString(fields))
-  add(query_579959, "quotaUser", newJString(quotaUser))
-  add(query_579959, "alt", newJString(alt))
-  add(query_579959, "oauth_token", newJString(oauthToken))
-  add(query_579959, "userIp", newJString(userIp))
-  add(query_579959, "key", newJString(key))
+  var query_588992 = newJObject()
+  var body_588993 = newJObject()
+  add(query_588992, "fields", newJString(fields))
+  add(query_588992, "quotaUser", newJString(quotaUser))
+  add(query_588992, "alt", newJString(alt))
+  add(query_588992, "oauth_token", newJString(oauthToken))
+  add(query_588992, "userIp", newJString(userIp))
+  add(query_588992, "key", newJString(key))
   if body != nil:
-    body_579960 = body
-  add(query_579959, "prettyPrint", newJBool(prettyPrint))
-  result = call_579958.call(nil, query_579959, nil, nil, body_579960)
+    body_588993 = body
+  add(query_588992, "prettyPrint", newJBool(prettyPrint))
+  result = call_588991.call(nil, query_588992, nil, nil, body_588993)
 
-var identitytoolkitRelyingpartyDeleteAccount* = Call_IdentitytoolkitRelyingpartyDeleteAccount_579946(
+var identitytoolkitRelyingpartyDeleteAccount* = Call_IdentitytoolkitRelyingpartyDeleteAccount_588979(
     name: "identitytoolkitRelyingpartyDeleteAccount", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com", route: "/deleteAccount",
-    validator: validate_IdentitytoolkitRelyingpartyDeleteAccount_579947,
+    validator: validate_IdentitytoolkitRelyingpartyDeleteAccount_588980,
     base: "/identitytoolkit/v3/relyingparty",
-    url: url_IdentitytoolkitRelyingpartyDeleteAccount_579948,
+    url: url_IdentitytoolkitRelyingpartyDeleteAccount_588981,
     schemes: {Scheme.Https})
 type
-  Call_IdentitytoolkitRelyingpartyDownloadAccount_579961 = ref object of OpenApiRestCall_579408
-proc url_IdentitytoolkitRelyingpartyDownloadAccount_579963(protocol: Scheme;
+  Call_IdentitytoolkitRelyingpartyDownloadAccount_588994 = ref object of OpenApiRestCall_588441
+proc url_IdentitytoolkitRelyingpartyDownloadAccount_588996(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
   result.query = $composeQueryString(query)
   result.path = base & route
 
-proc validate_IdentitytoolkitRelyingpartyDownloadAccount_579962(path: JsonNode;
+proc validate_IdentitytoolkitRelyingpartyDownloadAccount_588995(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Batch download user accounts.
   ## 
@@ -408,41 +408,41 @@ proc validate_IdentitytoolkitRelyingpartyDownloadAccount_579962(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_579964 = query.getOrDefault("fields")
-  valid_579964 = validateParameter(valid_579964, JString, required = false,
+  var valid_588997 = query.getOrDefault("fields")
+  valid_588997 = validateParameter(valid_588997, JString, required = false,
                                  default = nil)
-  if valid_579964 != nil:
-    section.add "fields", valid_579964
-  var valid_579965 = query.getOrDefault("quotaUser")
-  valid_579965 = validateParameter(valid_579965, JString, required = false,
+  if valid_588997 != nil:
+    section.add "fields", valid_588997
+  var valid_588998 = query.getOrDefault("quotaUser")
+  valid_588998 = validateParameter(valid_588998, JString, required = false,
                                  default = nil)
-  if valid_579965 != nil:
-    section.add "quotaUser", valid_579965
-  var valid_579966 = query.getOrDefault("alt")
-  valid_579966 = validateParameter(valid_579966, JString, required = false,
+  if valid_588998 != nil:
+    section.add "quotaUser", valid_588998
+  var valid_588999 = query.getOrDefault("alt")
+  valid_588999 = validateParameter(valid_588999, JString, required = false,
                                  default = newJString("json"))
-  if valid_579966 != nil:
-    section.add "alt", valid_579966
-  var valid_579967 = query.getOrDefault("oauth_token")
-  valid_579967 = validateParameter(valid_579967, JString, required = false,
+  if valid_588999 != nil:
+    section.add "alt", valid_588999
+  var valid_589000 = query.getOrDefault("oauth_token")
+  valid_589000 = validateParameter(valid_589000, JString, required = false,
                                  default = nil)
-  if valid_579967 != nil:
-    section.add "oauth_token", valid_579967
-  var valid_579968 = query.getOrDefault("userIp")
-  valid_579968 = validateParameter(valid_579968, JString, required = false,
+  if valid_589000 != nil:
+    section.add "oauth_token", valid_589000
+  var valid_589001 = query.getOrDefault("userIp")
+  valid_589001 = validateParameter(valid_589001, JString, required = false,
                                  default = nil)
-  if valid_579968 != nil:
-    section.add "userIp", valid_579968
-  var valid_579969 = query.getOrDefault("key")
-  valid_579969 = validateParameter(valid_579969, JString, required = false,
+  if valid_589001 != nil:
+    section.add "userIp", valid_589001
+  var valid_589002 = query.getOrDefault("key")
+  valid_589002 = validateParameter(valid_589002, JString, required = false,
                                  default = nil)
-  if valid_579969 != nil:
-    section.add "key", valid_579969
-  var valid_579970 = query.getOrDefault("prettyPrint")
-  valid_579970 = validateParameter(valid_579970, JBool, required = false,
+  if valid_589002 != nil:
+    section.add "key", valid_589002
+  var valid_589003 = query.getOrDefault("prettyPrint")
+  valid_589003 = validateParameter(valid_589003, JBool, required = false,
                                  default = newJBool(true))
-  if valid_579970 != nil:
-    section.add "prettyPrint", valid_579970
+  if valid_589003 != nil:
+    section.add "prettyPrint", valid_589003
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -454,21 +454,21 @@ proc validate_IdentitytoolkitRelyingpartyDownloadAccount_579962(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_579972: Call_IdentitytoolkitRelyingpartyDownloadAccount_579961;
+proc call*(call_589005: Call_IdentitytoolkitRelyingpartyDownloadAccount_588994;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Batch download user accounts.
   ## 
-  let valid = call_579972.validator(path, query, header, formData, body)
-  let scheme = call_579972.pickScheme
+  let valid = call_589005.validator(path, query, header, formData, body)
+  let scheme = call_589005.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_579972.url(scheme.get, call_579972.host, call_579972.base,
-                         call_579972.route, valid.getOrDefault("path"),
+  let url = call_589005.url(scheme.get, call_589005.host, call_589005.base,
+                         call_589005.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_579972, url, valid)
+  result = hook(call_589005, url, valid)
 
-proc call*(call_579973: Call_IdentitytoolkitRelyingpartyDownloadAccount_579961;
+proc call*(call_589006: Call_IdentitytoolkitRelyingpartyDownloadAccount_588994;
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           oauthToken: string = ""; userIp: string = ""; key: string = "";
           body: JsonNode = nil; prettyPrint: bool = true): Recallable =
@@ -489,36 +489,36 @@ proc call*(call_579973: Call_IdentitytoolkitRelyingpartyDownloadAccount_579961;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var query_579974 = newJObject()
-  var body_579975 = newJObject()
-  add(query_579974, "fields", newJString(fields))
-  add(query_579974, "quotaUser", newJString(quotaUser))
-  add(query_579974, "alt", newJString(alt))
-  add(query_579974, "oauth_token", newJString(oauthToken))
-  add(query_579974, "userIp", newJString(userIp))
-  add(query_579974, "key", newJString(key))
+  var query_589007 = newJObject()
+  var body_589008 = newJObject()
+  add(query_589007, "fields", newJString(fields))
+  add(query_589007, "quotaUser", newJString(quotaUser))
+  add(query_589007, "alt", newJString(alt))
+  add(query_589007, "oauth_token", newJString(oauthToken))
+  add(query_589007, "userIp", newJString(userIp))
+  add(query_589007, "key", newJString(key))
   if body != nil:
-    body_579975 = body
-  add(query_579974, "prettyPrint", newJBool(prettyPrint))
-  result = call_579973.call(nil, query_579974, nil, nil, body_579975)
+    body_589008 = body
+  add(query_589007, "prettyPrint", newJBool(prettyPrint))
+  result = call_589006.call(nil, query_589007, nil, nil, body_589008)
 
-var identitytoolkitRelyingpartyDownloadAccount* = Call_IdentitytoolkitRelyingpartyDownloadAccount_579961(
+var identitytoolkitRelyingpartyDownloadAccount* = Call_IdentitytoolkitRelyingpartyDownloadAccount_588994(
     name: "identitytoolkitRelyingpartyDownloadAccount", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com", route: "/downloadAccount",
-    validator: validate_IdentitytoolkitRelyingpartyDownloadAccount_579962,
+    validator: validate_IdentitytoolkitRelyingpartyDownloadAccount_588995,
     base: "/identitytoolkit/v3/relyingparty",
-    url: url_IdentitytoolkitRelyingpartyDownloadAccount_579963,
+    url: url_IdentitytoolkitRelyingpartyDownloadAccount_588996,
     schemes: {Scheme.Https})
 type
-  Call_IdentitytoolkitRelyingpartyEmailLinkSignin_579976 = ref object of OpenApiRestCall_579408
-proc url_IdentitytoolkitRelyingpartyEmailLinkSignin_579978(protocol: Scheme;
+  Call_IdentitytoolkitRelyingpartyEmailLinkSignin_589009 = ref object of OpenApiRestCall_588441
+proc url_IdentitytoolkitRelyingpartyEmailLinkSignin_589011(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
   result.query = $composeQueryString(query)
   result.path = base & route
 
-proc validate_IdentitytoolkitRelyingpartyEmailLinkSignin_579977(path: JsonNode;
+proc validate_IdentitytoolkitRelyingpartyEmailLinkSignin_589010(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Reset password for a user.
   ## 
@@ -542,41 +542,41 @@ proc validate_IdentitytoolkitRelyingpartyEmailLinkSignin_579977(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_579979 = query.getOrDefault("fields")
-  valid_579979 = validateParameter(valid_579979, JString, required = false,
+  var valid_589012 = query.getOrDefault("fields")
+  valid_589012 = validateParameter(valid_589012, JString, required = false,
                                  default = nil)
-  if valid_579979 != nil:
-    section.add "fields", valid_579979
-  var valid_579980 = query.getOrDefault("quotaUser")
-  valid_579980 = validateParameter(valid_579980, JString, required = false,
+  if valid_589012 != nil:
+    section.add "fields", valid_589012
+  var valid_589013 = query.getOrDefault("quotaUser")
+  valid_589013 = validateParameter(valid_589013, JString, required = false,
                                  default = nil)
-  if valid_579980 != nil:
-    section.add "quotaUser", valid_579980
-  var valid_579981 = query.getOrDefault("alt")
-  valid_579981 = validateParameter(valid_579981, JString, required = false,
+  if valid_589013 != nil:
+    section.add "quotaUser", valid_589013
+  var valid_589014 = query.getOrDefault("alt")
+  valid_589014 = validateParameter(valid_589014, JString, required = false,
                                  default = newJString("json"))
-  if valid_579981 != nil:
-    section.add "alt", valid_579981
-  var valid_579982 = query.getOrDefault("oauth_token")
-  valid_579982 = validateParameter(valid_579982, JString, required = false,
+  if valid_589014 != nil:
+    section.add "alt", valid_589014
+  var valid_589015 = query.getOrDefault("oauth_token")
+  valid_589015 = validateParameter(valid_589015, JString, required = false,
                                  default = nil)
-  if valid_579982 != nil:
-    section.add "oauth_token", valid_579982
-  var valid_579983 = query.getOrDefault("userIp")
-  valid_579983 = validateParameter(valid_579983, JString, required = false,
+  if valid_589015 != nil:
+    section.add "oauth_token", valid_589015
+  var valid_589016 = query.getOrDefault("userIp")
+  valid_589016 = validateParameter(valid_589016, JString, required = false,
                                  default = nil)
-  if valid_579983 != nil:
-    section.add "userIp", valid_579983
-  var valid_579984 = query.getOrDefault("key")
-  valid_579984 = validateParameter(valid_579984, JString, required = false,
+  if valid_589016 != nil:
+    section.add "userIp", valid_589016
+  var valid_589017 = query.getOrDefault("key")
+  valid_589017 = validateParameter(valid_589017, JString, required = false,
                                  default = nil)
-  if valid_579984 != nil:
-    section.add "key", valid_579984
-  var valid_579985 = query.getOrDefault("prettyPrint")
-  valid_579985 = validateParameter(valid_579985, JBool, required = false,
+  if valid_589017 != nil:
+    section.add "key", valid_589017
+  var valid_589018 = query.getOrDefault("prettyPrint")
+  valid_589018 = validateParameter(valid_589018, JBool, required = false,
                                  default = newJBool(true))
-  if valid_579985 != nil:
-    section.add "prettyPrint", valid_579985
+  if valid_589018 != nil:
+    section.add "prettyPrint", valid_589018
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -588,21 +588,21 @@ proc validate_IdentitytoolkitRelyingpartyEmailLinkSignin_579977(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_579987: Call_IdentitytoolkitRelyingpartyEmailLinkSignin_579976;
+proc call*(call_589020: Call_IdentitytoolkitRelyingpartyEmailLinkSignin_589009;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Reset password for a user.
   ## 
-  let valid = call_579987.validator(path, query, header, formData, body)
-  let scheme = call_579987.pickScheme
+  let valid = call_589020.validator(path, query, header, formData, body)
+  let scheme = call_589020.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_579987.url(scheme.get, call_579987.host, call_579987.base,
-                         call_579987.route, valid.getOrDefault("path"),
+  let url = call_589020.url(scheme.get, call_589020.host, call_589020.base,
+                         call_589020.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_579987, url, valid)
+  result = hook(call_589020, url, valid)
 
-proc call*(call_579988: Call_IdentitytoolkitRelyingpartyEmailLinkSignin_579976;
+proc call*(call_589021: Call_IdentitytoolkitRelyingpartyEmailLinkSignin_589009;
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           oauthToken: string = ""; userIp: string = ""; key: string = "";
           body: JsonNode = nil; prettyPrint: bool = true): Recallable =
@@ -623,36 +623,36 @@ proc call*(call_579988: Call_IdentitytoolkitRelyingpartyEmailLinkSignin_579976;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var query_579989 = newJObject()
-  var body_579990 = newJObject()
-  add(query_579989, "fields", newJString(fields))
-  add(query_579989, "quotaUser", newJString(quotaUser))
-  add(query_579989, "alt", newJString(alt))
-  add(query_579989, "oauth_token", newJString(oauthToken))
-  add(query_579989, "userIp", newJString(userIp))
-  add(query_579989, "key", newJString(key))
+  var query_589022 = newJObject()
+  var body_589023 = newJObject()
+  add(query_589022, "fields", newJString(fields))
+  add(query_589022, "quotaUser", newJString(quotaUser))
+  add(query_589022, "alt", newJString(alt))
+  add(query_589022, "oauth_token", newJString(oauthToken))
+  add(query_589022, "userIp", newJString(userIp))
+  add(query_589022, "key", newJString(key))
   if body != nil:
-    body_579990 = body
-  add(query_579989, "prettyPrint", newJBool(prettyPrint))
-  result = call_579988.call(nil, query_579989, nil, nil, body_579990)
+    body_589023 = body
+  add(query_589022, "prettyPrint", newJBool(prettyPrint))
+  result = call_589021.call(nil, query_589022, nil, nil, body_589023)
 
-var identitytoolkitRelyingpartyEmailLinkSignin* = Call_IdentitytoolkitRelyingpartyEmailLinkSignin_579976(
+var identitytoolkitRelyingpartyEmailLinkSignin* = Call_IdentitytoolkitRelyingpartyEmailLinkSignin_589009(
     name: "identitytoolkitRelyingpartyEmailLinkSignin", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com", route: "/emailLinkSignin",
-    validator: validate_IdentitytoolkitRelyingpartyEmailLinkSignin_579977,
+    validator: validate_IdentitytoolkitRelyingpartyEmailLinkSignin_589010,
     base: "/identitytoolkit/v3/relyingparty",
-    url: url_IdentitytoolkitRelyingpartyEmailLinkSignin_579978,
+    url: url_IdentitytoolkitRelyingpartyEmailLinkSignin_589011,
     schemes: {Scheme.Https})
 type
-  Call_IdentitytoolkitRelyingpartyGetAccountInfo_579991 = ref object of OpenApiRestCall_579408
-proc url_IdentitytoolkitRelyingpartyGetAccountInfo_579993(protocol: Scheme;
+  Call_IdentitytoolkitRelyingpartyGetAccountInfo_589024 = ref object of OpenApiRestCall_588441
+proc url_IdentitytoolkitRelyingpartyGetAccountInfo_589026(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
   result.query = $composeQueryString(query)
   result.path = base & route
 
-proc validate_IdentitytoolkitRelyingpartyGetAccountInfo_579992(path: JsonNode;
+proc validate_IdentitytoolkitRelyingpartyGetAccountInfo_589025(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Returns the account info.
   ## 
@@ -676,41 +676,41 @@ proc validate_IdentitytoolkitRelyingpartyGetAccountInfo_579992(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_579994 = query.getOrDefault("fields")
-  valid_579994 = validateParameter(valid_579994, JString, required = false,
+  var valid_589027 = query.getOrDefault("fields")
+  valid_589027 = validateParameter(valid_589027, JString, required = false,
                                  default = nil)
-  if valid_579994 != nil:
-    section.add "fields", valid_579994
-  var valid_579995 = query.getOrDefault("quotaUser")
-  valid_579995 = validateParameter(valid_579995, JString, required = false,
+  if valid_589027 != nil:
+    section.add "fields", valid_589027
+  var valid_589028 = query.getOrDefault("quotaUser")
+  valid_589028 = validateParameter(valid_589028, JString, required = false,
                                  default = nil)
-  if valid_579995 != nil:
-    section.add "quotaUser", valid_579995
-  var valid_579996 = query.getOrDefault("alt")
-  valid_579996 = validateParameter(valid_579996, JString, required = false,
+  if valid_589028 != nil:
+    section.add "quotaUser", valid_589028
+  var valid_589029 = query.getOrDefault("alt")
+  valid_589029 = validateParameter(valid_589029, JString, required = false,
                                  default = newJString("json"))
-  if valid_579996 != nil:
-    section.add "alt", valid_579996
-  var valid_579997 = query.getOrDefault("oauth_token")
-  valid_579997 = validateParameter(valid_579997, JString, required = false,
+  if valid_589029 != nil:
+    section.add "alt", valid_589029
+  var valid_589030 = query.getOrDefault("oauth_token")
+  valid_589030 = validateParameter(valid_589030, JString, required = false,
                                  default = nil)
-  if valid_579997 != nil:
-    section.add "oauth_token", valid_579997
-  var valid_579998 = query.getOrDefault("userIp")
-  valid_579998 = validateParameter(valid_579998, JString, required = false,
+  if valid_589030 != nil:
+    section.add "oauth_token", valid_589030
+  var valid_589031 = query.getOrDefault("userIp")
+  valid_589031 = validateParameter(valid_589031, JString, required = false,
                                  default = nil)
-  if valid_579998 != nil:
-    section.add "userIp", valid_579998
-  var valid_579999 = query.getOrDefault("key")
-  valid_579999 = validateParameter(valid_579999, JString, required = false,
+  if valid_589031 != nil:
+    section.add "userIp", valid_589031
+  var valid_589032 = query.getOrDefault("key")
+  valid_589032 = validateParameter(valid_589032, JString, required = false,
                                  default = nil)
-  if valid_579999 != nil:
-    section.add "key", valid_579999
-  var valid_580000 = query.getOrDefault("prettyPrint")
-  valid_580000 = validateParameter(valid_580000, JBool, required = false,
+  if valid_589032 != nil:
+    section.add "key", valid_589032
+  var valid_589033 = query.getOrDefault("prettyPrint")
+  valid_589033 = validateParameter(valid_589033, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580000 != nil:
-    section.add "prettyPrint", valid_580000
+  if valid_589033 != nil:
+    section.add "prettyPrint", valid_589033
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -722,21 +722,21 @@ proc validate_IdentitytoolkitRelyingpartyGetAccountInfo_579992(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580002: Call_IdentitytoolkitRelyingpartyGetAccountInfo_579991;
+proc call*(call_589035: Call_IdentitytoolkitRelyingpartyGetAccountInfo_589024;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Returns the account info.
   ## 
-  let valid = call_580002.validator(path, query, header, formData, body)
-  let scheme = call_580002.pickScheme
+  let valid = call_589035.validator(path, query, header, formData, body)
+  let scheme = call_589035.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580002.url(scheme.get, call_580002.host, call_580002.base,
-                         call_580002.route, valid.getOrDefault("path"),
+  let url = call_589035.url(scheme.get, call_589035.host, call_589035.base,
+                         call_589035.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580002, url, valid)
+  result = hook(call_589035, url, valid)
 
-proc call*(call_580003: Call_IdentitytoolkitRelyingpartyGetAccountInfo_579991;
+proc call*(call_589036: Call_IdentitytoolkitRelyingpartyGetAccountInfo_589024;
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           oauthToken: string = ""; userIp: string = ""; key: string = "";
           body: JsonNode = nil; prettyPrint: bool = true): Recallable =
@@ -757,29 +757,29 @@ proc call*(call_580003: Call_IdentitytoolkitRelyingpartyGetAccountInfo_579991;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var query_580004 = newJObject()
-  var body_580005 = newJObject()
-  add(query_580004, "fields", newJString(fields))
-  add(query_580004, "quotaUser", newJString(quotaUser))
-  add(query_580004, "alt", newJString(alt))
-  add(query_580004, "oauth_token", newJString(oauthToken))
-  add(query_580004, "userIp", newJString(userIp))
-  add(query_580004, "key", newJString(key))
+  var query_589037 = newJObject()
+  var body_589038 = newJObject()
+  add(query_589037, "fields", newJString(fields))
+  add(query_589037, "quotaUser", newJString(quotaUser))
+  add(query_589037, "alt", newJString(alt))
+  add(query_589037, "oauth_token", newJString(oauthToken))
+  add(query_589037, "userIp", newJString(userIp))
+  add(query_589037, "key", newJString(key))
   if body != nil:
-    body_580005 = body
-  add(query_580004, "prettyPrint", newJBool(prettyPrint))
-  result = call_580003.call(nil, query_580004, nil, nil, body_580005)
+    body_589038 = body
+  add(query_589037, "prettyPrint", newJBool(prettyPrint))
+  result = call_589036.call(nil, query_589037, nil, nil, body_589038)
 
-var identitytoolkitRelyingpartyGetAccountInfo* = Call_IdentitytoolkitRelyingpartyGetAccountInfo_579991(
+var identitytoolkitRelyingpartyGetAccountInfo* = Call_IdentitytoolkitRelyingpartyGetAccountInfo_589024(
     name: "identitytoolkitRelyingpartyGetAccountInfo", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com", route: "/getAccountInfo",
-    validator: validate_IdentitytoolkitRelyingpartyGetAccountInfo_579992,
+    validator: validate_IdentitytoolkitRelyingpartyGetAccountInfo_589025,
     base: "/identitytoolkit/v3/relyingparty",
-    url: url_IdentitytoolkitRelyingpartyGetAccountInfo_579993,
+    url: url_IdentitytoolkitRelyingpartyGetAccountInfo_589026,
     schemes: {Scheme.Https})
 type
-  Call_IdentitytoolkitRelyingpartyGetOobConfirmationCode_580006 = ref object of OpenApiRestCall_579408
-proc url_IdentitytoolkitRelyingpartyGetOobConfirmationCode_580008(
+  Call_IdentitytoolkitRelyingpartyGetOobConfirmationCode_589039 = ref object of OpenApiRestCall_588441
+proc url_IdentitytoolkitRelyingpartyGetOobConfirmationCode_589041(
     protocol: Scheme; host: string; base: string; route: string; path: JsonNode;
     query: JsonNode): Uri =
   result.scheme = $protocol
@@ -787,7 +787,7 @@ proc url_IdentitytoolkitRelyingpartyGetOobConfirmationCode_580008(
   result.query = $composeQueryString(query)
   result.path = base & route
 
-proc validate_IdentitytoolkitRelyingpartyGetOobConfirmationCode_580007(
+proc validate_IdentitytoolkitRelyingpartyGetOobConfirmationCode_589040(
     path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
     body: JsonNode): JsonNode =
   ## Get a code for user action confirmation.
@@ -812,41 +812,41 @@ proc validate_IdentitytoolkitRelyingpartyGetOobConfirmationCode_580007(
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580009 = query.getOrDefault("fields")
-  valid_580009 = validateParameter(valid_580009, JString, required = false,
+  var valid_589042 = query.getOrDefault("fields")
+  valid_589042 = validateParameter(valid_589042, JString, required = false,
                                  default = nil)
-  if valid_580009 != nil:
-    section.add "fields", valid_580009
-  var valid_580010 = query.getOrDefault("quotaUser")
-  valid_580010 = validateParameter(valid_580010, JString, required = false,
+  if valid_589042 != nil:
+    section.add "fields", valid_589042
+  var valid_589043 = query.getOrDefault("quotaUser")
+  valid_589043 = validateParameter(valid_589043, JString, required = false,
                                  default = nil)
-  if valid_580010 != nil:
-    section.add "quotaUser", valid_580010
-  var valid_580011 = query.getOrDefault("alt")
-  valid_580011 = validateParameter(valid_580011, JString, required = false,
+  if valid_589043 != nil:
+    section.add "quotaUser", valid_589043
+  var valid_589044 = query.getOrDefault("alt")
+  valid_589044 = validateParameter(valid_589044, JString, required = false,
                                  default = newJString("json"))
-  if valid_580011 != nil:
-    section.add "alt", valid_580011
-  var valid_580012 = query.getOrDefault("oauth_token")
-  valid_580012 = validateParameter(valid_580012, JString, required = false,
+  if valid_589044 != nil:
+    section.add "alt", valid_589044
+  var valid_589045 = query.getOrDefault("oauth_token")
+  valid_589045 = validateParameter(valid_589045, JString, required = false,
                                  default = nil)
-  if valid_580012 != nil:
-    section.add "oauth_token", valid_580012
-  var valid_580013 = query.getOrDefault("userIp")
-  valid_580013 = validateParameter(valid_580013, JString, required = false,
+  if valid_589045 != nil:
+    section.add "oauth_token", valid_589045
+  var valid_589046 = query.getOrDefault("userIp")
+  valid_589046 = validateParameter(valid_589046, JString, required = false,
                                  default = nil)
-  if valid_580013 != nil:
-    section.add "userIp", valid_580013
-  var valid_580014 = query.getOrDefault("key")
-  valid_580014 = validateParameter(valid_580014, JString, required = false,
+  if valid_589046 != nil:
+    section.add "userIp", valid_589046
+  var valid_589047 = query.getOrDefault("key")
+  valid_589047 = validateParameter(valid_589047, JString, required = false,
                                  default = nil)
-  if valid_580014 != nil:
-    section.add "key", valid_580014
-  var valid_580015 = query.getOrDefault("prettyPrint")
-  valid_580015 = validateParameter(valid_580015, JBool, required = false,
+  if valid_589047 != nil:
+    section.add "key", valid_589047
+  var valid_589048 = query.getOrDefault("prettyPrint")
+  valid_589048 = validateParameter(valid_589048, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580015 != nil:
-    section.add "prettyPrint", valid_580015
+  if valid_589048 != nil:
+    section.add "prettyPrint", valid_589048
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -858,21 +858,21 @@ proc validate_IdentitytoolkitRelyingpartyGetOobConfirmationCode_580007(
   if body != nil:
     result.add "body", body
 
-proc call*(call_580017: Call_IdentitytoolkitRelyingpartyGetOobConfirmationCode_580006;
+proc call*(call_589050: Call_IdentitytoolkitRelyingpartyGetOobConfirmationCode_589039;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Get a code for user action confirmation.
   ## 
-  let valid = call_580017.validator(path, query, header, formData, body)
-  let scheme = call_580017.pickScheme
+  let valid = call_589050.validator(path, query, header, formData, body)
+  let scheme = call_589050.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580017.url(scheme.get, call_580017.host, call_580017.base,
-                         call_580017.route, valid.getOrDefault("path"),
+  let url = call_589050.url(scheme.get, call_589050.host, call_589050.base,
+                         call_589050.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580017, url, valid)
+  result = hook(call_589050, url, valid)
 
-proc call*(call_580018: Call_IdentitytoolkitRelyingpartyGetOobConfirmationCode_580006;
+proc call*(call_589051: Call_IdentitytoolkitRelyingpartyGetOobConfirmationCode_589039;
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           oauthToken: string = ""; userIp: string = ""; key: string = "";
           body: JsonNode = nil; prettyPrint: bool = true): Recallable =
@@ -893,37 +893,37 @@ proc call*(call_580018: Call_IdentitytoolkitRelyingpartyGetOobConfirmationCode_5
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var query_580019 = newJObject()
-  var body_580020 = newJObject()
-  add(query_580019, "fields", newJString(fields))
-  add(query_580019, "quotaUser", newJString(quotaUser))
-  add(query_580019, "alt", newJString(alt))
-  add(query_580019, "oauth_token", newJString(oauthToken))
-  add(query_580019, "userIp", newJString(userIp))
-  add(query_580019, "key", newJString(key))
+  var query_589052 = newJObject()
+  var body_589053 = newJObject()
+  add(query_589052, "fields", newJString(fields))
+  add(query_589052, "quotaUser", newJString(quotaUser))
+  add(query_589052, "alt", newJString(alt))
+  add(query_589052, "oauth_token", newJString(oauthToken))
+  add(query_589052, "userIp", newJString(userIp))
+  add(query_589052, "key", newJString(key))
   if body != nil:
-    body_580020 = body
-  add(query_580019, "prettyPrint", newJBool(prettyPrint))
-  result = call_580018.call(nil, query_580019, nil, nil, body_580020)
+    body_589053 = body
+  add(query_589052, "prettyPrint", newJBool(prettyPrint))
+  result = call_589051.call(nil, query_589052, nil, nil, body_589053)
 
-var identitytoolkitRelyingpartyGetOobConfirmationCode* = Call_IdentitytoolkitRelyingpartyGetOobConfirmationCode_580006(
+var identitytoolkitRelyingpartyGetOobConfirmationCode* = Call_IdentitytoolkitRelyingpartyGetOobConfirmationCode_589039(
     name: "identitytoolkitRelyingpartyGetOobConfirmationCode",
     meth: HttpMethod.HttpPost, host: "www.googleapis.com",
     route: "/getOobConfirmationCode",
-    validator: validate_IdentitytoolkitRelyingpartyGetOobConfirmationCode_580007,
+    validator: validate_IdentitytoolkitRelyingpartyGetOobConfirmationCode_589040,
     base: "/identitytoolkit/v3/relyingparty",
-    url: url_IdentitytoolkitRelyingpartyGetOobConfirmationCode_580008,
+    url: url_IdentitytoolkitRelyingpartyGetOobConfirmationCode_589041,
     schemes: {Scheme.Https})
 type
-  Call_IdentitytoolkitRelyingpartyGetProjectConfig_580021 = ref object of OpenApiRestCall_579408
-proc url_IdentitytoolkitRelyingpartyGetProjectConfig_580023(protocol: Scheme;
+  Call_IdentitytoolkitRelyingpartyGetProjectConfig_589054 = ref object of OpenApiRestCall_588441
+proc url_IdentitytoolkitRelyingpartyGetProjectConfig_589056(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
   result.query = $composeQueryString(query)
   result.path = base & route
 
-proc validate_IdentitytoolkitRelyingpartyGetProjectConfig_580022(path: JsonNode;
+proc validate_IdentitytoolkitRelyingpartyGetProjectConfig_589055(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Get project configuration.
   ## 
@@ -951,51 +951,51 @@ proc validate_IdentitytoolkitRelyingpartyGetProjectConfig_580022(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580024 = query.getOrDefault("fields")
-  valid_580024 = validateParameter(valid_580024, JString, required = false,
+  var valid_589057 = query.getOrDefault("fields")
+  valid_589057 = validateParameter(valid_589057, JString, required = false,
                                  default = nil)
-  if valid_580024 != nil:
-    section.add "fields", valid_580024
-  var valid_580025 = query.getOrDefault("quotaUser")
-  valid_580025 = validateParameter(valid_580025, JString, required = false,
+  if valid_589057 != nil:
+    section.add "fields", valid_589057
+  var valid_589058 = query.getOrDefault("quotaUser")
+  valid_589058 = validateParameter(valid_589058, JString, required = false,
                                  default = nil)
-  if valid_580025 != nil:
-    section.add "quotaUser", valid_580025
-  var valid_580026 = query.getOrDefault("delegatedProjectNumber")
-  valid_580026 = validateParameter(valid_580026, JString, required = false,
+  if valid_589058 != nil:
+    section.add "quotaUser", valid_589058
+  var valid_589059 = query.getOrDefault("delegatedProjectNumber")
+  valid_589059 = validateParameter(valid_589059, JString, required = false,
                                  default = nil)
-  if valid_580026 != nil:
-    section.add "delegatedProjectNumber", valid_580026
-  var valid_580027 = query.getOrDefault("alt")
-  valid_580027 = validateParameter(valid_580027, JString, required = false,
+  if valid_589059 != nil:
+    section.add "delegatedProjectNumber", valid_589059
+  var valid_589060 = query.getOrDefault("alt")
+  valid_589060 = validateParameter(valid_589060, JString, required = false,
                                  default = newJString("json"))
-  if valid_580027 != nil:
-    section.add "alt", valid_580027
-  var valid_580028 = query.getOrDefault("oauth_token")
-  valid_580028 = validateParameter(valid_580028, JString, required = false,
+  if valid_589060 != nil:
+    section.add "alt", valid_589060
+  var valid_589061 = query.getOrDefault("oauth_token")
+  valid_589061 = validateParameter(valid_589061, JString, required = false,
                                  default = nil)
-  if valid_580028 != nil:
-    section.add "oauth_token", valid_580028
-  var valid_580029 = query.getOrDefault("userIp")
-  valid_580029 = validateParameter(valid_580029, JString, required = false,
+  if valid_589061 != nil:
+    section.add "oauth_token", valid_589061
+  var valid_589062 = query.getOrDefault("userIp")
+  valid_589062 = validateParameter(valid_589062, JString, required = false,
                                  default = nil)
-  if valid_580029 != nil:
-    section.add "userIp", valid_580029
-  var valid_580030 = query.getOrDefault("key")
-  valid_580030 = validateParameter(valid_580030, JString, required = false,
+  if valid_589062 != nil:
+    section.add "userIp", valid_589062
+  var valid_589063 = query.getOrDefault("key")
+  valid_589063 = validateParameter(valid_589063, JString, required = false,
                                  default = nil)
-  if valid_580030 != nil:
-    section.add "key", valid_580030
-  var valid_580031 = query.getOrDefault("projectNumber")
-  valid_580031 = validateParameter(valid_580031, JString, required = false,
+  if valid_589063 != nil:
+    section.add "key", valid_589063
+  var valid_589064 = query.getOrDefault("projectNumber")
+  valid_589064 = validateParameter(valid_589064, JString, required = false,
                                  default = nil)
-  if valid_580031 != nil:
-    section.add "projectNumber", valid_580031
-  var valid_580032 = query.getOrDefault("prettyPrint")
-  valid_580032 = validateParameter(valid_580032, JBool, required = false,
+  if valid_589064 != nil:
+    section.add "projectNumber", valid_589064
+  var valid_589065 = query.getOrDefault("prettyPrint")
+  valid_589065 = validateParameter(valid_589065, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580032 != nil:
-    section.add "prettyPrint", valid_580032
+  if valid_589065 != nil:
+    section.add "prettyPrint", valid_589065
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1004,21 +1004,21 @@ proc validate_IdentitytoolkitRelyingpartyGetProjectConfig_580022(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580033: Call_IdentitytoolkitRelyingpartyGetProjectConfig_580021;
+proc call*(call_589066: Call_IdentitytoolkitRelyingpartyGetProjectConfig_589054;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Get project configuration.
   ## 
-  let valid = call_580033.validator(path, query, header, formData, body)
-  let scheme = call_580033.pickScheme
+  let valid = call_589066.validator(path, query, header, formData, body)
+  let scheme = call_589066.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580033.url(scheme.get, call_580033.host, call_580033.base,
-                         call_580033.route, valid.getOrDefault("path"),
+  let url = call_589066.url(scheme.get, call_589066.host, call_589066.base,
+                         call_589066.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580033, url, valid)
+  result = hook(call_589066, url, valid)
 
-proc call*(call_580034: Call_IdentitytoolkitRelyingpartyGetProjectConfig_580021;
+proc call*(call_589067: Call_IdentitytoolkitRelyingpartyGetProjectConfig_589054;
           fields: string = ""; quotaUser: string = "";
           delegatedProjectNumber: string = ""; alt: string = "json";
           oauthToken: string = ""; userIp: string = ""; key: string = "";
@@ -1043,35 +1043,35 @@ proc call*(call_580034: Call_IdentitytoolkitRelyingpartyGetProjectConfig_580021;
   ##                : GCP project number of the request.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var query_580035 = newJObject()
-  add(query_580035, "fields", newJString(fields))
-  add(query_580035, "quotaUser", newJString(quotaUser))
-  add(query_580035, "delegatedProjectNumber", newJString(delegatedProjectNumber))
-  add(query_580035, "alt", newJString(alt))
-  add(query_580035, "oauth_token", newJString(oauthToken))
-  add(query_580035, "userIp", newJString(userIp))
-  add(query_580035, "key", newJString(key))
-  add(query_580035, "projectNumber", newJString(projectNumber))
-  add(query_580035, "prettyPrint", newJBool(prettyPrint))
-  result = call_580034.call(nil, query_580035, nil, nil, nil)
+  var query_589068 = newJObject()
+  add(query_589068, "fields", newJString(fields))
+  add(query_589068, "quotaUser", newJString(quotaUser))
+  add(query_589068, "delegatedProjectNumber", newJString(delegatedProjectNumber))
+  add(query_589068, "alt", newJString(alt))
+  add(query_589068, "oauth_token", newJString(oauthToken))
+  add(query_589068, "userIp", newJString(userIp))
+  add(query_589068, "key", newJString(key))
+  add(query_589068, "projectNumber", newJString(projectNumber))
+  add(query_589068, "prettyPrint", newJBool(prettyPrint))
+  result = call_589067.call(nil, query_589068, nil, nil, nil)
 
-var identitytoolkitRelyingpartyGetProjectConfig* = Call_IdentitytoolkitRelyingpartyGetProjectConfig_580021(
+var identitytoolkitRelyingpartyGetProjectConfig* = Call_IdentitytoolkitRelyingpartyGetProjectConfig_589054(
     name: "identitytoolkitRelyingpartyGetProjectConfig", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/getProjectConfig",
-    validator: validate_IdentitytoolkitRelyingpartyGetProjectConfig_580022,
+    validator: validate_IdentitytoolkitRelyingpartyGetProjectConfig_589055,
     base: "/identitytoolkit/v3/relyingparty",
-    url: url_IdentitytoolkitRelyingpartyGetProjectConfig_580023,
+    url: url_IdentitytoolkitRelyingpartyGetProjectConfig_589056,
     schemes: {Scheme.Https})
 type
-  Call_IdentitytoolkitRelyingpartyGetRecaptchaParam_580036 = ref object of OpenApiRestCall_579408
-proc url_IdentitytoolkitRelyingpartyGetRecaptchaParam_580038(protocol: Scheme;
+  Call_IdentitytoolkitRelyingpartyGetRecaptchaParam_589069 = ref object of OpenApiRestCall_588441
+proc url_IdentitytoolkitRelyingpartyGetRecaptchaParam_589071(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
   result.query = $composeQueryString(query)
   result.path = base & route
 
-proc validate_IdentitytoolkitRelyingpartyGetRecaptchaParam_580037(path: JsonNode;
+proc validate_IdentitytoolkitRelyingpartyGetRecaptchaParam_589070(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Get recaptcha secure param.
   ## 
@@ -1095,41 +1095,41 @@ proc validate_IdentitytoolkitRelyingpartyGetRecaptchaParam_580037(path: JsonNode
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580039 = query.getOrDefault("fields")
-  valid_580039 = validateParameter(valid_580039, JString, required = false,
+  var valid_589072 = query.getOrDefault("fields")
+  valid_589072 = validateParameter(valid_589072, JString, required = false,
                                  default = nil)
-  if valid_580039 != nil:
-    section.add "fields", valid_580039
-  var valid_580040 = query.getOrDefault("quotaUser")
-  valid_580040 = validateParameter(valid_580040, JString, required = false,
+  if valid_589072 != nil:
+    section.add "fields", valid_589072
+  var valid_589073 = query.getOrDefault("quotaUser")
+  valid_589073 = validateParameter(valid_589073, JString, required = false,
                                  default = nil)
-  if valid_580040 != nil:
-    section.add "quotaUser", valid_580040
-  var valid_580041 = query.getOrDefault("alt")
-  valid_580041 = validateParameter(valid_580041, JString, required = false,
+  if valid_589073 != nil:
+    section.add "quotaUser", valid_589073
+  var valid_589074 = query.getOrDefault("alt")
+  valid_589074 = validateParameter(valid_589074, JString, required = false,
                                  default = newJString("json"))
-  if valid_580041 != nil:
-    section.add "alt", valid_580041
-  var valid_580042 = query.getOrDefault("oauth_token")
-  valid_580042 = validateParameter(valid_580042, JString, required = false,
+  if valid_589074 != nil:
+    section.add "alt", valid_589074
+  var valid_589075 = query.getOrDefault("oauth_token")
+  valid_589075 = validateParameter(valid_589075, JString, required = false,
                                  default = nil)
-  if valid_580042 != nil:
-    section.add "oauth_token", valid_580042
-  var valid_580043 = query.getOrDefault("userIp")
-  valid_580043 = validateParameter(valid_580043, JString, required = false,
+  if valid_589075 != nil:
+    section.add "oauth_token", valid_589075
+  var valid_589076 = query.getOrDefault("userIp")
+  valid_589076 = validateParameter(valid_589076, JString, required = false,
                                  default = nil)
-  if valid_580043 != nil:
-    section.add "userIp", valid_580043
-  var valid_580044 = query.getOrDefault("key")
-  valid_580044 = validateParameter(valid_580044, JString, required = false,
+  if valid_589076 != nil:
+    section.add "userIp", valid_589076
+  var valid_589077 = query.getOrDefault("key")
+  valid_589077 = validateParameter(valid_589077, JString, required = false,
                                  default = nil)
-  if valid_580044 != nil:
-    section.add "key", valid_580044
-  var valid_580045 = query.getOrDefault("prettyPrint")
-  valid_580045 = validateParameter(valid_580045, JBool, required = false,
+  if valid_589077 != nil:
+    section.add "key", valid_589077
+  var valid_589078 = query.getOrDefault("prettyPrint")
+  valid_589078 = validateParameter(valid_589078, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580045 != nil:
-    section.add "prettyPrint", valid_580045
+  if valid_589078 != nil:
+    section.add "prettyPrint", valid_589078
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1138,21 +1138,21 @@ proc validate_IdentitytoolkitRelyingpartyGetRecaptchaParam_580037(path: JsonNode
   if body != nil:
     result.add "body", body
 
-proc call*(call_580046: Call_IdentitytoolkitRelyingpartyGetRecaptchaParam_580036;
+proc call*(call_589079: Call_IdentitytoolkitRelyingpartyGetRecaptchaParam_589069;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Get recaptcha secure param.
   ## 
-  let valid = call_580046.validator(path, query, header, formData, body)
-  let scheme = call_580046.pickScheme
+  let valid = call_589079.validator(path, query, header, formData, body)
+  let scheme = call_589079.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580046.url(scheme.get, call_580046.host, call_580046.base,
-                         call_580046.route, valid.getOrDefault("path"),
+  let url = call_589079.url(scheme.get, call_589079.host, call_589079.base,
+                         call_589079.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580046, url, valid)
+  result = hook(call_589079, url, valid)
 
-proc call*(call_580047: Call_IdentitytoolkitRelyingpartyGetRecaptchaParam_580036;
+proc call*(call_589080: Call_IdentitytoolkitRelyingpartyGetRecaptchaParam_589069;
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           oauthToken: string = ""; userIp: string = ""; key: string = "";
           prettyPrint: bool = true): Recallable =
@@ -1172,34 +1172,34 @@ proc call*(call_580047: Call_IdentitytoolkitRelyingpartyGetRecaptchaParam_580036
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var query_580048 = newJObject()
-  add(query_580048, "fields", newJString(fields))
-  add(query_580048, "quotaUser", newJString(quotaUser))
-  add(query_580048, "alt", newJString(alt))
-  add(query_580048, "oauth_token", newJString(oauthToken))
-  add(query_580048, "userIp", newJString(userIp))
-  add(query_580048, "key", newJString(key))
-  add(query_580048, "prettyPrint", newJBool(prettyPrint))
-  result = call_580047.call(nil, query_580048, nil, nil, nil)
+  var query_589081 = newJObject()
+  add(query_589081, "fields", newJString(fields))
+  add(query_589081, "quotaUser", newJString(quotaUser))
+  add(query_589081, "alt", newJString(alt))
+  add(query_589081, "oauth_token", newJString(oauthToken))
+  add(query_589081, "userIp", newJString(userIp))
+  add(query_589081, "key", newJString(key))
+  add(query_589081, "prettyPrint", newJBool(prettyPrint))
+  result = call_589080.call(nil, query_589081, nil, nil, nil)
 
-var identitytoolkitRelyingpartyGetRecaptchaParam* = Call_IdentitytoolkitRelyingpartyGetRecaptchaParam_580036(
+var identitytoolkitRelyingpartyGetRecaptchaParam* = Call_IdentitytoolkitRelyingpartyGetRecaptchaParam_589069(
     name: "identitytoolkitRelyingpartyGetRecaptchaParam",
     meth: HttpMethod.HttpGet, host: "www.googleapis.com",
     route: "/getRecaptchaParam",
-    validator: validate_IdentitytoolkitRelyingpartyGetRecaptchaParam_580037,
+    validator: validate_IdentitytoolkitRelyingpartyGetRecaptchaParam_589070,
     base: "/identitytoolkit/v3/relyingparty",
-    url: url_IdentitytoolkitRelyingpartyGetRecaptchaParam_580038,
+    url: url_IdentitytoolkitRelyingpartyGetRecaptchaParam_589071,
     schemes: {Scheme.Https})
 type
-  Call_IdentitytoolkitRelyingpartyGetPublicKeys_580049 = ref object of OpenApiRestCall_579408
-proc url_IdentitytoolkitRelyingpartyGetPublicKeys_580051(protocol: Scheme;
+  Call_IdentitytoolkitRelyingpartyGetPublicKeys_589082 = ref object of OpenApiRestCall_588441
+proc url_IdentitytoolkitRelyingpartyGetPublicKeys_589084(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
   result.query = $composeQueryString(query)
   result.path = base & route
 
-proc validate_IdentitytoolkitRelyingpartyGetPublicKeys_580050(path: JsonNode;
+proc validate_IdentitytoolkitRelyingpartyGetPublicKeys_589083(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Get token signing public key.
   ## 
@@ -1223,41 +1223,41 @@ proc validate_IdentitytoolkitRelyingpartyGetPublicKeys_580050(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580052 = query.getOrDefault("fields")
-  valid_580052 = validateParameter(valid_580052, JString, required = false,
+  var valid_589085 = query.getOrDefault("fields")
+  valid_589085 = validateParameter(valid_589085, JString, required = false,
                                  default = nil)
-  if valid_580052 != nil:
-    section.add "fields", valid_580052
-  var valid_580053 = query.getOrDefault("quotaUser")
-  valid_580053 = validateParameter(valid_580053, JString, required = false,
+  if valid_589085 != nil:
+    section.add "fields", valid_589085
+  var valid_589086 = query.getOrDefault("quotaUser")
+  valid_589086 = validateParameter(valid_589086, JString, required = false,
                                  default = nil)
-  if valid_580053 != nil:
-    section.add "quotaUser", valid_580053
-  var valid_580054 = query.getOrDefault("alt")
-  valid_580054 = validateParameter(valid_580054, JString, required = false,
+  if valid_589086 != nil:
+    section.add "quotaUser", valid_589086
+  var valid_589087 = query.getOrDefault("alt")
+  valid_589087 = validateParameter(valid_589087, JString, required = false,
                                  default = newJString("json"))
-  if valid_580054 != nil:
-    section.add "alt", valid_580054
-  var valid_580055 = query.getOrDefault("oauth_token")
-  valid_580055 = validateParameter(valid_580055, JString, required = false,
+  if valid_589087 != nil:
+    section.add "alt", valid_589087
+  var valid_589088 = query.getOrDefault("oauth_token")
+  valid_589088 = validateParameter(valid_589088, JString, required = false,
                                  default = nil)
-  if valid_580055 != nil:
-    section.add "oauth_token", valid_580055
-  var valid_580056 = query.getOrDefault("userIp")
-  valid_580056 = validateParameter(valid_580056, JString, required = false,
+  if valid_589088 != nil:
+    section.add "oauth_token", valid_589088
+  var valid_589089 = query.getOrDefault("userIp")
+  valid_589089 = validateParameter(valid_589089, JString, required = false,
                                  default = nil)
-  if valid_580056 != nil:
-    section.add "userIp", valid_580056
-  var valid_580057 = query.getOrDefault("key")
-  valid_580057 = validateParameter(valid_580057, JString, required = false,
+  if valid_589089 != nil:
+    section.add "userIp", valid_589089
+  var valid_589090 = query.getOrDefault("key")
+  valid_589090 = validateParameter(valid_589090, JString, required = false,
                                  default = nil)
-  if valid_580057 != nil:
-    section.add "key", valid_580057
-  var valid_580058 = query.getOrDefault("prettyPrint")
-  valid_580058 = validateParameter(valid_580058, JBool, required = false,
+  if valid_589090 != nil:
+    section.add "key", valid_589090
+  var valid_589091 = query.getOrDefault("prettyPrint")
+  valid_589091 = validateParameter(valid_589091, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580058 != nil:
-    section.add "prettyPrint", valid_580058
+  if valid_589091 != nil:
+    section.add "prettyPrint", valid_589091
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1266,21 +1266,21 @@ proc validate_IdentitytoolkitRelyingpartyGetPublicKeys_580050(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580059: Call_IdentitytoolkitRelyingpartyGetPublicKeys_580049;
+proc call*(call_589092: Call_IdentitytoolkitRelyingpartyGetPublicKeys_589082;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Get token signing public key.
   ## 
-  let valid = call_580059.validator(path, query, header, formData, body)
-  let scheme = call_580059.pickScheme
+  let valid = call_589092.validator(path, query, header, formData, body)
+  let scheme = call_589092.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580059.url(scheme.get, call_580059.host, call_580059.base,
-                         call_580059.route, valid.getOrDefault("path"),
+  let url = call_589092.url(scheme.get, call_589092.host, call_589092.base,
+                         call_589092.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580059, url, valid)
+  result = hook(call_589092, url, valid)
 
-proc call*(call_580060: Call_IdentitytoolkitRelyingpartyGetPublicKeys_580049;
+proc call*(call_589093: Call_IdentitytoolkitRelyingpartyGetPublicKeys_589082;
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           oauthToken: string = ""; userIp: string = ""; key: string = "";
           prettyPrint: bool = true): Recallable =
@@ -1300,33 +1300,33 @@ proc call*(call_580060: Call_IdentitytoolkitRelyingpartyGetPublicKeys_580049;
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var query_580061 = newJObject()
-  add(query_580061, "fields", newJString(fields))
-  add(query_580061, "quotaUser", newJString(quotaUser))
-  add(query_580061, "alt", newJString(alt))
-  add(query_580061, "oauth_token", newJString(oauthToken))
-  add(query_580061, "userIp", newJString(userIp))
-  add(query_580061, "key", newJString(key))
-  add(query_580061, "prettyPrint", newJBool(prettyPrint))
-  result = call_580060.call(nil, query_580061, nil, nil, nil)
+  var query_589094 = newJObject()
+  add(query_589094, "fields", newJString(fields))
+  add(query_589094, "quotaUser", newJString(quotaUser))
+  add(query_589094, "alt", newJString(alt))
+  add(query_589094, "oauth_token", newJString(oauthToken))
+  add(query_589094, "userIp", newJString(userIp))
+  add(query_589094, "key", newJString(key))
+  add(query_589094, "prettyPrint", newJBool(prettyPrint))
+  result = call_589093.call(nil, query_589094, nil, nil, nil)
 
-var identitytoolkitRelyingpartyGetPublicKeys* = Call_IdentitytoolkitRelyingpartyGetPublicKeys_580049(
+var identitytoolkitRelyingpartyGetPublicKeys* = Call_IdentitytoolkitRelyingpartyGetPublicKeys_589082(
     name: "identitytoolkitRelyingpartyGetPublicKeys", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/publicKeys",
-    validator: validate_IdentitytoolkitRelyingpartyGetPublicKeys_580050,
+    validator: validate_IdentitytoolkitRelyingpartyGetPublicKeys_589083,
     base: "/identitytoolkit/v3/relyingparty",
-    url: url_IdentitytoolkitRelyingpartyGetPublicKeys_580051,
+    url: url_IdentitytoolkitRelyingpartyGetPublicKeys_589084,
     schemes: {Scheme.Https})
 type
-  Call_IdentitytoolkitRelyingpartyResetPassword_580062 = ref object of OpenApiRestCall_579408
-proc url_IdentitytoolkitRelyingpartyResetPassword_580064(protocol: Scheme;
+  Call_IdentitytoolkitRelyingpartyResetPassword_589095 = ref object of OpenApiRestCall_588441
+proc url_IdentitytoolkitRelyingpartyResetPassword_589097(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
   result.query = $composeQueryString(query)
   result.path = base & route
 
-proc validate_IdentitytoolkitRelyingpartyResetPassword_580063(path: JsonNode;
+proc validate_IdentitytoolkitRelyingpartyResetPassword_589096(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Reset password for a user.
   ## 
@@ -1350,41 +1350,41 @@ proc validate_IdentitytoolkitRelyingpartyResetPassword_580063(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580065 = query.getOrDefault("fields")
-  valid_580065 = validateParameter(valid_580065, JString, required = false,
+  var valid_589098 = query.getOrDefault("fields")
+  valid_589098 = validateParameter(valid_589098, JString, required = false,
                                  default = nil)
-  if valid_580065 != nil:
-    section.add "fields", valid_580065
-  var valid_580066 = query.getOrDefault("quotaUser")
-  valid_580066 = validateParameter(valid_580066, JString, required = false,
+  if valid_589098 != nil:
+    section.add "fields", valid_589098
+  var valid_589099 = query.getOrDefault("quotaUser")
+  valid_589099 = validateParameter(valid_589099, JString, required = false,
                                  default = nil)
-  if valid_580066 != nil:
-    section.add "quotaUser", valid_580066
-  var valid_580067 = query.getOrDefault("alt")
-  valid_580067 = validateParameter(valid_580067, JString, required = false,
+  if valid_589099 != nil:
+    section.add "quotaUser", valid_589099
+  var valid_589100 = query.getOrDefault("alt")
+  valid_589100 = validateParameter(valid_589100, JString, required = false,
                                  default = newJString("json"))
-  if valid_580067 != nil:
-    section.add "alt", valid_580067
-  var valid_580068 = query.getOrDefault("oauth_token")
-  valid_580068 = validateParameter(valid_580068, JString, required = false,
+  if valid_589100 != nil:
+    section.add "alt", valid_589100
+  var valid_589101 = query.getOrDefault("oauth_token")
+  valid_589101 = validateParameter(valid_589101, JString, required = false,
                                  default = nil)
-  if valid_580068 != nil:
-    section.add "oauth_token", valid_580068
-  var valid_580069 = query.getOrDefault("userIp")
-  valid_580069 = validateParameter(valid_580069, JString, required = false,
+  if valid_589101 != nil:
+    section.add "oauth_token", valid_589101
+  var valid_589102 = query.getOrDefault("userIp")
+  valid_589102 = validateParameter(valid_589102, JString, required = false,
                                  default = nil)
-  if valid_580069 != nil:
-    section.add "userIp", valid_580069
-  var valid_580070 = query.getOrDefault("key")
-  valid_580070 = validateParameter(valid_580070, JString, required = false,
+  if valid_589102 != nil:
+    section.add "userIp", valid_589102
+  var valid_589103 = query.getOrDefault("key")
+  valid_589103 = validateParameter(valid_589103, JString, required = false,
                                  default = nil)
-  if valid_580070 != nil:
-    section.add "key", valid_580070
-  var valid_580071 = query.getOrDefault("prettyPrint")
-  valid_580071 = validateParameter(valid_580071, JBool, required = false,
+  if valid_589103 != nil:
+    section.add "key", valid_589103
+  var valid_589104 = query.getOrDefault("prettyPrint")
+  valid_589104 = validateParameter(valid_589104, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580071 != nil:
-    section.add "prettyPrint", valid_580071
+  if valid_589104 != nil:
+    section.add "prettyPrint", valid_589104
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1396,21 +1396,21 @@ proc validate_IdentitytoolkitRelyingpartyResetPassword_580063(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580073: Call_IdentitytoolkitRelyingpartyResetPassword_580062;
+proc call*(call_589106: Call_IdentitytoolkitRelyingpartyResetPassword_589095;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Reset password for a user.
   ## 
-  let valid = call_580073.validator(path, query, header, formData, body)
-  let scheme = call_580073.pickScheme
+  let valid = call_589106.validator(path, query, header, formData, body)
+  let scheme = call_589106.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580073.url(scheme.get, call_580073.host, call_580073.base,
-                         call_580073.route, valid.getOrDefault("path"),
+  let url = call_589106.url(scheme.get, call_589106.host, call_589106.base,
+                         call_589106.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580073, url, valid)
+  result = hook(call_589106, url, valid)
 
-proc call*(call_580074: Call_IdentitytoolkitRelyingpartyResetPassword_580062;
+proc call*(call_589107: Call_IdentitytoolkitRelyingpartyResetPassword_589095;
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           oauthToken: string = ""; userIp: string = ""; key: string = "";
           body: JsonNode = nil; prettyPrint: bool = true): Recallable =
@@ -1431,36 +1431,36 @@ proc call*(call_580074: Call_IdentitytoolkitRelyingpartyResetPassword_580062;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var query_580075 = newJObject()
-  var body_580076 = newJObject()
-  add(query_580075, "fields", newJString(fields))
-  add(query_580075, "quotaUser", newJString(quotaUser))
-  add(query_580075, "alt", newJString(alt))
-  add(query_580075, "oauth_token", newJString(oauthToken))
-  add(query_580075, "userIp", newJString(userIp))
-  add(query_580075, "key", newJString(key))
+  var query_589108 = newJObject()
+  var body_589109 = newJObject()
+  add(query_589108, "fields", newJString(fields))
+  add(query_589108, "quotaUser", newJString(quotaUser))
+  add(query_589108, "alt", newJString(alt))
+  add(query_589108, "oauth_token", newJString(oauthToken))
+  add(query_589108, "userIp", newJString(userIp))
+  add(query_589108, "key", newJString(key))
   if body != nil:
-    body_580076 = body
-  add(query_580075, "prettyPrint", newJBool(prettyPrint))
-  result = call_580074.call(nil, query_580075, nil, nil, body_580076)
+    body_589109 = body
+  add(query_589108, "prettyPrint", newJBool(prettyPrint))
+  result = call_589107.call(nil, query_589108, nil, nil, body_589109)
 
-var identitytoolkitRelyingpartyResetPassword* = Call_IdentitytoolkitRelyingpartyResetPassword_580062(
+var identitytoolkitRelyingpartyResetPassword* = Call_IdentitytoolkitRelyingpartyResetPassword_589095(
     name: "identitytoolkitRelyingpartyResetPassword", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com", route: "/resetPassword",
-    validator: validate_IdentitytoolkitRelyingpartyResetPassword_580063,
+    validator: validate_IdentitytoolkitRelyingpartyResetPassword_589096,
     base: "/identitytoolkit/v3/relyingparty",
-    url: url_IdentitytoolkitRelyingpartyResetPassword_580064,
+    url: url_IdentitytoolkitRelyingpartyResetPassword_589097,
     schemes: {Scheme.Https})
 type
-  Call_IdentitytoolkitRelyingpartySendVerificationCode_580077 = ref object of OpenApiRestCall_579408
-proc url_IdentitytoolkitRelyingpartySendVerificationCode_580079(protocol: Scheme;
+  Call_IdentitytoolkitRelyingpartySendVerificationCode_589110 = ref object of OpenApiRestCall_588441
+proc url_IdentitytoolkitRelyingpartySendVerificationCode_589112(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
   result.query = $composeQueryString(query)
   result.path = base & route
 
-proc validate_IdentitytoolkitRelyingpartySendVerificationCode_580078(
+proc validate_IdentitytoolkitRelyingpartySendVerificationCode_589111(
     path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
     body: JsonNode): JsonNode =
   ## Send SMS verification code.
@@ -1485,41 +1485,41 @@ proc validate_IdentitytoolkitRelyingpartySendVerificationCode_580078(
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580080 = query.getOrDefault("fields")
-  valid_580080 = validateParameter(valid_580080, JString, required = false,
+  var valid_589113 = query.getOrDefault("fields")
+  valid_589113 = validateParameter(valid_589113, JString, required = false,
                                  default = nil)
-  if valid_580080 != nil:
-    section.add "fields", valid_580080
-  var valid_580081 = query.getOrDefault("quotaUser")
-  valid_580081 = validateParameter(valid_580081, JString, required = false,
+  if valid_589113 != nil:
+    section.add "fields", valid_589113
+  var valid_589114 = query.getOrDefault("quotaUser")
+  valid_589114 = validateParameter(valid_589114, JString, required = false,
                                  default = nil)
-  if valid_580081 != nil:
-    section.add "quotaUser", valid_580081
-  var valid_580082 = query.getOrDefault("alt")
-  valid_580082 = validateParameter(valid_580082, JString, required = false,
+  if valid_589114 != nil:
+    section.add "quotaUser", valid_589114
+  var valid_589115 = query.getOrDefault("alt")
+  valid_589115 = validateParameter(valid_589115, JString, required = false,
                                  default = newJString("json"))
-  if valid_580082 != nil:
-    section.add "alt", valid_580082
-  var valid_580083 = query.getOrDefault("oauth_token")
-  valid_580083 = validateParameter(valid_580083, JString, required = false,
+  if valid_589115 != nil:
+    section.add "alt", valid_589115
+  var valid_589116 = query.getOrDefault("oauth_token")
+  valid_589116 = validateParameter(valid_589116, JString, required = false,
                                  default = nil)
-  if valid_580083 != nil:
-    section.add "oauth_token", valid_580083
-  var valid_580084 = query.getOrDefault("userIp")
-  valid_580084 = validateParameter(valid_580084, JString, required = false,
+  if valid_589116 != nil:
+    section.add "oauth_token", valid_589116
+  var valid_589117 = query.getOrDefault("userIp")
+  valid_589117 = validateParameter(valid_589117, JString, required = false,
                                  default = nil)
-  if valid_580084 != nil:
-    section.add "userIp", valid_580084
-  var valid_580085 = query.getOrDefault("key")
-  valid_580085 = validateParameter(valid_580085, JString, required = false,
+  if valid_589117 != nil:
+    section.add "userIp", valid_589117
+  var valid_589118 = query.getOrDefault("key")
+  valid_589118 = validateParameter(valid_589118, JString, required = false,
                                  default = nil)
-  if valid_580085 != nil:
-    section.add "key", valid_580085
-  var valid_580086 = query.getOrDefault("prettyPrint")
-  valid_580086 = validateParameter(valid_580086, JBool, required = false,
+  if valid_589118 != nil:
+    section.add "key", valid_589118
+  var valid_589119 = query.getOrDefault("prettyPrint")
+  valid_589119 = validateParameter(valid_589119, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580086 != nil:
-    section.add "prettyPrint", valid_580086
+  if valid_589119 != nil:
+    section.add "prettyPrint", valid_589119
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1531,21 +1531,21 @@ proc validate_IdentitytoolkitRelyingpartySendVerificationCode_580078(
   if body != nil:
     result.add "body", body
 
-proc call*(call_580088: Call_IdentitytoolkitRelyingpartySendVerificationCode_580077;
+proc call*(call_589121: Call_IdentitytoolkitRelyingpartySendVerificationCode_589110;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Send SMS verification code.
   ## 
-  let valid = call_580088.validator(path, query, header, formData, body)
-  let scheme = call_580088.pickScheme
+  let valid = call_589121.validator(path, query, header, formData, body)
+  let scheme = call_589121.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580088.url(scheme.get, call_580088.host, call_580088.base,
-                         call_580088.route, valid.getOrDefault("path"),
+  let url = call_589121.url(scheme.get, call_589121.host, call_589121.base,
+                         call_589121.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580088, url, valid)
+  result = hook(call_589121, url, valid)
 
-proc call*(call_580089: Call_IdentitytoolkitRelyingpartySendVerificationCode_580077;
+proc call*(call_589122: Call_IdentitytoolkitRelyingpartySendVerificationCode_589110;
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           oauthToken: string = ""; userIp: string = ""; key: string = "";
           body: JsonNode = nil; prettyPrint: bool = true): Recallable =
@@ -1566,37 +1566,37 @@ proc call*(call_580089: Call_IdentitytoolkitRelyingpartySendVerificationCode_580
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var query_580090 = newJObject()
-  var body_580091 = newJObject()
-  add(query_580090, "fields", newJString(fields))
-  add(query_580090, "quotaUser", newJString(quotaUser))
-  add(query_580090, "alt", newJString(alt))
-  add(query_580090, "oauth_token", newJString(oauthToken))
-  add(query_580090, "userIp", newJString(userIp))
-  add(query_580090, "key", newJString(key))
+  var query_589123 = newJObject()
+  var body_589124 = newJObject()
+  add(query_589123, "fields", newJString(fields))
+  add(query_589123, "quotaUser", newJString(quotaUser))
+  add(query_589123, "alt", newJString(alt))
+  add(query_589123, "oauth_token", newJString(oauthToken))
+  add(query_589123, "userIp", newJString(userIp))
+  add(query_589123, "key", newJString(key))
   if body != nil:
-    body_580091 = body
-  add(query_580090, "prettyPrint", newJBool(prettyPrint))
-  result = call_580089.call(nil, query_580090, nil, nil, body_580091)
+    body_589124 = body
+  add(query_589123, "prettyPrint", newJBool(prettyPrint))
+  result = call_589122.call(nil, query_589123, nil, nil, body_589124)
 
-var identitytoolkitRelyingpartySendVerificationCode* = Call_IdentitytoolkitRelyingpartySendVerificationCode_580077(
+var identitytoolkitRelyingpartySendVerificationCode* = Call_IdentitytoolkitRelyingpartySendVerificationCode_589110(
     name: "identitytoolkitRelyingpartySendVerificationCode",
     meth: HttpMethod.HttpPost, host: "www.googleapis.com",
     route: "/sendVerificationCode",
-    validator: validate_IdentitytoolkitRelyingpartySendVerificationCode_580078,
+    validator: validate_IdentitytoolkitRelyingpartySendVerificationCode_589111,
     base: "/identitytoolkit/v3/relyingparty",
-    url: url_IdentitytoolkitRelyingpartySendVerificationCode_580079,
+    url: url_IdentitytoolkitRelyingpartySendVerificationCode_589112,
     schemes: {Scheme.Https})
 type
-  Call_IdentitytoolkitRelyingpartySetAccountInfo_580092 = ref object of OpenApiRestCall_579408
-proc url_IdentitytoolkitRelyingpartySetAccountInfo_580094(protocol: Scheme;
+  Call_IdentitytoolkitRelyingpartySetAccountInfo_589125 = ref object of OpenApiRestCall_588441
+proc url_IdentitytoolkitRelyingpartySetAccountInfo_589127(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
   result.query = $composeQueryString(query)
   result.path = base & route
 
-proc validate_IdentitytoolkitRelyingpartySetAccountInfo_580093(path: JsonNode;
+proc validate_IdentitytoolkitRelyingpartySetAccountInfo_589126(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Set account info for a user.
   ## 
@@ -1620,41 +1620,41 @@ proc validate_IdentitytoolkitRelyingpartySetAccountInfo_580093(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580095 = query.getOrDefault("fields")
-  valid_580095 = validateParameter(valid_580095, JString, required = false,
+  var valid_589128 = query.getOrDefault("fields")
+  valid_589128 = validateParameter(valid_589128, JString, required = false,
                                  default = nil)
-  if valid_580095 != nil:
-    section.add "fields", valid_580095
-  var valid_580096 = query.getOrDefault("quotaUser")
-  valid_580096 = validateParameter(valid_580096, JString, required = false,
+  if valid_589128 != nil:
+    section.add "fields", valid_589128
+  var valid_589129 = query.getOrDefault("quotaUser")
+  valid_589129 = validateParameter(valid_589129, JString, required = false,
                                  default = nil)
-  if valid_580096 != nil:
-    section.add "quotaUser", valid_580096
-  var valid_580097 = query.getOrDefault("alt")
-  valid_580097 = validateParameter(valid_580097, JString, required = false,
+  if valid_589129 != nil:
+    section.add "quotaUser", valid_589129
+  var valid_589130 = query.getOrDefault("alt")
+  valid_589130 = validateParameter(valid_589130, JString, required = false,
                                  default = newJString("json"))
-  if valid_580097 != nil:
-    section.add "alt", valid_580097
-  var valid_580098 = query.getOrDefault("oauth_token")
-  valid_580098 = validateParameter(valid_580098, JString, required = false,
+  if valid_589130 != nil:
+    section.add "alt", valid_589130
+  var valid_589131 = query.getOrDefault("oauth_token")
+  valid_589131 = validateParameter(valid_589131, JString, required = false,
                                  default = nil)
-  if valid_580098 != nil:
-    section.add "oauth_token", valid_580098
-  var valid_580099 = query.getOrDefault("userIp")
-  valid_580099 = validateParameter(valid_580099, JString, required = false,
+  if valid_589131 != nil:
+    section.add "oauth_token", valid_589131
+  var valid_589132 = query.getOrDefault("userIp")
+  valid_589132 = validateParameter(valid_589132, JString, required = false,
                                  default = nil)
-  if valid_580099 != nil:
-    section.add "userIp", valid_580099
-  var valid_580100 = query.getOrDefault("key")
-  valid_580100 = validateParameter(valid_580100, JString, required = false,
+  if valid_589132 != nil:
+    section.add "userIp", valid_589132
+  var valid_589133 = query.getOrDefault("key")
+  valid_589133 = validateParameter(valid_589133, JString, required = false,
                                  default = nil)
-  if valid_580100 != nil:
-    section.add "key", valid_580100
-  var valid_580101 = query.getOrDefault("prettyPrint")
-  valid_580101 = validateParameter(valid_580101, JBool, required = false,
+  if valid_589133 != nil:
+    section.add "key", valid_589133
+  var valid_589134 = query.getOrDefault("prettyPrint")
+  valid_589134 = validateParameter(valid_589134, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580101 != nil:
-    section.add "prettyPrint", valid_580101
+  if valid_589134 != nil:
+    section.add "prettyPrint", valid_589134
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1666,21 +1666,21 @@ proc validate_IdentitytoolkitRelyingpartySetAccountInfo_580093(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580103: Call_IdentitytoolkitRelyingpartySetAccountInfo_580092;
+proc call*(call_589136: Call_IdentitytoolkitRelyingpartySetAccountInfo_589125;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Set account info for a user.
   ## 
-  let valid = call_580103.validator(path, query, header, formData, body)
-  let scheme = call_580103.pickScheme
+  let valid = call_589136.validator(path, query, header, formData, body)
+  let scheme = call_589136.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580103.url(scheme.get, call_580103.host, call_580103.base,
-                         call_580103.route, valid.getOrDefault("path"),
+  let url = call_589136.url(scheme.get, call_589136.host, call_589136.base,
+                         call_589136.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580103, url, valid)
+  result = hook(call_589136, url, valid)
 
-proc call*(call_580104: Call_IdentitytoolkitRelyingpartySetAccountInfo_580092;
+proc call*(call_589137: Call_IdentitytoolkitRelyingpartySetAccountInfo_589125;
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           oauthToken: string = ""; userIp: string = ""; key: string = "";
           body: JsonNode = nil; prettyPrint: bool = true): Recallable =
@@ -1701,36 +1701,36 @@ proc call*(call_580104: Call_IdentitytoolkitRelyingpartySetAccountInfo_580092;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var query_580105 = newJObject()
-  var body_580106 = newJObject()
-  add(query_580105, "fields", newJString(fields))
-  add(query_580105, "quotaUser", newJString(quotaUser))
-  add(query_580105, "alt", newJString(alt))
-  add(query_580105, "oauth_token", newJString(oauthToken))
-  add(query_580105, "userIp", newJString(userIp))
-  add(query_580105, "key", newJString(key))
+  var query_589138 = newJObject()
+  var body_589139 = newJObject()
+  add(query_589138, "fields", newJString(fields))
+  add(query_589138, "quotaUser", newJString(quotaUser))
+  add(query_589138, "alt", newJString(alt))
+  add(query_589138, "oauth_token", newJString(oauthToken))
+  add(query_589138, "userIp", newJString(userIp))
+  add(query_589138, "key", newJString(key))
   if body != nil:
-    body_580106 = body
-  add(query_580105, "prettyPrint", newJBool(prettyPrint))
-  result = call_580104.call(nil, query_580105, nil, nil, body_580106)
+    body_589139 = body
+  add(query_589138, "prettyPrint", newJBool(prettyPrint))
+  result = call_589137.call(nil, query_589138, nil, nil, body_589139)
 
-var identitytoolkitRelyingpartySetAccountInfo* = Call_IdentitytoolkitRelyingpartySetAccountInfo_580092(
+var identitytoolkitRelyingpartySetAccountInfo* = Call_IdentitytoolkitRelyingpartySetAccountInfo_589125(
     name: "identitytoolkitRelyingpartySetAccountInfo", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com", route: "/setAccountInfo",
-    validator: validate_IdentitytoolkitRelyingpartySetAccountInfo_580093,
+    validator: validate_IdentitytoolkitRelyingpartySetAccountInfo_589126,
     base: "/identitytoolkit/v3/relyingparty",
-    url: url_IdentitytoolkitRelyingpartySetAccountInfo_580094,
+    url: url_IdentitytoolkitRelyingpartySetAccountInfo_589127,
     schemes: {Scheme.Https})
 type
-  Call_IdentitytoolkitRelyingpartySetProjectConfig_580107 = ref object of OpenApiRestCall_579408
-proc url_IdentitytoolkitRelyingpartySetProjectConfig_580109(protocol: Scheme;
+  Call_IdentitytoolkitRelyingpartySetProjectConfig_589140 = ref object of OpenApiRestCall_588441
+proc url_IdentitytoolkitRelyingpartySetProjectConfig_589142(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
   result.query = $composeQueryString(query)
   result.path = base & route
 
-proc validate_IdentitytoolkitRelyingpartySetProjectConfig_580108(path: JsonNode;
+proc validate_IdentitytoolkitRelyingpartySetProjectConfig_589141(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Set project configuration.
   ## 
@@ -1754,41 +1754,41 @@ proc validate_IdentitytoolkitRelyingpartySetProjectConfig_580108(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580110 = query.getOrDefault("fields")
-  valid_580110 = validateParameter(valid_580110, JString, required = false,
+  var valid_589143 = query.getOrDefault("fields")
+  valid_589143 = validateParameter(valid_589143, JString, required = false,
                                  default = nil)
-  if valid_580110 != nil:
-    section.add "fields", valid_580110
-  var valid_580111 = query.getOrDefault("quotaUser")
-  valid_580111 = validateParameter(valid_580111, JString, required = false,
+  if valid_589143 != nil:
+    section.add "fields", valid_589143
+  var valid_589144 = query.getOrDefault("quotaUser")
+  valid_589144 = validateParameter(valid_589144, JString, required = false,
                                  default = nil)
-  if valid_580111 != nil:
-    section.add "quotaUser", valid_580111
-  var valid_580112 = query.getOrDefault("alt")
-  valid_580112 = validateParameter(valid_580112, JString, required = false,
+  if valid_589144 != nil:
+    section.add "quotaUser", valid_589144
+  var valid_589145 = query.getOrDefault("alt")
+  valid_589145 = validateParameter(valid_589145, JString, required = false,
                                  default = newJString("json"))
-  if valid_580112 != nil:
-    section.add "alt", valid_580112
-  var valid_580113 = query.getOrDefault("oauth_token")
-  valid_580113 = validateParameter(valid_580113, JString, required = false,
+  if valid_589145 != nil:
+    section.add "alt", valid_589145
+  var valid_589146 = query.getOrDefault("oauth_token")
+  valid_589146 = validateParameter(valid_589146, JString, required = false,
                                  default = nil)
-  if valid_580113 != nil:
-    section.add "oauth_token", valid_580113
-  var valid_580114 = query.getOrDefault("userIp")
-  valid_580114 = validateParameter(valid_580114, JString, required = false,
+  if valid_589146 != nil:
+    section.add "oauth_token", valid_589146
+  var valid_589147 = query.getOrDefault("userIp")
+  valid_589147 = validateParameter(valid_589147, JString, required = false,
                                  default = nil)
-  if valid_580114 != nil:
-    section.add "userIp", valid_580114
-  var valid_580115 = query.getOrDefault("key")
-  valid_580115 = validateParameter(valid_580115, JString, required = false,
+  if valid_589147 != nil:
+    section.add "userIp", valid_589147
+  var valid_589148 = query.getOrDefault("key")
+  valid_589148 = validateParameter(valid_589148, JString, required = false,
                                  default = nil)
-  if valid_580115 != nil:
-    section.add "key", valid_580115
-  var valid_580116 = query.getOrDefault("prettyPrint")
-  valid_580116 = validateParameter(valid_580116, JBool, required = false,
+  if valid_589148 != nil:
+    section.add "key", valid_589148
+  var valid_589149 = query.getOrDefault("prettyPrint")
+  valid_589149 = validateParameter(valid_589149, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580116 != nil:
-    section.add "prettyPrint", valid_580116
+  if valid_589149 != nil:
+    section.add "prettyPrint", valid_589149
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1800,21 +1800,21 @@ proc validate_IdentitytoolkitRelyingpartySetProjectConfig_580108(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580118: Call_IdentitytoolkitRelyingpartySetProjectConfig_580107;
+proc call*(call_589151: Call_IdentitytoolkitRelyingpartySetProjectConfig_589140;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Set project configuration.
   ## 
-  let valid = call_580118.validator(path, query, header, formData, body)
-  let scheme = call_580118.pickScheme
+  let valid = call_589151.validator(path, query, header, formData, body)
+  let scheme = call_589151.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580118.url(scheme.get, call_580118.host, call_580118.base,
-                         call_580118.route, valid.getOrDefault("path"),
+  let url = call_589151.url(scheme.get, call_589151.host, call_589151.base,
+                         call_589151.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580118, url, valid)
+  result = hook(call_589151, url, valid)
 
-proc call*(call_580119: Call_IdentitytoolkitRelyingpartySetProjectConfig_580107;
+proc call*(call_589152: Call_IdentitytoolkitRelyingpartySetProjectConfig_589140;
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           oauthToken: string = ""; userIp: string = ""; key: string = "";
           body: JsonNode = nil; prettyPrint: bool = true): Recallable =
@@ -1835,37 +1835,37 @@ proc call*(call_580119: Call_IdentitytoolkitRelyingpartySetProjectConfig_580107;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var query_580120 = newJObject()
-  var body_580121 = newJObject()
-  add(query_580120, "fields", newJString(fields))
-  add(query_580120, "quotaUser", newJString(quotaUser))
-  add(query_580120, "alt", newJString(alt))
-  add(query_580120, "oauth_token", newJString(oauthToken))
-  add(query_580120, "userIp", newJString(userIp))
-  add(query_580120, "key", newJString(key))
+  var query_589153 = newJObject()
+  var body_589154 = newJObject()
+  add(query_589153, "fields", newJString(fields))
+  add(query_589153, "quotaUser", newJString(quotaUser))
+  add(query_589153, "alt", newJString(alt))
+  add(query_589153, "oauth_token", newJString(oauthToken))
+  add(query_589153, "userIp", newJString(userIp))
+  add(query_589153, "key", newJString(key))
   if body != nil:
-    body_580121 = body
-  add(query_580120, "prettyPrint", newJBool(prettyPrint))
-  result = call_580119.call(nil, query_580120, nil, nil, body_580121)
+    body_589154 = body
+  add(query_589153, "prettyPrint", newJBool(prettyPrint))
+  result = call_589152.call(nil, query_589153, nil, nil, body_589154)
 
-var identitytoolkitRelyingpartySetProjectConfig* = Call_IdentitytoolkitRelyingpartySetProjectConfig_580107(
+var identitytoolkitRelyingpartySetProjectConfig* = Call_IdentitytoolkitRelyingpartySetProjectConfig_589140(
     name: "identitytoolkitRelyingpartySetProjectConfig",
     meth: HttpMethod.HttpPost, host: "www.googleapis.com",
     route: "/setProjectConfig",
-    validator: validate_IdentitytoolkitRelyingpartySetProjectConfig_580108,
+    validator: validate_IdentitytoolkitRelyingpartySetProjectConfig_589141,
     base: "/identitytoolkit/v3/relyingparty",
-    url: url_IdentitytoolkitRelyingpartySetProjectConfig_580109,
+    url: url_IdentitytoolkitRelyingpartySetProjectConfig_589142,
     schemes: {Scheme.Https})
 type
-  Call_IdentitytoolkitRelyingpartySignOutUser_580122 = ref object of OpenApiRestCall_579408
-proc url_IdentitytoolkitRelyingpartySignOutUser_580124(protocol: Scheme;
+  Call_IdentitytoolkitRelyingpartySignOutUser_589155 = ref object of OpenApiRestCall_588441
+proc url_IdentitytoolkitRelyingpartySignOutUser_589157(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
   result.query = $composeQueryString(query)
   result.path = base & route
 
-proc validate_IdentitytoolkitRelyingpartySignOutUser_580123(path: JsonNode;
+proc validate_IdentitytoolkitRelyingpartySignOutUser_589156(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Sign out user.
   ## 
@@ -1889,41 +1889,41 @@ proc validate_IdentitytoolkitRelyingpartySignOutUser_580123(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580125 = query.getOrDefault("fields")
-  valid_580125 = validateParameter(valid_580125, JString, required = false,
+  var valid_589158 = query.getOrDefault("fields")
+  valid_589158 = validateParameter(valid_589158, JString, required = false,
                                  default = nil)
-  if valid_580125 != nil:
-    section.add "fields", valid_580125
-  var valid_580126 = query.getOrDefault("quotaUser")
-  valid_580126 = validateParameter(valid_580126, JString, required = false,
+  if valid_589158 != nil:
+    section.add "fields", valid_589158
+  var valid_589159 = query.getOrDefault("quotaUser")
+  valid_589159 = validateParameter(valid_589159, JString, required = false,
                                  default = nil)
-  if valid_580126 != nil:
-    section.add "quotaUser", valid_580126
-  var valid_580127 = query.getOrDefault("alt")
-  valid_580127 = validateParameter(valid_580127, JString, required = false,
+  if valid_589159 != nil:
+    section.add "quotaUser", valid_589159
+  var valid_589160 = query.getOrDefault("alt")
+  valid_589160 = validateParameter(valid_589160, JString, required = false,
                                  default = newJString("json"))
-  if valid_580127 != nil:
-    section.add "alt", valid_580127
-  var valid_580128 = query.getOrDefault("oauth_token")
-  valid_580128 = validateParameter(valid_580128, JString, required = false,
+  if valid_589160 != nil:
+    section.add "alt", valid_589160
+  var valid_589161 = query.getOrDefault("oauth_token")
+  valid_589161 = validateParameter(valid_589161, JString, required = false,
                                  default = nil)
-  if valid_580128 != nil:
-    section.add "oauth_token", valid_580128
-  var valid_580129 = query.getOrDefault("userIp")
-  valid_580129 = validateParameter(valid_580129, JString, required = false,
+  if valid_589161 != nil:
+    section.add "oauth_token", valid_589161
+  var valid_589162 = query.getOrDefault("userIp")
+  valid_589162 = validateParameter(valid_589162, JString, required = false,
                                  default = nil)
-  if valid_580129 != nil:
-    section.add "userIp", valid_580129
-  var valid_580130 = query.getOrDefault("key")
-  valid_580130 = validateParameter(valid_580130, JString, required = false,
+  if valid_589162 != nil:
+    section.add "userIp", valid_589162
+  var valid_589163 = query.getOrDefault("key")
+  valid_589163 = validateParameter(valid_589163, JString, required = false,
                                  default = nil)
-  if valid_580130 != nil:
-    section.add "key", valid_580130
-  var valid_580131 = query.getOrDefault("prettyPrint")
-  valid_580131 = validateParameter(valid_580131, JBool, required = false,
+  if valid_589163 != nil:
+    section.add "key", valid_589163
+  var valid_589164 = query.getOrDefault("prettyPrint")
+  valid_589164 = validateParameter(valid_589164, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580131 != nil:
-    section.add "prettyPrint", valid_580131
+  if valid_589164 != nil:
+    section.add "prettyPrint", valid_589164
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1935,21 +1935,21 @@ proc validate_IdentitytoolkitRelyingpartySignOutUser_580123(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580133: Call_IdentitytoolkitRelyingpartySignOutUser_580122;
+proc call*(call_589166: Call_IdentitytoolkitRelyingpartySignOutUser_589155;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Sign out user.
   ## 
-  let valid = call_580133.validator(path, query, header, formData, body)
-  let scheme = call_580133.pickScheme
+  let valid = call_589166.validator(path, query, header, formData, body)
+  let scheme = call_589166.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580133.url(scheme.get, call_580133.host, call_580133.base,
-                         call_580133.route, valid.getOrDefault("path"),
+  let url = call_589166.url(scheme.get, call_589166.host, call_589166.base,
+                         call_589166.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580133, url, valid)
+  result = hook(call_589166, url, valid)
 
-proc call*(call_580134: Call_IdentitytoolkitRelyingpartySignOutUser_580122;
+proc call*(call_589167: Call_IdentitytoolkitRelyingpartySignOutUser_589155;
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           oauthToken: string = ""; userIp: string = ""; key: string = "";
           body: JsonNode = nil; prettyPrint: bool = true): Recallable =
@@ -1970,36 +1970,36 @@ proc call*(call_580134: Call_IdentitytoolkitRelyingpartySignOutUser_580122;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var query_580135 = newJObject()
-  var body_580136 = newJObject()
-  add(query_580135, "fields", newJString(fields))
-  add(query_580135, "quotaUser", newJString(quotaUser))
-  add(query_580135, "alt", newJString(alt))
-  add(query_580135, "oauth_token", newJString(oauthToken))
-  add(query_580135, "userIp", newJString(userIp))
-  add(query_580135, "key", newJString(key))
+  var query_589168 = newJObject()
+  var body_589169 = newJObject()
+  add(query_589168, "fields", newJString(fields))
+  add(query_589168, "quotaUser", newJString(quotaUser))
+  add(query_589168, "alt", newJString(alt))
+  add(query_589168, "oauth_token", newJString(oauthToken))
+  add(query_589168, "userIp", newJString(userIp))
+  add(query_589168, "key", newJString(key))
   if body != nil:
-    body_580136 = body
-  add(query_580135, "prettyPrint", newJBool(prettyPrint))
-  result = call_580134.call(nil, query_580135, nil, nil, body_580136)
+    body_589169 = body
+  add(query_589168, "prettyPrint", newJBool(prettyPrint))
+  result = call_589167.call(nil, query_589168, nil, nil, body_589169)
 
-var identitytoolkitRelyingpartySignOutUser* = Call_IdentitytoolkitRelyingpartySignOutUser_580122(
+var identitytoolkitRelyingpartySignOutUser* = Call_IdentitytoolkitRelyingpartySignOutUser_589155(
     name: "identitytoolkitRelyingpartySignOutUser", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com", route: "/signOutUser",
-    validator: validate_IdentitytoolkitRelyingpartySignOutUser_580123,
+    validator: validate_IdentitytoolkitRelyingpartySignOutUser_589156,
     base: "/identitytoolkit/v3/relyingparty",
-    url: url_IdentitytoolkitRelyingpartySignOutUser_580124,
+    url: url_IdentitytoolkitRelyingpartySignOutUser_589157,
     schemes: {Scheme.Https})
 type
-  Call_IdentitytoolkitRelyingpartySignupNewUser_580137 = ref object of OpenApiRestCall_579408
-proc url_IdentitytoolkitRelyingpartySignupNewUser_580139(protocol: Scheme;
+  Call_IdentitytoolkitRelyingpartySignupNewUser_589170 = ref object of OpenApiRestCall_588441
+proc url_IdentitytoolkitRelyingpartySignupNewUser_589172(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
   result.query = $composeQueryString(query)
   result.path = base & route
 
-proc validate_IdentitytoolkitRelyingpartySignupNewUser_580138(path: JsonNode;
+proc validate_IdentitytoolkitRelyingpartySignupNewUser_589171(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Signup new user.
   ## 
@@ -2023,41 +2023,41 @@ proc validate_IdentitytoolkitRelyingpartySignupNewUser_580138(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580140 = query.getOrDefault("fields")
-  valid_580140 = validateParameter(valid_580140, JString, required = false,
+  var valid_589173 = query.getOrDefault("fields")
+  valid_589173 = validateParameter(valid_589173, JString, required = false,
                                  default = nil)
-  if valid_580140 != nil:
-    section.add "fields", valid_580140
-  var valid_580141 = query.getOrDefault("quotaUser")
-  valid_580141 = validateParameter(valid_580141, JString, required = false,
+  if valid_589173 != nil:
+    section.add "fields", valid_589173
+  var valid_589174 = query.getOrDefault("quotaUser")
+  valid_589174 = validateParameter(valid_589174, JString, required = false,
                                  default = nil)
-  if valid_580141 != nil:
-    section.add "quotaUser", valid_580141
-  var valid_580142 = query.getOrDefault("alt")
-  valid_580142 = validateParameter(valid_580142, JString, required = false,
+  if valid_589174 != nil:
+    section.add "quotaUser", valid_589174
+  var valid_589175 = query.getOrDefault("alt")
+  valid_589175 = validateParameter(valid_589175, JString, required = false,
                                  default = newJString("json"))
-  if valid_580142 != nil:
-    section.add "alt", valid_580142
-  var valid_580143 = query.getOrDefault("oauth_token")
-  valid_580143 = validateParameter(valid_580143, JString, required = false,
+  if valid_589175 != nil:
+    section.add "alt", valid_589175
+  var valid_589176 = query.getOrDefault("oauth_token")
+  valid_589176 = validateParameter(valid_589176, JString, required = false,
                                  default = nil)
-  if valid_580143 != nil:
-    section.add "oauth_token", valid_580143
-  var valid_580144 = query.getOrDefault("userIp")
-  valid_580144 = validateParameter(valid_580144, JString, required = false,
+  if valid_589176 != nil:
+    section.add "oauth_token", valid_589176
+  var valid_589177 = query.getOrDefault("userIp")
+  valid_589177 = validateParameter(valid_589177, JString, required = false,
                                  default = nil)
-  if valid_580144 != nil:
-    section.add "userIp", valid_580144
-  var valid_580145 = query.getOrDefault("key")
-  valid_580145 = validateParameter(valid_580145, JString, required = false,
+  if valid_589177 != nil:
+    section.add "userIp", valid_589177
+  var valid_589178 = query.getOrDefault("key")
+  valid_589178 = validateParameter(valid_589178, JString, required = false,
                                  default = nil)
-  if valid_580145 != nil:
-    section.add "key", valid_580145
-  var valid_580146 = query.getOrDefault("prettyPrint")
-  valid_580146 = validateParameter(valid_580146, JBool, required = false,
+  if valid_589178 != nil:
+    section.add "key", valid_589178
+  var valid_589179 = query.getOrDefault("prettyPrint")
+  valid_589179 = validateParameter(valid_589179, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580146 != nil:
-    section.add "prettyPrint", valid_580146
+  if valid_589179 != nil:
+    section.add "prettyPrint", valid_589179
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -2069,21 +2069,21 @@ proc validate_IdentitytoolkitRelyingpartySignupNewUser_580138(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580148: Call_IdentitytoolkitRelyingpartySignupNewUser_580137;
+proc call*(call_589181: Call_IdentitytoolkitRelyingpartySignupNewUser_589170;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Signup new user.
   ## 
-  let valid = call_580148.validator(path, query, header, formData, body)
-  let scheme = call_580148.pickScheme
+  let valid = call_589181.validator(path, query, header, formData, body)
+  let scheme = call_589181.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580148.url(scheme.get, call_580148.host, call_580148.base,
-                         call_580148.route, valid.getOrDefault("path"),
+  let url = call_589181.url(scheme.get, call_589181.host, call_589181.base,
+                         call_589181.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580148, url, valid)
+  result = hook(call_589181, url, valid)
 
-proc call*(call_580149: Call_IdentitytoolkitRelyingpartySignupNewUser_580137;
+proc call*(call_589182: Call_IdentitytoolkitRelyingpartySignupNewUser_589170;
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           oauthToken: string = ""; userIp: string = ""; key: string = "";
           body: JsonNode = nil; prettyPrint: bool = true): Recallable =
@@ -2104,36 +2104,36 @@ proc call*(call_580149: Call_IdentitytoolkitRelyingpartySignupNewUser_580137;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var query_580150 = newJObject()
-  var body_580151 = newJObject()
-  add(query_580150, "fields", newJString(fields))
-  add(query_580150, "quotaUser", newJString(quotaUser))
-  add(query_580150, "alt", newJString(alt))
-  add(query_580150, "oauth_token", newJString(oauthToken))
-  add(query_580150, "userIp", newJString(userIp))
-  add(query_580150, "key", newJString(key))
+  var query_589183 = newJObject()
+  var body_589184 = newJObject()
+  add(query_589183, "fields", newJString(fields))
+  add(query_589183, "quotaUser", newJString(quotaUser))
+  add(query_589183, "alt", newJString(alt))
+  add(query_589183, "oauth_token", newJString(oauthToken))
+  add(query_589183, "userIp", newJString(userIp))
+  add(query_589183, "key", newJString(key))
   if body != nil:
-    body_580151 = body
-  add(query_580150, "prettyPrint", newJBool(prettyPrint))
-  result = call_580149.call(nil, query_580150, nil, nil, body_580151)
+    body_589184 = body
+  add(query_589183, "prettyPrint", newJBool(prettyPrint))
+  result = call_589182.call(nil, query_589183, nil, nil, body_589184)
 
-var identitytoolkitRelyingpartySignupNewUser* = Call_IdentitytoolkitRelyingpartySignupNewUser_580137(
+var identitytoolkitRelyingpartySignupNewUser* = Call_IdentitytoolkitRelyingpartySignupNewUser_589170(
     name: "identitytoolkitRelyingpartySignupNewUser", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com", route: "/signupNewUser",
-    validator: validate_IdentitytoolkitRelyingpartySignupNewUser_580138,
+    validator: validate_IdentitytoolkitRelyingpartySignupNewUser_589171,
     base: "/identitytoolkit/v3/relyingparty",
-    url: url_IdentitytoolkitRelyingpartySignupNewUser_580139,
+    url: url_IdentitytoolkitRelyingpartySignupNewUser_589172,
     schemes: {Scheme.Https})
 type
-  Call_IdentitytoolkitRelyingpartyUploadAccount_580152 = ref object of OpenApiRestCall_579408
-proc url_IdentitytoolkitRelyingpartyUploadAccount_580154(protocol: Scheme;
+  Call_IdentitytoolkitRelyingpartyUploadAccount_589185 = ref object of OpenApiRestCall_588441
+proc url_IdentitytoolkitRelyingpartyUploadAccount_589187(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
   result.query = $composeQueryString(query)
   result.path = base & route
 
-proc validate_IdentitytoolkitRelyingpartyUploadAccount_580153(path: JsonNode;
+proc validate_IdentitytoolkitRelyingpartyUploadAccount_589186(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Batch upload existing user accounts.
   ## 
@@ -2157,41 +2157,41 @@ proc validate_IdentitytoolkitRelyingpartyUploadAccount_580153(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580155 = query.getOrDefault("fields")
-  valid_580155 = validateParameter(valid_580155, JString, required = false,
+  var valid_589188 = query.getOrDefault("fields")
+  valid_589188 = validateParameter(valid_589188, JString, required = false,
                                  default = nil)
-  if valid_580155 != nil:
-    section.add "fields", valid_580155
-  var valid_580156 = query.getOrDefault("quotaUser")
-  valid_580156 = validateParameter(valid_580156, JString, required = false,
+  if valid_589188 != nil:
+    section.add "fields", valid_589188
+  var valid_589189 = query.getOrDefault("quotaUser")
+  valid_589189 = validateParameter(valid_589189, JString, required = false,
                                  default = nil)
-  if valid_580156 != nil:
-    section.add "quotaUser", valid_580156
-  var valid_580157 = query.getOrDefault("alt")
-  valid_580157 = validateParameter(valid_580157, JString, required = false,
+  if valid_589189 != nil:
+    section.add "quotaUser", valid_589189
+  var valid_589190 = query.getOrDefault("alt")
+  valid_589190 = validateParameter(valid_589190, JString, required = false,
                                  default = newJString("json"))
-  if valid_580157 != nil:
-    section.add "alt", valid_580157
-  var valid_580158 = query.getOrDefault("oauth_token")
-  valid_580158 = validateParameter(valid_580158, JString, required = false,
+  if valid_589190 != nil:
+    section.add "alt", valid_589190
+  var valid_589191 = query.getOrDefault("oauth_token")
+  valid_589191 = validateParameter(valid_589191, JString, required = false,
                                  default = nil)
-  if valid_580158 != nil:
-    section.add "oauth_token", valid_580158
-  var valid_580159 = query.getOrDefault("userIp")
-  valid_580159 = validateParameter(valid_580159, JString, required = false,
+  if valid_589191 != nil:
+    section.add "oauth_token", valid_589191
+  var valid_589192 = query.getOrDefault("userIp")
+  valid_589192 = validateParameter(valid_589192, JString, required = false,
                                  default = nil)
-  if valid_580159 != nil:
-    section.add "userIp", valid_580159
-  var valid_580160 = query.getOrDefault("key")
-  valid_580160 = validateParameter(valid_580160, JString, required = false,
+  if valid_589192 != nil:
+    section.add "userIp", valid_589192
+  var valid_589193 = query.getOrDefault("key")
+  valid_589193 = validateParameter(valid_589193, JString, required = false,
                                  default = nil)
-  if valid_580160 != nil:
-    section.add "key", valid_580160
-  var valid_580161 = query.getOrDefault("prettyPrint")
-  valid_580161 = validateParameter(valid_580161, JBool, required = false,
+  if valid_589193 != nil:
+    section.add "key", valid_589193
+  var valid_589194 = query.getOrDefault("prettyPrint")
+  valid_589194 = validateParameter(valid_589194, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580161 != nil:
-    section.add "prettyPrint", valid_580161
+  if valid_589194 != nil:
+    section.add "prettyPrint", valid_589194
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -2203,21 +2203,21 @@ proc validate_IdentitytoolkitRelyingpartyUploadAccount_580153(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580163: Call_IdentitytoolkitRelyingpartyUploadAccount_580152;
+proc call*(call_589196: Call_IdentitytoolkitRelyingpartyUploadAccount_589185;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Batch upload existing user accounts.
   ## 
-  let valid = call_580163.validator(path, query, header, formData, body)
-  let scheme = call_580163.pickScheme
+  let valid = call_589196.validator(path, query, header, formData, body)
+  let scheme = call_589196.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580163.url(scheme.get, call_580163.host, call_580163.base,
-                         call_580163.route, valid.getOrDefault("path"),
+  let url = call_589196.url(scheme.get, call_589196.host, call_589196.base,
+                         call_589196.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580163, url, valid)
+  result = hook(call_589196, url, valid)
 
-proc call*(call_580164: Call_IdentitytoolkitRelyingpartyUploadAccount_580152;
+proc call*(call_589197: Call_IdentitytoolkitRelyingpartyUploadAccount_589185;
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           oauthToken: string = ""; userIp: string = ""; key: string = "";
           body: JsonNode = nil; prettyPrint: bool = true): Recallable =
@@ -2238,36 +2238,36 @@ proc call*(call_580164: Call_IdentitytoolkitRelyingpartyUploadAccount_580152;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var query_580165 = newJObject()
-  var body_580166 = newJObject()
-  add(query_580165, "fields", newJString(fields))
-  add(query_580165, "quotaUser", newJString(quotaUser))
-  add(query_580165, "alt", newJString(alt))
-  add(query_580165, "oauth_token", newJString(oauthToken))
-  add(query_580165, "userIp", newJString(userIp))
-  add(query_580165, "key", newJString(key))
+  var query_589198 = newJObject()
+  var body_589199 = newJObject()
+  add(query_589198, "fields", newJString(fields))
+  add(query_589198, "quotaUser", newJString(quotaUser))
+  add(query_589198, "alt", newJString(alt))
+  add(query_589198, "oauth_token", newJString(oauthToken))
+  add(query_589198, "userIp", newJString(userIp))
+  add(query_589198, "key", newJString(key))
   if body != nil:
-    body_580166 = body
-  add(query_580165, "prettyPrint", newJBool(prettyPrint))
-  result = call_580164.call(nil, query_580165, nil, nil, body_580166)
+    body_589199 = body
+  add(query_589198, "prettyPrint", newJBool(prettyPrint))
+  result = call_589197.call(nil, query_589198, nil, nil, body_589199)
 
-var identitytoolkitRelyingpartyUploadAccount* = Call_IdentitytoolkitRelyingpartyUploadAccount_580152(
+var identitytoolkitRelyingpartyUploadAccount* = Call_IdentitytoolkitRelyingpartyUploadAccount_589185(
     name: "identitytoolkitRelyingpartyUploadAccount", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com", route: "/uploadAccount",
-    validator: validate_IdentitytoolkitRelyingpartyUploadAccount_580153,
+    validator: validate_IdentitytoolkitRelyingpartyUploadAccount_589186,
     base: "/identitytoolkit/v3/relyingparty",
-    url: url_IdentitytoolkitRelyingpartyUploadAccount_580154,
+    url: url_IdentitytoolkitRelyingpartyUploadAccount_589187,
     schemes: {Scheme.Https})
 type
-  Call_IdentitytoolkitRelyingpartyVerifyAssertion_580167 = ref object of OpenApiRestCall_579408
-proc url_IdentitytoolkitRelyingpartyVerifyAssertion_580169(protocol: Scheme;
+  Call_IdentitytoolkitRelyingpartyVerifyAssertion_589200 = ref object of OpenApiRestCall_588441
+proc url_IdentitytoolkitRelyingpartyVerifyAssertion_589202(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
   result.query = $composeQueryString(query)
   result.path = base & route
 
-proc validate_IdentitytoolkitRelyingpartyVerifyAssertion_580168(path: JsonNode;
+proc validate_IdentitytoolkitRelyingpartyVerifyAssertion_589201(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Verifies the assertion returned by the IdP.
   ## 
@@ -2291,41 +2291,41 @@ proc validate_IdentitytoolkitRelyingpartyVerifyAssertion_580168(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580170 = query.getOrDefault("fields")
-  valid_580170 = validateParameter(valid_580170, JString, required = false,
+  var valid_589203 = query.getOrDefault("fields")
+  valid_589203 = validateParameter(valid_589203, JString, required = false,
                                  default = nil)
-  if valid_580170 != nil:
-    section.add "fields", valid_580170
-  var valid_580171 = query.getOrDefault("quotaUser")
-  valid_580171 = validateParameter(valid_580171, JString, required = false,
+  if valid_589203 != nil:
+    section.add "fields", valid_589203
+  var valid_589204 = query.getOrDefault("quotaUser")
+  valid_589204 = validateParameter(valid_589204, JString, required = false,
                                  default = nil)
-  if valid_580171 != nil:
-    section.add "quotaUser", valid_580171
-  var valid_580172 = query.getOrDefault("alt")
-  valid_580172 = validateParameter(valid_580172, JString, required = false,
+  if valid_589204 != nil:
+    section.add "quotaUser", valid_589204
+  var valid_589205 = query.getOrDefault("alt")
+  valid_589205 = validateParameter(valid_589205, JString, required = false,
                                  default = newJString("json"))
-  if valid_580172 != nil:
-    section.add "alt", valid_580172
-  var valid_580173 = query.getOrDefault("oauth_token")
-  valid_580173 = validateParameter(valid_580173, JString, required = false,
+  if valid_589205 != nil:
+    section.add "alt", valid_589205
+  var valid_589206 = query.getOrDefault("oauth_token")
+  valid_589206 = validateParameter(valid_589206, JString, required = false,
                                  default = nil)
-  if valid_580173 != nil:
-    section.add "oauth_token", valid_580173
-  var valid_580174 = query.getOrDefault("userIp")
-  valid_580174 = validateParameter(valid_580174, JString, required = false,
+  if valid_589206 != nil:
+    section.add "oauth_token", valid_589206
+  var valid_589207 = query.getOrDefault("userIp")
+  valid_589207 = validateParameter(valid_589207, JString, required = false,
                                  default = nil)
-  if valid_580174 != nil:
-    section.add "userIp", valid_580174
-  var valid_580175 = query.getOrDefault("key")
-  valid_580175 = validateParameter(valid_580175, JString, required = false,
+  if valid_589207 != nil:
+    section.add "userIp", valid_589207
+  var valid_589208 = query.getOrDefault("key")
+  valid_589208 = validateParameter(valid_589208, JString, required = false,
                                  default = nil)
-  if valid_580175 != nil:
-    section.add "key", valid_580175
-  var valid_580176 = query.getOrDefault("prettyPrint")
-  valid_580176 = validateParameter(valid_580176, JBool, required = false,
+  if valid_589208 != nil:
+    section.add "key", valid_589208
+  var valid_589209 = query.getOrDefault("prettyPrint")
+  valid_589209 = validateParameter(valid_589209, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580176 != nil:
-    section.add "prettyPrint", valid_580176
+  if valid_589209 != nil:
+    section.add "prettyPrint", valid_589209
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -2337,21 +2337,21 @@ proc validate_IdentitytoolkitRelyingpartyVerifyAssertion_580168(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580178: Call_IdentitytoolkitRelyingpartyVerifyAssertion_580167;
+proc call*(call_589211: Call_IdentitytoolkitRelyingpartyVerifyAssertion_589200;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Verifies the assertion returned by the IdP.
   ## 
-  let valid = call_580178.validator(path, query, header, formData, body)
-  let scheme = call_580178.pickScheme
+  let valid = call_589211.validator(path, query, header, formData, body)
+  let scheme = call_589211.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580178.url(scheme.get, call_580178.host, call_580178.base,
-                         call_580178.route, valid.getOrDefault("path"),
+  let url = call_589211.url(scheme.get, call_589211.host, call_589211.base,
+                         call_589211.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580178, url, valid)
+  result = hook(call_589211, url, valid)
 
-proc call*(call_580179: Call_IdentitytoolkitRelyingpartyVerifyAssertion_580167;
+proc call*(call_589212: Call_IdentitytoolkitRelyingpartyVerifyAssertion_589200;
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           oauthToken: string = ""; userIp: string = ""; key: string = "";
           body: JsonNode = nil; prettyPrint: bool = true): Recallable =
@@ -2372,36 +2372,36 @@ proc call*(call_580179: Call_IdentitytoolkitRelyingpartyVerifyAssertion_580167;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var query_580180 = newJObject()
-  var body_580181 = newJObject()
-  add(query_580180, "fields", newJString(fields))
-  add(query_580180, "quotaUser", newJString(quotaUser))
-  add(query_580180, "alt", newJString(alt))
-  add(query_580180, "oauth_token", newJString(oauthToken))
-  add(query_580180, "userIp", newJString(userIp))
-  add(query_580180, "key", newJString(key))
+  var query_589213 = newJObject()
+  var body_589214 = newJObject()
+  add(query_589213, "fields", newJString(fields))
+  add(query_589213, "quotaUser", newJString(quotaUser))
+  add(query_589213, "alt", newJString(alt))
+  add(query_589213, "oauth_token", newJString(oauthToken))
+  add(query_589213, "userIp", newJString(userIp))
+  add(query_589213, "key", newJString(key))
   if body != nil:
-    body_580181 = body
-  add(query_580180, "prettyPrint", newJBool(prettyPrint))
-  result = call_580179.call(nil, query_580180, nil, nil, body_580181)
+    body_589214 = body
+  add(query_589213, "prettyPrint", newJBool(prettyPrint))
+  result = call_589212.call(nil, query_589213, nil, nil, body_589214)
 
-var identitytoolkitRelyingpartyVerifyAssertion* = Call_IdentitytoolkitRelyingpartyVerifyAssertion_580167(
+var identitytoolkitRelyingpartyVerifyAssertion* = Call_IdentitytoolkitRelyingpartyVerifyAssertion_589200(
     name: "identitytoolkitRelyingpartyVerifyAssertion", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com", route: "/verifyAssertion",
-    validator: validate_IdentitytoolkitRelyingpartyVerifyAssertion_580168,
+    validator: validate_IdentitytoolkitRelyingpartyVerifyAssertion_589201,
     base: "/identitytoolkit/v3/relyingparty",
-    url: url_IdentitytoolkitRelyingpartyVerifyAssertion_580169,
+    url: url_IdentitytoolkitRelyingpartyVerifyAssertion_589202,
     schemes: {Scheme.Https})
 type
-  Call_IdentitytoolkitRelyingpartyVerifyCustomToken_580182 = ref object of OpenApiRestCall_579408
-proc url_IdentitytoolkitRelyingpartyVerifyCustomToken_580184(protocol: Scheme;
+  Call_IdentitytoolkitRelyingpartyVerifyCustomToken_589215 = ref object of OpenApiRestCall_588441
+proc url_IdentitytoolkitRelyingpartyVerifyCustomToken_589217(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
   result.query = $composeQueryString(query)
   result.path = base & route
 
-proc validate_IdentitytoolkitRelyingpartyVerifyCustomToken_580183(path: JsonNode;
+proc validate_IdentitytoolkitRelyingpartyVerifyCustomToken_589216(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Verifies the developer asserted ID token.
   ## 
@@ -2425,41 +2425,41 @@ proc validate_IdentitytoolkitRelyingpartyVerifyCustomToken_580183(path: JsonNode
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580185 = query.getOrDefault("fields")
-  valid_580185 = validateParameter(valid_580185, JString, required = false,
+  var valid_589218 = query.getOrDefault("fields")
+  valid_589218 = validateParameter(valid_589218, JString, required = false,
                                  default = nil)
-  if valid_580185 != nil:
-    section.add "fields", valid_580185
-  var valid_580186 = query.getOrDefault("quotaUser")
-  valid_580186 = validateParameter(valid_580186, JString, required = false,
+  if valid_589218 != nil:
+    section.add "fields", valid_589218
+  var valid_589219 = query.getOrDefault("quotaUser")
+  valid_589219 = validateParameter(valid_589219, JString, required = false,
                                  default = nil)
-  if valid_580186 != nil:
-    section.add "quotaUser", valid_580186
-  var valid_580187 = query.getOrDefault("alt")
-  valid_580187 = validateParameter(valid_580187, JString, required = false,
+  if valid_589219 != nil:
+    section.add "quotaUser", valid_589219
+  var valid_589220 = query.getOrDefault("alt")
+  valid_589220 = validateParameter(valid_589220, JString, required = false,
                                  default = newJString("json"))
-  if valid_580187 != nil:
-    section.add "alt", valid_580187
-  var valid_580188 = query.getOrDefault("oauth_token")
-  valid_580188 = validateParameter(valid_580188, JString, required = false,
+  if valid_589220 != nil:
+    section.add "alt", valid_589220
+  var valid_589221 = query.getOrDefault("oauth_token")
+  valid_589221 = validateParameter(valid_589221, JString, required = false,
                                  default = nil)
-  if valid_580188 != nil:
-    section.add "oauth_token", valid_580188
-  var valid_580189 = query.getOrDefault("userIp")
-  valid_580189 = validateParameter(valid_580189, JString, required = false,
+  if valid_589221 != nil:
+    section.add "oauth_token", valid_589221
+  var valid_589222 = query.getOrDefault("userIp")
+  valid_589222 = validateParameter(valid_589222, JString, required = false,
                                  default = nil)
-  if valid_580189 != nil:
-    section.add "userIp", valid_580189
-  var valid_580190 = query.getOrDefault("key")
-  valid_580190 = validateParameter(valid_580190, JString, required = false,
+  if valid_589222 != nil:
+    section.add "userIp", valid_589222
+  var valid_589223 = query.getOrDefault("key")
+  valid_589223 = validateParameter(valid_589223, JString, required = false,
                                  default = nil)
-  if valid_580190 != nil:
-    section.add "key", valid_580190
-  var valid_580191 = query.getOrDefault("prettyPrint")
-  valid_580191 = validateParameter(valid_580191, JBool, required = false,
+  if valid_589223 != nil:
+    section.add "key", valid_589223
+  var valid_589224 = query.getOrDefault("prettyPrint")
+  valid_589224 = validateParameter(valid_589224, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580191 != nil:
-    section.add "prettyPrint", valid_580191
+  if valid_589224 != nil:
+    section.add "prettyPrint", valid_589224
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -2471,21 +2471,21 @@ proc validate_IdentitytoolkitRelyingpartyVerifyCustomToken_580183(path: JsonNode
   if body != nil:
     result.add "body", body
 
-proc call*(call_580193: Call_IdentitytoolkitRelyingpartyVerifyCustomToken_580182;
+proc call*(call_589226: Call_IdentitytoolkitRelyingpartyVerifyCustomToken_589215;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Verifies the developer asserted ID token.
   ## 
-  let valid = call_580193.validator(path, query, header, formData, body)
-  let scheme = call_580193.pickScheme
+  let valid = call_589226.validator(path, query, header, formData, body)
+  let scheme = call_589226.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580193.url(scheme.get, call_580193.host, call_580193.base,
-                         call_580193.route, valid.getOrDefault("path"),
+  let url = call_589226.url(scheme.get, call_589226.host, call_589226.base,
+                         call_589226.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580193, url, valid)
+  result = hook(call_589226, url, valid)
 
-proc call*(call_580194: Call_IdentitytoolkitRelyingpartyVerifyCustomToken_580182;
+proc call*(call_589227: Call_IdentitytoolkitRelyingpartyVerifyCustomToken_589215;
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           oauthToken: string = ""; userIp: string = ""; key: string = "";
           body: JsonNode = nil; prettyPrint: bool = true): Recallable =
@@ -2506,37 +2506,37 @@ proc call*(call_580194: Call_IdentitytoolkitRelyingpartyVerifyCustomToken_580182
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var query_580195 = newJObject()
-  var body_580196 = newJObject()
-  add(query_580195, "fields", newJString(fields))
-  add(query_580195, "quotaUser", newJString(quotaUser))
-  add(query_580195, "alt", newJString(alt))
-  add(query_580195, "oauth_token", newJString(oauthToken))
-  add(query_580195, "userIp", newJString(userIp))
-  add(query_580195, "key", newJString(key))
+  var query_589228 = newJObject()
+  var body_589229 = newJObject()
+  add(query_589228, "fields", newJString(fields))
+  add(query_589228, "quotaUser", newJString(quotaUser))
+  add(query_589228, "alt", newJString(alt))
+  add(query_589228, "oauth_token", newJString(oauthToken))
+  add(query_589228, "userIp", newJString(userIp))
+  add(query_589228, "key", newJString(key))
   if body != nil:
-    body_580196 = body
-  add(query_580195, "prettyPrint", newJBool(prettyPrint))
-  result = call_580194.call(nil, query_580195, nil, nil, body_580196)
+    body_589229 = body
+  add(query_589228, "prettyPrint", newJBool(prettyPrint))
+  result = call_589227.call(nil, query_589228, nil, nil, body_589229)
 
-var identitytoolkitRelyingpartyVerifyCustomToken* = Call_IdentitytoolkitRelyingpartyVerifyCustomToken_580182(
+var identitytoolkitRelyingpartyVerifyCustomToken* = Call_IdentitytoolkitRelyingpartyVerifyCustomToken_589215(
     name: "identitytoolkitRelyingpartyVerifyCustomToken",
     meth: HttpMethod.HttpPost, host: "www.googleapis.com",
     route: "/verifyCustomToken",
-    validator: validate_IdentitytoolkitRelyingpartyVerifyCustomToken_580183,
+    validator: validate_IdentitytoolkitRelyingpartyVerifyCustomToken_589216,
     base: "/identitytoolkit/v3/relyingparty",
-    url: url_IdentitytoolkitRelyingpartyVerifyCustomToken_580184,
+    url: url_IdentitytoolkitRelyingpartyVerifyCustomToken_589217,
     schemes: {Scheme.Https})
 type
-  Call_IdentitytoolkitRelyingpartyVerifyPassword_580197 = ref object of OpenApiRestCall_579408
-proc url_IdentitytoolkitRelyingpartyVerifyPassword_580199(protocol: Scheme;
+  Call_IdentitytoolkitRelyingpartyVerifyPassword_589230 = ref object of OpenApiRestCall_588441
+proc url_IdentitytoolkitRelyingpartyVerifyPassword_589232(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
   result.query = $composeQueryString(query)
   result.path = base & route
 
-proc validate_IdentitytoolkitRelyingpartyVerifyPassword_580198(path: JsonNode;
+proc validate_IdentitytoolkitRelyingpartyVerifyPassword_589231(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Verifies the user entered password.
   ## 
@@ -2560,41 +2560,41 @@ proc validate_IdentitytoolkitRelyingpartyVerifyPassword_580198(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580200 = query.getOrDefault("fields")
-  valid_580200 = validateParameter(valid_580200, JString, required = false,
+  var valid_589233 = query.getOrDefault("fields")
+  valid_589233 = validateParameter(valid_589233, JString, required = false,
                                  default = nil)
-  if valid_580200 != nil:
-    section.add "fields", valid_580200
-  var valid_580201 = query.getOrDefault("quotaUser")
-  valid_580201 = validateParameter(valid_580201, JString, required = false,
+  if valid_589233 != nil:
+    section.add "fields", valid_589233
+  var valid_589234 = query.getOrDefault("quotaUser")
+  valid_589234 = validateParameter(valid_589234, JString, required = false,
                                  default = nil)
-  if valid_580201 != nil:
-    section.add "quotaUser", valid_580201
-  var valid_580202 = query.getOrDefault("alt")
-  valid_580202 = validateParameter(valid_580202, JString, required = false,
+  if valid_589234 != nil:
+    section.add "quotaUser", valid_589234
+  var valid_589235 = query.getOrDefault("alt")
+  valid_589235 = validateParameter(valid_589235, JString, required = false,
                                  default = newJString("json"))
-  if valid_580202 != nil:
-    section.add "alt", valid_580202
-  var valid_580203 = query.getOrDefault("oauth_token")
-  valid_580203 = validateParameter(valid_580203, JString, required = false,
+  if valid_589235 != nil:
+    section.add "alt", valid_589235
+  var valid_589236 = query.getOrDefault("oauth_token")
+  valid_589236 = validateParameter(valid_589236, JString, required = false,
                                  default = nil)
-  if valid_580203 != nil:
-    section.add "oauth_token", valid_580203
-  var valid_580204 = query.getOrDefault("userIp")
-  valid_580204 = validateParameter(valid_580204, JString, required = false,
+  if valid_589236 != nil:
+    section.add "oauth_token", valid_589236
+  var valid_589237 = query.getOrDefault("userIp")
+  valid_589237 = validateParameter(valid_589237, JString, required = false,
                                  default = nil)
-  if valid_580204 != nil:
-    section.add "userIp", valid_580204
-  var valid_580205 = query.getOrDefault("key")
-  valid_580205 = validateParameter(valid_580205, JString, required = false,
+  if valid_589237 != nil:
+    section.add "userIp", valid_589237
+  var valid_589238 = query.getOrDefault("key")
+  valid_589238 = validateParameter(valid_589238, JString, required = false,
                                  default = nil)
-  if valid_580205 != nil:
-    section.add "key", valid_580205
-  var valid_580206 = query.getOrDefault("prettyPrint")
-  valid_580206 = validateParameter(valid_580206, JBool, required = false,
+  if valid_589238 != nil:
+    section.add "key", valid_589238
+  var valid_589239 = query.getOrDefault("prettyPrint")
+  valid_589239 = validateParameter(valid_589239, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580206 != nil:
-    section.add "prettyPrint", valid_580206
+  if valid_589239 != nil:
+    section.add "prettyPrint", valid_589239
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -2606,21 +2606,21 @@ proc validate_IdentitytoolkitRelyingpartyVerifyPassword_580198(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580208: Call_IdentitytoolkitRelyingpartyVerifyPassword_580197;
+proc call*(call_589241: Call_IdentitytoolkitRelyingpartyVerifyPassword_589230;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Verifies the user entered password.
   ## 
-  let valid = call_580208.validator(path, query, header, formData, body)
-  let scheme = call_580208.pickScheme
+  let valid = call_589241.validator(path, query, header, formData, body)
+  let scheme = call_589241.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580208.url(scheme.get, call_580208.host, call_580208.base,
-                         call_580208.route, valid.getOrDefault("path"),
+  let url = call_589241.url(scheme.get, call_589241.host, call_589241.base,
+                         call_589241.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580208, url, valid)
+  result = hook(call_589241, url, valid)
 
-proc call*(call_580209: Call_IdentitytoolkitRelyingpartyVerifyPassword_580197;
+proc call*(call_589242: Call_IdentitytoolkitRelyingpartyVerifyPassword_589230;
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           oauthToken: string = ""; userIp: string = ""; key: string = "";
           body: JsonNode = nil; prettyPrint: bool = true): Recallable =
@@ -2641,36 +2641,36 @@ proc call*(call_580209: Call_IdentitytoolkitRelyingpartyVerifyPassword_580197;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var query_580210 = newJObject()
-  var body_580211 = newJObject()
-  add(query_580210, "fields", newJString(fields))
-  add(query_580210, "quotaUser", newJString(quotaUser))
-  add(query_580210, "alt", newJString(alt))
-  add(query_580210, "oauth_token", newJString(oauthToken))
-  add(query_580210, "userIp", newJString(userIp))
-  add(query_580210, "key", newJString(key))
+  var query_589243 = newJObject()
+  var body_589244 = newJObject()
+  add(query_589243, "fields", newJString(fields))
+  add(query_589243, "quotaUser", newJString(quotaUser))
+  add(query_589243, "alt", newJString(alt))
+  add(query_589243, "oauth_token", newJString(oauthToken))
+  add(query_589243, "userIp", newJString(userIp))
+  add(query_589243, "key", newJString(key))
   if body != nil:
-    body_580211 = body
-  add(query_580210, "prettyPrint", newJBool(prettyPrint))
-  result = call_580209.call(nil, query_580210, nil, nil, body_580211)
+    body_589244 = body
+  add(query_589243, "prettyPrint", newJBool(prettyPrint))
+  result = call_589242.call(nil, query_589243, nil, nil, body_589244)
 
-var identitytoolkitRelyingpartyVerifyPassword* = Call_IdentitytoolkitRelyingpartyVerifyPassword_580197(
+var identitytoolkitRelyingpartyVerifyPassword* = Call_IdentitytoolkitRelyingpartyVerifyPassword_589230(
     name: "identitytoolkitRelyingpartyVerifyPassword", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com", route: "/verifyPassword",
-    validator: validate_IdentitytoolkitRelyingpartyVerifyPassword_580198,
+    validator: validate_IdentitytoolkitRelyingpartyVerifyPassword_589231,
     base: "/identitytoolkit/v3/relyingparty",
-    url: url_IdentitytoolkitRelyingpartyVerifyPassword_580199,
+    url: url_IdentitytoolkitRelyingpartyVerifyPassword_589232,
     schemes: {Scheme.Https})
 type
-  Call_IdentitytoolkitRelyingpartyVerifyPhoneNumber_580212 = ref object of OpenApiRestCall_579408
-proc url_IdentitytoolkitRelyingpartyVerifyPhoneNumber_580214(protocol: Scheme;
+  Call_IdentitytoolkitRelyingpartyVerifyPhoneNumber_589245 = ref object of OpenApiRestCall_588441
+proc url_IdentitytoolkitRelyingpartyVerifyPhoneNumber_589247(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
   result.query = $composeQueryString(query)
   result.path = base & route
 
-proc validate_IdentitytoolkitRelyingpartyVerifyPhoneNumber_580213(path: JsonNode;
+proc validate_IdentitytoolkitRelyingpartyVerifyPhoneNumber_589246(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Verifies ownership of a phone number and creates/updates the user account accordingly.
   ## 
@@ -2694,41 +2694,41 @@ proc validate_IdentitytoolkitRelyingpartyVerifyPhoneNumber_580213(path: JsonNode
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580215 = query.getOrDefault("fields")
-  valid_580215 = validateParameter(valid_580215, JString, required = false,
+  var valid_589248 = query.getOrDefault("fields")
+  valid_589248 = validateParameter(valid_589248, JString, required = false,
                                  default = nil)
-  if valid_580215 != nil:
-    section.add "fields", valid_580215
-  var valid_580216 = query.getOrDefault("quotaUser")
-  valid_580216 = validateParameter(valid_580216, JString, required = false,
+  if valid_589248 != nil:
+    section.add "fields", valid_589248
+  var valid_589249 = query.getOrDefault("quotaUser")
+  valid_589249 = validateParameter(valid_589249, JString, required = false,
                                  default = nil)
-  if valid_580216 != nil:
-    section.add "quotaUser", valid_580216
-  var valid_580217 = query.getOrDefault("alt")
-  valid_580217 = validateParameter(valid_580217, JString, required = false,
+  if valid_589249 != nil:
+    section.add "quotaUser", valid_589249
+  var valid_589250 = query.getOrDefault("alt")
+  valid_589250 = validateParameter(valid_589250, JString, required = false,
                                  default = newJString("json"))
-  if valid_580217 != nil:
-    section.add "alt", valid_580217
-  var valid_580218 = query.getOrDefault("oauth_token")
-  valid_580218 = validateParameter(valid_580218, JString, required = false,
+  if valid_589250 != nil:
+    section.add "alt", valid_589250
+  var valid_589251 = query.getOrDefault("oauth_token")
+  valid_589251 = validateParameter(valid_589251, JString, required = false,
                                  default = nil)
-  if valid_580218 != nil:
-    section.add "oauth_token", valid_580218
-  var valid_580219 = query.getOrDefault("userIp")
-  valid_580219 = validateParameter(valid_580219, JString, required = false,
+  if valid_589251 != nil:
+    section.add "oauth_token", valid_589251
+  var valid_589252 = query.getOrDefault("userIp")
+  valid_589252 = validateParameter(valid_589252, JString, required = false,
                                  default = nil)
-  if valid_580219 != nil:
-    section.add "userIp", valid_580219
-  var valid_580220 = query.getOrDefault("key")
-  valid_580220 = validateParameter(valid_580220, JString, required = false,
+  if valid_589252 != nil:
+    section.add "userIp", valid_589252
+  var valid_589253 = query.getOrDefault("key")
+  valid_589253 = validateParameter(valid_589253, JString, required = false,
                                  default = nil)
-  if valid_580220 != nil:
-    section.add "key", valid_580220
-  var valid_580221 = query.getOrDefault("prettyPrint")
-  valid_580221 = validateParameter(valid_580221, JBool, required = false,
+  if valid_589253 != nil:
+    section.add "key", valid_589253
+  var valid_589254 = query.getOrDefault("prettyPrint")
+  valid_589254 = validateParameter(valid_589254, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580221 != nil:
-    section.add "prettyPrint", valid_580221
+  if valid_589254 != nil:
+    section.add "prettyPrint", valid_589254
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -2740,21 +2740,21 @@ proc validate_IdentitytoolkitRelyingpartyVerifyPhoneNumber_580213(path: JsonNode
   if body != nil:
     result.add "body", body
 
-proc call*(call_580223: Call_IdentitytoolkitRelyingpartyVerifyPhoneNumber_580212;
+proc call*(call_589256: Call_IdentitytoolkitRelyingpartyVerifyPhoneNumber_589245;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Verifies ownership of a phone number and creates/updates the user account accordingly.
   ## 
-  let valid = call_580223.validator(path, query, header, formData, body)
-  let scheme = call_580223.pickScheme
+  let valid = call_589256.validator(path, query, header, formData, body)
+  let scheme = call_589256.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580223.url(scheme.get, call_580223.host, call_580223.base,
-                         call_580223.route, valid.getOrDefault("path"),
+  let url = call_589256.url(scheme.get, call_589256.host, call_589256.base,
+                         call_589256.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580223, url, valid)
+  result = hook(call_589256, url, valid)
 
-proc call*(call_580224: Call_IdentitytoolkitRelyingpartyVerifyPhoneNumber_580212;
+proc call*(call_589257: Call_IdentitytoolkitRelyingpartyVerifyPhoneNumber_589245;
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           oauthToken: string = ""; userIp: string = ""; key: string = "";
           body: JsonNode = nil; prettyPrint: bool = true): Recallable =
@@ -2775,26 +2775,26 @@ proc call*(call_580224: Call_IdentitytoolkitRelyingpartyVerifyPhoneNumber_580212
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var query_580225 = newJObject()
-  var body_580226 = newJObject()
-  add(query_580225, "fields", newJString(fields))
-  add(query_580225, "quotaUser", newJString(quotaUser))
-  add(query_580225, "alt", newJString(alt))
-  add(query_580225, "oauth_token", newJString(oauthToken))
-  add(query_580225, "userIp", newJString(userIp))
-  add(query_580225, "key", newJString(key))
+  var query_589258 = newJObject()
+  var body_589259 = newJObject()
+  add(query_589258, "fields", newJString(fields))
+  add(query_589258, "quotaUser", newJString(quotaUser))
+  add(query_589258, "alt", newJString(alt))
+  add(query_589258, "oauth_token", newJString(oauthToken))
+  add(query_589258, "userIp", newJString(userIp))
+  add(query_589258, "key", newJString(key))
   if body != nil:
-    body_580226 = body
-  add(query_580225, "prettyPrint", newJBool(prettyPrint))
-  result = call_580224.call(nil, query_580225, nil, nil, body_580226)
+    body_589259 = body
+  add(query_589258, "prettyPrint", newJBool(prettyPrint))
+  result = call_589257.call(nil, query_589258, nil, nil, body_589259)
 
-var identitytoolkitRelyingpartyVerifyPhoneNumber* = Call_IdentitytoolkitRelyingpartyVerifyPhoneNumber_580212(
+var identitytoolkitRelyingpartyVerifyPhoneNumber* = Call_IdentitytoolkitRelyingpartyVerifyPhoneNumber_589245(
     name: "identitytoolkitRelyingpartyVerifyPhoneNumber",
     meth: HttpMethod.HttpPost, host: "www.googleapis.com",
     route: "/verifyPhoneNumber",
-    validator: validate_IdentitytoolkitRelyingpartyVerifyPhoneNumber_580213,
+    validator: validate_IdentitytoolkitRelyingpartyVerifyPhoneNumber_589246,
     base: "/identitytoolkit/v3/relyingparty",
-    url: url_IdentitytoolkitRelyingpartyVerifyPhoneNumber_580214,
+    url: url_IdentitytoolkitRelyingpartyVerifyPhoneNumber_589247,
     schemes: {Scheme.Https})
 export
   rest
@@ -2837,7 +2837,7 @@ proc store(auth: var GoogleAuth; token: string; expiry: int; form: string) =
   auth.form = form
   auth.digest = auth.hash
 
-proc authenticate*(fresh: float64 = -3600.0; lifetime: int = 3600): Future[bool] {.async.} =
+proc authenticate*(fresh: float64 = 3600.0; lifetime: int = 3600): Future[bool] {.async.} =
   ## get or refresh an authentication token; provide `fresh`
   ## to ensure that the token won't expire in the next N seconds.
   ## provide `lifetime` to indicate how long the token should last.

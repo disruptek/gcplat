@@ -29,15 +29,15 @@ type
     url*: proc (protocol: Scheme; host: string; base: string; route: string;
               path: JsonNode; query: JsonNode): Uri
 
-  OpenApiRestCall_579437 = ref object of OpenApiRestCall
+  OpenApiRestCall_588466 = ref object of OpenApiRestCall
 proc hash(scheme: Scheme): Hash {.used.} =
   result = hash(ord(scheme))
 
-proc clone[T: OpenApiRestCall_579437](t: T): T {.used.} =
+proc clone[T: OpenApiRestCall_588466](t: T): T {.used.} =
   result = T(name: t.name, meth: t.meth, host: t.host, base: t.base, route: t.route,
            schemes: t.schemes, validator: t.validator, url: t.url)
 
-proc pickScheme(t: OpenApiRestCall_579437): Option[Scheme] {.used.} =
+proc pickScheme(t: OpenApiRestCall_588466): Option[Scheme] {.used.} =
   ## select a supported scheme from a set of candidates
   for scheme in Scheme.low ..
       Scheme.high:
@@ -74,7 +74,7 @@ type
   PathTokenKind = enum
     ConstantSegment, VariableSegment
   PathToken = tuple[kind: PathTokenKind, value: string]
-proc queryString(query: JsonNode): string =
+proc queryString(query: JsonNode): string {.used.} =
   var qs: seq[KeyVal]
   if query == nil:
     return ""
@@ -82,7 +82,7 @@ proc queryString(query: JsonNode): string =
     qs.add (key: k, val: v.getStr)
   result = encodeQuery(qs)
 
-proc hydratePath(input: JsonNode; segments: seq[PathToken]): Option[string] =
+proc hydratePath(input: JsonNode; segments: seq[PathToken]): Option[string] {.used.} =
   ## reconstitute a path with constants and variable values taken from json
   var head: string
   if segments.len == 0:
@@ -108,15 +108,15 @@ const
 proc composeQueryString(query: JsonNode): string
 method hook(call: OpenApiRestCall; url: Uri; input: JsonNode): Recallable {.base.}
 type
-  Call_AdexchangebuyerAccountsList_579706 = ref object of OpenApiRestCall_579437
-proc url_AdexchangebuyerAccountsList_579708(protocol: Scheme; host: string;
+  Call_AdexchangebuyerAccountsList_588735 = ref object of OpenApiRestCall_588466
+proc url_AdexchangebuyerAccountsList_588737(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
   result.query = $composeQueryString(query)
   result.path = base & route
 
-proc validate_AdexchangebuyerAccountsList_579707(path: JsonNode; query: JsonNode;
+proc validate_AdexchangebuyerAccountsList_588736(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Retrieves the authenticated user's list of accounts.
   ## 
@@ -140,41 +140,41 @@ proc validate_AdexchangebuyerAccountsList_579707(path: JsonNode; query: JsonNode
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_579820 = query.getOrDefault("fields")
-  valid_579820 = validateParameter(valid_579820, JString, required = false,
+  var valid_588849 = query.getOrDefault("fields")
+  valid_588849 = validateParameter(valid_588849, JString, required = false,
                                  default = nil)
-  if valid_579820 != nil:
-    section.add "fields", valid_579820
-  var valid_579821 = query.getOrDefault("quotaUser")
-  valid_579821 = validateParameter(valid_579821, JString, required = false,
+  if valid_588849 != nil:
+    section.add "fields", valid_588849
+  var valid_588850 = query.getOrDefault("quotaUser")
+  valid_588850 = validateParameter(valid_588850, JString, required = false,
                                  default = nil)
-  if valid_579821 != nil:
-    section.add "quotaUser", valid_579821
-  var valid_579835 = query.getOrDefault("alt")
-  valid_579835 = validateParameter(valid_579835, JString, required = false,
+  if valid_588850 != nil:
+    section.add "quotaUser", valid_588850
+  var valid_588864 = query.getOrDefault("alt")
+  valid_588864 = validateParameter(valid_588864, JString, required = false,
                                  default = newJString("json"))
-  if valid_579835 != nil:
-    section.add "alt", valid_579835
-  var valid_579836 = query.getOrDefault("oauth_token")
-  valid_579836 = validateParameter(valid_579836, JString, required = false,
+  if valid_588864 != nil:
+    section.add "alt", valid_588864
+  var valid_588865 = query.getOrDefault("oauth_token")
+  valid_588865 = validateParameter(valid_588865, JString, required = false,
                                  default = nil)
-  if valid_579836 != nil:
-    section.add "oauth_token", valid_579836
-  var valid_579837 = query.getOrDefault("userIp")
-  valid_579837 = validateParameter(valid_579837, JString, required = false,
+  if valid_588865 != nil:
+    section.add "oauth_token", valid_588865
+  var valid_588866 = query.getOrDefault("userIp")
+  valid_588866 = validateParameter(valid_588866, JString, required = false,
                                  default = nil)
-  if valid_579837 != nil:
-    section.add "userIp", valid_579837
-  var valid_579838 = query.getOrDefault("key")
-  valid_579838 = validateParameter(valid_579838, JString, required = false,
+  if valid_588866 != nil:
+    section.add "userIp", valid_588866
+  var valid_588867 = query.getOrDefault("key")
+  valid_588867 = validateParameter(valid_588867, JString, required = false,
                                  default = nil)
-  if valid_579838 != nil:
-    section.add "key", valid_579838
-  var valid_579839 = query.getOrDefault("prettyPrint")
-  valid_579839 = validateParameter(valid_579839, JBool, required = false,
+  if valid_588867 != nil:
+    section.add "key", valid_588867
+  var valid_588868 = query.getOrDefault("prettyPrint")
+  valid_588868 = validateParameter(valid_588868, JBool, required = false,
                                  default = newJBool(true))
-  if valid_579839 != nil:
-    section.add "prettyPrint", valid_579839
+  if valid_588868 != nil:
+    section.add "prettyPrint", valid_588868
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -183,20 +183,20 @@ proc validate_AdexchangebuyerAccountsList_579707(path: JsonNode; query: JsonNode
   if body != nil:
     result.add "body", body
 
-proc call*(call_579862: Call_AdexchangebuyerAccountsList_579706; path: JsonNode;
+proc call*(call_588891: Call_AdexchangebuyerAccountsList_588735; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Retrieves the authenticated user's list of accounts.
   ## 
-  let valid = call_579862.validator(path, query, header, formData, body)
-  let scheme = call_579862.pickScheme
+  let valid = call_588891.validator(path, query, header, formData, body)
+  let scheme = call_588891.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_579862.url(scheme.get, call_579862.host, call_579862.base,
-                         call_579862.route, valid.getOrDefault("path"),
+  let url = call_588891.url(scheme.get, call_588891.host, call_588891.base,
+                         call_588891.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_579862, url, valid)
+  result = hook(call_588891, url, valid)
 
-proc call*(call_579933: Call_AdexchangebuyerAccountsList_579706;
+proc call*(call_588962: Call_AdexchangebuyerAccountsList_588735;
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           oauthToken: string = ""; userIp: string = ""; key: string = "";
           prettyPrint: bool = true): Recallable =
@@ -216,25 +216,25 @@ proc call*(call_579933: Call_AdexchangebuyerAccountsList_579706;
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var query_579934 = newJObject()
-  add(query_579934, "fields", newJString(fields))
-  add(query_579934, "quotaUser", newJString(quotaUser))
-  add(query_579934, "alt", newJString(alt))
-  add(query_579934, "oauth_token", newJString(oauthToken))
-  add(query_579934, "userIp", newJString(userIp))
-  add(query_579934, "key", newJString(key))
-  add(query_579934, "prettyPrint", newJBool(prettyPrint))
-  result = call_579933.call(nil, query_579934, nil, nil, nil)
+  var query_588963 = newJObject()
+  add(query_588963, "fields", newJString(fields))
+  add(query_588963, "quotaUser", newJString(quotaUser))
+  add(query_588963, "alt", newJString(alt))
+  add(query_588963, "oauth_token", newJString(oauthToken))
+  add(query_588963, "userIp", newJString(userIp))
+  add(query_588963, "key", newJString(key))
+  add(query_588963, "prettyPrint", newJBool(prettyPrint))
+  result = call_588962.call(nil, query_588963, nil, nil, nil)
 
-var adexchangebuyerAccountsList* = Call_AdexchangebuyerAccountsList_579706(
+var adexchangebuyerAccountsList* = Call_AdexchangebuyerAccountsList_588735(
     name: "adexchangebuyerAccountsList", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/accounts",
-    validator: validate_AdexchangebuyerAccountsList_579707,
-    base: "/adexchangebuyer/v1.4", url: url_AdexchangebuyerAccountsList_579708,
+    validator: validate_AdexchangebuyerAccountsList_588736,
+    base: "/adexchangebuyer/v1.4", url: url_AdexchangebuyerAccountsList_588737,
     schemes: {Scheme.Https})
 type
-  Call_AdexchangebuyerAccountsUpdate_580003 = ref object of OpenApiRestCall_579437
-proc url_AdexchangebuyerAccountsUpdate_580005(protocol: Scheme; host: string;
+  Call_AdexchangebuyerAccountsUpdate_589032 = ref object of OpenApiRestCall_588466
+proc url_AdexchangebuyerAccountsUpdate_589034(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -249,7 +249,7 @@ proc url_AdexchangebuyerAccountsUpdate_580005(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_AdexchangebuyerAccountsUpdate_580004(path: JsonNode; query: JsonNode;
+proc validate_AdexchangebuyerAccountsUpdate_589033(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Updates an existing account.
   ## 
@@ -260,10 +260,10 @@ proc validate_AdexchangebuyerAccountsUpdate_580004(path: JsonNode; query: JsonNo
   ##     : The account id
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `id` field"
-  var valid_580006 = path.getOrDefault("id")
-  valid_580006 = validateParameter(valid_580006, JInt, required = true, default = nil)
-  if valid_580006 != nil:
-    section.add "id", valid_580006
+  var valid_589035 = path.getOrDefault("id")
+  valid_589035 = validateParameter(valid_589035, JInt, required = true, default = nil)
+  if valid_589035 != nil:
+    section.add "id", valid_589035
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -283,45 +283,45 @@ proc validate_AdexchangebuyerAccountsUpdate_580004(path: JsonNode; query: JsonNo
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580007 = query.getOrDefault("fields")
-  valid_580007 = validateParameter(valid_580007, JString, required = false,
+  var valid_589036 = query.getOrDefault("fields")
+  valid_589036 = validateParameter(valid_589036, JString, required = false,
                                  default = nil)
-  if valid_580007 != nil:
-    section.add "fields", valid_580007
-  var valid_580008 = query.getOrDefault("quotaUser")
-  valid_580008 = validateParameter(valid_580008, JString, required = false,
+  if valid_589036 != nil:
+    section.add "fields", valid_589036
+  var valid_589037 = query.getOrDefault("quotaUser")
+  valid_589037 = validateParameter(valid_589037, JString, required = false,
                                  default = nil)
-  if valid_580008 != nil:
-    section.add "quotaUser", valid_580008
-  var valid_580009 = query.getOrDefault("alt")
-  valid_580009 = validateParameter(valid_580009, JString, required = false,
+  if valid_589037 != nil:
+    section.add "quotaUser", valid_589037
+  var valid_589038 = query.getOrDefault("alt")
+  valid_589038 = validateParameter(valid_589038, JString, required = false,
                                  default = newJString("json"))
-  if valid_580009 != nil:
-    section.add "alt", valid_580009
-  var valid_580010 = query.getOrDefault("confirmUnsafeAccountChange")
-  valid_580010 = validateParameter(valid_580010, JBool, required = false, default = nil)
-  if valid_580010 != nil:
-    section.add "confirmUnsafeAccountChange", valid_580010
-  var valid_580011 = query.getOrDefault("oauth_token")
-  valid_580011 = validateParameter(valid_580011, JString, required = false,
+  if valid_589038 != nil:
+    section.add "alt", valid_589038
+  var valid_589039 = query.getOrDefault("confirmUnsafeAccountChange")
+  valid_589039 = validateParameter(valid_589039, JBool, required = false, default = nil)
+  if valid_589039 != nil:
+    section.add "confirmUnsafeAccountChange", valid_589039
+  var valid_589040 = query.getOrDefault("oauth_token")
+  valid_589040 = validateParameter(valid_589040, JString, required = false,
                                  default = nil)
-  if valid_580011 != nil:
-    section.add "oauth_token", valid_580011
-  var valid_580012 = query.getOrDefault("userIp")
-  valid_580012 = validateParameter(valid_580012, JString, required = false,
+  if valid_589040 != nil:
+    section.add "oauth_token", valid_589040
+  var valid_589041 = query.getOrDefault("userIp")
+  valid_589041 = validateParameter(valid_589041, JString, required = false,
                                  default = nil)
-  if valid_580012 != nil:
-    section.add "userIp", valid_580012
-  var valid_580013 = query.getOrDefault("key")
-  valid_580013 = validateParameter(valid_580013, JString, required = false,
+  if valid_589041 != nil:
+    section.add "userIp", valid_589041
+  var valid_589042 = query.getOrDefault("key")
+  valid_589042 = validateParameter(valid_589042, JString, required = false,
                                  default = nil)
-  if valid_580013 != nil:
-    section.add "key", valid_580013
-  var valid_580014 = query.getOrDefault("prettyPrint")
-  valid_580014 = validateParameter(valid_580014, JBool, required = false,
+  if valid_589042 != nil:
+    section.add "key", valid_589042
+  var valid_589043 = query.getOrDefault("prettyPrint")
+  valid_589043 = validateParameter(valid_589043, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580014 != nil:
-    section.add "prettyPrint", valid_580014
+  if valid_589043 != nil:
+    section.add "prettyPrint", valid_589043
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -333,20 +333,20 @@ proc validate_AdexchangebuyerAccountsUpdate_580004(path: JsonNode; query: JsonNo
   if body != nil:
     result.add "body", body
 
-proc call*(call_580016: Call_AdexchangebuyerAccountsUpdate_580003; path: JsonNode;
+proc call*(call_589045: Call_AdexchangebuyerAccountsUpdate_589032; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Updates an existing account.
   ## 
-  let valid = call_580016.validator(path, query, header, formData, body)
-  let scheme = call_580016.pickScheme
+  let valid = call_589045.validator(path, query, header, formData, body)
+  let scheme = call_589045.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580016.url(scheme.get, call_580016.host, call_580016.base,
-                         call_580016.route, valid.getOrDefault("path"),
+  let url = call_589045.url(scheme.get, call_589045.host, call_589045.base,
+                         call_589045.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580016, url, valid)
+  result = hook(call_589045, url, valid)
 
-proc call*(call_580017: Call_AdexchangebuyerAccountsUpdate_580003; id: int;
+proc call*(call_589046: Call_AdexchangebuyerAccountsUpdate_589032; id: int;
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           confirmUnsafeAccountChange: bool = false; oauthToken: string = "";
           userIp: string = ""; key: string = ""; body: JsonNode = nil;
@@ -372,32 +372,32 @@ proc call*(call_580017: Call_AdexchangebuyerAccountsUpdate_580003; id: int;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_580018 = newJObject()
-  var query_580019 = newJObject()
-  var body_580020 = newJObject()
-  add(query_580019, "fields", newJString(fields))
-  add(query_580019, "quotaUser", newJString(quotaUser))
-  add(query_580019, "alt", newJString(alt))
-  add(query_580019, "confirmUnsafeAccountChange",
+  var path_589047 = newJObject()
+  var query_589048 = newJObject()
+  var body_589049 = newJObject()
+  add(query_589048, "fields", newJString(fields))
+  add(query_589048, "quotaUser", newJString(quotaUser))
+  add(query_589048, "alt", newJString(alt))
+  add(query_589048, "confirmUnsafeAccountChange",
       newJBool(confirmUnsafeAccountChange))
-  add(query_580019, "oauth_token", newJString(oauthToken))
-  add(query_580019, "userIp", newJString(userIp))
-  add(path_580018, "id", newJInt(id))
-  add(query_580019, "key", newJString(key))
+  add(query_589048, "oauth_token", newJString(oauthToken))
+  add(query_589048, "userIp", newJString(userIp))
+  add(path_589047, "id", newJInt(id))
+  add(query_589048, "key", newJString(key))
   if body != nil:
-    body_580020 = body
-  add(query_580019, "prettyPrint", newJBool(prettyPrint))
-  result = call_580017.call(path_580018, query_580019, nil, nil, body_580020)
+    body_589049 = body
+  add(query_589048, "prettyPrint", newJBool(prettyPrint))
+  result = call_589046.call(path_589047, query_589048, nil, nil, body_589049)
 
-var adexchangebuyerAccountsUpdate* = Call_AdexchangebuyerAccountsUpdate_580003(
+var adexchangebuyerAccountsUpdate* = Call_AdexchangebuyerAccountsUpdate_589032(
     name: "adexchangebuyerAccountsUpdate", meth: HttpMethod.HttpPut,
     host: "www.googleapis.com", route: "/accounts/{id}",
-    validator: validate_AdexchangebuyerAccountsUpdate_580004,
-    base: "/adexchangebuyer/v1.4", url: url_AdexchangebuyerAccountsUpdate_580005,
+    validator: validate_AdexchangebuyerAccountsUpdate_589033,
+    base: "/adexchangebuyer/v1.4", url: url_AdexchangebuyerAccountsUpdate_589034,
     schemes: {Scheme.Https})
 type
-  Call_AdexchangebuyerAccountsGet_579974 = ref object of OpenApiRestCall_579437
-proc url_AdexchangebuyerAccountsGet_579976(protocol: Scheme; host: string;
+  Call_AdexchangebuyerAccountsGet_589003 = ref object of OpenApiRestCall_588466
+proc url_AdexchangebuyerAccountsGet_589005(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -412,7 +412,7 @@ proc url_AdexchangebuyerAccountsGet_579976(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_AdexchangebuyerAccountsGet_579975(path: JsonNode; query: JsonNode;
+proc validate_AdexchangebuyerAccountsGet_589004(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Gets one account by ID.
   ## 
@@ -423,10 +423,10 @@ proc validate_AdexchangebuyerAccountsGet_579975(path: JsonNode; query: JsonNode;
   ##     : The account id
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `id` field"
-  var valid_579991 = path.getOrDefault("id")
-  valid_579991 = validateParameter(valid_579991, JInt, required = true, default = nil)
-  if valid_579991 != nil:
-    section.add "id", valid_579991
+  var valid_589020 = path.getOrDefault("id")
+  valid_589020 = validateParameter(valid_589020, JInt, required = true, default = nil)
+  if valid_589020 != nil:
+    section.add "id", valid_589020
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -444,41 +444,41 @@ proc validate_AdexchangebuyerAccountsGet_579975(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_579992 = query.getOrDefault("fields")
-  valid_579992 = validateParameter(valid_579992, JString, required = false,
+  var valid_589021 = query.getOrDefault("fields")
+  valid_589021 = validateParameter(valid_589021, JString, required = false,
                                  default = nil)
-  if valid_579992 != nil:
-    section.add "fields", valid_579992
-  var valid_579993 = query.getOrDefault("quotaUser")
-  valid_579993 = validateParameter(valid_579993, JString, required = false,
+  if valid_589021 != nil:
+    section.add "fields", valid_589021
+  var valid_589022 = query.getOrDefault("quotaUser")
+  valid_589022 = validateParameter(valid_589022, JString, required = false,
                                  default = nil)
-  if valid_579993 != nil:
-    section.add "quotaUser", valid_579993
-  var valid_579994 = query.getOrDefault("alt")
-  valid_579994 = validateParameter(valid_579994, JString, required = false,
+  if valid_589022 != nil:
+    section.add "quotaUser", valid_589022
+  var valid_589023 = query.getOrDefault("alt")
+  valid_589023 = validateParameter(valid_589023, JString, required = false,
                                  default = newJString("json"))
-  if valid_579994 != nil:
-    section.add "alt", valid_579994
-  var valid_579995 = query.getOrDefault("oauth_token")
-  valid_579995 = validateParameter(valid_579995, JString, required = false,
+  if valid_589023 != nil:
+    section.add "alt", valid_589023
+  var valid_589024 = query.getOrDefault("oauth_token")
+  valid_589024 = validateParameter(valid_589024, JString, required = false,
                                  default = nil)
-  if valid_579995 != nil:
-    section.add "oauth_token", valid_579995
-  var valid_579996 = query.getOrDefault("userIp")
-  valid_579996 = validateParameter(valid_579996, JString, required = false,
+  if valid_589024 != nil:
+    section.add "oauth_token", valid_589024
+  var valid_589025 = query.getOrDefault("userIp")
+  valid_589025 = validateParameter(valid_589025, JString, required = false,
                                  default = nil)
-  if valid_579996 != nil:
-    section.add "userIp", valid_579996
-  var valid_579997 = query.getOrDefault("key")
-  valid_579997 = validateParameter(valid_579997, JString, required = false,
+  if valid_589025 != nil:
+    section.add "userIp", valid_589025
+  var valid_589026 = query.getOrDefault("key")
+  valid_589026 = validateParameter(valid_589026, JString, required = false,
                                  default = nil)
-  if valid_579997 != nil:
-    section.add "key", valid_579997
-  var valid_579998 = query.getOrDefault("prettyPrint")
-  valid_579998 = validateParameter(valid_579998, JBool, required = false,
+  if valid_589026 != nil:
+    section.add "key", valid_589026
+  var valid_589027 = query.getOrDefault("prettyPrint")
+  valid_589027 = validateParameter(valid_589027, JBool, required = false,
                                  default = newJBool(true))
-  if valid_579998 != nil:
-    section.add "prettyPrint", valid_579998
+  if valid_589027 != nil:
+    section.add "prettyPrint", valid_589027
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -487,20 +487,20 @@ proc validate_AdexchangebuyerAccountsGet_579975(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_579999: Call_AdexchangebuyerAccountsGet_579974; path: JsonNode;
+proc call*(call_589028: Call_AdexchangebuyerAccountsGet_589003; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Gets one account by ID.
   ## 
-  let valid = call_579999.validator(path, query, header, formData, body)
-  let scheme = call_579999.pickScheme
+  let valid = call_589028.validator(path, query, header, formData, body)
+  let scheme = call_589028.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_579999.url(scheme.get, call_579999.host, call_579999.base,
-                         call_579999.route, valid.getOrDefault("path"),
+  let url = call_589028.url(scheme.get, call_589028.host, call_589028.base,
+                         call_589028.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_579999, url, valid)
+  result = hook(call_589028, url, valid)
 
-proc call*(call_580000: Call_AdexchangebuyerAccountsGet_579974; id: int;
+proc call*(call_589029: Call_AdexchangebuyerAccountsGet_589003; id: int;
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           oauthToken: string = ""; userIp: string = ""; key: string = "";
           prettyPrint: bool = true): Recallable =
@@ -522,27 +522,27 @@ proc call*(call_580000: Call_AdexchangebuyerAccountsGet_579974; id: int;
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_580001 = newJObject()
-  var query_580002 = newJObject()
-  add(query_580002, "fields", newJString(fields))
-  add(query_580002, "quotaUser", newJString(quotaUser))
-  add(query_580002, "alt", newJString(alt))
-  add(query_580002, "oauth_token", newJString(oauthToken))
-  add(query_580002, "userIp", newJString(userIp))
-  add(path_580001, "id", newJInt(id))
-  add(query_580002, "key", newJString(key))
-  add(query_580002, "prettyPrint", newJBool(prettyPrint))
-  result = call_580000.call(path_580001, query_580002, nil, nil, nil)
+  var path_589030 = newJObject()
+  var query_589031 = newJObject()
+  add(query_589031, "fields", newJString(fields))
+  add(query_589031, "quotaUser", newJString(quotaUser))
+  add(query_589031, "alt", newJString(alt))
+  add(query_589031, "oauth_token", newJString(oauthToken))
+  add(query_589031, "userIp", newJString(userIp))
+  add(path_589030, "id", newJInt(id))
+  add(query_589031, "key", newJString(key))
+  add(query_589031, "prettyPrint", newJBool(prettyPrint))
+  result = call_589029.call(path_589030, query_589031, nil, nil, nil)
 
-var adexchangebuyerAccountsGet* = Call_AdexchangebuyerAccountsGet_579974(
+var adexchangebuyerAccountsGet* = Call_AdexchangebuyerAccountsGet_589003(
     name: "adexchangebuyerAccountsGet", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/accounts/{id}",
-    validator: validate_AdexchangebuyerAccountsGet_579975,
-    base: "/adexchangebuyer/v1.4", url: url_AdexchangebuyerAccountsGet_579976,
+    validator: validate_AdexchangebuyerAccountsGet_589004,
+    base: "/adexchangebuyer/v1.4", url: url_AdexchangebuyerAccountsGet_589005,
     schemes: {Scheme.Https})
 type
-  Call_AdexchangebuyerAccountsPatch_580021 = ref object of OpenApiRestCall_579437
-proc url_AdexchangebuyerAccountsPatch_580023(protocol: Scheme; host: string;
+  Call_AdexchangebuyerAccountsPatch_589050 = ref object of OpenApiRestCall_588466
+proc url_AdexchangebuyerAccountsPatch_589052(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -557,7 +557,7 @@ proc url_AdexchangebuyerAccountsPatch_580023(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_AdexchangebuyerAccountsPatch_580022(path: JsonNode; query: JsonNode;
+proc validate_AdexchangebuyerAccountsPatch_589051(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Updates an existing account. This method supports patch semantics.
   ## 
@@ -568,10 +568,10 @@ proc validate_AdexchangebuyerAccountsPatch_580022(path: JsonNode; query: JsonNod
   ##     : The account id
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `id` field"
-  var valid_580024 = path.getOrDefault("id")
-  valid_580024 = validateParameter(valid_580024, JInt, required = true, default = nil)
-  if valid_580024 != nil:
-    section.add "id", valid_580024
+  var valid_589053 = path.getOrDefault("id")
+  valid_589053 = validateParameter(valid_589053, JInt, required = true, default = nil)
+  if valid_589053 != nil:
+    section.add "id", valid_589053
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -591,45 +591,45 @@ proc validate_AdexchangebuyerAccountsPatch_580022(path: JsonNode; query: JsonNod
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580025 = query.getOrDefault("fields")
-  valid_580025 = validateParameter(valid_580025, JString, required = false,
+  var valid_589054 = query.getOrDefault("fields")
+  valid_589054 = validateParameter(valid_589054, JString, required = false,
                                  default = nil)
-  if valid_580025 != nil:
-    section.add "fields", valid_580025
-  var valid_580026 = query.getOrDefault("quotaUser")
-  valid_580026 = validateParameter(valid_580026, JString, required = false,
+  if valid_589054 != nil:
+    section.add "fields", valid_589054
+  var valid_589055 = query.getOrDefault("quotaUser")
+  valid_589055 = validateParameter(valid_589055, JString, required = false,
                                  default = nil)
-  if valid_580026 != nil:
-    section.add "quotaUser", valid_580026
-  var valid_580027 = query.getOrDefault("alt")
-  valid_580027 = validateParameter(valid_580027, JString, required = false,
+  if valid_589055 != nil:
+    section.add "quotaUser", valid_589055
+  var valid_589056 = query.getOrDefault("alt")
+  valid_589056 = validateParameter(valid_589056, JString, required = false,
                                  default = newJString("json"))
-  if valid_580027 != nil:
-    section.add "alt", valid_580027
-  var valid_580028 = query.getOrDefault("confirmUnsafeAccountChange")
-  valid_580028 = validateParameter(valid_580028, JBool, required = false, default = nil)
-  if valid_580028 != nil:
-    section.add "confirmUnsafeAccountChange", valid_580028
-  var valid_580029 = query.getOrDefault("oauth_token")
-  valid_580029 = validateParameter(valid_580029, JString, required = false,
+  if valid_589056 != nil:
+    section.add "alt", valid_589056
+  var valid_589057 = query.getOrDefault("confirmUnsafeAccountChange")
+  valid_589057 = validateParameter(valid_589057, JBool, required = false, default = nil)
+  if valid_589057 != nil:
+    section.add "confirmUnsafeAccountChange", valid_589057
+  var valid_589058 = query.getOrDefault("oauth_token")
+  valid_589058 = validateParameter(valid_589058, JString, required = false,
                                  default = nil)
-  if valid_580029 != nil:
-    section.add "oauth_token", valid_580029
-  var valid_580030 = query.getOrDefault("userIp")
-  valid_580030 = validateParameter(valid_580030, JString, required = false,
+  if valid_589058 != nil:
+    section.add "oauth_token", valid_589058
+  var valid_589059 = query.getOrDefault("userIp")
+  valid_589059 = validateParameter(valid_589059, JString, required = false,
                                  default = nil)
-  if valid_580030 != nil:
-    section.add "userIp", valid_580030
-  var valid_580031 = query.getOrDefault("key")
-  valid_580031 = validateParameter(valid_580031, JString, required = false,
+  if valid_589059 != nil:
+    section.add "userIp", valid_589059
+  var valid_589060 = query.getOrDefault("key")
+  valid_589060 = validateParameter(valid_589060, JString, required = false,
                                  default = nil)
-  if valid_580031 != nil:
-    section.add "key", valid_580031
-  var valid_580032 = query.getOrDefault("prettyPrint")
-  valid_580032 = validateParameter(valid_580032, JBool, required = false,
+  if valid_589060 != nil:
+    section.add "key", valid_589060
+  var valid_589061 = query.getOrDefault("prettyPrint")
+  valid_589061 = validateParameter(valid_589061, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580032 != nil:
-    section.add "prettyPrint", valid_580032
+  if valid_589061 != nil:
+    section.add "prettyPrint", valid_589061
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -641,20 +641,20 @@ proc validate_AdexchangebuyerAccountsPatch_580022(path: JsonNode; query: JsonNod
   if body != nil:
     result.add "body", body
 
-proc call*(call_580034: Call_AdexchangebuyerAccountsPatch_580021; path: JsonNode;
+proc call*(call_589063: Call_AdexchangebuyerAccountsPatch_589050; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Updates an existing account. This method supports patch semantics.
   ## 
-  let valid = call_580034.validator(path, query, header, formData, body)
-  let scheme = call_580034.pickScheme
+  let valid = call_589063.validator(path, query, header, formData, body)
+  let scheme = call_589063.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580034.url(scheme.get, call_580034.host, call_580034.base,
-                         call_580034.route, valid.getOrDefault("path"),
+  let url = call_589063.url(scheme.get, call_589063.host, call_589063.base,
+                         call_589063.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580034, url, valid)
+  result = hook(call_589063, url, valid)
 
-proc call*(call_580035: Call_AdexchangebuyerAccountsPatch_580021; id: int;
+proc call*(call_589064: Call_AdexchangebuyerAccountsPatch_589050; id: int;
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           confirmUnsafeAccountChange: bool = false; oauthToken: string = "";
           userIp: string = ""; key: string = ""; body: JsonNode = nil;
@@ -680,39 +680,39 @@ proc call*(call_580035: Call_AdexchangebuyerAccountsPatch_580021; id: int;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_580036 = newJObject()
-  var query_580037 = newJObject()
-  var body_580038 = newJObject()
-  add(query_580037, "fields", newJString(fields))
-  add(query_580037, "quotaUser", newJString(quotaUser))
-  add(query_580037, "alt", newJString(alt))
-  add(query_580037, "confirmUnsafeAccountChange",
+  var path_589065 = newJObject()
+  var query_589066 = newJObject()
+  var body_589067 = newJObject()
+  add(query_589066, "fields", newJString(fields))
+  add(query_589066, "quotaUser", newJString(quotaUser))
+  add(query_589066, "alt", newJString(alt))
+  add(query_589066, "confirmUnsafeAccountChange",
       newJBool(confirmUnsafeAccountChange))
-  add(query_580037, "oauth_token", newJString(oauthToken))
-  add(query_580037, "userIp", newJString(userIp))
-  add(path_580036, "id", newJInt(id))
-  add(query_580037, "key", newJString(key))
+  add(query_589066, "oauth_token", newJString(oauthToken))
+  add(query_589066, "userIp", newJString(userIp))
+  add(path_589065, "id", newJInt(id))
+  add(query_589066, "key", newJString(key))
   if body != nil:
-    body_580038 = body
-  add(query_580037, "prettyPrint", newJBool(prettyPrint))
-  result = call_580035.call(path_580036, query_580037, nil, nil, body_580038)
+    body_589067 = body
+  add(query_589066, "prettyPrint", newJBool(prettyPrint))
+  result = call_589064.call(path_589065, query_589066, nil, nil, body_589067)
 
-var adexchangebuyerAccountsPatch* = Call_AdexchangebuyerAccountsPatch_580021(
+var adexchangebuyerAccountsPatch* = Call_AdexchangebuyerAccountsPatch_589050(
     name: "adexchangebuyerAccountsPatch", meth: HttpMethod.HttpPatch,
     host: "www.googleapis.com", route: "/accounts/{id}",
-    validator: validate_AdexchangebuyerAccountsPatch_580022,
-    base: "/adexchangebuyer/v1.4", url: url_AdexchangebuyerAccountsPatch_580023,
+    validator: validate_AdexchangebuyerAccountsPatch_589051,
+    base: "/adexchangebuyer/v1.4", url: url_AdexchangebuyerAccountsPatch_589052,
     schemes: {Scheme.Https})
 type
-  Call_AdexchangebuyerBillingInfoList_580039 = ref object of OpenApiRestCall_579437
-proc url_AdexchangebuyerBillingInfoList_580041(protocol: Scheme; host: string;
+  Call_AdexchangebuyerBillingInfoList_589068 = ref object of OpenApiRestCall_588466
+proc url_AdexchangebuyerBillingInfoList_589070(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
   result.query = $composeQueryString(query)
   result.path = base & route
 
-proc validate_AdexchangebuyerBillingInfoList_580040(path: JsonNode;
+proc validate_AdexchangebuyerBillingInfoList_589069(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Retrieves a list of billing information for all accounts of the authenticated user.
   ## 
@@ -736,41 +736,41 @@ proc validate_AdexchangebuyerBillingInfoList_580040(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580042 = query.getOrDefault("fields")
-  valid_580042 = validateParameter(valid_580042, JString, required = false,
+  var valid_589071 = query.getOrDefault("fields")
+  valid_589071 = validateParameter(valid_589071, JString, required = false,
                                  default = nil)
-  if valid_580042 != nil:
-    section.add "fields", valid_580042
-  var valid_580043 = query.getOrDefault("quotaUser")
-  valid_580043 = validateParameter(valid_580043, JString, required = false,
+  if valid_589071 != nil:
+    section.add "fields", valid_589071
+  var valid_589072 = query.getOrDefault("quotaUser")
+  valid_589072 = validateParameter(valid_589072, JString, required = false,
                                  default = nil)
-  if valid_580043 != nil:
-    section.add "quotaUser", valid_580043
-  var valid_580044 = query.getOrDefault("alt")
-  valid_580044 = validateParameter(valid_580044, JString, required = false,
+  if valid_589072 != nil:
+    section.add "quotaUser", valid_589072
+  var valid_589073 = query.getOrDefault("alt")
+  valid_589073 = validateParameter(valid_589073, JString, required = false,
                                  default = newJString("json"))
-  if valid_580044 != nil:
-    section.add "alt", valid_580044
-  var valid_580045 = query.getOrDefault("oauth_token")
-  valid_580045 = validateParameter(valid_580045, JString, required = false,
+  if valid_589073 != nil:
+    section.add "alt", valid_589073
+  var valid_589074 = query.getOrDefault("oauth_token")
+  valid_589074 = validateParameter(valid_589074, JString, required = false,
                                  default = nil)
-  if valid_580045 != nil:
-    section.add "oauth_token", valid_580045
-  var valid_580046 = query.getOrDefault("userIp")
-  valid_580046 = validateParameter(valid_580046, JString, required = false,
+  if valid_589074 != nil:
+    section.add "oauth_token", valid_589074
+  var valid_589075 = query.getOrDefault("userIp")
+  valid_589075 = validateParameter(valid_589075, JString, required = false,
                                  default = nil)
-  if valid_580046 != nil:
-    section.add "userIp", valid_580046
-  var valid_580047 = query.getOrDefault("key")
-  valid_580047 = validateParameter(valid_580047, JString, required = false,
+  if valid_589075 != nil:
+    section.add "userIp", valid_589075
+  var valid_589076 = query.getOrDefault("key")
+  valid_589076 = validateParameter(valid_589076, JString, required = false,
                                  default = nil)
-  if valid_580047 != nil:
-    section.add "key", valid_580047
-  var valid_580048 = query.getOrDefault("prettyPrint")
-  valid_580048 = validateParameter(valid_580048, JBool, required = false,
+  if valid_589076 != nil:
+    section.add "key", valid_589076
+  var valid_589077 = query.getOrDefault("prettyPrint")
+  valid_589077 = validateParameter(valid_589077, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580048 != nil:
-    section.add "prettyPrint", valid_580048
+  if valid_589077 != nil:
+    section.add "prettyPrint", valid_589077
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -779,20 +779,20 @@ proc validate_AdexchangebuyerBillingInfoList_580040(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580049: Call_AdexchangebuyerBillingInfoList_580039; path: JsonNode;
+proc call*(call_589078: Call_AdexchangebuyerBillingInfoList_589068; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Retrieves a list of billing information for all accounts of the authenticated user.
   ## 
-  let valid = call_580049.validator(path, query, header, formData, body)
-  let scheme = call_580049.pickScheme
+  let valid = call_589078.validator(path, query, header, formData, body)
+  let scheme = call_589078.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580049.url(scheme.get, call_580049.host, call_580049.base,
-                         call_580049.route, valid.getOrDefault("path"),
+  let url = call_589078.url(scheme.get, call_589078.host, call_589078.base,
+                         call_589078.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580049, url, valid)
+  result = hook(call_589078, url, valid)
 
-proc call*(call_580050: Call_AdexchangebuyerBillingInfoList_580039;
+proc call*(call_589079: Call_AdexchangebuyerBillingInfoList_589068;
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           oauthToken: string = ""; userIp: string = ""; key: string = "";
           prettyPrint: bool = true): Recallable =
@@ -812,25 +812,25 @@ proc call*(call_580050: Call_AdexchangebuyerBillingInfoList_580039;
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var query_580051 = newJObject()
-  add(query_580051, "fields", newJString(fields))
-  add(query_580051, "quotaUser", newJString(quotaUser))
-  add(query_580051, "alt", newJString(alt))
-  add(query_580051, "oauth_token", newJString(oauthToken))
-  add(query_580051, "userIp", newJString(userIp))
-  add(query_580051, "key", newJString(key))
-  add(query_580051, "prettyPrint", newJBool(prettyPrint))
-  result = call_580050.call(nil, query_580051, nil, nil, nil)
+  var query_589080 = newJObject()
+  add(query_589080, "fields", newJString(fields))
+  add(query_589080, "quotaUser", newJString(quotaUser))
+  add(query_589080, "alt", newJString(alt))
+  add(query_589080, "oauth_token", newJString(oauthToken))
+  add(query_589080, "userIp", newJString(userIp))
+  add(query_589080, "key", newJString(key))
+  add(query_589080, "prettyPrint", newJBool(prettyPrint))
+  result = call_589079.call(nil, query_589080, nil, nil, nil)
 
-var adexchangebuyerBillingInfoList* = Call_AdexchangebuyerBillingInfoList_580039(
+var adexchangebuyerBillingInfoList* = Call_AdexchangebuyerBillingInfoList_589068(
     name: "adexchangebuyerBillingInfoList", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/billinginfo",
-    validator: validate_AdexchangebuyerBillingInfoList_580040,
-    base: "/adexchangebuyer/v1.4", url: url_AdexchangebuyerBillingInfoList_580041,
+    validator: validate_AdexchangebuyerBillingInfoList_589069,
+    base: "/adexchangebuyer/v1.4", url: url_AdexchangebuyerBillingInfoList_589070,
     schemes: {Scheme.Https})
 type
-  Call_AdexchangebuyerBillingInfoGet_580052 = ref object of OpenApiRestCall_579437
-proc url_AdexchangebuyerBillingInfoGet_580054(protocol: Scheme; host: string;
+  Call_AdexchangebuyerBillingInfoGet_589081 = ref object of OpenApiRestCall_588466
+proc url_AdexchangebuyerBillingInfoGet_589083(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -845,7 +845,7 @@ proc url_AdexchangebuyerBillingInfoGet_580054(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_AdexchangebuyerBillingInfoGet_580053(path: JsonNode; query: JsonNode;
+proc validate_AdexchangebuyerBillingInfoGet_589082(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Returns the billing information for one account specified by account ID.
   ## 
@@ -856,10 +856,10 @@ proc validate_AdexchangebuyerBillingInfoGet_580053(path: JsonNode; query: JsonNo
   ##            : The account id.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `accountId` field"
-  var valid_580055 = path.getOrDefault("accountId")
-  valid_580055 = validateParameter(valid_580055, JInt, required = true, default = nil)
-  if valid_580055 != nil:
-    section.add "accountId", valid_580055
+  var valid_589084 = path.getOrDefault("accountId")
+  valid_589084 = validateParameter(valid_589084, JInt, required = true, default = nil)
+  if valid_589084 != nil:
+    section.add "accountId", valid_589084
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -877,41 +877,41 @@ proc validate_AdexchangebuyerBillingInfoGet_580053(path: JsonNode; query: JsonNo
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580056 = query.getOrDefault("fields")
-  valid_580056 = validateParameter(valid_580056, JString, required = false,
+  var valid_589085 = query.getOrDefault("fields")
+  valid_589085 = validateParameter(valid_589085, JString, required = false,
                                  default = nil)
-  if valid_580056 != nil:
-    section.add "fields", valid_580056
-  var valid_580057 = query.getOrDefault("quotaUser")
-  valid_580057 = validateParameter(valid_580057, JString, required = false,
+  if valid_589085 != nil:
+    section.add "fields", valid_589085
+  var valid_589086 = query.getOrDefault("quotaUser")
+  valid_589086 = validateParameter(valid_589086, JString, required = false,
                                  default = nil)
-  if valid_580057 != nil:
-    section.add "quotaUser", valid_580057
-  var valid_580058 = query.getOrDefault("alt")
-  valid_580058 = validateParameter(valid_580058, JString, required = false,
+  if valid_589086 != nil:
+    section.add "quotaUser", valid_589086
+  var valid_589087 = query.getOrDefault("alt")
+  valid_589087 = validateParameter(valid_589087, JString, required = false,
                                  default = newJString("json"))
-  if valid_580058 != nil:
-    section.add "alt", valid_580058
-  var valid_580059 = query.getOrDefault("oauth_token")
-  valid_580059 = validateParameter(valid_580059, JString, required = false,
+  if valid_589087 != nil:
+    section.add "alt", valid_589087
+  var valid_589088 = query.getOrDefault("oauth_token")
+  valid_589088 = validateParameter(valid_589088, JString, required = false,
                                  default = nil)
-  if valid_580059 != nil:
-    section.add "oauth_token", valid_580059
-  var valid_580060 = query.getOrDefault("userIp")
-  valid_580060 = validateParameter(valid_580060, JString, required = false,
+  if valid_589088 != nil:
+    section.add "oauth_token", valid_589088
+  var valid_589089 = query.getOrDefault("userIp")
+  valid_589089 = validateParameter(valid_589089, JString, required = false,
                                  default = nil)
-  if valid_580060 != nil:
-    section.add "userIp", valid_580060
-  var valid_580061 = query.getOrDefault("key")
-  valid_580061 = validateParameter(valid_580061, JString, required = false,
+  if valid_589089 != nil:
+    section.add "userIp", valid_589089
+  var valid_589090 = query.getOrDefault("key")
+  valid_589090 = validateParameter(valid_589090, JString, required = false,
                                  default = nil)
-  if valid_580061 != nil:
-    section.add "key", valid_580061
-  var valid_580062 = query.getOrDefault("prettyPrint")
-  valid_580062 = validateParameter(valid_580062, JBool, required = false,
+  if valid_589090 != nil:
+    section.add "key", valid_589090
+  var valid_589091 = query.getOrDefault("prettyPrint")
+  valid_589091 = validateParameter(valid_589091, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580062 != nil:
-    section.add "prettyPrint", valid_580062
+  if valid_589091 != nil:
+    section.add "prettyPrint", valid_589091
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -920,20 +920,20 @@ proc validate_AdexchangebuyerBillingInfoGet_580053(path: JsonNode; query: JsonNo
   if body != nil:
     result.add "body", body
 
-proc call*(call_580063: Call_AdexchangebuyerBillingInfoGet_580052; path: JsonNode;
+proc call*(call_589092: Call_AdexchangebuyerBillingInfoGet_589081; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Returns the billing information for one account specified by account ID.
   ## 
-  let valid = call_580063.validator(path, query, header, formData, body)
-  let scheme = call_580063.pickScheme
+  let valid = call_589092.validator(path, query, header, formData, body)
+  let scheme = call_589092.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580063.url(scheme.get, call_580063.host, call_580063.base,
-                         call_580063.route, valid.getOrDefault("path"),
+  let url = call_589092.url(scheme.get, call_589092.host, call_589092.base,
+                         call_589092.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580063, url, valid)
+  result = hook(call_589092, url, valid)
 
-proc call*(call_580064: Call_AdexchangebuyerBillingInfoGet_580052; accountId: int;
+proc call*(call_589093: Call_AdexchangebuyerBillingInfoGet_589081; accountId: int;
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           oauthToken: string = ""; userIp: string = ""; key: string = "";
           prettyPrint: bool = true): Recallable =
@@ -955,27 +955,27 @@ proc call*(call_580064: Call_AdexchangebuyerBillingInfoGet_580052; accountId: in
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_580065 = newJObject()
-  var query_580066 = newJObject()
-  add(query_580066, "fields", newJString(fields))
-  add(query_580066, "quotaUser", newJString(quotaUser))
-  add(query_580066, "alt", newJString(alt))
-  add(query_580066, "oauth_token", newJString(oauthToken))
-  add(path_580065, "accountId", newJInt(accountId))
-  add(query_580066, "userIp", newJString(userIp))
-  add(query_580066, "key", newJString(key))
-  add(query_580066, "prettyPrint", newJBool(prettyPrint))
-  result = call_580064.call(path_580065, query_580066, nil, nil, nil)
+  var path_589094 = newJObject()
+  var query_589095 = newJObject()
+  add(query_589095, "fields", newJString(fields))
+  add(query_589095, "quotaUser", newJString(quotaUser))
+  add(query_589095, "alt", newJString(alt))
+  add(query_589095, "oauth_token", newJString(oauthToken))
+  add(path_589094, "accountId", newJInt(accountId))
+  add(query_589095, "userIp", newJString(userIp))
+  add(query_589095, "key", newJString(key))
+  add(query_589095, "prettyPrint", newJBool(prettyPrint))
+  result = call_589093.call(path_589094, query_589095, nil, nil, nil)
 
-var adexchangebuyerBillingInfoGet* = Call_AdexchangebuyerBillingInfoGet_580052(
+var adexchangebuyerBillingInfoGet* = Call_AdexchangebuyerBillingInfoGet_589081(
     name: "adexchangebuyerBillingInfoGet", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/billinginfo/{accountId}",
-    validator: validate_AdexchangebuyerBillingInfoGet_580053,
-    base: "/adexchangebuyer/v1.4", url: url_AdexchangebuyerBillingInfoGet_580054,
+    validator: validate_AdexchangebuyerBillingInfoGet_589082,
+    base: "/adexchangebuyer/v1.4", url: url_AdexchangebuyerBillingInfoGet_589083,
     schemes: {Scheme.Https})
 type
-  Call_AdexchangebuyerBudgetUpdate_580083 = ref object of OpenApiRestCall_579437
-proc url_AdexchangebuyerBudgetUpdate_580085(protocol: Scheme; host: string;
+  Call_AdexchangebuyerBudgetUpdate_589112 = ref object of OpenApiRestCall_588466
+proc url_AdexchangebuyerBudgetUpdate_589114(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -993,7 +993,7 @@ proc url_AdexchangebuyerBudgetUpdate_580085(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_AdexchangebuyerBudgetUpdate_580084(path: JsonNode; query: JsonNode;
+proc validate_AdexchangebuyerBudgetUpdate_589113(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Updates the budget amount for the budget of the adgroup specified by the accountId and billingId, with the budget amount in the request.
   ## 
@@ -1006,16 +1006,16 @@ proc validate_AdexchangebuyerBudgetUpdate_580084(path: JsonNode; query: JsonNode
   ##            : The account id associated with the budget being updated.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `billingId` field"
-  var valid_580086 = path.getOrDefault("billingId")
-  valid_580086 = validateParameter(valid_580086, JString, required = true,
+  var valid_589115 = path.getOrDefault("billingId")
+  valid_589115 = validateParameter(valid_589115, JString, required = true,
                                  default = nil)
-  if valid_580086 != nil:
-    section.add "billingId", valid_580086
-  var valid_580087 = path.getOrDefault("accountId")
-  valid_580087 = validateParameter(valid_580087, JString, required = true,
+  if valid_589115 != nil:
+    section.add "billingId", valid_589115
+  var valid_589116 = path.getOrDefault("accountId")
+  valid_589116 = validateParameter(valid_589116, JString, required = true,
                                  default = nil)
-  if valid_580087 != nil:
-    section.add "accountId", valid_580087
+  if valid_589116 != nil:
+    section.add "accountId", valid_589116
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -1033,41 +1033,41 @@ proc validate_AdexchangebuyerBudgetUpdate_580084(path: JsonNode; query: JsonNode
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580088 = query.getOrDefault("fields")
-  valid_580088 = validateParameter(valid_580088, JString, required = false,
+  var valid_589117 = query.getOrDefault("fields")
+  valid_589117 = validateParameter(valid_589117, JString, required = false,
                                  default = nil)
-  if valid_580088 != nil:
-    section.add "fields", valid_580088
-  var valid_580089 = query.getOrDefault("quotaUser")
-  valid_580089 = validateParameter(valid_580089, JString, required = false,
+  if valid_589117 != nil:
+    section.add "fields", valid_589117
+  var valid_589118 = query.getOrDefault("quotaUser")
+  valid_589118 = validateParameter(valid_589118, JString, required = false,
                                  default = nil)
-  if valid_580089 != nil:
-    section.add "quotaUser", valid_580089
-  var valid_580090 = query.getOrDefault("alt")
-  valid_580090 = validateParameter(valid_580090, JString, required = false,
+  if valid_589118 != nil:
+    section.add "quotaUser", valid_589118
+  var valid_589119 = query.getOrDefault("alt")
+  valid_589119 = validateParameter(valid_589119, JString, required = false,
                                  default = newJString("json"))
-  if valid_580090 != nil:
-    section.add "alt", valid_580090
-  var valid_580091 = query.getOrDefault("oauth_token")
-  valid_580091 = validateParameter(valid_580091, JString, required = false,
+  if valid_589119 != nil:
+    section.add "alt", valid_589119
+  var valid_589120 = query.getOrDefault("oauth_token")
+  valid_589120 = validateParameter(valid_589120, JString, required = false,
                                  default = nil)
-  if valid_580091 != nil:
-    section.add "oauth_token", valid_580091
-  var valid_580092 = query.getOrDefault("userIp")
-  valid_580092 = validateParameter(valid_580092, JString, required = false,
+  if valid_589120 != nil:
+    section.add "oauth_token", valid_589120
+  var valid_589121 = query.getOrDefault("userIp")
+  valid_589121 = validateParameter(valid_589121, JString, required = false,
                                  default = nil)
-  if valid_580092 != nil:
-    section.add "userIp", valid_580092
-  var valid_580093 = query.getOrDefault("key")
-  valid_580093 = validateParameter(valid_580093, JString, required = false,
+  if valid_589121 != nil:
+    section.add "userIp", valid_589121
+  var valid_589122 = query.getOrDefault("key")
+  valid_589122 = validateParameter(valid_589122, JString, required = false,
                                  default = nil)
-  if valid_580093 != nil:
-    section.add "key", valid_580093
-  var valid_580094 = query.getOrDefault("prettyPrint")
-  valid_580094 = validateParameter(valid_580094, JBool, required = false,
+  if valid_589122 != nil:
+    section.add "key", valid_589122
+  var valid_589123 = query.getOrDefault("prettyPrint")
+  valid_589123 = validateParameter(valid_589123, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580094 != nil:
-    section.add "prettyPrint", valid_580094
+  if valid_589123 != nil:
+    section.add "prettyPrint", valid_589123
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1079,20 +1079,20 @@ proc validate_AdexchangebuyerBudgetUpdate_580084(path: JsonNode; query: JsonNode
   if body != nil:
     result.add "body", body
 
-proc call*(call_580096: Call_AdexchangebuyerBudgetUpdate_580083; path: JsonNode;
+proc call*(call_589125: Call_AdexchangebuyerBudgetUpdate_589112; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Updates the budget amount for the budget of the adgroup specified by the accountId and billingId, with the budget amount in the request.
   ## 
-  let valid = call_580096.validator(path, query, header, formData, body)
-  let scheme = call_580096.pickScheme
+  let valid = call_589125.validator(path, query, header, formData, body)
+  let scheme = call_589125.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580096.url(scheme.get, call_580096.host, call_580096.base,
-                         call_580096.route, valid.getOrDefault("path"),
+  let url = call_589125.url(scheme.get, call_589125.host, call_589125.base,
+                         call_589125.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580096, url, valid)
+  result = hook(call_589125, url, valid)
 
-proc call*(call_580097: Call_AdexchangebuyerBudgetUpdate_580083; billingId: string;
+proc call*(call_589126: Call_AdexchangebuyerBudgetUpdate_589112; billingId: string;
           accountId: string; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; userIp: string = "";
           key: string = ""; body: JsonNode = nil; prettyPrint: bool = true): Recallable =
@@ -1117,31 +1117,31 @@ proc call*(call_580097: Call_AdexchangebuyerBudgetUpdate_580083; billingId: stri
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_580098 = newJObject()
-  var query_580099 = newJObject()
-  var body_580100 = newJObject()
-  add(query_580099, "fields", newJString(fields))
-  add(query_580099, "quotaUser", newJString(quotaUser))
-  add(path_580098, "billingId", newJString(billingId))
-  add(query_580099, "alt", newJString(alt))
-  add(query_580099, "oauth_token", newJString(oauthToken))
-  add(path_580098, "accountId", newJString(accountId))
-  add(query_580099, "userIp", newJString(userIp))
-  add(query_580099, "key", newJString(key))
+  var path_589127 = newJObject()
+  var query_589128 = newJObject()
+  var body_589129 = newJObject()
+  add(query_589128, "fields", newJString(fields))
+  add(query_589128, "quotaUser", newJString(quotaUser))
+  add(path_589127, "billingId", newJString(billingId))
+  add(query_589128, "alt", newJString(alt))
+  add(query_589128, "oauth_token", newJString(oauthToken))
+  add(path_589127, "accountId", newJString(accountId))
+  add(query_589128, "userIp", newJString(userIp))
+  add(query_589128, "key", newJString(key))
   if body != nil:
-    body_580100 = body
-  add(query_580099, "prettyPrint", newJBool(prettyPrint))
-  result = call_580097.call(path_580098, query_580099, nil, nil, body_580100)
+    body_589129 = body
+  add(query_589128, "prettyPrint", newJBool(prettyPrint))
+  result = call_589126.call(path_589127, query_589128, nil, nil, body_589129)
 
-var adexchangebuyerBudgetUpdate* = Call_AdexchangebuyerBudgetUpdate_580083(
+var adexchangebuyerBudgetUpdate* = Call_AdexchangebuyerBudgetUpdate_589112(
     name: "adexchangebuyerBudgetUpdate", meth: HttpMethod.HttpPut,
     host: "www.googleapis.com", route: "/billinginfo/{accountId}/{billingId}",
-    validator: validate_AdexchangebuyerBudgetUpdate_580084,
-    base: "/adexchangebuyer/v1.4", url: url_AdexchangebuyerBudgetUpdate_580085,
+    validator: validate_AdexchangebuyerBudgetUpdate_589113,
+    base: "/adexchangebuyer/v1.4", url: url_AdexchangebuyerBudgetUpdate_589114,
     schemes: {Scheme.Https})
 type
-  Call_AdexchangebuyerBudgetGet_580067 = ref object of OpenApiRestCall_579437
-proc url_AdexchangebuyerBudgetGet_580069(protocol: Scheme; host: string;
+  Call_AdexchangebuyerBudgetGet_589096 = ref object of OpenApiRestCall_588466
+proc url_AdexchangebuyerBudgetGet_589098(protocol: Scheme; host: string;
                                         base: string; route: string; path: JsonNode;
                                         query: JsonNode): Uri =
   result.scheme = $protocol
@@ -1160,7 +1160,7 @@ proc url_AdexchangebuyerBudgetGet_580069(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_AdexchangebuyerBudgetGet_580068(path: JsonNode; query: JsonNode;
+proc validate_AdexchangebuyerBudgetGet_589097(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Returns the budget information for the adgroup specified by the accountId and billingId.
   ## 
@@ -1173,16 +1173,16 @@ proc validate_AdexchangebuyerBudgetGet_580068(path: JsonNode; query: JsonNode;
   ##            : The account id to get the budget information for.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `billingId` field"
-  var valid_580070 = path.getOrDefault("billingId")
-  valid_580070 = validateParameter(valid_580070, JString, required = true,
+  var valid_589099 = path.getOrDefault("billingId")
+  valid_589099 = validateParameter(valid_589099, JString, required = true,
                                  default = nil)
-  if valid_580070 != nil:
-    section.add "billingId", valid_580070
-  var valid_580071 = path.getOrDefault("accountId")
-  valid_580071 = validateParameter(valid_580071, JString, required = true,
+  if valid_589099 != nil:
+    section.add "billingId", valid_589099
+  var valid_589100 = path.getOrDefault("accountId")
+  valid_589100 = validateParameter(valid_589100, JString, required = true,
                                  default = nil)
-  if valid_580071 != nil:
-    section.add "accountId", valid_580071
+  if valid_589100 != nil:
+    section.add "accountId", valid_589100
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -1200,41 +1200,41 @@ proc validate_AdexchangebuyerBudgetGet_580068(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580072 = query.getOrDefault("fields")
-  valid_580072 = validateParameter(valid_580072, JString, required = false,
+  var valid_589101 = query.getOrDefault("fields")
+  valid_589101 = validateParameter(valid_589101, JString, required = false,
                                  default = nil)
-  if valid_580072 != nil:
-    section.add "fields", valid_580072
-  var valid_580073 = query.getOrDefault("quotaUser")
-  valid_580073 = validateParameter(valid_580073, JString, required = false,
+  if valid_589101 != nil:
+    section.add "fields", valid_589101
+  var valid_589102 = query.getOrDefault("quotaUser")
+  valid_589102 = validateParameter(valid_589102, JString, required = false,
                                  default = nil)
-  if valid_580073 != nil:
-    section.add "quotaUser", valid_580073
-  var valid_580074 = query.getOrDefault("alt")
-  valid_580074 = validateParameter(valid_580074, JString, required = false,
+  if valid_589102 != nil:
+    section.add "quotaUser", valid_589102
+  var valid_589103 = query.getOrDefault("alt")
+  valid_589103 = validateParameter(valid_589103, JString, required = false,
                                  default = newJString("json"))
-  if valid_580074 != nil:
-    section.add "alt", valid_580074
-  var valid_580075 = query.getOrDefault("oauth_token")
-  valid_580075 = validateParameter(valid_580075, JString, required = false,
+  if valid_589103 != nil:
+    section.add "alt", valid_589103
+  var valid_589104 = query.getOrDefault("oauth_token")
+  valid_589104 = validateParameter(valid_589104, JString, required = false,
                                  default = nil)
-  if valid_580075 != nil:
-    section.add "oauth_token", valid_580075
-  var valid_580076 = query.getOrDefault("userIp")
-  valid_580076 = validateParameter(valid_580076, JString, required = false,
+  if valid_589104 != nil:
+    section.add "oauth_token", valid_589104
+  var valid_589105 = query.getOrDefault("userIp")
+  valid_589105 = validateParameter(valid_589105, JString, required = false,
                                  default = nil)
-  if valid_580076 != nil:
-    section.add "userIp", valid_580076
-  var valid_580077 = query.getOrDefault("key")
-  valid_580077 = validateParameter(valid_580077, JString, required = false,
+  if valid_589105 != nil:
+    section.add "userIp", valid_589105
+  var valid_589106 = query.getOrDefault("key")
+  valid_589106 = validateParameter(valid_589106, JString, required = false,
                                  default = nil)
-  if valid_580077 != nil:
-    section.add "key", valid_580077
-  var valid_580078 = query.getOrDefault("prettyPrint")
-  valid_580078 = validateParameter(valid_580078, JBool, required = false,
+  if valid_589106 != nil:
+    section.add "key", valid_589106
+  var valid_589107 = query.getOrDefault("prettyPrint")
+  valid_589107 = validateParameter(valid_589107, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580078 != nil:
-    section.add "prettyPrint", valid_580078
+  if valid_589107 != nil:
+    section.add "prettyPrint", valid_589107
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1243,20 +1243,20 @@ proc validate_AdexchangebuyerBudgetGet_580068(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580079: Call_AdexchangebuyerBudgetGet_580067; path: JsonNode;
+proc call*(call_589108: Call_AdexchangebuyerBudgetGet_589096; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Returns the budget information for the adgroup specified by the accountId and billingId.
   ## 
-  let valid = call_580079.validator(path, query, header, formData, body)
-  let scheme = call_580079.pickScheme
+  let valid = call_589108.validator(path, query, header, formData, body)
+  let scheme = call_589108.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580079.url(scheme.get, call_580079.host, call_580079.base,
-                         call_580079.route, valid.getOrDefault("path"),
+  let url = call_589108.url(scheme.get, call_589108.host, call_589108.base,
+                         call_589108.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580079, url, valid)
+  result = hook(call_589108, url, valid)
 
-proc call*(call_580080: Call_AdexchangebuyerBudgetGet_580067; billingId: string;
+proc call*(call_589109: Call_AdexchangebuyerBudgetGet_589096; billingId: string;
           accountId: string; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; userIp: string = "";
           key: string = ""; prettyPrint: bool = true): Recallable =
@@ -1280,28 +1280,28 @@ proc call*(call_580080: Call_AdexchangebuyerBudgetGet_580067; billingId: string;
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_580081 = newJObject()
-  var query_580082 = newJObject()
-  add(query_580082, "fields", newJString(fields))
-  add(query_580082, "quotaUser", newJString(quotaUser))
-  add(path_580081, "billingId", newJString(billingId))
-  add(query_580082, "alt", newJString(alt))
-  add(query_580082, "oauth_token", newJString(oauthToken))
-  add(path_580081, "accountId", newJString(accountId))
-  add(query_580082, "userIp", newJString(userIp))
-  add(query_580082, "key", newJString(key))
-  add(query_580082, "prettyPrint", newJBool(prettyPrint))
-  result = call_580080.call(path_580081, query_580082, nil, nil, nil)
+  var path_589110 = newJObject()
+  var query_589111 = newJObject()
+  add(query_589111, "fields", newJString(fields))
+  add(query_589111, "quotaUser", newJString(quotaUser))
+  add(path_589110, "billingId", newJString(billingId))
+  add(query_589111, "alt", newJString(alt))
+  add(query_589111, "oauth_token", newJString(oauthToken))
+  add(path_589110, "accountId", newJString(accountId))
+  add(query_589111, "userIp", newJString(userIp))
+  add(query_589111, "key", newJString(key))
+  add(query_589111, "prettyPrint", newJBool(prettyPrint))
+  result = call_589109.call(path_589110, query_589111, nil, nil, nil)
 
-var adexchangebuyerBudgetGet* = Call_AdexchangebuyerBudgetGet_580067(
+var adexchangebuyerBudgetGet* = Call_AdexchangebuyerBudgetGet_589096(
     name: "adexchangebuyerBudgetGet", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/billinginfo/{accountId}/{billingId}",
-    validator: validate_AdexchangebuyerBudgetGet_580068,
-    base: "/adexchangebuyer/v1.4", url: url_AdexchangebuyerBudgetGet_580069,
+    validator: validate_AdexchangebuyerBudgetGet_589097,
+    base: "/adexchangebuyer/v1.4", url: url_AdexchangebuyerBudgetGet_589098,
     schemes: {Scheme.Https})
 type
-  Call_AdexchangebuyerBudgetPatch_580101 = ref object of OpenApiRestCall_579437
-proc url_AdexchangebuyerBudgetPatch_580103(protocol: Scheme; host: string;
+  Call_AdexchangebuyerBudgetPatch_589130 = ref object of OpenApiRestCall_588466
+proc url_AdexchangebuyerBudgetPatch_589132(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -1319,7 +1319,7 @@ proc url_AdexchangebuyerBudgetPatch_580103(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_AdexchangebuyerBudgetPatch_580102(path: JsonNode; query: JsonNode;
+proc validate_AdexchangebuyerBudgetPatch_589131(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Updates the budget amount for the budget of the adgroup specified by the accountId and billingId, with the budget amount in the request. This method supports patch semantics.
   ## 
@@ -1332,16 +1332,16 @@ proc validate_AdexchangebuyerBudgetPatch_580102(path: JsonNode; query: JsonNode;
   ##            : The account id associated with the budget being updated.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `billingId` field"
-  var valid_580104 = path.getOrDefault("billingId")
-  valid_580104 = validateParameter(valid_580104, JString, required = true,
+  var valid_589133 = path.getOrDefault("billingId")
+  valid_589133 = validateParameter(valid_589133, JString, required = true,
                                  default = nil)
-  if valid_580104 != nil:
-    section.add "billingId", valid_580104
-  var valid_580105 = path.getOrDefault("accountId")
-  valid_580105 = validateParameter(valid_580105, JString, required = true,
+  if valid_589133 != nil:
+    section.add "billingId", valid_589133
+  var valid_589134 = path.getOrDefault("accountId")
+  valid_589134 = validateParameter(valid_589134, JString, required = true,
                                  default = nil)
-  if valid_580105 != nil:
-    section.add "accountId", valid_580105
+  if valid_589134 != nil:
+    section.add "accountId", valid_589134
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -1359,41 +1359,41 @@ proc validate_AdexchangebuyerBudgetPatch_580102(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580106 = query.getOrDefault("fields")
-  valid_580106 = validateParameter(valid_580106, JString, required = false,
+  var valid_589135 = query.getOrDefault("fields")
+  valid_589135 = validateParameter(valid_589135, JString, required = false,
                                  default = nil)
-  if valid_580106 != nil:
-    section.add "fields", valid_580106
-  var valid_580107 = query.getOrDefault("quotaUser")
-  valid_580107 = validateParameter(valid_580107, JString, required = false,
+  if valid_589135 != nil:
+    section.add "fields", valid_589135
+  var valid_589136 = query.getOrDefault("quotaUser")
+  valid_589136 = validateParameter(valid_589136, JString, required = false,
                                  default = nil)
-  if valid_580107 != nil:
-    section.add "quotaUser", valid_580107
-  var valid_580108 = query.getOrDefault("alt")
-  valid_580108 = validateParameter(valid_580108, JString, required = false,
+  if valid_589136 != nil:
+    section.add "quotaUser", valid_589136
+  var valid_589137 = query.getOrDefault("alt")
+  valid_589137 = validateParameter(valid_589137, JString, required = false,
                                  default = newJString("json"))
-  if valid_580108 != nil:
-    section.add "alt", valid_580108
-  var valid_580109 = query.getOrDefault("oauth_token")
-  valid_580109 = validateParameter(valid_580109, JString, required = false,
+  if valid_589137 != nil:
+    section.add "alt", valid_589137
+  var valid_589138 = query.getOrDefault("oauth_token")
+  valid_589138 = validateParameter(valid_589138, JString, required = false,
                                  default = nil)
-  if valid_580109 != nil:
-    section.add "oauth_token", valid_580109
-  var valid_580110 = query.getOrDefault("userIp")
-  valid_580110 = validateParameter(valid_580110, JString, required = false,
+  if valid_589138 != nil:
+    section.add "oauth_token", valid_589138
+  var valid_589139 = query.getOrDefault("userIp")
+  valid_589139 = validateParameter(valid_589139, JString, required = false,
                                  default = nil)
-  if valid_580110 != nil:
-    section.add "userIp", valid_580110
-  var valid_580111 = query.getOrDefault("key")
-  valid_580111 = validateParameter(valid_580111, JString, required = false,
+  if valid_589139 != nil:
+    section.add "userIp", valid_589139
+  var valid_589140 = query.getOrDefault("key")
+  valid_589140 = validateParameter(valid_589140, JString, required = false,
                                  default = nil)
-  if valid_580111 != nil:
-    section.add "key", valid_580111
-  var valid_580112 = query.getOrDefault("prettyPrint")
-  valid_580112 = validateParameter(valid_580112, JBool, required = false,
+  if valid_589140 != nil:
+    section.add "key", valid_589140
+  var valid_589141 = query.getOrDefault("prettyPrint")
+  valid_589141 = validateParameter(valid_589141, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580112 != nil:
-    section.add "prettyPrint", valid_580112
+  if valid_589141 != nil:
+    section.add "prettyPrint", valid_589141
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1405,20 +1405,20 @@ proc validate_AdexchangebuyerBudgetPatch_580102(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580114: Call_AdexchangebuyerBudgetPatch_580101; path: JsonNode;
+proc call*(call_589143: Call_AdexchangebuyerBudgetPatch_589130; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Updates the budget amount for the budget of the adgroup specified by the accountId and billingId, with the budget amount in the request. This method supports patch semantics.
   ## 
-  let valid = call_580114.validator(path, query, header, formData, body)
-  let scheme = call_580114.pickScheme
+  let valid = call_589143.validator(path, query, header, formData, body)
+  let scheme = call_589143.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580114.url(scheme.get, call_580114.host, call_580114.base,
-                         call_580114.route, valid.getOrDefault("path"),
+  let url = call_589143.url(scheme.get, call_589143.host, call_589143.base,
+                         call_589143.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580114, url, valid)
+  result = hook(call_589143, url, valid)
 
-proc call*(call_580115: Call_AdexchangebuyerBudgetPatch_580101; billingId: string;
+proc call*(call_589144: Call_AdexchangebuyerBudgetPatch_589130; billingId: string;
           accountId: string; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; userIp: string = "";
           key: string = ""; body: JsonNode = nil; prettyPrint: bool = true): Recallable =
@@ -1443,38 +1443,38 @@ proc call*(call_580115: Call_AdexchangebuyerBudgetPatch_580101; billingId: strin
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_580116 = newJObject()
-  var query_580117 = newJObject()
-  var body_580118 = newJObject()
-  add(query_580117, "fields", newJString(fields))
-  add(query_580117, "quotaUser", newJString(quotaUser))
-  add(path_580116, "billingId", newJString(billingId))
-  add(query_580117, "alt", newJString(alt))
-  add(query_580117, "oauth_token", newJString(oauthToken))
-  add(path_580116, "accountId", newJString(accountId))
-  add(query_580117, "userIp", newJString(userIp))
-  add(query_580117, "key", newJString(key))
+  var path_589145 = newJObject()
+  var query_589146 = newJObject()
+  var body_589147 = newJObject()
+  add(query_589146, "fields", newJString(fields))
+  add(query_589146, "quotaUser", newJString(quotaUser))
+  add(path_589145, "billingId", newJString(billingId))
+  add(query_589146, "alt", newJString(alt))
+  add(query_589146, "oauth_token", newJString(oauthToken))
+  add(path_589145, "accountId", newJString(accountId))
+  add(query_589146, "userIp", newJString(userIp))
+  add(query_589146, "key", newJString(key))
   if body != nil:
-    body_580118 = body
-  add(query_580117, "prettyPrint", newJBool(prettyPrint))
-  result = call_580115.call(path_580116, query_580117, nil, nil, body_580118)
+    body_589147 = body
+  add(query_589146, "prettyPrint", newJBool(prettyPrint))
+  result = call_589144.call(path_589145, query_589146, nil, nil, body_589147)
 
-var adexchangebuyerBudgetPatch* = Call_AdexchangebuyerBudgetPatch_580101(
+var adexchangebuyerBudgetPatch* = Call_AdexchangebuyerBudgetPatch_589130(
     name: "adexchangebuyerBudgetPatch", meth: HttpMethod.HttpPatch,
     host: "www.googleapis.com", route: "/billinginfo/{accountId}/{billingId}",
-    validator: validate_AdexchangebuyerBudgetPatch_580102,
-    base: "/adexchangebuyer/v1.4", url: url_AdexchangebuyerBudgetPatch_580103,
+    validator: validate_AdexchangebuyerBudgetPatch_589131,
+    base: "/adexchangebuyer/v1.4", url: url_AdexchangebuyerBudgetPatch_589132,
     schemes: {Scheme.Https})
 type
-  Call_AdexchangebuyerCreativesInsert_580138 = ref object of OpenApiRestCall_579437
-proc url_AdexchangebuyerCreativesInsert_580140(protocol: Scheme; host: string;
+  Call_AdexchangebuyerCreativesInsert_589167 = ref object of OpenApiRestCall_588466
+proc url_AdexchangebuyerCreativesInsert_589169(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
   result.query = $composeQueryString(query)
   result.path = base & route
 
-proc validate_AdexchangebuyerCreativesInsert_580139(path: JsonNode;
+proc validate_AdexchangebuyerCreativesInsert_589168(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Submit a new creative.
   ## 
@@ -1498,41 +1498,41 @@ proc validate_AdexchangebuyerCreativesInsert_580139(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580141 = query.getOrDefault("fields")
-  valid_580141 = validateParameter(valid_580141, JString, required = false,
+  var valid_589170 = query.getOrDefault("fields")
+  valid_589170 = validateParameter(valid_589170, JString, required = false,
                                  default = nil)
-  if valid_580141 != nil:
-    section.add "fields", valid_580141
-  var valid_580142 = query.getOrDefault("quotaUser")
-  valid_580142 = validateParameter(valid_580142, JString, required = false,
+  if valid_589170 != nil:
+    section.add "fields", valid_589170
+  var valid_589171 = query.getOrDefault("quotaUser")
+  valid_589171 = validateParameter(valid_589171, JString, required = false,
                                  default = nil)
-  if valid_580142 != nil:
-    section.add "quotaUser", valid_580142
-  var valid_580143 = query.getOrDefault("alt")
-  valid_580143 = validateParameter(valid_580143, JString, required = false,
+  if valid_589171 != nil:
+    section.add "quotaUser", valid_589171
+  var valid_589172 = query.getOrDefault("alt")
+  valid_589172 = validateParameter(valid_589172, JString, required = false,
                                  default = newJString("json"))
-  if valid_580143 != nil:
-    section.add "alt", valid_580143
-  var valid_580144 = query.getOrDefault("oauth_token")
-  valid_580144 = validateParameter(valid_580144, JString, required = false,
+  if valid_589172 != nil:
+    section.add "alt", valid_589172
+  var valid_589173 = query.getOrDefault("oauth_token")
+  valid_589173 = validateParameter(valid_589173, JString, required = false,
                                  default = nil)
-  if valid_580144 != nil:
-    section.add "oauth_token", valid_580144
-  var valid_580145 = query.getOrDefault("userIp")
-  valid_580145 = validateParameter(valid_580145, JString, required = false,
+  if valid_589173 != nil:
+    section.add "oauth_token", valid_589173
+  var valid_589174 = query.getOrDefault("userIp")
+  valid_589174 = validateParameter(valid_589174, JString, required = false,
                                  default = nil)
-  if valid_580145 != nil:
-    section.add "userIp", valid_580145
-  var valid_580146 = query.getOrDefault("key")
-  valid_580146 = validateParameter(valid_580146, JString, required = false,
+  if valid_589174 != nil:
+    section.add "userIp", valid_589174
+  var valid_589175 = query.getOrDefault("key")
+  valid_589175 = validateParameter(valid_589175, JString, required = false,
                                  default = nil)
-  if valid_580146 != nil:
-    section.add "key", valid_580146
-  var valid_580147 = query.getOrDefault("prettyPrint")
-  valid_580147 = validateParameter(valid_580147, JBool, required = false,
+  if valid_589175 != nil:
+    section.add "key", valid_589175
+  var valid_589176 = query.getOrDefault("prettyPrint")
+  valid_589176 = validateParameter(valid_589176, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580147 != nil:
-    section.add "prettyPrint", valid_580147
+  if valid_589176 != nil:
+    section.add "prettyPrint", valid_589176
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1544,20 +1544,20 @@ proc validate_AdexchangebuyerCreativesInsert_580139(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580149: Call_AdexchangebuyerCreativesInsert_580138; path: JsonNode;
+proc call*(call_589178: Call_AdexchangebuyerCreativesInsert_589167; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Submit a new creative.
   ## 
-  let valid = call_580149.validator(path, query, header, formData, body)
-  let scheme = call_580149.pickScheme
+  let valid = call_589178.validator(path, query, header, formData, body)
+  let scheme = call_589178.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580149.url(scheme.get, call_580149.host, call_580149.base,
-                         call_580149.route, valid.getOrDefault("path"),
+  let url = call_589178.url(scheme.get, call_589178.host, call_589178.base,
+                         call_589178.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580149, url, valid)
+  result = hook(call_589178, url, valid)
 
-proc call*(call_580150: Call_AdexchangebuyerCreativesInsert_580138;
+proc call*(call_589179: Call_AdexchangebuyerCreativesInsert_589167;
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           oauthToken: string = ""; userIp: string = ""; key: string = "";
           body: JsonNode = nil; prettyPrint: bool = true): Recallable =
@@ -1578,35 +1578,35 @@ proc call*(call_580150: Call_AdexchangebuyerCreativesInsert_580138;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var query_580151 = newJObject()
-  var body_580152 = newJObject()
-  add(query_580151, "fields", newJString(fields))
-  add(query_580151, "quotaUser", newJString(quotaUser))
-  add(query_580151, "alt", newJString(alt))
-  add(query_580151, "oauth_token", newJString(oauthToken))
-  add(query_580151, "userIp", newJString(userIp))
-  add(query_580151, "key", newJString(key))
+  var query_589180 = newJObject()
+  var body_589181 = newJObject()
+  add(query_589180, "fields", newJString(fields))
+  add(query_589180, "quotaUser", newJString(quotaUser))
+  add(query_589180, "alt", newJString(alt))
+  add(query_589180, "oauth_token", newJString(oauthToken))
+  add(query_589180, "userIp", newJString(userIp))
+  add(query_589180, "key", newJString(key))
   if body != nil:
-    body_580152 = body
-  add(query_580151, "prettyPrint", newJBool(prettyPrint))
-  result = call_580150.call(nil, query_580151, nil, nil, body_580152)
+    body_589181 = body
+  add(query_589180, "prettyPrint", newJBool(prettyPrint))
+  result = call_589179.call(nil, query_589180, nil, nil, body_589181)
 
-var adexchangebuyerCreativesInsert* = Call_AdexchangebuyerCreativesInsert_580138(
+var adexchangebuyerCreativesInsert* = Call_AdexchangebuyerCreativesInsert_589167(
     name: "adexchangebuyerCreativesInsert", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com", route: "/creatives",
-    validator: validate_AdexchangebuyerCreativesInsert_580139,
-    base: "/adexchangebuyer/v1.4", url: url_AdexchangebuyerCreativesInsert_580140,
+    validator: validate_AdexchangebuyerCreativesInsert_589168,
+    base: "/adexchangebuyer/v1.4", url: url_AdexchangebuyerCreativesInsert_589169,
     schemes: {Scheme.Https})
 type
-  Call_AdexchangebuyerCreativesList_580119 = ref object of OpenApiRestCall_579437
-proc url_AdexchangebuyerCreativesList_580121(protocol: Scheme; host: string;
+  Call_AdexchangebuyerCreativesList_589148 = ref object of OpenApiRestCall_588466
+proc url_AdexchangebuyerCreativesList_589150(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
   result.query = $composeQueryString(query)
   result.path = base & route
 
-proc validate_AdexchangebuyerCreativesList_580120(path: JsonNode; query: JsonNode;
+proc validate_AdexchangebuyerCreativesList_589149(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Retrieves a list of the authenticated user's active creatives. A creative will be available 30-40 minutes after submission.
   ## 
@@ -1642,70 +1642,70 @@ proc validate_AdexchangebuyerCreativesList_580120(path: JsonNode; query: JsonNod
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580122 = query.getOrDefault("buyerCreativeId")
-  valid_580122 = validateParameter(valid_580122, JArray, required = false,
+  var valid_589151 = query.getOrDefault("buyerCreativeId")
+  valid_589151 = validateParameter(valid_589151, JArray, required = false,
                                  default = nil)
-  if valid_580122 != nil:
-    section.add "buyerCreativeId", valid_580122
-  var valid_580123 = query.getOrDefault("fields")
-  valid_580123 = validateParameter(valid_580123, JString, required = false,
+  if valid_589151 != nil:
+    section.add "buyerCreativeId", valid_589151
+  var valid_589152 = query.getOrDefault("fields")
+  valid_589152 = validateParameter(valid_589152, JString, required = false,
                                  default = nil)
-  if valid_580123 != nil:
-    section.add "fields", valid_580123
-  var valid_580124 = query.getOrDefault("pageToken")
-  valid_580124 = validateParameter(valid_580124, JString, required = false,
+  if valid_589152 != nil:
+    section.add "fields", valid_589152
+  var valid_589153 = query.getOrDefault("pageToken")
+  valid_589153 = validateParameter(valid_589153, JString, required = false,
                                  default = nil)
-  if valid_580124 != nil:
-    section.add "pageToken", valid_580124
-  var valid_580125 = query.getOrDefault("quotaUser")
-  valid_580125 = validateParameter(valid_580125, JString, required = false,
+  if valid_589153 != nil:
+    section.add "pageToken", valid_589153
+  var valid_589154 = query.getOrDefault("quotaUser")
+  valid_589154 = validateParameter(valid_589154, JString, required = false,
                                  default = nil)
-  if valid_580125 != nil:
-    section.add "quotaUser", valid_580125
-  var valid_580126 = query.getOrDefault("alt")
-  valid_580126 = validateParameter(valid_580126, JString, required = false,
+  if valid_589154 != nil:
+    section.add "quotaUser", valid_589154
+  var valid_589155 = query.getOrDefault("alt")
+  valid_589155 = validateParameter(valid_589155, JString, required = false,
                                  default = newJString("json"))
-  if valid_580126 != nil:
-    section.add "alt", valid_580126
-  var valid_580127 = query.getOrDefault("oauth_token")
-  valid_580127 = validateParameter(valid_580127, JString, required = false,
+  if valid_589155 != nil:
+    section.add "alt", valid_589155
+  var valid_589156 = query.getOrDefault("oauth_token")
+  valid_589156 = validateParameter(valid_589156, JString, required = false,
                                  default = nil)
-  if valid_580127 != nil:
-    section.add "oauth_token", valid_580127
-  var valid_580128 = query.getOrDefault("accountId")
-  valid_580128 = validateParameter(valid_580128, JArray, required = false,
+  if valid_589156 != nil:
+    section.add "oauth_token", valid_589156
+  var valid_589157 = query.getOrDefault("accountId")
+  valid_589157 = validateParameter(valid_589157, JArray, required = false,
                                  default = nil)
-  if valid_580128 != nil:
-    section.add "accountId", valid_580128
-  var valid_580129 = query.getOrDefault("userIp")
-  valid_580129 = validateParameter(valid_580129, JString, required = false,
+  if valid_589157 != nil:
+    section.add "accountId", valid_589157
+  var valid_589158 = query.getOrDefault("userIp")
+  valid_589158 = validateParameter(valid_589158, JString, required = false,
                                  default = nil)
-  if valid_580129 != nil:
-    section.add "userIp", valid_580129
-  var valid_580130 = query.getOrDefault("maxResults")
-  valid_580130 = validateParameter(valid_580130, JInt, required = false, default = nil)
-  if valid_580130 != nil:
-    section.add "maxResults", valid_580130
-  var valid_580131 = query.getOrDefault("openAuctionStatusFilter")
-  valid_580131 = validateParameter(valid_580131, JString, required = false,
+  if valid_589158 != nil:
+    section.add "userIp", valid_589158
+  var valid_589159 = query.getOrDefault("maxResults")
+  valid_589159 = validateParameter(valid_589159, JInt, required = false, default = nil)
+  if valid_589159 != nil:
+    section.add "maxResults", valid_589159
+  var valid_589160 = query.getOrDefault("openAuctionStatusFilter")
+  valid_589160 = validateParameter(valid_589160, JString, required = false,
                                  default = newJString("approved"))
-  if valid_580131 != nil:
-    section.add "openAuctionStatusFilter", valid_580131
-  var valid_580132 = query.getOrDefault("key")
-  valid_580132 = validateParameter(valid_580132, JString, required = false,
+  if valid_589160 != nil:
+    section.add "openAuctionStatusFilter", valid_589160
+  var valid_589161 = query.getOrDefault("key")
+  valid_589161 = validateParameter(valid_589161, JString, required = false,
                                  default = nil)
-  if valid_580132 != nil:
-    section.add "key", valid_580132
-  var valid_580133 = query.getOrDefault("dealsStatusFilter")
-  valid_580133 = validateParameter(valid_580133, JString, required = false,
+  if valid_589161 != nil:
+    section.add "key", valid_589161
+  var valid_589162 = query.getOrDefault("dealsStatusFilter")
+  valid_589162 = validateParameter(valid_589162, JString, required = false,
                                  default = newJString("approved"))
-  if valid_580133 != nil:
-    section.add "dealsStatusFilter", valid_580133
-  var valid_580134 = query.getOrDefault("prettyPrint")
-  valid_580134 = validateParameter(valid_580134, JBool, required = false,
+  if valid_589162 != nil:
+    section.add "dealsStatusFilter", valid_589162
+  var valid_589163 = query.getOrDefault("prettyPrint")
+  valid_589163 = validateParameter(valid_589163, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580134 != nil:
-    section.add "prettyPrint", valid_580134
+  if valid_589163 != nil:
+    section.add "prettyPrint", valid_589163
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1714,20 +1714,20 @@ proc validate_AdexchangebuyerCreativesList_580120(path: JsonNode; query: JsonNod
   if body != nil:
     result.add "body", body
 
-proc call*(call_580135: Call_AdexchangebuyerCreativesList_580119; path: JsonNode;
+proc call*(call_589164: Call_AdexchangebuyerCreativesList_589148; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Retrieves a list of the authenticated user's active creatives. A creative will be available 30-40 minutes after submission.
   ## 
-  let valid = call_580135.validator(path, query, header, formData, body)
-  let scheme = call_580135.pickScheme
+  let valid = call_589164.validator(path, query, header, formData, body)
+  let scheme = call_589164.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580135.url(scheme.get, call_580135.host, call_580135.base,
-                         call_580135.route, valid.getOrDefault("path"),
+  let url = call_589164.url(scheme.get, call_589164.host, call_589164.base,
+                         call_589164.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580135, url, valid)
+  result = hook(call_589164, url, valid)
 
-proc call*(call_580136: Call_AdexchangebuyerCreativesList_580119;
+proc call*(call_589165: Call_AdexchangebuyerCreativesList_589148;
           buyerCreativeId: JsonNode = nil; fields: string = ""; pageToken: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           accountId: JsonNode = nil; userIp: string = ""; maxResults: int = 0;
@@ -1761,33 +1761,33 @@ proc call*(call_580136: Call_AdexchangebuyerCreativesList_580119;
   ##                    : When specified, only creatives having the given deals status are returned.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var query_580137 = newJObject()
+  var query_589166 = newJObject()
   if buyerCreativeId != nil:
-    query_580137.add "buyerCreativeId", buyerCreativeId
-  add(query_580137, "fields", newJString(fields))
-  add(query_580137, "pageToken", newJString(pageToken))
-  add(query_580137, "quotaUser", newJString(quotaUser))
-  add(query_580137, "alt", newJString(alt))
-  add(query_580137, "oauth_token", newJString(oauthToken))
+    query_589166.add "buyerCreativeId", buyerCreativeId
+  add(query_589166, "fields", newJString(fields))
+  add(query_589166, "pageToken", newJString(pageToken))
+  add(query_589166, "quotaUser", newJString(quotaUser))
+  add(query_589166, "alt", newJString(alt))
+  add(query_589166, "oauth_token", newJString(oauthToken))
   if accountId != nil:
-    query_580137.add "accountId", accountId
-  add(query_580137, "userIp", newJString(userIp))
-  add(query_580137, "maxResults", newJInt(maxResults))
-  add(query_580137, "openAuctionStatusFilter", newJString(openAuctionStatusFilter))
-  add(query_580137, "key", newJString(key))
-  add(query_580137, "dealsStatusFilter", newJString(dealsStatusFilter))
-  add(query_580137, "prettyPrint", newJBool(prettyPrint))
-  result = call_580136.call(nil, query_580137, nil, nil, nil)
+    query_589166.add "accountId", accountId
+  add(query_589166, "userIp", newJString(userIp))
+  add(query_589166, "maxResults", newJInt(maxResults))
+  add(query_589166, "openAuctionStatusFilter", newJString(openAuctionStatusFilter))
+  add(query_589166, "key", newJString(key))
+  add(query_589166, "dealsStatusFilter", newJString(dealsStatusFilter))
+  add(query_589166, "prettyPrint", newJBool(prettyPrint))
+  result = call_589165.call(nil, query_589166, nil, nil, nil)
 
-var adexchangebuyerCreativesList* = Call_AdexchangebuyerCreativesList_580119(
+var adexchangebuyerCreativesList* = Call_AdexchangebuyerCreativesList_589148(
     name: "adexchangebuyerCreativesList", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/creatives",
-    validator: validate_AdexchangebuyerCreativesList_580120,
-    base: "/adexchangebuyer/v1.4", url: url_AdexchangebuyerCreativesList_580121,
+    validator: validate_AdexchangebuyerCreativesList_589149,
+    base: "/adexchangebuyer/v1.4", url: url_AdexchangebuyerCreativesList_589150,
     schemes: {Scheme.Https})
 type
-  Call_AdexchangebuyerCreativesGet_580153 = ref object of OpenApiRestCall_579437
-proc url_AdexchangebuyerCreativesGet_580155(protocol: Scheme; host: string;
+  Call_AdexchangebuyerCreativesGet_589182 = ref object of OpenApiRestCall_588466
+proc url_AdexchangebuyerCreativesGet_589184(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -1805,7 +1805,7 @@ proc url_AdexchangebuyerCreativesGet_580155(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_AdexchangebuyerCreativesGet_580154(path: JsonNode; query: JsonNode;
+proc validate_AdexchangebuyerCreativesGet_589183(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Gets the status for a single creative. A creative will be available 30-40 minutes after submission.
   ## 
@@ -1818,15 +1818,15 @@ proc validate_AdexchangebuyerCreativesGet_580154(path: JsonNode; query: JsonNode
   ##                  : The buyer-specific id for this creative.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `accountId` field"
-  var valid_580156 = path.getOrDefault("accountId")
-  valid_580156 = validateParameter(valid_580156, JInt, required = true, default = nil)
-  if valid_580156 != nil:
-    section.add "accountId", valid_580156
-  var valid_580157 = path.getOrDefault("buyerCreativeId")
-  valid_580157 = validateParameter(valid_580157, JString, required = true,
+  var valid_589185 = path.getOrDefault("accountId")
+  valid_589185 = validateParameter(valid_589185, JInt, required = true, default = nil)
+  if valid_589185 != nil:
+    section.add "accountId", valid_589185
+  var valid_589186 = path.getOrDefault("buyerCreativeId")
+  valid_589186 = validateParameter(valid_589186, JString, required = true,
                                  default = nil)
-  if valid_580157 != nil:
-    section.add "buyerCreativeId", valid_580157
+  if valid_589186 != nil:
+    section.add "buyerCreativeId", valid_589186
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -1844,41 +1844,41 @@ proc validate_AdexchangebuyerCreativesGet_580154(path: JsonNode; query: JsonNode
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580158 = query.getOrDefault("fields")
-  valid_580158 = validateParameter(valid_580158, JString, required = false,
+  var valid_589187 = query.getOrDefault("fields")
+  valid_589187 = validateParameter(valid_589187, JString, required = false,
                                  default = nil)
-  if valid_580158 != nil:
-    section.add "fields", valid_580158
-  var valid_580159 = query.getOrDefault("quotaUser")
-  valid_580159 = validateParameter(valid_580159, JString, required = false,
+  if valid_589187 != nil:
+    section.add "fields", valid_589187
+  var valid_589188 = query.getOrDefault("quotaUser")
+  valid_589188 = validateParameter(valid_589188, JString, required = false,
                                  default = nil)
-  if valid_580159 != nil:
-    section.add "quotaUser", valid_580159
-  var valid_580160 = query.getOrDefault("alt")
-  valid_580160 = validateParameter(valid_580160, JString, required = false,
+  if valid_589188 != nil:
+    section.add "quotaUser", valid_589188
+  var valid_589189 = query.getOrDefault("alt")
+  valid_589189 = validateParameter(valid_589189, JString, required = false,
                                  default = newJString("json"))
-  if valid_580160 != nil:
-    section.add "alt", valid_580160
-  var valid_580161 = query.getOrDefault("oauth_token")
-  valid_580161 = validateParameter(valid_580161, JString, required = false,
+  if valid_589189 != nil:
+    section.add "alt", valid_589189
+  var valid_589190 = query.getOrDefault("oauth_token")
+  valid_589190 = validateParameter(valid_589190, JString, required = false,
                                  default = nil)
-  if valid_580161 != nil:
-    section.add "oauth_token", valid_580161
-  var valid_580162 = query.getOrDefault("userIp")
-  valid_580162 = validateParameter(valid_580162, JString, required = false,
+  if valid_589190 != nil:
+    section.add "oauth_token", valid_589190
+  var valid_589191 = query.getOrDefault("userIp")
+  valid_589191 = validateParameter(valid_589191, JString, required = false,
                                  default = nil)
-  if valid_580162 != nil:
-    section.add "userIp", valid_580162
-  var valid_580163 = query.getOrDefault("key")
-  valid_580163 = validateParameter(valid_580163, JString, required = false,
+  if valid_589191 != nil:
+    section.add "userIp", valid_589191
+  var valid_589192 = query.getOrDefault("key")
+  valid_589192 = validateParameter(valid_589192, JString, required = false,
                                  default = nil)
-  if valid_580163 != nil:
-    section.add "key", valid_580163
-  var valid_580164 = query.getOrDefault("prettyPrint")
-  valid_580164 = validateParameter(valid_580164, JBool, required = false,
+  if valid_589192 != nil:
+    section.add "key", valid_589192
+  var valid_589193 = query.getOrDefault("prettyPrint")
+  valid_589193 = validateParameter(valid_589193, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580164 != nil:
-    section.add "prettyPrint", valid_580164
+  if valid_589193 != nil:
+    section.add "prettyPrint", valid_589193
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1887,20 +1887,20 @@ proc validate_AdexchangebuyerCreativesGet_580154(path: JsonNode; query: JsonNode
   if body != nil:
     result.add "body", body
 
-proc call*(call_580165: Call_AdexchangebuyerCreativesGet_580153; path: JsonNode;
+proc call*(call_589194: Call_AdexchangebuyerCreativesGet_589182; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Gets the status for a single creative. A creative will be available 30-40 minutes after submission.
   ## 
-  let valid = call_580165.validator(path, query, header, formData, body)
-  let scheme = call_580165.pickScheme
+  let valid = call_589194.validator(path, query, header, formData, body)
+  let scheme = call_589194.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580165.url(scheme.get, call_580165.host, call_580165.base,
-                         call_580165.route, valid.getOrDefault("path"),
+  let url = call_589194.url(scheme.get, call_589194.host, call_589194.base,
+                         call_589194.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580165, url, valid)
+  result = hook(call_589194, url, valid)
 
-proc call*(call_580166: Call_AdexchangebuyerCreativesGet_580153; accountId: int;
+proc call*(call_589195: Call_AdexchangebuyerCreativesGet_589182; accountId: int;
           buyerCreativeId: string; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; userIp: string = "";
           key: string = ""; prettyPrint: bool = true): Recallable =
@@ -1924,28 +1924,28 @@ proc call*(call_580166: Call_AdexchangebuyerCreativesGet_580153; accountId: int;
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_580167 = newJObject()
-  var query_580168 = newJObject()
-  add(query_580168, "fields", newJString(fields))
-  add(query_580168, "quotaUser", newJString(quotaUser))
-  add(query_580168, "alt", newJString(alt))
-  add(query_580168, "oauth_token", newJString(oauthToken))
-  add(path_580167, "accountId", newJInt(accountId))
-  add(query_580168, "userIp", newJString(userIp))
-  add(path_580167, "buyerCreativeId", newJString(buyerCreativeId))
-  add(query_580168, "key", newJString(key))
-  add(query_580168, "prettyPrint", newJBool(prettyPrint))
-  result = call_580166.call(path_580167, query_580168, nil, nil, nil)
+  var path_589196 = newJObject()
+  var query_589197 = newJObject()
+  add(query_589197, "fields", newJString(fields))
+  add(query_589197, "quotaUser", newJString(quotaUser))
+  add(query_589197, "alt", newJString(alt))
+  add(query_589197, "oauth_token", newJString(oauthToken))
+  add(path_589196, "accountId", newJInt(accountId))
+  add(query_589197, "userIp", newJString(userIp))
+  add(path_589196, "buyerCreativeId", newJString(buyerCreativeId))
+  add(query_589197, "key", newJString(key))
+  add(query_589197, "prettyPrint", newJBool(prettyPrint))
+  result = call_589195.call(path_589196, query_589197, nil, nil, nil)
 
-var adexchangebuyerCreativesGet* = Call_AdexchangebuyerCreativesGet_580153(
+var adexchangebuyerCreativesGet* = Call_AdexchangebuyerCreativesGet_589182(
     name: "adexchangebuyerCreativesGet", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/creatives/{accountId}/{buyerCreativeId}",
-    validator: validate_AdexchangebuyerCreativesGet_580154,
-    base: "/adexchangebuyer/v1.4", url: url_AdexchangebuyerCreativesGet_580155,
+    validator: validate_AdexchangebuyerCreativesGet_589183,
+    base: "/adexchangebuyer/v1.4", url: url_AdexchangebuyerCreativesGet_589184,
     schemes: {Scheme.Https})
 type
-  Call_AdexchangebuyerCreativesAddDeal_580169 = ref object of OpenApiRestCall_579437
-proc url_AdexchangebuyerCreativesAddDeal_580171(protocol: Scheme; host: string;
+  Call_AdexchangebuyerCreativesAddDeal_589198 = ref object of OpenApiRestCall_588466
+proc url_AdexchangebuyerCreativesAddDeal_589200(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -1966,7 +1966,7 @@ proc url_AdexchangebuyerCreativesAddDeal_580171(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_AdexchangebuyerCreativesAddDeal_580170(path: JsonNode;
+proc validate_AdexchangebuyerCreativesAddDeal_589199(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Add a deal id association for the creative.
   ## 
@@ -1981,20 +1981,20 @@ proc validate_AdexchangebuyerCreativesAddDeal_580170(path: JsonNode;
   ##         : The id of the deal id to associate with this creative.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `accountId` field"
-  var valid_580172 = path.getOrDefault("accountId")
-  valid_580172 = validateParameter(valid_580172, JInt, required = true, default = nil)
-  if valid_580172 != nil:
-    section.add "accountId", valid_580172
-  var valid_580173 = path.getOrDefault("buyerCreativeId")
-  valid_580173 = validateParameter(valid_580173, JString, required = true,
+  var valid_589201 = path.getOrDefault("accountId")
+  valid_589201 = validateParameter(valid_589201, JInt, required = true, default = nil)
+  if valid_589201 != nil:
+    section.add "accountId", valid_589201
+  var valid_589202 = path.getOrDefault("buyerCreativeId")
+  valid_589202 = validateParameter(valid_589202, JString, required = true,
                                  default = nil)
-  if valid_580173 != nil:
-    section.add "buyerCreativeId", valid_580173
-  var valid_580174 = path.getOrDefault("dealId")
-  valid_580174 = validateParameter(valid_580174, JString, required = true,
+  if valid_589202 != nil:
+    section.add "buyerCreativeId", valid_589202
+  var valid_589203 = path.getOrDefault("dealId")
+  valid_589203 = validateParameter(valid_589203, JString, required = true,
                                  default = nil)
-  if valid_580174 != nil:
-    section.add "dealId", valid_580174
+  if valid_589203 != nil:
+    section.add "dealId", valid_589203
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -2012,41 +2012,41 @@ proc validate_AdexchangebuyerCreativesAddDeal_580170(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580175 = query.getOrDefault("fields")
-  valid_580175 = validateParameter(valid_580175, JString, required = false,
+  var valid_589204 = query.getOrDefault("fields")
+  valid_589204 = validateParameter(valid_589204, JString, required = false,
                                  default = nil)
-  if valid_580175 != nil:
-    section.add "fields", valid_580175
-  var valid_580176 = query.getOrDefault("quotaUser")
-  valid_580176 = validateParameter(valid_580176, JString, required = false,
+  if valid_589204 != nil:
+    section.add "fields", valid_589204
+  var valid_589205 = query.getOrDefault("quotaUser")
+  valid_589205 = validateParameter(valid_589205, JString, required = false,
                                  default = nil)
-  if valid_580176 != nil:
-    section.add "quotaUser", valid_580176
-  var valid_580177 = query.getOrDefault("alt")
-  valid_580177 = validateParameter(valid_580177, JString, required = false,
+  if valid_589205 != nil:
+    section.add "quotaUser", valid_589205
+  var valid_589206 = query.getOrDefault("alt")
+  valid_589206 = validateParameter(valid_589206, JString, required = false,
                                  default = newJString("json"))
-  if valid_580177 != nil:
-    section.add "alt", valid_580177
-  var valid_580178 = query.getOrDefault("oauth_token")
-  valid_580178 = validateParameter(valid_580178, JString, required = false,
+  if valid_589206 != nil:
+    section.add "alt", valid_589206
+  var valid_589207 = query.getOrDefault("oauth_token")
+  valid_589207 = validateParameter(valid_589207, JString, required = false,
                                  default = nil)
-  if valid_580178 != nil:
-    section.add "oauth_token", valid_580178
-  var valid_580179 = query.getOrDefault("userIp")
-  valid_580179 = validateParameter(valid_580179, JString, required = false,
+  if valid_589207 != nil:
+    section.add "oauth_token", valid_589207
+  var valid_589208 = query.getOrDefault("userIp")
+  valid_589208 = validateParameter(valid_589208, JString, required = false,
                                  default = nil)
-  if valid_580179 != nil:
-    section.add "userIp", valid_580179
-  var valid_580180 = query.getOrDefault("key")
-  valid_580180 = validateParameter(valid_580180, JString, required = false,
+  if valid_589208 != nil:
+    section.add "userIp", valid_589208
+  var valid_589209 = query.getOrDefault("key")
+  valid_589209 = validateParameter(valid_589209, JString, required = false,
                                  default = nil)
-  if valid_580180 != nil:
-    section.add "key", valid_580180
-  var valid_580181 = query.getOrDefault("prettyPrint")
-  valid_580181 = validateParameter(valid_580181, JBool, required = false,
+  if valid_589209 != nil:
+    section.add "key", valid_589209
+  var valid_589210 = query.getOrDefault("prettyPrint")
+  valid_589210 = validateParameter(valid_589210, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580181 != nil:
-    section.add "prettyPrint", valid_580181
+  if valid_589210 != nil:
+    section.add "prettyPrint", valid_589210
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -2055,21 +2055,21 @@ proc validate_AdexchangebuyerCreativesAddDeal_580170(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580182: Call_AdexchangebuyerCreativesAddDeal_580169;
+proc call*(call_589211: Call_AdexchangebuyerCreativesAddDeal_589198;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Add a deal id association for the creative.
   ## 
-  let valid = call_580182.validator(path, query, header, formData, body)
-  let scheme = call_580182.pickScheme
+  let valid = call_589211.validator(path, query, header, formData, body)
+  let scheme = call_589211.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580182.url(scheme.get, call_580182.host, call_580182.base,
-                         call_580182.route, valid.getOrDefault("path"),
+  let url = call_589211.url(scheme.get, call_589211.host, call_589211.base,
+                         call_589211.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580182, url, valid)
+  result = hook(call_589211, url, valid)
 
-proc call*(call_580183: Call_AdexchangebuyerCreativesAddDeal_580169;
+proc call*(call_589212: Call_AdexchangebuyerCreativesAddDeal_589198;
           accountId: int; buyerCreativeId: string; dealId: string;
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           oauthToken: string = ""; userIp: string = ""; key: string = "";
@@ -2096,30 +2096,30 @@ proc call*(call_580183: Call_AdexchangebuyerCreativesAddDeal_580169;
   ##              : Returns response with indentations and line breaks.
   ##   dealId: string (required)
   ##         : The id of the deal id to associate with this creative.
-  var path_580184 = newJObject()
-  var query_580185 = newJObject()
-  add(query_580185, "fields", newJString(fields))
-  add(query_580185, "quotaUser", newJString(quotaUser))
-  add(query_580185, "alt", newJString(alt))
-  add(query_580185, "oauth_token", newJString(oauthToken))
-  add(path_580184, "accountId", newJInt(accountId))
-  add(query_580185, "userIp", newJString(userIp))
-  add(path_580184, "buyerCreativeId", newJString(buyerCreativeId))
-  add(query_580185, "key", newJString(key))
-  add(query_580185, "prettyPrint", newJBool(prettyPrint))
-  add(path_580184, "dealId", newJString(dealId))
-  result = call_580183.call(path_580184, query_580185, nil, nil, nil)
+  var path_589213 = newJObject()
+  var query_589214 = newJObject()
+  add(query_589214, "fields", newJString(fields))
+  add(query_589214, "quotaUser", newJString(quotaUser))
+  add(query_589214, "alt", newJString(alt))
+  add(query_589214, "oauth_token", newJString(oauthToken))
+  add(path_589213, "accountId", newJInt(accountId))
+  add(query_589214, "userIp", newJString(userIp))
+  add(path_589213, "buyerCreativeId", newJString(buyerCreativeId))
+  add(query_589214, "key", newJString(key))
+  add(query_589214, "prettyPrint", newJBool(prettyPrint))
+  add(path_589213, "dealId", newJString(dealId))
+  result = call_589212.call(path_589213, query_589214, nil, nil, nil)
 
-var adexchangebuyerCreativesAddDeal* = Call_AdexchangebuyerCreativesAddDeal_580169(
+var adexchangebuyerCreativesAddDeal* = Call_AdexchangebuyerCreativesAddDeal_589198(
     name: "adexchangebuyerCreativesAddDeal", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com",
     route: "/creatives/{accountId}/{buyerCreativeId}/addDeal/{dealId}",
-    validator: validate_AdexchangebuyerCreativesAddDeal_580170,
-    base: "/adexchangebuyer/v1.4", url: url_AdexchangebuyerCreativesAddDeal_580171,
+    validator: validate_AdexchangebuyerCreativesAddDeal_589199,
+    base: "/adexchangebuyer/v1.4", url: url_AdexchangebuyerCreativesAddDeal_589200,
     schemes: {Scheme.Https})
 type
-  Call_AdexchangebuyerCreativesListDeals_580186 = ref object of OpenApiRestCall_579437
-proc url_AdexchangebuyerCreativesListDeals_580188(protocol: Scheme; host: string;
+  Call_AdexchangebuyerCreativesListDeals_589215 = ref object of OpenApiRestCall_588466
+proc url_AdexchangebuyerCreativesListDeals_589217(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -2138,7 +2138,7 @@ proc url_AdexchangebuyerCreativesListDeals_580188(protocol: Scheme; host: string
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_AdexchangebuyerCreativesListDeals_580187(path: JsonNode;
+proc validate_AdexchangebuyerCreativesListDeals_589216(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Lists the external deal ids associated with the creative.
   ## 
@@ -2151,15 +2151,15 @@ proc validate_AdexchangebuyerCreativesListDeals_580187(path: JsonNode;
   ##                  : The buyer-specific id for this creative.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `accountId` field"
-  var valid_580189 = path.getOrDefault("accountId")
-  valid_580189 = validateParameter(valid_580189, JInt, required = true, default = nil)
-  if valid_580189 != nil:
-    section.add "accountId", valid_580189
-  var valid_580190 = path.getOrDefault("buyerCreativeId")
-  valid_580190 = validateParameter(valid_580190, JString, required = true,
+  var valid_589218 = path.getOrDefault("accountId")
+  valid_589218 = validateParameter(valid_589218, JInt, required = true, default = nil)
+  if valid_589218 != nil:
+    section.add "accountId", valid_589218
+  var valid_589219 = path.getOrDefault("buyerCreativeId")
+  valid_589219 = validateParameter(valid_589219, JString, required = true,
                                  default = nil)
-  if valid_580190 != nil:
-    section.add "buyerCreativeId", valid_580190
+  if valid_589219 != nil:
+    section.add "buyerCreativeId", valid_589219
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -2177,41 +2177,41 @@ proc validate_AdexchangebuyerCreativesListDeals_580187(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580191 = query.getOrDefault("fields")
-  valid_580191 = validateParameter(valid_580191, JString, required = false,
+  var valid_589220 = query.getOrDefault("fields")
+  valid_589220 = validateParameter(valid_589220, JString, required = false,
                                  default = nil)
-  if valid_580191 != nil:
-    section.add "fields", valid_580191
-  var valid_580192 = query.getOrDefault("quotaUser")
-  valid_580192 = validateParameter(valid_580192, JString, required = false,
+  if valid_589220 != nil:
+    section.add "fields", valid_589220
+  var valid_589221 = query.getOrDefault("quotaUser")
+  valid_589221 = validateParameter(valid_589221, JString, required = false,
                                  default = nil)
-  if valid_580192 != nil:
-    section.add "quotaUser", valid_580192
-  var valid_580193 = query.getOrDefault("alt")
-  valid_580193 = validateParameter(valid_580193, JString, required = false,
+  if valid_589221 != nil:
+    section.add "quotaUser", valid_589221
+  var valid_589222 = query.getOrDefault("alt")
+  valid_589222 = validateParameter(valid_589222, JString, required = false,
                                  default = newJString("json"))
-  if valid_580193 != nil:
-    section.add "alt", valid_580193
-  var valid_580194 = query.getOrDefault("oauth_token")
-  valid_580194 = validateParameter(valid_580194, JString, required = false,
+  if valid_589222 != nil:
+    section.add "alt", valid_589222
+  var valid_589223 = query.getOrDefault("oauth_token")
+  valid_589223 = validateParameter(valid_589223, JString, required = false,
                                  default = nil)
-  if valid_580194 != nil:
-    section.add "oauth_token", valid_580194
-  var valid_580195 = query.getOrDefault("userIp")
-  valid_580195 = validateParameter(valid_580195, JString, required = false,
+  if valid_589223 != nil:
+    section.add "oauth_token", valid_589223
+  var valid_589224 = query.getOrDefault("userIp")
+  valid_589224 = validateParameter(valid_589224, JString, required = false,
                                  default = nil)
-  if valid_580195 != nil:
-    section.add "userIp", valid_580195
-  var valid_580196 = query.getOrDefault("key")
-  valid_580196 = validateParameter(valid_580196, JString, required = false,
+  if valid_589224 != nil:
+    section.add "userIp", valid_589224
+  var valid_589225 = query.getOrDefault("key")
+  valid_589225 = validateParameter(valid_589225, JString, required = false,
                                  default = nil)
-  if valid_580196 != nil:
-    section.add "key", valid_580196
-  var valid_580197 = query.getOrDefault("prettyPrint")
-  valid_580197 = validateParameter(valid_580197, JBool, required = false,
+  if valid_589225 != nil:
+    section.add "key", valid_589225
+  var valid_589226 = query.getOrDefault("prettyPrint")
+  valid_589226 = validateParameter(valid_589226, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580197 != nil:
-    section.add "prettyPrint", valid_580197
+  if valid_589226 != nil:
+    section.add "prettyPrint", valid_589226
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -2220,21 +2220,21 @@ proc validate_AdexchangebuyerCreativesListDeals_580187(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580198: Call_AdexchangebuyerCreativesListDeals_580186;
+proc call*(call_589227: Call_AdexchangebuyerCreativesListDeals_589215;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Lists the external deal ids associated with the creative.
   ## 
-  let valid = call_580198.validator(path, query, header, formData, body)
-  let scheme = call_580198.pickScheme
+  let valid = call_589227.validator(path, query, header, formData, body)
+  let scheme = call_589227.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580198.url(scheme.get, call_580198.host, call_580198.base,
-                         call_580198.route, valid.getOrDefault("path"),
+  let url = call_589227.url(scheme.get, call_589227.host, call_589227.base,
+                         call_589227.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580198, url, valid)
+  result = hook(call_589227, url, valid)
 
-proc call*(call_580199: Call_AdexchangebuyerCreativesListDeals_580186;
+proc call*(call_589228: Call_AdexchangebuyerCreativesListDeals_589215;
           accountId: int; buyerCreativeId: string; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; key: string = ""; prettyPrint: bool = true): Recallable =
@@ -2258,29 +2258,29 @@ proc call*(call_580199: Call_AdexchangebuyerCreativesListDeals_580186;
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_580200 = newJObject()
-  var query_580201 = newJObject()
-  add(query_580201, "fields", newJString(fields))
-  add(query_580201, "quotaUser", newJString(quotaUser))
-  add(query_580201, "alt", newJString(alt))
-  add(query_580201, "oauth_token", newJString(oauthToken))
-  add(path_580200, "accountId", newJInt(accountId))
-  add(query_580201, "userIp", newJString(userIp))
-  add(path_580200, "buyerCreativeId", newJString(buyerCreativeId))
-  add(query_580201, "key", newJString(key))
-  add(query_580201, "prettyPrint", newJBool(prettyPrint))
-  result = call_580199.call(path_580200, query_580201, nil, nil, nil)
+  var path_589229 = newJObject()
+  var query_589230 = newJObject()
+  add(query_589230, "fields", newJString(fields))
+  add(query_589230, "quotaUser", newJString(quotaUser))
+  add(query_589230, "alt", newJString(alt))
+  add(query_589230, "oauth_token", newJString(oauthToken))
+  add(path_589229, "accountId", newJInt(accountId))
+  add(query_589230, "userIp", newJString(userIp))
+  add(path_589229, "buyerCreativeId", newJString(buyerCreativeId))
+  add(query_589230, "key", newJString(key))
+  add(query_589230, "prettyPrint", newJBool(prettyPrint))
+  result = call_589228.call(path_589229, query_589230, nil, nil, nil)
 
-var adexchangebuyerCreativesListDeals* = Call_AdexchangebuyerCreativesListDeals_580186(
+var adexchangebuyerCreativesListDeals* = Call_AdexchangebuyerCreativesListDeals_589215(
     name: "adexchangebuyerCreativesListDeals", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com",
     route: "/creatives/{accountId}/{buyerCreativeId}/listDeals",
-    validator: validate_AdexchangebuyerCreativesListDeals_580187,
-    base: "/adexchangebuyer/v1.4", url: url_AdexchangebuyerCreativesListDeals_580188,
+    validator: validate_AdexchangebuyerCreativesListDeals_589216,
+    base: "/adexchangebuyer/v1.4", url: url_AdexchangebuyerCreativesListDeals_589217,
     schemes: {Scheme.Https})
 type
-  Call_AdexchangebuyerCreativesRemoveDeal_580202 = ref object of OpenApiRestCall_579437
-proc url_AdexchangebuyerCreativesRemoveDeal_580204(protocol: Scheme; host: string;
+  Call_AdexchangebuyerCreativesRemoveDeal_589231 = ref object of OpenApiRestCall_588466
+proc url_AdexchangebuyerCreativesRemoveDeal_589233(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -2301,7 +2301,7 @@ proc url_AdexchangebuyerCreativesRemoveDeal_580204(protocol: Scheme; host: strin
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_AdexchangebuyerCreativesRemoveDeal_580203(path: JsonNode;
+proc validate_AdexchangebuyerCreativesRemoveDeal_589232(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Remove a deal id associated with the creative.
   ## 
@@ -2316,20 +2316,20 @@ proc validate_AdexchangebuyerCreativesRemoveDeal_580203(path: JsonNode;
   ##         : The id of the deal id to disassociate with this creative.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `accountId` field"
-  var valid_580205 = path.getOrDefault("accountId")
-  valid_580205 = validateParameter(valid_580205, JInt, required = true, default = nil)
-  if valid_580205 != nil:
-    section.add "accountId", valid_580205
-  var valid_580206 = path.getOrDefault("buyerCreativeId")
-  valid_580206 = validateParameter(valid_580206, JString, required = true,
+  var valid_589234 = path.getOrDefault("accountId")
+  valid_589234 = validateParameter(valid_589234, JInt, required = true, default = nil)
+  if valid_589234 != nil:
+    section.add "accountId", valid_589234
+  var valid_589235 = path.getOrDefault("buyerCreativeId")
+  valid_589235 = validateParameter(valid_589235, JString, required = true,
                                  default = nil)
-  if valid_580206 != nil:
-    section.add "buyerCreativeId", valid_580206
-  var valid_580207 = path.getOrDefault("dealId")
-  valid_580207 = validateParameter(valid_580207, JString, required = true,
+  if valid_589235 != nil:
+    section.add "buyerCreativeId", valid_589235
+  var valid_589236 = path.getOrDefault("dealId")
+  valid_589236 = validateParameter(valid_589236, JString, required = true,
                                  default = nil)
-  if valid_580207 != nil:
-    section.add "dealId", valid_580207
+  if valid_589236 != nil:
+    section.add "dealId", valid_589236
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -2347,41 +2347,41 @@ proc validate_AdexchangebuyerCreativesRemoveDeal_580203(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580208 = query.getOrDefault("fields")
-  valid_580208 = validateParameter(valid_580208, JString, required = false,
+  var valid_589237 = query.getOrDefault("fields")
+  valid_589237 = validateParameter(valid_589237, JString, required = false,
                                  default = nil)
-  if valid_580208 != nil:
-    section.add "fields", valid_580208
-  var valid_580209 = query.getOrDefault("quotaUser")
-  valid_580209 = validateParameter(valid_580209, JString, required = false,
+  if valid_589237 != nil:
+    section.add "fields", valid_589237
+  var valid_589238 = query.getOrDefault("quotaUser")
+  valid_589238 = validateParameter(valid_589238, JString, required = false,
                                  default = nil)
-  if valid_580209 != nil:
-    section.add "quotaUser", valid_580209
-  var valid_580210 = query.getOrDefault("alt")
-  valid_580210 = validateParameter(valid_580210, JString, required = false,
+  if valid_589238 != nil:
+    section.add "quotaUser", valid_589238
+  var valid_589239 = query.getOrDefault("alt")
+  valid_589239 = validateParameter(valid_589239, JString, required = false,
                                  default = newJString("json"))
-  if valid_580210 != nil:
-    section.add "alt", valid_580210
-  var valid_580211 = query.getOrDefault("oauth_token")
-  valid_580211 = validateParameter(valid_580211, JString, required = false,
+  if valid_589239 != nil:
+    section.add "alt", valid_589239
+  var valid_589240 = query.getOrDefault("oauth_token")
+  valid_589240 = validateParameter(valid_589240, JString, required = false,
                                  default = nil)
-  if valid_580211 != nil:
-    section.add "oauth_token", valid_580211
-  var valid_580212 = query.getOrDefault("userIp")
-  valid_580212 = validateParameter(valid_580212, JString, required = false,
+  if valid_589240 != nil:
+    section.add "oauth_token", valid_589240
+  var valid_589241 = query.getOrDefault("userIp")
+  valid_589241 = validateParameter(valid_589241, JString, required = false,
                                  default = nil)
-  if valid_580212 != nil:
-    section.add "userIp", valid_580212
-  var valid_580213 = query.getOrDefault("key")
-  valid_580213 = validateParameter(valid_580213, JString, required = false,
+  if valid_589241 != nil:
+    section.add "userIp", valid_589241
+  var valid_589242 = query.getOrDefault("key")
+  valid_589242 = validateParameter(valid_589242, JString, required = false,
                                  default = nil)
-  if valid_580213 != nil:
-    section.add "key", valid_580213
-  var valid_580214 = query.getOrDefault("prettyPrint")
-  valid_580214 = validateParameter(valid_580214, JBool, required = false,
+  if valid_589242 != nil:
+    section.add "key", valid_589242
+  var valid_589243 = query.getOrDefault("prettyPrint")
+  valid_589243 = validateParameter(valid_589243, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580214 != nil:
-    section.add "prettyPrint", valid_580214
+  if valid_589243 != nil:
+    section.add "prettyPrint", valid_589243
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -2390,21 +2390,21 @@ proc validate_AdexchangebuyerCreativesRemoveDeal_580203(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580215: Call_AdexchangebuyerCreativesRemoveDeal_580202;
+proc call*(call_589244: Call_AdexchangebuyerCreativesRemoveDeal_589231;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Remove a deal id associated with the creative.
   ## 
-  let valid = call_580215.validator(path, query, header, formData, body)
-  let scheme = call_580215.pickScheme
+  let valid = call_589244.validator(path, query, header, formData, body)
+  let scheme = call_589244.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580215.url(scheme.get, call_580215.host, call_580215.base,
-                         call_580215.route, valid.getOrDefault("path"),
+  let url = call_589244.url(scheme.get, call_589244.host, call_589244.base,
+                         call_589244.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580215, url, valid)
+  result = hook(call_589244, url, valid)
 
-proc call*(call_580216: Call_AdexchangebuyerCreativesRemoveDeal_580202;
+proc call*(call_589245: Call_AdexchangebuyerCreativesRemoveDeal_589231;
           accountId: int; buyerCreativeId: string; dealId: string;
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           oauthToken: string = ""; userIp: string = ""; key: string = "";
@@ -2431,37 +2431,37 @@ proc call*(call_580216: Call_AdexchangebuyerCreativesRemoveDeal_580202;
   ##              : Returns response with indentations and line breaks.
   ##   dealId: string (required)
   ##         : The id of the deal id to disassociate with this creative.
-  var path_580217 = newJObject()
-  var query_580218 = newJObject()
-  add(query_580218, "fields", newJString(fields))
-  add(query_580218, "quotaUser", newJString(quotaUser))
-  add(query_580218, "alt", newJString(alt))
-  add(query_580218, "oauth_token", newJString(oauthToken))
-  add(path_580217, "accountId", newJInt(accountId))
-  add(query_580218, "userIp", newJString(userIp))
-  add(path_580217, "buyerCreativeId", newJString(buyerCreativeId))
-  add(query_580218, "key", newJString(key))
-  add(query_580218, "prettyPrint", newJBool(prettyPrint))
-  add(path_580217, "dealId", newJString(dealId))
-  result = call_580216.call(path_580217, query_580218, nil, nil, nil)
+  var path_589246 = newJObject()
+  var query_589247 = newJObject()
+  add(query_589247, "fields", newJString(fields))
+  add(query_589247, "quotaUser", newJString(quotaUser))
+  add(query_589247, "alt", newJString(alt))
+  add(query_589247, "oauth_token", newJString(oauthToken))
+  add(path_589246, "accountId", newJInt(accountId))
+  add(query_589247, "userIp", newJString(userIp))
+  add(path_589246, "buyerCreativeId", newJString(buyerCreativeId))
+  add(query_589247, "key", newJString(key))
+  add(query_589247, "prettyPrint", newJBool(prettyPrint))
+  add(path_589246, "dealId", newJString(dealId))
+  result = call_589245.call(path_589246, query_589247, nil, nil, nil)
 
-var adexchangebuyerCreativesRemoveDeal* = Call_AdexchangebuyerCreativesRemoveDeal_580202(
+var adexchangebuyerCreativesRemoveDeal* = Call_AdexchangebuyerCreativesRemoveDeal_589231(
     name: "adexchangebuyerCreativesRemoveDeal", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com",
     route: "/creatives/{accountId}/{buyerCreativeId}/removeDeal/{dealId}",
-    validator: validate_AdexchangebuyerCreativesRemoveDeal_580203,
-    base: "/adexchangebuyer/v1.4", url: url_AdexchangebuyerCreativesRemoveDeal_580204,
+    validator: validate_AdexchangebuyerCreativesRemoveDeal_589232,
+    base: "/adexchangebuyer/v1.4", url: url_AdexchangebuyerCreativesRemoveDeal_589233,
     schemes: {Scheme.Https})
 type
-  Call_AdexchangebuyerPerformanceReportList_580219 = ref object of OpenApiRestCall_579437
-proc url_AdexchangebuyerPerformanceReportList_580221(protocol: Scheme;
+  Call_AdexchangebuyerPerformanceReportList_589248 = ref object of OpenApiRestCall_588466
+proc url_AdexchangebuyerPerformanceReportList_589250(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
   result.query = $composeQueryString(query)
   result.path = base & route
 
-proc validate_AdexchangebuyerPerformanceReportList_580220(path: JsonNode;
+proc validate_AdexchangebuyerPerformanceReportList_589249(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Retrieves the authenticated user's list of performance metrics.
   ## 
@@ -2495,67 +2495,67 @@ proc validate_AdexchangebuyerPerformanceReportList_580220(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580222 = query.getOrDefault("fields")
-  valid_580222 = validateParameter(valid_580222, JString, required = false,
+  var valid_589251 = query.getOrDefault("fields")
+  valid_589251 = validateParameter(valid_589251, JString, required = false,
                                  default = nil)
-  if valid_580222 != nil:
-    section.add "fields", valid_580222
-  var valid_580223 = query.getOrDefault("pageToken")
-  valid_580223 = validateParameter(valid_580223, JString, required = false,
+  if valid_589251 != nil:
+    section.add "fields", valid_589251
+  var valid_589252 = query.getOrDefault("pageToken")
+  valid_589252 = validateParameter(valid_589252, JString, required = false,
                                  default = nil)
-  if valid_580223 != nil:
-    section.add "pageToken", valid_580223
-  var valid_580224 = query.getOrDefault("quotaUser")
-  valid_580224 = validateParameter(valid_580224, JString, required = false,
+  if valid_589252 != nil:
+    section.add "pageToken", valid_589252
+  var valid_589253 = query.getOrDefault("quotaUser")
+  valid_589253 = validateParameter(valid_589253, JString, required = false,
                                  default = nil)
-  if valid_580224 != nil:
-    section.add "quotaUser", valid_580224
-  var valid_580225 = query.getOrDefault("alt")
-  valid_580225 = validateParameter(valid_580225, JString, required = false,
+  if valid_589253 != nil:
+    section.add "quotaUser", valid_589253
+  var valid_589254 = query.getOrDefault("alt")
+  valid_589254 = validateParameter(valid_589254, JString, required = false,
                                  default = newJString("json"))
-  if valid_580225 != nil:
-    section.add "alt", valid_580225
+  if valid_589254 != nil:
+    section.add "alt", valid_589254
   assert query != nil,
         "query argument is necessary due to required `startDateTime` field"
-  var valid_580226 = query.getOrDefault("startDateTime")
-  valid_580226 = validateParameter(valid_580226, JString, required = true,
+  var valid_589255 = query.getOrDefault("startDateTime")
+  valid_589255 = validateParameter(valid_589255, JString, required = true,
                                  default = nil)
-  if valid_580226 != nil:
-    section.add "startDateTime", valid_580226
-  var valid_580227 = query.getOrDefault("oauth_token")
-  valid_580227 = validateParameter(valid_580227, JString, required = false,
+  if valid_589255 != nil:
+    section.add "startDateTime", valid_589255
+  var valid_589256 = query.getOrDefault("oauth_token")
+  valid_589256 = validateParameter(valid_589256, JString, required = false,
                                  default = nil)
-  if valid_580227 != nil:
-    section.add "oauth_token", valid_580227
-  var valid_580228 = query.getOrDefault("accountId")
-  valid_580228 = validateParameter(valid_580228, JString, required = true,
+  if valid_589256 != nil:
+    section.add "oauth_token", valid_589256
+  var valid_589257 = query.getOrDefault("accountId")
+  valid_589257 = validateParameter(valid_589257, JString, required = true,
                                  default = nil)
-  if valid_580228 != nil:
-    section.add "accountId", valid_580228
-  var valid_580229 = query.getOrDefault("userIp")
-  valid_580229 = validateParameter(valid_580229, JString, required = false,
+  if valid_589257 != nil:
+    section.add "accountId", valid_589257
+  var valid_589258 = query.getOrDefault("userIp")
+  valid_589258 = validateParameter(valid_589258, JString, required = false,
                                  default = nil)
-  if valid_580229 != nil:
-    section.add "userIp", valid_580229
-  var valid_580230 = query.getOrDefault("maxResults")
-  valid_580230 = validateParameter(valid_580230, JInt, required = false, default = nil)
-  if valid_580230 != nil:
-    section.add "maxResults", valid_580230
-  var valid_580231 = query.getOrDefault("key")
-  valid_580231 = validateParameter(valid_580231, JString, required = false,
+  if valid_589258 != nil:
+    section.add "userIp", valid_589258
+  var valid_589259 = query.getOrDefault("maxResults")
+  valid_589259 = validateParameter(valid_589259, JInt, required = false, default = nil)
+  if valid_589259 != nil:
+    section.add "maxResults", valid_589259
+  var valid_589260 = query.getOrDefault("key")
+  valid_589260 = validateParameter(valid_589260, JString, required = false,
                                  default = nil)
-  if valid_580231 != nil:
-    section.add "key", valid_580231
-  var valid_580232 = query.getOrDefault("endDateTime")
-  valid_580232 = validateParameter(valid_580232, JString, required = true,
+  if valid_589260 != nil:
+    section.add "key", valid_589260
+  var valid_589261 = query.getOrDefault("endDateTime")
+  valid_589261 = validateParameter(valid_589261, JString, required = true,
                                  default = nil)
-  if valid_580232 != nil:
-    section.add "endDateTime", valid_580232
-  var valid_580233 = query.getOrDefault("prettyPrint")
-  valid_580233 = validateParameter(valid_580233, JBool, required = false,
+  if valid_589261 != nil:
+    section.add "endDateTime", valid_589261
+  var valid_589262 = query.getOrDefault("prettyPrint")
+  valid_589262 = validateParameter(valid_589262, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580233 != nil:
-    section.add "prettyPrint", valid_580233
+  if valid_589262 != nil:
+    section.add "prettyPrint", valid_589262
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -2564,21 +2564,21 @@ proc validate_AdexchangebuyerPerformanceReportList_580220(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580234: Call_AdexchangebuyerPerformanceReportList_580219;
+proc call*(call_589263: Call_AdexchangebuyerPerformanceReportList_589248;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Retrieves the authenticated user's list of performance metrics.
   ## 
-  let valid = call_580234.validator(path, query, header, formData, body)
-  let scheme = call_580234.pickScheme
+  let valid = call_589263.validator(path, query, header, formData, body)
+  let scheme = call_589263.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580234.url(scheme.get, call_580234.host, call_580234.base,
-                         call_580234.route, valid.getOrDefault("path"),
+  let url = call_589263.url(scheme.get, call_589263.host, call_589263.base,
+                         call_589263.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580234, url, valid)
+  result = hook(call_589263, url, valid)
 
-proc call*(call_580235: Call_AdexchangebuyerPerformanceReportList_580219;
+proc call*(call_589264: Call_AdexchangebuyerPerformanceReportList_589248;
           startDateTime: string; accountId: string; endDateTime: string;
           fields: string = ""; pageToken: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; userIp: string = "";
@@ -2609,30 +2609,30 @@ proc call*(call_580235: Call_AdexchangebuyerPerformanceReportList_580219;
   ##              : The end time of the report in ISO 8601 timestamp format using UTC.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var query_580236 = newJObject()
-  add(query_580236, "fields", newJString(fields))
-  add(query_580236, "pageToken", newJString(pageToken))
-  add(query_580236, "quotaUser", newJString(quotaUser))
-  add(query_580236, "alt", newJString(alt))
-  add(query_580236, "startDateTime", newJString(startDateTime))
-  add(query_580236, "oauth_token", newJString(oauthToken))
-  add(query_580236, "accountId", newJString(accountId))
-  add(query_580236, "userIp", newJString(userIp))
-  add(query_580236, "maxResults", newJInt(maxResults))
-  add(query_580236, "key", newJString(key))
-  add(query_580236, "endDateTime", newJString(endDateTime))
-  add(query_580236, "prettyPrint", newJBool(prettyPrint))
-  result = call_580235.call(nil, query_580236, nil, nil, nil)
+  var query_589265 = newJObject()
+  add(query_589265, "fields", newJString(fields))
+  add(query_589265, "pageToken", newJString(pageToken))
+  add(query_589265, "quotaUser", newJString(quotaUser))
+  add(query_589265, "alt", newJString(alt))
+  add(query_589265, "startDateTime", newJString(startDateTime))
+  add(query_589265, "oauth_token", newJString(oauthToken))
+  add(query_589265, "accountId", newJString(accountId))
+  add(query_589265, "userIp", newJString(userIp))
+  add(query_589265, "maxResults", newJInt(maxResults))
+  add(query_589265, "key", newJString(key))
+  add(query_589265, "endDateTime", newJString(endDateTime))
+  add(query_589265, "prettyPrint", newJBool(prettyPrint))
+  result = call_589264.call(nil, query_589265, nil, nil, nil)
 
-var adexchangebuyerPerformanceReportList* = Call_AdexchangebuyerPerformanceReportList_580219(
+var adexchangebuyerPerformanceReportList* = Call_AdexchangebuyerPerformanceReportList_589248(
     name: "adexchangebuyerPerformanceReportList", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/performancereport",
-    validator: validate_AdexchangebuyerPerformanceReportList_580220,
-    base: "/adexchangebuyer/v1.4", url: url_AdexchangebuyerPerformanceReportList_580221,
+    validator: validate_AdexchangebuyerPerformanceReportList_589249,
+    base: "/adexchangebuyer/v1.4", url: url_AdexchangebuyerPerformanceReportList_589250,
     schemes: {Scheme.Https})
 type
-  Call_AdexchangebuyerPretargetingConfigInsert_580252 = ref object of OpenApiRestCall_579437
-proc url_AdexchangebuyerPretargetingConfigInsert_580254(protocol: Scheme;
+  Call_AdexchangebuyerPretargetingConfigInsert_589281 = ref object of OpenApiRestCall_588466
+proc url_AdexchangebuyerPretargetingConfigInsert_589283(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -2647,7 +2647,7 @@ proc url_AdexchangebuyerPretargetingConfigInsert_580254(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_AdexchangebuyerPretargetingConfigInsert_580253(path: JsonNode;
+proc validate_AdexchangebuyerPretargetingConfigInsert_589282(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Inserts a new pretargeting configuration.
   ## 
@@ -2658,11 +2658,11 @@ proc validate_AdexchangebuyerPretargetingConfigInsert_580253(path: JsonNode;
   ##            : The account id to insert the pretargeting config for.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `accountId` field"
-  var valid_580255 = path.getOrDefault("accountId")
-  valid_580255 = validateParameter(valid_580255, JString, required = true,
+  var valid_589284 = path.getOrDefault("accountId")
+  valid_589284 = validateParameter(valid_589284, JString, required = true,
                                  default = nil)
-  if valid_580255 != nil:
-    section.add "accountId", valid_580255
+  if valid_589284 != nil:
+    section.add "accountId", valid_589284
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -2680,41 +2680,41 @@ proc validate_AdexchangebuyerPretargetingConfigInsert_580253(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580256 = query.getOrDefault("fields")
-  valid_580256 = validateParameter(valid_580256, JString, required = false,
+  var valid_589285 = query.getOrDefault("fields")
+  valid_589285 = validateParameter(valid_589285, JString, required = false,
                                  default = nil)
-  if valid_580256 != nil:
-    section.add "fields", valid_580256
-  var valid_580257 = query.getOrDefault("quotaUser")
-  valid_580257 = validateParameter(valid_580257, JString, required = false,
+  if valid_589285 != nil:
+    section.add "fields", valid_589285
+  var valid_589286 = query.getOrDefault("quotaUser")
+  valid_589286 = validateParameter(valid_589286, JString, required = false,
                                  default = nil)
-  if valid_580257 != nil:
-    section.add "quotaUser", valid_580257
-  var valid_580258 = query.getOrDefault("alt")
-  valid_580258 = validateParameter(valid_580258, JString, required = false,
+  if valid_589286 != nil:
+    section.add "quotaUser", valid_589286
+  var valid_589287 = query.getOrDefault("alt")
+  valid_589287 = validateParameter(valid_589287, JString, required = false,
                                  default = newJString("json"))
-  if valid_580258 != nil:
-    section.add "alt", valid_580258
-  var valid_580259 = query.getOrDefault("oauth_token")
-  valid_580259 = validateParameter(valid_580259, JString, required = false,
+  if valid_589287 != nil:
+    section.add "alt", valid_589287
+  var valid_589288 = query.getOrDefault("oauth_token")
+  valid_589288 = validateParameter(valid_589288, JString, required = false,
                                  default = nil)
-  if valid_580259 != nil:
-    section.add "oauth_token", valid_580259
-  var valid_580260 = query.getOrDefault("userIp")
-  valid_580260 = validateParameter(valid_580260, JString, required = false,
+  if valid_589288 != nil:
+    section.add "oauth_token", valid_589288
+  var valid_589289 = query.getOrDefault("userIp")
+  valid_589289 = validateParameter(valid_589289, JString, required = false,
                                  default = nil)
-  if valid_580260 != nil:
-    section.add "userIp", valid_580260
-  var valid_580261 = query.getOrDefault("key")
-  valid_580261 = validateParameter(valid_580261, JString, required = false,
+  if valid_589289 != nil:
+    section.add "userIp", valid_589289
+  var valid_589290 = query.getOrDefault("key")
+  valid_589290 = validateParameter(valid_589290, JString, required = false,
                                  default = nil)
-  if valid_580261 != nil:
-    section.add "key", valid_580261
-  var valid_580262 = query.getOrDefault("prettyPrint")
-  valid_580262 = validateParameter(valid_580262, JBool, required = false,
+  if valid_589290 != nil:
+    section.add "key", valid_589290
+  var valid_589291 = query.getOrDefault("prettyPrint")
+  valid_589291 = validateParameter(valid_589291, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580262 != nil:
-    section.add "prettyPrint", valid_580262
+  if valid_589291 != nil:
+    section.add "prettyPrint", valid_589291
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -2726,21 +2726,21 @@ proc validate_AdexchangebuyerPretargetingConfigInsert_580253(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580264: Call_AdexchangebuyerPretargetingConfigInsert_580252;
+proc call*(call_589293: Call_AdexchangebuyerPretargetingConfigInsert_589281;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Inserts a new pretargeting configuration.
   ## 
-  let valid = call_580264.validator(path, query, header, formData, body)
-  let scheme = call_580264.pickScheme
+  let valid = call_589293.validator(path, query, header, formData, body)
+  let scheme = call_589293.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580264.url(scheme.get, call_580264.host, call_580264.base,
-                         call_580264.route, valid.getOrDefault("path"),
+  let url = call_589293.url(scheme.get, call_589293.host, call_589293.base,
+                         call_589293.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580264, url, valid)
+  result = hook(call_589293, url, valid)
 
-proc call*(call_580265: Call_AdexchangebuyerPretargetingConfigInsert_580252;
+proc call*(call_589294: Call_AdexchangebuyerPretargetingConfigInsert_589281;
           accountId: string; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; userIp: string = "";
           key: string = ""; body: JsonNode = nil; prettyPrint: bool = true): Recallable =
@@ -2763,31 +2763,31 @@ proc call*(call_580265: Call_AdexchangebuyerPretargetingConfigInsert_580252;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_580266 = newJObject()
-  var query_580267 = newJObject()
-  var body_580268 = newJObject()
-  add(query_580267, "fields", newJString(fields))
-  add(query_580267, "quotaUser", newJString(quotaUser))
-  add(query_580267, "alt", newJString(alt))
-  add(query_580267, "oauth_token", newJString(oauthToken))
-  add(path_580266, "accountId", newJString(accountId))
-  add(query_580267, "userIp", newJString(userIp))
-  add(query_580267, "key", newJString(key))
+  var path_589295 = newJObject()
+  var query_589296 = newJObject()
+  var body_589297 = newJObject()
+  add(query_589296, "fields", newJString(fields))
+  add(query_589296, "quotaUser", newJString(quotaUser))
+  add(query_589296, "alt", newJString(alt))
+  add(query_589296, "oauth_token", newJString(oauthToken))
+  add(path_589295, "accountId", newJString(accountId))
+  add(query_589296, "userIp", newJString(userIp))
+  add(query_589296, "key", newJString(key))
   if body != nil:
-    body_580268 = body
-  add(query_580267, "prettyPrint", newJBool(prettyPrint))
-  result = call_580265.call(path_580266, query_580267, nil, nil, body_580268)
+    body_589297 = body
+  add(query_589296, "prettyPrint", newJBool(prettyPrint))
+  result = call_589294.call(path_589295, query_589296, nil, nil, body_589297)
 
-var adexchangebuyerPretargetingConfigInsert* = Call_AdexchangebuyerPretargetingConfigInsert_580252(
+var adexchangebuyerPretargetingConfigInsert* = Call_AdexchangebuyerPretargetingConfigInsert_589281(
     name: "adexchangebuyerPretargetingConfigInsert", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com", route: "/pretargetingconfigs/{accountId}",
-    validator: validate_AdexchangebuyerPretargetingConfigInsert_580253,
+    validator: validate_AdexchangebuyerPretargetingConfigInsert_589282,
     base: "/adexchangebuyer/v1.4",
-    url: url_AdexchangebuyerPretargetingConfigInsert_580254,
+    url: url_AdexchangebuyerPretargetingConfigInsert_589283,
     schemes: {Scheme.Https})
 type
-  Call_AdexchangebuyerPretargetingConfigList_580237 = ref object of OpenApiRestCall_579437
-proc url_AdexchangebuyerPretargetingConfigList_580239(protocol: Scheme;
+  Call_AdexchangebuyerPretargetingConfigList_589266 = ref object of OpenApiRestCall_588466
+proc url_AdexchangebuyerPretargetingConfigList_589268(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -2802,7 +2802,7 @@ proc url_AdexchangebuyerPretargetingConfigList_580239(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_AdexchangebuyerPretargetingConfigList_580238(path: JsonNode;
+proc validate_AdexchangebuyerPretargetingConfigList_589267(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Retrieves a list of the authenticated user's pretargeting configurations.
   ## 
@@ -2813,11 +2813,11 @@ proc validate_AdexchangebuyerPretargetingConfigList_580238(path: JsonNode;
   ##            : The account id to get the pretargeting configs for.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `accountId` field"
-  var valid_580240 = path.getOrDefault("accountId")
-  valid_580240 = validateParameter(valid_580240, JString, required = true,
+  var valid_589269 = path.getOrDefault("accountId")
+  valid_589269 = validateParameter(valid_589269, JString, required = true,
                                  default = nil)
-  if valid_580240 != nil:
-    section.add "accountId", valid_580240
+  if valid_589269 != nil:
+    section.add "accountId", valid_589269
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -2835,41 +2835,41 @@ proc validate_AdexchangebuyerPretargetingConfigList_580238(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580241 = query.getOrDefault("fields")
-  valid_580241 = validateParameter(valid_580241, JString, required = false,
+  var valid_589270 = query.getOrDefault("fields")
+  valid_589270 = validateParameter(valid_589270, JString, required = false,
                                  default = nil)
-  if valid_580241 != nil:
-    section.add "fields", valid_580241
-  var valid_580242 = query.getOrDefault("quotaUser")
-  valid_580242 = validateParameter(valid_580242, JString, required = false,
+  if valid_589270 != nil:
+    section.add "fields", valid_589270
+  var valid_589271 = query.getOrDefault("quotaUser")
+  valid_589271 = validateParameter(valid_589271, JString, required = false,
                                  default = nil)
-  if valid_580242 != nil:
-    section.add "quotaUser", valid_580242
-  var valid_580243 = query.getOrDefault("alt")
-  valid_580243 = validateParameter(valid_580243, JString, required = false,
+  if valid_589271 != nil:
+    section.add "quotaUser", valid_589271
+  var valid_589272 = query.getOrDefault("alt")
+  valid_589272 = validateParameter(valid_589272, JString, required = false,
                                  default = newJString("json"))
-  if valid_580243 != nil:
-    section.add "alt", valid_580243
-  var valid_580244 = query.getOrDefault("oauth_token")
-  valid_580244 = validateParameter(valid_580244, JString, required = false,
+  if valid_589272 != nil:
+    section.add "alt", valid_589272
+  var valid_589273 = query.getOrDefault("oauth_token")
+  valid_589273 = validateParameter(valid_589273, JString, required = false,
                                  default = nil)
-  if valid_580244 != nil:
-    section.add "oauth_token", valid_580244
-  var valid_580245 = query.getOrDefault("userIp")
-  valid_580245 = validateParameter(valid_580245, JString, required = false,
+  if valid_589273 != nil:
+    section.add "oauth_token", valid_589273
+  var valid_589274 = query.getOrDefault("userIp")
+  valid_589274 = validateParameter(valid_589274, JString, required = false,
                                  default = nil)
-  if valid_580245 != nil:
-    section.add "userIp", valid_580245
-  var valid_580246 = query.getOrDefault("key")
-  valid_580246 = validateParameter(valid_580246, JString, required = false,
+  if valid_589274 != nil:
+    section.add "userIp", valid_589274
+  var valid_589275 = query.getOrDefault("key")
+  valid_589275 = validateParameter(valid_589275, JString, required = false,
                                  default = nil)
-  if valid_580246 != nil:
-    section.add "key", valid_580246
-  var valid_580247 = query.getOrDefault("prettyPrint")
-  valid_580247 = validateParameter(valid_580247, JBool, required = false,
+  if valid_589275 != nil:
+    section.add "key", valid_589275
+  var valid_589276 = query.getOrDefault("prettyPrint")
+  valid_589276 = validateParameter(valid_589276, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580247 != nil:
-    section.add "prettyPrint", valid_580247
+  if valid_589276 != nil:
+    section.add "prettyPrint", valid_589276
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -2878,21 +2878,21 @@ proc validate_AdexchangebuyerPretargetingConfigList_580238(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580248: Call_AdexchangebuyerPretargetingConfigList_580237;
+proc call*(call_589277: Call_AdexchangebuyerPretargetingConfigList_589266;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Retrieves a list of the authenticated user's pretargeting configurations.
   ## 
-  let valid = call_580248.validator(path, query, header, formData, body)
-  let scheme = call_580248.pickScheme
+  let valid = call_589277.validator(path, query, header, formData, body)
+  let scheme = call_589277.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580248.url(scheme.get, call_580248.host, call_580248.base,
-                         call_580248.route, valid.getOrDefault("path"),
+  let url = call_589277.url(scheme.get, call_589277.host, call_589277.base,
+                         call_589277.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580248, url, valid)
+  result = hook(call_589277, url, valid)
 
-proc call*(call_580249: Call_AdexchangebuyerPretargetingConfigList_580237;
+proc call*(call_589278: Call_AdexchangebuyerPretargetingConfigList_589266;
           accountId: string; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; userIp: string = "";
           key: string = ""; prettyPrint: bool = true): Recallable =
@@ -2914,27 +2914,27 @@ proc call*(call_580249: Call_AdexchangebuyerPretargetingConfigList_580237;
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_580250 = newJObject()
-  var query_580251 = newJObject()
-  add(query_580251, "fields", newJString(fields))
-  add(query_580251, "quotaUser", newJString(quotaUser))
-  add(query_580251, "alt", newJString(alt))
-  add(query_580251, "oauth_token", newJString(oauthToken))
-  add(path_580250, "accountId", newJString(accountId))
-  add(query_580251, "userIp", newJString(userIp))
-  add(query_580251, "key", newJString(key))
-  add(query_580251, "prettyPrint", newJBool(prettyPrint))
-  result = call_580249.call(path_580250, query_580251, nil, nil, nil)
+  var path_589279 = newJObject()
+  var query_589280 = newJObject()
+  add(query_589280, "fields", newJString(fields))
+  add(query_589280, "quotaUser", newJString(quotaUser))
+  add(query_589280, "alt", newJString(alt))
+  add(query_589280, "oauth_token", newJString(oauthToken))
+  add(path_589279, "accountId", newJString(accountId))
+  add(query_589280, "userIp", newJString(userIp))
+  add(query_589280, "key", newJString(key))
+  add(query_589280, "prettyPrint", newJBool(prettyPrint))
+  result = call_589278.call(path_589279, query_589280, nil, nil, nil)
 
-var adexchangebuyerPretargetingConfigList* = Call_AdexchangebuyerPretargetingConfigList_580237(
+var adexchangebuyerPretargetingConfigList* = Call_AdexchangebuyerPretargetingConfigList_589266(
     name: "adexchangebuyerPretargetingConfigList", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/pretargetingconfigs/{accountId}",
-    validator: validate_AdexchangebuyerPretargetingConfigList_580238,
-    base: "/adexchangebuyer/v1.4", url: url_AdexchangebuyerPretargetingConfigList_580239,
+    validator: validate_AdexchangebuyerPretargetingConfigList_589267,
+    base: "/adexchangebuyer/v1.4", url: url_AdexchangebuyerPretargetingConfigList_589268,
     schemes: {Scheme.Https})
 type
-  Call_AdexchangebuyerPretargetingConfigUpdate_580285 = ref object of OpenApiRestCall_579437
-proc url_AdexchangebuyerPretargetingConfigUpdate_580287(protocol: Scheme;
+  Call_AdexchangebuyerPretargetingConfigUpdate_589314 = ref object of OpenApiRestCall_588466
+proc url_AdexchangebuyerPretargetingConfigUpdate_589316(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -2952,7 +2952,7 @@ proc url_AdexchangebuyerPretargetingConfigUpdate_580287(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_AdexchangebuyerPretargetingConfigUpdate_580286(path: JsonNode;
+proc validate_AdexchangebuyerPretargetingConfigUpdate_589315(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Updates an existing pretargeting config.
   ## 
@@ -2965,16 +2965,16 @@ proc validate_AdexchangebuyerPretargetingConfigUpdate_580286(path: JsonNode;
   ##           : The specific id of the configuration to update.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `accountId` field"
-  var valid_580288 = path.getOrDefault("accountId")
-  valid_580288 = validateParameter(valid_580288, JString, required = true,
+  var valid_589317 = path.getOrDefault("accountId")
+  valid_589317 = validateParameter(valid_589317, JString, required = true,
                                  default = nil)
-  if valid_580288 != nil:
-    section.add "accountId", valid_580288
-  var valid_580289 = path.getOrDefault("configId")
-  valid_580289 = validateParameter(valid_580289, JString, required = true,
+  if valid_589317 != nil:
+    section.add "accountId", valid_589317
+  var valid_589318 = path.getOrDefault("configId")
+  valid_589318 = validateParameter(valid_589318, JString, required = true,
                                  default = nil)
-  if valid_580289 != nil:
-    section.add "configId", valid_580289
+  if valid_589318 != nil:
+    section.add "configId", valid_589318
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -2992,41 +2992,41 @@ proc validate_AdexchangebuyerPretargetingConfigUpdate_580286(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580290 = query.getOrDefault("fields")
-  valid_580290 = validateParameter(valid_580290, JString, required = false,
+  var valid_589319 = query.getOrDefault("fields")
+  valid_589319 = validateParameter(valid_589319, JString, required = false,
                                  default = nil)
-  if valid_580290 != nil:
-    section.add "fields", valid_580290
-  var valid_580291 = query.getOrDefault("quotaUser")
-  valid_580291 = validateParameter(valid_580291, JString, required = false,
+  if valid_589319 != nil:
+    section.add "fields", valid_589319
+  var valid_589320 = query.getOrDefault("quotaUser")
+  valid_589320 = validateParameter(valid_589320, JString, required = false,
                                  default = nil)
-  if valid_580291 != nil:
-    section.add "quotaUser", valid_580291
-  var valid_580292 = query.getOrDefault("alt")
-  valid_580292 = validateParameter(valid_580292, JString, required = false,
+  if valid_589320 != nil:
+    section.add "quotaUser", valid_589320
+  var valid_589321 = query.getOrDefault("alt")
+  valid_589321 = validateParameter(valid_589321, JString, required = false,
                                  default = newJString("json"))
-  if valid_580292 != nil:
-    section.add "alt", valid_580292
-  var valid_580293 = query.getOrDefault("oauth_token")
-  valid_580293 = validateParameter(valid_580293, JString, required = false,
+  if valid_589321 != nil:
+    section.add "alt", valid_589321
+  var valid_589322 = query.getOrDefault("oauth_token")
+  valid_589322 = validateParameter(valid_589322, JString, required = false,
                                  default = nil)
-  if valid_580293 != nil:
-    section.add "oauth_token", valid_580293
-  var valid_580294 = query.getOrDefault("userIp")
-  valid_580294 = validateParameter(valid_580294, JString, required = false,
+  if valid_589322 != nil:
+    section.add "oauth_token", valid_589322
+  var valid_589323 = query.getOrDefault("userIp")
+  valid_589323 = validateParameter(valid_589323, JString, required = false,
                                  default = nil)
-  if valid_580294 != nil:
-    section.add "userIp", valid_580294
-  var valid_580295 = query.getOrDefault("key")
-  valid_580295 = validateParameter(valid_580295, JString, required = false,
+  if valid_589323 != nil:
+    section.add "userIp", valid_589323
+  var valid_589324 = query.getOrDefault("key")
+  valid_589324 = validateParameter(valid_589324, JString, required = false,
                                  default = nil)
-  if valid_580295 != nil:
-    section.add "key", valid_580295
-  var valid_580296 = query.getOrDefault("prettyPrint")
-  valid_580296 = validateParameter(valid_580296, JBool, required = false,
+  if valid_589324 != nil:
+    section.add "key", valid_589324
+  var valid_589325 = query.getOrDefault("prettyPrint")
+  valid_589325 = validateParameter(valid_589325, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580296 != nil:
-    section.add "prettyPrint", valid_580296
+  if valid_589325 != nil:
+    section.add "prettyPrint", valid_589325
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -3038,21 +3038,21 @@ proc validate_AdexchangebuyerPretargetingConfigUpdate_580286(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580298: Call_AdexchangebuyerPretargetingConfigUpdate_580285;
+proc call*(call_589327: Call_AdexchangebuyerPretargetingConfigUpdate_589314;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Updates an existing pretargeting config.
   ## 
-  let valid = call_580298.validator(path, query, header, formData, body)
-  let scheme = call_580298.pickScheme
+  let valid = call_589327.validator(path, query, header, formData, body)
+  let scheme = call_589327.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580298.url(scheme.get, call_580298.host, call_580298.base,
-                         call_580298.route, valid.getOrDefault("path"),
+  let url = call_589327.url(scheme.get, call_589327.host, call_589327.base,
+                         call_589327.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580298, url, valid)
+  result = hook(call_589327, url, valid)
 
-proc call*(call_580299: Call_AdexchangebuyerPretargetingConfigUpdate_580285;
+proc call*(call_589328: Call_AdexchangebuyerPretargetingConfigUpdate_589314;
           accountId: string; configId: string; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; key: string = ""; body: JsonNode = nil;
@@ -3078,33 +3078,33 @@ proc call*(call_580299: Call_AdexchangebuyerPretargetingConfigUpdate_580285;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_580300 = newJObject()
-  var query_580301 = newJObject()
-  var body_580302 = newJObject()
-  add(query_580301, "fields", newJString(fields))
-  add(query_580301, "quotaUser", newJString(quotaUser))
-  add(query_580301, "alt", newJString(alt))
-  add(query_580301, "oauth_token", newJString(oauthToken))
-  add(path_580300, "accountId", newJString(accountId))
-  add(query_580301, "userIp", newJString(userIp))
-  add(query_580301, "key", newJString(key))
-  add(path_580300, "configId", newJString(configId))
+  var path_589329 = newJObject()
+  var query_589330 = newJObject()
+  var body_589331 = newJObject()
+  add(query_589330, "fields", newJString(fields))
+  add(query_589330, "quotaUser", newJString(quotaUser))
+  add(query_589330, "alt", newJString(alt))
+  add(query_589330, "oauth_token", newJString(oauthToken))
+  add(path_589329, "accountId", newJString(accountId))
+  add(query_589330, "userIp", newJString(userIp))
+  add(query_589330, "key", newJString(key))
+  add(path_589329, "configId", newJString(configId))
   if body != nil:
-    body_580302 = body
-  add(query_580301, "prettyPrint", newJBool(prettyPrint))
-  result = call_580299.call(path_580300, query_580301, nil, nil, body_580302)
+    body_589331 = body
+  add(query_589330, "prettyPrint", newJBool(prettyPrint))
+  result = call_589328.call(path_589329, query_589330, nil, nil, body_589331)
 
-var adexchangebuyerPretargetingConfigUpdate* = Call_AdexchangebuyerPretargetingConfigUpdate_580285(
+var adexchangebuyerPretargetingConfigUpdate* = Call_AdexchangebuyerPretargetingConfigUpdate_589314(
     name: "adexchangebuyerPretargetingConfigUpdate", meth: HttpMethod.HttpPut,
     host: "www.googleapis.com",
     route: "/pretargetingconfigs/{accountId}/{configId}",
-    validator: validate_AdexchangebuyerPretargetingConfigUpdate_580286,
+    validator: validate_AdexchangebuyerPretargetingConfigUpdate_589315,
     base: "/adexchangebuyer/v1.4",
-    url: url_AdexchangebuyerPretargetingConfigUpdate_580287,
+    url: url_AdexchangebuyerPretargetingConfigUpdate_589316,
     schemes: {Scheme.Https})
 type
-  Call_AdexchangebuyerPretargetingConfigGet_580269 = ref object of OpenApiRestCall_579437
-proc url_AdexchangebuyerPretargetingConfigGet_580271(protocol: Scheme;
+  Call_AdexchangebuyerPretargetingConfigGet_589298 = ref object of OpenApiRestCall_588466
+proc url_AdexchangebuyerPretargetingConfigGet_589300(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -3122,7 +3122,7 @@ proc url_AdexchangebuyerPretargetingConfigGet_580271(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_AdexchangebuyerPretargetingConfigGet_580270(path: JsonNode;
+proc validate_AdexchangebuyerPretargetingConfigGet_589299(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Gets a specific pretargeting configuration
   ## 
@@ -3135,16 +3135,16 @@ proc validate_AdexchangebuyerPretargetingConfigGet_580270(path: JsonNode;
   ##           : The specific id of the configuration to retrieve.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `accountId` field"
-  var valid_580272 = path.getOrDefault("accountId")
-  valid_580272 = validateParameter(valid_580272, JString, required = true,
+  var valid_589301 = path.getOrDefault("accountId")
+  valid_589301 = validateParameter(valid_589301, JString, required = true,
                                  default = nil)
-  if valid_580272 != nil:
-    section.add "accountId", valid_580272
-  var valid_580273 = path.getOrDefault("configId")
-  valid_580273 = validateParameter(valid_580273, JString, required = true,
+  if valid_589301 != nil:
+    section.add "accountId", valid_589301
+  var valid_589302 = path.getOrDefault("configId")
+  valid_589302 = validateParameter(valid_589302, JString, required = true,
                                  default = nil)
-  if valid_580273 != nil:
-    section.add "configId", valid_580273
+  if valid_589302 != nil:
+    section.add "configId", valid_589302
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -3162,41 +3162,41 @@ proc validate_AdexchangebuyerPretargetingConfigGet_580270(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580274 = query.getOrDefault("fields")
-  valid_580274 = validateParameter(valid_580274, JString, required = false,
+  var valid_589303 = query.getOrDefault("fields")
+  valid_589303 = validateParameter(valid_589303, JString, required = false,
                                  default = nil)
-  if valid_580274 != nil:
-    section.add "fields", valid_580274
-  var valid_580275 = query.getOrDefault("quotaUser")
-  valid_580275 = validateParameter(valid_580275, JString, required = false,
+  if valid_589303 != nil:
+    section.add "fields", valid_589303
+  var valid_589304 = query.getOrDefault("quotaUser")
+  valid_589304 = validateParameter(valid_589304, JString, required = false,
                                  default = nil)
-  if valid_580275 != nil:
-    section.add "quotaUser", valid_580275
-  var valid_580276 = query.getOrDefault("alt")
-  valid_580276 = validateParameter(valid_580276, JString, required = false,
+  if valid_589304 != nil:
+    section.add "quotaUser", valid_589304
+  var valid_589305 = query.getOrDefault("alt")
+  valid_589305 = validateParameter(valid_589305, JString, required = false,
                                  default = newJString("json"))
-  if valid_580276 != nil:
-    section.add "alt", valid_580276
-  var valid_580277 = query.getOrDefault("oauth_token")
-  valid_580277 = validateParameter(valid_580277, JString, required = false,
+  if valid_589305 != nil:
+    section.add "alt", valid_589305
+  var valid_589306 = query.getOrDefault("oauth_token")
+  valid_589306 = validateParameter(valid_589306, JString, required = false,
                                  default = nil)
-  if valid_580277 != nil:
-    section.add "oauth_token", valid_580277
-  var valid_580278 = query.getOrDefault("userIp")
-  valid_580278 = validateParameter(valid_580278, JString, required = false,
+  if valid_589306 != nil:
+    section.add "oauth_token", valid_589306
+  var valid_589307 = query.getOrDefault("userIp")
+  valid_589307 = validateParameter(valid_589307, JString, required = false,
                                  default = nil)
-  if valid_580278 != nil:
-    section.add "userIp", valid_580278
-  var valid_580279 = query.getOrDefault("key")
-  valid_580279 = validateParameter(valid_580279, JString, required = false,
+  if valid_589307 != nil:
+    section.add "userIp", valid_589307
+  var valid_589308 = query.getOrDefault("key")
+  valid_589308 = validateParameter(valid_589308, JString, required = false,
                                  default = nil)
-  if valid_580279 != nil:
-    section.add "key", valid_580279
-  var valid_580280 = query.getOrDefault("prettyPrint")
-  valid_580280 = validateParameter(valid_580280, JBool, required = false,
+  if valid_589308 != nil:
+    section.add "key", valid_589308
+  var valid_589309 = query.getOrDefault("prettyPrint")
+  valid_589309 = validateParameter(valid_589309, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580280 != nil:
-    section.add "prettyPrint", valid_580280
+  if valid_589309 != nil:
+    section.add "prettyPrint", valid_589309
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -3205,21 +3205,21 @@ proc validate_AdexchangebuyerPretargetingConfigGet_580270(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580281: Call_AdexchangebuyerPretargetingConfigGet_580269;
+proc call*(call_589310: Call_AdexchangebuyerPretargetingConfigGet_589298;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Gets a specific pretargeting configuration
   ## 
-  let valid = call_580281.validator(path, query, header, formData, body)
-  let scheme = call_580281.pickScheme
+  let valid = call_589310.validator(path, query, header, formData, body)
+  let scheme = call_589310.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580281.url(scheme.get, call_580281.host, call_580281.base,
-                         call_580281.route, valid.getOrDefault("path"),
+  let url = call_589310.url(scheme.get, call_589310.host, call_589310.base,
+                         call_589310.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580281, url, valid)
+  result = hook(call_589310, url, valid)
 
-proc call*(call_580282: Call_AdexchangebuyerPretargetingConfigGet_580269;
+proc call*(call_589311: Call_AdexchangebuyerPretargetingConfigGet_589298;
           accountId: string; configId: string; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; key: string = ""; prettyPrint: bool = true): Recallable =
@@ -3243,29 +3243,29 @@ proc call*(call_580282: Call_AdexchangebuyerPretargetingConfigGet_580269;
   ##           : The specific id of the configuration to retrieve.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_580283 = newJObject()
-  var query_580284 = newJObject()
-  add(query_580284, "fields", newJString(fields))
-  add(query_580284, "quotaUser", newJString(quotaUser))
-  add(query_580284, "alt", newJString(alt))
-  add(query_580284, "oauth_token", newJString(oauthToken))
-  add(path_580283, "accountId", newJString(accountId))
-  add(query_580284, "userIp", newJString(userIp))
-  add(query_580284, "key", newJString(key))
-  add(path_580283, "configId", newJString(configId))
-  add(query_580284, "prettyPrint", newJBool(prettyPrint))
-  result = call_580282.call(path_580283, query_580284, nil, nil, nil)
+  var path_589312 = newJObject()
+  var query_589313 = newJObject()
+  add(query_589313, "fields", newJString(fields))
+  add(query_589313, "quotaUser", newJString(quotaUser))
+  add(query_589313, "alt", newJString(alt))
+  add(query_589313, "oauth_token", newJString(oauthToken))
+  add(path_589312, "accountId", newJString(accountId))
+  add(query_589313, "userIp", newJString(userIp))
+  add(query_589313, "key", newJString(key))
+  add(path_589312, "configId", newJString(configId))
+  add(query_589313, "prettyPrint", newJBool(prettyPrint))
+  result = call_589311.call(path_589312, query_589313, nil, nil, nil)
 
-var adexchangebuyerPretargetingConfigGet* = Call_AdexchangebuyerPretargetingConfigGet_580269(
+var adexchangebuyerPretargetingConfigGet* = Call_AdexchangebuyerPretargetingConfigGet_589298(
     name: "adexchangebuyerPretargetingConfigGet", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com",
     route: "/pretargetingconfigs/{accountId}/{configId}",
-    validator: validate_AdexchangebuyerPretargetingConfigGet_580270,
-    base: "/adexchangebuyer/v1.4", url: url_AdexchangebuyerPretargetingConfigGet_580271,
+    validator: validate_AdexchangebuyerPretargetingConfigGet_589299,
+    base: "/adexchangebuyer/v1.4", url: url_AdexchangebuyerPretargetingConfigGet_589300,
     schemes: {Scheme.Https})
 type
-  Call_AdexchangebuyerPretargetingConfigPatch_580319 = ref object of OpenApiRestCall_579437
-proc url_AdexchangebuyerPretargetingConfigPatch_580321(protocol: Scheme;
+  Call_AdexchangebuyerPretargetingConfigPatch_589348 = ref object of OpenApiRestCall_588466
+proc url_AdexchangebuyerPretargetingConfigPatch_589350(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -3283,7 +3283,7 @@ proc url_AdexchangebuyerPretargetingConfigPatch_580321(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_AdexchangebuyerPretargetingConfigPatch_580320(path: JsonNode;
+proc validate_AdexchangebuyerPretargetingConfigPatch_589349(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Updates an existing pretargeting config. This method supports patch semantics.
   ## 
@@ -3296,16 +3296,16 @@ proc validate_AdexchangebuyerPretargetingConfigPatch_580320(path: JsonNode;
   ##           : The specific id of the configuration to update.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `accountId` field"
-  var valid_580322 = path.getOrDefault("accountId")
-  valid_580322 = validateParameter(valid_580322, JString, required = true,
+  var valid_589351 = path.getOrDefault("accountId")
+  valid_589351 = validateParameter(valid_589351, JString, required = true,
                                  default = nil)
-  if valid_580322 != nil:
-    section.add "accountId", valid_580322
-  var valid_580323 = path.getOrDefault("configId")
-  valid_580323 = validateParameter(valid_580323, JString, required = true,
+  if valid_589351 != nil:
+    section.add "accountId", valid_589351
+  var valid_589352 = path.getOrDefault("configId")
+  valid_589352 = validateParameter(valid_589352, JString, required = true,
                                  default = nil)
-  if valid_580323 != nil:
-    section.add "configId", valid_580323
+  if valid_589352 != nil:
+    section.add "configId", valid_589352
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -3323,41 +3323,41 @@ proc validate_AdexchangebuyerPretargetingConfigPatch_580320(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580324 = query.getOrDefault("fields")
-  valid_580324 = validateParameter(valid_580324, JString, required = false,
+  var valid_589353 = query.getOrDefault("fields")
+  valid_589353 = validateParameter(valid_589353, JString, required = false,
                                  default = nil)
-  if valid_580324 != nil:
-    section.add "fields", valid_580324
-  var valid_580325 = query.getOrDefault("quotaUser")
-  valid_580325 = validateParameter(valid_580325, JString, required = false,
+  if valid_589353 != nil:
+    section.add "fields", valid_589353
+  var valid_589354 = query.getOrDefault("quotaUser")
+  valid_589354 = validateParameter(valid_589354, JString, required = false,
                                  default = nil)
-  if valid_580325 != nil:
-    section.add "quotaUser", valid_580325
-  var valid_580326 = query.getOrDefault("alt")
-  valid_580326 = validateParameter(valid_580326, JString, required = false,
+  if valid_589354 != nil:
+    section.add "quotaUser", valid_589354
+  var valid_589355 = query.getOrDefault("alt")
+  valid_589355 = validateParameter(valid_589355, JString, required = false,
                                  default = newJString("json"))
-  if valid_580326 != nil:
-    section.add "alt", valid_580326
-  var valid_580327 = query.getOrDefault("oauth_token")
-  valid_580327 = validateParameter(valid_580327, JString, required = false,
+  if valid_589355 != nil:
+    section.add "alt", valid_589355
+  var valid_589356 = query.getOrDefault("oauth_token")
+  valid_589356 = validateParameter(valid_589356, JString, required = false,
                                  default = nil)
-  if valid_580327 != nil:
-    section.add "oauth_token", valid_580327
-  var valid_580328 = query.getOrDefault("userIp")
-  valid_580328 = validateParameter(valid_580328, JString, required = false,
+  if valid_589356 != nil:
+    section.add "oauth_token", valid_589356
+  var valid_589357 = query.getOrDefault("userIp")
+  valid_589357 = validateParameter(valid_589357, JString, required = false,
                                  default = nil)
-  if valid_580328 != nil:
-    section.add "userIp", valid_580328
-  var valid_580329 = query.getOrDefault("key")
-  valid_580329 = validateParameter(valid_580329, JString, required = false,
+  if valid_589357 != nil:
+    section.add "userIp", valid_589357
+  var valid_589358 = query.getOrDefault("key")
+  valid_589358 = validateParameter(valid_589358, JString, required = false,
                                  default = nil)
-  if valid_580329 != nil:
-    section.add "key", valid_580329
-  var valid_580330 = query.getOrDefault("prettyPrint")
-  valid_580330 = validateParameter(valid_580330, JBool, required = false,
+  if valid_589358 != nil:
+    section.add "key", valid_589358
+  var valid_589359 = query.getOrDefault("prettyPrint")
+  valid_589359 = validateParameter(valid_589359, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580330 != nil:
-    section.add "prettyPrint", valid_580330
+  if valid_589359 != nil:
+    section.add "prettyPrint", valid_589359
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -3369,21 +3369,21 @@ proc validate_AdexchangebuyerPretargetingConfigPatch_580320(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580332: Call_AdexchangebuyerPretargetingConfigPatch_580319;
+proc call*(call_589361: Call_AdexchangebuyerPretargetingConfigPatch_589348;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Updates an existing pretargeting config. This method supports patch semantics.
   ## 
-  let valid = call_580332.validator(path, query, header, formData, body)
-  let scheme = call_580332.pickScheme
+  let valid = call_589361.validator(path, query, header, formData, body)
+  let scheme = call_589361.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580332.url(scheme.get, call_580332.host, call_580332.base,
-                         call_580332.route, valid.getOrDefault("path"),
+  let url = call_589361.url(scheme.get, call_589361.host, call_589361.base,
+                         call_589361.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580332, url, valid)
+  result = hook(call_589361, url, valid)
 
-proc call*(call_580333: Call_AdexchangebuyerPretargetingConfigPatch_580319;
+proc call*(call_589362: Call_AdexchangebuyerPretargetingConfigPatch_589348;
           accountId: string; configId: string; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; key: string = ""; body: JsonNode = nil;
@@ -3409,33 +3409,33 @@ proc call*(call_580333: Call_AdexchangebuyerPretargetingConfigPatch_580319;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_580334 = newJObject()
-  var query_580335 = newJObject()
-  var body_580336 = newJObject()
-  add(query_580335, "fields", newJString(fields))
-  add(query_580335, "quotaUser", newJString(quotaUser))
-  add(query_580335, "alt", newJString(alt))
-  add(query_580335, "oauth_token", newJString(oauthToken))
-  add(path_580334, "accountId", newJString(accountId))
-  add(query_580335, "userIp", newJString(userIp))
-  add(query_580335, "key", newJString(key))
-  add(path_580334, "configId", newJString(configId))
+  var path_589363 = newJObject()
+  var query_589364 = newJObject()
+  var body_589365 = newJObject()
+  add(query_589364, "fields", newJString(fields))
+  add(query_589364, "quotaUser", newJString(quotaUser))
+  add(query_589364, "alt", newJString(alt))
+  add(query_589364, "oauth_token", newJString(oauthToken))
+  add(path_589363, "accountId", newJString(accountId))
+  add(query_589364, "userIp", newJString(userIp))
+  add(query_589364, "key", newJString(key))
+  add(path_589363, "configId", newJString(configId))
   if body != nil:
-    body_580336 = body
-  add(query_580335, "prettyPrint", newJBool(prettyPrint))
-  result = call_580333.call(path_580334, query_580335, nil, nil, body_580336)
+    body_589365 = body
+  add(query_589364, "prettyPrint", newJBool(prettyPrint))
+  result = call_589362.call(path_589363, query_589364, nil, nil, body_589365)
 
-var adexchangebuyerPretargetingConfigPatch* = Call_AdexchangebuyerPretargetingConfigPatch_580319(
+var adexchangebuyerPretargetingConfigPatch* = Call_AdexchangebuyerPretargetingConfigPatch_589348(
     name: "adexchangebuyerPretargetingConfigPatch", meth: HttpMethod.HttpPatch,
     host: "www.googleapis.com",
     route: "/pretargetingconfigs/{accountId}/{configId}",
-    validator: validate_AdexchangebuyerPretargetingConfigPatch_580320,
+    validator: validate_AdexchangebuyerPretargetingConfigPatch_589349,
     base: "/adexchangebuyer/v1.4",
-    url: url_AdexchangebuyerPretargetingConfigPatch_580321,
+    url: url_AdexchangebuyerPretargetingConfigPatch_589350,
     schemes: {Scheme.Https})
 type
-  Call_AdexchangebuyerPretargetingConfigDelete_580303 = ref object of OpenApiRestCall_579437
-proc url_AdexchangebuyerPretargetingConfigDelete_580305(protocol: Scheme;
+  Call_AdexchangebuyerPretargetingConfigDelete_589332 = ref object of OpenApiRestCall_588466
+proc url_AdexchangebuyerPretargetingConfigDelete_589334(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -3453,7 +3453,7 @@ proc url_AdexchangebuyerPretargetingConfigDelete_580305(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_AdexchangebuyerPretargetingConfigDelete_580304(path: JsonNode;
+proc validate_AdexchangebuyerPretargetingConfigDelete_589333(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Deletes an existing pretargeting config.
   ## 
@@ -3466,16 +3466,16 @@ proc validate_AdexchangebuyerPretargetingConfigDelete_580304(path: JsonNode;
   ##           : The specific id of the configuration to delete.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `accountId` field"
-  var valid_580306 = path.getOrDefault("accountId")
-  valid_580306 = validateParameter(valid_580306, JString, required = true,
+  var valid_589335 = path.getOrDefault("accountId")
+  valid_589335 = validateParameter(valid_589335, JString, required = true,
                                  default = nil)
-  if valid_580306 != nil:
-    section.add "accountId", valid_580306
-  var valid_580307 = path.getOrDefault("configId")
-  valid_580307 = validateParameter(valid_580307, JString, required = true,
+  if valid_589335 != nil:
+    section.add "accountId", valid_589335
+  var valid_589336 = path.getOrDefault("configId")
+  valid_589336 = validateParameter(valid_589336, JString, required = true,
                                  default = nil)
-  if valid_580307 != nil:
-    section.add "configId", valid_580307
+  if valid_589336 != nil:
+    section.add "configId", valid_589336
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -3493,41 +3493,41 @@ proc validate_AdexchangebuyerPretargetingConfigDelete_580304(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580308 = query.getOrDefault("fields")
-  valid_580308 = validateParameter(valid_580308, JString, required = false,
+  var valid_589337 = query.getOrDefault("fields")
+  valid_589337 = validateParameter(valid_589337, JString, required = false,
                                  default = nil)
-  if valid_580308 != nil:
-    section.add "fields", valid_580308
-  var valid_580309 = query.getOrDefault("quotaUser")
-  valid_580309 = validateParameter(valid_580309, JString, required = false,
+  if valid_589337 != nil:
+    section.add "fields", valid_589337
+  var valid_589338 = query.getOrDefault("quotaUser")
+  valid_589338 = validateParameter(valid_589338, JString, required = false,
                                  default = nil)
-  if valid_580309 != nil:
-    section.add "quotaUser", valid_580309
-  var valid_580310 = query.getOrDefault("alt")
-  valid_580310 = validateParameter(valid_580310, JString, required = false,
+  if valid_589338 != nil:
+    section.add "quotaUser", valid_589338
+  var valid_589339 = query.getOrDefault("alt")
+  valid_589339 = validateParameter(valid_589339, JString, required = false,
                                  default = newJString("json"))
-  if valid_580310 != nil:
-    section.add "alt", valid_580310
-  var valid_580311 = query.getOrDefault("oauth_token")
-  valid_580311 = validateParameter(valid_580311, JString, required = false,
+  if valid_589339 != nil:
+    section.add "alt", valid_589339
+  var valid_589340 = query.getOrDefault("oauth_token")
+  valid_589340 = validateParameter(valid_589340, JString, required = false,
                                  default = nil)
-  if valid_580311 != nil:
-    section.add "oauth_token", valid_580311
-  var valid_580312 = query.getOrDefault("userIp")
-  valid_580312 = validateParameter(valid_580312, JString, required = false,
+  if valid_589340 != nil:
+    section.add "oauth_token", valid_589340
+  var valid_589341 = query.getOrDefault("userIp")
+  valid_589341 = validateParameter(valid_589341, JString, required = false,
                                  default = nil)
-  if valid_580312 != nil:
-    section.add "userIp", valid_580312
-  var valid_580313 = query.getOrDefault("key")
-  valid_580313 = validateParameter(valid_580313, JString, required = false,
+  if valid_589341 != nil:
+    section.add "userIp", valid_589341
+  var valid_589342 = query.getOrDefault("key")
+  valid_589342 = validateParameter(valid_589342, JString, required = false,
                                  default = nil)
-  if valid_580313 != nil:
-    section.add "key", valid_580313
-  var valid_580314 = query.getOrDefault("prettyPrint")
-  valid_580314 = validateParameter(valid_580314, JBool, required = false,
+  if valid_589342 != nil:
+    section.add "key", valid_589342
+  var valid_589343 = query.getOrDefault("prettyPrint")
+  valid_589343 = validateParameter(valid_589343, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580314 != nil:
-    section.add "prettyPrint", valid_580314
+  if valid_589343 != nil:
+    section.add "prettyPrint", valid_589343
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -3536,21 +3536,21 @@ proc validate_AdexchangebuyerPretargetingConfigDelete_580304(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580315: Call_AdexchangebuyerPretargetingConfigDelete_580303;
+proc call*(call_589344: Call_AdexchangebuyerPretargetingConfigDelete_589332;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Deletes an existing pretargeting config.
   ## 
-  let valid = call_580315.validator(path, query, header, formData, body)
-  let scheme = call_580315.pickScheme
+  let valid = call_589344.validator(path, query, header, formData, body)
+  let scheme = call_589344.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580315.url(scheme.get, call_580315.host, call_580315.base,
-                         call_580315.route, valid.getOrDefault("path"),
+  let url = call_589344.url(scheme.get, call_589344.host, call_589344.base,
+                         call_589344.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580315, url, valid)
+  result = hook(call_589344, url, valid)
 
-proc call*(call_580316: Call_AdexchangebuyerPretargetingConfigDelete_580303;
+proc call*(call_589345: Call_AdexchangebuyerPretargetingConfigDelete_589332;
           accountId: string; configId: string; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; key: string = ""; prettyPrint: bool = true): Recallable =
@@ -3574,30 +3574,30 @@ proc call*(call_580316: Call_AdexchangebuyerPretargetingConfigDelete_580303;
   ##           : The specific id of the configuration to delete.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_580317 = newJObject()
-  var query_580318 = newJObject()
-  add(query_580318, "fields", newJString(fields))
-  add(query_580318, "quotaUser", newJString(quotaUser))
-  add(query_580318, "alt", newJString(alt))
-  add(query_580318, "oauth_token", newJString(oauthToken))
-  add(path_580317, "accountId", newJString(accountId))
-  add(query_580318, "userIp", newJString(userIp))
-  add(query_580318, "key", newJString(key))
-  add(path_580317, "configId", newJString(configId))
-  add(query_580318, "prettyPrint", newJBool(prettyPrint))
-  result = call_580316.call(path_580317, query_580318, nil, nil, nil)
+  var path_589346 = newJObject()
+  var query_589347 = newJObject()
+  add(query_589347, "fields", newJString(fields))
+  add(query_589347, "quotaUser", newJString(quotaUser))
+  add(query_589347, "alt", newJString(alt))
+  add(query_589347, "oauth_token", newJString(oauthToken))
+  add(path_589346, "accountId", newJString(accountId))
+  add(query_589347, "userIp", newJString(userIp))
+  add(query_589347, "key", newJString(key))
+  add(path_589346, "configId", newJString(configId))
+  add(query_589347, "prettyPrint", newJBool(prettyPrint))
+  result = call_589345.call(path_589346, query_589347, nil, nil, nil)
 
-var adexchangebuyerPretargetingConfigDelete* = Call_AdexchangebuyerPretargetingConfigDelete_580303(
+var adexchangebuyerPretargetingConfigDelete* = Call_AdexchangebuyerPretargetingConfigDelete_589332(
     name: "adexchangebuyerPretargetingConfigDelete", meth: HttpMethod.HttpDelete,
     host: "www.googleapis.com",
     route: "/pretargetingconfigs/{accountId}/{configId}",
-    validator: validate_AdexchangebuyerPretargetingConfigDelete_580304,
+    validator: validate_AdexchangebuyerPretargetingConfigDelete_589333,
     base: "/adexchangebuyer/v1.4",
-    url: url_AdexchangebuyerPretargetingConfigDelete_580305,
+    url: url_AdexchangebuyerPretargetingConfigDelete_589334,
     schemes: {Scheme.Https})
 type
-  Call_AdexchangebuyerMarketplaceprivateauctionUpdateproposal_580337 = ref object of OpenApiRestCall_579437
-proc url_AdexchangebuyerMarketplaceprivateauctionUpdateproposal_580339(
+  Call_AdexchangebuyerMarketplaceprivateauctionUpdateproposal_589366 = ref object of OpenApiRestCall_588466
+proc url_AdexchangebuyerMarketplaceprivateauctionUpdateproposal_589368(
     protocol: Scheme; host: string; base: string; route: string; path: JsonNode;
     query: JsonNode): Uri =
   result.scheme = $protocol
@@ -3615,7 +3615,7 @@ proc url_AdexchangebuyerMarketplaceprivateauctionUpdateproposal_580339(
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_AdexchangebuyerMarketplaceprivateauctionUpdateproposal_580338(
+proc validate_AdexchangebuyerMarketplaceprivateauctionUpdateproposal_589367(
     path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
     body: JsonNode): JsonNode =
   ## Update a given private auction proposal
@@ -3627,11 +3627,11 @@ proc validate_AdexchangebuyerMarketplaceprivateauctionUpdateproposal_580338(
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `privateAuctionId` field"
-  var valid_580340 = path.getOrDefault("privateAuctionId")
-  valid_580340 = validateParameter(valid_580340, JString, required = true,
+  var valid_589369 = path.getOrDefault("privateAuctionId")
+  valid_589369 = validateParameter(valid_589369, JString, required = true,
                                  default = nil)
-  if valid_580340 != nil:
-    section.add "privateAuctionId", valid_580340
+  if valid_589369 != nil:
+    section.add "privateAuctionId", valid_589369
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -3649,41 +3649,41 @@ proc validate_AdexchangebuyerMarketplaceprivateauctionUpdateproposal_580338(
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580341 = query.getOrDefault("fields")
-  valid_580341 = validateParameter(valid_580341, JString, required = false,
+  var valid_589370 = query.getOrDefault("fields")
+  valid_589370 = validateParameter(valid_589370, JString, required = false,
                                  default = nil)
-  if valid_580341 != nil:
-    section.add "fields", valid_580341
-  var valid_580342 = query.getOrDefault("quotaUser")
-  valid_580342 = validateParameter(valid_580342, JString, required = false,
+  if valid_589370 != nil:
+    section.add "fields", valid_589370
+  var valid_589371 = query.getOrDefault("quotaUser")
+  valid_589371 = validateParameter(valid_589371, JString, required = false,
                                  default = nil)
-  if valid_580342 != nil:
-    section.add "quotaUser", valid_580342
-  var valid_580343 = query.getOrDefault("alt")
-  valid_580343 = validateParameter(valid_580343, JString, required = false,
+  if valid_589371 != nil:
+    section.add "quotaUser", valid_589371
+  var valid_589372 = query.getOrDefault("alt")
+  valid_589372 = validateParameter(valid_589372, JString, required = false,
                                  default = newJString("json"))
-  if valid_580343 != nil:
-    section.add "alt", valid_580343
-  var valid_580344 = query.getOrDefault("oauth_token")
-  valid_580344 = validateParameter(valid_580344, JString, required = false,
+  if valid_589372 != nil:
+    section.add "alt", valid_589372
+  var valid_589373 = query.getOrDefault("oauth_token")
+  valid_589373 = validateParameter(valid_589373, JString, required = false,
                                  default = nil)
-  if valid_580344 != nil:
-    section.add "oauth_token", valid_580344
-  var valid_580345 = query.getOrDefault("userIp")
-  valid_580345 = validateParameter(valid_580345, JString, required = false,
+  if valid_589373 != nil:
+    section.add "oauth_token", valid_589373
+  var valid_589374 = query.getOrDefault("userIp")
+  valid_589374 = validateParameter(valid_589374, JString, required = false,
                                  default = nil)
-  if valid_580345 != nil:
-    section.add "userIp", valid_580345
-  var valid_580346 = query.getOrDefault("key")
-  valid_580346 = validateParameter(valid_580346, JString, required = false,
+  if valid_589374 != nil:
+    section.add "userIp", valid_589374
+  var valid_589375 = query.getOrDefault("key")
+  valid_589375 = validateParameter(valid_589375, JString, required = false,
                                  default = nil)
-  if valid_580346 != nil:
-    section.add "key", valid_580346
-  var valid_580347 = query.getOrDefault("prettyPrint")
-  valid_580347 = validateParameter(valid_580347, JBool, required = false,
+  if valid_589375 != nil:
+    section.add "key", valid_589375
+  var valid_589376 = query.getOrDefault("prettyPrint")
+  valid_589376 = validateParameter(valid_589376, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580347 != nil:
-    section.add "prettyPrint", valid_580347
+  if valid_589376 != nil:
+    section.add "prettyPrint", valid_589376
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -3695,21 +3695,21 @@ proc validate_AdexchangebuyerMarketplaceprivateauctionUpdateproposal_580338(
   if body != nil:
     result.add "body", body
 
-proc call*(call_580349: Call_AdexchangebuyerMarketplaceprivateauctionUpdateproposal_580337;
+proc call*(call_589378: Call_AdexchangebuyerMarketplaceprivateauctionUpdateproposal_589366;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Update a given private auction proposal
   ## 
-  let valid = call_580349.validator(path, query, header, formData, body)
-  let scheme = call_580349.pickScheme
+  let valid = call_589378.validator(path, query, header, formData, body)
+  let scheme = call_589378.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580349.url(scheme.get, call_580349.host, call_580349.base,
-                         call_580349.route, valid.getOrDefault("path"),
+  let url = call_589378.url(scheme.get, call_589378.host, call_589378.base,
+                         call_589378.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580349, url, valid)
+  result = hook(call_589378, url, valid)
 
-proc call*(call_580350: Call_AdexchangebuyerMarketplaceprivateauctionUpdateproposal_580337;
+proc call*(call_589379: Call_AdexchangebuyerMarketplaceprivateauctionUpdateproposal_589366;
           privateAuctionId: string; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; userIp: string = "";
           key: string = ""; body: JsonNode = nil; prettyPrint: bool = true): Recallable =
@@ -3731,39 +3731,39 @@ proc call*(call_580350: Call_AdexchangebuyerMarketplaceprivateauctionUpdatepropo
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
   ##   privateAuctionId: string (required)
-  var path_580351 = newJObject()
-  var query_580352 = newJObject()
-  var body_580353 = newJObject()
-  add(query_580352, "fields", newJString(fields))
-  add(query_580352, "quotaUser", newJString(quotaUser))
-  add(query_580352, "alt", newJString(alt))
-  add(query_580352, "oauth_token", newJString(oauthToken))
-  add(query_580352, "userIp", newJString(userIp))
-  add(query_580352, "key", newJString(key))
+  var path_589380 = newJObject()
+  var query_589381 = newJObject()
+  var body_589382 = newJObject()
+  add(query_589381, "fields", newJString(fields))
+  add(query_589381, "quotaUser", newJString(quotaUser))
+  add(query_589381, "alt", newJString(alt))
+  add(query_589381, "oauth_token", newJString(oauthToken))
+  add(query_589381, "userIp", newJString(userIp))
+  add(query_589381, "key", newJString(key))
   if body != nil:
-    body_580353 = body
-  add(query_580352, "prettyPrint", newJBool(prettyPrint))
-  add(path_580351, "privateAuctionId", newJString(privateAuctionId))
-  result = call_580350.call(path_580351, query_580352, nil, nil, body_580353)
+    body_589382 = body
+  add(query_589381, "prettyPrint", newJBool(prettyPrint))
+  add(path_589380, "privateAuctionId", newJString(privateAuctionId))
+  result = call_589379.call(path_589380, query_589381, nil, nil, body_589382)
 
-var adexchangebuyerMarketplaceprivateauctionUpdateproposal* = Call_AdexchangebuyerMarketplaceprivateauctionUpdateproposal_580337(
+var adexchangebuyerMarketplaceprivateauctionUpdateproposal* = Call_AdexchangebuyerMarketplaceprivateauctionUpdateproposal_589366(
     name: "adexchangebuyerMarketplaceprivateauctionUpdateproposal",
     meth: HttpMethod.HttpPost, host: "www.googleapis.com",
     route: "/privateauction/{privateAuctionId}/updateproposal",
-    validator: validate_AdexchangebuyerMarketplaceprivateauctionUpdateproposal_580338,
+    validator: validate_AdexchangebuyerMarketplaceprivateauctionUpdateproposal_589367,
     base: "/adexchangebuyer/v1.4",
-    url: url_AdexchangebuyerMarketplaceprivateauctionUpdateproposal_580339,
+    url: url_AdexchangebuyerMarketplaceprivateauctionUpdateproposal_589368,
     schemes: {Scheme.Https})
 type
-  Call_AdexchangebuyerProductsSearch_580354 = ref object of OpenApiRestCall_579437
-proc url_AdexchangebuyerProductsSearch_580356(protocol: Scheme; host: string;
+  Call_AdexchangebuyerProductsSearch_589383 = ref object of OpenApiRestCall_588466
+proc url_AdexchangebuyerProductsSearch_589385(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
   result.query = $composeQueryString(query)
   result.path = base & route
 
-proc validate_AdexchangebuyerProductsSearch_580355(path: JsonNode; query: JsonNode;
+proc validate_AdexchangebuyerProductsSearch_589384(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Gets the requested product.
   ## 
@@ -3789,46 +3789,46 @@ proc validate_AdexchangebuyerProductsSearch_580355(path: JsonNode; query: JsonNo
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580357 = query.getOrDefault("fields")
-  valid_580357 = validateParameter(valid_580357, JString, required = false,
+  var valid_589386 = query.getOrDefault("fields")
+  valid_589386 = validateParameter(valid_589386, JString, required = false,
                                  default = nil)
-  if valid_580357 != nil:
-    section.add "fields", valid_580357
-  var valid_580358 = query.getOrDefault("quotaUser")
-  valid_580358 = validateParameter(valid_580358, JString, required = false,
+  if valid_589386 != nil:
+    section.add "fields", valid_589386
+  var valid_589387 = query.getOrDefault("quotaUser")
+  valid_589387 = validateParameter(valid_589387, JString, required = false,
                                  default = nil)
-  if valid_580358 != nil:
-    section.add "quotaUser", valid_580358
-  var valid_580359 = query.getOrDefault("alt")
-  valid_580359 = validateParameter(valid_580359, JString, required = false,
+  if valid_589387 != nil:
+    section.add "quotaUser", valid_589387
+  var valid_589388 = query.getOrDefault("alt")
+  valid_589388 = validateParameter(valid_589388, JString, required = false,
                                  default = newJString("json"))
-  if valid_580359 != nil:
-    section.add "alt", valid_580359
-  var valid_580360 = query.getOrDefault("pqlQuery")
-  valid_580360 = validateParameter(valid_580360, JString, required = false,
+  if valid_589388 != nil:
+    section.add "alt", valid_589388
+  var valid_589389 = query.getOrDefault("pqlQuery")
+  valid_589389 = validateParameter(valid_589389, JString, required = false,
                                  default = nil)
-  if valid_580360 != nil:
-    section.add "pqlQuery", valid_580360
-  var valid_580361 = query.getOrDefault("oauth_token")
-  valid_580361 = validateParameter(valid_580361, JString, required = false,
+  if valid_589389 != nil:
+    section.add "pqlQuery", valid_589389
+  var valid_589390 = query.getOrDefault("oauth_token")
+  valid_589390 = validateParameter(valid_589390, JString, required = false,
                                  default = nil)
-  if valid_580361 != nil:
-    section.add "oauth_token", valid_580361
-  var valid_580362 = query.getOrDefault("userIp")
-  valid_580362 = validateParameter(valid_580362, JString, required = false,
+  if valid_589390 != nil:
+    section.add "oauth_token", valid_589390
+  var valid_589391 = query.getOrDefault("userIp")
+  valid_589391 = validateParameter(valid_589391, JString, required = false,
                                  default = nil)
-  if valid_580362 != nil:
-    section.add "userIp", valid_580362
-  var valid_580363 = query.getOrDefault("key")
-  valid_580363 = validateParameter(valid_580363, JString, required = false,
+  if valid_589391 != nil:
+    section.add "userIp", valid_589391
+  var valid_589392 = query.getOrDefault("key")
+  valid_589392 = validateParameter(valid_589392, JString, required = false,
                                  default = nil)
-  if valid_580363 != nil:
-    section.add "key", valid_580363
-  var valid_580364 = query.getOrDefault("prettyPrint")
-  valid_580364 = validateParameter(valid_580364, JBool, required = false,
+  if valid_589392 != nil:
+    section.add "key", valid_589392
+  var valid_589393 = query.getOrDefault("prettyPrint")
+  valid_589393 = validateParameter(valid_589393, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580364 != nil:
-    section.add "prettyPrint", valid_580364
+  if valid_589393 != nil:
+    section.add "prettyPrint", valid_589393
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -3837,20 +3837,20 @@ proc validate_AdexchangebuyerProductsSearch_580355(path: JsonNode; query: JsonNo
   if body != nil:
     result.add "body", body
 
-proc call*(call_580365: Call_AdexchangebuyerProductsSearch_580354; path: JsonNode;
+proc call*(call_589394: Call_AdexchangebuyerProductsSearch_589383; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Gets the requested product.
   ## 
-  let valid = call_580365.validator(path, query, header, formData, body)
-  let scheme = call_580365.pickScheme
+  let valid = call_589394.validator(path, query, header, formData, body)
+  let scheme = call_589394.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580365.url(scheme.get, call_580365.host, call_580365.base,
-                         call_580365.route, valid.getOrDefault("path"),
+  let url = call_589394.url(scheme.get, call_589394.host, call_589394.base,
+                         call_589394.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580365, url, valid)
+  result = hook(call_589394, url, valid)
 
-proc call*(call_580366: Call_AdexchangebuyerProductsSearch_580354;
+proc call*(call_589395: Call_AdexchangebuyerProductsSearch_589383;
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           pqlQuery: string = ""; oauthToken: string = ""; userIp: string = "";
           key: string = ""; prettyPrint: bool = true): Recallable =
@@ -3872,26 +3872,26 @@ proc call*(call_580366: Call_AdexchangebuyerProductsSearch_580354;
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var query_580367 = newJObject()
-  add(query_580367, "fields", newJString(fields))
-  add(query_580367, "quotaUser", newJString(quotaUser))
-  add(query_580367, "alt", newJString(alt))
-  add(query_580367, "pqlQuery", newJString(pqlQuery))
-  add(query_580367, "oauth_token", newJString(oauthToken))
-  add(query_580367, "userIp", newJString(userIp))
-  add(query_580367, "key", newJString(key))
-  add(query_580367, "prettyPrint", newJBool(prettyPrint))
-  result = call_580366.call(nil, query_580367, nil, nil, nil)
+  var query_589396 = newJObject()
+  add(query_589396, "fields", newJString(fields))
+  add(query_589396, "quotaUser", newJString(quotaUser))
+  add(query_589396, "alt", newJString(alt))
+  add(query_589396, "pqlQuery", newJString(pqlQuery))
+  add(query_589396, "oauth_token", newJString(oauthToken))
+  add(query_589396, "userIp", newJString(userIp))
+  add(query_589396, "key", newJString(key))
+  add(query_589396, "prettyPrint", newJBool(prettyPrint))
+  result = call_589395.call(nil, query_589396, nil, nil, nil)
 
-var adexchangebuyerProductsSearch* = Call_AdexchangebuyerProductsSearch_580354(
+var adexchangebuyerProductsSearch* = Call_AdexchangebuyerProductsSearch_589383(
     name: "adexchangebuyerProductsSearch", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/products/search",
-    validator: validate_AdexchangebuyerProductsSearch_580355,
-    base: "/adexchangebuyer/v1.4", url: url_AdexchangebuyerProductsSearch_580356,
+    validator: validate_AdexchangebuyerProductsSearch_589384,
+    base: "/adexchangebuyer/v1.4", url: url_AdexchangebuyerProductsSearch_589385,
     schemes: {Scheme.Https})
 type
-  Call_AdexchangebuyerProductsGet_580368 = ref object of OpenApiRestCall_579437
-proc url_AdexchangebuyerProductsGet_580370(protocol: Scheme; host: string;
+  Call_AdexchangebuyerProductsGet_589397 = ref object of OpenApiRestCall_588466
+proc url_AdexchangebuyerProductsGet_589399(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -3906,7 +3906,7 @@ proc url_AdexchangebuyerProductsGet_580370(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_AdexchangebuyerProductsGet_580369(path: JsonNode; query: JsonNode;
+proc validate_AdexchangebuyerProductsGet_589398(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Gets the requested product by id.
   ## 
@@ -3917,11 +3917,11 @@ proc validate_AdexchangebuyerProductsGet_580369(path: JsonNode; query: JsonNode;
   ##            : The id for the product to get the head revision for.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `productId` field"
-  var valid_580371 = path.getOrDefault("productId")
-  valid_580371 = validateParameter(valid_580371, JString, required = true,
+  var valid_589400 = path.getOrDefault("productId")
+  valid_589400 = validateParameter(valid_589400, JString, required = true,
                                  default = nil)
-  if valid_580371 != nil:
-    section.add "productId", valid_580371
+  if valid_589400 != nil:
+    section.add "productId", valid_589400
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -3939,41 +3939,41 @@ proc validate_AdexchangebuyerProductsGet_580369(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580372 = query.getOrDefault("fields")
-  valid_580372 = validateParameter(valid_580372, JString, required = false,
+  var valid_589401 = query.getOrDefault("fields")
+  valid_589401 = validateParameter(valid_589401, JString, required = false,
                                  default = nil)
-  if valid_580372 != nil:
-    section.add "fields", valid_580372
-  var valid_580373 = query.getOrDefault("quotaUser")
-  valid_580373 = validateParameter(valid_580373, JString, required = false,
+  if valid_589401 != nil:
+    section.add "fields", valid_589401
+  var valid_589402 = query.getOrDefault("quotaUser")
+  valid_589402 = validateParameter(valid_589402, JString, required = false,
                                  default = nil)
-  if valid_580373 != nil:
-    section.add "quotaUser", valid_580373
-  var valid_580374 = query.getOrDefault("alt")
-  valid_580374 = validateParameter(valid_580374, JString, required = false,
+  if valid_589402 != nil:
+    section.add "quotaUser", valid_589402
+  var valid_589403 = query.getOrDefault("alt")
+  valid_589403 = validateParameter(valid_589403, JString, required = false,
                                  default = newJString("json"))
-  if valid_580374 != nil:
-    section.add "alt", valid_580374
-  var valid_580375 = query.getOrDefault("oauth_token")
-  valid_580375 = validateParameter(valid_580375, JString, required = false,
+  if valid_589403 != nil:
+    section.add "alt", valid_589403
+  var valid_589404 = query.getOrDefault("oauth_token")
+  valid_589404 = validateParameter(valid_589404, JString, required = false,
                                  default = nil)
-  if valid_580375 != nil:
-    section.add "oauth_token", valid_580375
-  var valid_580376 = query.getOrDefault("userIp")
-  valid_580376 = validateParameter(valid_580376, JString, required = false,
+  if valid_589404 != nil:
+    section.add "oauth_token", valid_589404
+  var valid_589405 = query.getOrDefault("userIp")
+  valid_589405 = validateParameter(valid_589405, JString, required = false,
                                  default = nil)
-  if valid_580376 != nil:
-    section.add "userIp", valid_580376
-  var valid_580377 = query.getOrDefault("key")
-  valid_580377 = validateParameter(valid_580377, JString, required = false,
+  if valid_589405 != nil:
+    section.add "userIp", valid_589405
+  var valid_589406 = query.getOrDefault("key")
+  valid_589406 = validateParameter(valid_589406, JString, required = false,
                                  default = nil)
-  if valid_580377 != nil:
-    section.add "key", valid_580377
-  var valid_580378 = query.getOrDefault("prettyPrint")
-  valid_580378 = validateParameter(valid_580378, JBool, required = false,
+  if valid_589406 != nil:
+    section.add "key", valid_589406
+  var valid_589407 = query.getOrDefault("prettyPrint")
+  valid_589407 = validateParameter(valid_589407, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580378 != nil:
-    section.add "prettyPrint", valid_580378
+  if valid_589407 != nil:
+    section.add "prettyPrint", valid_589407
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -3982,20 +3982,20 @@ proc validate_AdexchangebuyerProductsGet_580369(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580379: Call_AdexchangebuyerProductsGet_580368; path: JsonNode;
+proc call*(call_589408: Call_AdexchangebuyerProductsGet_589397; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Gets the requested product by id.
   ## 
-  let valid = call_580379.validator(path, query, header, formData, body)
-  let scheme = call_580379.pickScheme
+  let valid = call_589408.validator(path, query, header, formData, body)
+  let scheme = call_589408.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580379.url(scheme.get, call_580379.host, call_580379.base,
-                         call_580379.route, valid.getOrDefault("path"),
+  let url = call_589408.url(scheme.get, call_589408.host, call_589408.base,
+                         call_589408.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580379, url, valid)
+  result = hook(call_589408, url, valid)
 
-proc call*(call_580380: Call_AdexchangebuyerProductsGet_580368; productId: string;
+proc call*(call_589409: Call_AdexchangebuyerProductsGet_589397; productId: string;
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           oauthToken: string = ""; userIp: string = ""; key: string = "";
           prettyPrint: bool = true): Recallable =
@@ -4017,34 +4017,34 @@ proc call*(call_580380: Call_AdexchangebuyerProductsGet_580368; productId: strin
   ##            : The id for the product to get the head revision for.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_580381 = newJObject()
-  var query_580382 = newJObject()
-  add(query_580382, "fields", newJString(fields))
-  add(query_580382, "quotaUser", newJString(quotaUser))
-  add(query_580382, "alt", newJString(alt))
-  add(query_580382, "oauth_token", newJString(oauthToken))
-  add(query_580382, "userIp", newJString(userIp))
-  add(query_580382, "key", newJString(key))
-  add(path_580381, "productId", newJString(productId))
-  add(query_580382, "prettyPrint", newJBool(prettyPrint))
-  result = call_580380.call(path_580381, query_580382, nil, nil, nil)
+  var path_589410 = newJObject()
+  var query_589411 = newJObject()
+  add(query_589411, "fields", newJString(fields))
+  add(query_589411, "quotaUser", newJString(quotaUser))
+  add(query_589411, "alt", newJString(alt))
+  add(query_589411, "oauth_token", newJString(oauthToken))
+  add(query_589411, "userIp", newJString(userIp))
+  add(query_589411, "key", newJString(key))
+  add(path_589410, "productId", newJString(productId))
+  add(query_589411, "prettyPrint", newJBool(prettyPrint))
+  result = call_589409.call(path_589410, query_589411, nil, nil, nil)
 
-var adexchangebuyerProductsGet* = Call_AdexchangebuyerProductsGet_580368(
+var adexchangebuyerProductsGet* = Call_AdexchangebuyerProductsGet_589397(
     name: "adexchangebuyerProductsGet", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/products/{productId}",
-    validator: validate_AdexchangebuyerProductsGet_580369,
-    base: "/adexchangebuyer/v1.4", url: url_AdexchangebuyerProductsGet_580370,
+    validator: validate_AdexchangebuyerProductsGet_589398,
+    base: "/adexchangebuyer/v1.4", url: url_AdexchangebuyerProductsGet_589399,
     schemes: {Scheme.Https})
 type
-  Call_AdexchangebuyerProposalsInsert_580383 = ref object of OpenApiRestCall_579437
-proc url_AdexchangebuyerProposalsInsert_580385(protocol: Scheme; host: string;
+  Call_AdexchangebuyerProposalsInsert_589412 = ref object of OpenApiRestCall_588466
+proc url_AdexchangebuyerProposalsInsert_589414(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
   result.query = $composeQueryString(query)
   result.path = base & route
 
-proc validate_AdexchangebuyerProposalsInsert_580384(path: JsonNode;
+proc validate_AdexchangebuyerProposalsInsert_589413(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Create the given list of proposals
   ## 
@@ -4068,41 +4068,41 @@ proc validate_AdexchangebuyerProposalsInsert_580384(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580386 = query.getOrDefault("fields")
-  valid_580386 = validateParameter(valid_580386, JString, required = false,
+  var valid_589415 = query.getOrDefault("fields")
+  valid_589415 = validateParameter(valid_589415, JString, required = false,
                                  default = nil)
-  if valid_580386 != nil:
-    section.add "fields", valid_580386
-  var valid_580387 = query.getOrDefault("quotaUser")
-  valid_580387 = validateParameter(valid_580387, JString, required = false,
+  if valid_589415 != nil:
+    section.add "fields", valid_589415
+  var valid_589416 = query.getOrDefault("quotaUser")
+  valid_589416 = validateParameter(valid_589416, JString, required = false,
                                  default = nil)
-  if valid_580387 != nil:
-    section.add "quotaUser", valid_580387
-  var valid_580388 = query.getOrDefault("alt")
-  valid_580388 = validateParameter(valid_580388, JString, required = false,
+  if valid_589416 != nil:
+    section.add "quotaUser", valid_589416
+  var valid_589417 = query.getOrDefault("alt")
+  valid_589417 = validateParameter(valid_589417, JString, required = false,
                                  default = newJString("json"))
-  if valid_580388 != nil:
-    section.add "alt", valid_580388
-  var valid_580389 = query.getOrDefault("oauth_token")
-  valid_580389 = validateParameter(valid_580389, JString, required = false,
+  if valid_589417 != nil:
+    section.add "alt", valid_589417
+  var valid_589418 = query.getOrDefault("oauth_token")
+  valid_589418 = validateParameter(valid_589418, JString, required = false,
                                  default = nil)
-  if valid_580389 != nil:
-    section.add "oauth_token", valid_580389
-  var valid_580390 = query.getOrDefault("userIp")
-  valid_580390 = validateParameter(valid_580390, JString, required = false,
+  if valid_589418 != nil:
+    section.add "oauth_token", valid_589418
+  var valid_589419 = query.getOrDefault("userIp")
+  valid_589419 = validateParameter(valid_589419, JString, required = false,
                                  default = nil)
-  if valid_580390 != nil:
-    section.add "userIp", valid_580390
-  var valid_580391 = query.getOrDefault("key")
-  valid_580391 = validateParameter(valid_580391, JString, required = false,
+  if valid_589419 != nil:
+    section.add "userIp", valid_589419
+  var valid_589420 = query.getOrDefault("key")
+  valid_589420 = validateParameter(valid_589420, JString, required = false,
                                  default = nil)
-  if valid_580391 != nil:
-    section.add "key", valid_580391
-  var valid_580392 = query.getOrDefault("prettyPrint")
-  valid_580392 = validateParameter(valid_580392, JBool, required = false,
+  if valid_589420 != nil:
+    section.add "key", valid_589420
+  var valid_589421 = query.getOrDefault("prettyPrint")
+  valid_589421 = validateParameter(valid_589421, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580392 != nil:
-    section.add "prettyPrint", valid_580392
+  if valid_589421 != nil:
+    section.add "prettyPrint", valid_589421
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -4114,20 +4114,20 @@ proc validate_AdexchangebuyerProposalsInsert_580384(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580394: Call_AdexchangebuyerProposalsInsert_580383; path: JsonNode;
+proc call*(call_589423: Call_AdexchangebuyerProposalsInsert_589412; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Create the given list of proposals
   ## 
-  let valid = call_580394.validator(path, query, header, formData, body)
-  let scheme = call_580394.pickScheme
+  let valid = call_589423.validator(path, query, header, formData, body)
+  let scheme = call_589423.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580394.url(scheme.get, call_580394.host, call_580394.base,
-                         call_580394.route, valid.getOrDefault("path"),
+  let url = call_589423.url(scheme.get, call_589423.host, call_589423.base,
+                         call_589423.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580394, url, valid)
+  result = hook(call_589423, url, valid)
 
-proc call*(call_580395: Call_AdexchangebuyerProposalsInsert_580383;
+proc call*(call_589424: Call_AdexchangebuyerProposalsInsert_589412;
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           oauthToken: string = ""; userIp: string = ""; key: string = "";
           body: JsonNode = nil; prettyPrint: bool = true): Recallable =
@@ -4148,35 +4148,35 @@ proc call*(call_580395: Call_AdexchangebuyerProposalsInsert_580383;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var query_580396 = newJObject()
-  var body_580397 = newJObject()
-  add(query_580396, "fields", newJString(fields))
-  add(query_580396, "quotaUser", newJString(quotaUser))
-  add(query_580396, "alt", newJString(alt))
-  add(query_580396, "oauth_token", newJString(oauthToken))
-  add(query_580396, "userIp", newJString(userIp))
-  add(query_580396, "key", newJString(key))
+  var query_589425 = newJObject()
+  var body_589426 = newJObject()
+  add(query_589425, "fields", newJString(fields))
+  add(query_589425, "quotaUser", newJString(quotaUser))
+  add(query_589425, "alt", newJString(alt))
+  add(query_589425, "oauth_token", newJString(oauthToken))
+  add(query_589425, "userIp", newJString(userIp))
+  add(query_589425, "key", newJString(key))
   if body != nil:
-    body_580397 = body
-  add(query_580396, "prettyPrint", newJBool(prettyPrint))
-  result = call_580395.call(nil, query_580396, nil, nil, body_580397)
+    body_589426 = body
+  add(query_589425, "prettyPrint", newJBool(prettyPrint))
+  result = call_589424.call(nil, query_589425, nil, nil, body_589426)
 
-var adexchangebuyerProposalsInsert* = Call_AdexchangebuyerProposalsInsert_580383(
+var adexchangebuyerProposalsInsert* = Call_AdexchangebuyerProposalsInsert_589412(
     name: "adexchangebuyerProposalsInsert", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com", route: "/proposals/insert",
-    validator: validate_AdexchangebuyerProposalsInsert_580384,
-    base: "/adexchangebuyer/v1.4", url: url_AdexchangebuyerProposalsInsert_580385,
+    validator: validate_AdexchangebuyerProposalsInsert_589413,
+    base: "/adexchangebuyer/v1.4", url: url_AdexchangebuyerProposalsInsert_589414,
     schemes: {Scheme.Https})
 type
-  Call_AdexchangebuyerProposalsSearch_580398 = ref object of OpenApiRestCall_579437
-proc url_AdexchangebuyerProposalsSearch_580400(protocol: Scheme; host: string;
+  Call_AdexchangebuyerProposalsSearch_589427 = ref object of OpenApiRestCall_588466
+proc url_AdexchangebuyerProposalsSearch_589429(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
   result.query = $composeQueryString(query)
   result.path = base & route
 
-proc validate_AdexchangebuyerProposalsSearch_580399(path: JsonNode;
+proc validate_AdexchangebuyerProposalsSearch_589428(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Search for proposals using pql query
   ## 
@@ -4202,46 +4202,46 @@ proc validate_AdexchangebuyerProposalsSearch_580399(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580401 = query.getOrDefault("fields")
-  valid_580401 = validateParameter(valid_580401, JString, required = false,
+  var valid_589430 = query.getOrDefault("fields")
+  valid_589430 = validateParameter(valid_589430, JString, required = false,
                                  default = nil)
-  if valid_580401 != nil:
-    section.add "fields", valid_580401
-  var valid_580402 = query.getOrDefault("quotaUser")
-  valid_580402 = validateParameter(valid_580402, JString, required = false,
+  if valid_589430 != nil:
+    section.add "fields", valid_589430
+  var valid_589431 = query.getOrDefault("quotaUser")
+  valid_589431 = validateParameter(valid_589431, JString, required = false,
                                  default = nil)
-  if valid_580402 != nil:
-    section.add "quotaUser", valid_580402
-  var valid_580403 = query.getOrDefault("alt")
-  valid_580403 = validateParameter(valid_580403, JString, required = false,
+  if valid_589431 != nil:
+    section.add "quotaUser", valid_589431
+  var valid_589432 = query.getOrDefault("alt")
+  valid_589432 = validateParameter(valid_589432, JString, required = false,
                                  default = newJString("json"))
-  if valid_580403 != nil:
-    section.add "alt", valid_580403
-  var valid_580404 = query.getOrDefault("pqlQuery")
-  valid_580404 = validateParameter(valid_580404, JString, required = false,
+  if valid_589432 != nil:
+    section.add "alt", valid_589432
+  var valid_589433 = query.getOrDefault("pqlQuery")
+  valid_589433 = validateParameter(valid_589433, JString, required = false,
                                  default = nil)
-  if valid_580404 != nil:
-    section.add "pqlQuery", valid_580404
-  var valid_580405 = query.getOrDefault("oauth_token")
-  valid_580405 = validateParameter(valid_580405, JString, required = false,
+  if valid_589433 != nil:
+    section.add "pqlQuery", valid_589433
+  var valid_589434 = query.getOrDefault("oauth_token")
+  valid_589434 = validateParameter(valid_589434, JString, required = false,
                                  default = nil)
-  if valid_580405 != nil:
-    section.add "oauth_token", valid_580405
-  var valid_580406 = query.getOrDefault("userIp")
-  valid_580406 = validateParameter(valid_580406, JString, required = false,
+  if valid_589434 != nil:
+    section.add "oauth_token", valid_589434
+  var valid_589435 = query.getOrDefault("userIp")
+  valid_589435 = validateParameter(valid_589435, JString, required = false,
                                  default = nil)
-  if valid_580406 != nil:
-    section.add "userIp", valid_580406
-  var valid_580407 = query.getOrDefault("key")
-  valid_580407 = validateParameter(valid_580407, JString, required = false,
+  if valid_589435 != nil:
+    section.add "userIp", valid_589435
+  var valid_589436 = query.getOrDefault("key")
+  valid_589436 = validateParameter(valid_589436, JString, required = false,
                                  default = nil)
-  if valid_580407 != nil:
-    section.add "key", valid_580407
-  var valid_580408 = query.getOrDefault("prettyPrint")
-  valid_580408 = validateParameter(valid_580408, JBool, required = false,
+  if valid_589436 != nil:
+    section.add "key", valid_589436
+  var valid_589437 = query.getOrDefault("prettyPrint")
+  valid_589437 = validateParameter(valid_589437, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580408 != nil:
-    section.add "prettyPrint", valid_580408
+  if valid_589437 != nil:
+    section.add "prettyPrint", valid_589437
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -4250,20 +4250,20 @@ proc validate_AdexchangebuyerProposalsSearch_580399(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580409: Call_AdexchangebuyerProposalsSearch_580398; path: JsonNode;
+proc call*(call_589438: Call_AdexchangebuyerProposalsSearch_589427; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Search for proposals using pql query
   ## 
-  let valid = call_580409.validator(path, query, header, formData, body)
-  let scheme = call_580409.pickScheme
+  let valid = call_589438.validator(path, query, header, formData, body)
+  let scheme = call_589438.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580409.url(scheme.get, call_580409.host, call_580409.base,
-                         call_580409.route, valid.getOrDefault("path"),
+  let url = call_589438.url(scheme.get, call_589438.host, call_589438.base,
+                         call_589438.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580409, url, valid)
+  result = hook(call_589438, url, valid)
 
-proc call*(call_580410: Call_AdexchangebuyerProposalsSearch_580398;
+proc call*(call_589439: Call_AdexchangebuyerProposalsSearch_589427;
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           pqlQuery: string = ""; oauthToken: string = ""; userIp: string = "";
           key: string = ""; prettyPrint: bool = true): Recallable =
@@ -4285,26 +4285,26 @@ proc call*(call_580410: Call_AdexchangebuyerProposalsSearch_580398;
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var query_580411 = newJObject()
-  add(query_580411, "fields", newJString(fields))
-  add(query_580411, "quotaUser", newJString(quotaUser))
-  add(query_580411, "alt", newJString(alt))
-  add(query_580411, "pqlQuery", newJString(pqlQuery))
-  add(query_580411, "oauth_token", newJString(oauthToken))
-  add(query_580411, "userIp", newJString(userIp))
-  add(query_580411, "key", newJString(key))
-  add(query_580411, "prettyPrint", newJBool(prettyPrint))
-  result = call_580410.call(nil, query_580411, nil, nil, nil)
+  var query_589440 = newJObject()
+  add(query_589440, "fields", newJString(fields))
+  add(query_589440, "quotaUser", newJString(quotaUser))
+  add(query_589440, "alt", newJString(alt))
+  add(query_589440, "pqlQuery", newJString(pqlQuery))
+  add(query_589440, "oauth_token", newJString(oauthToken))
+  add(query_589440, "userIp", newJString(userIp))
+  add(query_589440, "key", newJString(key))
+  add(query_589440, "prettyPrint", newJBool(prettyPrint))
+  result = call_589439.call(nil, query_589440, nil, nil, nil)
 
-var adexchangebuyerProposalsSearch* = Call_AdexchangebuyerProposalsSearch_580398(
+var adexchangebuyerProposalsSearch* = Call_AdexchangebuyerProposalsSearch_589427(
     name: "adexchangebuyerProposalsSearch", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/proposals/search",
-    validator: validate_AdexchangebuyerProposalsSearch_580399,
-    base: "/adexchangebuyer/v1.4", url: url_AdexchangebuyerProposalsSearch_580400,
+    validator: validate_AdexchangebuyerProposalsSearch_589428,
+    base: "/adexchangebuyer/v1.4", url: url_AdexchangebuyerProposalsSearch_589429,
     schemes: {Scheme.Https})
 type
-  Call_AdexchangebuyerProposalsGet_580412 = ref object of OpenApiRestCall_579437
-proc url_AdexchangebuyerProposalsGet_580414(protocol: Scheme; host: string;
+  Call_AdexchangebuyerProposalsGet_589441 = ref object of OpenApiRestCall_588466
+proc url_AdexchangebuyerProposalsGet_589443(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -4319,7 +4319,7 @@ proc url_AdexchangebuyerProposalsGet_580414(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_AdexchangebuyerProposalsGet_580413(path: JsonNode; query: JsonNode;
+proc validate_AdexchangebuyerProposalsGet_589442(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Get a proposal given its id
   ## 
@@ -4331,11 +4331,11 @@ proc validate_AdexchangebuyerProposalsGet_580413(path: JsonNode; query: JsonNode
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `proposalId` field"
-  var valid_580415 = path.getOrDefault("proposalId")
-  valid_580415 = validateParameter(valid_580415, JString, required = true,
+  var valid_589444 = path.getOrDefault("proposalId")
+  valid_589444 = validateParameter(valid_589444, JString, required = true,
                                  default = nil)
-  if valid_580415 != nil:
-    section.add "proposalId", valid_580415
+  if valid_589444 != nil:
+    section.add "proposalId", valid_589444
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -4353,41 +4353,41 @@ proc validate_AdexchangebuyerProposalsGet_580413(path: JsonNode; query: JsonNode
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580416 = query.getOrDefault("fields")
-  valid_580416 = validateParameter(valid_580416, JString, required = false,
+  var valid_589445 = query.getOrDefault("fields")
+  valid_589445 = validateParameter(valid_589445, JString, required = false,
                                  default = nil)
-  if valid_580416 != nil:
-    section.add "fields", valid_580416
-  var valid_580417 = query.getOrDefault("quotaUser")
-  valid_580417 = validateParameter(valid_580417, JString, required = false,
+  if valid_589445 != nil:
+    section.add "fields", valid_589445
+  var valid_589446 = query.getOrDefault("quotaUser")
+  valid_589446 = validateParameter(valid_589446, JString, required = false,
                                  default = nil)
-  if valid_580417 != nil:
-    section.add "quotaUser", valid_580417
-  var valid_580418 = query.getOrDefault("alt")
-  valid_580418 = validateParameter(valid_580418, JString, required = false,
+  if valid_589446 != nil:
+    section.add "quotaUser", valid_589446
+  var valid_589447 = query.getOrDefault("alt")
+  valid_589447 = validateParameter(valid_589447, JString, required = false,
                                  default = newJString("json"))
-  if valid_580418 != nil:
-    section.add "alt", valid_580418
-  var valid_580419 = query.getOrDefault("oauth_token")
-  valid_580419 = validateParameter(valid_580419, JString, required = false,
+  if valid_589447 != nil:
+    section.add "alt", valid_589447
+  var valid_589448 = query.getOrDefault("oauth_token")
+  valid_589448 = validateParameter(valid_589448, JString, required = false,
                                  default = nil)
-  if valid_580419 != nil:
-    section.add "oauth_token", valid_580419
-  var valid_580420 = query.getOrDefault("userIp")
-  valid_580420 = validateParameter(valid_580420, JString, required = false,
+  if valid_589448 != nil:
+    section.add "oauth_token", valid_589448
+  var valid_589449 = query.getOrDefault("userIp")
+  valid_589449 = validateParameter(valid_589449, JString, required = false,
                                  default = nil)
-  if valid_580420 != nil:
-    section.add "userIp", valid_580420
-  var valid_580421 = query.getOrDefault("key")
-  valid_580421 = validateParameter(valid_580421, JString, required = false,
+  if valid_589449 != nil:
+    section.add "userIp", valid_589449
+  var valid_589450 = query.getOrDefault("key")
+  valid_589450 = validateParameter(valid_589450, JString, required = false,
                                  default = nil)
-  if valid_580421 != nil:
-    section.add "key", valid_580421
-  var valid_580422 = query.getOrDefault("prettyPrint")
-  valid_580422 = validateParameter(valid_580422, JBool, required = false,
+  if valid_589450 != nil:
+    section.add "key", valid_589450
+  var valid_589451 = query.getOrDefault("prettyPrint")
+  valid_589451 = validateParameter(valid_589451, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580422 != nil:
-    section.add "prettyPrint", valid_580422
+  if valid_589451 != nil:
+    section.add "prettyPrint", valid_589451
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -4396,20 +4396,20 @@ proc validate_AdexchangebuyerProposalsGet_580413(path: JsonNode; query: JsonNode
   if body != nil:
     result.add "body", body
 
-proc call*(call_580423: Call_AdexchangebuyerProposalsGet_580412; path: JsonNode;
+proc call*(call_589452: Call_AdexchangebuyerProposalsGet_589441; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Get a proposal given its id
   ## 
-  let valid = call_580423.validator(path, query, header, formData, body)
-  let scheme = call_580423.pickScheme
+  let valid = call_589452.validator(path, query, header, formData, body)
+  let scheme = call_589452.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580423.url(scheme.get, call_580423.host, call_580423.base,
-                         call_580423.route, valid.getOrDefault("path"),
+  let url = call_589452.url(scheme.get, call_589452.host, call_589452.base,
+                         call_589452.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580423, url, valid)
+  result = hook(call_589452, url, valid)
 
-proc call*(call_580424: Call_AdexchangebuyerProposalsGet_580412;
+proc call*(call_589453: Call_AdexchangebuyerProposalsGet_589441;
           proposalId: string; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; userIp: string = "";
           key: string = ""; prettyPrint: bool = true): Recallable =
@@ -4431,27 +4431,27 @@ proc call*(call_580424: Call_AdexchangebuyerProposalsGet_580412;
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_580425 = newJObject()
-  var query_580426 = newJObject()
-  add(query_580426, "fields", newJString(fields))
-  add(query_580426, "quotaUser", newJString(quotaUser))
-  add(query_580426, "alt", newJString(alt))
-  add(path_580425, "proposalId", newJString(proposalId))
-  add(query_580426, "oauth_token", newJString(oauthToken))
-  add(query_580426, "userIp", newJString(userIp))
-  add(query_580426, "key", newJString(key))
-  add(query_580426, "prettyPrint", newJBool(prettyPrint))
-  result = call_580424.call(path_580425, query_580426, nil, nil, nil)
+  var path_589454 = newJObject()
+  var query_589455 = newJObject()
+  add(query_589455, "fields", newJString(fields))
+  add(query_589455, "quotaUser", newJString(quotaUser))
+  add(query_589455, "alt", newJString(alt))
+  add(path_589454, "proposalId", newJString(proposalId))
+  add(query_589455, "oauth_token", newJString(oauthToken))
+  add(query_589455, "userIp", newJString(userIp))
+  add(query_589455, "key", newJString(key))
+  add(query_589455, "prettyPrint", newJBool(prettyPrint))
+  result = call_589453.call(path_589454, query_589455, nil, nil, nil)
 
-var adexchangebuyerProposalsGet* = Call_AdexchangebuyerProposalsGet_580412(
+var adexchangebuyerProposalsGet* = Call_AdexchangebuyerProposalsGet_589441(
     name: "adexchangebuyerProposalsGet", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/proposals/{proposalId}",
-    validator: validate_AdexchangebuyerProposalsGet_580413,
-    base: "/adexchangebuyer/v1.4", url: url_AdexchangebuyerProposalsGet_580414,
+    validator: validate_AdexchangebuyerProposalsGet_589442,
+    base: "/adexchangebuyer/v1.4", url: url_AdexchangebuyerProposalsGet_589443,
     schemes: {Scheme.Https})
 type
-  Call_AdexchangebuyerMarketplacedealsList_580427 = ref object of OpenApiRestCall_579437
-proc url_AdexchangebuyerMarketplacedealsList_580429(protocol: Scheme; host: string;
+  Call_AdexchangebuyerMarketplacedealsList_589456 = ref object of OpenApiRestCall_588466
+proc url_AdexchangebuyerMarketplacedealsList_589458(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -4467,7 +4467,7 @@ proc url_AdexchangebuyerMarketplacedealsList_580429(protocol: Scheme; host: stri
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_AdexchangebuyerMarketplacedealsList_580428(path: JsonNode;
+proc validate_AdexchangebuyerMarketplacedealsList_589457(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## List all the deals for a given proposal
   ## 
@@ -4479,11 +4479,11 @@ proc validate_AdexchangebuyerMarketplacedealsList_580428(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `proposalId` field"
-  var valid_580430 = path.getOrDefault("proposalId")
-  valid_580430 = validateParameter(valid_580430, JString, required = true,
+  var valid_589459 = path.getOrDefault("proposalId")
+  valid_589459 = validateParameter(valid_589459, JString, required = true,
                                  default = nil)
-  if valid_580430 != nil:
-    section.add "proposalId", valid_580430
+  if valid_589459 != nil:
+    section.add "proposalId", valid_589459
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -4503,46 +4503,46 @@ proc validate_AdexchangebuyerMarketplacedealsList_580428(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580431 = query.getOrDefault("fields")
-  valid_580431 = validateParameter(valid_580431, JString, required = false,
+  var valid_589460 = query.getOrDefault("fields")
+  valid_589460 = validateParameter(valid_589460, JString, required = false,
                                  default = nil)
-  if valid_580431 != nil:
-    section.add "fields", valid_580431
-  var valid_580432 = query.getOrDefault("quotaUser")
-  valid_580432 = validateParameter(valid_580432, JString, required = false,
+  if valid_589460 != nil:
+    section.add "fields", valid_589460
+  var valid_589461 = query.getOrDefault("quotaUser")
+  valid_589461 = validateParameter(valid_589461, JString, required = false,
                                  default = nil)
-  if valid_580432 != nil:
-    section.add "quotaUser", valid_580432
-  var valid_580433 = query.getOrDefault("alt")
-  valid_580433 = validateParameter(valid_580433, JString, required = false,
+  if valid_589461 != nil:
+    section.add "quotaUser", valid_589461
+  var valid_589462 = query.getOrDefault("alt")
+  valid_589462 = validateParameter(valid_589462, JString, required = false,
                                  default = newJString("json"))
-  if valid_580433 != nil:
-    section.add "alt", valid_580433
-  var valid_580434 = query.getOrDefault("pqlQuery")
-  valid_580434 = validateParameter(valid_580434, JString, required = false,
+  if valid_589462 != nil:
+    section.add "alt", valid_589462
+  var valid_589463 = query.getOrDefault("pqlQuery")
+  valid_589463 = validateParameter(valid_589463, JString, required = false,
                                  default = nil)
-  if valid_580434 != nil:
-    section.add "pqlQuery", valid_580434
-  var valid_580435 = query.getOrDefault("oauth_token")
-  valid_580435 = validateParameter(valid_580435, JString, required = false,
+  if valid_589463 != nil:
+    section.add "pqlQuery", valid_589463
+  var valid_589464 = query.getOrDefault("oauth_token")
+  valid_589464 = validateParameter(valid_589464, JString, required = false,
                                  default = nil)
-  if valid_580435 != nil:
-    section.add "oauth_token", valid_580435
-  var valid_580436 = query.getOrDefault("userIp")
-  valid_580436 = validateParameter(valid_580436, JString, required = false,
+  if valid_589464 != nil:
+    section.add "oauth_token", valid_589464
+  var valid_589465 = query.getOrDefault("userIp")
+  valid_589465 = validateParameter(valid_589465, JString, required = false,
                                  default = nil)
-  if valid_580436 != nil:
-    section.add "userIp", valid_580436
-  var valid_580437 = query.getOrDefault("key")
-  valid_580437 = validateParameter(valid_580437, JString, required = false,
+  if valid_589465 != nil:
+    section.add "userIp", valid_589465
+  var valid_589466 = query.getOrDefault("key")
+  valid_589466 = validateParameter(valid_589466, JString, required = false,
                                  default = nil)
-  if valid_580437 != nil:
-    section.add "key", valid_580437
-  var valid_580438 = query.getOrDefault("prettyPrint")
-  valid_580438 = validateParameter(valid_580438, JBool, required = false,
+  if valid_589466 != nil:
+    section.add "key", valid_589466
+  var valid_589467 = query.getOrDefault("prettyPrint")
+  valid_589467 = validateParameter(valid_589467, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580438 != nil:
-    section.add "prettyPrint", valid_580438
+  if valid_589467 != nil:
+    section.add "prettyPrint", valid_589467
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -4551,21 +4551,21 @@ proc validate_AdexchangebuyerMarketplacedealsList_580428(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580439: Call_AdexchangebuyerMarketplacedealsList_580427;
+proc call*(call_589468: Call_AdexchangebuyerMarketplacedealsList_589456;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## List all the deals for a given proposal
   ## 
-  let valid = call_580439.validator(path, query, header, formData, body)
-  let scheme = call_580439.pickScheme
+  let valid = call_589468.validator(path, query, header, formData, body)
+  let scheme = call_589468.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580439.url(scheme.get, call_580439.host, call_580439.base,
-                         call_580439.route, valid.getOrDefault("path"),
+  let url = call_589468.url(scheme.get, call_589468.host, call_589468.base,
+                         call_589468.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580439, url, valid)
+  result = hook(call_589468, url, valid)
 
-proc call*(call_580440: Call_AdexchangebuyerMarketplacedealsList_580427;
+proc call*(call_589469: Call_AdexchangebuyerMarketplacedealsList_589456;
           proposalId: string; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; pqlQuery: string = ""; oauthToken: string = "";
           userIp: string = ""; key: string = ""; prettyPrint: bool = true): Recallable =
@@ -4589,28 +4589,28 @@ proc call*(call_580440: Call_AdexchangebuyerMarketplacedealsList_580427;
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_580441 = newJObject()
-  var query_580442 = newJObject()
-  add(query_580442, "fields", newJString(fields))
-  add(query_580442, "quotaUser", newJString(quotaUser))
-  add(query_580442, "alt", newJString(alt))
-  add(query_580442, "pqlQuery", newJString(pqlQuery))
-  add(path_580441, "proposalId", newJString(proposalId))
-  add(query_580442, "oauth_token", newJString(oauthToken))
-  add(query_580442, "userIp", newJString(userIp))
-  add(query_580442, "key", newJString(key))
-  add(query_580442, "prettyPrint", newJBool(prettyPrint))
-  result = call_580440.call(path_580441, query_580442, nil, nil, nil)
+  var path_589470 = newJObject()
+  var query_589471 = newJObject()
+  add(query_589471, "fields", newJString(fields))
+  add(query_589471, "quotaUser", newJString(quotaUser))
+  add(query_589471, "alt", newJString(alt))
+  add(query_589471, "pqlQuery", newJString(pqlQuery))
+  add(path_589470, "proposalId", newJString(proposalId))
+  add(query_589471, "oauth_token", newJString(oauthToken))
+  add(query_589471, "userIp", newJString(userIp))
+  add(query_589471, "key", newJString(key))
+  add(query_589471, "prettyPrint", newJBool(prettyPrint))
+  result = call_589469.call(path_589470, query_589471, nil, nil, nil)
 
-var adexchangebuyerMarketplacedealsList* = Call_AdexchangebuyerMarketplacedealsList_580427(
+var adexchangebuyerMarketplacedealsList* = Call_AdexchangebuyerMarketplacedealsList_589456(
     name: "adexchangebuyerMarketplacedealsList", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/proposals/{proposalId}/deals",
-    validator: validate_AdexchangebuyerMarketplacedealsList_580428,
-    base: "/adexchangebuyer/v1.4", url: url_AdexchangebuyerMarketplacedealsList_580429,
+    validator: validate_AdexchangebuyerMarketplacedealsList_589457,
+    base: "/adexchangebuyer/v1.4", url: url_AdexchangebuyerMarketplacedealsList_589458,
     schemes: {Scheme.Https})
 type
-  Call_AdexchangebuyerMarketplacedealsDelete_580443 = ref object of OpenApiRestCall_579437
-proc url_AdexchangebuyerMarketplacedealsDelete_580445(protocol: Scheme;
+  Call_AdexchangebuyerMarketplacedealsDelete_589472 = ref object of OpenApiRestCall_588466
+proc url_AdexchangebuyerMarketplacedealsDelete_589474(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -4626,7 +4626,7 @@ proc url_AdexchangebuyerMarketplacedealsDelete_580445(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_AdexchangebuyerMarketplacedealsDelete_580444(path: JsonNode;
+proc validate_AdexchangebuyerMarketplacedealsDelete_589473(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Delete the specified deals from the proposal
   ## 
@@ -4638,11 +4638,11 @@ proc validate_AdexchangebuyerMarketplacedealsDelete_580444(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `proposalId` field"
-  var valid_580446 = path.getOrDefault("proposalId")
-  valid_580446 = validateParameter(valid_580446, JString, required = true,
+  var valid_589475 = path.getOrDefault("proposalId")
+  valid_589475 = validateParameter(valid_589475, JString, required = true,
                                  default = nil)
-  if valid_580446 != nil:
-    section.add "proposalId", valid_580446
+  if valid_589475 != nil:
+    section.add "proposalId", valid_589475
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -4660,41 +4660,41 @@ proc validate_AdexchangebuyerMarketplacedealsDelete_580444(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580447 = query.getOrDefault("fields")
-  valid_580447 = validateParameter(valid_580447, JString, required = false,
+  var valid_589476 = query.getOrDefault("fields")
+  valid_589476 = validateParameter(valid_589476, JString, required = false,
                                  default = nil)
-  if valid_580447 != nil:
-    section.add "fields", valid_580447
-  var valid_580448 = query.getOrDefault("quotaUser")
-  valid_580448 = validateParameter(valid_580448, JString, required = false,
+  if valid_589476 != nil:
+    section.add "fields", valid_589476
+  var valid_589477 = query.getOrDefault("quotaUser")
+  valid_589477 = validateParameter(valid_589477, JString, required = false,
                                  default = nil)
-  if valid_580448 != nil:
-    section.add "quotaUser", valid_580448
-  var valid_580449 = query.getOrDefault("alt")
-  valid_580449 = validateParameter(valid_580449, JString, required = false,
+  if valid_589477 != nil:
+    section.add "quotaUser", valid_589477
+  var valid_589478 = query.getOrDefault("alt")
+  valid_589478 = validateParameter(valid_589478, JString, required = false,
                                  default = newJString("json"))
-  if valid_580449 != nil:
-    section.add "alt", valid_580449
-  var valid_580450 = query.getOrDefault("oauth_token")
-  valid_580450 = validateParameter(valid_580450, JString, required = false,
+  if valid_589478 != nil:
+    section.add "alt", valid_589478
+  var valid_589479 = query.getOrDefault("oauth_token")
+  valid_589479 = validateParameter(valid_589479, JString, required = false,
                                  default = nil)
-  if valid_580450 != nil:
-    section.add "oauth_token", valid_580450
-  var valid_580451 = query.getOrDefault("userIp")
-  valid_580451 = validateParameter(valid_580451, JString, required = false,
+  if valid_589479 != nil:
+    section.add "oauth_token", valid_589479
+  var valid_589480 = query.getOrDefault("userIp")
+  valid_589480 = validateParameter(valid_589480, JString, required = false,
                                  default = nil)
-  if valid_580451 != nil:
-    section.add "userIp", valid_580451
-  var valid_580452 = query.getOrDefault("key")
-  valid_580452 = validateParameter(valid_580452, JString, required = false,
+  if valid_589480 != nil:
+    section.add "userIp", valid_589480
+  var valid_589481 = query.getOrDefault("key")
+  valid_589481 = validateParameter(valid_589481, JString, required = false,
                                  default = nil)
-  if valid_580452 != nil:
-    section.add "key", valid_580452
-  var valid_580453 = query.getOrDefault("prettyPrint")
-  valid_580453 = validateParameter(valid_580453, JBool, required = false,
+  if valid_589481 != nil:
+    section.add "key", valid_589481
+  var valid_589482 = query.getOrDefault("prettyPrint")
+  valid_589482 = validateParameter(valid_589482, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580453 != nil:
-    section.add "prettyPrint", valid_580453
+  if valid_589482 != nil:
+    section.add "prettyPrint", valid_589482
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -4706,21 +4706,21 @@ proc validate_AdexchangebuyerMarketplacedealsDelete_580444(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580455: Call_AdexchangebuyerMarketplacedealsDelete_580443;
+proc call*(call_589484: Call_AdexchangebuyerMarketplacedealsDelete_589472;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Delete the specified deals from the proposal
   ## 
-  let valid = call_580455.validator(path, query, header, formData, body)
-  let scheme = call_580455.pickScheme
+  let valid = call_589484.validator(path, query, header, formData, body)
+  let scheme = call_589484.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580455.url(scheme.get, call_580455.host, call_580455.base,
-                         call_580455.route, valid.getOrDefault("path"),
+  let url = call_589484.url(scheme.get, call_589484.host, call_589484.base,
+                         call_589484.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580455, url, valid)
+  result = hook(call_589484, url, valid)
 
-proc call*(call_580456: Call_AdexchangebuyerMarketplacedealsDelete_580443;
+proc call*(call_589485: Call_AdexchangebuyerMarketplacedealsDelete_589472;
           proposalId: string; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; userIp: string = "";
           key: string = ""; body: JsonNode = nil; prettyPrint: bool = true): Recallable =
@@ -4743,30 +4743,30 @@ proc call*(call_580456: Call_AdexchangebuyerMarketplacedealsDelete_580443;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_580457 = newJObject()
-  var query_580458 = newJObject()
-  var body_580459 = newJObject()
-  add(query_580458, "fields", newJString(fields))
-  add(query_580458, "quotaUser", newJString(quotaUser))
-  add(query_580458, "alt", newJString(alt))
-  add(path_580457, "proposalId", newJString(proposalId))
-  add(query_580458, "oauth_token", newJString(oauthToken))
-  add(query_580458, "userIp", newJString(userIp))
-  add(query_580458, "key", newJString(key))
+  var path_589486 = newJObject()
+  var query_589487 = newJObject()
+  var body_589488 = newJObject()
+  add(query_589487, "fields", newJString(fields))
+  add(query_589487, "quotaUser", newJString(quotaUser))
+  add(query_589487, "alt", newJString(alt))
+  add(path_589486, "proposalId", newJString(proposalId))
+  add(query_589487, "oauth_token", newJString(oauthToken))
+  add(query_589487, "userIp", newJString(userIp))
+  add(query_589487, "key", newJString(key))
   if body != nil:
-    body_580459 = body
-  add(query_580458, "prettyPrint", newJBool(prettyPrint))
-  result = call_580456.call(path_580457, query_580458, nil, nil, body_580459)
+    body_589488 = body
+  add(query_589487, "prettyPrint", newJBool(prettyPrint))
+  result = call_589485.call(path_589486, query_589487, nil, nil, body_589488)
 
-var adexchangebuyerMarketplacedealsDelete* = Call_AdexchangebuyerMarketplacedealsDelete_580443(
+var adexchangebuyerMarketplacedealsDelete* = Call_AdexchangebuyerMarketplacedealsDelete_589472(
     name: "adexchangebuyerMarketplacedealsDelete", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com", route: "/proposals/{proposalId}/deals/delete",
-    validator: validate_AdexchangebuyerMarketplacedealsDelete_580444,
-    base: "/adexchangebuyer/v1.4", url: url_AdexchangebuyerMarketplacedealsDelete_580445,
+    validator: validate_AdexchangebuyerMarketplacedealsDelete_589473,
+    base: "/adexchangebuyer/v1.4", url: url_AdexchangebuyerMarketplacedealsDelete_589474,
     schemes: {Scheme.Https})
 type
-  Call_AdexchangebuyerMarketplacedealsInsert_580460 = ref object of OpenApiRestCall_579437
-proc url_AdexchangebuyerMarketplacedealsInsert_580462(protocol: Scheme;
+  Call_AdexchangebuyerMarketplacedealsInsert_589489 = ref object of OpenApiRestCall_588466
+proc url_AdexchangebuyerMarketplacedealsInsert_589491(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -4782,7 +4782,7 @@ proc url_AdexchangebuyerMarketplacedealsInsert_580462(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_AdexchangebuyerMarketplacedealsInsert_580461(path: JsonNode;
+proc validate_AdexchangebuyerMarketplacedealsInsert_589490(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Add new deals for the specified proposal
   ## 
@@ -4794,11 +4794,11 @@ proc validate_AdexchangebuyerMarketplacedealsInsert_580461(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `proposalId` field"
-  var valid_580463 = path.getOrDefault("proposalId")
-  valid_580463 = validateParameter(valid_580463, JString, required = true,
+  var valid_589492 = path.getOrDefault("proposalId")
+  valid_589492 = validateParameter(valid_589492, JString, required = true,
                                  default = nil)
-  if valid_580463 != nil:
-    section.add "proposalId", valid_580463
+  if valid_589492 != nil:
+    section.add "proposalId", valid_589492
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -4816,41 +4816,41 @@ proc validate_AdexchangebuyerMarketplacedealsInsert_580461(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580464 = query.getOrDefault("fields")
-  valid_580464 = validateParameter(valid_580464, JString, required = false,
+  var valid_589493 = query.getOrDefault("fields")
+  valid_589493 = validateParameter(valid_589493, JString, required = false,
                                  default = nil)
-  if valid_580464 != nil:
-    section.add "fields", valid_580464
-  var valid_580465 = query.getOrDefault("quotaUser")
-  valid_580465 = validateParameter(valid_580465, JString, required = false,
+  if valid_589493 != nil:
+    section.add "fields", valid_589493
+  var valid_589494 = query.getOrDefault("quotaUser")
+  valid_589494 = validateParameter(valid_589494, JString, required = false,
                                  default = nil)
-  if valid_580465 != nil:
-    section.add "quotaUser", valid_580465
-  var valid_580466 = query.getOrDefault("alt")
-  valid_580466 = validateParameter(valid_580466, JString, required = false,
+  if valid_589494 != nil:
+    section.add "quotaUser", valid_589494
+  var valid_589495 = query.getOrDefault("alt")
+  valid_589495 = validateParameter(valid_589495, JString, required = false,
                                  default = newJString("json"))
-  if valid_580466 != nil:
-    section.add "alt", valid_580466
-  var valid_580467 = query.getOrDefault("oauth_token")
-  valid_580467 = validateParameter(valid_580467, JString, required = false,
+  if valid_589495 != nil:
+    section.add "alt", valid_589495
+  var valid_589496 = query.getOrDefault("oauth_token")
+  valid_589496 = validateParameter(valid_589496, JString, required = false,
                                  default = nil)
-  if valid_580467 != nil:
-    section.add "oauth_token", valid_580467
-  var valid_580468 = query.getOrDefault("userIp")
-  valid_580468 = validateParameter(valid_580468, JString, required = false,
+  if valid_589496 != nil:
+    section.add "oauth_token", valid_589496
+  var valid_589497 = query.getOrDefault("userIp")
+  valid_589497 = validateParameter(valid_589497, JString, required = false,
                                  default = nil)
-  if valid_580468 != nil:
-    section.add "userIp", valid_580468
-  var valid_580469 = query.getOrDefault("key")
-  valid_580469 = validateParameter(valid_580469, JString, required = false,
+  if valid_589497 != nil:
+    section.add "userIp", valid_589497
+  var valid_589498 = query.getOrDefault("key")
+  valid_589498 = validateParameter(valid_589498, JString, required = false,
                                  default = nil)
-  if valid_580469 != nil:
-    section.add "key", valid_580469
-  var valid_580470 = query.getOrDefault("prettyPrint")
-  valid_580470 = validateParameter(valid_580470, JBool, required = false,
+  if valid_589498 != nil:
+    section.add "key", valid_589498
+  var valid_589499 = query.getOrDefault("prettyPrint")
+  valid_589499 = validateParameter(valid_589499, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580470 != nil:
-    section.add "prettyPrint", valid_580470
+  if valid_589499 != nil:
+    section.add "prettyPrint", valid_589499
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -4862,21 +4862,21 @@ proc validate_AdexchangebuyerMarketplacedealsInsert_580461(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580472: Call_AdexchangebuyerMarketplacedealsInsert_580460;
+proc call*(call_589501: Call_AdexchangebuyerMarketplacedealsInsert_589489;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Add new deals for the specified proposal
   ## 
-  let valid = call_580472.validator(path, query, header, formData, body)
-  let scheme = call_580472.pickScheme
+  let valid = call_589501.validator(path, query, header, formData, body)
+  let scheme = call_589501.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580472.url(scheme.get, call_580472.host, call_580472.base,
-                         call_580472.route, valid.getOrDefault("path"),
+  let url = call_589501.url(scheme.get, call_589501.host, call_589501.base,
+                         call_589501.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580472, url, valid)
+  result = hook(call_589501, url, valid)
 
-proc call*(call_580473: Call_AdexchangebuyerMarketplacedealsInsert_580460;
+proc call*(call_589502: Call_AdexchangebuyerMarketplacedealsInsert_589489;
           proposalId: string; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; userIp: string = "";
           key: string = ""; body: JsonNode = nil; prettyPrint: bool = true): Recallable =
@@ -4899,30 +4899,30 @@ proc call*(call_580473: Call_AdexchangebuyerMarketplacedealsInsert_580460;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_580474 = newJObject()
-  var query_580475 = newJObject()
-  var body_580476 = newJObject()
-  add(query_580475, "fields", newJString(fields))
-  add(query_580475, "quotaUser", newJString(quotaUser))
-  add(query_580475, "alt", newJString(alt))
-  add(path_580474, "proposalId", newJString(proposalId))
-  add(query_580475, "oauth_token", newJString(oauthToken))
-  add(query_580475, "userIp", newJString(userIp))
-  add(query_580475, "key", newJString(key))
+  var path_589503 = newJObject()
+  var query_589504 = newJObject()
+  var body_589505 = newJObject()
+  add(query_589504, "fields", newJString(fields))
+  add(query_589504, "quotaUser", newJString(quotaUser))
+  add(query_589504, "alt", newJString(alt))
+  add(path_589503, "proposalId", newJString(proposalId))
+  add(query_589504, "oauth_token", newJString(oauthToken))
+  add(query_589504, "userIp", newJString(userIp))
+  add(query_589504, "key", newJString(key))
   if body != nil:
-    body_580476 = body
-  add(query_580475, "prettyPrint", newJBool(prettyPrint))
-  result = call_580473.call(path_580474, query_580475, nil, nil, body_580476)
+    body_589505 = body
+  add(query_589504, "prettyPrint", newJBool(prettyPrint))
+  result = call_589502.call(path_589503, query_589504, nil, nil, body_589505)
 
-var adexchangebuyerMarketplacedealsInsert* = Call_AdexchangebuyerMarketplacedealsInsert_580460(
+var adexchangebuyerMarketplacedealsInsert* = Call_AdexchangebuyerMarketplacedealsInsert_589489(
     name: "adexchangebuyerMarketplacedealsInsert", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com", route: "/proposals/{proposalId}/deals/insert",
-    validator: validate_AdexchangebuyerMarketplacedealsInsert_580461,
-    base: "/adexchangebuyer/v1.4", url: url_AdexchangebuyerMarketplacedealsInsert_580462,
+    validator: validate_AdexchangebuyerMarketplacedealsInsert_589490,
+    base: "/adexchangebuyer/v1.4", url: url_AdexchangebuyerMarketplacedealsInsert_589491,
     schemes: {Scheme.Https})
 type
-  Call_AdexchangebuyerMarketplacedealsUpdate_580477 = ref object of OpenApiRestCall_579437
-proc url_AdexchangebuyerMarketplacedealsUpdate_580479(protocol: Scheme;
+  Call_AdexchangebuyerMarketplacedealsUpdate_589506 = ref object of OpenApiRestCall_588466
+proc url_AdexchangebuyerMarketplacedealsUpdate_589508(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -4938,7 +4938,7 @@ proc url_AdexchangebuyerMarketplacedealsUpdate_580479(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_AdexchangebuyerMarketplacedealsUpdate_580478(path: JsonNode;
+proc validate_AdexchangebuyerMarketplacedealsUpdate_589507(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Replaces all the deals in the proposal with the passed in deals
   ## 
@@ -4950,11 +4950,11 @@ proc validate_AdexchangebuyerMarketplacedealsUpdate_580478(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `proposalId` field"
-  var valid_580480 = path.getOrDefault("proposalId")
-  valid_580480 = validateParameter(valid_580480, JString, required = true,
+  var valid_589509 = path.getOrDefault("proposalId")
+  valid_589509 = validateParameter(valid_589509, JString, required = true,
                                  default = nil)
-  if valid_580480 != nil:
-    section.add "proposalId", valid_580480
+  if valid_589509 != nil:
+    section.add "proposalId", valid_589509
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -4972,41 +4972,41 @@ proc validate_AdexchangebuyerMarketplacedealsUpdate_580478(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580481 = query.getOrDefault("fields")
-  valid_580481 = validateParameter(valid_580481, JString, required = false,
+  var valid_589510 = query.getOrDefault("fields")
+  valid_589510 = validateParameter(valid_589510, JString, required = false,
                                  default = nil)
-  if valid_580481 != nil:
-    section.add "fields", valid_580481
-  var valid_580482 = query.getOrDefault("quotaUser")
-  valid_580482 = validateParameter(valid_580482, JString, required = false,
+  if valid_589510 != nil:
+    section.add "fields", valid_589510
+  var valid_589511 = query.getOrDefault("quotaUser")
+  valid_589511 = validateParameter(valid_589511, JString, required = false,
                                  default = nil)
-  if valid_580482 != nil:
-    section.add "quotaUser", valid_580482
-  var valid_580483 = query.getOrDefault("alt")
-  valid_580483 = validateParameter(valid_580483, JString, required = false,
+  if valid_589511 != nil:
+    section.add "quotaUser", valid_589511
+  var valid_589512 = query.getOrDefault("alt")
+  valid_589512 = validateParameter(valid_589512, JString, required = false,
                                  default = newJString("json"))
-  if valid_580483 != nil:
-    section.add "alt", valid_580483
-  var valid_580484 = query.getOrDefault("oauth_token")
-  valid_580484 = validateParameter(valid_580484, JString, required = false,
+  if valid_589512 != nil:
+    section.add "alt", valid_589512
+  var valid_589513 = query.getOrDefault("oauth_token")
+  valid_589513 = validateParameter(valid_589513, JString, required = false,
                                  default = nil)
-  if valid_580484 != nil:
-    section.add "oauth_token", valid_580484
-  var valid_580485 = query.getOrDefault("userIp")
-  valid_580485 = validateParameter(valid_580485, JString, required = false,
+  if valid_589513 != nil:
+    section.add "oauth_token", valid_589513
+  var valid_589514 = query.getOrDefault("userIp")
+  valid_589514 = validateParameter(valid_589514, JString, required = false,
                                  default = nil)
-  if valid_580485 != nil:
-    section.add "userIp", valid_580485
-  var valid_580486 = query.getOrDefault("key")
-  valid_580486 = validateParameter(valid_580486, JString, required = false,
+  if valid_589514 != nil:
+    section.add "userIp", valid_589514
+  var valid_589515 = query.getOrDefault("key")
+  valid_589515 = validateParameter(valid_589515, JString, required = false,
                                  default = nil)
-  if valid_580486 != nil:
-    section.add "key", valid_580486
-  var valid_580487 = query.getOrDefault("prettyPrint")
-  valid_580487 = validateParameter(valid_580487, JBool, required = false,
+  if valid_589515 != nil:
+    section.add "key", valid_589515
+  var valid_589516 = query.getOrDefault("prettyPrint")
+  valid_589516 = validateParameter(valid_589516, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580487 != nil:
-    section.add "prettyPrint", valid_580487
+  if valid_589516 != nil:
+    section.add "prettyPrint", valid_589516
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -5018,21 +5018,21 @@ proc validate_AdexchangebuyerMarketplacedealsUpdate_580478(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580489: Call_AdexchangebuyerMarketplacedealsUpdate_580477;
+proc call*(call_589518: Call_AdexchangebuyerMarketplacedealsUpdate_589506;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Replaces all the deals in the proposal with the passed in deals
   ## 
-  let valid = call_580489.validator(path, query, header, formData, body)
-  let scheme = call_580489.pickScheme
+  let valid = call_589518.validator(path, query, header, formData, body)
+  let scheme = call_589518.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580489.url(scheme.get, call_580489.host, call_580489.base,
-                         call_580489.route, valid.getOrDefault("path"),
+  let url = call_589518.url(scheme.get, call_589518.host, call_589518.base,
+                         call_589518.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580489, url, valid)
+  result = hook(call_589518, url, valid)
 
-proc call*(call_580490: Call_AdexchangebuyerMarketplacedealsUpdate_580477;
+proc call*(call_589519: Call_AdexchangebuyerMarketplacedealsUpdate_589506;
           proposalId: string; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; userIp: string = "";
           key: string = ""; body: JsonNode = nil; prettyPrint: bool = true): Recallable =
@@ -5055,30 +5055,30 @@ proc call*(call_580490: Call_AdexchangebuyerMarketplacedealsUpdate_580477;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_580491 = newJObject()
-  var query_580492 = newJObject()
-  var body_580493 = newJObject()
-  add(query_580492, "fields", newJString(fields))
-  add(query_580492, "quotaUser", newJString(quotaUser))
-  add(query_580492, "alt", newJString(alt))
-  add(path_580491, "proposalId", newJString(proposalId))
-  add(query_580492, "oauth_token", newJString(oauthToken))
-  add(query_580492, "userIp", newJString(userIp))
-  add(query_580492, "key", newJString(key))
+  var path_589520 = newJObject()
+  var query_589521 = newJObject()
+  var body_589522 = newJObject()
+  add(query_589521, "fields", newJString(fields))
+  add(query_589521, "quotaUser", newJString(quotaUser))
+  add(query_589521, "alt", newJString(alt))
+  add(path_589520, "proposalId", newJString(proposalId))
+  add(query_589521, "oauth_token", newJString(oauthToken))
+  add(query_589521, "userIp", newJString(userIp))
+  add(query_589521, "key", newJString(key))
   if body != nil:
-    body_580493 = body
-  add(query_580492, "prettyPrint", newJBool(prettyPrint))
-  result = call_580490.call(path_580491, query_580492, nil, nil, body_580493)
+    body_589522 = body
+  add(query_589521, "prettyPrint", newJBool(prettyPrint))
+  result = call_589519.call(path_589520, query_589521, nil, nil, body_589522)
 
-var adexchangebuyerMarketplacedealsUpdate* = Call_AdexchangebuyerMarketplacedealsUpdate_580477(
+var adexchangebuyerMarketplacedealsUpdate* = Call_AdexchangebuyerMarketplacedealsUpdate_589506(
     name: "adexchangebuyerMarketplacedealsUpdate", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com", route: "/proposals/{proposalId}/deals/update",
-    validator: validate_AdexchangebuyerMarketplacedealsUpdate_580478,
-    base: "/adexchangebuyer/v1.4", url: url_AdexchangebuyerMarketplacedealsUpdate_580479,
+    validator: validate_AdexchangebuyerMarketplacedealsUpdate_589507,
+    base: "/adexchangebuyer/v1.4", url: url_AdexchangebuyerMarketplacedealsUpdate_589508,
     schemes: {Scheme.Https})
 type
-  Call_AdexchangebuyerMarketplacenotesList_580494 = ref object of OpenApiRestCall_579437
-proc url_AdexchangebuyerMarketplacenotesList_580496(protocol: Scheme; host: string;
+  Call_AdexchangebuyerMarketplacenotesList_589523 = ref object of OpenApiRestCall_588466
+proc url_AdexchangebuyerMarketplacenotesList_589525(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -5094,7 +5094,7 @@ proc url_AdexchangebuyerMarketplacenotesList_580496(protocol: Scheme; host: stri
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_AdexchangebuyerMarketplacenotesList_580495(path: JsonNode;
+proc validate_AdexchangebuyerMarketplacenotesList_589524(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Get all the notes associated with a proposal
   ## 
@@ -5106,11 +5106,11 @@ proc validate_AdexchangebuyerMarketplacenotesList_580495(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `proposalId` field"
-  var valid_580497 = path.getOrDefault("proposalId")
-  valid_580497 = validateParameter(valid_580497, JString, required = true,
+  var valid_589526 = path.getOrDefault("proposalId")
+  valid_589526 = validateParameter(valid_589526, JString, required = true,
                                  default = nil)
-  if valid_580497 != nil:
-    section.add "proposalId", valid_580497
+  if valid_589526 != nil:
+    section.add "proposalId", valid_589526
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -5130,46 +5130,46 @@ proc validate_AdexchangebuyerMarketplacenotesList_580495(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580498 = query.getOrDefault("fields")
-  valid_580498 = validateParameter(valid_580498, JString, required = false,
+  var valid_589527 = query.getOrDefault("fields")
+  valid_589527 = validateParameter(valid_589527, JString, required = false,
                                  default = nil)
-  if valid_580498 != nil:
-    section.add "fields", valid_580498
-  var valid_580499 = query.getOrDefault("quotaUser")
-  valid_580499 = validateParameter(valid_580499, JString, required = false,
+  if valid_589527 != nil:
+    section.add "fields", valid_589527
+  var valid_589528 = query.getOrDefault("quotaUser")
+  valid_589528 = validateParameter(valid_589528, JString, required = false,
                                  default = nil)
-  if valid_580499 != nil:
-    section.add "quotaUser", valid_580499
-  var valid_580500 = query.getOrDefault("alt")
-  valid_580500 = validateParameter(valid_580500, JString, required = false,
+  if valid_589528 != nil:
+    section.add "quotaUser", valid_589528
+  var valid_589529 = query.getOrDefault("alt")
+  valid_589529 = validateParameter(valid_589529, JString, required = false,
                                  default = newJString("json"))
-  if valid_580500 != nil:
-    section.add "alt", valid_580500
-  var valid_580501 = query.getOrDefault("pqlQuery")
-  valid_580501 = validateParameter(valid_580501, JString, required = false,
+  if valid_589529 != nil:
+    section.add "alt", valid_589529
+  var valid_589530 = query.getOrDefault("pqlQuery")
+  valid_589530 = validateParameter(valid_589530, JString, required = false,
                                  default = nil)
-  if valid_580501 != nil:
-    section.add "pqlQuery", valid_580501
-  var valid_580502 = query.getOrDefault("oauth_token")
-  valid_580502 = validateParameter(valid_580502, JString, required = false,
+  if valid_589530 != nil:
+    section.add "pqlQuery", valid_589530
+  var valid_589531 = query.getOrDefault("oauth_token")
+  valid_589531 = validateParameter(valid_589531, JString, required = false,
                                  default = nil)
-  if valid_580502 != nil:
-    section.add "oauth_token", valid_580502
-  var valid_580503 = query.getOrDefault("userIp")
-  valid_580503 = validateParameter(valid_580503, JString, required = false,
+  if valid_589531 != nil:
+    section.add "oauth_token", valid_589531
+  var valid_589532 = query.getOrDefault("userIp")
+  valid_589532 = validateParameter(valid_589532, JString, required = false,
                                  default = nil)
-  if valid_580503 != nil:
-    section.add "userIp", valid_580503
-  var valid_580504 = query.getOrDefault("key")
-  valid_580504 = validateParameter(valid_580504, JString, required = false,
+  if valid_589532 != nil:
+    section.add "userIp", valid_589532
+  var valid_589533 = query.getOrDefault("key")
+  valid_589533 = validateParameter(valid_589533, JString, required = false,
                                  default = nil)
-  if valid_580504 != nil:
-    section.add "key", valid_580504
-  var valid_580505 = query.getOrDefault("prettyPrint")
-  valid_580505 = validateParameter(valid_580505, JBool, required = false,
+  if valid_589533 != nil:
+    section.add "key", valid_589533
+  var valid_589534 = query.getOrDefault("prettyPrint")
+  valid_589534 = validateParameter(valid_589534, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580505 != nil:
-    section.add "prettyPrint", valid_580505
+  if valid_589534 != nil:
+    section.add "prettyPrint", valid_589534
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -5178,21 +5178,21 @@ proc validate_AdexchangebuyerMarketplacenotesList_580495(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580506: Call_AdexchangebuyerMarketplacenotesList_580494;
+proc call*(call_589535: Call_AdexchangebuyerMarketplacenotesList_589523;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Get all the notes associated with a proposal
   ## 
-  let valid = call_580506.validator(path, query, header, formData, body)
-  let scheme = call_580506.pickScheme
+  let valid = call_589535.validator(path, query, header, formData, body)
+  let scheme = call_589535.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580506.url(scheme.get, call_580506.host, call_580506.base,
-                         call_580506.route, valid.getOrDefault("path"),
+  let url = call_589535.url(scheme.get, call_589535.host, call_589535.base,
+                         call_589535.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580506, url, valid)
+  result = hook(call_589535, url, valid)
 
-proc call*(call_580507: Call_AdexchangebuyerMarketplacenotesList_580494;
+proc call*(call_589536: Call_AdexchangebuyerMarketplacenotesList_589523;
           proposalId: string; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; pqlQuery: string = ""; oauthToken: string = "";
           userIp: string = ""; key: string = ""; prettyPrint: bool = true): Recallable =
@@ -5216,28 +5216,28 @@ proc call*(call_580507: Call_AdexchangebuyerMarketplacenotesList_580494;
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_580508 = newJObject()
-  var query_580509 = newJObject()
-  add(query_580509, "fields", newJString(fields))
-  add(query_580509, "quotaUser", newJString(quotaUser))
-  add(query_580509, "alt", newJString(alt))
-  add(query_580509, "pqlQuery", newJString(pqlQuery))
-  add(path_580508, "proposalId", newJString(proposalId))
-  add(query_580509, "oauth_token", newJString(oauthToken))
-  add(query_580509, "userIp", newJString(userIp))
-  add(query_580509, "key", newJString(key))
-  add(query_580509, "prettyPrint", newJBool(prettyPrint))
-  result = call_580507.call(path_580508, query_580509, nil, nil, nil)
+  var path_589537 = newJObject()
+  var query_589538 = newJObject()
+  add(query_589538, "fields", newJString(fields))
+  add(query_589538, "quotaUser", newJString(quotaUser))
+  add(query_589538, "alt", newJString(alt))
+  add(query_589538, "pqlQuery", newJString(pqlQuery))
+  add(path_589537, "proposalId", newJString(proposalId))
+  add(query_589538, "oauth_token", newJString(oauthToken))
+  add(query_589538, "userIp", newJString(userIp))
+  add(query_589538, "key", newJString(key))
+  add(query_589538, "prettyPrint", newJBool(prettyPrint))
+  result = call_589536.call(path_589537, query_589538, nil, nil, nil)
 
-var adexchangebuyerMarketplacenotesList* = Call_AdexchangebuyerMarketplacenotesList_580494(
+var adexchangebuyerMarketplacenotesList* = Call_AdexchangebuyerMarketplacenotesList_589523(
     name: "adexchangebuyerMarketplacenotesList", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/proposals/{proposalId}/notes",
-    validator: validate_AdexchangebuyerMarketplacenotesList_580495,
-    base: "/adexchangebuyer/v1.4", url: url_AdexchangebuyerMarketplacenotesList_580496,
+    validator: validate_AdexchangebuyerMarketplacenotesList_589524,
+    base: "/adexchangebuyer/v1.4", url: url_AdexchangebuyerMarketplacenotesList_589525,
     schemes: {Scheme.Https})
 type
-  Call_AdexchangebuyerMarketplacenotesInsert_580510 = ref object of OpenApiRestCall_579437
-proc url_AdexchangebuyerMarketplacenotesInsert_580512(protocol: Scheme;
+  Call_AdexchangebuyerMarketplacenotesInsert_589539 = ref object of OpenApiRestCall_588466
+proc url_AdexchangebuyerMarketplacenotesInsert_589541(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -5253,7 +5253,7 @@ proc url_AdexchangebuyerMarketplacenotesInsert_580512(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_AdexchangebuyerMarketplacenotesInsert_580511(path: JsonNode;
+proc validate_AdexchangebuyerMarketplacenotesInsert_589540(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Add notes to the proposal
   ## 
@@ -5265,11 +5265,11 @@ proc validate_AdexchangebuyerMarketplacenotesInsert_580511(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `proposalId` field"
-  var valid_580513 = path.getOrDefault("proposalId")
-  valid_580513 = validateParameter(valid_580513, JString, required = true,
+  var valid_589542 = path.getOrDefault("proposalId")
+  valid_589542 = validateParameter(valid_589542, JString, required = true,
                                  default = nil)
-  if valid_580513 != nil:
-    section.add "proposalId", valid_580513
+  if valid_589542 != nil:
+    section.add "proposalId", valid_589542
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -5287,41 +5287,41 @@ proc validate_AdexchangebuyerMarketplacenotesInsert_580511(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580514 = query.getOrDefault("fields")
-  valid_580514 = validateParameter(valid_580514, JString, required = false,
+  var valid_589543 = query.getOrDefault("fields")
+  valid_589543 = validateParameter(valid_589543, JString, required = false,
                                  default = nil)
-  if valid_580514 != nil:
-    section.add "fields", valid_580514
-  var valid_580515 = query.getOrDefault("quotaUser")
-  valid_580515 = validateParameter(valid_580515, JString, required = false,
+  if valid_589543 != nil:
+    section.add "fields", valid_589543
+  var valid_589544 = query.getOrDefault("quotaUser")
+  valid_589544 = validateParameter(valid_589544, JString, required = false,
                                  default = nil)
-  if valid_580515 != nil:
-    section.add "quotaUser", valid_580515
-  var valid_580516 = query.getOrDefault("alt")
-  valid_580516 = validateParameter(valid_580516, JString, required = false,
+  if valid_589544 != nil:
+    section.add "quotaUser", valid_589544
+  var valid_589545 = query.getOrDefault("alt")
+  valid_589545 = validateParameter(valid_589545, JString, required = false,
                                  default = newJString("json"))
-  if valid_580516 != nil:
-    section.add "alt", valid_580516
-  var valid_580517 = query.getOrDefault("oauth_token")
-  valid_580517 = validateParameter(valid_580517, JString, required = false,
+  if valid_589545 != nil:
+    section.add "alt", valid_589545
+  var valid_589546 = query.getOrDefault("oauth_token")
+  valid_589546 = validateParameter(valid_589546, JString, required = false,
                                  default = nil)
-  if valid_580517 != nil:
-    section.add "oauth_token", valid_580517
-  var valid_580518 = query.getOrDefault("userIp")
-  valid_580518 = validateParameter(valid_580518, JString, required = false,
+  if valid_589546 != nil:
+    section.add "oauth_token", valid_589546
+  var valid_589547 = query.getOrDefault("userIp")
+  valid_589547 = validateParameter(valid_589547, JString, required = false,
                                  default = nil)
-  if valid_580518 != nil:
-    section.add "userIp", valid_580518
-  var valid_580519 = query.getOrDefault("key")
-  valid_580519 = validateParameter(valid_580519, JString, required = false,
+  if valid_589547 != nil:
+    section.add "userIp", valid_589547
+  var valid_589548 = query.getOrDefault("key")
+  valid_589548 = validateParameter(valid_589548, JString, required = false,
                                  default = nil)
-  if valid_580519 != nil:
-    section.add "key", valid_580519
-  var valid_580520 = query.getOrDefault("prettyPrint")
-  valid_580520 = validateParameter(valid_580520, JBool, required = false,
+  if valid_589548 != nil:
+    section.add "key", valid_589548
+  var valid_589549 = query.getOrDefault("prettyPrint")
+  valid_589549 = validateParameter(valid_589549, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580520 != nil:
-    section.add "prettyPrint", valid_580520
+  if valid_589549 != nil:
+    section.add "prettyPrint", valid_589549
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -5333,21 +5333,21 @@ proc validate_AdexchangebuyerMarketplacenotesInsert_580511(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580522: Call_AdexchangebuyerMarketplacenotesInsert_580510;
+proc call*(call_589551: Call_AdexchangebuyerMarketplacenotesInsert_589539;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Add notes to the proposal
   ## 
-  let valid = call_580522.validator(path, query, header, formData, body)
-  let scheme = call_580522.pickScheme
+  let valid = call_589551.validator(path, query, header, formData, body)
+  let scheme = call_589551.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580522.url(scheme.get, call_580522.host, call_580522.base,
-                         call_580522.route, valid.getOrDefault("path"),
+  let url = call_589551.url(scheme.get, call_589551.host, call_589551.base,
+                         call_589551.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580522, url, valid)
+  result = hook(call_589551, url, valid)
 
-proc call*(call_580523: Call_AdexchangebuyerMarketplacenotesInsert_580510;
+proc call*(call_589552: Call_AdexchangebuyerMarketplacenotesInsert_589539;
           proposalId: string; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; userIp: string = "";
           key: string = ""; body: JsonNode = nil; prettyPrint: bool = true): Recallable =
@@ -5370,30 +5370,30 @@ proc call*(call_580523: Call_AdexchangebuyerMarketplacenotesInsert_580510;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_580524 = newJObject()
-  var query_580525 = newJObject()
-  var body_580526 = newJObject()
-  add(query_580525, "fields", newJString(fields))
-  add(query_580525, "quotaUser", newJString(quotaUser))
-  add(query_580525, "alt", newJString(alt))
-  add(path_580524, "proposalId", newJString(proposalId))
-  add(query_580525, "oauth_token", newJString(oauthToken))
-  add(query_580525, "userIp", newJString(userIp))
-  add(query_580525, "key", newJString(key))
+  var path_589553 = newJObject()
+  var query_589554 = newJObject()
+  var body_589555 = newJObject()
+  add(query_589554, "fields", newJString(fields))
+  add(query_589554, "quotaUser", newJString(quotaUser))
+  add(query_589554, "alt", newJString(alt))
+  add(path_589553, "proposalId", newJString(proposalId))
+  add(query_589554, "oauth_token", newJString(oauthToken))
+  add(query_589554, "userIp", newJString(userIp))
+  add(query_589554, "key", newJString(key))
   if body != nil:
-    body_580526 = body
-  add(query_580525, "prettyPrint", newJBool(prettyPrint))
-  result = call_580523.call(path_580524, query_580525, nil, nil, body_580526)
+    body_589555 = body
+  add(query_589554, "prettyPrint", newJBool(prettyPrint))
+  result = call_589552.call(path_589553, query_589554, nil, nil, body_589555)
 
-var adexchangebuyerMarketplacenotesInsert* = Call_AdexchangebuyerMarketplacenotesInsert_580510(
+var adexchangebuyerMarketplacenotesInsert* = Call_AdexchangebuyerMarketplacenotesInsert_589539(
     name: "adexchangebuyerMarketplacenotesInsert", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com", route: "/proposals/{proposalId}/notes/insert",
-    validator: validate_AdexchangebuyerMarketplacenotesInsert_580511,
-    base: "/adexchangebuyer/v1.4", url: url_AdexchangebuyerMarketplacenotesInsert_580512,
+    validator: validate_AdexchangebuyerMarketplacenotesInsert_589540,
+    base: "/adexchangebuyer/v1.4", url: url_AdexchangebuyerMarketplacenotesInsert_589541,
     schemes: {Scheme.Https})
 type
-  Call_AdexchangebuyerProposalsSetupcomplete_580527 = ref object of OpenApiRestCall_579437
-proc url_AdexchangebuyerProposalsSetupcomplete_580529(protocol: Scheme;
+  Call_AdexchangebuyerProposalsSetupcomplete_589556 = ref object of OpenApiRestCall_588466
+proc url_AdexchangebuyerProposalsSetupcomplete_589558(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -5409,7 +5409,7 @@ proc url_AdexchangebuyerProposalsSetupcomplete_580529(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_AdexchangebuyerProposalsSetupcomplete_580528(path: JsonNode;
+proc validate_AdexchangebuyerProposalsSetupcomplete_589557(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Update the given proposal to indicate that setup has been completed.
   ## 
@@ -5421,11 +5421,11 @@ proc validate_AdexchangebuyerProposalsSetupcomplete_580528(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `proposalId` field"
-  var valid_580530 = path.getOrDefault("proposalId")
-  valid_580530 = validateParameter(valid_580530, JString, required = true,
+  var valid_589559 = path.getOrDefault("proposalId")
+  valid_589559 = validateParameter(valid_589559, JString, required = true,
                                  default = nil)
-  if valid_580530 != nil:
-    section.add "proposalId", valid_580530
+  if valid_589559 != nil:
+    section.add "proposalId", valid_589559
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -5443,41 +5443,41 @@ proc validate_AdexchangebuyerProposalsSetupcomplete_580528(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580531 = query.getOrDefault("fields")
-  valid_580531 = validateParameter(valid_580531, JString, required = false,
+  var valid_589560 = query.getOrDefault("fields")
+  valid_589560 = validateParameter(valid_589560, JString, required = false,
                                  default = nil)
-  if valid_580531 != nil:
-    section.add "fields", valid_580531
-  var valid_580532 = query.getOrDefault("quotaUser")
-  valid_580532 = validateParameter(valid_580532, JString, required = false,
+  if valid_589560 != nil:
+    section.add "fields", valid_589560
+  var valid_589561 = query.getOrDefault("quotaUser")
+  valid_589561 = validateParameter(valid_589561, JString, required = false,
                                  default = nil)
-  if valid_580532 != nil:
-    section.add "quotaUser", valid_580532
-  var valid_580533 = query.getOrDefault("alt")
-  valid_580533 = validateParameter(valid_580533, JString, required = false,
+  if valid_589561 != nil:
+    section.add "quotaUser", valid_589561
+  var valid_589562 = query.getOrDefault("alt")
+  valid_589562 = validateParameter(valid_589562, JString, required = false,
                                  default = newJString("json"))
-  if valid_580533 != nil:
-    section.add "alt", valid_580533
-  var valid_580534 = query.getOrDefault("oauth_token")
-  valid_580534 = validateParameter(valid_580534, JString, required = false,
+  if valid_589562 != nil:
+    section.add "alt", valid_589562
+  var valid_589563 = query.getOrDefault("oauth_token")
+  valid_589563 = validateParameter(valid_589563, JString, required = false,
                                  default = nil)
-  if valid_580534 != nil:
-    section.add "oauth_token", valid_580534
-  var valid_580535 = query.getOrDefault("userIp")
-  valid_580535 = validateParameter(valid_580535, JString, required = false,
+  if valid_589563 != nil:
+    section.add "oauth_token", valid_589563
+  var valid_589564 = query.getOrDefault("userIp")
+  valid_589564 = validateParameter(valid_589564, JString, required = false,
                                  default = nil)
-  if valid_580535 != nil:
-    section.add "userIp", valid_580535
-  var valid_580536 = query.getOrDefault("key")
-  valid_580536 = validateParameter(valid_580536, JString, required = false,
+  if valid_589564 != nil:
+    section.add "userIp", valid_589564
+  var valid_589565 = query.getOrDefault("key")
+  valid_589565 = validateParameter(valid_589565, JString, required = false,
                                  default = nil)
-  if valid_580536 != nil:
-    section.add "key", valid_580536
-  var valid_580537 = query.getOrDefault("prettyPrint")
-  valid_580537 = validateParameter(valid_580537, JBool, required = false,
+  if valid_589565 != nil:
+    section.add "key", valid_589565
+  var valid_589566 = query.getOrDefault("prettyPrint")
+  valid_589566 = validateParameter(valid_589566, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580537 != nil:
-    section.add "prettyPrint", valid_580537
+  if valid_589566 != nil:
+    section.add "prettyPrint", valid_589566
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -5486,21 +5486,21 @@ proc validate_AdexchangebuyerProposalsSetupcomplete_580528(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580538: Call_AdexchangebuyerProposalsSetupcomplete_580527;
+proc call*(call_589567: Call_AdexchangebuyerProposalsSetupcomplete_589556;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Update the given proposal to indicate that setup has been completed.
   ## 
-  let valid = call_580538.validator(path, query, header, formData, body)
-  let scheme = call_580538.pickScheme
+  let valid = call_589567.validator(path, query, header, formData, body)
+  let scheme = call_589567.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580538.url(scheme.get, call_580538.host, call_580538.base,
-                         call_580538.route, valid.getOrDefault("path"),
+  let url = call_589567.url(scheme.get, call_589567.host, call_589567.base,
+                         call_589567.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580538, url, valid)
+  result = hook(call_589567, url, valid)
 
-proc call*(call_580539: Call_AdexchangebuyerProposalsSetupcomplete_580527;
+proc call*(call_589568: Call_AdexchangebuyerProposalsSetupcomplete_589556;
           proposalId: string; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; userIp: string = "";
           key: string = ""; prettyPrint: bool = true): Recallable =
@@ -5522,27 +5522,27 @@ proc call*(call_580539: Call_AdexchangebuyerProposalsSetupcomplete_580527;
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_580540 = newJObject()
-  var query_580541 = newJObject()
-  add(query_580541, "fields", newJString(fields))
-  add(query_580541, "quotaUser", newJString(quotaUser))
-  add(query_580541, "alt", newJString(alt))
-  add(path_580540, "proposalId", newJString(proposalId))
-  add(query_580541, "oauth_token", newJString(oauthToken))
-  add(query_580541, "userIp", newJString(userIp))
-  add(query_580541, "key", newJString(key))
-  add(query_580541, "prettyPrint", newJBool(prettyPrint))
-  result = call_580539.call(path_580540, query_580541, nil, nil, nil)
+  var path_589569 = newJObject()
+  var query_589570 = newJObject()
+  add(query_589570, "fields", newJString(fields))
+  add(query_589570, "quotaUser", newJString(quotaUser))
+  add(query_589570, "alt", newJString(alt))
+  add(path_589569, "proposalId", newJString(proposalId))
+  add(query_589570, "oauth_token", newJString(oauthToken))
+  add(query_589570, "userIp", newJString(userIp))
+  add(query_589570, "key", newJString(key))
+  add(query_589570, "prettyPrint", newJBool(prettyPrint))
+  result = call_589568.call(path_589569, query_589570, nil, nil, nil)
 
-var adexchangebuyerProposalsSetupcomplete* = Call_AdexchangebuyerProposalsSetupcomplete_580527(
+var adexchangebuyerProposalsSetupcomplete* = Call_AdexchangebuyerProposalsSetupcomplete_589556(
     name: "adexchangebuyerProposalsSetupcomplete", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com", route: "/proposals/{proposalId}/setupcomplete",
-    validator: validate_AdexchangebuyerProposalsSetupcomplete_580528,
-    base: "/adexchangebuyer/v1.4", url: url_AdexchangebuyerProposalsSetupcomplete_580529,
+    validator: validate_AdexchangebuyerProposalsSetupcomplete_589557,
+    base: "/adexchangebuyer/v1.4", url: url_AdexchangebuyerProposalsSetupcomplete_589558,
     schemes: {Scheme.Https})
 type
-  Call_AdexchangebuyerProposalsUpdate_580542 = ref object of OpenApiRestCall_579437
-proc url_AdexchangebuyerProposalsUpdate_580544(protocol: Scheme; host: string;
+  Call_AdexchangebuyerProposalsUpdate_589571 = ref object of OpenApiRestCall_588466
+proc url_AdexchangebuyerProposalsUpdate_589573(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -5563,7 +5563,7 @@ proc url_AdexchangebuyerProposalsUpdate_580544(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_AdexchangebuyerProposalsUpdate_580543(path: JsonNode;
+proc validate_AdexchangebuyerProposalsUpdate_589572(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Update the given proposal
   ## 
@@ -5579,21 +5579,21 @@ proc validate_AdexchangebuyerProposalsUpdate_580543(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `updateAction` field"
-  var valid_580545 = path.getOrDefault("updateAction")
-  valid_580545 = validateParameter(valid_580545, JString, required = true,
+  var valid_589574 = path.getOrDefault("updateAction")
+  valid_589574 = validateParameter(valid_589574, JString, required = true,
                                  default = newJString("accept"))
-  if valid_580545 != nil:
-    section.add "updateAction", valid_580545
-  var valid_580546 = path.getOrDefault("proposalId")
-  valid_580546 = validateParameter(valid_580546, JString, required = true,
+  if valid_589574 != nil:
+    section.add "updateAction", valid_589574
+  var valid_589575 = path.getOrDefault("proposalId")
+  valid_589575 = validateParameter(valid_589575, JString, required = true,
                                  default = nil)
-  if valid_580546 != nil:
-    section.add "proposalId", valid_580546
-  var valid_580547 = path.getOrDefault("revisionNumber")
-  valid_580547 = validateParameter(valid_580547, JString, required = true,
+  if valid_589575 != nil:
+    section.add "proposalId", valid_589575
+  var valid_589576 = path.getOrDefault("revisionNumber")
+  valid_589576 = validateParameter(valid_589576, JString, required = true,
                                  default = nil)
-  if valid_580547 != nil:
-    section.add "revisionNumber", valid_580547
+  if valid_589576 != nil:
+    section.add "revisionNumber", valid_589576
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -5611,41 +5611,41 @@ proc validate_AdexchangebuyerProposalsUpdate_580543(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580548 = query.getOrDefault("fields")
-  valid_580548 = validateParameter(valid_580548, JString, required = false,
+  var valid_589577 = query.getOrDefault("fields")
+  valid_589577 = validateParameter(valid_589577, JString, required = false,
                                  default = nil)
-  if valid_580548 != nil:
-    section.add "fields", valid_580548
-  var valid_580549 = query.getOrDefault("quotaUser")
-  valid_580549 = validateParameter(valid_580549, JString, required = false,
+  if valid_589577 != nil:
+    section.add "fields", valid_589577
+  var valid_589578 = query.getOrDefault("quotaUser")
+  valid_589578 = validateParameter(valid_589578, JString, required = false,
                                  default = nil)
-  if valid_580549 != nil:
-    section.add "quotaUser", valid_580549
-  var valid_580550 = query.getOrDefault("alt")
-  valid_580550 = validateParameter(valid_580550, JString, required = false,
+  if valid_589578 != nil:
+    section.add "quotaUser", valid_589578
+  var valid_589579 = query.getOrDefault("alt")
+  valid_589579 = validateParameter(valid_589579, JString, required = false,
                                  default = newJString("json"))
-  if valid_580550 != nil:
-    section.add "alt", valid_580550
-  var valid_580551 = query.getOrDefault("oauth_token")
-  valid_580551 = validateParameter(valid_580551, JString, required = false,
+  if valid_589579 != nil:
+    section.add "alt", valid_589579
+  var valid_589580 = query.getOrDefault("oauth_token")
+  valid_589580 = validateParameter(valid_589580, JString, required = false,
                                  default = nil)
-  if valid_580551 != nil:
-    section.add "oauth_token", valid_580551
-  var valid_580552 = query.getOrDefault("userIp")
-  valid_580552 = validateParameter(valid_580552, JString, required = false,
+  if valid_589580 != nil:
+    section.add "oauth_token", valid_589580
+  var valid_589581 = query.getOrDefault("userIp")
+  valid_589581 = validateParameter(valid_589581, JString, required = false,
                                  default = nil)
-  if valid_580552 != nil:
-    section.add "userIp", valid_580552
-  var valid_580553 = query.getOrDefault("key")
-  valid_580553 = validateParameter(valid_580553, JString, required = false,
+  if valid_589581 != nil:
+    section.add "userIp", valid_589581
+  var valid_589582 = query.getOrDefault("key")
+  valid_589582 = validateParameter(valid_589582, JString, required = false,
                                  default = nil)
-  if valid_580553 != nil:
-    section.add "key", valid_580553
-  var valid_580554 = query.getOrDefault("prettyPrint")
-  valid_580554 = validateParameter(valid_580554, JBool, required = false,
+  if valid_589582 != nil:
+    section.add "key", valid_589582
+  var valid_589583 = query.getOrDefault("prettyPrint")
+  valid_589583 = validateParameter(valid_589583, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580554 != nil:
-    section.add "prettyPrint", valid_580554
+  if valid_589583 != nil:
+    section.add "prettyPrint", valid_589583
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -5657,20 +5657,20 @@ proc validate_AdexchangebuyerProposalsUpdate_580543(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580556: Call_AdexchangebuyerProposalsUpdate_580542; path: JsonNode;
+proc call*(call_589585: Call_AdexchangebuyerProposalsUpdate_589571; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Update the given proposal
   ## 
-  let valid = call_580556.validator(path, query, header, formData, body)
-  let scheme = call_580556.pickScheme
+  let valid = call_589585.validator(path, query, header, formData, body)
+  let scheme = call_589585.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580556.url(scheme.get, call_580556.host, call_580556.base,
-                         call_580556.route, valid.getOrDefault("path"),
+  let url = call_589585.url(scheme.get, call_589585.host, call_589585.base,
+                         call_589585.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580556, url, valid)
+  result = hook(call_589585, url, valid)
 
-proc call*(call_580557: Call_AdexchangebuyerProposalsUpdate_580542;
+proc call*(call_589586: Call_AdexchangebuyerProposalsUpdate_589571;
           proposalId: string; revisionNumber: string;
           updateAction: string = "accept"; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; userIp: string = "";
@@ -5698,33 +5698,33 @@ proc call*(call_580557: Call_AdexchangebuyerProposalsUpdate_580542;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_580558 = newJObject()
-  var query_580559 = newJObject()
-  var body_580560 = newJObject()
-  add(path_580558, "updateAction", newJString(updateAction))
-  add(query_580559, "fields", newJString(fields))
-  add(query_580559, "quotaUser", newJString(quotaUser))
-  add(query_580559, "alt", newJString(alt))
-  add(path_580558, "proposalId", newJString(proposalId))
-  add(path_580558, "revisionNumber", newJString(revisionNumber))
-  add(query_580559, "oauth_token", newJString(oauthToken))
-  add(query_580559, "userIp", newJString(userIp))
-  add(query_580559, "key", newJString(key))
+  var path_589587 = newJObject()
+  var query_589588 = newJObject()
+  var body_589589 = newJObject()
+  add(path_589587, "updateAction", newJString(updateAction))
+  add(query_589588, "fields", newJString(fields))
+  add(query_589588, "quotaUser", newJString(quotaUser))
+  add(query_589588, "alt", newJString(alt))
+  add(path_589587, "proposalId", newJString(proposalId))
+  add(path_589587, "revisionNumber", newJString(revisionNumber))
+  add(query_589588, "oauth_token", newJString(oauthToken))
+  add(query_589588, "userIp", newJString(userIp))
+  add(query_589588, "key", newJString(key))
   if body != nil:
-    body_580560 = body
-  add(query_580559, "prettyPrint", newJBool(prettyPrint))
-  result = call_580557.call(path_580558, query_580559, nil, nil, body_580560)
+    body_589589 = body
+  add(query_589588, "prettyPrint", newJBool(prettyPrint))
+  result = call_589586.call(path_589587, query_589588, nil, nil, body_589589)
 
-var adexchangebuyerProposalsUpdate* = Call_AdexchangebuyerProposalsUpdate_580542(
+var adexchangebuyerProposalsUpdate* = Call_AdexchangebuyerProposalsUpdate_589571(
     name: "adexchangebuyerProposalsUpdate", meth: HttpMethod.HttpPut,
     host: "www.googleapis.com",
     route: "/proposals/{proposalId}/{revisionNumber}/{updateAction}",
-    validator: validate_AdexchangebuyerProposalsUpdate_580543,
-    base: "/adexchangebuyer/v1.4", url: url_AdexchangebuyerProposalsUpdate_580544,
+    validator: validate_AdexchangebuyerProposalsUpdate_589572,
+    base: "/adexchangebuyer/v1.4", url: url_AdexchangebuyerProposalsUpdate_589573,
     schemes: {Scheme.Https})
 type
-  Call_AdexchangebuyerProposalsPatch_580561 = ref object of OpenApiRestCall_579437
-proc url_AdexchangebuyerProposalsPatch_580563(protocol: Scheme; host: string;
+  Call_AdexchangebuyerProposalsPatch_589590 = ref object of OpenApiRestCall_588466
+proc url_AdexchangebuyerProposalsPatch_589592(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -5745,7 +5745,7 @@ proc url_AdexchangebuyerProposalsPatch_580563(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_AdexchangebuyerProposalsPatch_580562(path: JsonNode; query: JsonNode;
+proc validate_AdexchangebuyerProposalsPatch_589591(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Update the given proposal. This method supports patch semantics.
   ## 
@@ -5761,21 +5761,21 @@ proc validate_AdexchangebuyerProposalsPatch_580562(path: JsonNode; query: JsonNo
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `updateAction` field"
-  var valid_580564 = path.getOrDefault("updateAction")
-  valid_580564 = validateParameter(valid_580564, JString, required = true,
+  var valid_589593 = path.getOrDefault("updateAction")
+  valid_589593 = validateParameter(valid_589593, JString, required = true,
                                  default = newJString("accept"))
-  if valid_580564 != nil:
-    section.add "updateAction", valid_580564
-  var valid_580565 = path.getOrDefault("proposalId")
-  valid_580565 = validateParameter(valid_580565, JString, required = true,
+  if valid_589593 != nil:
+    section.add "updateAction", valid_589593
+  var valid_589594 = path.getOrDefault("proposalId")
+  valid_589594 = validateParameter(valid_589594, JString, required = true,
                                  default = nil)
-  if valid_580565 != nil:
-    section.add "proposalId", valid_580565
-  var valid_580566 = path.getOrDefault("revisionNumber")
-  valid_580566 = validateParameter(valid_580566, JString, required = true,
+  if valid_589594 != nil:
+    section.add "proposalId", valid_589594
+  var valid_589595 = path.getOrDefault("revisionNumber")
+  valid_589595 = validateParameter(valid_589595, JString, required = true,
                                  default = nil)
-  if valid_580566 != nil:
-    section.add "revisionNumber", valid_580566
+  if valid_589595 != nil:
+    section.add "revisionNumber", valid_589595
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -5793,41 +5793,41 @@ proc validate_AdexchangebuyerProposalsPatch_580562(path: JsonNode; query: JsonNo
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580567 = query.getOrDefault("fields")
-  valid_580567 = validateParameter(valid_580567, JString, required = false,
+  var valid_589596 = query.getOrDefault("fields")
+  valid_589596 = validateParameter(valid_589596, JString, required = false,
                                  default = nil)
-  if valid_580567 != nil:
-    section.add "fields", valid_580567
-  var valid_580568 = query.getOrDefault("quotaUser")
-  valid_580568 = validateParameter(valid_580568, JString, required = false,
+  if valid_589596 != nil:
+    section.add "fields", valid_589596
+  var valid_589597 = query.getOrDefault("quotaUser")
+  valid_589597 = validateParameter(valid_589597, JString, required = false,
                                  default = nil)
-  if valid_580568 != nil:
-    section.add "quotaUser", valid_580568
-  var valid_580569 = query.getOrDefault("alt")
-  valid_580569 = validateParameter(valid_580569, JString, required = false,
+  if valid_589597 != nil:
+    section.add "quotaUser", valid_589597
+  var valid_589598 = query.getOrDefault("alt")
+  valid_589598 = validateParameter(valid_589598, JString, required = false,
                                  default = newJString("json"))
-  if valid_580569 != nil:
-    section.add "alt", valid_580569
-  var valid_580570 = query.getOrDefault("oauth_token")
-  valid_580570 = validateParameter(valid_580570, JString, required = false,
+  if valid_589598 != nil:
+    section.add "alt", valid_589598
+  var valid_589599 = query.getOrDefault("oauth_token")
+  valid_589599 = validateParameter(valid_589599, JString, required = false,
                                  default = nil)
-  if valid_580570 != nil:
-    section.add "oauth_token", valid_580570
-  var valid_580571 = query.getOrDefault("userIp")
-  valid_580571 = validateParameter(valid_580571, JString, required = false,
+  if valid_589599 != nil:
+    section.add "oauth_token", valid_589599
+  var valid_589600 = query.getOrDefault("userIp")
+  valid_589600 = validateParameter(valid_589600, JString, required = false,
                                  default = nil)
-  if valid_580571 != nil:
-    section.add "userIp", valid_580571
-  var valid_580572 = query.getOrDefault("key")
-  valid_580572 = validateParameter(valid_580572, JString, required = false,
+  if valid_589600 != nil:
+    section.add "userIp", valid_589600
+  var valid_589601 = query.getOrDefault("key")
+  valid_589601 = validateParameter(valid_589601, JString, required = false,
                                  default = nil)
-  if valid_580572 != nil:
-    section.add "key", valid_580572
-  var valid_580573 = query.getOrDefault("prettyPrint")
-  valid_580573 = validateParameter(valid_580573, JBool, required = false,
+  if valid_589601 != nil:
+    section.add "key", valid_589601
+  var valid_589602 = query.getOrDefault("prettyPrint")
+  valid_589602 = validateParameter(valid_589602, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580573 != nil:
-    section.add "prettyPrint", valid_580573
+  if valid_589602 != nil:
+    section.add "prettyPrint", valid_589602
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -5839,20 +5839,20 @@ proc validate_AdexchangebuyerProposalsPatch_580562(path: JsonNode; query: JsonNo
   if body != nil:
     result.add "body", body
 
-proc call*(call_580575: Call_AdexchangebuyerProposalsPatch_580561; path: JsonNode;
+proc call*(call_589604: Call_AdexchangebuyerProposalsPatch_589590; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Update the given proposal. This method supports patch semantics.
   ## 
-  let valid = call_580575.validator(path, query, header, formData, body)
-  let scheme = call_580575.pickScheme
+  let valid = call_589604.validator(path, query, header, formData, body)
+  let scheme = call_589604.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580575.url(scheme.get, call_580575.host, call_580575.base,
-                         call_580575.route, valid.getOrDefault("path"),
+  let url = call_589604.url(scheme.get, call_589604.host, call_589604.base,
+                         call_589604.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580575, url, valid)
+  result = hook(call_589604, url, valid)
 
-proc call*(call_580576: Call_AdexchangebuyerProposalsPatch_580561;
+proc call*(call_589605: Call_AdexchangebuyerProposalsPatch_589590;
           proposalId: string; revisionNumber: string;
           updateAction: string = "accept"; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; userIp: string = "";
@@ -5880,33 +5880,33 @@ proc call*(call_580576: Call_AdexchangebuyerProposalsPatch_580561;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_580577 = newJObject()
-  var query_580578 = newJObject()
-  var body_580579 = newJObject()
-  add(path_580577, "updateAction", newJString(updateAction))
-  add(query_580578, "fields", newJString(fields))
-  add(query_580578, "quotaUser", newJString(quotaUser))
-  add(query_580578, "alt", newJString(alt))
-  add(path_580577, "proposalId", newJString(proposalId))
-  add(path_580577, "revisionNumber", newJString(revisionNumber))
-  add(query_580578, "oauth_token", newJString(oauthToken))
-  add(query_580578, "userIp", newJString(userIp))
-  add(query_580578, "key", newJString(key))
+  var path_589606 = newJObject()
+  var query_589607 = newJObject()
+  var body_589608 = newJObject()
+  add(path_589606, "updateAction", newJString(updateAction))
+  add(query_589607, "fields", newJString(fields))
+  add(query_589607, "quotaUser", newJString(quotaUser))
+  add(query_589607, "alt", newJString(alt))
+  add(path_589606, "proposalId", newJString(proposalId))
+  add(path_589606, "revisionNumber", newJString(revisionNumber))
+  add(query_589607, "oauth_token", newJString(oauthToken))
+  add(query_589607, "userIp", newJString(userIp))
+  add(query_589607, "key", newJString(key))
   if body != nil:
-    body_580579 = body
-  add(query_580578, "prettyPrint", newJBool(prettyPrint))
-  result = call_580576.call(path_580577, query_580578, nil, nil, body_580579)
+    body_589608 = body
+  add(query_589607, "prettyPrint", newJBool(prettyPrint))
+  result = call_589605.call(path_589606, query_589607, nil, nil, body_589608)
 
-var adexchangebuyerProposalsPatch* = Call_AdexchangebuyerProposalsPatch_580561(
+var adexchangebuyerProposalsPatch* = Call_AdexchangebuyerProposalsPatch_589590(
     name: "adexchangebuyerProposalsPatch", meth: HttpMethod.HttpPatch,
     host: "www.googleapis.com",
     route: "/proposals/{proposalId}/{revisionNumber}/{updateAction}",
-    validator: validate_AdexchangebuyerProposalsPatch_580562,
-    base: "/adexchangebuyer/v1.4", url: url_AdexchangebuyerProposalsPatch_580563,
+    validator: validate_AdexchangebuyerProposalsPatch_589591,
+    base: "/adexchangebuyer/v1.4", url: url_AdexchangebuyerProposalsPatch_589592,
     schemes: {Scheme.Https})
 type
-  Call_AdexchangebuyerPubprofilesList_580580 = ref object of OpenApiRestCall_579437
-proc url_AdexchangebuyerPubprofilesList_580582(protocol: Scheme; host: string;
+  Call_AdexchangebuyerPubprofilesList_589609 = ref object of OpenApiRestCall_588466
+proc url_AdexchangebuyerPubprofilesList_589611(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -5922,7 +5922,7 @@ proc url_AdexchangebuyerPubprofilesList_580582(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_AdexchangebuyerPubprofilesList_580581(path: JsonNode;
+proc validate_AdexchangebuyerPubprofilesList_589610(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Gets the requested publisher profile(s) by publisher accountId.
   ## 
@@ -5933,10 +5933,10 @@ proc validate_AdexchangebuyerPubprofilesList_580581(path: JsonNode;
   ##            : The accountId of the publisher to get profiles for.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `accountId` field"
-  var valid_580583 = path.getOrDefault("accountId")
-  valid_580583 = validateParameter(valid_580583, JInt, required = true, default = nil)
-  if valid_580583 != nil:
-    section.add "accountId", valid_580583
+  var valid_589612 = path.getOrDefault("accountId")
+  valid_589612 = validateParameter(valid_589612, JInt, required = true, default = nil)
+  if valid_589612 != nil:
+    section.add "accountId", valid_589612
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -5954,41 +5954,41 @@ proc validate_AdexchangebuyerPubprofilesList_580581(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580584 = query.getOrDefault("fields")
-  valid_580584 = validateParameter(valid_580584, JString, required = false,
+  var valid_589613 = query.getOrDefault("fields")
+  valid_589613 = validateParameter(valid_589613, JString, required = false,
                                  default = nil)
-  if valid_580584 != nil:
-    section.add "fields", valid_580584
-  var valid_580585 = query.getOrDefault("quotaUser")
-  valid_580585 = validateParameter(valid_580585, JString, required = false,
+  if valid_589613 != nil:
+    section.add "fields", valid_589613
+  var valid_589614 = query.getOrDefault("quotaUser")
+  valid_589614 = validateParameter(valid_589614, JString, required = false,
                                  default = nil)
-  if valid_580585 != nil:
-    section.add "quotaUser", valid_580585
-  var valid_580586 = query.getOrDefault("alt")
-  valid_580586 = validateParameter(valid_580586, JString, required = false,
+  if valid_589614 != nil:
+    section.add "quotaUser", valid_589614
+  var valid_589615 = query.getOrDefault("alt")
+  valid_589615 = validateParameter(valid_589615, JString, required = false,
                                  default = newJString("json"))
-  if valid_580586 != nil:
-    section.add "alt", valid_580586
-  var valid_580587 = query.getOrDefault("oauth_token")
-  valid_580587 = validateParameter(valid_580587, JString, required = false,
+  if valid_589615 != nil:
+    section.add "alt", valid_589615
+  var valid_589616 = query.getOrDefault("oauth_token")
+  valid_589616 = validateParameter(valid_589616, JString, required = false,
                                  default = nil)
-  if valid_580587 != nil:
-    section.add "oauth_token", valid_580587
-  var valid_580588 = query.getOrDefault("userIp")
-  valid_580588 = validateParameter(valid_580588, JString, required = false,
+  if valid_589616 != nil:
+    section.add "oauth_token", valid_589616
+  var valid_589617 = query.getOrDefault("userIp")
+  valid_589617 = validateParameter(valid_589617, JString, required = false,
                                  default = nil)
-  if valid_580588 != nil:
-    section.add "userIp", valid_580588
-  var valid_580589 = query.getOrDefault("key")
-  valid_580589 = validateParameter(valid_580589, JString, required = false,
+  if valid_589617 != nil:
+    section.add "userIp", valid_589617
+  var valid_589618 = query.getOrDefault("key")
+  valid_589618 = validateParameter(valid_589618, JString, required = false,
                                  default = nil)
-  if valid_580589 != nil:
-    section.add "key", valid_580589
-  var valid_580590 = query.getOrDefault("prettyPrint")
-  valid_580590 = validateParameter(valid_580590, JBool, required = false,
+  if valid_589618 != nil:
+    section.add "key", valid_589618
+  var valid_589619 = query.getOrDefault("prettyPrint")
+  valid_589619 = validateParameter(valid_589619, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580590 != nil:
-    section.add "prettyPrint", valid_580590
+  if valid_589619 != nil:
+    section.add "prettyPrint", valid_589619
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -5997,20 +5997,20 @@ proc validate_AdexchangebuyerPubprofilesList_580581(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580591: Call_AdexchangebuyerPubprofilesList_580580; path: JsonNode;
+proc call*(call_589620: Call_AdexchangebuyerPubprofilesList_589609; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Gets the requested publisher profile(s) by publisher accountId.
   ## 
-  let valid = call_580591.validator(path, query, header, formData, body)
-  let scheme = call_580591.pickScheme
+  let valid = call_589620.validator(path, query, header, formData, body)
+  let scheme = call_589620.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580591.url(scheme.get, call_580591.host, call_580591.base,
-                         call_580591.route, valid.getOrDefault("path"),
+  let url = call_589620.url(scheme.get, call_589620.host, call_589620.base,
+                         call_589620.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580591, url, valid)
+  result = hook(call_589620, url, valid)
 
-proc call*(call_580592: Call_AdexchangebuyerPubprofilesList_580580; accountId: int;
+proc call*(call_589621: Call_AdexchangebuyerPubprofilesList_589609; accountId: int;
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           oauthToken: string = ""; userIp: string = ""; key: string = "";
           prettyPrint: bool = true): Recallable =
@@ -6032,23 +6032,23 @@ proc call*(call_580592: Call_AdexchangebuyerPubprofilesList_580580; accountId: i
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_580593 = newJObject()
-  var query_580594 = newJObject()
-  add(query_580594, "fields", newJString(fields))
-  add(query_580594, "quotaUser", newJString(quotaUser))
-  add(query_580594, "alt", newJString(alt))
-  add(query_580594, "oauth_token", newJString(oauthToken))
-  add(path_580593, "accountId", newJInt(accountId))
-  add(query_580594, "userIp", newJString(userIp))
-  add(query_580594, "key", newJString(key))
-  add(query_580594, "prettyPrint", newJBool(prettyPrint))
-  result = call_580592.call(path_580593, query_580594, nil, nil, nil)
+  var path_589622 = newJObject()
+  var query_589623 = newJObject()
+  add(query_589623, "fields", newJString(fields))
+  add(query_589623, "quotaUser", newJString(quotaUser))
+  add(query_589623, "alt", newJString(alt))
+  add(query_589623, "oauth_token", newJString(oauthToken))
+  add(path_589622, "accountId", newJInt(accountId))
+  add(query_589623, "userIp", newJString(userIp))
+  add(query_589623, "key", newJString(key))
+  add(query_589623, "prettyPrint", newJBool(prettyPrint))
+  result = call_589621.call(path_589622, query_589623, nil, nil, nil)
 
-var adexchangebuyerPubprofilesList* = Call_AdexchangebuyerPubprofilesList_580580(
+var adexchangebuyerPubprofilesList* = Call_AdexchangebuyerPubprofilesList_589609(
     name: "adexchangebuyerPubprofilesList", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/publisher/{accountId}/profiles",
-    validator: validate_AdexchangebuyerPubprofilesList_580581,
-    base: "/adexchangebuyer/v1.4", url: url_AdexchangebuyerPubprofilesList_580582,
+    validator: validate_AdexchangebuyerPubprofilesList_589610,
+    base: "/adexchangebuyer/v1.4", url: url_AdexchangebuyerPubprofilesList_589611,
     schemes: {Scheme.Https})
 export
   rest
@@ -6091,7 +6091,7 @@ proc store(auth: var GoogleAuth; token: string; expiry: int; form: string) =
   auth.form = form
   auth.digest = auth.hash
 
-proc authenticate*(fresh: float64 = -3600.0; lifetime: int = 3600): Future[bool] {.async.} =
+proc authenticate*(fresh: float64 = 3600.0; lifetime: int = 3600): Future[bool] {.async.} =
   ## get or refresh an authentication token; provide `fresh`
   ## to ensure that the token won't expire in the next N seconds.
   ## provide `lifetime` to indicate how long the token should last.

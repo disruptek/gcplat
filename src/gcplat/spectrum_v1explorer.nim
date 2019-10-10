@@ -27,15 +27,15 @@ type
     url*: proc (protocol: Scheme; host: string; base: string; route: string;
               path: JsonNode; query: JsonNode): Uri
 
-  OpenApiRestCall_579408 = ref object of OpenApiRestCall
+  OpenApiRestCall_588441 = ref object of OpenApiRestCall
 proc hash(scheme: Scheme): Hash {.used.} =
   result = hash(ord(scheme))
 
-proc clone[T: OpenApiRestCall_579408](t: T): T {.used.} =
+proc clone[T: OpenApiRestCall_588441](t: T): T {.used.} =
   result = T(name: t.name, meth: t.meth, host: t.host, base: t.base, route: t.route,
            schemes: t.schemes, validator: t.validator, url: t.url)
 
-proc pickScheme(t: OpenApiRestCall_579408): Option[Scheme] {.used.} =
+proc pickScheme(t: OpenApiRestCall_588441): Option[Scheme] {.used.} =
   ## select a supported scheme from a set of candidates
   for scheme in Scheme.low ..
       Scheme.high:
@@ -72,7 +72,7 @@ type
   PathTokenKind = enum
     ConstantSegment, VariableSegment
   PathToken = tuple[kind: PathTokenKind, value: string]
-proc queryString(query: JsonNode): string =
+proc queryString(query: JsonNode): string {.used.} =
   var qs: seq[KeyVal]
   if query == nil:
     return ""
@@ -80,7 +80,7 @@ proc queryString(query: JsonNode): string =
     qs.add (key: k, val: v.getStr)
   result = encodeQuery(qs)
 
-proc hydratePath(input: JsonNode; segments: seq[PathToken]): Option[string] =
+proc hydratePath(input: JsonNode; segments: seq[PathToken]): Option[string] {.used.} =
   ## reconstitute a path with constants and variable values taken from json
   var head: string
   if segments.len == 0:
@@ -106,8 +106,8 @@ const
 proc composeQueryString(query: JsonNode): string
 method hook(call: OpenApiRestCall; url: Uri; input: JsonNode): Recallable {.base.}
 type
-  Call_SpectrumPawsGetSpectrum_579676 = ref object of OpenApiRestCall_579408
-proc url_SpectrumPawsGetSpectrum_579678(protocol: Scheme; host: string; base: string;
+  Call_SpectrumPawsGetSpectrum_588709 = ref object of OpenApiRestCall_588441
+proc url_SpectrumPawsGetSpectrum_588711(protocol: Scheme; host: string; base: string;
                                        route: string; path: JsonNode;
                                        query: JsonNode): Uri =
   result.scheme = $protocol
@@ -115,7 +115,7 @@ proc url_SpectrumPawsGetSpectrum_579678(protocol: Scheme; host: string; base: st
   result.query = $composeQueryString(query)
   result.path = base & route
 
-proc validate_SpectrumPawsGetSpectrum_579677(path: JsonNode; query: JsonNode;
+proc validate_SpectrumPawsGetSpectrum_588710(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Requests information about the available spectrum for a device at a location. Requests from a fixed-mode device must include owner information so the device can be registered with the database.
   ## 
@@ -139,41 +139,41 @@ proc validate_SpectrumPawsGetSpectrum_579677(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_579790 = query.getOrDefault("fields")
-  valid_579790 = validateParameter(valid_579790, JString, required = false,
+  var valid_588823 = query.getOrDefault("fields")
+  valid_588823 = validateParameter(valid_588823, JString, required = false,
                                  default = nil)
-  if valid_579790 != nil:
-    section.add "fields", valid_579790
-  var valid_579791 = query.getOrDefault("quotaUser")
-  valid_579791 = validateParameter(valid_579791, JString, required = false,
+  if valid_588823 != nil:
+    section.add "fields", valid_588823
+  var valid_588824 = query.getOrDefault("quotaUser")
+  valid_588824 = validateParameter(valid_588824, JString, required = false,
                                  default = nil)
-  if valid_579791 != nil:
-    section.add "quotaUser", valid_579791
-  var valid_579805 = query.getOrDefault("alt")
-  valid_579805 = validateParameter(valid_579805, JString, required = false,
+  if valid_588824 != nil:
+    section.add "quotaUser", valid_588824
+  var valid_588838 = query.getOrDefault("alt")
+  valid_588838 = validateParameter(valid_588838, JString, required = false,
                                  default = newJString("json"))
-  if valid_579805 != nil:
-    section.add "alt", valid_579805
-  var valid_579806 = query.getOrDefault("oauth_token")
-  valid_579806 = validateParameter(valid_579806, JString, required = false,
+  if valid_588838 != nil:
+    section.add "alt", valid_588838
+  var valid_588839 = query.getOrDefault("oauth_token")
+  valid_588839 = validateParameter(valid_588839, JString, required = false,
                                  default = nil)
-  if valid_579806 != nil:
-    section.add "oauth_token", valid_579806
-  var valid_579807 = query.getOrDefault("userIp")
-  valid_579807 = validateParameter(valid_579807, JString, required = false,
+  if valid_588839 != nil:
+    section.add "oauth_token", valid_588839
+  var valid_588840 = query.getOrDefault("userIp")
+  valid_588840 = validateParameter(valid_588840, JString, required = false,
                                  default = nil)
-  if valid_579807 != nil:
-    section.add "userIp", valid_579807
-  var valid_579808 = query.getOrDefault("key")
-  valid_579808 = validateParameter(valid_579808, JString, required = false,
+  if valid_588840 != nil:
+    section.add "userIp", valid_588840
+  var valid_588841 = query.getOrDefault("key")
+  valid_588841 = validateParameter(valid_588841, JString, required = false,
                                  default = nil)
-  if valid_579808 != nil:
-    section.add "key", valid_579808
-  var valid_579809 = query.getOrDefault("prettyPrint")
-  valid_579809 = validateParameter(valid_579809, JBool, required = false,
+  if valid_588841 != nil:
+    section.add "key", valid_588841
+  var valid_588842 = query.getOrDefault("prettyPrint")
+  valid_588842 = validateParameter(valid_588842, JBool, required = false,
                                  default = newJBool(true))
-  if valid_579809 != nil:
-    section.add "prettyPrint", valid_579809
+  if valid_588842 != nil:
+    section.add "prettyPrint", valid_588842
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -185,20 +185,20 @@ proc validate_SpectrumPawsGetSpectrum_579677(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_579833: Call_SpectrumPawsGetSpectrum_579676; path: JsonNode;
+proc call*(call_588866: Call_SpectrumPawsGetSpectrum_588709; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Requests information about the available spectrum for a device at a location. Requests from a fixed-mode device must include owner information so the device can be registered with the database.
   ## 
-  let valid = call_579833.validator(path, query, header, formData, body)
-  let scheme = call_579833.pickScheme
+  let valid = call_588866.validator(path, query, header, formData, body)
+  let scheme = call_588866.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_579833.url(scheme.get, call_579833.host, call_579833.base,
-                         call_579833.route, valid.getOrDefault("path"),
+  let url = call_588866.url(scheme.get, call_588866.host, call_588866.base,
+                         call_588866.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_579833, url, valid)
+  result = hook(call_588866, url, valid)
 
-proc call*(call_579904: Call_SpectrumPawsGetSpectrum_579676; fields: string = "";
+proc call*(call_588937: Call_SpectrumPawsGetSpectrum_588709; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; key: string = ""; body: JsonNode = nil;
           prettyPrint: bool = true): Recallable =
@@ -219,35 +219,35 @@ proc call*(call_579904: Call_SpectrumPawsGetSpectrum_579676; fields: string = ""
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var query_579905 = newJObject()
-  var body_579907 = newJObject()
-  add(query_579905, "fields", newJString(fields))
-  add(query_579905, "quotaUser", newJString(quotaUser))
-  add(query_579905, "alt", newJString(alt))
-  add(query_579905, "oauth_token", newJString(oauthToken))
-  add(query_579905, "userIp", newJString(userIp))
-  add(query_579905, "key", newJString(key))
+  var query_588938 = newJObject()
+  var body_588940 = newJObject()
+  add(query_588938, "fields", newJString(fields))
+  add(query_588938, "quotaUser", newJString(quotaUser))
+  add(query_588938, "alt", newJString(alt))
+  add(query_588938, "oauth_token", newJString(oauthToken))
+  add(query_588938, "userIp", newJString(userIp))
+  add(query_588938, "key", newJString(key))
   if body != nil:
-    body_579907 = body
-  add(query_579905, "prettyPrint", newJBool(prettyPrint))
-  result = call_579904.call(nil, query_579905, nil, nil, body_579907)
+    body_588940 = body
+  add(query_588938, "prettyPrint", newJBool(prettyPrint))
+  result = call_588937.call(nil, query_588938, nil, nil, body_588940)
 
-var spectrumPawsGetSpectrum* = Call_SpectrumPawsGetSpectrum_579676(
+var spectrumPawsGetSpectrum* = Call_SpectrumPawsGetSpectrum_588709(
     name: "spectrumPawsGetSpectrum", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com", route: "/getSpectrum",
-    validator: validate_SpectrumPawsGetSpectrum_579677,
-    base: "/spectrum/v1explorer/paws", url: url_SpectrumPawsGetSpectrum_579678,
+    validator: validate_SpectrumPawsGetSpectrum_588710,
+    base: "/spectrum/v1explorer/paws", url: url_SpectrumPawsGetSpectrum_588711,
     schemes: {Scheme.Https})
 type
-  Call_SpectrumPawsGetSpectrumBatch_579946 = ref object of OpenApiRestCall_579408
-proc url_SpectrumPawsGetSpectrumBatch_579948(protocol: Scheme; host: string;
+  Call_SpectrumPawsGetSpectrumBatch_588979 = ref object of OpenApiRestCall_588441
+proc url_SpectrumPawsGetSpectrumBatch_588981(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
   result.query = $composeQueryString(query)
   result.path = base & route
 
-proc validate_SpectrumPawsGetSpectrumBatch_579947(path: JsonNode; query: JsonNode;
+proc validate_SpectrumPawsGetSpectrumBatch_588980(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## The Google Spectrum Database does not support batch requests, so this method always yields an UNIMPLEMENTED error.
   ## 
@@ -271,41 +271,41 @@ proc validate_SpectrumPawsGetSpectrumBatch_579947(path: JsonNode; query: JsonNod
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_579949 = query.getOrDefault("fields")
-  valid_579949 = validateParameter(valid_579949, JString, required = false,
+  var valid_588982 = query.getOrDefault("fields")
+  valid_588982 = validateParameter(valid_588982, JString, required = false,
                                  default = nil)
-  if valid_579949 != nil:
-    section.add "fields", valid_579949
-  var valid_579950 = query.getOrDefault("quotaUser")
-  valid_579950 = validateParameter(valid_579950, JString, required = false,
+  if valid_588982 != nil:
+    section.add "fields", valid_588982
+  var valid_588983 = query.getOrDefault("quotaUser")
+  valid_588983 = validateParameter(valid_588983, JString, required = false,
                                  default = nil)
-  if valid_579950 != nil:
-    section.add "quotaUser", valid_579950
-  var valid_579951 = query.getOrDefault("alt")
-  valid_579951 = validateParameter(valid_579951, JString, required = false,
+  if valid_588983 != nil:
+    section.add "quotaUser", valid_588983
+  var valid_588984 = query.getOrDefault("alt")
+  valid_588984 = validateParameter(valid_588984, JString, required = false,
                                  default = newJString("json"))
-  if valid_579951 != nil:
-    section.add "alt", valid_579951
-  var valid_579952 = query.getOrDefault("oauth_token")
-  valid_579952 = validateParameter(valid_579952, JString, required = false,
+  if valid_588984 != nil:
+    section.add "alt", valid_588984
+  var valid_588985 = query.getOrDefault("oauth_token")
+  valid_588985 = validateParameter(valid_588985, JString, required = false,
                                  default = nil)
-  if valid_579952 != nil:
-    section.add "oauth_token", valid_579952
-  var valid_579953 = query.getOrDefault("userIp")
-  valid_579953 = validateParameter(valid_579953, JString, required = false,
+  if valid_588985 != nil:
+    section.add "oauth_token", valid_588985
+  var valid_588986 = query.getOrDefault("userIp")
+  valid_588986 = validateParameter(valid_588986, JString, required = false,
                                  default = nil)
-  if valid_579953 != nil:
-    section.add "userIp", valid_579953
-  var valid_579954 = query.getOrDefault("key")
-  valid_579954 = validateParameter(valid_579954, JString, required = false,
+  if valid_588986 != nil:
+    section.add "userIp", valid_588986
+  var valid_588987 = query.getOrDefault("key")
+  valid_588987 = validateParameter(valid_588987, JString, required = false,
                                  default = nil)
-  if valid_579954 != nil:
-    section.add "key", valid_579954
-  var valid_579955 = query.getOrDefault("prettyPrint")
-  valid_579955 = validateParameter(valid_579955, JBool, required = false,
+  if valid_588987 != nil:
+    section.add "key", valid_588987
+  var valid_588988 = query.getOrDefault("prettyPrint")
+  valid_588988 = validateParameter(valid_588988, JBool, required = false,
                                  default = newJBool(true))
-  if valid_579955 != nil:
-    section.add "prettyPrint", valid_579955
+  if valid_588988 != nil:
+    section.add "prettyPrint", valid_588988
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -317,20 +317,20 @@ proc validate_SpectrumPawsGetSpectrumBatch_579947(path: JsonNode; query: JsonNod
   if body != nil:
     result.add "body", body
 
-proc call*(call_579957: Call_SpectrumPawsGetSpectrumBatch_579946; path: JsonNode;
+proc call*(call_588990: Call_SpectrumPawsGetSpectrumBatch_588979; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## The Google Spectrum Database does not support batch requests, so this method always yields an UNIMPLEMENTED error.
   ## 
-  let valid = call_579957.validator(path, query, header, formData, body)
-  let scheme = call_579957.pickScheme
+  let valid = call_588990.validator(path, query, header, formData, body)
+  let scheme = call_588990.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_579957.url(scheme.get, call_579957.host, call_579957.base,
-                         call_579957.route, valid.getOrDefault("path"),
+  let url = call_588990.url(scheme.get, call_588990.host, call_588990.base,
+                         call_588990.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_579957, url, valid)
+  result = hook(call_588990, url, valid)
 
-proc call*(call_579958: Call_SpectrumPawsGetSpectrumBatch_579946;
+proc call*(call_588991: Call_SpectrumPawsGetSpectrumBatch_588979;
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           oauthToken: string = ""; userIp: string = ""; key: string = "";
           body: JsonNode = nil; prettyPrint: bool = true): Recallable =
@@ -351,35 +351,35 @@ proc call*(call_579958: Call_SpectrumPawsGetSpectrumBatch_579946;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var query_579959 = newJObject()
-  var body_579960 = newJObject()
-  add(query_579959, "fields", newJString(fields))
-  add(query_579959, "quotaUser", newJString(quotaUser))
-  add(query_579959, "alt", newJString(alt))
-  add(query_579959, "oauth_token", newJString(oauthToken))
-  add(query_579959, "userIp", newJString(userIp))
-  add(query_579959, "key", newJString(key))
+  var query_588992 = newJObject()
+  var body_588993 = newJObject()
+  add(query_588992, "fields", newJString(fields))
+  add(query_588992, "quotaUser", newJString(quotaUser))
+  add(query_588992, "alt", newJString(alt))
+  add(query_588992, "oauth_token", newJString(oauthToken))
+  add(query_588992, "userIp", newJString(userIp))
+  add(query_588992, "key", newJString(key))
   if body != nil:
-    body_579960 = body
-  add(query_579959, "prettyPrint", newJBool(prettyPrint))
-  result = call_579958.call(nil, query_579959, nil, nil, body_579960)
+    body_588993 = body
+  add(query_588992, "prettyPrint", newJBool(prettyPrint))
+  result = call_588991.call(nil, query_588992, nil, nil, body_588993)
 
-var spectrumPawsGetSpectrumBatch* = Call_SpectrumPawsGetSpectrumBatch_579946(
+var spectrumPawsGetSpectrumBatch* = Call_SpectrumPawsGetSpectrumBatch_588979(
     name: "spectrumPawsGetSpectrumBatch", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com", route: "/getSpectrumBatch",
-    validator: validate_SpectrumPawsGetSpectrumBatch_579947,
-    base: "/spectrum/v1explorer/paws", url: url_SpectrumPawsGetSpectrumBatch_579948,
+    validator: validate_SpectrumPawsGetSpectrumBatch_588980,
+    base: "/spectrum/v1explorer/paws", url: url_SpectrumPawsGetSpectrumBatch_588981,
     schemes: {Scheme.Https})
 type
-  Call_SpectrumPawsInit_579961 = ref object of OpenApiRestCall_579408
-proc url_SpectrumPawsInit_579963(protocol: Scheme; host: string; base: string;
+  Call_SpectrumPawsInit_588994 = ref object of OpenApiRestCall_588441
+proc url_SpectrumPawsInit_588996(protocol: Scheme; host: string; base: string;
                                 route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
   result.query = $composeQueryString(query)
   result.path = base & route
 
-proc validate_SpectrumPawsInit_579962(path: JsonNode; query: JsonNode;
+proc validate_SpectrumPawsInit_588995(path: JsonNode; query: JsonNode;
                                      header: JsonNode; formData: JsonNode;
                                      body: JsonNode): JsonNode =
   ## Initializes the connection between a white space device and the database.
@@ -404,41 +404,41 @@ proc validate_SpectrumPawsInit_579962(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_579964 = query.getOrDefault("fields")
-  valid_579964 = validateParameter(valid_579964, JString, required = false,
+  var valid_588997 = query.getOrDefault("fields")
+  valid_588997 = validateParameter(valid_588997, JString, required = false,
                                  default = nil)
-  if valid_579964 != nil:
-    section.add "fields", valid_579964
-  var valid_579965 = query.getOrDefault("quotaUser")
-  valid_579965 = validateParameter(valid_579965, JString, required = false,
+  if valid_588997 != nil:
+    section.add "fields", valid_588997
+  var valid_588998 = query.getOrDefault("quotaUser")
+  valid_588998 = validateParameter(valid_588998, JString, required = false,
                                  default = nil)
-  if valid_579965 != nil:
-    section.add "quotaUser", valid_579965
-  var valid_579966 = query.getOrDefault("alt")
-  valid_579966 = validateParameter(valid_579966, JString, required = false,
+  if valid_588998 != nil:
+    section.add "quotaUser", valid_588998
+  var valid_588999 = query.getOrDefault("alt")
+  valid_588999 = validateParameter(valid_588999, JString, required = false,
                                  default = newJString("json"))
-  if valid_579966 != nil:
-    section.add "alt", valid_579966
-  var valid_579967 = query.getOrDefault("oauth_token")
-  valid_579967 = validateParameter(valid_579967, JString, required = false,
+  if valid_588999 != nil:
+    section.add "alt", valid_588999
+  var valid_589000 = query.getOrDefault("oauth_token")
+  valid_589000 = validateParameter(valid_589000, JString, required = false,
                                  default = nil)
-  if valid_579967 != nil:
-    section.add "oauth_token", valid_579967
-  var valid_579968 = query.getOrDefault("userIp")
-  valid_579968 = validateParameter(valid_579968, JString, required = false,
+  if valid_589000 != nil:
+    section.add "oauth_token", valid_589000
+  var valid_589001 = query.getOrDefault("userIp")
+  valid_589001 = validateParameter(valid_589001, JString, required = false,
                                  default = nil)
-  if valid_579968 != nil:
-    section.add "userIp", valid_579968
-  var valid_579969 = query.getOrDefault("key")
-  valid_579969 = validateParameter(valid_579969, JString, required = false,
+  if valid_589001 != nil:
+    section.add "userIp", valid_589001
+  var valid_589002 = query.getOrDefault("key")
+  valid_589002 = validateParameter(valid_589002, JString, required = false,
                                  default = nil)
-  if valid_579969 != nil:
-    section.add "key", valid_579969
-  var valid_579970 = query.getOrDefault("prettyPrint")
-  valid_579970 = validateParameter(valid_579970, JBool, required = false,
+  if valid_589002 != nil:
+    section.add "key", valid_589002
+  var valid_589003 = query.getOrDefault("prettyPrint")
+  valid_589003 = validateParameter(valid_589003, JBool, required = false,
                                  default = newJBool(true))
-  if valid_579970 != nil:
-    section.add "prettyPrint", valid_579970
+  if valid_589003 != nil:
+    section.add "prettyPrint", valid_589003
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -450,20 +450,20 @@ proc validate_SpectrumPawsInit_579962(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_579972: Call_SpectrumPawsInit_579961; path: JsonNode;
+proc call*(call_589005: Call_SpectrumPawsInit_588994; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Initializes the connection between a white space device and the database.
   ## 
-  let valid = call_579972.validator(path, query, header, formData, body)
-  let scheme = call_579972.pickScheme
+  let valid = call_589005.validator(path, query, header, formData, body)
+  let scheme = call_589005.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_579972.url(scheme.get, call_579972.host, call_579972.base,
-                         call_579972.route, valid.getOrDefault("path"),
+  let url = call_589005.url(scheme.get, call_589005.host, call_589005.base,
+                         call_589005.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_579972, url, valid)
+  result = hook(call_589005, url, valid)
 
-proc call*(call_579973: Call_SpectrumPawsInit_579961; fields: string = "";
+proc call*(call_589006: Call_SpectrumPawsInit_588994; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; key: string = ""; body: JsonNode = nil;
           prettyPrint: bool = true): Recallable =
@@ -484,34 +484,34 @@ proc call*(call_579973: Call_SpectrumPawsInit_579961; fields: string = "";
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var query_579974 = newJObject()
-  var body_579975 = newJObject()
-  add(query_579974, "fields", newJString(fields))
-  add(query_579974, "quotaUser", newJString(quotaUser))
-  add(query_579974, "alt", newJString(alt))
-  add(query_579974, "oauth_token", newJString(oauthToken))
-  add(query_579974, "userIp", newJString(userIp))
-  add(query_579974, "key", newJString(key))
+  var query_589007 = newJObject()
+  var body_589008 = newJObject()
+  add(query_589007, "fields", newJString(fields))
+  add(query_589007, "quotaUser", newJString(quotaUser))
+  add(query_589007, "alt", newJString(alt))
+  add(query_589007, "oauth_token", newJString(oauthToken))
+  add(query_589007, "userIp", newJString(userIp))
+  add(query_589007, "key", newJString(key))
   if body != nil:
-    body_579975 = body
-  add(query_579974, "prettyPrint", newJBool(prettyPrint))
-  result = call_579973.call(nil, query_579974, nil, nil, body_579975)
+    body_589008 = body
+  add(query_589007, "prettyPrint", newJBool(prettyPrint))
+  result = call_589006.call(nil, query_589007, nil, nil, body_589008)
 
-var spectrumPawsInit* = Call_SpectrumPawsInit_579961(name: "spectrumPawsInit",
+var spectrumPawsInit* = Call_SpectrumPawsInit_588994(name: "spectrumPawsInit",
     meth: HttpMethod.HttpPost, host: "www.googleapis.com", route: "/init",
-    validator: validate_SpectrumPawsInit_579962,
-    base: "/spectrum/v1explorer/paws", url: url_SpectrumPawsInit_579963,
+    validator: validate_SpectrumPawsInit_588995,
+    base: "/spectrum/v1explorer/paws", url: url_SpectrumPawsInit_588996,
     schemes: {Scheme.Https})
 type
-  Call_SpectrumPawsNotifySpectrumUse_579976 = ref object of OpenApiRestCall_579408
-proc url_SpectrumPawsNotifySpectrumUse_579978(protocol: Scheme; host: string;
+  Call_SpectrumPawsNotifySpectrumUse_589009 = ref object of OpenApiRestCall_588441
+proc url_SpectrumPawsNotifySpectrumUse_589011(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
   result.query = $composeQueryString(query)
   result.path = base & route
 
-proc validate_SpectrumPawsNotifySpectrumUse_579977(path: JsonNode; query: JsonNode;
+proc validate_SpectrumPawsNotifySpectrumUse_589010(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Notifies the database that the device has selected certain frequency ranges for transmission. Only to be invoked when required by the regulator. The Google Spectrum Database does not operate in domains that require notification, so this always yields an UNIMPLEMENTED error.
   ## 
@@ -535,41 +535,41 @@ proc validate_SpectrumPawsNotifySpectrumUse_579977(path: JsonNode; query: JsonNo
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_579979 = query.getOrDefault("fields")
-  valid_579979 = validateParameter(valid_579979, JString, required = false,
+  var valid_589012 = query.getOrDefault("fields")
+  valid_589012 = validateParameter(valid_589012, JString, required = false,
                                  default = nil)
-  if valid_579979 != nil:
-    section.add "fields", valid_579979
-  var valid_579980 = query.getOrDefault("quotaUser")
-  valid_579980 = validateParameter(valid_579980, JString, required = false,
+  if valid_589012 != nil:
+    section.add "fields", valid_589012
+  var valid_589013 = query.getOrDefault("quotaUser")
+  valid_589013 = validateParameter(valid_589013, JString, required = false,
                                  default = nil)
-  if valid_579980 != nil:
-    section.add "quotaUser", valid_579980
-  var valid_579981 = query.getOrDefault("alt")
-  valid_579981 = validateParameter(valid_579981, JString, required = false,
+  if valid_589013 != nil:
+    section.add "quotaUser", valid_589013
+  var valid_589014 = query.getOrDefault("alt")
+  valid_589014 = validateParameter(valid_589014, JString, required = false,
                                  default = newJString("json"))
-  if valid_579981 != nil:
-    section.add "alt", valid_579981
-  var valid_579982 = query.getOrDefault("oauth_token")
-  valid_579982 = validateParameter(valid_579982, JString, required = false,
+  if valid_589014 != nil:
+    section.add "alt", valid_589014
+  var valid_589015 = query.getOrDefault("oauth_token")
+  valid_589015 = validateParameter(valid_589015, JString, required = false,
                                  default = nil)
-  if valid_579982 != nil:
-    section.add "oauth_token", valid_579982
-  var valid_579983 = query.getOrDefault("userIp")
-  valid_579983 = validateParameter(valid_579983, JString, required = false,
+  if valid_589015 != nil:
+    section.add "oauth_token", valid_589015
+  var valid_589016 = query.getOrDefault("userIp")
+  valid_589016 = validateParameter(valid_589016, JString, required = false,
                                  default = nil)
-  if valid_579983 != nil:
-    section.add "userIp", valid_579983
-  var valid_579984 = query.getOrDefault("key")
-  valid_579984 = validateParameter(valid_579984, JString, required = false,
+  if valid_589016 != nil:
+    section.add "userIp", valid_589016
+  var valid_589017 = query.getOrDefault("key")
+  valid_589017 = validateParameter(valid_589017, JString, required = false,
                                  default = nil)
-  if valid_579984 != nil:
-    section.add "key", valid_579984
-  var valid_579985 = query.getOrDefault("prettyPrint")
-  valid_579985 = validateParameter(valid_579985, JBool, required = false,
+  if valid_589017 != nil:
+    section.add "key", valid_589017
+  var valid_589018 = query.getOrDefault("prettyPrint")
+  valid_589018 = validateParameter(valid_589018, JBool, required = false,
                                  default = newJBool(true))
-  if valid_579985 != nil:
-    section.add "prettyPrint", valid_579985
+  if valid_589018 != nil:
+    section.add "prettyPrint", valid_589018
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -581,20 +581,20 @@ proc validate_SpectrumPawsNotifySpectrumUse_579977(path: JsonNode; query: JsonNo
   if body != nil:
     result.add "body", body
 
-proc call*(call_579987: Call_SpectrumPawsNotifySpectrumUse_579976; path: JsonNode;
+proc call*(call_589020: Call_SpectrumPawsNotifySpectrumUse_589009; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Notifies the database that the device has selected certain frequency ranges for transmission. Only to be invoked when required by the regulator. The Google Spectrum Database does not operate in domains that require notification, so this always yields an UNIMPLEMENTED error.
   ## 
-  let valid = call_579987.validator(path, query, header, formData, body)
-  let scheme = call_579987.pickScheme
+  let valid = call_589020.validator(path, query, header, formData, body)
+  let scheme = call_589020.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_579987.url(scheme.get, call_579987.host, call_579987.base,
-                         call_579987.route, valid.getOrDefault("path"),
+  let url = call_589020.url(scheme.get, call_589020.host, call_589020.base,
+                         call_589020.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_579987, url, valid)
+  result = hook(call_589020, url, valid)
 
-proc call*(call_579988: Call_SpectrumPawsNotifySpectrumUse_579976;
+proc call*(call_589021: Call_SpectrumPawsNotifySpectrumUse_589009;
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           oauthToken: string = ""; userIp: string = ""; key: string = "";
           body: JsonNode = nil; prettyPrint: bool = true): Recallable =
@@ -615,35 +615,35 @@ proc call*(call_579988: Call_SpectrumPawsNotifySpectrumUse_579976;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var query_579989 = newJObject()
-  var body_579990 = newJObject()
-  add(query_579989, "fields", newJString(fields))
-  add(query_579989, "quotaUser", newJString(quotaUser))
-  add(query_579989, "alt", newJString(alt))
-  add(query_579989, "oauth_token", newJString(oauthToken))
-  add(query_579989, "userIp", newJString(userIp))
-  add(query_579989, "key", newJString(key))
+  var query_589022 = newJObject()
+  var body_589023 = newJObject()
+  add(query_589022, "fields", newJString(fields))
+  add(query_589022, "quotaUser", newJString(quotaUser))
+  add(query_589022, "alt", newJString(alt))
+  add(query_589022, "oauth_token", newJString(oauthToken))
+  add(query_589022, "userIp", newJString(userIp))
+  add(query_589022, "key", newJString(key))
   if body != nil:
-    body_579990 = body
-  add(query_579989, "prettyPrint", newJBool(prettyPrint))
-  result = call_579988.call(nil, query_579989, nil, nil, body_579990)
+    body_589023 = body
+  add(query_589022, "prettyPrint", newJBool(prettyPrint))
+  result = call_589021.call(nil, query_589022, nil, nil, body_589023)
 
-var spectrumPawsNotifySpectrumUse* = Call_SpectrumPawsNotifySpectrumUse_579976(
+var spectrumPawsNotifySpectrumUse* = Call_SpectrumPawsNotifySpectrumUse_589009(
     name: "spectrumPawsNotifySpectrumUse", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com", route: "/notifySpectrumUse",
-    validator: validate_SpectrumPawsNotifySpectrumUse_579977,
-    base: "/spectrum/v1explorer/paws", url: url_SpectrumPawsNotifySpectrumUse_579978,
+    validator: validate_SpectrumPawsNotifySpectrumUse_589010,
+    base: "/spectrum/v1explorer/paws", url: url_SpectrumPawsNotifySpectrumUse_589011,
     schemes: {Scheme.Https})
 type
-  Call_SpectrumPawsRegister_579991 = ref object of OpenApiRestCall_579408
-proc url_SpectrumPawsRegister_579993(protocol: Scheme; host: string; base: string;
+  Call_SpectrumPawsRegister_589024 = ref object of OpenApiRestCall_588441
+proc url_SpectrumPawsRegister_589026(protocol: Scheme; host: string; base: string;
                                     route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
   result.query = $composeQueryString(query)
   result.path = base & route
 
-proc validate_SpectrumPawsRegister_579992(path: JsonNode; query: JsonNode;
+proc validate_SpectrumPawsRegister_589025(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## The Google Spectrum Database implements registration in the getSpectrum method. As such this always returns an UNIMPLEMENTED error.
   ## 
@@ -667,41 +667,41 @@ proc validate_SpectrumPawsRegister_579992(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_579994 = query.getOrDefault("fields")
-  valid_579994 = validateParameter(valid_579994, JString, required = false,
+  var valid_589027 = query.getOrDefault("fields")
+  valid_589027 = validateParameter(valid_589027, JString, required = false,
                                  default = nil)
-  if valid_579994 != nil:
-    section.add "fields", valid_579994
-  var valid_579995 = query.getOrDefault("quotaUser")
-  valid_579995 = validateParameter(valid_579995, JString, required = false,
+  if valid_589027 != nil:
+    section.add "fields", valid_589027
+  var valid_589028 = query.getOrDefault("quotaUser")
+  valid_589028 = validateParameter(valid_589028, JString, required = false,
                                  default = nil)
-  if valid_579995 != nil:
-    section.add "quotaUser", valid_579995
-  var valid_579996 = query.getOrDefault("alt")
-  valid_579996 = validateParameter(valid_579996, JString, required = false,
+  if valid_589028 != nil:
+    section.add "quotaUser", valid_589028
+  var valid_589029 = query.getOrDefault("alt")
+  valid_589029 = validateParameter(valid_589029, JString, required = false,
                                  default = newJString("json"))
-  if valid_579996 != nil:
-    section.add "alt", valid_579996
-  var valid_579997 = query.getOrDefault("oauth_token")
-  valid_579997 = validateParameter(valid_579997, JString, required = false,
+  if valid_589029 != nil:
+    section.add "alt", valid_589029
+  var valid_589030 = query.getOrDefault("oauth_token")
+  valid_589030 = validateParameter(valid_589030, JString, required = false,
                                  default = nil)
-  if valid_579997 != nil:
-    section.add "oauth_token", valid_579997
-  var valid_579998 = query.getOrDefault("userIp")
-  valid_579998 = validateParameter(valid_579998, JString, required = false,
+  if valid_589030 != nil:
+    section.add "oauth_token", valid_589030
+  var valid_589031 = query.getOrDefault("userIp")
+  valid_589031 = validateParameter(valid_589031, JString, required = false,
                                  default = nil)
-  if valid_579998 != nil:
-    section.add "userIp", valid_579998
-  var valid_579999 = query.getOrDefault("key")
-  valid_579999 = validateParameter(valid_579999, JString, required = false,
+  if valid_589031 != nil:
+    section.add "userIp", valid_589031
+  var valid_589032 = query.getOrDefault("key")
+  valid_589032 = validateParameter(valid_589032, JString, required = false,
                                  default = nil)
-  if valid_579999 != nil:
-    section.add "key", valid_579999
-  var valid_580000 = query.getOrDefault("prettyPrint")
-  valid_580000 = validateParameter(valid_580000, JBool, required = false,
+  if valid_589032 != nil:
+    section.add "key", valid_589032
+  var valid_589033 = query.getOrDefault("prettyPrint")
+  valid_589033 = validateParameter(valid_589033, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580000 != nil:
-    section.add "prettyPrint", valid_580000
+  if valid_589033 != nil:
+    section.add "prettyPrint", valid_589033
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -713,20 +713,20 @@ proc validate_SpectrumPawsRegister_579992(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580002: Call_SpectrumPawsRegister_579991; path: JsonNode;
+proc call*(call_589035: Call_SpectrumPawsRegister_589024; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## The Google Spectrum Database implements registration in the getSpectrum method. As such this always returns an UNIMPLEMENTED error.
   ## 
-  let valid = call_580002.validator(path, query, header, formData, body)
-  let scheme = call_580002.pickScheme
+  let valid = call_589035.validator(path, query, header, formData, body)
+  let scheme = call_589035.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580002.url(scheme.get, call_580002.host, call_580002.base,
-                         call_580002.route, valid.getOrDefault("path"),
+  let url = call_589035.url(scheme.get, call_589035.host, call_589035.base,
+                         call_589035.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580002, url, valid)
+  result = hook(call_589035, url, valid)
 
-proc call*(call_580003: Call_SpectrumPawsRegister_579991; fields: string = "";
+proc call*(call_589036: Call_SpectrumPawsRegister_589024; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; key: string = ""; body: JsonNode = nil;
           prettyPrint: bool = true): Recallable =
@@ -747,28 +747,28 @@ proc call*(call_580003: Call_SpectrumPawsRegister_579991; fields: string = "";
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var query_580004 = newJObject()
-  var body_580005 = newJObject()
-  add(query_580004, "fields", newJString(fields))
-  add(query_580004, "quotaUser", newJString(quotaUser))
-  add(query_580004, "alt", newJString(alt))
-  add(query_580004, "oauth_token", newJString(oauthToken))
-  add(query_580004, "userIp", newJString(userIp))
-  add(query_580004, "key", newJString(key))
+  var query_589037 = newJObject()
+  var body_589038 = newJObject()
+  add(query_589037, "fields", newJString(fields))
+  add(query_589037, "quotaUser", newJString(quotaUser))
+  add(query_589037, "alt", newJString(alt))
+  add(query_589037, "oauth_token", newJString(oauthToken))
+  add(query_589037, "userIp", newJString(userIp))
+  add(query_589037, "key", newJString(key))
   if body != nil:
-    body_580005 = body
-  add(query_580004, "prettyPrint", newJBool(prettyPrint))
-  result = call_580003.call(nil, query_580004, nil, nil, body_580005)
+    body_589038 = body
+  add(query_589037, "prettyPrint", newJBool(prettyPrint))
+  result = call_589036.call(nil, query_589037, nil, nil, body_589038)
 
-var spectrumPawsRegister* = Call_SpectrumPawsRegister_579991(
+var spectrumPawsRegister* = Call_SpectrumPawsRegister_589024(
     name: "spectrumPawsRegister", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com", route: "/register",
-    validator: validate_SpectrumPawsRegister_579992,
-    base: "/spectrum/v1explorer/paws", url: url_SpectrumPawsRegister_579993,
+    validator: validate_SpectrumPawsRegister_589025,
+    base: "/spectrum/v1explorer/paws", url: url_SpectrumPawsRegister_589026,
     schemes: {Scheme.Https})
 type
-  Call_SpectrumPawsVerifyDevice_580006 = ref object of OpenApiRestCall_579408
-proc url_SpectrumPawsVerifyDevice_580008(protocol: Scheme; host: string;
+  Call_SpectrumPawsVerifyDevice_589039 = ref object of OpenApiRestCall_588441
+proc url_SpectrumPawsVerifyDevice_589041(protocol: Scheme; host: string;
                                         base: string; route: string; path: JsonNode;
                                         query: JsonNode): Uri =
   result.scheme = $protocol
@@ -776,7 +776,7 @@ proc url_SpectrumPawsVerifyDevice_580008(protocol: Scheme; host: string;
   result.query = $composeQueryString(query)
   result.path = base & route
 
-proc validate_SpectrumPawsVerifyDevice_580007(path: JsonNode; query: JsonNode;
+proc validate_SpectrumPawsVerifyDevice_589040(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Validates a device for white space use in accordance with regulatory rules. The Google Spectrum Database does not support master/slave configurations, so this always yields an UNIMPLEMENTED error.
   ## 
@@ -800,41 +800,41 @@ proc validate_SpectrumPawsVerifyDevice_580007(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580009 = query.getOrDefault("fields")
-  valid_580009 = validateParameter(valid_580009, JString, required = false,
+  var valid_589042 = query.getOrDefault("fields")
+  valid_589042 = validateParameter(valid_589042, JString, required = false,
                                  default = nil)
-  if valid_580009 != nil:
-    section.add "fields", valid_580009
-  var valid_580010 = query.getOrDefault("quotaUser")
-  valid_580010 = validateParameter(valid_580010, JString, required = false,
+  if valid_589042 != nil:
+    section.add "fields", valid_589042
+  var valid_589043 = query.getOrDefault("quotaUser")
+  valid_589043 = validateParameter(valid_589043, JString, required = false,
                                  default = nil)
-  if valid_580010 != nil:
-    section.add "quotaUser", valid_580010
-  var valid_580011 = query.getOrDefault("alt")
-  valid_580011 = validateParameter(valid_580011, JString, required = false,
+  if valid_589043 != nil:
+    section.add "quotaUser", valid_589043
+  var valid_589044 = query.getOrDefault("alt")
+  valid_589044 = validateParameter(valid_589044, JString, required = false,
                                  default = newJString("json"))
-  if valid_580011 != nil:
-    section.add "alt", valid_580011
-  var valid_580012 = query.getOrDefault("oauth_token")
-  valid_580012 = validateParameter(valid_580012, JString, required = false,
+  if valid_589044 != nil:
+    section.add "alt", valid_589044
+  var valid_589045 = query.getOrDefault("oauth_token")
+  valid_589045 = validateParameter(valid_589045, JString, required = false,
                                  default = nil)
-  if valid_580012 != nil:
-    section.add "oauth_token", valid_580012
-  var valid_580013 = query.getOrDefault("userIp")
-  valid_580013 = validateParameter(valid_580013, JString, required = false,
+  if valid_589045 != nil:
+    section.add "oauth_token", valid_589045
+  var valid_589046 = query.getOrDefault("userIp")
+  valid_589046 = validateParameter(valid_589046, JString, required = false,
                                  default = nil)
-  if valid_580013 != nil:
-    section.add "userIp", valid_580013
-  var valid_580014 = query.getOrDefault("key")
-  valid_580014 = validateParameter(valid_580014, JString, required = false,
+  if valid_589046 != nil:
+    section.add "userIp", valid_589046
+  var valid_589047 = query.getOrDefault("key")
+  valid_589047 = validateParameter(valid_589047, JString, required = false,
                                  default = nil)
-  if valid_580014 != nil:
-    section.add "key", valid_580014
-  var valid_580015 = query.getOrDefault("prettyPrint")
-  valid_580015 = validateParameter(valid_580015, JBool, required = false,
+  if valid_589047 != nil:
+    section.add "key", valid_589047
+  var valid_589048 = query.getOrDefault("prettyPrint")
+  valid_589048 = validateParameter(valid_589048, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580015 != nil:
-    section.add "prettyPrint", valid_580015
+  if valid_589048 != nil:
+    section.add "prettyPrint", valid_589048
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -846,20 +846,20 @@ proc validate_SpectrumPawsVerifyDevice_580007(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580017: Call_SpectrumPawsVerifyDevice_580006; path: JsonNode;
+proc call*(call_589050: Call_SpectrumPawsVerifyDevice_589039; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Validates a device for white space use in accordance with regulatory rules. The Google Spectrum Database does not support master/slave configurations, so this always yields an UNIMPLEMENTED error.
   ## 
-  let valid = call_580017.validator(path, query, header, formData, body)
-  let scheme = call_580017.pickScheme
+  let valid = call_589050.validator(path, query, header, formData, body)
+  let scheme = call_589050.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580017.url(scheme.get, call_580017.host, call_580017.base,
-                         call_580017.route, valid.getOrDefault("path"),
+  let url = call_589050.url(scheme.get, call_589050.host, call_589050.base,
+                         call_589050.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580017, url, valid)
+  result = hook(call_589050, url, valid)
 
-proc call*(call_580018: Call_SpectrumPawsVerifyDevice_580006; fields: string = "";
+proc call*(call_589051: Call_SpectrumPawsVerifyDevice_589039; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; key: string = ""; body: JsonNode = nil;
           prettyPrint: bool = true): Recallable =
@@ -880,24 +880,24 @@ proc call*(call_580018: Call_SpectrumPawsVerifyDevice_580006; fields: string = "
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var query_580019 = newJObject()
-  var body_580020 = newJObject()
-  add(query_580019, "fields", newJString(fields))
-  add(query_580019, "quotaUser", newJString(quotaUser))
-  add(query_580019, "alt", newJString(alt))
-  add(query_580019, "oauth_token", newJString(oauthToken))
-  add(query_580019, "userIp", newJString(userIp))
-  add(query_580019, "key", newJString(key))
+  var query_589052 = newJObject()
+  var body_589053 = newJObject()
+  add(query_589052, "fields", newJString(fields))
+  add(query_589052, "quotaUser", newJString(quotaUser))
+  add(query_589052, "alt", newJString(alt))
+  add(query_589052, "oauth_token", newJString(oauthToken))
+  add(query_589052, "userIp", newJString(userIp))
+  add(query_589052, "key", newJString(key))
   if body != nil:
-    body_580020 = body
-  add(query_580019, "prettyPrint", newJBool(prettyPrint))
-  result = call_580018.call(nil, query_580019, nil, nil, body_580020)
+    body_589053 = body
+  add(query_589052, "prettyPrint", newJBool(prettyPrint))
+  result = call_589051.call(nil, query_589052, nil, nil, body_589053)
 
-var spectrumPawsVerifyDevice* = Call_SpectrumPawsVerifyDevice_580006(
+var spectrumPawsVerifyDevice* = Call_SpectrumPawsVerifyDevice_589039(
     name: "spectrumPawsVerifyDevice", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com", route: "/verifyDevice",
-    validator: validate_SpectrumPawsVerifyDevice_580007,
-    base: "/spectrum/v1explorer/paws", url: url_SpectrumPawsVerifyDevice_580008,
+    validator: validate_SpectrumPawsVerifyDevice_589040,
+    base: "/spectrum/v1explorer/paws", url: url_SpectrumPawsVerifyDevice_589041,
     schemes: {Scheme.Https})
 export
   rest
@@ -940,7 +940,7 @@ proc store(auth: var GoogleAuth; token: string; expiry: int; form: string) =
   auth.form = form
   auth.digest = auth.hash
 
-proc authenticate*(fresh: float64 = -3600.0; lifetime: int = 3600): Future[bool] {.async.} =
+proc authenticate*(fresh: float64 = 3600.0; lifetime: int = 3600): Future[bool] {.async.} =
   ## get or refresh an authentication token; provide `fresh`
   ## to ensure that the token won't expire in the next N seconds.
   ## provide `lifetime` to indicate how long the token should last.

@@ -29,15 +29,15 @@ type
     url*: proc (protocol: Scheme; host: string; base: string; route: string;
               path: JsonNode; query: JsonNode): Uri
 
-  OpenApiRestCall_579424 = ref object of OpenApiRestCall
+  OpenApiRestCall_588457 = ref object of OpenApiRestCall
 proc hash(scheme: Scheme): Hash {.used.} =
   result = hash(ord(scheme))
 
-proc clone[T: OpenApiRestCall_579424](t: T): T {.used.} =
+proc clone[T: OpenApiRestCall_588457](t: T): T {.used.} =
   result = T(name: t.name, meth: t.meth, host: t.host, base: t.base, route: t.route,
            schemes: t.schemes, validator: t.validator, url: t.url)
 
-proc pickScheme(t: OpenApiRestCall_579424): Option[Scheme] {.used.} =
+proc pickScheme(t: OpenApiRestCall_588457): Option[Scheme] {.used.} =
   ## select a supported scheme from a set of candidates
   for scheme in Scheme.low ..
       Scheme.high:
@@ -74,7 +74,7 @@ type
   PathTokenKind = enum
     ConstantSegment, VariableSegment
   PathToken = tuple[kind: PathTokenKind, value: string]
-proc queryString(query: JsonNode): string =
+proc queryString(query: JsonNode): string {.used.} =
   var qs: seq[KeyVal]
   if query == nil:
     return ""
@@ -82,7 +82,7 @@ proc queryString(query: JsonNode): string =
     qs.add (key: k, val: v.getStr)
   result = encodeQuery(qs)
 
-proc hydratePath(input: JsonNode; segments: seq[PathToken]): Option[string] =
+proc hydratePath(input: JsonNode; segments: seq[PathToken]): Option[string] {.used.} =
   ## reconstitute a path with constants and variable values taken from json
   var head: string
   if segments.len == 0:
@@ -108,15 +108,15 @@ const
 proc composeQueryString(query: JsonNode): string
 method hook(call: OpenApiRestCall; url: Uri; input: JsonNode): Recallable {.base.}
 type
-  Call_FusiontablesQuerySql_579963 = ref object of OpenApiRestCall_579424
-proc url_FusiontablesQuerySql_579965(protocol: Scheme; host: string; base: string;
+  Call_FusiontablesQuerySql_588996 = ref object of OpenApiRestCall_588457
+proc url_FusiontablesQuerySql_588998(protocol: Scheme; host: string; base: string;
                                     route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
   result.query = $composeQueryString(query)
   result.path = base & route
 
-proc validate_FusiontablesQuerySql_579964(path: JsonNode; query: JsonNode;
+proc validate_FusiontablesQuerySql_588997(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Executes a Fusion Tables SQL statement, which can be any of 
   ## - SELECT
@@ -160,55 +160,55 @@ proc validate_FusiontablesQuerySql_579964(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_579966 = query.getOrDefault("fields")
-  valid_579966 = validateParameter(valid_579966, JString, required = false,
+  var valid_588999 = query.getOrDefault("fields")
+  valid_588999 = validateParameter(valid_588999, JString, required = false,
                                  default = nil)
-  if valid_579966 != nil:
-    section.add "fields", valid_579966
-  var valid_579967 = query.getOrDefault("quotaUser")
-  valid_579967 = validateParameter(valid_579967, JString, required = false,
+  if valid_588999 != nil:
+    section.add "fields", valid_588999
+  var valid_589000 = query.getOrDefault("quotaUser")
+  valid_589000 = validateParameter(valid_589000, JString, required = false,
                                  default = nil)
-  if valid_579967 != nil:
-    section.add "quotaUser", valid_579967
-  var valid_579968 = query.getOrDefault("alt")
-  valid_579968 = validateParameter(valid_579968, JString, required = false,
+  if valid_589000 != nil:
+    section.add "quotaUser", valid_589000
+  var valid_589001 = query.getOrDefault("alt")
+  valid_589001 = validateParameter(valid_589001, JString, required = false,
                                  default = newJString("json"))
-  if valid_579968 != nil:
-    section.add "alt", valid_579968
-  var valid_579969 = query.getOrDefault("typed")
-  valid_579969 = validateParameter(valid_579969, JBool, required = false, default = nil)
-  if valid_579969 != nil:
-    section.add "typed", valid_579969
+  if valid_589001 != nil:
+    section.add "alt", valid_589001
+  var valid_589002 = query.getOrDefault("typed")
+  valid_589002 = validateParameter(valid_589002, JBool, required = false, default = nil)
+  if valid_589002 != nil:
+    section.add "typed", valid_589002
   assert query != nil, "query argument is necessary due to required `sql` field"
-  var valid_579970 = query.getOrDefault("sql")
-  valid_579970 = validateParameter(valid_579970, JString, required = true,
+  var valid_589003 = query.getOrDefault("sql")
+  valid_589003 = validateParameter(valid_589003, JString, required = true,
                                  default = nil)
-  if valid_579970 != nil:
-    section.add "sql", valid_579970
-  var valid_579971 = query.getOrDefault("oauth_token")
-  valid_579971 = validateParameter(valid_579971, JString, required = false,
+  if valid_589003 != nil:
+    section.add "sql", valid_589003
+  var valid_589004 = query.getOrDefault("oauth_token")
+  valid_589004 = validateParameter(valid_589004, JString, required = false,
                                  default = nil)
-  if valid_579971 != nil:
-    section.add "oauth_token", valid_579971
-  var valid_579972 = query.getOrDefault("userIp")
-  valid_579972 = validateParameter(valid_579972, JString, required = false,
+  if valid_589004 != nil:
+    section.add "oauth_token", valid_589004
+  var valid_589005 = query.getOrDefault("userIp")
+  valid_589005 = validateParameter(valid_589005, JString, required = false,
                                  default = nil)
-  if valid_579972 != nil:
-    section.add "userIp", valid_579972
-  var valid_579973 = query.getOrDefault("hdrs")
-  valid_579973 = validateParameter(valid_579973, JBool, required = false, default = nil)
-  if valid_579973 != nil:
-    section.add "hdrs", valid_579973
-  var valid_579974 = query.getOrDefault("key")
-  valid_579974 = validateParameter(valid_579974, JString, required = false,
+  if valid_589005 != nil:
+    section.add "userIp", valid_589005
+  var valid_589006 = query.getOrDefault("hdrs")
+  valid_589006 = validateParameter(valid_589006, JBool, required = false, default = nil)
+  if valid_589006 != nil:
+    section.add "hdrs", valid_589006
+  var valid_589007 = query.getOrDefault("key")
+  valid_589007 = validateParameter(valid_589007, JString, required = false,
                                  default = nil)
-  if valid_579974 != nil:
-    section.add "key", valid_579974
-  var valid_579975 = query.getOrDefault("prettyPrint")
-  valid_579975 = validateParameter(valid_579975, JBool, required = false,
+  if valid_589007 != nil:
+    section.add "key", valid_589007
+  var valid_589008 = query.getOrDefault("prettyPrint")
+  valid_589008 = validateParameter(valid_589008, JBool, required = false,
                                  default = newJBool(true))
-  if valid_579975 != nil:
-    section.add "prettyPrint", valid_579975
+  if valid_589008 != nil:
+    section.add "prettyPrint", valid_589008
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -217,7 +217,7 @@ proc validate_FusiontablesQuerySql_579964(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_579976: Call_FusiontablesQuerySql_579963; path: JsonNode;
+proc call*(call_589009: Call_FusiontablesQuerySql_588996; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Executes a Fusion Tables SQL statement, which can be any of 
   ## - SELECT
@@ -228,16 +228,16 @@ proc call*(call_579976: Call_FusiontablesQuerySql_579963; path: JsonNode;
   ## - DESCRIBE
   ## - CREATE statement.
   ## 
-  let valid = call_579976.validator(path, query, header, formData, body)
-  let scheme = call_579976.pickScheme
+  let valid = call_589009.validator(path, query, header, formData, body)
+  let scheme = call_589009.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_579976.url(scheme.get, call_579976.host, call_579976.base,
-                         call_579976.route, valid.getOrDefault("path"),
+  let url = call_589009.url(scheme.get, call_589009.host, call_589009.base,
+                         call_589009.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_579976, url, valid)
+  result = hook(call_589009, url, valid)
 
-proc call*(call_579977: Call_FusiontablesQuerySql_579963; sql: string;
+proc call*(call_589010: Call_FusiontablesQuerySql_588996; sql: string;
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           typed: bool = false; oauthToken: string = ""; userIp: string = "";
           hdrs: bool = false; key: string = ""; prettyPrint: bool = true): Recallable =
@@ -277,27 +277,27 @@ proc call*(call_579977: Call_FusiontablesQuerySql_579963; sql: string;
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var query_579978 = newJObject()
-  add(query_579978, "fields", newJString(fields))
-  add(query_579978, "quotaUser", newJString(quotaUser))
-  add(query_579978, "alt", newJString(alt))
-  add(query_579978, "typed", newJBool(typed))
-  add(query_579978, "sql", newJString(sql))
-  add(query_579978, "oauth_token", newJString(oauthToken))
-  add(query_579978, "userIp", newJString(userIp))
-  add(query_579978, "hdrs", newJBool(hdrs))
-  add(query_579978, "key", newJString(key))
-  add(query_579978, "prettyPrint", newJBool(prettyPrint))
-  result = call_579977.call(nil, query_579978, nil, nil, nil)
+  var query_589011 = newJObject()
+  add(query_589011, "fields", newJString(fields))
+  add(query_589011, "quotaUser", newJString(quotaUser))
+  add(query_589011, "alt", newJString(alt))
+  add(query_589011, "typed", newJBool(typed))
+  add(query_589011, "sql", newJString(sql))
+  add(query_589011, "oauth_token", newJString(oauthToken))
+  add(query_589011, "userIp", newJString(userIp))
+  add(query_589011, "hdrs", newJBool(hdrs))
+  add(query_589011, "key", newJString(key))
+  add(query_589011, "prettyPrint", newJBool(prettyPrint))
+  result = call_589010.call(nil, query_589011, nil, nil, nil)
 
-var fusiontablesQuerySql* = Call_FusiontablesQuerySql_579963(
+var fusiontablesQuerySql* = Call_FusiontablesQuerySql_588996(
     name: "fusiontablesQuerySql", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com", route: "/query",
-    validator: validate_FusiontablesQuerySql_579964, base: "/fusiontables/v2",
-    url: url_FusiontablesQuerySql_579965, schemes: {Scheme.Https})
+    validator: validate_FusiontablesQuerySql_588997, base: "/fusiontables/v2",
+    url: url_FusiontablesQuerySql_588998, schemes: {Scheme.Https})
 type
-  Call_FusiontablesQuerySqlGet_579692 = ref object of OpenApiRestCall_579424
-proc url_FusiontablesQuerySqlGet_579694(protocol: Scheme; host: string; base: string;
+  Call_FusiontablesQuerySqlGet_588725 = ref object of OpenApiRestCall_588457
+proc url_FusiontablesQuerySqlGet_588727(protocol: Scheme; host: string; base: string;
                                        route: string; path: JsonNode;
                                        query: JsonNode): Uri =
   result.scheme = $protocol
@@ -305,7 +305,7 @@ proc url_FusiontablesQuerySqlGet_579694(protocol: Scheme; host: string; base: st
   result.query = $composeQueryString(query)
   result.path = base & route
 
-proc validate_FusiontablesQuerySqlGet_579693(path: JsonNode; query: JsonNode;
+proc validate_FusiontablesQuerySqlGet_588726(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Executes a SQL statement which can be any of 
   ## - SELECT
@@ -341,55 +341,55 @@ proc validate_FusiontablesQuerySqlGet_579693(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_579806 = query.getOrDefault("fields")
-  valid_579806 = validateParameter(valid_579806, JString, required = false,
+  var valid_588839 = query.getOrDefault("fields")
+  valid_588839 = validateParameter(valid_588839, JString, required = false,
                                  default = nil)
-  if valid_579806 != nil:
-    section.add "fields", valid_579806
-  var valid_579807 = query.getOrDefault("quotaUser")
-  valid_579807 = validateParameter(valid_579807, JString, required = false,
+  if valid_588839 != nil:
+    section.add "fields", valid_588839
+  var valid_588840 = query.getOrDefault("quotaUser")
+  valid_588840 = validateParameter(valid_588840, JString, required = false,
                                  default = nil)
-  if valid_579807 != nil:
-    section.add "quotaUser", valid_579807
-  var valid_579821 = query.getOrDefault("alt")
-  valid_579821 = validateParameter(valid_579821, JString, required = false,
+  if valid_588840 != nil:
+    section.add "quotaUser", valid_588840
+  var valid_588854 = query.getOrDefault("alt")
+  valid_588854 = validateParameter(valid_588854, JString, required = false,
                                  default = newJString("json"))
-  if valid_579821 != nil:
-    section.add "alt", valid_579821
-  var valid_579822 = query.getOrDefault("typed")
-  valid_579822 = validateParameter(valid_579822, JBool, required = false, default = nil)
-  if valid_579822 != nil:
-    section.add "typed", valid_579822
+  if valid_588854 != nil:
+    section.add "alt", valid_588854
+  var valid_588855 = query.getOrDefault("typed")
+  valid_588855 = validateParameter(valid_588855, JBool, required = false, default = nil)
+  if valid_588855 != nil:
+    section.add "typed", valid_588855
   assert query != nil, "query argument is necessary due to required `sql` field"
-  var valid_579823 = query.getOrDefault("sql")
-  valid_579823 = validateParameter(valid_579823, JString, required = true,
+  var valid_588856 = query.getOrDefault("sql")
+  valid_588856 = validateParameter(valid_588856, JString, required = true,
                                  default = nil)
-  if valid_579823 != nil:
-    section.add "sql", valid_579823
-  var valid_579824 = query.getOrDefault("oauth_token")
-  valid_579824 = validateParameter(valid_579824, JString, required = false,
+  if valid_588856 != nil:
+    section.add "sql", valid_588856
+  var valid_588857 = query.getOrDefault("oauth_token")
+  valid_588857 = validateParameter(valid_588857, JString, required = false,
                                  default = nil)
-  if valid_579824 != nil:
-    section.add "oauth_token", valid_579824
-  var valid_579825 = query.getOrDefault("userIp")
-  valid_579825 = validateParameter(valid_579825, JString, required = false,
+  if valid_588857 != nil:
+    section.add "oauth_token", valid_588857
+  var valid_588858 = query.getOrDefault("userIp")
+  valid_588858 = validateParameter(valid_588858, JString, required = false,
                                  default = nil)
-  if valid_579825 != nil:
-    section.add "userIp", valid_579825
-  var valid_579826 = query.getOrDefault("hdrs")
-  valid_579826 = validateParameter(valid_579826, JBool, required = false, default = nil)
-  if valid_579826 != nil:
-    section.add "hdrs", valid_579826
-  var valid_579827 = query.getOrDefault("key")
-  valid_579827 = validateParameter(valid_579827, JString, required = false,
+  if valid_588858 != nil:
+    section.add "userIp", valid_588858
+  var valid_588859 = query.getOrDefault("hdrs")
+  valid_588859 = validateParameter(valid_588859, JBool, required = false, default = nil)
+  if valid_588859 != nil:
+    section.add "hdrs", valid_588859
+  var valid_588860 = query.getOrDefault("key")
+  valid_588860 = validateParameter(valid_588860, JString, required = false,
                                  default = nil)
-  if valid_579827 != nil:
-    section.add "key", valid_579827
-  var valid_579828 = query.getOrDefault("prettyPrint")
-  valid_579828 = validateParameter(valid_579828, JBool, required = false,
+  if valid_588860 != nil:
+    section.add "key", valid_588860
+  var valid_588861 = query.getOrDefault("prettyPrint")
+  valid_588861 = validateParameter(valid_588861, JBool, required = false,
                                  default = newJBool(true))
-  if valid_579828 != nil:
-    section.add "prettyPrint", valid_579828
+  if valid_588861 != nil:
+    section.add "prettyPrint", valid_588861
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -398,23 +398,23 @@ proc validate_FusiontablesQuerySqlGet_579693(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_579851: Call_FusiontablesQuerySqlGet_579692; path: JsonNode;
+proc call*(call_588884: Call_FusiontablesQuerySqlGet_588725; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Executes a SQL statement which can be any of 
   ## - SELECT
   ## - SHOW
   ## - DESCRIBE
   ## 
-  let valid = call_579851.validator(path, query, header, formData, body)
-  let scheme = call_579851.pickScheme
+  let valid = call_588884.validator(path, query, header, formData, body)
+  let scheme = call_588884.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_579851.url(scheme.get, call_579851.host, call_579851.base,
-                         call_579851.route, valid.getOrDefault("path"),
+  let url = call_588884.url(scheme.get, call_588884.host, call_588884.base,
+                         call_588884.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_579851, url, valid)
+  result = hook(call_588884, url, valid)
 
-proc call*(call_579922: Call_FusiontablesQuerySqlGet_579692; sql: string;
+proc call*(call_588955: Call_FusiontablesQuerySqlGet_588725; sql: string;
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           typed: bool = false; oauthToken: string = ""; userIp: string = "";
           hdrs: bool = false; key: string = ""; prettyPrint: bool = true): Recallable =
@@ -446,27 +446,27 @@ proc call*(call_579922: Call_FusiontablesQuerySqlGet_579692; sql: string;
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var query_579923 = newJObject()
-  add(query_579923, "fields", newJString(fields))
-  add(query_579923, "quotaUser", newJString(quotaUser))
-  add(query_579923, "alt", newJString(alt))
-  add(query_579923, "typed", newJBool(typed))
-  add(query_579923, "sql", newJString(sql))
-  add(query_579923, "oauth_token", newJString(oauthToken))
-  add(query_579923, "userIp", newJString(userIp))
-  add(query_579923, "hdrs", newJBool(hdrs))
-  add(query_579923, "key", newJString(key))
-  add(query_579923, "prettyPrint", newJBool(prettyPrint))
-  result = call_579922.call(nil, query_579923, nil, nil, nil)
+  var query_588956 = newJObject()
+  add(query_588956, "fields", newJString(fields))
+  add(query_588956, "quotaUser", newJString(quotaUser))
+  add(query_588956, "alt", newJString(alt))
+  add(query_588956, "typed", newJBool(typed))
+  add(query_588956, "sql", newJString(sql))
+  add(query_588956, "oauth_token", newJString(oauthToken))
+  add(query_588956, "userIp", newJString(userIp))
+  add(query_588956, "hdrs", newJBool(hdrs))
+  add(query_588956, "key", newJString(key))
+  add(query_588956, "prettyPrint", newJBool(prettyPrint))
+  result = call_588955.call(nil, query_588956, nil, nil, nil)
 
-var fusiontablesQuerySqlGet* = Call_FusiontablesQuerySqlGet_579692(
+var fusiontablesQuerySqlGet* = Call_FusiontablesQuerySqlGet_588725(
     name: "fusiontablesQuerySqlGet", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/query",
-    validator: validate_FusiontablesQuerySqlGet_579693, base: "/fusiontables/v2",
-    url: url_FusiontablesQuerySqlGet_579694, schemes: {Scheme.Https})
+    validator: validate_FusiontablesQuerySqlGet_588726, base: "/fusiontables/v2",
+    url: url_FusiontablesQuerySqlGet_588727, schemes: {Scheme.Https})
 type
-  Call_FusiontablesTableInsert_579994 = ref object of OpenApiRestCall_579424
-proc url_FusiontablesTableInsert_579996(protocol: Scheme; host: string; base: string;
+  Call_FusiontablesTableInsert_589027 = ref object of OpenApiRestCall_588457
+proc url_FusiontablesTableInsert_589029(protocol: Scheme; host: string; base: string;
                                        route: string; path: JsonNode;
                                        query: JsonNode): Uri =
   result.scheme = $protocol
@@ -474,7 +474,7 @@ proc url_FusiontablesTableInsert_579996(protocol: Scheme; host: string; base: st
   result.query = $composeQueryString(query)
   result.path = base & route
 
-proc validate_FusiontablesTableInsert_579995(path: JsonNode; query: JsonNode;
+proc validate_FusiontablesTableInsert_589028(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Creates a new table.
   ## 
@@ -498,41 +498,41 @@ proc validate_FusiontablesTableInsert_579995(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_579997 = query.getOrDefault("fields")
-  valid_579997 = validateParameter(valid_579997, JString, required = false,
+  var valid_589030 = query.getOrDefault("fields")
+  valid_589030 = validateParameter(valid_589030, JString, required = false,
                                  default = nil)
-  if valid_579997 != nil:
-    section.add "fields", valid_579997
-  var valid_579998 = query.getOrDefault("quotaUser")
-  valid_579998 = validateParameter(valid_579998, JString, required = false,
+  if valid_589030 != nil:
+    section.add "fields", valid_589030
+  var valid_589031 = query.getOrDefault("quotaUser")
+  valid_589031 = validateParameter(valid_589031, JString, required = false,
                                  default = nil)
-  if valid_579998 != nil:
-    section.add "quotaUser", valid_579998
-  var valid_579999 = query.getOrDefault("alt")
-  valid_579999 = validateParameter(valid_579999, JString, required = false,
+  if valid_589031 != nil:
+    section.add "quotaUser", valid_589031
+  var valid_589032 = query.getOrDefault("alt")
+  valid_589032 = validateParameter(valid_589032, JString, required = false,
                                  default = newJString("json"))
-  if valid_579999 != nil:
-    section.add "alt", valid_579999
-  var valid_580000 = query.getOrDefault("oauth_token")
-  valid_580000 = validateParameter(valid_580000, JString, required = false,
+  if valid_589032 != nil:
+    section.add "alt", valid_589032
+  var valid_589033 = query.getOrDefault("oauth_token")
+  valid_589033 = validateParameter(valid_589033, JString, required = false,
                                  default = nil)
-  if valid_580000 != nil:
-    section.add "oauth_token", valid_580000
-  var valid_580001 = query.getOrDefault("userIp")
-  valid_580001 = validateParameter(valid_580001, JString, required = false,
+  if valid_589033 != nil:
+    section.add "oauth_token", valid_589033
+  var valid_589034 = query.getOrDefault("userIp")
+  valid_589034 = validateParameter(valid_589034, JString, required = false,
                                  default = nil)
-  if valid_580001 != nil:
-    section.add "userIp", valid_580001
-  var valid_580002 = query.getOrDefault("key")
-  valid_580002 = validateParameter(valid_580002, JString, required = false,
+  if valid_589034 != nil:
+    section.add "userIp", valid_589034
+  var valid_589035 = query.getOrDefault("key")
+  valid_589035 = validateParameter(valid_589035, JString, required = false,
                                  default = nil)
-  if valid_580002 != nil:
-    section.add "key", valid_580002
-  var valid_580003 = query.getOrDefault("prettyPrint")
-  valid_580003 = validateParameter(valid_580003, JBool, required = false,
+  if valid_589035 != nil:
+    section.add "key", valid_589035
+  var valid_589036 = query.getOrDefault("prettyPrint")
+  valid_589036 = validateParameter(valid_589036, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580003 != nil:
-    section.add "prettyPrint", valid_580003
+  if valid_589036 != nil:
+    section.add "prettyPrint", valid_589036
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -544,20 +544,20 @@ proc validate_FusiontablesTableInsert_579995(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580005: Call_FusiontablesTableInsert_579994; path: JsonNode;
+proc call*(call_589038: Call_FusiontablesTableInsert_589027; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Creates a new table.
   ## 
-  let valid = call_580005.validator(path, query, header, formData, body)
-  let scheme = call_580005.pickScheme
+  let valid = call_589038.validator(path, query, header, formData, body)
+  let scheme = call_589038.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580005.url(scheme.get, call_580005.host, call_580005.base,
-                         call_580005.route, valid.getOrDefault("path"),
+  let url = call_589038.url(scheme.get, call_589038.host, call_589038.base,
+                         call_589038.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580005, url, valid)
+  result = hook(call_589038, url, valid)
 
-proc call*(call_580006: Call_FusiontablesTableInsert_579994; fields: string = "";
+proc call*(call_589039: Call_FusiontablesTableInsert_589027; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; key: string = ""; body: JsonNode = nil;
           prettyPrint: bool = true): Recallable =
@@ -578,34 +578,34 @@ proc call*(call_580006: Call_FusiontablesTableInsert_579994; fields: string = ""
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var query_580007 = newJObject()
-  var body_580008 = newJObject()
-  add(query_580007, "fields", newJString(fields))
-  add(query_580007, "quotaUser", newJString(quotaUser))
-  add(query_580007, "alt", newJString(alt))
-  add(query_580007, "oauth_token", newJString(oauthToken))
-  add(query_580007, "userIp", newJString(userIp))
-  add(query_580007, "key", newJString(key))
+  var query_589040 = newJObject()
+  var body_589041 = newJObject()
+  add(query_589040, "fields", newJString(fields))
+  add(query_589040, "quotaUser", newJString(quotaUser))
+  add(query_589040, "alt", newJString(alt))
+  add(query_589040, "oauth_token", newJString(oauthToken))
+  add(query_589040, "userIp", newJString(userIp))
+  add(query_589040, "key", newJString(key))
   if body != nil:
-    body_580008 = body
-  add(query_580007, "prettyPrint", newJBool(prettyPrint))
-  result = call_580006.call(nil, query_580007, nil, nil, body_580008)
+    body_589041 = body
+  add(query_589040, "prettyPrint", newJBool(prettyPrint))
+  result = call_589039.call(nil, query_589040, nil, nil, body_589041)
 
-var fusiontablesTableInsert* = Call_FusiontablesTableInsert_579994(
+var fusiontablesTableInsert* = Call_FusiontablesTableInsert_589027(
     name: "fusiontablesTableInsert", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com", route: "/tables",
-    validator: validate_FusiontablesTableInsert_579995, base: "/fusiontables/v2",
-    url: url_FusiontablesTableInsert_579996, schemes: {Scheme.Https})
+    validator: validate_FusiontablesTableInsert_589028, base: "/fusiontables/v2",
+    url: url_FusiontablesTableInsert_589029, schemes: {Scheme.Https})
 type
-  Call_FusiontablesTableList_579979 = ref object of OpenApiRestCall_579424
-proc url_FusiontablesTableList_579981(protocol: Scheme; host: string; base: string;
+  Call_FusiontablesTableList_589012 = ref object of OpenApiRestCall_588457
+proc url_FusiontablesTableList_589014(protocol: Scheme; host: string; base: string;
                                      route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
   result.query = $composeQueryString(query)
   result.path = base & route
 
-proc validate_FusiontablesTableList_579980(path: JsonNode; query: JsonNode;
+proc validate_FusiontablesTableList_589013(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Retrieves a list of tables a user owns.
   ## 
@@ -633,50 +633,50 @@ proc validate_FusiontablesTableList_579980(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_579982 = query.getOrDefault("fields")
-  valid_579982 = validateParameter(valid_579982, JString, required = false,
+  var valid_589015 = query.getOrDefault("fields")
+  valid_589015 = validateParameter(valid_589015, JString, required = false,
                                  default = nil)
-  if valid_579982 != nil:
-    section.add "fields", valid_579982
-  var valid_579983 = query.getOrDefault("pageToken")
-  valid_579983 = validateParameter(valid_579983, JString, required = false,
+  if valid_589015 != nil:
+    section.add "fields", valid_589015
+  var valid_589016 = query.getOrDefault("pageToken")
+  valid_589016 = validateParameter(valid_589016, JString, required = false,
                                  default = nil)
-  if valid_579983 != nil:
-    section.add "pageToken", valid_579983
-  var valid_579984 = query.getOrDefault("quotaUser")
-  valid_579984 = validateParameter(valid_579984, JString, required = false,
+  if valid_589016 != nil:
+    section.add "pageToken", valid_589016
+  var valid_589017 = query.getOrDefault("quotaUser")
+  valid_589017 = validateParameter(valid_589017, JString, required = false,
                                  default = nil)
-  if valid_579984 != nil:
-    section.add "quotaUser", valid_579984
-  var valid_579985 = query.getOrDefault("alt")
-  valid_579985 = validateParameter(valid_579985, JString, required = false,
+  if valid_589017 != nil:
+    section.add "quotaUser", valid_589017
+  var valid_589018 = query.getOrDefault("alt")
+  valid_589018 = validateParameter(valid_589018, JString, required = false,
                                  default = newJString("json"))
-  if valid_579985 != nil:
-    section.add "alt", valid_579985
-  var valid_579986 = query.getOrDefault("oauth_token")
-  valid_579986 = validateParameter(valid_579986, JString, required = false,
+  if valid_589018 != nil:
+    section.add "alt", valid_589018
+  var valid_589019 = query.getOrDefault("oauth_token")
+  valid_589019 = validateParameter(valid_589019, JString, required = false,
                                  default = nil)
-  if valid_579986 != nil:
-    section.add "oauth_token", valid_579986
-  var valid_579987 = query.getOrDefault("userIp")
-  valid_579987 = validateParameter(valid_579987, JString, required = false,
+  if valid_589019 != nil:
+    section.add "oauth_token", valid_589019
+  var valid_589020 = query.getOrDefault("userIp")
+  valid_589020 = validateParameter(valid_589020, JString, required = false,
                                  default = nil)
-  if valid_579987 != nil:
-    section.add "userIp", valid_579987
-  var valid_579988 = query.getOrDefault("maxResults")
-  valid_579988 = validateParameter(valid_579988, JInt, required = false, default = nil)
-  if valid_579988 != nil:
-    section.add "maxResults", valid_579988
-  var valid_579989 = query.getOrDefault("key")
-  valid_579989 = validateParameter(valid_579989, JString, required = false,
+  if valid_589020 != nil:
+    section.add "userIp", valid_589020
+  var valid_589021 = query.getOrDefault("maxResults")
+  valid_589021 = validateParameter(valid_589021, JInt, required = false, default = nil)
+  if valid_589021 != nil:
+    section.add "maxResults", valid_589021
+  var valid_589022 = query.getOrDefault("key")
+  valid_589022 = validateParameter(valid_589022, JString, required = false,
                                  default = nil)
-  if valid_579989 != nil:
-    section.add "key", valid_579989
-  var valid_579990 = query.getOrDefault("prettyPrint")
-  valid_579990 = validateParameter(valid_579990, JBool, required = false,
+  if valid_589022 != nil:
+    section.add "key", valid_589022
+  var valid_589023 = query.getOrDefault("prettyPrint")
+  valid_589023 = validateParameter(valid_589023, JBool, required = false,
                                  default = newJBool(true))
-  if valid_579990 != nil:
-    section.add "prettyPrint", valid_579990
+  if valid_589023 != nil:
+    section.add "prettyPrint", valid_589023
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -685,20 +685,20 @@ proc validate_FusiontablesTableList_579980(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_579991: Call_FusiontablesTableList_579979; path: JsonNode;
+proc call*(call_589024: Call_FusiontablesTableList_589012; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Retrieves a list of tables a user owns.
   ## 
-  let valid = call_579991.validator(path, query, header, formData, body)
-  let scheme = call_579991.pickScheme
+  let valid = call_589024.validator(path, query, header, formData, body)
+  let scheme = call_589024.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_579991.url(scheme.get, call_579991.host, call_579991.base,
-                         call_579991.route, valid.getOrDefault("path"),
+  let url = call_589024.url(scheme.get, call_589024.host, call_589024.base,
+                         call_589024.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_579991, url, valid)
+  result = hook(call_589024, url, valid)
 
-proc call*(call_579992: Call_FusiontablesTableList_579979; fields: string = "";
+proc call*(call_589025: Call_FusiontablesTableList_589012; fields: string = "";
           pageToken: string = ""; quotaUser: string = ""; alt: string = "json";
           oauthToken: string = ""; userIp: string = ""; maxResults: int = 0;
           key: string = ""; prettyPrint: bool = true): Recallable =
@@ -722,33 +722,33 @@ proc call*(call_579992: Call_FusiontablesTableList_579979; fields: string = "";
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var query_579993 = newJObject()
-  add(query_579993, "fields", newJString(fields))
-  add(query_579993, "pageToken", newJString(pageToken))
-  add(query_579993, "quotaUser", newJString(quotaUser))
-  add(query_579993, "alt", newJString(alt))
-  add(query_579993, "oauth_token", newJString(oauthToken))
-  add(query_579993, "userIp", newJString(userIp))
-  add(query_579993, "maxResults", newJInt(maxResults))
-  add(query_579993, "key", newJString(key))
-  add(query_579993, "prettyPrint", newJBool(prettyPrint))
-  result = call_579992.call(nil, query_579993, nil, nil, nil)
+  var query_589026 = newJObject()
+  add(query_589026, "fields", newJString(fields))
+  add(query_589026, "pageToken", newJString(pageToken))
+  add(query_589026, "quotaUser", newJString(quotaUser))
+  add(query_589026, "alt", newJString(alt))
+  add(query_589026, "oauth_token", newJString(oauthToken))
+  add(query_589026, "userIp", newJString(userIp))
+  add(query_589026, "maxResults", newJInt(maxResults))
+  add(query_589026, "key", newJString(key))
+  add(query_589026, "prettyPrint", newJBool(prettyPrint))
+  result = call_589025.call(nil, query_589026, nil, nil, nil)
 
-var fusiontablesTableList* = Call_FusiontablesTableList_579979(
+var fusiontablesTableList* = Call_FusiontablesTableList_589012(
     name: "fusiontablesTableList", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/tables",
-    validator: validate_FusiontablesTableList_579980, base: "/fusiontables/v2",
-    url: url_FusiontablesTableList_579981, schemes: {Scheme.Https})
+    validator: validate_FusiontablesTableList_589013, base: "/fusiontables/v2",
+    url: url_FusiontablesTableList_589014, schemes: {Scheme.Https})
 type
-  Call_FusiontablesTableImportTable_580009 = ref object of OpenApiRestCall_579424
-proc url_FusiontablesTableImportTable_580011(protocol: Scheme; host: string;
+  Call_FusiontablesTableImportTable_589042 = ref object of OpenApiRestCall_588457
+proc url_FusiontablesTableImportTable_589044(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
   result.query = $composeQueryString(query)
   result.path = base & route
 
-proc validate_FusiontablesTableImportTable_580010(path: JsonNode; query: JsonNode;
+proc validate_FusiontablesTableImportTable_589043(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Imports a new table.
   ## 
@@ -778,57 +778,57 @@ proc validate_FusiontablesTableImportTable_580010(path: JsonNode; query: JsonNod
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580012 = query.getOrDefault("fields")
-  valid_580012 = validateParameter(valid_580012, JString, required = false,
+  var valid_589045 = query.getOrDefault("fields")
+  valid_589045 = validateParameter(valid_589045, JString, required = false,
                                  default = nil)
-  if valid_580012 != nil:
-    section.add "fields", valid_580012
-  var valid_580013 = query.getOrDefault("quotaUser")
-  valid_580013 = validateParameter(valid_580013, JString, required = false,
+  if valid_589045 != nil:
+    section.add "fields", valid_589045
+  var valid_589046 = query.getOrDefault("quotaUser")
+  valid_589046 = validateParameter(valid_589046, JString, required = false,
                                  default = nil)
-  if valid_580013 != nil:
-    section.add "quotaUser", valid_580013
-  var valid_580014 = query.getOrDefault("alt")
-  valid_580014 = validateParameter(valid_580014, JString, required = false,
+  if valid_589046 != nil:
+    section.add "quotaUser", valid_589046
+  var valid_589047 = query.getOrDefault("alt")
+  valid_589047 = validateParameter(valid_589047, JString, required = false,
                                  default = newJString("json"))
-  if valid_580014 != nil:
-    section.add "alt", valid_580014
-  var valid_580015 = query.getOrDefault("oauth_token")
-  valid_580015 = validateParameter(valid_580015, JString, required = false,
+  if valid_589047 != nil:
+    section.add "alt", valid_589047
+  var valid_589048 = query.getOrDefault("oauth_token")
+  valid_589048 = validateParameter(valid_589048, JString, required = false,
                                  default = nil)
-  if valid_580015 != nil:
-    section.add "oauth_token", valid_580015
-  var valid_580016 = query.getOrDefault("userIp")
-  valid_580016 = validateParameter(valid_580016, JString, required = false,
+  if valid_589048 != nil:
+    section.add "oauth_token", valid_589048
+  var valid_589049 = query.getOrDefault("userIp")
+  valid_589049 = validateParameter(valid_589049, JString, required = false,
                                  default = nil)
-  if valid_580016 != nil:
-    section.add "userIp", valid_580016
-  var valid_580017 = query.getOrDefault("key")
-  valid_580017 = validateParameter(valid_580017, JString, required = false,
+  if valid_589049 != nil:
+    section.add "userIp", valid_589049
+  var valid_589050 = query.getOrDefault("key")
+  valid_589050 = validateParameter(valid_589050, JString, required = false,
                                  default = nil)
-  if valid_580017 != nil:
-    section.add "key", valid_580017
+  if valid_589050 != nil:
+    section.add "key", valid_589050
   assert query != nil, "query argument is necessary due to required `name` field"
-  var valid_580018 = query.getOrDefault("name")
-  valid_580018 = validateParameter(valid_580018, JString, required = true,
+  var valid_589051 = query.getOrDefault("name")
+  valid_589051 = validateParameter(valid_589051, JString, required = true,
                                  default = nil)
-  if valid_580018 != nil:
-    section.add "name", valid_580018
-  var valid_580019 = query.getOrDefault("delimiter")
-  valid_580019 = validateParameter(valid_580019, JString, required = false,
+  if valid_589051 != nil:
+    section.add "name", valid_589051
+  var valid_589052 = query.getOrDefault("delimiter")
+  valid_589052 = validateParameter(valid_589052, JString, required = false,
                                  default = nil)
-  if valid_580019 != nil:
-    section.add "delimiter", valid_580019
-  var valid_580020 = query.getOrDefault("encoding")
-  valid_580020 = validateParameter(valid_580020, JString, required = false,
+  if valid_589052 != nil:
+    section.add "delimiter", valid_589052
+  var valid_589053 = query.getOrDefault("encoding")
+  valid_589053 = validateParameter(valid_589053, JString, required = false,
                                  default = nil)
-  if valid_580020 != nil:
-    section.add "encoding", valid_580020
-  var valid_580021 = query.getOrDefault("prettyPrint")
-  valid_580021 = validateParameter(valid_580021, JBool, required = false,
+  if valid_589053 != nil:
+    section.add "encoding", valid_589053
+  var valid_589054 = query.getOrDefault("prettyPrint")
+  valid_589054 = validateParameter(valid_589054, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580021 != nil:
-    section.add "prettyPrint", valid_580021
+  if valid_589054 != nil:
+    section.add "prettyPrint", valid_589054
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -837,20 +837,20 @@ proc validate_FusiontablesTableImportTable_580010(path: JsonNode; query: JsonNod
   if body != nil:
     result.add "body", body
 
-proc call*(call_580022: Call_FusiontablesTableImportTable_580009; path: JsonNode;
+proc call*(call_589055: Call_FusiontablesTableImportTable_589042; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Imports a new table.
   ## 
-  let valid = call_580022.validator(path, query, header, formData, body)
-  let scheme = call_580022.pickScheme
+  let valid = call_589055.validator(path, query, header, formData, body)
+  let scheme = call_589055.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580022.url(scheme.get, call_580022.host, call_580022.base,
-                         call_580022.route, valid.getOrDefault("path"),
+  let url = call_589055.url(scheme.get, call_589055.host, call_589055.base,
+                         call_589055.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580022, url, valid)
+  result = hook(call_589055, url, valid)
 
-proc call*(call_580023: Call_FusiontablesTableImportTable_580009; name: string;
+proc call*(call_589056: Call_FusiontablesTableImportTable_589042; name: string;
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           oauthToken: string = ""; userIp: string = ""; key: string = "";
           delimiter: string = ""; encoding: string = ""; prettyPrint: bool = true): Recallable =
@@ -876,28 +876,28 @@ proc call*(call_580023: Call_FusiontablesTableImportTable_580009; name: string;
   ##           : The encoding of the content. Default is UTF-8. Use auto-detect if you are unsure of the encoding.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var query_580024 = newJObject()
-  add(query_580024, "fields", newJString(fields))
-  add(query_580024, "quotaUser", newJString(quotaUser))
-  add(query_580024, "alt", newJString(alt))
-  add(query_580024, "oauth_token", newJString(oauthToken))
-  add(query_580024, "userIp", newJString(userIp))
-  add(query_580024, "key", newJString(key))
-  add(query_580024, "name", newJString(name))
-  add(query_580024, "delimiter", newJString(delimiter))
-  add(query_580024, "encoding", newJString(encoding))
-  add(query_580024, "prettyPrint", newJBool(prettyPrint))
-  result = call_580023.call(nil, query_580024, nil, nil, nil)
+  var query_589057 = newJObject()
+  add(query_589057, "fields", newJString(fields))
+  add(query_589057, "quotaUser", newJString(quotaUser))
+  add(query_589057, "alt", newJString(alt))
+  add(query_589057, "oauth_token", newJString(oauthToken))
+  add(query_589057, "userIp", newJString(userIp))
+  add(query_589057, "key", newJString(key))
+  add(query_589057, "name", newJString(name))
+  add(query_589057, "delimiter", newJString(delimiter))
+  add(query_589057, "encoding", newJString(encoding))
+  add(query_589057, "prettyPrint", newJBool(prettyPrint))
+  result = call_589056.call(nil, query_589057, nil, nil, nil)
 
-var fusiontablesTableImportTable* = Call_FusiontablesTableImportTable_580009(
+var fusiontablesTableImportTable* = Call_FusiontablesTableImportTable_589042(
     name: "fusiontablesTableImportTable", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com", route: "/tables/import",
-    validator: validate_FusiontablesTableImportTable_580010,
-    base: "/fusiontables/v2", url: url_FusiontablesTableImportTable_580011,
+    validator: validate_FusiontablesTableImportTable_589043,
+    base: "/fusiontables/v2", url: url_FusiontablesTableImportTable_589044,
     schemes: {Scheme.Https})
 type
-  Call_FusiontablesTableUpdate_580054 = ref object of OpenApiRestCall_579424
-proc url_FusiontablesTableUpdate_580056(protocol: Scheme; host: string; base: string;
+  Call_FusiontablesTableUpdate_589087 = ref object of OpenApiRestCall_588457
+proc url_FusiontablesTableUpdate_589089(protocol: Scheme; host: string; base: string;
                                        route: string; path: JsonNode;
                                        query: JsonNode): Uri =
   result.scheme = $protocol
@@ -913,7 +913,7 @@ proc url_FusiontablesTableUpdate_580056(protocol: Scheme; host: string; base: st
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_FusiontablesTableUpdate_580055(path: JsonNode; query: JsonNode;
+proc validate_FusiontablesTableUpdate_589088(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Updates an existing table. Unless explicitly requested, only the name, description, and attribution will be updated.
   ## 
@@ -924,11 +924,11 @@ proc validate_FusiontablesTableUpdate_580055(path: JsonNode; query: JsonNode;
   ##          : ID of the table that is being updated.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `tableId` field"
-  var valid_580057 = path.getOrDefault("tableId")
-  valid_580057 = validateParameter(valid_580057, JString, required = true,
+  var valid_589090 = path.getOrDefault("tableId")
+  valid_589090 = validateParameter(valid_589090, JString, required = true,
                                  default = nil)
-  if valid_580057 != nil:
-    section.add "tableId", valid_580057
+  if valid_589090 != nil:
+    section.add "tableId", valid_589090
   result.add "path", section
   ## parameters in `query` object:
   ##   replaceViewDefinition: JBool
@@ -948,45 +948,45 @@ proc validate_FusiontablesTableUpdate_580055(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580058 = query.getOrDefault("replaceViewDefinition")
-  valid_580058 = validateParameter(valid_580058, JBool, required = false, default = nil)
-  if valid_580058 != nil:
-    section.add "replaceViewDefinition", valid_580058
-  var valid_580059 = query.getOrDefault("fields")
-  valid_580059 = validateParameter(valid_580059, JString, required = false,
+  var valid_589091 = query.getOrDefault("replaceViewDefinition")
+  valid_589091 = validateParameter(valid_589091, JBool, required = false, default = nil)
+  if valid_589091 != nil:
+    section.add "replaceViewDefinition", valid_589091
+  var valid_589092 = query.getOrDefault("fields")
+  valid_589092 = validateParameter(valid_589092, JString, required = false,
                                  default = nil)
-  if valid_580059 != nil:
-    section.add "fields", valid_580059
-  var valid_580060 = query.getOrDefault("quotaUser")
-  valid_580060 = validateParameter(valid_580060, JString, required = false,
+  if valid_589092 != nil:
+    section.add "fields", valid_589092
+  var valid_589093 = query.getOrDefault("quotaUser")
+  valid_589093 = validateParameter(valid_589093, JString, required = false,
                                  default = nil)
-  if valid_580060 != nil:
-    section.add "quotaUser", valid_580060
-  var valid_580061 = query.getOrDefault("alt")
-  valid_580061 = validateParameter(valid_580061, JString, required = false,
+  if valid_589093 != nil:
+    section.add "quotaUser", valid_589093
+  var valid_589094 = query.getOrDefault("alt")
+  valid_589094 = validateParameter(valid_589094, JString, required = false,
                                  default = newJString("json"))
-  if valid_580061 != nil:
-    section.add "alt", valid_580061
-  var valid_580062 = query.getOrDefault("oauth_token")
-  valid_580062 = validateParameter(valid_580062, JString, required = false,
+  if valid_589094 != nil:
+    section.add "alt", valid_589094
+  var valid_589095 = query.getOrDefault("oauth_token")
+  valid_589095 = validateParameter(valid_589095, JString, required = false,
                                  default = nil)
-  if valid_580062 != nil:
-    section.add "oauth_token", valid_580062
-  var valid_580063 = query.getOrDefault("userIp")
-  valid_580063 = validateParameter(valid_580063, JString, required = false,
+  if valid_589095 != nil:
+    section.add "oauth_token", valid_589095
+  var valid_589096 = query.getOrDefault("userIp")
+  valid_589096 = validateParameter(valid_589096, JString, required = false,
                                  default = nil)
-  if valid_580063 != nil:
-    section.add "userIp", valid_580063
-  var valid_580064 = query.getOrDefault("key")
-  valid_580064 = validateParameter(valid_580064, JString, required = false,
+  if valid_589096 != nil:
+    section.add "userIp", valid_589096
+  var valid_589097 = query.getOrDefault("key")
+  valid_589097 = validateParameter(valid_589097, JString, required = false,
                                  default = nil)
-  if valid_580064 != nil:
-    section.add "key", valid_580064
-  var valid_580065 = query.getOrDefault("prettyPrint")
-  valid_580065 = validateParameter(valid_580065, JBool, required = false,
+  if valid_589097 != nil:
+    section.add "key", valid_589097
+  var valid_589098 = query.getOrDefault("prettyPrint")
+  valid_589098 = validateParameter(valid_589098, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580065 != nil:
-    section.add "prettyPrint", valid_580065
+  if valid_589098 != nil:
+    section.add "prettyPrint", valid_589098
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -998,20 +998,20 @@ proc validate_FusiontablesTableUpdate_580055(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580067: Call_FusiontablesTableUpdate_580054; path: JsonNode;
+proc call*(call_589100: Call_FusiontablesTableUpdate_589087; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Updates an existing table. Unless explicitly requested, only the name, description, and attribution will be updated.
   ## 
-  let valid = call_580067.validator(path, query, header, formData, body)
-  let scheme = call_580067.pickScheme
+  let valid = call_589100.validator(path, query, header, formData, body)
+  let scheme = call_589100.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580067.url(scheme.get, call_580067.host, call_580067.base,
-                         call_580067.route, valid.getOrDefault("path"),
+  let url = call_589100.url(scheme.get, call_589100.host, call_589100.base,
+                         call_589100.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580067, url, valid)
+  result = hook(call_589100, url, valid)
 
-proc call*(call_580068: Call_FusiontablesTableUpdate_580054; tableId: string;
+proc call*(call_589101: Call_FusiontablesTableUpdate_589087; tableId: string;
           replaceViewDefinition: bool = false; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; key: string = ""; body: JsonNode = nil;
@@ -1037,30 +1037,30 @@ proc call*(call_580068: Call_FusiontablesTableUpdate_580054; tableId: string;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_580069 = newJObject()
-  var query_580070 = newJObject()
-  var body_580071 = newJObject()
-  add(query_580070, "replaceViewDefinition", newJBool(replaceViewDefinition))
-  add(path_580069, "tableId", newJString(tableId))
-  add(query_580070, "fields", newJString(fields))
-  add(query_580070, "quotaUser", newJString(quotaUser))
-  add(query_580070, "alt", newJString(alt))
-  add(query_580070, "oauth_token", newJString(oauthToken))
-  add(query_580070, "userIp", newJString(userIp))
-  add(query_580070, "key", newJString(key))
+  var path_589102 = newJObject()
+  var query_589103 = newJObject()
+  var body_589104 = newJObject()
+  add(query_589103, "replaceViewDefinition", newJBool(replaceViewDefinition))
+  add(path_589102, "tableId", newJString(tableId))
+  add(query_589103, "fields", newJString(fields))
+  add(query_589103, "quotaUser", newJString(quotaUser))
+  add(query_589103, "alt", newJString(alt))
+  add(query_589103, "oauth_token", newJString(oauthToken))
+  add(query_589103, "userIp", newJString(userIp))
+  add(query_589103, "key", newJString(key))
   if body != nil:
-    body_580071 = body
-  add(query_580070, "prettyPrint", newJBool(prettyPrint))
-  result = call_580068.call(path_580069, query_580070, nil, nil, body_580071)
+    body_589104 = body
+  add(query_589103, "prettyPrint", newJBool(prettyPrint))
+  result = call_589101.call(path_589102, query_589103, nil, nil, body_589104)
 
-var fusiontablesTableUpdate* = Call_FusiontablesTableUpdate_580054(
+var fusiontablesTableUpdate* = Call_FusiontablesTableUpdate_589087(
     name: "fusiontablesTableUpdate", meth: HttpMethod.HttpPut,
     host: "www.googleapis.com", route: "/tables/{tableId}",
-    validator: validate_FusiontablesTableUpdate_580055, base: "/fusiontables/v2",
-    url: url_FusiontablesTableUpdate_580056, schemes: {Scheme.Https})
+    validator: validate_FusiontablesTableUpdate_589088, base: "/fusiontables/v2",
+    url: url_FusiontablesTableUpdate_589089, schemes: {Scheme.Https})
 type
-  Call_FusiontablesTableGet_580025 = ref object of OpenApiRestCall_579424
-proc url_FusiontablesTableGet_580027(protocol: Scheme; host: string; base: string;
+  Call_FusiontablesTableGet_589058 = ref object of OpenApiRestCall_588457
+proc url_FusiontablesTableGet_589060(protocol: Scheme; host: string; base: string;
                                     route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -1075,7 +1075,7 @@ proc url_FusiontablesTableGet_580027(protocol: Scheme; host: string; base: strin
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_FusiontablesTableGet_580026(path: JsonNode; query: JsonNode;
+proc validate_FusiontablesTableGet_589059(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Retrieves a specific table by its ID.
   ## 
@@ -1086,11 +1086,11 @@ proc validate_FusiontablesTableGet_580026(path: JsonNode; query: JsonNode;
   ##          : Identifier for the table being requested.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `tableId` field"
-  var valid_580042 = path.getOrDefault("tableId")
-  valid_580042 = validateParameter(valid_580042, JString, required = true,
+  var valid_589075 = path.getOrDefault("tableId")
+  valid_589075 = validateParameter(valid_589075, JString, required = true,
                                  default = nil)
-  if valid_580042 != nil:
-    section.add "tableId", valid_580042
+  if valid_589075 != nil:
+    section.add "tableId", valid_589075
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -1108,41 +1108,41 @@ proc validate_FusiontablesTableGet_580026(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580043 = query.getOrDefault("fields")
-  valid_580043 = validateParameter(valid_580043, JString, required = false,
+  var valid_589076 = query.getOrDefault("fields")
+  valid_589076 = validateParameter(valid_589076, JString, required = false,
                                  default = nil)
-  if valid_580043 != nil:
-    section.add "fields", valid_580043
-  var valid_580044 = query.getOrDefault("quotaUser")
-  valid_580044 = validateParameter(valid_580044, JString, required = false,
+  if valid_589076 != nil:
+    section.add "fields", valid_589076
+  var valid_589077 = query.getOrDefault("quotaUser")
+  valid_589077 = validateParameter(valid_589077, JString, required = false,
                                  default = nil)
-  if valid_580044 != nil:
-    section.add "quotaUser", valid_580044
-  var valid_580045 = query.getOrDefault("alt")
-  valid_580045 = validateParameter(valid_580045, JString, required = false,
+  if valid_589077 != nil:
+    section.add "quotaUser", valid_589077
+  var valid_589078 = query.getOrDefault("alt")
+  valid_589078 = validateParameter(valid_589078, JString, required = false,
                                  default = newJString("json"))
-  if valid_580045 != nil:
-    section.add "alt", valid_580045
-  var valid_580046 = query.getOrDefault("oauth_token")
-  valid_580046 = validateParameter(valid_580046, JString, required = false,
+  if valid_589078 != nil:
+    section.add "alt", valid_589078
+  var valid_589079 = query.getOrDefault("oauth_token")
+  valid_589079 = validateParameter(valid_589079, JString, required = false,
                                  default = nil)
-  if valid_580046 != nil:
-    section.add "oauth_token", valid_580046
-  var valid_580047 = query.getOrDefault("userIp")
-  valid_580047 = validateParameter(valid_580047, JString, required = false,
+  if valid_589079 != nil:
+    section.add "oauth_token", valid_589079
+  var valid_589080 = query.getOrDefault("userIp")
+  valid_589080 = validateParameter(valid_589080, JString, required = false,
                                  default = nil)
-  if valid_580047 != nil:
-    section.add "userIp", valid_580047
-  var valid_580048 = query.getOrDefault("key")
-  valid_580048 = validateParameter(valid_580048, JString, required = false,
+  if valid_589080 != nil:
+    section.add "userIp", valid_589080
+  var valid_589081 = query.getOrDefault("key")
+  valid_589081 = validateParameter(valid_589081, JString, required = false,
                                  default = nil)
-  if valid_580048 != nil:
-    section.add "key", valid_580048
-  var valid_580049 = query.getOrDefault("prettyPrint")
-  valid_580049 = validateParameter(valid_580049, JBool, required = false,
+  if valid_589081 != nil:
+    section.add "key", valid_589081
+  var valid_589082 = query.getOrDefault("prettyPrint")
+  valid_589082 = validateParameter(valid_589082, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580049 != nil:
-    section.add "prettyPrint", valid_580049
+  if valid_589082 != nil:
+    section.add "prettyPrint", valid_589082
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1151,20 +1151,20 @@ proc validate_FusiontablesTableGet_580026(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580050: Call_FusiontablesTableGet_580025; path: JsonNode;
+proc call*(call_589083: Call_FusiontablesTableGet_589058; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Retrieves a specific table by its ID.
   ## 
-  let valid = call_580050.validator(path, query, header, formData, body)
-  let scheme = call_580050.pickScheme
+  let valid = call_589083.validator(path, query, header, formData, body)
+  let scheme = call_589083.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580050.url(scheme.get, call_580050.host, call_580050.base,
-                         call_580050.route, valid.getOrDefault("path"),
+  let url = call_589083.url(scheme.get, call_589083.host, call_589083.base,
+                         call_589083.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580050, url, valid)
+  result = hook(call_589083, url, valid)
 
-proc call*(call_580051: Call_FusiontablesTableGet_580025; tableId: string;
+proc call*(call_589084: Call_FusiontablesTableGet_589058; tableId: string;
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           oauthToken: string = ""; userIp: string = ""; key: string = "";
           prettyPrint: bool = true): Recallable =
@@ -1186,26 +1186,26 @@ proc call*(call_580051: Call_FusiontablesTableGet_580025; tableId: string;
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_580052 = newJObject()
-  var query_580053 = newJObject()
-  add(path_580052, "tableId", newJString(tableId))
-  add(query_580053, "fields", newJString(fields))
-  add(query_580053, "quotaUser", newJString(quotaUser))
-  add(query_580053, "alt", newJString(alt))
-  add(query_580053, "oauth_token", newJString(oauthToken))
-  add(query_580053, "userIp", newJString(userIp))
-  add(query_580053, "key", newJString(key))
-  add(query_580053, "prettyPrint", newJBool(prettyPrint))
-  result = call_580051.call(path_580052, query_580053, nil, nil, nil)
+  var path_589085 = newJObject()
+  var query_589086 = newJObject()
+  add(path_589085, "tableId", newJString(tableId))
+  add(query_589086, "fields", newJString(fields))
+  add(query_589086, "quotaUser", newJString(quotaUser))
+  add(query_589086, "alt", newJString(alt))
+  add(query_589086, "oauth_token", newJString(oauthToken))
+  add(query_589086, "userIp", newJString(userIp))
+  add(query_589086, "key", newJString(key))
+  add(query_589086, "prettyPrint", newJBool(prettyPrint))
+  result = call_589084.call(path_589085, query_589086, nil, nil, nil)
 
-var fusiontablesTableGet* = Call_FusiontablesTableGet_580025(
+var fusiontablesTableGet* = Call_FusiontablesTableGet_589058(
     name: "fusiontablesTableGet", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/tables/{tableId}",
-    validator: validate_FusiontablesTableGet_580026, base: "/fusiontables/v2",
-    url: url_FusiontablesTableGet_580027, schemes: {Scheme.Https})
+    validator: validate_FusiontablesTableGet_589059, base: "/fusiontables/v2",
+    url: url_FusiontablesTableGet_589060, schemes: {Scheme.Https})
 type
-  Call_FusiontablesTablePatch_580087 = ref object of OpenApiRestCall_579424
-proc url_FusiontablesTablePatch_580089(protocol: Scheme; host: string; base: string;
+  Call_FusiontablesTablePatch_589120 = ref object of OpenApiRestCall_588457
+proc url_FusiontablesTablePatch_589122(protocol: Scheme; host: string; base: string;
                                       route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -1220,7 +1220,7 @@ proc url_FusiontablesTablePatch_580089(protocol: Scheme; host: string; base: str
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_FusiontablesTablePatch_580088(path: JsonNode; query: JsonNode;
+proc validate_FusiontablesTablePatch_589121(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Updates an existing table. Unless explicitly requested, only the name, description, and attribution will be updated. This method supports patch semantics.
   ## 
@@ -1231,11 +1231,11 @@ proc validate_FusiontablesTablePatch_580088(path: JsonNode; query: JsonNode;
   ##          : ID of the table that is being updated.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `tableId` field"
-  var valid_580090 = path.getOrDefault("tableId")
-  valid_580090 = validateParameter(valid_580090, JString, required = true,
+  var valid_589123 = path.getOrDefault("tableId")
+  valid_589123 = validateParameter(valid_589123, JString, required = true,
                                  default = nil)
-  if valid_580090 != nil:
-    section.add "tableId", valid_580090
+  if valid_589123 != nil:
+    section.add "tableId", valid_589123
   result.add "path", section
   ## parameters in `query` object:
   ##   replaceViewDefinition: JBool
@@ -1255,45 +1255,45 @@ proc validate_FusiontablesTablePatch_580088(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580091 = query.getOrDefault("replaceViewDefinition")
-  valid_580091 = validateParameter(valid_580091, JBool, required = false, default = nil)
-  if valid_580091 != nil:
-    section.add "replaceViewDefinition", valid_580091
-  var valid_580092 = query.getOrDefault("fields")
-  valid_580092 = validateParameter(valid_580092, JString, required = false,
+  var valid_589124 = query.getOrDefault("replaceViewDefinition")
+  valid_589124 = validateParameter(valid_589124, JBool, required = false, default = nil)
+  if valid_589124 != nil:
+    section.add "replaceViewDefinition", valid_589124
+  var valid_589125 = query.getOrDefault("fields")
+  valid_589125 = validateParameter(valid_589125, JString, required = false,
                                  default = nil)
-  if valid_580092 != nil:
-    section.add "fields", valid_580092
-  var valid_580093 = query.getOrDefault("quotaUser")
-  valid_580093 = validateParameter(valid_580093, JString, required = false,
+  if valid_589125 != nil:
+    section.add "fields", valid_589125
+  var valid_589126 = query.getOrDefault("quotaUser")
+  valid_589126 = validateParameter(valid_589126, JString, required = false,
                                  default = nil)
-  if valid_580093 != nil:
-    section.add "quotaUser", valid_580093
-  var valid_580094 = query.getOrDefault("alt")
-  valid_580094 = validateParameter(valid_580094, JString, required = false,
+  if valid_589126 != nil:
+    section.add "quotaUser", valid_589126
+  var valid_589127 = query.getOrDefault("alt")
+  valid_589127 = validateParameter(valid_589127, JString, required = false,
                                  default = newJString("json"))
-  if valid_580094 != nil:
-    section.add "alt", valid_580094
-  var valid_580095 = query.getOrDefault("oauth_token")
-  valid_580095 = validateParameter(valid_580095, JString, required = false,
+  if valid_589127 != nil:
+    section.add "alt", valid_589127
+  var valid_589128 = query.getOrDefault("oauth_token")
+  valid_589128 = validateParameter(valid_589128, JString, required = false,
                                  default = nil)
-  if valid_580095 != nil:
-    section.add "oauth_token", valid_580095
-  var valid_580096 = query.getOrDefault("userIp")
-  valid_580096 = validateParameter(valid_580096, JString, required = false,
+  if valid_589128 != nil:
+    section.add "oauth_token", valid_589128
+  var valid_589129 = query.getOrDefault("userIp")
+  valid_589129 = validateParameter(valid_589129, JString, required = false,
                                  default = nil)
-  if valid_580096 != nil:
-    section.add "userIp", valid_580096
-  var valid_580097 = query.getOrDefault("key")
-  valid_580097 = validateParameter(valid_580097, JString, required = false,
+  if valid_589129 != nil:
+    section.add "userIp", valid_589129
+  var valid_589130 = query.getOrDefault("key")
+  valid_589130 = validateParameter(valid_589130, JString, required = false,
                                  default = nil)
-  if valid_580097 != nil:
-    section.add "key", valid_580097
-  var valid_580098 = query.getOrDefault("prettyPrint")
-  valid_580098 = validateParameter(valid_580098, JBool, required = false,
+  if valid_589130 != nil:
+    section.add "key", valid_589130
+  var valid_589131 = query.getOrDefault("prettyPrint")
+  valid_589131 = validateParameter(valid_589131, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580098 != nil:
-    section.add "prettyPrint", valid_580098
+  if valid_589131 != nil:
+    section.add "prettyPrint", valid_589131
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1305,20 +1305,20 @@ proc validate_FusiontablesTablePatch_580088(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580100: Call_FusiontablesTablePatch_580087; path: JsonNode;
+proc call*(call_589133: Call_FusiontablesTablePatch_589120; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Updates an existing table. Unless explicitly requested, only the name, description, and attribution will be updated. This method supports patch semantics.
   ## 
-  let valid = call_580100.validator(path, query, header, formData, body)
-  let scheme = call_580100.pickScheme
+  let valid = call_589133.validator(path, query, header, formData, body)
+  let scheme = call_589133.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580100.url(scheme.get, call_580100.host, call_580100.base,
-                         call_580100.route, valid.getOrDefault("path"),
+  let url = call_589133.url(scheme.get, call_589133.host, call_589133.base,
+                         call_589133.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580100, url, valid)
+  result = hook(call_589133, url, valid)
 
-proc call*(call_580101: Call_FusiontablesTablePatch_580087; tableId: string;
+proc call*(call_589134: Call_FusiontablesTablePatch_589120; tableId: string;
           replaceViewDefinition: bool = false; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; key: string = ""; body: JsonNode = nil;
@@ -1344,30 +1344,30 @@ proc call*(call_580101: Call_FusiontablesTablePatch_580087; tableId: string;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_580102 = newJObject()
-  var query_580103 = newJObject()
-  var body_580104 = newJObject()
-  add(query_580103, "replaceViewDefinition", newJBool(replaceViewDefinition))
-  add(path_580102, "tableId", newJString(tableId))
-  add(query_580103, "fields", newJString(fields))
-  add(query_580103, "quotaUser", newJString(quotaUser))
-  add(query_580103, "alt", newJString(alt))
-  add(query_580103, "oauth_token", newJString(oauthToken))
-  add(query_580103, "userIp", newJString(userIp))
-  add(query_580103, "key", newJString(key))
+  var path_589135 = newJObject()
+  var query_589136 = newJObject()
+  var body_589137 = newJObject()
+  add(query_589136, "replaceViewDefinition", newJBool(replaceViewDefinition))
+  add(path_589135, "tableId", newJString(tableId))
+  add(query_589136, "fields", newJString(fields))
+  add(query_589136, "quotaUser", newJString(quotaUser))
+  add(query_589136, "alt", newJString(alt))
+  add(query_589136, "oauth_token", newJString(oauthToken))
+  add(query_589136, "userIp", newJString(userIp))
+  add(query_589136, "key", newJString(key))
   if body != nil:
-    body_580104 = body
-  add(query_580103, "prettyPrint", newJBool(prettyPrint))
-  result = call_580101.call(path_580102, query_580103, nil, nil, body_580104)
+    body_589137 = body
+  add(query_589136, "prettyPrint", newJBool(prettyPrint))
+  result = call_589134.call(path_589135, query_589136, nil, nil, body_589137)
 
-var fusiontablesTablePatch* = Call_FusiontablesTablePatch_580087(
+var fusiontablesTablePatch* = Call_FusiontablesTablePatch_589120(
     name: "fusiontablesTablePatch", meth: HttpMethod.HttpPatch,
     host: "www.googleapis.com", route: "/tables/{tableId}",
-    validator: validate_FusiontablesTablePatch_580088, base: "/fusiontables/v2",
-    url: url_FusiontablesTablePatch_580089, schemes: {Scheme.Https})
+    validator: validate_FusiontablesTablePatch_589121, base: "/fusiontables/v2",
+    url: url_FusiontablesTablePatch_589122, schemes: {Scheme.Https})
 type
-  Call_FusiontablesTableDelete_580072 = ref object of OpenApiRestCall_579424
-proc url_FusiontablesTableDelete_580074(protocol: Scheme; host: string; base: string;
+  Call_FusiontablesTableDelete_589105 = ref object of OpenApiRestCall_588457
+proc url_FusiontablesTableDelete_589107(protocol: Scheme; host: string; base: string;
                                        route: string; path: JsonNode;
                                        query: JsonNode): Uri =
   result.scheme = $protocol
@@ -1383,7 +1383,7 @@ proc url_FusiontablesTableDelete_580074(protocol: Scheme; host: string; base: st
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_FusiontablesTableDelete_580073(path: JsonNode; query: JsonNode;
+proc validate_FusiontablesTableDelete_589106(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Deletes a table.
   ## 
@@ -1394,11 +1394,11 @@ proc validate_FusiontablesTableDelete_580073(path: JsonNode; query: JsonNode;
   ##          : ID of the table to be deleted.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `tableId` field"
-  var valid_580075 = path.getOrDefault("tableId")
-  valid_580075 = validateParameter(valid_580075, JString, required = true,
+  var valid_589108 = path.getOrDefault("tableId")
+  valid_589108 = validateParameter(valid_589108, JString, required = true,
                                  default = nil)
-  if valid_580075 != nil:
-    section.add "tableId", valid_580075
+  if valid_589108 != nil:
+    section.add "tableId", valid_589108
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -1416,41 +1416,41 @@ proc validate_FusiontablesTableDelete_580073(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580076 = query.getOrDefault("fields")
-  valid_580076 = validateParameter(valid_580076, JString, required = false,
+  var valid_589109 = query.getOrDefault("fields")
+  valid_589109 = validateParameter(valid_589109, JString, required = false,
                                  default = nil)
-  if valid_580076 != nil:
-    section.add "fields", valid_580076
-  var valid_580077 = query.getOrDefault("quotaUser")
-  valid_580077 = validateParameter(valid_580077, JString, required = false,
+  if valid_589109 != nil:
+    section.add "fields", valid_589109
+  var valid_589110 = query.getOrDefault("quotaUser")
+  valid_589110 = validateParameter(valid_589110, JString, required = false,
                                  default = nil)
-  if valid_580077 != nil:
-    section.add "quotaUser", valid_580077
-  var valid_580078 = query.getOrDefault("alt")
-  valid_580078 = validateParameter(valid_580078, JString, required = false,
+  if valid_589110 != nil:
+    section.add "quotaUser", valid_589110
+  var valid_589111 = query.getOrDefault("alt")
+  valid_589111 = validateParameter(valid_589111, JString, required = false,
                                  default = newJString("json"))
-  if valid_580078 != nil:
-    section.add "alt", valid_580078
-  var valid_580079 = query.getOrDefault("oauth_token")
-  valid_580079 = validateParameter(valid_580079, JString, required = false,
+  if valid_589111 != nil:
+    section.add "alt", valid_589111
+  var valid_589112 = query.getOrDefault("oauth_token")
+  valid_589112 = validateParameter(valid_589112, JString, required = false,
                                  default = nil)
-  if valid_580079 != nil:
-    section.add "oauth_token", valid_580079
-  var valid_580080 = query.getOrDefault("userIp")
-  valid_580080 = validateParameter(valid_580080, JString, required = false,
+  if valid_589112 != nil:
+    section.add "oauth_token", valid_589112
+  var valid_589113 = query.getOrDefault("userIp")
+  valid_589113 = validateParameter(valid_589113, JString, required = false,
                                  default = nil)
-  if valid_580080 != nil:
-    section.add "userIp", valid_580080
-  var valid_580081 = query.getOrDefault("key")
-  valid_580081 = validateParameter(valid_580081, JString, required = false,
+  if valid_589113 != nil:
+    section.add "userIp", valid_589113
+  var valid_589114 = query.getOrDefault("key")
+  valid_589114 = validateParameter(valid_589114, JString, required = false,
                                  default = nil)
-  if valid_580081 != nil:
-    section.add "key", valid_580081
-  var valid_580082 = query.getOrDefault("prettyPrint")
-  valid_580082 = validateParameter(valid_580082, JBool, required = false,
+  if valid_589114 != nil:
+    section.add "key", valid_589114
+  var valid_589115 = query.getOrDefault("prettyPrint")
+  valid_589115 = validateParameter(valid_589115, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580082 != nil:
-    section.add "prettyPrint", valid_580082
+  if valid_589115 != nil:
+    section.add "prettyPrint", valid_589115
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1459,20 +1459,20 @@ proc validate_FusiontablesTableDelete_580073(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580083: Call_FusiontablesTableDelete_580072; path: JsonNode;
+proc call*(call_589116: Call_FusiontablesTableDelete_589105; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Deletes a table.
   ## 
-  let valid = call_580083.validator(path, query, header, formData, body)
-  let scheme = call_580083.pickScheme
+  let valid = call_589116.validator(path, query, header, formData, body)
+  let scheme = call_589116.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580083.url(scheme.get, call_580083.host, call_580083.base,
-                         call_580083.route, valid.getOrDefault("path"),
+  let url = call_589116.url(scheme.get, call_589116.host, call_589116.base,
+                         call_589116.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580083, url, valid)
+  result = hook(call_589116, url, valid)
 
-proc call*(call_580084: Call_FusiontablesTableDelete_580072; tableId: string;
+proc call*(call_589117: Call_FusiontablesTableDelete_589105; tableId: string;
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           oauthToken: string = ""; userIp: string = ""; key: string = "";
           prettyPrint: bool = true): Recallable =
@@ -1494,26 +1494,26 @@ proc call*(call_580084: Call_FusiontablesTableDelete_580072; tableId: string;
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_580085 = newJObject()
-  var query_580086 = newJObject()
-  add(path_580085, "tableId", newJString(tableId))
-  add(query_580086, "fields", newJString(fields))
-  add(query_580086, "quotaUser", newJString(quotaUser))
-  add(query_580086, "alt", newJString(alt))
-  add(query_580086, "oauth_token", newJString(oauthToken))
-  add(query_580086, "userIp", newJString(userIp))
-  add(query_580086, "key", newJString(key))
-  add(query_580086, "prettyPrint", newJBool(prettyPrint))
-  result = call_580084.call(path_580085, query_580086, nil, nil, nil)
+  var path_589118 = newJObject()
+  var query_589119 = newJObject()
+  add(path_589118, "tableId", newJString(tableId))
+  add(query_589119, "fields", newJString(fields))
+  add(query_589119, "quotaUser", newJString(quotaUser))
+  add(query_589119, "alt", newJString(alt))
+  add(query_589119, "oauth_token", newJString(oauthToken))
+  add(query_589119, "userIp", newJString(userIp))
+  add(query_589119, "key", newJString(key))
+  add(query_589119, "prettyPrint", newJBool(prettyPrint))
+  result = call_589117.call(path_589118, query_589119, nil, nil, nil)
 
-var fusiontablesTableDelete* = Call_FusiontablesTableDelete_580072(
+var fusiontablesTableDelete* = Call_FusiontablesTableDelete_589105(
     name: "fusiontablesTableDelete", meth: HttpMethod.HttpDelete,
     host: "www.googleapis.com", route: "/tables/{tableId}",
-    validator: validate_FusiontablesTableDelete_580073, base: "/fusiontables/v2",
-    url: url_FusiontablesTableDelete_580074, schemes: {Scheme.Https})
+    validator: validate_FusiontablesTableDelete_589106, base: "/fusiontables/v2",
+    url: url_FusiontablesTableDelete_589107, schemes: {Scheme.Https})
 type
-  Call_FusiontablesColumnInsert_580122 = ref object of OpenApiRestCall_579424
-proc url_FusiontablesColumnInsert_580124(protocol: Scheme; host: string;
+  Call_FusiontablesColumnInsert_589155 = ref object of OpenApiRestCall_588457
+proc url_FusiontablesColumnInsert_589157(protocol: Scheme; host: string;
                                         base: string; route: string; path: JsonNode;
                                         query: JsonNode): Uri =
   result.scheme = $protocol
@@ -1530,7 +1530,7 @@ proc url_FusiontablesColumnInsert_580124(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_FusiontablesColumnInsert_580123(path: JsonNode; query: JsonNode;
+proc validate_FusiontablesColumnInsert_589156(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Adds a new column to the table.
   ## 
@@ -1541,11 +1541,11 @@ proc validate_FusiontablesColumnInsert_580123(path: JsonNode; query: JsonNode;
   ##          : Table for which a new column is being added.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `tableId` field"
-  var valid_580125 = path.getOrDefault("tableId")
-  valid_580125 = validateParameter(valid_580125, JString, required = true,
+  var valid_589158 = path.getOrDefault("tableId")
+  valid_589158 = validateParameter(valid_589158, JString, required = true,
                                  default = nil)
-  if valid_580125 != nil:
-    section.add "tableId", valid_580125
+  if valid_589158 != nil:
+    section.add "tableId", valid_589158
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -1563,41 +1563,41 @@ proc validate_FusiontablesColumnInsert_580123(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580126 = query.getOrDefault("fields")
-  valid_580126 = validateParameter(valid_580126, JString, required = false,
+  var valid_589159 = query.getOrDefault("fields")
+  valid_589159 = validateParameter(valid_589159, JString, required = false,
                                  default = nil)
-  if valid_580126 != nil:
-    section.add "fields", valid_580126
-  var valid_580127 = query.getOrDefault("quotaUser")
-  valid_580127 = validateParameter(valid_580127, JString, required = false,
+  if valid_589159 != nil:
+    section.add "fields", valid_589159
+  var valid_589160 = query.getOrDefault("quotaUser")
+  valid_589160 = validateParameter(valid_589160, JString, required = false,
                                  default = nil)
-  if valid_580127 != nil:
-    section.add "quotaUser", valid_580127
-  var valid_580128 = query.getOrDefault("alt")
-  valid_580128 = validateParameter(valid_580128, JString, required = false,
+  if valid_589160 != nil:
+    section.add "quotaUser", valid_589160
+  var valid_589161 = query.getOrDefault("alt")
+  valid_589161 = validateParameter(valid_589161, JString, required = false,
                                  default = newJString("json"))
-  if valid_580128 != nil:
-    section.add "alt", valid_580128
-  var valid_580129 = query.getOrDefault("oauth_token")
-  valid_580129 = validateParameter(valid_580129, JString, required = false,
+  if valid_589161 != nil:
+    section.add "alt", valid_589161
+  var valid_589162 = query.getOrDefault("oauth_token")
+  valid_589162 = validateParameter(valid_589162, JString, required = false,
                                  default = nil)
-  if valid_580129 != nil:
-    section.add "oauth_token", valid_580129
-  var valid_580130 = query.getOrDefault("userIp")
-  valid_580130 = validateParameter(valid_580130, JString, required = false,
+  if valid_589162 != nil:
+    section.add "oauth_token", valid_589162
+  var valid_589163 = query.getOrDefault("userIp")
+  valid_589163 = validateParameter(valid_589163, JString, required = false,
                                  default = nil)
-  if valid_580130 != nil:
-    section.add "userIp", valid_580130
-  var valid_580131 = query.getOrDefault("key")
-  valid_580131 = validateParameter(valid_580131, JString, required = false,
+  if valid_589163 != nil:
+    section.add "userIp", valid_589163
+  var valid_589164 = query.getOrDefault("key")
+  valid_589164 = validateParameter(valid_589164, JString, required = false,
                                  default = nil)
-  if valid_580131 != nil:
-    section.add "key", valid_580131
-  var valid_580132 = query.getOrDefault("prettyPrint")
-  valid_580132 = validateParameter(valid_580132, JBool, required = false,
+  if valid_589164 != nil:
+    section.add "key", valid_589164
+  var valid_589165 = query.getOrDefault("prettyPrint")
+  valid_589165 = validateParameter(valid_589165, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580132 != nil:
-    section.add "prettyPrint", valid_580132
+  if valid_589165 != nil:
+    section.add "prettyPrint", valid_589165
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1609,20 +1609,20 @@ proc validate_FusiontablesColumnInsert_580123(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580134: Call_FusiontablesColumnInsert_580122; path: JsonNode;
+proc call*(call_589167: Call_FusiontablesColumnInsert_589155; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Adds a new column to the table.
   ## 
-  let valid = call_580134.validator(path, query, header, formData, body)
-  let scheme = call_580134.pickScheme
+  let valid = call_589167.validator(path, query, header, formData, body)
+  let scheme = call_589167.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580134.url(scheme.get, call_580134.host, call_580134.base,
-                         call_580134.route, valid.getOrDefault("path"),
+  let url = call_589167.url(scheme.get, call_589167.host, call_589167.base,
+                         call_589167.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580134, url, valid)
+  result = hook(call_589167, url, valid)
 
-proc call*(call_580135: Call_FusiontablesColumnInsert_580122; tableId: string;
+proc call*(call_589168: Call_FusiontablesColumnInsert_589155; tableId: string;
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           oauthToken: string = ""; userIp: string = ""; key: string = "";
           body: JsonNode = nil; prettyPrint: bool = true): Recallable =
@@ -1645,29 +1645,29 @@ proc call*(call_580135: Call_FusiontablesColumnInsert_580122; tableId: string;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_580136 = newJObject()
-  var query_580137 = newJObject()
-  var body_580138 = newJObject()
-  add(path_580136, "tableId", newJString(tableId))
-  add(query_580137, "fields", newJString(fields))
-  add(query_580137, "quotaUser", newJString(quotaUser))
-  add(query_580137, "alt", newJString(alt))
-  add(query_580137, "oauth_token", newJString(oauthToken))
-  add(query_580137, "userIp", newJString(userIp))
-  add(query_580137, "key", newJString(key))
+  var path_589169 = newJObject()
+  var query_589170 = newJObject()
+  var body_589171 = newJObject()
+  add(path_589169, "tableId", newJString(tableId))
+  add(query_589170, "fields", newJString(fields))
+  add(query_589170, "quotaUser", newJString(quotaUser))
+  add(query_589170, "alt", newJString(alt))
+  add(query_589170, "oauth_token", newJString(oauthToken))
+  add(query_589170, "userIp", newJString(userIp))
+  add(query_589170, "key", newJString(key))
   if body != nil:
-    body_580138 = body
-  add(query_580137, "prettyPrint", newJBool(prettyPrint))
-  result = call_580135.call(path_580136, query_580137, nil, nil, body_580138)
+    body_589171 = body
+  add(query_589170, "prettyPrint", newJBool(prettyPrint))
+  result = call_589168.call(path_589169, query_589170, nil, nil, body_589171)
 
-var fusiontablesColumnInsert* = Call_FusiontablesColumnInsert_580122(
+var fusiontablesColumnInsert* = Call_FusiontablesColumnInsert_589155(
     name: "fusiontablesColumnInsert", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com", route: "/tables/{tableId}/columns",
-    validator: validate_FusiontablesColumnInsert_580123, base: "/fusiontables/v2",
-    url: url_FusiontablesColumnInsert_580124, schemes: {Scheme.Https})
+    validator: validate_FusiontablesColumnInsert_589156, base: "/fusiontables/v2",
+    url: url_FusiontablesColumnInsert_589157, schemes: {Scheme.Https})
 type
-  Call_FusiontablesColumnList_580105 = ref object of OpenApiRestCall_579424
-proc url_FusiontablesColumnList_580107(protocol: Scheme; host: string; base: string;
+  Call_FusiontablesColumnList_589138 = ref object of OpenApiRestCall_588457
+proc url_FusiontablesColumnList_589140(protocol: Scheme; host: string; base: string;
                                       route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -1683,7 +1683,7 @@ proc url_FusiontablesColumnList_580107(protocol: Scheme; host: string; base: str
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_FusiontablesColumnList_580106(path: JsonNode; query: JsonNode;
+proc validate_FusiontablesColumnList_589139(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Retrieves a list of columns.
   ## 
@@ -1694,11 +1694,11 @@ proc validate_FusiontablesColumnList_580106(path: JsonNode; query: JsonNode;
   ##          : Table whose columns are being listed.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `tableId` field"
-  var valid_580108 = path.getOrDefault("tableId")
-  valid_580108 = validateParameter(valid_580108, JString, required = true,
+  var valid_589141 = path.getOrDefault("tableId")
+  valid_589141 = validateParameter(valid_589141, JString, required = true,
                                  default = nil)
-  if valid_580108 != nil:
-    section.add "tableId", valid_580108
+  if valid_589141 != nil:
+    section.add "tableId", valid_589141
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -1720,50 +1720,50 @@ proc validate_FusiontablesColumnList_580106(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580109 = query.getOrDefault("fields")
-  valid_580109 = validateParameter(valid_580109, JString, required = false,
+  var valid_589142 = query.getOrDefault("fields")
+  valid_589142 = validateParameter(valid_589142, JString, required = false,
                                  default = nil)
-  if valid_580109 != nil:
-    section.add "fields", valid_580109
-  var valid_580110 = query.getOrDefault("pageToken")
-  valid_580110 = validateParameter(valid_580110, JString, required = false,
+  if valid_589142 != nil:
+    section.add "fields", valid_589142
+  var valid_589143 = query.getOrDefault("pageToken")
+  valid_589143 = validateParameter(valid_589143, JString, required = false,
                                  default = nil)
-  if valid_580110 != nil:
-    section.add "pageToken", valid_580110
-  var valid_580111 = query.getOrDefault("quotaUser")
-  valid_580111 = validateParameter(valid_580111, JString, required = false,
+  if valid_589143 != nil:
+    section.add "pageToken", valid_589143
+  var valid_589144 = query.getOrDefault("quotaUser")
+  valid_589144 = validateParameter(valid_589144, JString, required = false,
                                  default = nil)
-  if valid_580111 != nil:
-    section.add "quotaUser", valid_580111
-  var valid_580112 = query.getOrDefault("alt")
-  valid_580112 = validateParameter(valid_580112, JString, required = false,
+  if valid_589144 != nil:
+    section.add "quotaUser", valid_589144
+  var valid_589145 = query.getOrDefault("alt")
+  valid_589145 = validateParameter(valid_589145, JString, required = false,
                                  default = newJString("json"))
-  if valid_580112 != nil:
-    section.add "alt", valid_580112
-  var valid_580113 = query.getOrDefault("oauth_token")
-  valid_580113 = validateParameter(valid_580113, JString, required = false,
+  if valid_589145 != nil:
+    section.add "alt", valid_589145
+  var valid_589146 = query.getOrDefault("oauth_token")
+  valid_589146 = validateParameter(valid_589146, JString, required = false,
                                  default = nil)
-  if valid_580113 != nil:
-    section.add "oauth_token", valid_580113
-  var valid_580114 = query.getOrDefault("userIp")
-  valid_580114 = validateParameter(valid_580114, JString, required = false,
+  if valid_589146 != nil:
+    section.add "oauth_token", valid_589146
+  var valid_589147 = query.getOrDefault("userIp")
+  valid_589147 = validateParameter(valid_589147, JString, required = false,
                                  default = nil)
-  if valid_580114 != nil:
-    section.add "userIp", valid_580114
-  var valid_580115 = query.getOrDefault("maxResults")
-  valid_580115 = validateParameter(valid_580115, JInt, required = false, default = nil)
-  if valid_580115 != nil:
-    section.add "maxResults", valid_580115
-  var valid_580116 = query.getOrDefault("key")
-  valid_580116 = validateParameter(valid_580116, JString, required = false,
+  if valid_589147 != nil:
+    section.add "userIp", valid_589147
+  var valid_589148 = query.getOrDefault("maxResults")
+  valid_589148 = validateParameter(valid_589148, JInt, required = false, default = nil)
+  if valid_589148 != nil:
+    section.add "maxResults", valid_589148
+  var valid_589149 = query.getOrDefault("key")
+  valid_589149 = validateParameter(valid_589149, JString, required = false,
                                  default = nil)
-  if valid_580116 != nil:
-    section.add "key", valid_580116
-  var valid_580117 = query.getOrDefault("prettyPrint")
-  valid_580117 = validateParameter(valid_580117, JBool, required = false,
+  if valid_589149 != nil:
+    section.add "key", valid_589149
+  var valid_589150 = query.getOrDefault("prettyPrint")
+  valid_589150 = validateParameter(valid_589150, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580117 != nil:
-    section.add "prettyPrint", valid_580117
+  if valid_589150 != nil:
+    section.add "prettyPrint", valid_589150
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1772,20 +1772,20 @@ proc validate_FusiontablesColumnList_580106(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580118: Call_FusiontablesColumnList_580105; path: JsonNode;
+proc call*(call_589151: Call_FusiontablesColumnList_589138; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Retrieves a list of columns.
   ## 
-  let valid = call_580118.validator(path, query, header, formData, body)
-  let scheme = call_580118.pickScheme
+  let valid = call_589151.validator(path, query, header, formData, body)
+  let scheme = call_589151.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580118.url(scheme.get, call_580118.host, call_580118.base,
-                         call_580118.route, valid.getOrDefault("path"),
+  let url = call_589151.url(scheme.get, call_589151.host, call_589151.base,
+                         call_589151.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580118, url, valid)
+  result = hook(call_589151, url, valid)
 
-proc call*(call_580119: Call_FusiontablesColumnList_580105; tableId: string;
+proc call*(call_589152: Call_FusiontablesColumnList_589138; tableId: string;
           fields: string = ""; pageToken: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; userIp: string = "";
           maxResults: int = 0; key: string = ""; prettyPrint: bool = true): Recallable =
@@ -1811,28 +1811,28 @@ proc call*(call_580119: Call_FusiontablesColumnList_580105; tableId: string;
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_580120 = newJObject()
-  var query_580121 = newJObject()
-  add(path_580120, "tableId", newJString(tableId))
-  add(query_580121, "fields", newJString(fields))
-  add(query_580121, "pageToken", newJString(pageToken))
-  add(query_580121, "quotaUser", newJString(quotaUser))
-  add(query_580121, "alt", newJString(alt))
-  add(query_580121, "oauth_token", newJString(oauthToken))
-  add(query_580121, "userIp", newJString(userIp))
-  add(query_580121, "maxResults", newJInt(maxResults))
-  add(query_580121, "key", newJString(key))
-  add(query_580121, "prettyPrint", newJBool(prettyPrint))
-  result = call_580119.call(path_580120, query_580121, nil, nil, nil)
+  var path_589153 = newJObject()
+  var query_589154 = newJObject()
+  add(path_589153, "tableId", newJString(tableId))
+  add(query_589154, "fields", newJString(fields))
+  add(query_589154, "pageToken", newJString(pageToken))
+  add(query_589154, "quotaUser", newJString(quotaUser))
+  add(query_589154, "alt", newJString(alt))
+  add(query_589154, "oauth_token", newJString(oauthToken))
+  add(query_589154, "userIp", newJString(userIp))
+  add(query_589154, "maxResults", newJInt(maxResults))
+  add(query_589154, "key", newJString(key))
+  add(query_589154, "prettyPrint", newJBool(prettyPrint))
+  result = call_589152.call(path_589153, query_589154, nil, nil, nil)
 
-var fusiontablesColumnList* = Call_FusiontablesColumnList_580105(
+var fusiontablesColumnList* = Call_FusiontablesColumnList_589138(
     name: "fusiontablesColumnList", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/tables/{tableId}/columns",
-    validator: validate_FusiontablesColumnList_580106, base: "/fusiontables/v2",
-    url: url_FusiontablesColumnList_580107, schemes: {Scheme.Https})
+    validator: validate_FusiontablesColumnList_589139, base: "/fusiontables/v2",
+    url: url_FusiontablesColumnList_589140, schemes: {Scheme.Https})
 type
-  Call_FusiontablesColumnUpdate_580155 = ref object of OpenApiRestCall_579424
-proc url_FusiontablesColumnUpdate_580157(protocol: Scheme; host: string;
+  Call_FusiontablesColumnUpdate_589188 = ref object of OpenApiRestCall_588457
+proc url_FusiontablesColumnUpdate_589190(protocol: Scheme; host: string;
                                         base: string; route: string; path: JsonNode;
                                         query: JsonNode): Uri =
   result.scheme = $protocol
@@ -1851,7 +1851,7 @@ proc url_FusiontablesColumnUpdate_580157(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_FusiontablesColumnUpdate_580156(path: JsonNode; query: JsonNode;
+proc validate_FusiontablesColumnUpdate_589189(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Updates the name or type of an existing column.
   ## 
@@ -1864,16 +1864,16 @@ proc validate_FusiontablesColumnUpdate_580156(path: JsonNode; query: JsonNode;
   ##           : Name or identifier for the column that is being updated.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `tableId` field"
-  var valid_580158 = path.getOrDefault("tableId")
-  valid_580158 = validateParameter(valid_580158, JString, required = true,
+  var valid_589191 = path.getOrDefault("tableId")
+  valid_589191 = validateParameter(valid_589191, JString, required = true,
                                  default = nil)
-  if valid_580158 != nil:
-    section.add "tableId", valid_580158
-  var valid_580159 = path.getOrDefault("columnId")
-  valid_580159 = validateParameter(valid_580159, JString, required = true,
+  if valid_589191 != nil:
+    section.add "tableId", valid_589191
+  var valid_589192 = path.getOrDefault("columnId")
+  valid_589192 = validateParameter(valid_589192, JString, required = true,
                                  default = nil)
-  if valid_580159 != nil:
-    section.add "columnId", valid_580159
+  if valid_589192 != nil:
+    section.add "columnId", valid_589192
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -1891,41 +1891,41 @@ proc validate_FusiontablesColumnUpdate_580156(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580160 = query.getOrDefault("fields")
-  valid_580160 = validateParameter(valid_580160, JString, required = false,
+  var valid_589193 = query.getOrDefault("fields")
+  valid_589193 = validateParameter(valid_589193, JString, required = false,
                                  default = nil)
-  if valid_580160 != nil:
-    section.add "fields", valid_580160
-  var valid_580161 = query.getOrDefault("quotaUser")
-  valid_580161 = validateParameter(valid_580161, JString, required = false,
+  if valid_589193 != nil:
+    section.add "fields", valid_589193
+  var valid_589194 = query.getOrDefault("quotaUser")
+  valid_589194 = validateParameter(valid_589194, JString, required = false,
                                  default = nil)
-  if valid_580161 != nil:
-    section.add "quotaUser", valid_580161
-  var valid_580162 = query.getOrDefault("alt")
-  valid_580162 = validateParameter(valid_580162, JString, required = false,
+  if valid_589194 != nil:
+    section.add "quotaUser", valid_589194
+  var valid_589195 = query.getOrDefault("alt")
+  valid_589195 = validateParameter(valid_589195, JString, required = false,
                                  default = newJString("json"))
-  if valid_580162 != nil:
-    section.add "alt", valid_580162
-  var valid_580163 = query.getOrDefault("oauth_token")
-  valid_580163 = validateParameter(valid_580163, JString, required = false,
+  if valid_589195 != nil:
+    section.add "alt", valid_589195
+  var valid_589196 = query.getOrDefault("oauth_token")
+  valid_589196 = validateParameter(valid_589196, JString, required = false,
                                  default = nil)
-  if valid_580163 != nil:
-    section.add "oauth_token", valid_580163
-  var valid_580164 = query.getOrDefault("userIp")
-  valid_580164 = validateParameter(valid_580164, JString, required = false,
+  if valid_589196 != nil:
+    section.add "oauth_token", valid_589196
+  var valid_589197 = query.getOrDefault("userIp")
+  valid_589197 = validateParameter(valid_589197, JString, required = false,
                                  default = nil)
-  if valid_580164 != nil:
-    section.add "userIp", valid_580164
-  var valid_580165 = query.getOrDefault("key")
-  valid_580165 = validateParameter(valid_580165, JString, required = false,
+  if valid_589197 != nil:
+    section.add "userIp", valid_589197
+  var valid_589198 = query.getOrDefault("key")
+  valid_589198 = validateParameter(valid_589198, JString, required = false,
                                  default = nil)
-  if valid_580165 != nil:
-    section.add "key", valid_580165
-  var valid_580166 = query.getOrDefault("prettyPrint")
-  valid_580166 = validateParameter(valid_580166, JBool, required = false,
+  if valid_589198 != nil:
+    section.add "key", valid_589198
+  var valid_589199 = query.getOrDefault("prettyPrint")
+  valid_589199 = validateParameter(valid_589199, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580166 != nil:
-    section.add "prettyPrint", valid_580166
+  if valid_589199 != nil:
+    section.add "prettyPrint", valid_589199
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1937,20 +1937,20 @@ proc validate_FusiontablesColumnUpdate_580156(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580168: Call_FusiontablesColumnUpdate_580155; path: JsonNode;
+proc call*(call_589201: Call_FusiontablesColumnUpdate_589188; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Updates the name or type of an existing column.
   ## 
-  let valid = call_580168.validator(path, query, header, formData, body)
-  let scheme = call_580168.pickScheme
+  let valid = call_589201.validator(path, query, header, formData, body)
+  let scheme = call_589201.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580168.url(scheme.get, call_580168.host, call_580168.base,
-                         call_580168.route, valid.getOrDefault("path"),
+  let url = call_589201.url(scheme.get, call_589201.host, call_589201.base,
+                         call_589201.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580168, url, valid)
+  result = hook(call_589201, url, valid)
 
-proc call*(call_580169: Call_FusiontablesColumnUpdate_580155; tableId: string;
+proc call*(call_589202: Call_FusiontablesColumnUpdate_589188; tableId: string;
           columnId: string; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; userIp: string = "";
           key: string = ""; body: JsonNode = nil; prettyPrint: bool = true): Recallable =
@@ -1975,30 +1975,30 @@ proc call*(call_580169: Call_FusiontablesColumnUpdate_580155; tableId: string;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_580170 = newJObject()
-  var query_580171 = newJObject()
-  var body_580172 = newJObject()
-  add(path_580170, "tableId", newJString(tableId))
-  add(query_580171, "fields", newJString(fields))
-  add(query_580171, "quotaUser", newJString(quotaUser))
-  add(query_580171, "alt", newJString(alt))
-  add(query_580171, "oauth_token", newJString(oauthToken))
-  add(query_580171, "userIp", newJString(userIp))
-  add(query_580171, "key", newJString(key))
-  add(path_580170, "columnId", newJString(columnId))
+  var path_589203 = newJObject()
+  var query_589204 = newJObject()
+  var body_589205 = newJObject()
+  add(path_589203, "tableId", newJString(tableId))
+  add(query_589204, "fields", newJString(fields))
+  add(query_589204, "quotaUser", newJString(quotaUser))
+  add(query_589204, "alt", newJString(alt))
+  add(query_589204, "oauth_token", newJString(oauthToken))
+  add(query_589204, "userIp", newJString(userIp))
+  add(query_589204, "key", newJString(key))
+  add(path_589203, "columnId", newJString(columnId))
   if body != nil:
-    body_580172 = body
-  add(query_580171, "prettyPrint", newJBool(prettyPrint))
-  result = call_580169.call(path_580170, query_580171, nil, nil, body_580172)
+    body_589205 = body
+  add(query_589204, "prettyPrint", newJBool(prettyPrint))
+  result = call_589202.call(path_589203, query_589204, nil, nil, body_589205)
 
-var fusiontablesColumnUpdate* = Call_FusiontablesColumnUpdate_580155(
+var fusiontablesColumnUpdate* = Call_FusiontablesColumnUpdate_589188(
     name: "fusiontablesColumnUpdate", meth: HttpMethod.HttpPut,
     host: "www.googleapis.com", route: "/tables/{tableId}/columns/{columnId}",
-    validator: validate_FusiontablesColumnUpdate_580156, base: "/fusiontables/v2",
-    url: url_FusiontablesColumnUpdate_580157, schemes: {Scheme.Https})
+    validator: validate_FusiontablesColumnUpdate_589189, base: "/fusiontables/v2",
+    url: url_FusiontablesColumnUpdate_589190, schemes: {Scheme.Https})
 type
-  Call_FusiontablesColumnGet_580139 = ref object of OpenApiRestCall_579424
-proc url_FusiontablesColumnGet_580141(protocol: Scheme; host: string; base: string;
+  Call_FusiontablesColumnGet_589172 = ref object of OpenApiRestCall_588457
+proc url_FusiontablesColumnGet_589174(protocol: Scheme; host: string; base: string;
                                      route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -2016,7 +2016,7 @@ proc url_FusiontablesColumnGet_580141(protocol: Scheme; host: string; base: stri
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_FusiontablesColumnGet_580140(path: JsonNode; query: JsonNode;
+proc validate_FusiontablesColumnGet_589173(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Retrieves a specific column by its ID.
   ## 
@@ -2029,16 +2029,16 @@ proc validate_FusiontablesColumnGet_580140(path: JsonNode; query: JsonNode;
   ##           : Name or identifier for the column that is being requested.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `tableId` field"
-  var valid_580142 = path.getOrDefault("tableId")
-  valid_580142 = validateParameter(valid_580142, JString, required = true,
+  var valid_589175 = path.getOrDefault("tableId")
+  valid_589175 = validateParameter(valid_589175, JString, required = true,
                                  default = nil)
-  if valid_580142 != nil:
-    section.add "tableId", valid_580142
-  var valid_580143 = path.getOrDefault("columnId")
-  valid_580143 = validateParameter(valid_580143, JString, required = true,
+  if valid_589175 != nil:
+    section.add "tableId", valid_589175
+  var valid_589176 = path.getOrDefault("columnId")
+  valid_589176 = validateParameter(valid_589176, JString, required = true,
                                  default = nil)
-  if valid_580143 != nil:
-    section.add "columnId", valid_580143
+  if valid_589176 != nil:
+    section.add "columnId", valid_589176
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -2056,41 +2056,41 @@ proc validate_FusiontablesColumnGet_580140(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580144 = query.getOrDefault("fields")
-  valid_580144 = validateParameter(valid_580144, JString, required = false,
+  var valid_589177 = query.getOrDefault("fields")
+  valid_589177 = validateParameter(valid_589177, JString, required = false,
                                  default = nil)
-  if valid_580144 != nil:
-    section.add "fields", valid_580144
-  var valid_580145 = query.getOrDefault("quotaUser")
-  valid_580145 = validateParameter(valid_580145, JString, required = false,
+  if valid_589177 != nil:
+    section.add "fields", valid_589177
+  var valid_589178 = query.getOrDefault("quotaUser")
+  valid_589178 = validateParameter(valid_589178, JString, required = false,
                                  default = nil)
-  if valid_580145 != nil:
-    section.add "quotaUser", valid_580145
-  var valid_580146 = query.getOrDefault("alt")
-  valid_580146 = validateParameter(valid_580146, JString, required = false,
+  if valid_589178 != nil:
+    section.add "quotaUser", valid_589178
+  var valid_589179 = query.getOrDefault("alt")
+  valid_589179 = validateParameter(valid_589179, JString, required = false,
                                  default = newJString("json"))
-  if valid_580146 != nil:
-    section.add "alt", valid_580146
-  var valid_580147 = query.getOrDefault("oauth_token")
-  valid_580147 = validateParameter(valid_580147, JString, required = false,
+  if valid_589179 != nil:
+    section.add "alt", valid_589179
+  var valid_589180 = query.getOrDefault("oauth_token")
+  valid_589180 = validateParameter(valid_589180, JString, required = false,
                                  default = nil)
-  if valid_580147 != nil:
-    section.add "oauth_token", valid_580147
-  var valid_580148 = query.getOrDefault("userIp")
-  valid_580148 = validateParameter(valid_580148, JString, required = false,
+  if valid_589180 != nil:
+    section.add "oauth_token", valid_589180
+  var valid_589181 = query.getOrDefault("userIp")
+  valid_589181 = validateParameter(valid_589181, JString, required = false,
                                  default = nil)
-  if valid_580148 != nil:
-    section.add "userIp", valid_580148
-  var valid_580149 = query.getOrDefault("key")
-  valid_580149 = validateParameter(valid_580149, JString, required = false,
+  if valid_589181 != nil:
+    section.add "userIp", valid_589181
+  var valid_589182 = query.getOrDefault("key")
+  valid_589182 = validateParameter(valid_589182, JString, required = false,
                                  default = nil)
-  if valid_580149 != nil:
-    section.add "key", valid_580149
-  var valid_580150 = query.getOrDefault("prettyPrint")
-  valid_580150 = validateParameter(valid_580150, JBool, required = false,
+  if valid_589182 != nil:
+    section.add "key", valid_589182
+  var valid_589183 = query.getOrDefault("prettyPrint")
+  valid_589183 = validateParameter(valid_589183, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580150 != nil:
-    section.add "prettyPrint", valid_580150
+  if valid_589183 != nil:
+    section.add "prettyPrint", valid_589183
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -2099,20 +2099,20 @@ proc validate_FusiontablesColumnGet_580140(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580151: Call_FusiontablesColumnGet_580139; path: JsonNode;
+proc call*(call_589184: Call_FusiontablesColumnGet_589172; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Retrieves a specific column by its ID.
   ## 
-  let valid = call_580151.validator(path, query, header, formData, body)
-  let scheme = call_580151.pickScheme
+  let valid = call_589184.validator(path, query, header, formData, body)
+  let scheme = call_589184.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580151.url(scheme.get, call_580151.host, call_580151.base,
-                         call_580151.route, valid.getOrDefault("path"),
+  let url = call_589184.url(scheme.get, call_589184.host, call_589184.base,
+                         call_589184.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580151, url, valid)
+  result = hook(call_589184, url, valid)
 
-proc call*(call_580152: Call_FusiontablesColumnGet_580139; tableId: string;
+proc call*(call_589185: Call_FusiontablesColumnGet_589172; tableId: string;
           columnId: string; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; userIp: string = "";
           key: string = ""; prettyPrint: bool = true): Recallable =
@@ -2136,27 +2136,27 @@ proc call*(call_580152: Call_FusiontablesColumnGet_580139; tableId: string;
   ##           : Name or identifier for the column that is being requested.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_580153 = newJObject()
-  var query_580154 = newJObject()
-  add(path_580153, "tableId", newJString(tableId))
-  add(query_580154, "fields", newJString(fields))
-  add(query_580154, "quotaUser", newJString(quotaUser))
-  add(query_580154, "alt", newJString(alt))
-  add(query_580154, "oauth_token", newJString(oauthToken))
-  add(query_580154, "userIp", newJString(userIp))
-  add(query_580154, "key", newJString(key))
-  add(path_580153, "columnId", newJString(columnId))
-  add(query_580154, "prettyPrint", newJBool(prettyPrint))
-  result = call_580152.call(path_580153, query_580154, nil, nil, nil)
+  var path_589186 = newJObject()
+  var query_589187 = newJObject()
+  add(path_589186, "tableId", newJString(tableId))
+  add(query_589187, "fields", newJString(fields))
+  add(query_589187, "quotaUser", newJString(quotaUser))
+  add(query_589187, "alt", newJString(alt))
+  add(query_589187, "oauth_token", newJString(oauthToken))
+  add(query_589187, "userIp", newJString(userIp))
+  add(query_589187, "key", newJString(key))
+  add(path_589186, "columnId", newJString(columnId))
+  add(query_589187, "prettyPrint", newJBool(prettyPrint))
+  result = call_589185.call(path_589186, query_589187, nil, nil, nil)
 
-var fusiontablesColumnGet* = Call_FusiontablesColumnGet_580139(
+var fusiontablesColumnGet* = Call_FusiontablesColumnGet_589172(
     name: "fusiontablesColumnGet", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/tables/{tableId}/columns/{columnId}",
-    validator: validate_FusiontablesColumnGet_580140, base: "/fusiontables/v2",
-    url: url_FusiontablesColumnGet_580141, schemes: {Scheme.Https})
+    validator: validate_FusiontablesColumnGet_589173, base: "/fusiontables/v2",
+    url: url_FusiontablesColumnGet_589174, schemes: {Scheme.Https})
 type
-  Call_FusiontablesColumnPatch_580189 = ref object of OpenApiRestCall_579424
-proc url_FusiontablesColumnPatch_580191(protocol: Scheme; host: string; base: string;
+  Call_FusiontablesColumnPatch_589222 = ref object of OpenApiRestCall_588457
+proc url_FusiontablesColumnPatch_589224(protocol: Scheme; host: string; base: string;
                                        route: string; path: JsonNode;
                                        query: JsonNode): Uri =
   result.scheme = $protocol
@@ -2175,7 +2175,7 @@ proc url_FusiontablesColumnPatch_580191(protocol: Scheme; host: string; base: st
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_FusiontablesColumnPatch_580190(path: JsonNode; query: JsonNode;
+proc validate_FusiontablesColumnPatch_589223(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Updates the name or type of an existing column. This method supports patch semantics.
   ## 
@@ -2188,16 +2188,16 @@ proc validate_FusiontablesColumnPatch_580190(path: JsonNode; query: JsonNode;
   ##           : Name or identifier for the column that is being updated.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `tableId` field"
-  var valid_580192 = path.getOrDefault("tableId")
-  valid_580192 = validateParameter(valid_580192, JString, required = true,
+  var valid_589225 = path.getOrDefault("tableId")
+  valid_589225 = validateParameter(valid_589225, JString, required = true,
                                  default = nil)
-  if valid_580192 != nil:
-    section.add "tableId", valid_580192
-  var valid_580193 = path.getOrDefault("columnId")
-  valid_580193 = validateParameter(valid_580193, JString, required = true,
+  if valid_589225 != nil:
+    section.add "tableId", valid_589225
+  var valid_589226 = path.getOrDefault("columnId")
+  valid_589226 = validateParameter(valid_589226, JString, required = true,
                                  default = nil)
-  if valid_580193 != nil:
-    section.add "columnId", valid_580193
+  if valid_589226 != nil:
+    section.add "columnId", valid_589226
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -2215,41 +2215,41 @@ proc validate_FusiontablesColumnPatch_580190(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580194 = query.getOrDefault("fields")
-  valid_580194 = validateParameter(valid_580194, JString, required = false,
+  var valid_589227 = query.getOrDefault("fields")
+  valid_589227 = validateParameter(valid_589227, JString, required = false,
                                  default = nil)
-  if valid_580194 != nil:
-    section.add "fields", valid_580194
-  var valid_580195 = query.getOrDefault("quotaUser")
-  valid_580195 = validateParameter(valid_580195, JString, required = false,
+  if valid_589227 != nil:
+    section.add "fields", valid_589227
+  var valid_589228 = query.getOrDefault("quotaUser")
+  valid_589228 = validateParameter(valid_589228, JString, required = false,
                                  default = nil)
-  if valid_580195 != nil:
-    section.add "quotaUser", valid_580195
-  var valid_580196 = query.getOrDefault("alt")
-  valid_580196 = validateParameter(valid_580196, JString, required = false,
+  if valid_589228 != nil:
+    section.add "quotaUser", valid_589228
+  var valid_589229 = query.getOrDefault("alt")
+  valid_589229 = validateParameter(valid_589229, JString, required = false,
                                  default = newJString("json"))
-  if valid_580196 != nil:
-    section.add "alt", valid_580196
-  var valid_580197 = query.getOrDefault("oauth_token")
-  valid_580197 = validateParameter(valid_580197, JString, required = false,
+  if valid_589229 != nil:
+    section.add "alt", valid_589229
+  var valid_589230 = query.getOrDefault("oauth_token")
+  valid_589230 = validateParameter(valid_589230, JString, required = false,
                                  default = nil)
-  if valid_580197 != nil:
-    section.add "oauth_token", valid_580197
-  var valid_580198 = query.getOrDefault("userIp")
-  valid_580198 = validateParameter(valid_580198, JString, required = false,
+  if valid_589230 != nil:
+    section.add "oauth_token", valid_589230
+  var valid_589231 = query.getOrDefault("userIp")
+  valid_589231 = validateParameter(valid_589231, JString, required = false,
                                  default = nil)
-  if valid_580198 != nil:
-    section.add "userIp", valid_580198
-  var valid_580199 = query.getOrDefault("key")
-  valid_580199 = validateParameter(valid_580199, JString, required = false,
+  if valid_589231 != nil:
+    section.add "userIp", valid_589231
+  var valid_589232 = query.getOrDefault("key")
+  valid_589232 = validateParameter(valid_589232, JString, required = false,
                                  default = nil)
-  if valid_580199 != nil:
-    section.add "key", valid_580199
-  var valid_580200 = query.getOrDefault("prettyPrint")
-  valid_580200 = validateParameter(valid_580200, JBool, required = false,
+  if valid_589232 != nil:
+    section.add "key", valid_589232
+  var valid_589233 = query.getOrDefault("prettyPrint")
+  valid_589233 = validateParameter(valid_589233, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580200 != nil:
-    section.add "prettyPrint", valid_580200
+  if valid_589233 != nil:
+    section.add "prettyPrint", valid_589233
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -2261,20 +2261,20 @@ proc validate_FusiontablesColumnPatch_580190(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580202: Call_FusiontablesColumnPatch_580189; path: JsonNode;
+proc call*(call_589235: Call_FusiontablesColumnPatch_589222; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Updates the name or type of an existing column. This method supports patch semantics.
   ## 
-  let valid = call_580202.validator(path, query, header, formData, body)
-  let scheme = call_580202.pickScheme
+  let valid = call_589235.validator(path, query, header, formData, body)
+  let scheme = call_589235.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580202.url(scheme.get, call_580202.host, call_580202.base,
-                         call_580202.route, valid.getOrDefault("path"),
+  let url = call_589235.url(scheme.get, call_589235.host, call_589235.base,
+                         call_589235.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580202, url, valid)
+  result = hook(call_589235, url, valid)
 
-proc call*(call_580203: Call_FusiontablesColumnPatch_580189; tableId: string;
+proc call*(call_589236: Call_FusiontablesColumnPatch_589222; tableId: string;
           columnId: string; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; userIp: string = "";
           key: string = ""; body: JsonNode = nil; prettyPrint: bool = true): Recallable =
@@ -2299,30 +2299,30 @@ proc call*(call_580203: Call_FusiontablesColumnPatch_580189; tableId: string;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_580204 = newJObject()
-  var query_580205 = newJObject()
-  var body_580206 = newJObject()
-  add(path_580204, "tableId", newJString(tableId))
-  add(query_580205, "fields", newJString(fields))
-  add(query_580205, "quotaUser", newJString(quotaUser))
-  add(query_580205, "alt", newJString(alt))
-  add(query_580205, "oauth_token", newJString(oauthToken))
-  add(query_580205, "userIp", newJString(userIp))
-  add(query_580205, "key", newJString(key))
-  add(path_580204, "columnId", newJString(columnId))
+  var path_589237 = newJObject()
+  var query_589238 = newJObject()
+  var body_589239 = newJObject()
+  add(path_589237, "tableId", newJString(tableId))
+  add(query_589238, "fields", newJString(fields))
+  add(query_589238, "quotaUser", newJString(quotaUser))
+  add(query_589238, "alt", newJString(alt))
+  add(query_589238, "oauth_token", newJString(oauthToken))
+  add(query_589238, "userIp", newJString(userIp))
+  add(query_589238, "key", newJString(key))
+  add(path_589237, "columnId", newJString(columnId))
   if body != nil:
-    body_580206 = body
-  add(query_580205, "prettyPrint", newJBool(prettyPrint))
-  result = call_580203.call(path_580204, query_580205, nil, nil, body_580206)
+    body_589239 = body
+  add(query_589238, "prettyPrint", newJBool(prettyPrint))
+  result = call_589236.call(path_589237, query_589238, nil, nil, body_589239)
 
-var fusiontablesColumnPatch* = Call_FusiontablesColumnPatch_580189(
+var fusiontablesColumnPatch* = Call_FusiontablesColumnPatch_589222(
     name: "fusiontablesColumnPatch", meth: HttpMethod.HttpPatch,
     host: "www.googleapis.com", route: "/tables/{tableId}/columns/{columnId}",
-    validator: validate_FusiontablesColumnPatch_580190, base: "/fusiontables/v2",
-    url: url_FusiontablesColumnPatch_580191, schemes: {Scheme.Https})
+    validator: validate_FusiontablesColumnPatch_589223, base: "/fusiontables/v2",
+    url: url_FusiontablesColumnPatch_589224, schemes: {Scheme.Https})
 type
-  Call_FusiontablesColumnDelete_580173 = ref object of OpenApiRestCall_579424
-proc url_FusiontablesColumnDelete_580175(protocol: Scheme; host: string;
+  Call_FusiontablesColumnDelete_589206 = ref object of OpenApiRestCall_588457
+proc url_FusiontablesColumnDelete_589208(protocol: Scheme; host: string;
                                         base: string; route: string; path: JsonNode;
                                         query: JsonNode): Uri =
   result.scheme = $protocol
@@ -2341,7 +2341,7 @@ proc url_FusiontablesColumnDelete_580175(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_FusiontablesColumnDelete_580174(path: JsonNode; query: JsonNode;
+proc validate_FusiontablesColumnDelete_589207(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Deletes the specified column.
   ## 
@@ -2354,16 +2354,16 @@ proc validate_FusiontablesColumnDelete_580174(path: JsonNode; query: JsonNode;
   ##           : Name or identifier for the column being deleted.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `tableId` field"
-  var valid_580176 = path.getOrDefault("tableId")
-  valid_580176 = validateParameter(valid_580176, JString, required = true,
+  var valid_589209 = path.getOrDefault("tableId")
+  valid_589209 = validateParameter(valid_589209, JString, required = true,
                                  default = nil)
-  if valid_580176 != nil:
-    section.add "tableId", valid_580176
-  var valid_580177 = path.getOrDefault("columnId")
-  valid_580177 = validateParameter(valid_580177, JString, required = true,
+  if valid_589209 != nil:
+    section.add "tableId", valid_589209
+  var valid_589210 = path.getOrDefault("columnId")
+  valid_589210 = validateParameter(valid_589210, JString, required = true,
                                  default = nil)
-  if valid_580177 != nil:
-    section.add "columnId", valid_580177
+  if valid_589210 != nil:
+    section.add "columnId", valid_589210
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -2381,41 +2381,41 @@ proc validate_FusiontablesColumnDelete_580174(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580178 = query.getOrDefault("fields")
-  valid_580178 = validateParameter(valid_580178, JString, required = false,
+  var valid_589211 = query.getOrDefault("fields")
+  valid_589211 = validateParameter(valid_589211, JString, required = false,
                                  default = nil)
-  if valid_580178 != nil:
-    section.add "fields", valid_580178
-  var valid_580179 = query.getOrDefault("quotaUser")
-  valid_580179 = validateParameter(valid_580179, JString, required = false,
+  if valid_589211 != nil:
+    section.add "fields", valid_589211
+  var valid_589212 = query.getOrDefault("quotaUser")
+  valid_589212 = validateParameter(valid_589212, JString, required = false,
                                  default = nil)
-  if valid_580179 != nil:
-    section.add "quotaUser", valid_580179
-  var valid_580180 = query.getOrDefault("alt")
-  valid_580180 = validateParameter(valid_580180, JString, required = false,
+  if valid_589212 != nil:
+    section.add "quotaUser", valid_589212
+  var valid_589213 = query.getOrDefault("alt")
+  valid_589213 = validateParameter(valid_589213, JString, required = false,
                                  default = newJString("json"))
-  if valid_580180 != nil:
-    section.add "alt", valid_580180
-  var valid_580181 = query.getOrDefault("oauth_token")
-  valid_580181 = validateParameter(valid_580181, JString, required = false,
+  if valid_589213 != nil:
+    section.add "alt", valid_589213
+  var valid_589214 = query.getOrDefault("oauth_token")
+  valid_589214 = validateParameter(valid_589214, JString, required = false,
                                  default = nil)
-  if valid_580181 != nil:
-    section.add "oauth_token", valid_580181
-  var valid_580182 = query.getOrDefault("userIp")
-  valid_580182 = validateParameter(valid_580182, JString, required = false,
+  if valid_589214 != nil:
+    section.add "oauth_token", valid_589214
+  var valid_589215 = query.getOrDefault("userIp")
+  valid_589215 = validateParameter(valid_589215, JString, required = false,
                                  default = nil)
-  if valid_580182 != nil:
-    section.add "userIp", valid_580182
-  var valid_580183 = query.getOrDefault("key")
-  valid_580183 = validateParameter(valid_580183, JString, required = false,
+  if valid_589215 != nil:
+    section.add "userIp", valid_589215
+  var valid_589216 = query.getOrDefault("key")
+  valid_589216 = validateParameter(valid_589216, JString, required = false,
                                  default = nil)
-  if valid_580183 != nil:
-    section.add "key", valid_580183
-  var valid_580184 = query.getOrDefault("prettyPrint")
-  valid_580184 = validateParameter(valid_580184, JBool, required = false,
+  if valid_589216 != nil:
+    section.add "key", valid_589216
+  var valid_589217 = query.getOrDefault("prettyPrint")
+  valid_589217 = validateParameter(valid_589217, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580184 != nil:
-    section.add "prettyPrint", valid_580184
+  if valid_589217 != nil:
+    section.add "prettyPrint", valid_589217
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -2424,20 +2424,20 @@ proc validate_FusiontablesColumnDelete_580174(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580185: Call_FusiontablesColumnDelete_580173; path: JsonNode;
+proc call*(call_589218: Call_FusiontablesColumnDelete_589206; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Deletes the specified column.
   ## 
-  let valid = call_580185.validator(path, query, header, formData, body)
-  let scheme = call_580185.pickScheme
+  let valid = call_589218.validator(path, query, header, formData, body)
+  let scheme = call_589218.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580185.url(scheme.get, call_580185.host, call_580185.base,
-                         call_580185.route, valid.getOrDefault("path"),
+  let url = call_589218.url(scheme.get, call_589218.host, call_589218.base,
+                         call_589218.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580185, url, valid)
+  result = hook(call_589218, url, valid)
 
-proc call*(call_580186: Call_FusiontablesColumnDelete_580173; tableId: string;
+proc call*(call_589219: Call_FusiontablesColumnDelete_589206; tableId: string;
           columnId: string; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; userIp: string = "";
           key: string = ""; prettyPrint: bool = true): Recallable =
@@ -2461,27 +2461,27 @@ proc call*(call_580186: Call_FusiontablesColumnDelete_580173; tableId: string;
   ##           : Name or identifier for the column being deleted.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_580187 = newJObject()
-  var query_580188 = newJObject()
-  add(path_580187, "tableId", newJString(tableId))
-  add(query_580188, "fields", newJString(fields))
-  add(query_580188, "quotaUser", newJString(quotaUser))
-  add(query_580188, "alt", newJString(alt))
-  add(query_580188, "oauth_token", newJString(oauthToken))
-  add(query_580188, "userIp", newJString(userIp))
-  add(query_580188, "key", newJString(key))
-  add(path_580187, "columnId", newJString(columnId))
-  add(query_580188, "prettyPrint", newJBool(prettyPrint))
-  result = call_580186.call(path_580187, query_580188, nil, nil, nil)
+  var path_589220 = newJObject()
+  var query_589221 = newJObject()
+  add(path_589220, "tableId", newJString(tableId))
+  add(query_589221, "fields", newJString(fields))
+  add(query_589221, "quotaUser", newJString(quotaUser))
+  add(query_589221, "alt", newJString(alt))
+  add(query_589221, "oauth_token", newJString(oauthToken))
+  add(query_589221, "userIp", newJString(userIp))
+  add(query_589221, "key", newJString(key))
+  add(path_589220, "columnId", newJString(columnId))
+  add(query_589221, "prettyPrint", newJBool(prettyPrint))
+  result = call_589219.call(path_589220, query_589221, nil, nil, nil)
 
-var fusiontablesColumnDelete* = Call_FusiontablesColumnDelete_580173(
+var fusiontablesColumnDelete* = Call_FusiontablesColumnDelete_589206(
     name: "fusiontablesColumnDelete", meth: HttpMethod.HttpDelete,
     host: "www.googleapis.com", route: "/tables/{tableId}/columns/{columnId}",
-    validator: validate_FusiontablesColumnDelete_580174, base: "/fusiontables/v2",
-    url: url_FusiontablesColumnDelete_580175, schemes: {Scheme.Https})
+    validator: validate_FusiontablesColumnDelete_589207, base: "/fusiontables/v2",
+    url: url_FusiontablesColumnDelete_589208, schemes: {Scheme.Https})
 type
-  Call_FusiontablesTableCopy_580207 = ref object of OpenApiRestCall_579424
-proc url_FusiontablesTableCopy_580209(protocol: Scheme; host: string; base: string;
+  Call_FusiontablesTableCopy_589240 = ref object of OpenApiRestCall_588457
+proc url_FusiontablesTableCopy_589242(protocol: Scheme; host: string; base: string;
                                      route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -2497,7 +2497,7 @@ proc url_FusiontablesTableCopy_580209(protocol: Scheme; host: string; base: stri
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_FusiontablesTableCopy_580208(path: JsonNode; query: JsonNode;
+proc validate_FusiontablesTableCopy_589241(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Copies a table.
   ## 
@@ -2508,11 +2508,11 @@ proc validate_FusiontablesTableCopy_580208(path: JsonNode; query: JsonNode;
   ##          : ID of the table that is being copied.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `tableId` field"
-  var valid_580210 = path.getOrDefault("tableId")
-  valid_580210 = validateParameter(valid_580210, JString, required = true,
+  var valid_589243 = path.getOrDefault("tableId")
+  valid_589243 = validateParameter(valid_589243, JString, required = true,
                                  default = nil)
-  if valid_580210 != nil:
-    section.add "tableId", valid_580210
+  if valid_589243 != nil:
+    section.add "tableId", valid_589243
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -2532,45 +2532,45 @@ proc validate_FusiontablesTableCopy_580208(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580211 = query.getOrDefault("fields")
-  valid_580211 = validateParameter(valid_580211, JString, required = false,
+  var valid_589244 = query.getOrDefault("fields")
+  valid_589244 = validateParameter(valid_589244, JString, required = false,
                                  default = nil)
-  if valid_580211 != nil:
-    section.add "fields", valid_580211
-  var valid_580212 = query.getOrDefault("quotaUser")
-  valid_580212 = validateParameter(valid_580212, JString, required = false,
+  if valid_589244 != nil:
+    section.add "fields", valid_589244
+  var valid_589245 = query.getOrDefault("quotaUser")
+  valid_589245 = validateParameter(valid_589245, JString, required = false,
                                  default = nil)
-  if valid_580212 != nil:
-    section.add "quotaUser", valid_580212
-  var valid_580213 = query.getOrDefault("alt")
-  valid_580213 = validateParameter(valid_580213, JString, required = false,
+  if valid_589245 != nil:
+    section.add "quotaUser", valid_589245
+  var valid_589246 = query.getOrDefault("alt")
+  valid_589246 = validateParameter(valid_589246, JString, required = false,
                                  default = newJString("json"))
-  if valid_580213 != nil:
-    section.add "alt", valid_580213
-  var valid_580214 = query.getOrDefault("oauth_token")
-  valid_580214 = validateParameter(valid_580214, JString, required = false,
+  if valid_589246 != nil:
+    section.add "alt", valid_589246
+  var valid_589247 = query.getOrDefault("oauth_token")
+  valid_589247 = validateParameter(valid_589247, JString, required = false,
                                  default = nil)
-  if valid_580214 != nil:
-    section.add "oauth_token", valid_580214
-  var valid_580215 = query.getOrDefault("userIp")
-  valid_580215 = validateParameter(valid_580215, JString, required = false,
+  if valid_589247 != nil:
+    section.add "oauth_token", valid_589247
+  var valid_589248 = query.getOrDefault("userIp")
+  valid_589248 = validateParameter(valid_589248, JString, required = false,
                                  default = nil)
-  if valid_580215 != nil:
-    section.add "userIp", valid_580215
-  var valid_580216 = query.getOrDefault("key")
-  valid_580216 = validateParameter(valid_580216, JString, required = false,
+  if valid_589248 != nil:
+    section.add "userIp", valid_589248
+  var valid_589249 = query.getOrDefault("key")
+  valid_589249 = validateParameter(valid_589249, JString, required = false,
                                  default = nil)
-  if valid_580216 != nil:
-    section.add "key", valid_580216
-  var valid_580217 = query.getOrDefault("copyPresentation")
-  valid_580217 = validateParameter(valid_580217, JBool, required = false, default = nil)
-  if valid_580217 != nil:
-    section.add "copyPresentation", valid_580217
-  var valid_580218 = query.getOrDefault("prettyPrint")
-  valid_580218 = validateParameter(valid_580218, JBool, required = false,
+  if valid_589249 != nil:
+    section.add "key", valid_589249
+  var valid_589250 = query.getOrDefault("copyPresentation")
+  valid_589250 = validateParameter(valid_589250, JBool, required = false, default = nil)
+  if valid_589250 != nil:
+    section.add "copyPresentation", valid_589250
+  var valid_589251 = query.getOrDefault("prettyPrint")
+  valid_589251 = validateParameter(valid_589251, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580218 != nil:
-    section.add "prettyPrint", valid_580218
+  if valid_589251 != nil:
+    section.add "prettyPrint", valid_589251
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -2579,20 +2579,20 @@ proc validate_FusiontablesTableCopy_580208(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580219: Call_FusiontablesTableCopy_580207; path: JsonNode;
+proc call*(call_589252: Call_FusiontablesTableCopy_589240; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Copies a table.
   ## 
-  let valid = call_580219.validator(path, query, header, formData, body)
-  let scheme = call_580219.pickScheme
+  let valid = call_589252.validator(path, query, header, formData, body)
+  let scheme = call_589252.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580219.url(scheme.get, call_580219.host, call_580219.base,
-                         call_580219.route, valid.getOrDefault("path"),
+  let url = call_589252.url(scheme.get, call_589252.host, call_589252.base,
+                         call_589252.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580219, url, valid)
+  result = hook(call_589252, url, valid)
 
-proc call*(call_580220: Call_FusiontablesTableCopy_580207; tableId: string;
+proc call*(call_589253: Call_FusiontablesTableCopy_589240; tableId: string;
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           oauthToken: string = ""; userIp: string = ""; key: string = "";
           copyPresentation: bool = false; prettyPrint: bool = true): Recallable =
@@ -2616,27 +2616,27 @@ proc call*(call_580220: Call_FusiontablesTableCopy_580207; tableId: string;
   ##                   : Whether to also copy tabs, styles, and templates. Default is false.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_580221 = newJObject()
-  var query_580222 = newJObject()
-  add(path_580221, "tableId", newJString(tableId))
-  add(query_580222, "fields", newJString(fields))
-  add(query_580222, "quotaUser", newJString(quotaUser))
-  add(query_580222, "alt", newJString(alt))
-  add(query_580222, "oauth_token", newJString(oauthToken))
-  add(query_580222, "userIp", newJString(userIp))
-  add(query_580222, "key", newJString(key))
-  add(query_580222, "copyPresentation", newJBool(copyPresentation))
-  add(query_580222, "prettyPrint", newJBool(prettyPrint))
-  result = call_580220.call(path_580221, query_580222, nil, nil, nil)
+  var path_589254 = newJObject()
+  var query_589255 = newJObject()
+  add(path_589254, "tableId", newJString(tableId))
+  add(query_589255, "fields", newJString(fields))
+  add(query_589255, "quotaUser", newJString(quotaUser))
+  add(query_589255, "alt", newJString(alt))
+  add(query_589255, "oauth_token", newJString(oauthToken))
+  add(query_589255, "userIp", newJString(userIp))
+  add(query_589255, "key", newJString(key))
+  add(query_589255, "copyPresentation", newJBool(copyPresentation))
+  add(query_589255, "prettyPrint", newJBool(prettyPrint))
+  result = call_589253.call(path_589254, query_589255, nil, nil, nil)
 
-var fusiontablesTableCopy* = Call_FusiontablesTableCopy_580207(
+var fusiontablesTableCopy* = Call_FusiontablesTableCopy_589240(
     name: "fusiontablesTableCopy", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com", route: "/tables/{tableId}/copy",
-    validator: validate_FusiontablesTableCopy_580208, base: "/fusiontables/v2",
-    url: url_FusiontablesTableCopy_580209, schemes: {Scheme.Https})
+    validator: validate_FusiontablesTableCopy_589241, base: "/fusiontables/v2",
+    url: url_FusiontablesTableCopy_589242, schemes: {Scheme.Https})
 type
-  Call_FusiontablesTableImportRows_580223 = ref object of OpenApiRestCall_579424
-proc url_FusiontablesTableImportRows_580225(protocol: Scheme; host: string;
+  Call_FusiontablesTableImportRows_589256 = ref object of OpenApiRestCall_588457
+proc url_FusiontablesTableImportRows_589258(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -2652,7 +2652,7 @@ proc url_FusiontablesTableImportRows_580225(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_FusiontablesTableImportRows_580224(path: JsonNode; query: JsonNode;
+proc validate_FusiontablesTableImportRows_589257(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Imports more rows into a table.
   ## 
@@ -2663,11 +2663,11 @@ proc validate_FusiontablesTableImportRows_580224(path: JsonNode; query: JsonNode
   ##          : The table into which new rows are being imported.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `tableId` field"
-  var valid_580226 = path.getOrDefault("tableId")
-  valid_580226 = validateParameter(valid_580226, JString, required = true,
+  var valid_589259 = path.getOrDefault("tableId")
+  valid_589259 = validateParameter(valid_589259, JString, required = true,
                                  default = nil)
-  if valid_580226 != nil:
-    section.add "tableId", valid_580226
+  if valid_589259 != nil:
+    section.add "tableId", valid_589259
   result.add "path", section
   ## parameters in `query` object:
   ##   endLine: JInt
@@ -2695,63 +2695,63 @@ proc validate_FusiontablesTableImportRows_580224(path: JsonNode; query: JsonNode
   ##   startLine: JInt
   ##            : The index of the first line from which to start importing, inclusive. Default is 0.
   section = newJObject()
-  var valid_580227 = query.getOrDefault("endLine")
-  valid_580227 = validateParameter(valid_580227, JInt, required = false, default = nil)
-  if valid_580227 != nil:
-    section.add "endLine", valid_580227
-  var valid_580228 = query.getOrDefault("fields")
-  valid_580228 = validateParameter(valid_580228, JString, required = false,
+  var valid_589260 = query.getOrDefault("endLine")
+  valid_589260 = validateParameter(valid_589260, JInt, required = false, default = nil)
+  if valid_589260 != nil:
+    section.add "endLine", valid_589260
+  var valid_589261 = query.getOrDefault("fields")
+  valid_589261 = validateParameter(valid_589261, JString, required = false,
                                  default = nil)
-  if valid_580228 != nil:
-    section.add "fields", valid_580228
-  var valid_580229 = query.getOrDefault("quotaUser")
-  valid_580229 = validateParameter(valid_580229, JString, required = false,
+  if valid_589261 != nil:
+    section.add "fields", valid_589261
+  var valid_589262 = query.getOrDefault("quotaUser")
+  valid_589262 = validateParameter(valid_589262, JString, required = false,
                                  default = nil)
-  if valid_580229 != nil:
-    section.add "quotaUser", valid_580229
-  var valid_580230 = query.getOrDefault("alt")
-  valid_580230 = validateParameter(valid_580230, JString, required = false,
+  if valid_589262 != nil:
+    section.add "quotaUser", valid_589262
+  var valid_589263 = query.getOrDefault("alt")
+  valid_589263 = validateParameter(valid_589263, JString, required = false,
                                  default = newJString("json"))
-  if valid_580230 != nil:
-    section.add "alt", valid_580230
-  var valid_580231 = query.getOrDefault("isStrict")
-  valid_580231 = validateParameter(valid_580231, JBool, required = false, default = nil)
-  if valid_580231 != nil:
-    section.add "isStrict", valid_580231
-  var valid_580232 = query.getOrDefault("oauth_token")
-  valid_580232 = validateParameter(valid_580232, JString, required = false,
+  if valid_589263 != nil:
+    section.add "alt", valid_589263
+  var valid_589264 = query.getOrDefault("isStrict")
+  valid_589264 = validateParameter(valid_589264, JBool, required = false, default = nil)
+  if valid_589264 != nil:
+    section.add "isStrict", valid_589264
+  var valid_589265 = query.getOrDefault("oauth_token")
+  valid_589265 = validateParameter(valid_589265, JString, required = false,
                                  default = nil)
-  if valid_580232 != nil:
-    section.add "oauth_token", valid_580232
-  var valid_580233 = query.getOrDefault("userIp")
-  valid_580233 = validateParameter(valid_580233, JString, required = false,
+  if valid_589265 != nil:
+    section.add "oauth_token", valid_589265
+  var valid_589266 = query.getOrDefault("userIp")
+  valid_589266 = validateParameter(valid_589266, JString, required = false,
                                  default = nil)
-  if valid_580233 != nil:
-    section.add "userIp", valid_580233
-  var valid_580234 = query.getOrDefault("key")
-  valid_580234 = validateParameter(valid_580234, JString, required = false,
+  if valid_589266 != nil:
+    section.add "userIp", valid_589266
+  var valid_589267 = query.getOrDefault("key")
+  valid_589267 = validateParameter(valid_589267, JString, required = false,
                                  default = nil)
-  if valid_580234 != nil:
-    section.add "key", valid_580234
-  var valid_580235 = query.getOrDefault("delimiter")
-  valid_580235 = validateParameter(valid_580235, JString, required = false,
+  if valid_589267 != nil:
+    section.add "key", valid_589267
+  var valid_589268 = query.getOrDefault("delimiter")
+  valid_589268 = validateParameter(valid_589268, JString, required = false,
                                  default = nil)
-  if valid_580235 != nil:
-    section.add "delimiter", valid_580235
-  var valid_580236 = query.getOrDefault("encoding")
-  valid_580236 = validateParameter(valid_580236, JString, required = false,
+  if valid_589268 != nil:
+    section.add "delimiter", valid_589268
+  var valid_589269 = query.getOrDefault("encoding")
+  valid_589269 = validateParameter(valid_589269, JString, required = false,
                                  default = nil)
-  if valid_580236 != nil:
-    section.add "encoding", valid_580236
-  var valid_580237 = query.getOrDefault("prettyPrint")
-  valid_580237 = validateParameter(valid_580237, JBool, required = false,
+  if valid_589269 != nil:
+    section.add "encoding", valid_589269
+  var valid_589270 = query.getOrDefault("prettyPrint")
+  valid_589270 = validateParameter(valid_589270, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580237 != nil:
-    section.add "prettyPrint", valid_580237
-  var valid_580238 = query.getOrDefault("startLine")
-  valid_580238 = validateParameter(valid_580238, JInt, required = false, default = nil)
-  if valid_580238 != nil:
-    section.add "startLine", valid_580238
+  if valid_589270 != nil:
+    section.add "prettyPrint", valid_589270
+  var valid_589271 = query.getOrDefault("startLine")
+  valid_589271 = validateParameter(valid_589271, JInt, required = false, default = nil)
+  if valid_589271 != nil:
+    section.add "startLine", valid_589271
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -2760,20 +2760,20 @@ proc validate_FusiontablesTableImportRows_580224(path: JsonNode; query: JsonNode
   if body != nil:
     result.add "body", body
 
-proc call*(call_580239: Call_FusiontablesTableImportRows_580223; path: JsonNode;
+proc call*(call_589272: Call_FusiontablesTableImportRows_589256; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Imports more rows into a table.
   ## 
-  let valid = call_580239.validator(path, query, header, formData, body)
-  let scheme = call_580239.pickScheme
+  let valid = call_589272.validator(path, query, header, formData, body)
+  let scheme = call_589272.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580239.url(scheme.get, call_580239.host, call_580239.base,
-                         call_580239.route, valid.getOrDefault("path"),
+  let url = call_589272.url(scheme.get, call_589272.host, call_589272.base,
+                         call_589272.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580239, url, valid)
+  result = hook(call_589272, url, valid)
 
-proc call*(call_580240: Call_FusiontablesTableImportRows_580223; tableId: string;
+proc call*(call_589273: Call_FusiontablesTableImportRows_589256; tableId: string;
           endLine: int = 0; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; isStrict: bool = false; oauthToken: string = "";
           userIp: string = ""; key: string = ""; delimiter: string = "";
@@ -2806,32 +2806,32 @@ proc call*(call_580240: Call_FusiontablesTableImportRows_580223; tableId: string
   ##              : Returns response with indentations and line breaks.
   ##   startLine: int
   ##            : The index of the first line from which to start importing, inclusive. Default is 0.
-  var path_580241 = newJObject()
-  var query_580242 = newJObject()
-  add(query_580242, "endLine", newJInt(endLine))
-  add(path_580241, "tableId", newJString(tableId))
-  add(query_580242, "fields", newJString(fields))
-  add(query_580242, "quotaUser", newJString(quotaUser))
-  add(query_580242, "alt", newJString(alt))
-  add(query_580242, "isStrict", newJBool(isStrict))
-  add(query_580242, "oauth_token", newJString(oauthToken))
-  add(query_580242, "userIp", newJString(userIp))
-  add(query_580242, "key", newJString(key))
-  add(query_580242, "delimiter", newJString(delimiter))
-  add(query_580242, "encoding", newJString(encoding))
-  add(query_580242, "prettyPrint", newJBool(prettyPrint))
-  add(query_580242, "startLine", newJInt(startLine))
-  result = call_580240.call(path_580241, query_580242, nil, nil, nil)
+  var path_589274 = newJObject()
+  var query_589275 = newJObject()
+  add(query_589275, "endLine", newJInt(endLine))
+  add(path_589274, "tableId", newJString(tableId))
+  add(query_589275, "fields", newJString(fields))
+  add(query_589275, "quotaUser", newJString(quotaUser))
+  add(query_589275, "alt", newJString(alt))
+  add(query_589275, "isStrict", newJBool(isStrict))
+  add(query_589275, "oauth_token", newJString(oauthToken))
+  add(query_589275, "userIp", newJString(userIp))
+  add(query_589275, "key", newJString(key))
+  add(query_589275, "delimiter", newJString(delimiter))
+  add(query_589275, "encoding", newJString(encoding))
+  add(query_589275, "prettyPrint", newJBool(prettyPrint))
+  add(query_589275, "startLine", newJInt(startLine))
+  result = call_589273.call(path_589274, query_589275, nil, nil, nil)
 
-var fusiontablesTableImportRows* = Call_FusiontablesTableImportRows_580223(
+var fusiontablesTableImportRows* = Call_FusiontablesTableImportRows_589256(
     name: "fusiontablesTableImportRows", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com", route: "/tables/{tableId}/import",
-    validator: validate_FusiontablesTableImportRows_580224,
-    base: "/fusiontables/v2", url: url_FusiontablesTableImportRows_580225,
+    validator: validate_FusiontablesTableImportRows_589257,
+    base: "/fusiontables/v2", url: url_FusiontablesTableImportRows_589258,
     schemes: {Scheme.Https})
 type
-  Call_FusiontablesTableRefetchSheet_580243 = ref object of OpenApiRestCall_579424
-proc url_FusiontablesTableRefetchSheet_580245(protocol: Scheme; host: string;
+  Call_FusiontablesTableRefetchSheet_589276 = ref object of OpenApiRestCall_588457
+proc url_FusiontablesTableRefetchSheet_589278(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -2847,7 +2847,7 @@ proc url_FusiontablesTableRefetchSheet_580245(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_FusiontablesTableRefetchSheet_580244(path: JsonNode; query: JsonNode;
+proc validate_FusiontablesTableRefetchSheet_589277(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Replaces rows of the table with the rows of the spreadsheet that is first imported from. Current rows remain visible until all replacement rows are ready.
   ## 
@@ -2858,11 +2858,11 @@ proc validate_FusiontablesTableRefetchSheet_580244(path: JsonNode; query: JsonNo
   ##          : Table whose rows will be replaced from the spreadsheet.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `tableId` field"
-  var valid_580246 = path.getOrDefault("tableId")
-  valid_580246 = validateParameter(valid_580246, JString, required = true,
+  var valid_589279 = path.getOrDefault("tableId")
+  valid_589279 = validateParameter(valid_589279, JString, required = true,
                                  default = nil)
-  if valid_580246 != nil:
-    section.add "tableId", valid_580246
+  if valid_589279 != nil:
+    section.add "tableId", valid_589279
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -2880,41 +2880,41 @@ proc validate_FusiontablesTableRefetchSheet_580244(path: JsonNode; query: JsonNo
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580247 = query.getOrDefault("fields")
-  valid_580247 = validateParameter(valid_580247, JString, required = false,
+  var valid_589280 = query.getOrDefault("fields")
+  valid_589280 = validateParameter(valid_589280, JString, required = false,
                                  default = nil)
-  if valid_580247 != nil:
-    section.add "fields", valid_580247
-  var valid_580248 = query.getOrDefault("quotaUser")
-  valid_580248 = validateParameter(valid_580248, JString, required = false,
+  if valid_589280 != nil:
+    section.add "fields", valid_589280
+  var valid_589281 = query.getOrDefault("quotaUser")
+  valid_589281 = validateParameter(valid_589281, JString, required = false,
                                  default = nil)
-  if valid_580248 != nil:
-    section.add "quotaUser", valid_580248
-  var valid_580249 = query.getOrDefault("alt")
-  valid_580249 = validateParameter(valid_580249, JString, required = false,
+  if valid_589281 != nil:
+    section.add "quotaUser", valid_589281
+  var valid_589282 = query.getOrDefault("alt")
+  valid_589282 = validateParameter(valid_589282, JString, required = false,
                                  default = newJString("json"))
-  if valid_580249 != nil:
-    section.add "alt", valid_580249
-  var valid_580250 = query.getOrDefault("oauth_token")
-  valid_580250 = validateParameter(valid_580250, JString, required = false,
+  if valid_589282 != nil:
+    section.add "alt", valid_589282
+  var valid_589283 = query.getOrDefault("oauth_token")
+  valid_589283 = validateParameter(valid_589283, JString, required = false,
                                  default = nil)
-  if valid_580250 != nil:
-    section.add "oauth_token", valid_580250
-  var valid_580251 = query.getOrDefault("userIp")
-  valid_580251 = validateParameter(valid_580251, JString, required = false,
+  if valid_589283 != nil:
+    section.add "oauth_token", valid_589283
+  var valid_589284 = query.getOrDefault("userIp")
+  valid_589284 = validateParameter(valid_589284, JString, required = false,
                                  default = nil)
-  if valid_580251 != nil:
-    section.add "userIp", valid_580251
-  var valid_580252 = query.getOrDefault("key")
-  valid_580252 = validateParameter(valid_580252, JString, required = false,
+  if valid_589284 != nil:
+    section.add "userIp", valid_589284
+  var valid_589285 = query.getOrDefault("key")
+  valid_589285 = validateParameter(valid_589285, JString, required = false,
                                  default = nil)
-  if valid_580252 != nil:
-    section.add "key", valid_580252
-  var valid_580253 = query.getOrDefault("prettyPrint")
-  valid_580253 = validateParameter(valid_580253, JBool, required = false,
+  if valid_589285 != nil:
+    section.add "key", valid_589285
+  var valid_589286 = query.getOrDefault("prettyPrint")
+  valid_589286 = validateParameter(valid_589286, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580253 != nil:
-    section.add "prettyPrint", valid_580253
+  if valid_589286 != nil:
+    section.add "prettyPrint", valid_589286
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -2923,20 +2923,20 @@ proc validate_FusiontablesTableRefetchSheet_580244(path: JsonNode; query: JsonNo
   if body != nil:
     result.add "body", body
 
-proc call*(call_580254: Call_FusiontablesTableRefetchSheet_580243; path: JsonNode;
+proc call*(call_589287: Call_FusiontablesTableRefetchSheet_589276; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Replaces rows of the table with the rows of the spreadsheet that is first imported from. Current rows remain visible until all replacement rows are ready.
   ## 
-  let valid = call_580254.validator(path, query, header, formData, body)
-  let scheme = call_580254.pickScheme
+  let valid = call_589287.validator(path, query, header, formData, body)
+  let scheme = call_589287.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580254.url(scheme.get, call_580254.host, call_580254.base,
-                         call_580254.route, valid.getOrDefault("path"),
+  let url = call_589287.url(scheme.get, call_589287.host, call_589287.base,
+                         call_589287.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580254, url, valid)
+  result = hook(call_589287, url, valid)
 
-proc call*(call_580255: Call_FusiontablesTableRefetchSheet_580243; tableId: string;
+proc call*(call_589288: Call_FusiontablesTableRefetchSheet_589276; tableId: string;
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           oauthToken: string = ""; userIp: string = ""; key: string = "";
           prettyPrint: bool = true): Recallable =
@@ -2958,27 +2958,27 @@ proc call*(call_580255: Call_FusiontablesTableRefetchSheet_580243; tableId: stri
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_580256 = newJObject()
-  var query_580257 = newJObject()
-  add(path_580256, "tableId", newJString(tableId))
-  add(query_580257, "fields", newJString(fields))
-  add(query_580257, "quotaUser", newJString(quotaUser))
-  add(query_580257, "alt", newJString(alt))
-  add(query_580257, "oauth_token", newJString(oauthToken))
-  add(query_580257, "userIp", newJString(userIp))
-  add(query_580257, "key", newJString(key))
-  add(query_580257, "prettyPrint", newJBool(prettyPrint))
-  result = call_580255.call(path_580256, query_580257, nil, nil, nil)
+  var path_589289 = newJObject()
+  var query_589290 = newJObject()
+  add(path_589289, "tableId", newJString(tableId))
+  add(query_589290, "fields", newJString(fields))
+  add(query_589290, "quotaUser", newJString(quotaUser))
+  add(query_589290, "alt", newJString(alt))
+  add(query_589290, "oauth_token", newJString(oauthToken))
+  add(query_589290, "userIp", newJString(userIp))
+  add(query_589290, "key", newJString(key))
+  add(query_589290, "prettyPrint", newJBool(prettyPrint))
+  result = call_589288.call(path_589289, query_589290, nil, nil, nil)
 
-var fusiontablesTableRefetchSheet* = Call_FusiontablesTableRefetchSheet_580243(
+var fusiontablesTableRefetchSheet* = Call_FusiontablesTableRefetchSheet_589276(
     name: "fusiontablesTableRefetchSheet", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com", route: "/tables/{tableId}/refetch",
-    validator: validate_FusiontablesTableRefetchSheet_580244,
-    base: "/fusiontables/v2", url: url_FusiontablesTableRefetchSheet_580245,
+    validator: validate_FusiontablesTableRefetchSheet_589277,
+    base: "/fusiontables/v2", url: url_FusiontablesTableRefetchSheet_589278,
     schemes: {Scheme.Https})
 type
-  Call_FusiontablesTableReplaceRows_580258 = ref object of OpenApiRestCall_579424
-proc url_FusiontablesTableReplaceRows_580260(protocol: Scheme; host: string;
+  Call_FusiontablesTableReplaceRows_589291 = ref object of OpenApiRestCall_588457
+proc url_FusiontablesTableReplaceRows_589293(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -2994,7 +2994,7 @@ proc url_FusiontablesTableReplaceRows_580260(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_FusiontablesTableReplaceRows_580259(path: JsonNode; query: JsonNode;
+proc validate_FusiontablesTableReplaceRows_589292(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Replaces rows of an existing table. Current rows remain visible until all replacement rows are ready.
   ## 
@@ -3005,11 +3005,11 @@ proc validate_FusiontablesTableReplaceRows_580259(path: JsonNode; query: JsonNod
   ##          : Table whose rows will be replaced.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `tableId` field"
-  var valid_580261 = path.getOrDefault("tableId")
-  valid_580261 = validateParameter(valid_580261, JString, required = true,
+  var valid_589294 = path.getOrDefault("tableId")
+  valid_589294 = validateParameter(valid_589294, JString, required = true,
                                  default = nil)
-  if valid_580261 != nil:
-    section.add "tableId", valid_580261
+  if valid_589294 != nil:
+    section.add "tableId", valid_589294
   result.add "path", section
   ## parameters in `query` object:
   ##   endLine: JInt
@@ -3037,63 +3037,63 @@ proc validate_FusiontablesTableReplaceRows_580259(path: JsonNode; query: JsonNod
   ##   startLine: JInt
   ##            : The index of the first line from which to start importing, inclusive. Default is 0.
   section = newJObject()
-  var valid_580262 = query.getOrDefault("endLine")
-  valid_580262 = validateParameter(valid_580262, JInt, required = false, default = nil)
-  if valid_580262 != nil:
-    section.add "endLine", valid_580262
-  var valid_580263 = query.getOrDefault("fields")
-  valid_580263 = validateParameter(valid_580263, JString, required = false,
+  var valid_589295 = query.getOrDefault("endLine")
+  valid_589295 = validateParameter(valid_589295, JInt, required = false, default = nil)
+  if valid_589295 != nil:
+    section.add "endLine", valid_589295
+  var valid_589296 = query.getOrDefault("fields")
+  valid_589296 = validateParameter(valid_589296, JString, required = false,
                                  default = nil)
-  if valid_580263 != nil:
-    section.add "fields", valid_580263
-  var valid_580264 = query.getOrDefault("quotaUser")
-  valid_580264 = validateParameter(valid_580264, JString, required = false,
+  if valid_589296 != nil:
+    section.add "fields", valid_589296
+  var valid_589297 = query.getOrDefault("quotaUser")
+  valid_589297 = validateParameter(valid_589297, JString, required = false,
                                  default = nil)
-  if valid_580264 != nil:
-    section.add "quotaUser", valid_580264
-  var valid_580265 = query.getOrDefault("alt")
-  valid_580265 = validateParameter(valid_580265, JString, required = false,
+  if valid_589297 != nil:
+    section.add "quotaUser", valid_589297
+  var valid_589298 = query.getOrDefault("alt")
+  valid_589298 = validateParameter(valid_589298, JString, required = false,
                                  default = newJString("json"))
-  if valid_580265 != nil:
-    section.add "alt", valid_580265
-  var valid_580266 = query.getOrDefault("isStrict")
-  valid_580266 = validateParameter(valid_580266, JBool, required = false, default = nil)
-  if valid_580266 != nil:
-    section.add "isStrict", valid_580266
-  var valid_580267 = query.getOrDefault("oauth_token")
-  valid_580267 = validateParameter(valid_580267, JString, required = false,
+  if valid_589298 != nil:
+    section.add "alt", valid_589298
+  var valid_589299 = query.getOrDefault("isStrict")
+  valid_589299 = validateParameter(valid_589299, JBool, required = false, default = nil)
+  if valid_589299 != nil:
+    section.add "isStrict", valid_589299
+  var valid_589300 = query.getOrDefault("oauth_token")
+  valid_589300 = validateParameter(valid_589300, JString, required = false,
                                  default = nil)
-  if valid_580267 != nil:
-    section.add "oauth_token", valid_580267
-  var valid_580268 = query.getOrDefault("userIp")
-  valid_580268 = validateParameter(valid_580268, JString, required = false,
+  if valid_589300 != nil:
+    section.add "oauth_token", valid_589300
+  var valid_589301 = query.getOrDefault("userIp")
+  valid_589301 = validateParameter(valid_589301, JString, required = false,
                                  default = nil)
-  if valid_580268 != nil:
-    section.add "userIp", valid_580268
-  var valid_580269 = query.getOrDefault("key")
-  valid_580269 = validateParameter(valid_580269, JString, required = false,
+  if valid_589301 != nil:
+    section.add "userIp", valid_589301
+  var valid_589302 = query.getOrDefault("key")
+  valid_589302 = validateParameter(valid_589302, JString, required = false,
                                  default = nil)
-  if valid_580269 != nil:
-    section.add "key", valid_580269
-  var valid_580270 = query.getOrDefault("delimiter")
-  valid_580270 = validateParameter(valid_580270, JString, required = false,
+  if valid_589302 != nil:
+    section.add "key", valid_589302
+  var valid_589303 = query.getOrDefault("delimiter")
+  valid_589303 = validateParameter(valid_589303, JString, required = false,
                                  default = nil)
-  if valid_580270 != nil:
-    section.add "delimiter", valid_580270
-  var valid_580271 = query.getOrDefault("encoding")
-  valid_580271 = validateParameter(valid_580271, JString, required = false,
+  if valid_589303 != nil:
+    section.add "delimiter", valid_589303
+  var valid_589304 = query.getOrDefault("encoding")
+  valid_589304 = validateParameter(valid_589304, JString, required = false,
                                  default = nil)
-  if valid_580271 != nil:
-    section.add "encoding", valid_580271
-  var valid_580272 = query.getOrDefault("prettyPrint")
-  valid_580272 = validateParameter(valid_580272, JBool, required = false,
+  if valid_589304 != nil:
+    section.add "encoding", valid_589304
+  var valid_589305 = query.getOrDefault("prettyPrint")
+  valid_589305 = validateParameter(valid_589305, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580272 != nil:
-    section.add "prettyPrint", valid_580272
-  var valid_580273 = query.getOrDefault("startLine")
-  valid_580273 = validateParameter(valid_580273, JInt, required = false, default = nil)
-  if valid_580273 != nil:
-    section.add "startLine", valid_580273
+  if valid_589305 != nil:
+    section.add "prettyPrint", valid_589305
+  var valid_589306 = query.getOrDefault("startLine")
+  valid_589306 = validateParameter(valid_589306, JInt, required = false, default = nil)
+  if valid_589306 != nil:
+    section.add "startLine", valid_589306
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -3102,20 +3102,20 @@ proc validate_FusiontablesTableReplaceRows_580259(path: JsonNode; query: JsonNod
   if body != nil:
     result.add "body", body
 
-proc call*(call_580274: Call_FusiontablesTableReplaceRows_580258; path: JsonNode;
+proc call*(call_589307: Call_FusiontablesTableReplaceRows_589291; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Replaces rows of an existing table. Current rows remain visible until all replacement rows are ready.
   ## 
-  let valid = call_580274.validator(path, query, header, formData, body)
-  let scheme = call_580274.pickScheme
+  let valid = call_589307.validator(path, query, header, formData, body)
+  let scheme = call_589307.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580274.url(scheme.get, call_580274.host, call_580274.base,
-                         call_580274.route, valid.getOrDefault("path"),
+  let url = call_589307.url(scheme.get, call_589307.host, call_589307.base,
+                         call_589307.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580274, url, valid)
+  result = hook(call_589307, url, valid)
 
-proc call*(call_580275: Call_FusiontablesTableReplaceRows_580258; tableId: string;
+proc call*(call_589308: Call_FusiontablesTableReplaceRows_589291; tableId: string;
           endLine: int = 0; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; isStrict: bool = false; oauthToken: string = "";
           userIp: string = ""; key: string = ""; delimiter: string = "";
@@ -3148,32 +3148,32 @@ proc call*(call_580275: Call_FusiontablesTableReplaceRows_580258; tableId: strin
   ##              : Returns response with indentations and line breaks.
   ##   startLine: int
   ##            : The index of the first line from which to start importing, inclusive. Default is 0.
-  var path_580276 = newJObject()
-  var query_580277 = newJObject()
-  add(query_580277, "endLine", newJInt(endLine))
-  add(path_580276, "tableId", newJString(tableId))
-  add(query_580277, "fields", newJString(fields))
-  add(query_580277, "quotaUser", newJString(quotaUser))
-  add(query_580277, "alt", newJString(alt))
-  add(query_580277, "isStrict", newJBool(isStrict))
-  add(query_580277, "oauth_token", newJString(oauthToken))
-  add(query_580277, "userIp", newJString(userIp))
-  add(query_580277, "key", newJString(key))
-  add(query_580277, "delimiter", newJString(delimiter))
-  add(query_580277, "encoding", newJString(encoding))
-  add(query_580277, "prettyPrint", newJBool(prettyPrint))
-  add(query_580277, "startLine", newJInt(startLine))
-  result = call_580275.call(path_580276, query_580277, nil, nil, nil)
+  var path_589309 = newJObject()
+  var query_589310 = newJObject()
+  add(query_589310, "endLine", newJInt(endLine))
+  add(path_589309, "tableId", newJString(tableId))
+  add(query_589310, "fields", newJString(fields))
+  add(query_589310, "quotaUser", newJString(quotaUser))
+  add(query_589310, "alt", newJString(alt))
+  add(query_589310, "isStrict", newJBool(isStrict))
+  add(query_589310, "oauth_token", newJString(oauthToken))
+  add(query_589310, "userIp", newJString(userIp))
+  add(query_589310, "key", newJString(key))
+  add(query_589310, "delimiter", newJString(delimiter))
+  add(query_589310, "encoding", newJString(encoding))
+  add(query_589310, "prettyPrint", newJBool(prettyPrint))
+  add(query_589310, "startLine", newJInt(startLine))
+  result = call_589308.call(path_589309, query_589310, nil, nil, nil)
 
-var fusiontablesTableReplaceRows* = Call_FusiontablesTableReplaceRows_580258(
+var fusiontablesTableReplaceRows* = Call_FusiontablesTableReplaceRows_589291(
     name: "fusiontablesTableReplaceRows", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com", route: "/tables/{tableId}/replace",
-    validator: validate_FusiontablesTableReplaceRows_580259,
-    base: "/fusiontables/v2", url: url_FusiontablesTableReplaceRows_580260,
+    validator: validate_FusiontablesTableReplaceRows_589292,
+    base: "/fusiontables/v2", url: url_FusiontablesTableReplaceRows_589293,
     schemes: {Scheme.Https})
 type
-  Call_FusiontablesStyleInsert_580295 = ref object of OpenApiRestCall_579424
-proc url_FusiontablesStyleInsert_580297(protocol: Scheme; host: string; base: string;
+  Call_FusiontablesStyleInsert_589328 = ref object of OpenApiRestCall_588457
+proc url_FusiontablesStyleInsert_589330(protocol: Scheme; host: string; base: string;
                                        route: string; path: JsonNode;
                                        query: JsonNode): Uri =
   result.scheme = $protocol
@@ -3190,7 +3190,7 @@ proc url_FusiontablesStyleInsert_580297(protocol: Scheme; host: string; base: st
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_FusiontablesStyleInsert_580296(path: JsonNode; query: JsonNode;
+proc validate_FusiontablesStyleInsert_589329(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Adds a new style for the table.
   ## 
@@ -3201,11 +3201,11 @@ proc validate_FusiontablesStyleInsert_580296(path: JsonNode; query: JsonNode;
   ##          : Table for which a new style is being added
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `tableId` field"
-  var valid_580298 = path.getOrDefault("tableId")
-  valid_580298 = validateParameter(valid_580298, JString, required = true,
+  var valid_589331 = path.getOrDefault("tableId")
+  valid_589331 = validateParameter(valid_589331, JString, required = true,
                                  default = nil)
-  if valid_580298 != nil:
-    section.add "tableId", valid_580298
+  if valid_589331 != nil:
+    section.add "tableId", valid_589331
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -3223,41 +3223,41 @@ proc validate_FusiontablesStyleInsert_580296(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580299 = query.getOrDefault("fields")
-  valid_580299 = validateParameter(valid_580299, JString, required = false,
+  var valid_589332 = query.getOrDefault("fields")
+  valid_589332 = validateParameter(valid_589332, JString, required = false,
                                  default = nil)
-  if valid_580299 != nil:
-    section.add "fields", valid_580299
-  var valid_580300 = query.getOrDefault("quotaUser")
-  valid_580300 = validateParameter(valid_580300, JString, required = false,
+  if valid_589332 != nil:
+    section.add "fields", valid_589332
+  var valid_589333 = query.getOrDefault("quotaUser")
+  valid_589333 = validateParameter(valid_589333, JString, required = false,
                                  default = nil)
-  if valid_580300 != nil:
-    section.add "quotaUser", valid_580300
-  var valid_580301 = query.getOrDefault("alt")
-  valid_580301 = validateParameter(valid_580301, JString, required = false,
+  if valid_589333 != nil:
+    section.add "quotaUser", valid_589333
+  var valid_589334 = query.getOrDefault("alt")
+  valid_589334 = validateParameter(valid_589334, JString, required = false,
                                  default = newJString("json"))
-  if valid_580301 != nil:
-    section.add "alt", valid_580301
-  var valid_580302 = query.getOrDefault("oauth_token")
-  valid_580302 = validateParameter(valid_580302, JString, required = false,
+  if valid_589334 != nil:
+    section.add "alt", valid_589334
+  var valid_589335 = query.getOrDefault("oauth_token")
+  valid_589335 = validateParameter(valid_589335, JString, required = false,
                                  default = nil)
-  if valid_580302 != nil:
-    section.add "oauth_token", valid_580302
-  var valid_580303 = query.getOrDefault("userIp")
-  valid_580303 = validateParameter(valid_580303, JString, required = false,
+  if valid_589335 != nil:
+    section.add "oauth_token", valid_589335
+  var valid_589336 = query.getOrDefault("userIp")
+  valid_589336 = validateParameter(valid_589336, JString, required = false,
                                  default = nil)
-  if valid_580303 != nil:
-    section.add "userIp", valid_580303
-  var valid_580304 = query.getOrDefault("key")
-  valid_580304 = validateParameter(valid_580304, JString, required = false,
+  if valid_589336 != nil:
+    section.add "userIp", valid_589336
+  var valid_589337 = query.getOrDefault("key")
+  valid_589337 = validateParameter(valid_589337, JString, required = false,
                                  default = nil)
-  if valid_580304 != nil:
-    section.add "key", valid_580304
-  var valid_580305 = query.getOrDefault("prettyPrint")
-  valid_580305 = validateParameter(valid_580305, JBool, required = false,
+  if valid_589337 != nil:
+    section.add "key", valid_589337
+  var valid_589338 = query.getOrDefault("prettyPrint")
+  valid_589338 = validateParameter(valid_589338, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580305 != nil:
-    section.add "prettyPrint", valid_580305
+  if valid_589338 != nil:
+    section.add "prettyPrint", valid_589338
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -3269,20 +3269,20 @@ proc validate_FusiontablesStyleInsert_580296(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580307: Call_FusiontablesStyleInsert_580295; path: JsonNode;
+proc call*(call_589340: Call_FusiontablesStyleInsert_589328; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Adds a new style for the table.
   ## 
-  let valid = call_580307.validator(path, query, header, formData, body)
-  let scheme = call_580307.pickScheme
+  let valid = call_589340.validator(path, query, header, formData, body)
+  let scheme = call_589340.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580307.url(scheme.get, call_580307.host, call_580307.base,
-                         call_580307.route, valid.getOrDefault("path"),
+  let url = call_589340.url(scheme.get, call_589340.host, call_589340.base,
+                         call_589340.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580307, url, valid)
+  result = hook(call_589340, url, valid)
 
-proc call*(call_580308: Call_FusiontablesStyleInsert_580295; tableId: string;
+proc call*(call_589341: Call_FusiontablesStyleInsert_589328; tableId: string;
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           oauthToken: string = ""; userIp: string = ""; key: string = "";
           body: JsonNode = nil; prettyPrint: bool = true): Recallable =
@@ -3305,29 +3305,29 @@ proc call*(call_580308: Call_FusiontablesStyleInsert_580295; tableId: string;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_580309 = newJObject()
-  var query_580310 = newJObject()
-  var body_580311 = newJObject()
-  add(path_580309, "tableId", newJString(tableId))
-  add(query_580310, "fields", newJString(fields))
-  add(query_580310, "quotaUser", newJString(quotaUser))
-  add(query_580310, "alt", newJString(alt))
-  add(query_580310, "oauth_token", newJString(oauthToken))
-  add(query_580310, "userIp", newJString(userIp))
-  add(query_580310, "key", newJString(key))
+  var path_589342 = newJObject()
+  var query_589343 = newJObject()
+  var body_589344 = newJObject()
+  add(path_589342, "tableId", newJString(tableId))
+  add(query_589343, "fields", newJString(fields))
+  add(query_589343, "quotaUser", newJString(quotaUser))
+  add(query_589343, "alt", newJString(alt))
+  add(query_589343, "oauth_token", newJString(oauthToken))
+  add(query_589343, "userIp", newJString(userIp))
+  add(query_589343, "key", newJString(key))
   if body != nil:
-    body_580311 = body
-  add(query_580310, "prettyPrint", newJBool(prettyPrint))
-  result = call_580308.call(path_580309, query_580310, nil, nil, body_580311)
+    body_589344 = body
+  add(query_589343, "prettyPrint", newJBool(prettyPrint))
+  result = call_589341.call(path_589342, query_589343, nil, nil, body_589344)
 
-var fusiontablesStyleInsert* = Call_FusiontablesStyleInsert_580295(
+var fusiontablesStyleInsert* = Call_FusiontablesStyleInsert_589328(
     name: "fusiontablesStyleInsert", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com", route: "/tables/{tableId}/styles",
-    validator: validate_FusiontablesStyleInsert_580296, base: "/fusiontables/v2",
-    url: url_FusiontablesStyleInsert_580297, schemes: {Scheme.Https})
+    validator: validate_FusiontablesStyleInsert_589329, base: "/fusiontables/v2",
+    url: url_FusiontablesStyleInsert_589330, schemes: {Scheme.Https})
 type
-  Call_FusiontablesStyleList_580278 = ref object of OpenApiRestCall_579424
-proc url_FusiontablesStyleList_580280(protocol: Scheme; host: string; base: string;
+  Call_FusiontablesStyleList_589311 = ref object of OpenApiRestCall_588457
+proc url_FusiontablesStyleList_589313(protocol: Scheme; host: string; base: string;
                                      route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -3343,7 +3343,7 @@ proc url_FusiontablesStyleList_580280(protocol: Scheme; host: string; base: stri
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_FusiontablesStyleList_580279(path: JsonNode; query: JsonNode;
+proc validate_FusiontablesStyleList_589312(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Retrieves a list of styles.
   ## 
@@ -3354,11 +3354,11 @@ proc validate_FusiontablesStyleList_580279(path: JsonNode; query: JsonNode;
   ##          : Table whose styles are being listed
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `tableId` field"
-  var valid_580281 = path.getOrDefault("tableId")
-  valid_580281 = validateParameter(valid_580281, JString, required = true,
+  var valid_589314 = path.getOrDefault("tableId")
+  valid_589314 = validateParameter(valid_589314, JString, required = true,
                                  default = nil)
-  if valid_580281 != nil:
-    section.add "tableId", valid_580281
+  if valid_589314 != nil:
+    section.add "tableId", valid_589314
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -3380,50 +3380,50 @@ proc validate_FusiontablesStyleList_580279(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580282 = query.getOrDefault("fields")
-  valid_580282 = validateParameter(valid_580282, JString, required = false,
+  var valid_589315 = query.getOrDefault("fields")
+  valid_589315 = validateParameter(valid_589315, JString, required = false,
                                  default = nil)
-  if valid_580282 != nil:
-    section.add "fields", valid_580282
-  var valid_580283 = query.getOrDefault("pageToken")
-  valid_580283 = validateParameter(valid_580283, JString, required = false,
+  if valid_589315 != nil:
+    section.add "fields", valid_589315
+  var valid_589316 = query.getOrDefault("pageToken")
+  valid_589316 = validateParameter(valid_589316, JString, required = false,
                                  default = nil)
-  if valid_580283 != nil:
-    section.add "pageToken", valid_580283
-  var valid_580284 = query.getOrDefault("quotaUser")
-  valid_580284 = validateParameter(valid_580284, JString, required = false,
+  if valid_589316 != nil:
+    section.add "pageToken", valid_589316
+  var valid_589317 = query.getOrDefault("quotaUser")
+  valid_589317 = validateParameter(valid_589317, JString, required = false,
                                  default = nil)
-  if valid_580284 != nil:
-    section.add "quotaUser", valid_580284
-  var valid_580285 = query.getOrDefault("alt")
-  valid_580285 = validateParameter(valid_580285, JString, required = false,
+  if valid_589317 != nil:
+    section.add "quotaUser", valid_589317
+  var valid_589318 = query.getOrDefault("alt")
+  valid_589318 = validateParameter(valid_589318, JString, required = false,
                                  default = newJString("json"))
-  if valid_580285 != nil:
-    section.add "alt", valid_580285
-  var valid_580286 = query.getOrDefault("oauth_token")
-  valid_580286 = validateParameter(valid_580286, JString, required = false,
+  if valid_589318 != nil:
+    section.add "alt", valid_589318
+  var valid_589319 = query.getOrDefault("oauth_token")
+  valid_589319 = validateParameter(valid_589319, JString, required = false,
                                  default = nil)
-  if valid_580286 != nil:
-    section.add "oauth_token", valid_580286
-  var valid_580287 = query.getOrDefault("userIp")
-  valid_580287 = validateParameter(valid_580287, JString, required = false,
+  if valid_589319 != nil:
+    section.add "oauth_token", valid_589319
+  var valid_589320 = query.getOrDefault("userIp")
+  valid_589320 = validateParameter(valid_589320, JString, required = false,
                                  default = nil)
-  if valid_580287 != nil:
-    section.add "userIp", valid_580287
-  var valid_580288 = query.getOrDefault("maxResults")
-  valid_580288 = validateParameter(valid_580288, JInt, required = false, default = nil)
-  if valid_580288 != nil:
-    section.add "maxResults", valid_580288
-  var valid_580289 = query.getOrDefault("key")
-  valid_580289 = validateParameter(valid_580289, JString, required = false,
+  if valid_589320 != nil:
+    section.add "userIp", valid_589320
+  var valid_589321 = query.getOrDefault("maxResults")
+  valid_589321 = validateParameter(valid_589321, JInt, required = false, default = nil)
+  if valid_589321 != nil:
+    section.add "maxResults", valid_589321
+  var valid_589322 = query.getOrDefault("key")
+  valid_589322 = validateParameter(valid_589322, JString, required = false,
                                  default = nil)
-  if valid_580289 != nil:
-    section.add "key", valid_580289
-  var valid_580290 = query.getOrDefault("prettyPrint")
-  valid_580290 = validateParameter(valid_580290, JBool, required = false,
+  if valid_589322 != nil:
+    section.add "key", valid_589322
+  var valid_589323 = query.getOrDefault("prettyPrint")
+  valid_589323 = validateParameter(valid_589323, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580290 != nil:
-    section.add "prettyPrint", valid_580290
+  if valid_589323 != nil:
+    section.add "prettyPrint", valid_589323
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -3432,20 +3432,20 @@ proc validate_FusiontablesStyleList_580279(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580291: Call_FusiontablesStyleList_580278; path: JsonNode;
+proc call*(call_589324: Call_FusiontablesStyleList_589311; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Retrieves a list of styles.
   ## 
-  let valid = call_580291.validator(path, query, header, formData, body)
-  let scheme = call_580291.pickScheme
+  let valid = call_589324.validator(path, query, header, formData, body)
+  let scheme = call_589324.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580291.url(scheme.get, call_580291.host, call_580291.base,
-                         call_580291.route, valid.getOrDefault("path"),
+  let url = call_589324.url(scheme.get, call_589324.host, call_589324.base,
+                         call_589324.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580291, url, valid)
+  result = hook(call_589324, url, valid)
 
-proc call*(call_580292: Call_FusiontablesStyleList_580278; tableId: string;
+proc call*(call_589325: Call_FusiontablesStyleList_589311; tableId: string;
           fields: string = ""; pageToken: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; userIp: string = "";
           maxResults: int = 0; key: string = ""; prettyPrint: bool = true): Recallable =
@@ -3471,28 +3471,28 @@ proc call*(call_580292: Call_FusiontablesStyleList_580278; tableId: string;
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_580293 = newJObject()
-  var query_580294 = newJObject()
-  add(path_580293, "tableId", newJString(tableId))
-  add(query_580294, "fields", newJString(fields))
-  add(query_580294, "pageToken", newJString(pageToken))
-  add(query_580294, "quotaUser", newJString(quotaUser))
-  add(query_580294, "alt", newJString(alt))
-  add(query_580294, "oauth_token", newJString(oauthToken))
-  add(query_580294, "userIp", newJString(userIp))
-  add(query_580294, "maxResults", newJInt(maxResults))
-  add(query_580294, "key", newJString(key))
-  add(query_580294, "prettyPrint", newJBool(prettyPrint))
-  result = call_580292.call(path_580293, query_580294, nil, nil, nil)
+  var path_589326 = newJObject()
+  var query_589327 = newJObject()
+  add(path_589326, "tableId", newJString(tableId))
+  add(query_589327, "fields", newJString(fields))
+  add(query_589327, "pageToken", newJString(pageToken))
+  add(query_589327, "quotaUser", newJString(quotaUser))
+  add(query_589327, "alt", newJString(alt))
+  add(query_589327, "oauth_token", newJString(oauthToken))
+  add(query_589327, "userIp", newJString(userIp))
+  add(query_589327, "maxResults", newJInt(maxResults))
+  add(query_589327, "key", newJString(key))
+  add(query_589327, "prettyPrint", newJBool(prettyPrint))
+  result = call_589325.call(path_589326, query_589327, nil, nil, nil)
 
-var fusiontablesStyleList* = Call_FusiontablesStyleList_580278(
+var fusiontablesStyleList* = Call_FusiontablesStyleList_589311(
     name: "fusiontablesStyleList", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/tables/{tableId}/styles",
-    validator: validate_FusiontablesStyleList_580279, base: "/fusiontables/v2",
-    url: url_FusiontablesStyleList_580280, schemes: {Scheme.Https})
+    validator: validate_FusiontablesStyleList_589312, base: "/fusiontables/v2",
+    url: url_FusiontablesStyleList_589313, schemes: {Scheme.Https})
 type
-  Call_FusiontablesStyleUpdate_580328 = ref object of OpenApiRestCall_579424
-proc url_FusiontablesStyleUpdate_580330(protocol: Scheme; host: string; base: string;
+  Call_FusiontablesStyleUpdate_589361 = ref object of OpenApiRestCall_588457
+proc url_FusiontablesStyleUpdate_589363(protocol: Scheme; host: string; base: string;
                                        route: string; path: JsonNode;
                                        query: JsonNode): Uri =
   result.scheme = $protocol
@@ -3511,7 +3511,7 @@ proc url_FusiontablesStyleUpdate_580330(protocol: Scheme; host: string; base: st
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_FusiontablesStyleUpdate_580329(path: JsonNode; query: JsonNode;
+proc validate_FusiontablesStyleUpdate_589362(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Updates an existing style.
   ## 
@@ -3524,15 +3524,15 @@ proc validate_FusiontablesStyleUpdate_580329(path: JsonNode; query: JsonNode;
   ##          : Identifier (within a table) for the style being updated.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `tableId` field"
-  var valid_580331 = path.getOrDefault("tableId")
-  valid_580331 = validateParameter(valid_580331, JString, required = true,
+  var valid_589364 = path.getOrDefault("tableId")
+  valid_589364 = validateParameter(valid_589364, JString, required = true,
                                  default = nil)
-  if valid_580331 != nil:
-    section.add "tableId", valid_580331
-  var valid_580332 = path.getOrDefault("styleId")
-  valid_580332 = validateParameter(valid_580332, JInt, required = true, default = nil)
-  if valid_580332 != nil:
-    section.add "styleId", valid_580332
+  if valid_589364 != nil:
+    section.add "tableId", valid_589364
+  var valid_589365 = path.getOrDefault("styleId")
+  valid_589365 = validateParameter(valid_589365, JInt, required = true, default = nil)
+  if valid_589365 != nil:
+    section.add "styleId", valid_589365
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -3550,41 +3550,41 @@ proc validate_FusiontablesStyleUpdate_580329(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580333 = query.getOrDefault("fields")
-  valid_580333 = validateParameter(valid_580333, JString, required = false,
+  var valid_589366 = query.getOrDefault("fields")
+  valid_589366 = validateParameter(valid_589366, JString, required = false,
                                  default = nil)
-  if valid_580333 != nil:
-    section.add "fields", valid_580333
-  var valid_580334 = query.getOrDefault("quotaUser")
-  valid_580334 = validateParameter(valid_580334, JString, required = false,
+  if valid_589366 != nil:
+    section.add "fields", valid_589366
+  var valid_589367 = query.getOrDefault("quotaUser")
+  valid_589367 = validateParameter(valid_589367, JString, required = false,
                                  default = nil)
-  if valid_580334 != nil:
-    section.add "quotaUser", valid_580334
-  var valid_580335 = query.getOrDefault("alt")
-  valid_580335 = validateParameter(valid_580335, JString, required = false,
+  if valid_589367 != nil:
+    section.add "quotaUser", valid_589367
+  var valid_589368 = query.getOrDefault("alt")
+  valid_589368 = validateParameter(valid_589368, JString, required = false,
                                  default = newJString("json"))
-  if valid_580335 != nil:
-    section.add "alt", valid_580335
-  var valid_580336 = query.getOrDefault("oauth_token")
-  valid_580336 = validateParameter(valid_580336, JString, required = false,
+  if valid_589368 != nil:
+    section.add "alt", valid_589368
+  var valid_589369 = query.getOrDefault("oauth_token")
+  valid_589369 = validateParameter(valid_589369, JString, required = false,
                                  default = nil)
-  if valid_580336 != nil:
-    section.add "oauth_token", valid_580336
-  var valid_580337 = query.getOrDefault("userIp")
-  valid_580337 = validateParameter(valid_580337, JString, required = false,
+  if valid_589369 != nil:
+    section.add "oauth_token", valid_589369
+  var valid_589370 = query.getOrDefault("userIp")
+  valid_589370 = validateParameter(valid_589370, JString, required = false,
                                  default = nil)
-  if valid_580337 != nil:
-    section.add "userIp", valid_580337
-  var valid_580338 = query.getOrDefault("key")
-  valid_580338 = validateParameter(valid_580338, JString, required = false,
+  if valid_589370 != nil:
+    section.add "userIp", valid_589370
+  var valid_589371 = query.getOrDefault("key")
+  valid_589371 = validateParameter(valid_589371, JString, required = false,
                                  default = nil)
-  if valid_580338 != nil:
-    section.add "key", valid_580338
-  var valid_580339 = query.getOrDefault("prettyPrint")
-  valid_580339 = validateParameter(valid_580339, JBool, required = false,
+  if valid_589371 != nil:
+    section.add "key", valid_589371
+  var valid_589372 = query.getOrDefault("prettyPrint")
+  valid_589372 = validateParameter(valid_589372, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580339 != nil:
-    section.add "prettyPrint", valid_580339
+  if valid_589372 != nil:
+    section.add "prettyPrint", valid_589372
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -3596,20 +3596,20 @@ proc validate_FusiontablesStyleUpdate_580329(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580341: Call_FusiontablesStyleUpdate_580328; path: JsonNode;
+proc call*(call_589374: Call_FusiontablesStyleUpdate_589361; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Updates an existing style.
   ## 
-  let valid = call_580341.validator(path, query, header, formData, body)
-  let scheme = call_580341.pickScheme
+  let valid = call_589374.validator(path, query, header, formData, body)
+  let scheme = call_589374.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580341.url(scheme.get, call_580341.host, call_580341.base,
-                         call_580341.route, valid.getOrDefault("path"),
+  let url = call_589374.url(scheme.get, call_589374.host, call_589374.base,
+                         call_589374.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580341, url, valid)
+  result = hook(call_589374, url, valid)
 
-proc call*(call_580342: Call_FusiontablesStyleUpdate_580328; tableId: string;
+proc call*(call_589375: Call_FusiontablesStyleUpdate_589361; tableId: string;
           styleId: int; fields: string = ""; quotaUser: string = ""; alt: string = "json";
           oauthToken: string = ""; userIp: string = ""; key: string = "";
           body: JsonNode = nil; prettyPrint: bool = true): Recallable =
@@ -3634,30 +3634,30 @@ proc call*(call_580342: Call_FusiontablesStyleUpdate_580328; tableId: string;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_580343 = newJObject()
-  var query_580344 = newJObject()
-  var body_580345 = newJObject()
-  add(path_580343, "tableId", newJString(tableId))
-  add(query_580344, "fields", newJString(fields))
-  add(query_580344, "quotaUser", newJString(quotaUser))
-  add(query_580344, "alt", newJString(alt))
-  add(query_580344, "oauth_token", newJString(oauthToken))
-  add(query_580344, "userIp", newJString(userIp))
-  add(path_580343, "styleId", newJInt(styleId))
-  add(query_580344, "key", newJString(key))
+  var path_589376 = newJObject()
+  var query_589377 = newJObject()
+  var body_589378 = newJObject()
+  add(path_589376, "tableId", newJString(tableId))
+  add(query_589377, "fields", newJString(fields))
+  add(query_589377, "quotaUser", newJString(quotaUser))
+  add(query_589377, "alt", newJString(alt))
+  add(query_589377, "oauth_token", newJString(oauthToken))
+  add(query_589377, "userIp", newJString(userIp))
+  add(path_589376, "styleId", newJInt(styleId))
+  add(query_589377, "key", newJString(key))
   if body != nil:
-    body_580345 = body
-  add(query_580344, "prettyPrint", newJBool(prettyPrint))
-  result = call_580342.call(path_580343, query_580344, nil, nil, body_580345)
+    body_589378 = body
+  add(query_589377, "prettyPrint", newJBool(prettyPrint))
+  result = call_589375.call(path_589376, query_589377, nil, nil, body_589378)
 
-var fusiontablesStyleUpdate* = Call_FusiontablesStyleUpdate_580328(
+var fusiontablesStyleUpdate* = Call_FusiontablesStyleUpdate_589361(
     name: "fusiontablesStyleUpdate", meth: HttpMethod.HttpPut,
     host: "www.googleapis.com", route: "/tables/{tableId}/styles/{styleId}",
-    validator: validate_FusiontablesStyleUpdate_580329, base: "/fusiontables/v2",
-    url: url_FusiontablesStyleUpdate_580330, schemes: {Scheme.Https})
+    validator: validate_FusiontablesStyleUpdate_589362, base: "/fusiontables/v2",
+    url: url_FusiontablesStyleUpdate_589363, schemes: {Scheme.Https})
 type
-  Call_FusiontablesStyleGet_580312 = ref object of OpenApiRestCall_579424
-proc url_FusiontablesStyleGet_580314(protocol: Scheme; host: string; base: string;
+  Call_FusiontablesStyleGet_589345 = ref object of OpenApiRestCall_588457
+proc url_FusiontablesStyleGet_589347(protocol: Scheme; host: string; base: string;
                                     route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -3675,7 +3675,7 @@ proc url_FusiontablesStyleGet_580314(protocol: Scheme; host: string; base: strin
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_FusiontablesStyleGet_580313(path: JsonNode; query: JsonNode;
+proc validate_FusiontablesStyleGet_589346(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Gets a specific style.
   ## 
@@ -3688,15 +3688,15 @@ proc validate_FusiontablesStyleGet_580313(path: JsonNode; query: JsonNode;
   ##          : Identifier (integer) for a specific style in a table
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `tableId` field"
-  var valid_580315 = path.getOrDefault("tableId")
-  valid_580315 = validateParameter(valid_580315, JString, required = true,
+  var valid_589348 = path.getOrDefault("tableId")
+  valid_589348 = validateParameter(valid_589348, JString, required = true,
                                  default = nil)
-  if valid_580315 != nil:
-    section.add "tableId", valid_580315
-  var valid_580316 = path.getOrDefault("styleId")
-  valid_580316 = validateParameter(valid_580316, JInt, required = true, default = nil)
-  if valid_580316 != nil:
-    section.add "styleId", valid_580316
+  if valid_589348 != nil:
+    section.add "tableId", valid_589348
+  var valid_589349 = path.getOrDefault("styleId")
+  valid_589349 = validateParameter(valid_589349, JInt, required = true, default = nil)
+  if valid_589349 != nil:
+    section.add "styleId", valid_589349
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -3714,41 +3714,41 @@ proc validate_FusiontablesStyleGet_580313(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580317 = query.getOrDefault("fields")
-  valid_580317 = validateParameter(valid_580317, JString, required = false,
+  var valid_589350 = query.getOrDefault("fields")
+  valid_589350 = validateParameter(valid_589350, JString, required = false,
                                  default = nil)
-  if valid_580317 != nil:
-    section.add "fields", valid_580317
-  var valid_580318 = query.getOrDefault("quotaUser")
-  valid_580318 = validateParameter(valid_580318, JString, required = false,
+  if valid_589350 != nil:
+    section.add "fields", valid_589350
+  var valid_589351 = query.getOrDefault("quotaUser")
+  valid_589351 = validateParameter(valid_589351, JString, required = false,
                                  default = nil)
-  if valid_580318 != nil:
-    section.add "quotaUser", valid_580318
-  var valid_580319 = query.getOrDefault("alt")
-  valid_580319 = validateParameter(valid_580319, JString, required = false,
+  if valid_589351 != nil:
+    section.add "quotaUser", valid_589351
+  var valid_589352 = query.getOrDefault("alt")
+  valid_589352 = validateParameter(valid_589352, JString, required = false,
                                  default = newJString("json"))
-  if valid_580319 != nil:
-    section.add "alt", valid_580319
-  var valid_580320 = query.getOrDefault("oauth_token")
-  valid_580320 = validateParameter(valid_580320, JString, required = false,
+  if valid_589352 != nil:
+    section.add "alt", valid_589352
+  var valid_589353 = query.getOrDefault("oauth_token")
+  valid_589353 = validateParameter(valid_589353, JString, required = false,
                                  default = nil)
-  if valid_580320 != nil:
-    section.add "oauth_token", valid_580320
-  var valid_580321 = query.getOrDefault("userIp")
-  valid_580321 = validateParameter(valid_580321, JString, required = false,
+  if valid_589353 != nil:
+    section.add "oauth_token", valid_589353
+  var valid_589354 = query.getOrDefault("userIp")
+  valid_589354 = validateParameter(valid_589354, JString, required = false,
                                  default = nil)
-  if valid_580321 != nil:
-    section.add "userIp", valid_580321
-  var valid_580322 = query.getOrDefault("key")
-  valid_580322 = validateParameter(valid_580322, JString, required = false,
+  if valid_589354 != nil:
+    section.add "userIp", valid_589354
+  var valid_589355 = query.getOrDefault("key")
+  valid_589355 = validateParameter(valid_589355, JString, required = false,
                                  default = nil)
-  if valid_580322 != nil:
-    section.add "key", valid_580322
-  var valid_580323 = query.getOrDefault("prettyPrint")
-  valid_580323 = validateParameter(valid_580323, JBool, required = false,
+  if valid_589355 != nil:
+    section.add "key", valid_589355
+  var valid_589356 = query.getOrDefault("prettyPrint")
+  valid_589356 = validateParameter(valid_589356, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580323 != nil:
-    section.add "prettyPrint", valid_580323
+  if valid_589356 != nil:
+    section.add "prettyPrint", valid_589356
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -3757,20 +3757,20 @@ proc validate_FusiontablesStyleGet_580313(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580324: Call_FusiontablesStyleGet_580312; path: JsonNode;
+proc call*(call_589357: Call_FusiontablesStyleGet_589345; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Gets a specific style.
   ## 
-  let valid = call_580324.validator(path, query, header, formData, body)
-  let scheme = call_580324.pickScheme
+  let valid = call_589357.validator(path, query, header, formData, body)
+  let scheme = call_589357.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580324.url(scheme.get, call_580324.host, call_580324.base,
-                         call_580324.route, valid.getOrDefault("path"),
+  let url = call_589357.url(scheme.get, call_589357.host, call_589357.base,
+                         call_589357.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580324, url, valid)
+  result = hook(call_589357, url, valid)
 
-proc call*(call_580325: Call_FusiontablesStyleGet_580312; tableId: string;
+proc call*(call_589358: Call_FusiontablesStyleGet_589345; tableId: string;
           styleId: int; fields: string = ""; quotaUser: string = ""; alt: string = "json";
           oauthToken: string = ""; userIp: string = ""; key: string = "";
           prettyPrint: bool = true): Recallable =
@@ -3794,27 +3794,27 @@ proc call*(call_580325: Call_FusiontablesStyleGet_580312; tableId: string;
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_580326 = newJObject()
-  var query_580327 = newJObject()
-  add(path_580326, "tableId", newJString(tableId))
-  add(query_580327, "fields", newJString(fields))
-  add(query_580327, "quotaUser", newJString(quotaUser))
-  add(query_580327, "alt", newJString(alt))
-  add(query_580327, "oauth_token", newJString(oauthToken))
-  add(query_580327, "userIp", newJString(userIp))
-  add(path_580326, "styleId", newJInt(styleId))
-  add(query_580327, "key", newJString(key))
-  add(query_580327, "prettyPrint", newJBool(prettyPrint))
-  result = call_580325.call(path_580326, query_580327, nil, nil, nil)
+  var path_589359 = newJObject()
+  var query_589360 = newJObject()
+  add(path_589359, "tableId", newJString(tableId))
+  add(query_589360, "fields", newJString(fields))
+  add(query_589360, "quotaUser", newJString(quotaUser))
+  add(query_589360, "alt", newJString(alt))
+  add(query_589360, "oauth_token", newJString(oauthToken))
+  add(query_589360, "userIp", newJString(userIp))
+  add(path_589359, "styleId", newJInt(styleId))
+  add(query_589360, "key", newJString(key))
+  add(query_589360, "prettyPrint", newJBool(prettyPrint))
+  result = call_589358.call(path_589359, query_589360, nil, nil, nil)
 
-var fusiontablesStyleGet* = Call_FusiontablesStyleGet_580312(
+var fusiontablesStyleGet* = Call_FusiontablesStyleGet_589345(
     name: "fusiontablesStyleGet", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/tables/{tableId}/styles/{styleId}",
-    validator: validate_FusiontablesStyleGet_580313, base: "/fusiontables/v2",
-    url: url_FusiontablesStyleGet_580314, schemes: {Scheme.Https})
+    validator: validate_FusiontablesStyleGet_589346, base: "/fusiontables/v2",
+    url: url_FusiontablesStyleGet_589347, schemes: {Scheme.Https})
 type
-  Call_FusiontablesStylePatch_580362 = ref object of OpenApiRestCall_579424
-proc url_FusiontablesStylePatch_580364(protocol: Scheme; host: string; base: string;
+  Call_FusiontablesStylePatch_589395 = ref object of OpenApiRestCall_588457
+proc url_FusiontablesStylePatch_589397(protocol: Scheme; host: string; base: string;
                                       route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -3832,7 +3832,7 @@ proc url_FusiontablesStylePatch_580364(protocol: Scheme; host: string; base: str
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_FusiontablesStylePatch_580363(path: JsonNode; query: JsonNode;
+proc validate_FusiontablesStylePatch_589396(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Updates an existing style. This method supports patch semantics.
   ## 
@@ -3845,15 +3845,15 @@ proc validate_FusiontablesStylePatch_580363(path: JsonNode; query: JsonNode;
   ##          : Identifier (within a table) for the style being updated.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `tableId` field"
-  var valid_580365 = path.getOrDefault("tableId")
-  valid_580365 = validateParameter(valid_580365, JString, required = true,
+  var valid_589398 = path.getOrDefault("tableId")
+  valid_589398 = validateParameter(valid_589398, JString, required = true,
                                  default = nil)
-  if valid_580365 != nil:
-    section.add "tableId", valid_580365
-  var valid_580366 = path.getOrDefault("styleId")
-  valid_580366 = validateParameter(valid_580366, JInt, required = true, default = nil)
-  if valid_580366 != nil:
-    section.add "styleId", valid_580366
+  if valid_589398 != nil:
+    section.add "tableId", valid_589398
+  var valid_589399 = path.getOrDefault("styleId")
+  valid_589399 = validateParameter(valid_589399, JInt, required = true, default = nil)
+  if valid_589399 != nil:
+    section.add "styleId", valid_589399
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -3871,41 +3871,41 @@ proc validate_FusiontablesStylePatch_580363(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580367 = query.getOrDefault("fields")
-  valid_580367 = validateParameter(valid_580367, JString, required = false,
+  var valid_589400 = query.getOrDefault("fields")
+  valid_589400 = validateParameter(valid_589400, JString, required = false,
                                  default = nil)
-  if valid_580367 != nil:
-    section.add "fields", valid_580367
-  var valid_580368 = query.getOrDefault("quotaUser")
-  valid_580368 = validateParameter(valid_580368, JString, required = false,
+  if valid_589400 != nil:
+    section.add "fields", valid_589400
+  var valid_589401 = query.getOrDefault("quotaUser")
+  valid_589401 = validateParameter(valid_589401, JString, required = false,
                                  default = nil)
-  if valid_580368 != nil:
-    section.add "quotaUser", valid_580368
-  var valid_580369 = query.getOrDefault("alt")
-  valid_580369 = validateParameter(valid_580369, JString, required = false,
+  if valid_589401 != nil:
+    section.add "quotaUser", valid_589401
+  var valid_589402 = query.getOrDefault("alt")
+  valid_589402 = validateParameter(valid_589402, JString, required = false,
                                  default = newJString("json"))
-  if valid_580369 != nil:
-    section.add "alt", valid_580369
-  var valid_580370 = query.getOrDefault("oauth_token")
-  valid_580370 = validateParameter(valid_580370, JString, required = false,
+  if valid_589402 != nil:
+    section.add "alt", valid_589402
+  var valid_589403 = query.getOrDefault("oauth_token")
+  valid_589403 = validateParameter(valid_589403, JString, required = false,
                                  default = nil)
-  if valid_580370 != nil:
-    section.add "oauth_token", valid_580370
-  var valid_580371 = query.getOrDefault("userIp")
-  valid_580371 = validateParameter(valid_580371, JString, required = false,
+  if valid_589403 != nil:
+    section.add "oauth_token", valid_589403
+  var valid_589404 = query.getOrDefault("userIp")
+  valid_589404 = validateParameter(valid_589404, JString, required = false,
                                  default = nil)
-  if valid_580371 != nil:
-    section.add "userIp", valid_580371
-  var valid_580372 = query.getOrDefault("key")
-  valid_580372 = validateParameter(valid_580372, JString, required = false,
+  if valid_589404 != nil:
+    section.add "userIp", valid_589404
+  var valid_589405 = query.getOrDefault("key")
+  valid_589405 = validateParameter(valid_589405, JString, required = false,
                                  default = nil)
-  if valid_580372 != nil:
-    section.add "key", valid_580372
-  var valid_580373 = query.getOrDefault("prettyPrint")
-  valid_580373 = validateParameter(valid_580373, JBool, required = false,
+  if valid_589405 != nil:
+    section.add "key", valid_589405
+  var valid_589406 = query.getOrDefault("prettyPrint")
+  valid_589406 = validateParameter(valid_589406, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580373 != nil:
-    section.add "prettyPrint", valid_580373
+  if valid_589406 != nil:
+    section.add "prettyPrint", valid_589406
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -3917,20 +3917,20 @@ proc validate_FusiontablesStylePatch_580363(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580375: Call_FusiontablesStylePatch_580362; path: JsonNode;
+proc call*(call_589408: Call_FusiontablesStylePatch_589395; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Updates an existing style. This method supports patch semantics.
   ## 
-  let valid = call_580375.validator(path, query, header, formData, body)
-  let scheme = call_580375.pickScheme
+  let valid = call_589408.validator(path, query, header, formData, body)
+  let scheme = call_589408.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580375.url(scheme.get, call_580375.host, call_580375.base,
-                         call_580375.route, valid.getOrDefault("path"),
+  let url = call_589408.url(scheme.get, call_589408.host, call_589408.base,
+                         call_589408.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580375, url, valid)
+  result = hook(call_589408, url, valid)
 
-proc call*(call_580376: Call_FusiontablesStylePatch_580362; tableId: string;
+proc call*(call_589409: Call_FusiontablesStylePatch_589395; tableId: string;
           styleId: int; fields: string = ""; quotaUser: string = ""; alt: string = "json";
           oauthToken: string = ""; userIp: string = ""; key: string = "";
           body: JsonNode = nil; prettyPrint: bool = true): Recallable =
@@ -3955,30 +3955,30 @@ proc call*(call_580376: Call_FusiontablesStylePatch_580362; tableId: string;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_580377 = newJObject()
-  var query_580378 = newJObject()
-  var body_580379 = newJObject()
-  add(path_580377, "tableId", newJString(tableId))
-  add(query_580378, "fields", newJString(fields))
-  add(query_580378, "quotaUser", newJString(quotaUser))
-  add(query_580378, "alt", newJString(alt))
-  add(query_580378, "oauth_token", newJString(oauthToken))
-  add(query_580378, "userIp", newJString(userIp))
-  add(path_580377, "styleId", newJInt(styleId))
-  add(query_580378, "key", newJString(key))
+  var path_589410 = newJObject()
+  var query_589411 = newJObject()
+  var body_589412 = newJObject()
+  add(path_589410, "tableId", newJString(tableId))
+  add(query_589411, "fields", newJString(fields))
+  add(query_589411, "quotaUser", newJString(quotaUser))
+  add(query_589411, "alt", newJString(alt))
+  add(query_589411, "oauth_token", newJString(oauthToken))
+  add(query_589411, "userIp", newJString(userIp))
+  add(path_589410, "styleId", newJInt(styleId))
+  add(query_589411, "key", newJString(key))
   if body != nil:
-    body_580379 = body
-  add(query_580378, "prettyPrint", newJBool(prettyPrint))
-  result = call_580376.call(path_580377, query_580378, nil, nil, body_580379)
+    body_589412 = body
+  add(query_589411, "prettyPrint", newJBool(prettyPrint))
+  result = call_589409.call(path_589410, query_589411, nil, nil, body_589412)
 
-var fusiontablesStylePatch* = Call_FusiontablesStylePatch_580362(
+var fusiontablesStylePatch* = Call_FusiontablesStylePatch_589395(
     name: "fusiontablesStylePatch", meth: HttpMethod.HttpPatch,
     host: "www.googleapis.com", route: "/tables/{tableId}/styles/{styleId}",
-    validator: validate_FusiontablesStylePatch_580363, base: "/fusiontables/v2",
-    url: url_FusiontablesStylePatch_580364, schemes: {Scheme.Https})
+    validator: validate_FusiontablesStylePatch_589396, base: "/fusiontables/v2",
+    url: url_FusiontablesStylePatch_589397, schemes: {Scheme.Https})
 type
-  Call_FusiontablesStyleDelete_580346 = ref object of OpenApiRestCall_579424
-proc url_FusiontablesStyleDelete_580348(protocol: Scheme; host: string; base: string;
+  Call_FusiontablesStyleDelete_589379 = ref object of OpenApiRestCall_588457
+proc url_FusiontablesStyleDelete_589381(protocol: Scheme; host: string; base: string;
                                        route: string; path: JsonNode;
                                        query: JsonNode): Uri =
   result.scheme = $protocol
@@ -3997,7 +3997,7 @@ proc url_FusiontablesStyleDelete_580348(protocol: Scheme; host: string; base: st
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_FusiontablesStyleDelete_580347(path: JsonNode; query: JsonNode;
+proc validate_FusiontablesStyleDelete_589380(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Deletes a style.
   ## 
@@ -4010,15 +4010,15 @@ proc validate_FusiontablesStyleDelete_580347(path: JsonNode; query: JsonNode;
   ##          : Identifier (within a table) for the style being deleted
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `tableId` field"
-  var valid_580349 = path.getOrDefault("tableId")
-  valid_580349 = validateParameter(valid_580349, JString, required = true,
+  var valid_589382 = path.getOrDefault("tableId")
+  valid_589382 = validateParameter(valid_589382, JString, required = true,
                                  default = nil)
-  if valid_580349 != nil:
-    section.add "tableId", valid_580349
-  var valid_580350 = path.getOrDefault("styleId")
-  valid_580350 = validateParameter(valid_580350, JInt, required = true, default = nil)
-  if valid_580350 != nil:
-    section.add "styleId", valid_580350
+  if valid_589382 != nil:
+    section.add "tableId", valid_589382
+  var valid_589383 = path.getOrDefault("styleId")
+  valid_589383 = validateParameter(valid_589383, JInt, required = true, default = nil)
+  if valid_589383 != nil:
+    section.add "styleId", valid_589383
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -4036,41 +4036,41 @@ proc validate_FusiontablesStyleDelete_580347(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580351 = query.getOrDefault("fields")
-  valid_580351 = validateParameter(valid_580351, JString, required = false,
+  var valid_589384 = query.getOrDefault("fields")
+  valid_589384 = validateParameter(valid_589384, JString, required = false,
                                  default = nil)
-  if valid_580351 != nil:
-    section.add "fields", valid_580351
-  var valid_580352 = query.getOrDefault("quotaUser")
-  valid_580352 = validateParameter(valid_580352, JString, required = false,
+  if valid_589384 != nil:
+    section.add "fields", valid_589384
+  var valid_589385 = query.getOrDefault("quotaUser")
+  valid_589385 = validateParameter(valid_589385, JString, required = false,
                                  default = nil)
-  if valid_580352 != nil:
-    section.add "quotaUser", valid_580352
-  var valid_580353 = query.getOrDefault("alt")
-  valid_580353 = validateParameter(valid_580353, JString, required = false,
+  if valid_589385 != nil:
+    section.add "quotaUser", valid_589385
+  var valid_589386 = query.getOrDefault("alt")
+  valid_589386 = validateParameter(valid_589386, JString, required = false,
                                  default = newJString("json"))
-  if valid_580353 != nil:
-    section.add "alt", valid_580353
-  var valid_580354 = query.getOrDefault("oauth_token")
-  valid_580354 = validateParameter(valid_580354, JString, required = false,
+  if valid_589386 != nil:
+    section.add "alt", valid_589386
+  var valid_589387 = query.getOrDefault("oauth_token")
+  valid_589387 = validateParameter(valid_589387, JString, required = false,
                                  default = nil)
-  if valid_580354 != nil:
-    section.add "oauth_token", valid_580354
-  var valid_580355 = query.getOrDefault("userIp")
-  valid_580355 = validateParameter(valid_580355, JString, required = false,
+  if valid_589387 != nil:
+    section.add "oauth_token", valid_589387
+  var valid_589388 = query.getOrDefault("userIp")
+  valid_589388 = validateParameter(valid_589388, JString, required = false,
                                  default = nil)
-  if valid_580355 != nil:
-    section.add "userIp", valid_580355
-  var valid_580356 = query.getOrDefault("key")
-  valid_580356 = validateParameter(valid_580356, JString, required = false,
+  if valid_589388 != nil:
+    section.add "userIp", valid_589388
+  var valid_589389 = query.getOrDefault("key")
+  valid_589389 = validateParameter(valid_589389, JString, required = false,
                                  default = nil)
-  if valid_580356 != nil:
-    section.add "key", valid_580356
-  var valid_580357 = query.getOrDefault("prettyPrint")
-  valid_580357 = validateParameter(valid_580357, JBool, required = false,
+  if valid_589389 != nil:
+    section.add "key", valid_589389
+  var valid_589390 = query.getOrDefault("prettyPrint")
+  valid_589390 = validateParameter(valid_589390, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580357 != nil:
-    section.add "prettyPrint", valid_580357
+  if valid_589390 != nil:
+    section.add "prettyPrint", valid_589390
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -4079,20 +4079,20 @@ proc validate_FusiontablesStyleDelete_580347(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580358: Call_FusiontablesStyleDelete_580346; path: JsonNode;
+proc call*(call_589391: Call_FusiontablesStyleDelete_589379; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Deletes a style.
   ## 
-  let valid = call_580358.validator(path, query, header, formData, body)
-  let scheme = call_580358.pickScheme
+  let valid = call_589391.validator(path, query, header, formData, body)
+  let scheme = call_589391.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580358.url(scheme.get, call_580358.host, call_580358.base,
-                         call_580358.route, valid.getOrDefault("path"),
+  let url = call_589391.url(scheme.get, call_589391.host, call_589391.base,
+                         call_589391.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580358, url, valid)
+  result = hook(call_589391, url, valid)
 
-proc call*(call_580359: Call_FusiontablesStyleDelete_580346; tableId: string;
+proc call*(call_589392: Call_FusiontablesStyleDelete_589379; tableId: string;
           styleId: int; fields: string = ""; quotaUser: string = ""; alt: string = "json";
           oauthToken: string = ""; userIp: string = ""; key: string = "";
           prettyPrint: bool = true): Recallable =
@@ -4116,27 +4116,27 @@ proc call*(call_580359: Call_FusiontablesStyleDelete_580346; tableId: string;
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_580360 = newJObject()
-  var query_580361 = newJObject()
-  add(path_580360, "tableId", newJString(tableId))
-  add(query_580361, "fields", newJString(fields))
-  add(query_580361, "quotaUser", newJString(quotaUser))
-  add(query_580361, "alt", newJString(alt))
-  add(query_580361, "oauth_token", newJString(oauthToken))
-  add(query_580361, "userIp", newJString(userIp))
-  add(path_580360, "styleId", newJInt(styleId))
-  add(query_580361, "key", newJString(key))
-  add(query_580361, "prettyPrint", newJBool(prettyPrint))
-  result = call_580359.call(path_580360, query_580361, nil, nil, nil)
+  var path_589393 = newJObject()
+  var query_589394 = newJObject()
+  add(path_589393, "tableId", newJString(tableId))
+  add(query_589394, "fields", newJString(fields))
+  add(query_589394, "quotaUser", newJString(quotaUser))
+  add(query_589394, "alt", newJString(alt))
+  add(query_589394, "oauth_token", newJString(oauthToken))
+  add(query_589394, "userIp", newJString(userIp))
+  add(path_589393, "styleId", newJInt(styleId))
+  add(query_589394, "key", newJString(key))
+  add(query_589394, "prettyPrint", newJBool(prettyPrint))
+  result = call_589392.call(path_589393, query_589394, nil, nil, nil)
 
-var fusiontablesStyleDelete* = Call_FusiontablesStyleDelete_580346(
+var fusiontablesStyleDelete* = Call_FusiontablesStyleDelete_589379(
     name: "fusiontablesStyleDelete", meth: HttpMethod.HttpDelete,
     host: "www.googleapis.com", route: "/tables/{tableId}/styles/{styleId}",
-    validator: validate_FusiontablesStyleDelete_580347, base: "/fusiontables/v2",
-    url: url_FusiontablesStyleDelete_580348, schemes: {Scheme.Https})
+    validator: validate_FusiontablesStyleDelete_589380, base: "/fusiontables/v2",
+    url: url_FusiontablesStyleDelete_589381, schemes: {Scheme.Https})
 type
-  Call_FusiontablesTaskList_580380 = ref object of OpenApiRestCall_579424
-proc url_FusiontablesTaskList_580382(protocol: Scheme; host: string; base: string;
+  Call_FusiontablesTaskList_589413 = ref object of OpenApiRestCall_588457
+proc url_FusiontablesTaskList_589415(protocol: Scheme; host: string; base: string;
                                     route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -4152,7 +4152,7 @@ proc url_FusiontablesTaskList_580382(protocol: Scheme; host: string; base: strin
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_FusiontablesTaskList_580381(path: JsonNode; query: JsonNode;
+proc validate_FusiontablesTaskList_589414(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Retrieves a list of tasks.
   ## 
@@ -4163,11 +4163,11 @@ proc validate_FusiontablesTaskList_580381(path: JsonNode; query: JsonNode;
   ##          : Table whose tasks are being listed.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `tableId` field"
-  var valid_580383 = path.getOrDefault("tableId")
-  valid_580383 = validateParameter(valid_580383, JString, required = true,
+  var valid_589416 = path.getOrDefault("tableId")
+  valid_589416 = validateParameter(valid_589416, JString, required = true,
                                  default = nil)
-  if valid_580383 != nil:
-    section.add "tableId", valid_580383
+  if valid_589416 != nil:
+    section.add "tableId", valid_589416
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -4191,54 +4191,54 @@ proc validate_FusiontablesTaskList_580381(path: JsonNode; query: JsonNode;
   ##   startIndex: JInt
   ##             : Index of the first result returned in the current page.
   section = newJObject()
-  var valid_580384 = query.getOrDefault("fields")
-  valid_580384 = validateParameter(valid_580384, JString, required = false,
+  var valid_589417 = query.getOrDefault("fields")
+  valid_589417 = validateParameter(valid_589417, JString, required = false,
                                  default = nil)
-  if valid_580384 != nil:
-    section.add "fields", valid_580384
-  var valid_580385 = query.getOrDefault("pageToken")
-  valid_580385 = validateParameter(valid_580385, JString, required = false,
+  if valid_589417 != nil:
+    section.add "fields", valid_589417
+  var valid_589418 = query.getOrDefault("pageToken")
+  valid_589418 = validateParameter(valid_589418, JString, required = false,
                                  default = nil)
-  if valid_580385 != nil:
-    section.add "pageToken", valid_580385
-  var valid_580386 = query.getOrDefault("quotaUser")
-  valid_580386 = validateParameter(valid_580386, JString, required = false,
+  if valid_589418 != nil:
+    section.add "pageToken", valid_589418
+  var valid_589419 = query.getOrDefault("quotaUser")
+  valid_589419 = validateParameter(valid_589419, JString, required = false,
                                  default = nil)
-  if valid_580386 != nil:
-    section.add "quotaUser", valid_580386
-  var valid_580387 = query.getOrDefault("alt")
-  valid_580387 = validateParameter(valid_580387, JString, required = false,
+  if valid_589419 != nil:
+    section.add "quotaUser", valid_589419
+  var valid_589420 = query.getOrDefault("alt")
+  valid_589420 = validateParameter(valid_589420, JString, required = false,
                                  default = newJString("json"))
-  if valid_580387 != nil:
-    section.add "alt", valid_580387
-  var valid_580388 = query.getOrDefault("oauth_token")
-  valid_580388 = validateParameter(valid_580388, JString, required = false,
+  if valid_589420 != nil:
+    section.add "alt", valid_589420
+  var valid_589421 = query.getOrDefault("oauth_token")
+  valid_589421 = validateParameter(valid_589421, JString, required = false,
                                  default = nil)
-  if valid_580388 != nil:
-    section.add "oauth_token", valid_580388
-  var valid_580389 = query.getOrDefault("userIp")
-  valid_580389 = validateParameter(valid_580389, JString, required = false,
+  if valid_589421 != nil:
+    section.add "oauth_token", valid_589421
+  var valid_589422 = query.getOrDefault("userIp")
+  valid_589422 = validateParameter(valid_589422, JString, required = false,
                                  default = nil)
-  if valid_580389 != nil:
-    section.add "userIp", valid_580389
-  var valid_580390 = query.getOrDefault("maxResults")
-  valid_580390 = validateParameter(valid_580390, JInt, required = false, default = nil)
-  if valid_580390 != nil:
-    section.add "maxResults", valid_580390
-  var valid_580391 = query.getOrDefault("key")
-  valid_580391 = validateParameter(valid_580391, JString, required = false,
+  if valid_589422 != nil:
+    section.add "userIp", valid_589422
+  var valid_589423 = query.getOrDefault("maxResults")
+  valid_589423 = validateParameter(valid_589423, JInt, required = false, default = nil)
+  if valid_589423 != nil:
+    section.add "maxResults", valid_589423
+  var valid_589424 = query.getOrDefault("key")
+  valid_589424 = validateParameter(valid_589424, JString, required = false,
                                  default = nil)
-  if valid_580391 != nil:
-    section.add "key", valid_580391
-  var valid_580392 = query.getOrDefault("prettyPrint")
-  valid_580392 = validateParameter(valid_580392, JBool, required = false,
+  if valid_589424 != nil:
+    section.add "key", valid_589424
+  var valid_589425 = query.getOrDefault("prettyPrint")
+  valid_589425 = validateParameter(valid_589425, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580392 != nil:
-    section.add "prettyPrint", valid_580392
-  var valid_580393 = query.getOrDefault("startIndex")
-  valid_580393 = validateParameter(valid_580393, JInt, required = false, default = nil)
-  if valid_580393 != nil:
-    section.add "startIndex", valid_580393
+  if valid_589425 != nil:
+    section.add "prettyPrint", valid_589425
+  var valid_589426 = query.getOrDefault("startIndex")
+  valid_589426 = validateParameter(valid_589426, JInt, required = false, default = nil)
+  if valid_589426 != nil:
+    section.add "startIndex", valid_589426
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -4247,20 +4247,20 @@ proc validate_FusiontablesTaskList_580381(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580394: Call_FusiontablesTaskList_580380; path: JsonNode;
+proc call*(call_589427: Call_FusiontablesTaskList_589413; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Retrieves a list of tasks.
   ## 
-  let valid = call_580394.validator(path, query, header, formData, body)
-  let scheme = call_580394.pickScheme
+  let valid = call_589427.validator(path, query, header, formData, body)
+  let scheme = call_589427.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580394.url(scheme.get, call_580394.host, call_580394.base,
-                         call_580394.route, valid.getOrDefault("path"),
+  let url = call_589427.url(scheme.get, call_589427.host, call_589427.base,
+                         call_589427.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580394, url, valid)
+  result = hook(call_589427, url, valid)
 
-proc call*(call_580395: Call_FusiontablesTaskList_580380; tableId: string;
+proc call*(call_589428: Call_FusiontablesTaskList_589413; tableId: string;
           fields: string = ""; pageToken: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; userIp: string = "";
           maxResults: int = 0; key: string = ""; prettyPrint: bool = true;
@@ -4289,29 +4289,29 @@ proc call*(call_580395: Call_FusiontablesTaskList_580380; tableId: string;
   ##              : Returns response with indentations and line breaks.
   ##   startIndex: int
   ##             : Index of the first result returned in the current page.
-  var path_580396 = newJObject()
-  var query_580397 = newJObject()
-  add(path_580396, "tableId", newJString(tableId))
-  add(query_580397, "fields", newJString(fields))
-  add(query_580397, "pageToken", newJString(pageToken))
-  add(query_580397, "quotaUser", newJString(quotaUser))
-  add(query_580397, "alt", newJString(alt))
-  add(query_580397, "oauth_token", newJString(oauthToken))
-  add(query_580397, "userIp", newJString(userIp))
-  add(query_580397, "maxResults", newJInt(maxResults))
-  add(query_580397, "key", newJString(key))
-  add(query_580397, "prettyPrint", newJBool(prettyPrint))
-  add(query_580397, "startIndex", newJInt(startIndex))
-  result = call_580395.call(path_580396, query_580397, nil, nil, nil)
+  var path_589429 = newJObject()
+  var query_589430 = newJObject()
+  add(path_589429, "tableId", newJString(tableId))
+  add(query_589430, "fields", newJString(fields))
+  add(query_589430, "pageToken", newJString(pageToken))
+  add(query_589430, "quotaUser", newJString(quotaUser))
+  add(query_589430, "alt", newJString(alt))
+  add(query_589430, "oauth_token", newJString(oauthToken))
+  add(query_589430, "userIp", newJString(userIp))
+  add(query_589430, "maxResults", newJInt(maxResults))
+  add(query_589430, "key", newJString(key))
+  add(query_589430, "prettyPrint", newJBool(prettyPrint))
+  add(query_589430, "startIndex", newJInt(startIndex))
+  result = call_589428.call(path_589429, query_589430, nil, nil, nil)
 
-var fusiontablesTaskList* = Call_FusiontablesTaskList_580380(
+var fusiontablesTaskList* = Call_FusiontablesTaskList_589413(
     name: "fusiontablesTaskList", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/tables/{tableId}/tasks",
-    validator: validate_FusiontablesTaskList_580381, base: "/fusiontables/v2",
-    url: url_FusiontablesTaskList_580382, schemes: {Scheme.Https})
+    validator: validate_FusiontablesTaskList_589414, base: "/fusiontables/v2",
+    url: url_FusiontablesTaskList_589415, schemes: {Scheme.Https})
 type
-  Call_FusiontablesTaskGet_580398 = ref object of OpenApiRestCall_579424
-proc url_FusiontablesTaskGet_580400(protocol: Scheme; host: string; base: string;
+  Call_FusiontablesTaskGet_589431 = ref object of OpenApiRestCall_588457
+proc url_FusiontablesTaskGet_589433(protocol: Scheme; host: string; base: string;
                                    route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -4329,7 +4329,7 @@ proc url_FusiontablesTaskGet_580400(protocol: Scheme; host: string; base: string
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_FusiontablesTaskGet_580399(path: JsonNode; query: JsonNode;
+proc validate_FusiontablesTaskGet_589432(path: JsonNode; query: JsonNode;
                                         header: JsonNode; formData: JsonNode;
                                         body: JsonNode): JsonNode =
   ## Retrieves a specific task by its ID.
@@ -4343,16 +4343,16 @@ proc validate_FusiontablesTaskGet_580399(path: JsonNode; query: JsonNode;
   ##         : The identifier of the task to get.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `tableId` field"
-  var valid_580401 = path.getOrDefault("tableId")
-  valid_580401 = validateParameter(valid_580401, JString, required = true,
+  var valid_589434 = path.getOrDefault("tableId")
+  valid_589434 = validateParameter(valid_589434, JString, required = true,
                                  default = nil)
-  if valid_580401 != nil:
-    section.add "tableId", valid_580401
-  var valid_580402 = path.getOrDefault("taskId")
-  valid_580402 = validateParameter(valid_580402, JString, required = true,
+  if valid_589434 != nil:
+    section.add "tableId", valid_589434
+  var valid_589435 = path.getOrDefault("taskId")
+  valid_589435 = validateParameter(valid_589435, JString, required = true,
                                  default = nil)
-  if valid_580402 != nil:
-    section.add "taskId", valid_580402
+  if valid_589435 != nil:
+    section.add "taskId", valid_589435
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -4370,41 +4370,41 @@ proc validate_FusiontablesTaskGet_580399(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580403 = query.getOrDefault("fields")
-  valid_580403 = validateParameter(valid_580403, JString, required = false,
+  var valid_589436 = query.getOrDefault("fields")
+  valid_589436 = validateParameter(valid_589436, JString, required = false,
                                  default = nil)
-  if valid_580403 != nil:
-    section.add "fields", valid_580403
-  var valid_580404 = query.getOrDefault("quotaUser")
-  valid_580404 = validateParameter(valid_580404, JString, required = false,
+  if valid_589436 != nil:
+    section.add "fields", valid_589436
+  var valid_589437 = query.getOrDefault("quotaUser")
+  valid_589437 = validateParameter(valid_589437, JString, required = false,
                                  default = nil)
-  if valid_580404 != nil:
-    section.add "quotaUser", valid_580404
-  var valid_580405 = query.getOrDefault("alt")
-  valid_580405 = validateParameter(valid_580405, JString, required = false,
+  if valid_589437 != nil:
+    section.add "quotaUser", valid_589437
+  var valid_589438 = query.getOrDefault("alt")
+  valid_589438 = validateParameter(valid_589438, JString, required = false,
                                  default = newJString("json"))
-  if valid_580405 != nil:
-    section.add "alt", valid_580405
-  var valid_580406 = query.getOrDefault("oauth_token")
-  valid_580406 = validateParameter(valid_580406, JString, required = false,
+  if valid_589438 != nil:
+    section.add "alt", valid_589438
+  var valid_589439 = query.getOrDefault("oauth_token")
+  valid_589439 = validateParameter(valid_589439, JString, required = false,
                                  default = nil)
-  if valid_580406 != nil:
-    section.add "oauth_token", valid_580406
-  var valid_580407 = query.getOrDefault("userIp")
-  valid_580407 = validateParameter(valid_580407, JString, required = false,
+  if valid_589439 != nil:
+    section.add "oauth_token", valid_589439
+  var valid_589440 = query.getOrDefault("userIp")
+  valid_589440 = validateParameter(valid_589440, JString, required = false,
                                  default = nil)
-  if valid_580407 != nil:
-    section.add "userIp", valid_580407
-  var valid_580408 = query.getOrDefault("key")
-  valid_580408 = validateParameter(valid_580408, JString, required = false,
+  if valid_589440 != nil:
+    section.add "userIp", valid_589440
+  var valid_589441 = query.getOrDefault("key")
+  valid_589441 = validateParameter(valid_589441, JString, required = false,
                                  default = nil)
-  if valid_580408 != nil:
-    section.add "key", valid_580408
-  var valid_580409 = query.getOrDefault("prettyPrint")
-  valid_580409 = validateParameter(valid_580409, JBool, required = false,
+  if valid_589441 != nil:
+    section.add "key", valid_589441
+  var valid_589442 = query.getOrDefault("prettyPrint")
+  valid_589442 = validateParameter(valid_589442, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580409 != nil:
-    section.add "prettyPrint", valid_580409
+  if valid_589442 != nil:
+    section.add "prettyPrint", valid_589442
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -4413,20 +4413,20 @@ proc validate_FusiontablesTaskGet_580399(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580410: Call_FusiontablesTaskGet_580398; path: JsonNode;
+proc call*(call_589443: Call_FusiontablesTaskGet_589431; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Retrieves a specific task by its ID.
   ## 
-  let valid = call_580410.validator(path, query, header, formData, body)
-  let scheme = call_580410.pickScheme
+  let valid = call_589443.validator(path, query, header, formData, body)
+  let scheme = call_589443.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580410.url(scheme.get, call_580410.host, call_580410.base,
-                         call_580410.route, valid.getOrDefault("path"),
+  let url = call_589443.url(scheme.get, call_589443.host, call_589443.base,
+                         call_589443.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580410, url, valid)
+  result = hook(call_589443, url, valid)
 
-proc call*(call_580411: Call_FusiontablesTaskGet_580398; tableId: string;
+proc call*(call_589444: Call_FusiontablesTaskGet_589431; tableId: string;
           taskId: string; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; userIp: string = "";
           key: string = ""; prettyPrint: bool = true): Recallable =
@@ -4450,27 +4450,27 @@ proc call*(call_580411: Call_FusiontablesTaskGet_580398; tableId: string;
   ##              : Returns response with indentations and line breaks.
   ##   taskId: string (required)
   ##         : The identifier of the task to get.
-  var path_580412 = newJObject()
-  var query_580413 = newJObject()
-  add(path_580412, "tableId", newJString(tableId))
-  add(query_580413, "fields", newJString(fields))
-  add(query_580413, "quotaUser", newJString(quotaUser))
-  add(query_580413, "alt", newJString(alt))
-  add(query_580413, "oauth_token", newJString(oauthToken))
-  add(query_580413, "userIp", newJString(userIp))
-  add(query_580413, "key", newJString(key))
-  add(query_580413, "prettyPrint", newJBool(prettyPrint))
-  add(path_580412, "taskId", newJString(taskId))
-  result = call_580411.call(path_580412, query_580413, nil, nil, nil)
+  var path_589445 = newJObject()
+  var query_589446 = newJObject()
+  add(path_589445, "tableId", newJString(tableId))
+  add(query_589446, "fields", newJString(fields))
+  add(query_589446, "quotaUser", newJString(quotaUser))
+  add(query_589446, "alt", newJString(alt))
+  add(query_589446, "oauth_token", newJString(oauthToken))
+  add(query_589446, "userIp", newJString(userIp))
+  add(query_589446, "key", newJString(key))
+  add(query_589446, "prettyPrint", newJBool(prettyPrint))
+  add(path_589445, "taskId", newJString(taskId))
+  result = call_589444.call(path_589445, query_589446, nil, nil, nil)
 
-var fusiontablesTaskGet* = Call_FusiontablesTaskGet_580398(
+var fusiontablesTaskGet* = Call_FusiontablesTaskGet_589431(
     name: "fusiontablesTaskGet", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/tables/{tableId}/tasks/{taskId}",
-    validator: validate_FusiontablesTaskGet_580399, base: "/fusiontables/v2",
-    url: url_FusiontablesTaskGet_580400, schemes: {Scheme.Https})
+    validator: validate_FusiontablesTaskGet_589432, base: "/fusiontables/v2",
+    url: url_FusiontablesTaskGet_589433, schemes: {Scheme.Https})
 type
-  Call_FusiontablesTaskDelete_580414 = ref object of OpenApiRestCall_579424
-proc url_FusiontablesTaskDelete_580416(protocol: Scheme; host: string; base: string;
+  Call_FusiontablesTaskDelete_589447 = ref object of OpenApiRestCall_588457
+proc url_FusiontablesTaskDelete_589449(protocol: Scheme; host: string; base: string;
                                       route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -4488,7 +4488,7 @@ proc url_FusiontablesTaskDelete_580416(protocol: Scheme; host: string; base: str
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_FusiontablesTaskDelete_580415(path: JsonNode; query: JsonNode;
+proc validate_FusiontablesTaskDelete_589448(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Deletes a specific task by its ID, unless that task has already started running.
   ## 
@@ -4501,16 +4501,16 @@ proc validate_FusiontablesTaskDelete_580415(path: JsonNode; query: JsonNode;
   ##         : The identifier of the task to delete.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `tableId` field"
-  var valid_580417 = path.getOrDefault("tableId")
-  valid_580417 = validateParameter(valid_580417, JString, required = true,
+  var valid_589450 = path.getOrDefault("tableId")
+  valid_589450 = validateParameter(valid_589450, JString, required = true,
                                  default = nil)
-  if valid_580417 != nil:
-    section.add "tableId", valid_580417
-  var valid_580418 = path.getOrDefault("taskId")
-  valid_580418 = validateParameter(valid_580418, JString, required = true,
+  if valid_589450 != nil:
+    section.add "tableId", valid_589450
+  var valid_589451 = path.getOrDefault("taskId")
+  valid_589451 = validateParameter(valid_589451, JString, required = true,
                                  default = nil)
-  if valid_580418 != nil:
-    section.add "taskId", valid_580418
+  if valid_589451 != nil:
+    section.add "taskId", valid_589451
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -4528,41 +4528,41 @@ proc validate_FusiontablesTaskDelete_580415(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580419 = query.getOrDefault("fields")
-  valid_580419 = validateParameter(valid_580419, JString, required = false,
+  var valid_589452 = query.getOrDefault("fields")
+  valid_589452 = validateParameter(valid_589452, JString, required = false,
                                  default = nil)
-  if valid_580419 != nil:
-    section.add "fields", valid_580419
-  var valid_580420 = query.getOrDefault("quotaUser")
-  valid_580420 = validateParameter(valid_580420, JString, required = false,
+  if valid_589452 != nil:
+    section.add "fields", valid_589452
+  var valid_589453 = query.getOrDefault("quotaUser")
+  valid_589453 = validateParameter(valid_589453, JString, required = false,
                                  default = nil)
-  if valid_580420 != nil:
-    section.add "quotaUser", valid_580420
-  var valid_580421 = query.getOrDefault("alt")
-  valid_580421 = validateParameter(valid_580421, JString, required = false,
+  if valid_589453 != nil:
+    section.add "quotaUser", valid_589453
+  var valid_589454 = query.getOrDefault("alt")
+  valid_589454 = validateParameter(valid_589454, JString, required = false,
                                  default = newJString("json"))
-  if valid_580421 != nil:
-    section.add "alt", valid_580421
-  var valid_580422 = query.getOrDefault("oauth_token")
-  valid_580422 = validateParameter(valid_580422, JString, required = false,
+  if valid_589454 != nil:
+    section.add "alt", valid_589454
+  var valid_589455 = query.getOrDefault("oauth_token")
+  valid_589455 = validateParameter(valid_589455, JString, required = false,
                                  default = nil)
-  if valid_580422 != nil:
-    section.add "oauth_token", valid_580422
-  var valid_580423 = query.getOrDefault("userIp")
-  valid_580423 = validateParameter(valid_580423, JString, required = false,
+  if valid_589455 != nil:
+    section.add "oauth_token", valid_589455
+  var valid_589456 = query.getOrDefault("userIp")
+  valid_589456 = validateParameter(valid_589456, JString, required = false,
                                  default = nil)
-  if valid_580423 != nil:
-    section.add "userIp", valid_580423
-  var valid_580424 = query.getOrDefault("key")
-  valid_580424 = validateParameter(valid_580424, JString, required = false,
+  if valid_589456 != nil:
+    section.add "userIp", valid_589456
+  var valid_589457 = query.getOrDefault("key")
+  valid_589457 = validateParameter(valid_589457, JString, required = false,
                                  default = nil)
-  if valid_580424 != nil:
-    section.add "key", valid_580424
-  var valid_580425 = query.getOrDefault("prettyPrint")
-  valid_580425 = validateParameter(valid_580425, JBool, required = false,
+  if valid_589457 != nil:
+    section.add "key", valid_589457
+  var valid_589458 = query.getOrDefault("prettyPrint")
+  valid_589458 = validateParameter(valid_589458, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580425 != nil:
-    section.add "prettyPrint", valid_580425
+  if valid_589458 != nil:
+    section.add "prettyPrint", valid_589458
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -4571,20 +4571,20 @@ proc validate_FusiontablesTaskDelete_580415(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580426: Call_FusiontablesTaskDelete_580414; path: JsonNode;
+proc call*(call_589459: Call_FusiontablesTaskDelete_589447; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Deletes a specific task by its ID, unless that task has already started running.
   ## 
-  let valid = call_580426.validator(path, query, header, formData, body)
-  let scheme = call_580426.pickScheme
+  let valid = call_589459.validator(path, query, header, formData, body)
+  let scheme = call_589459.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580426.url(scheme.get, call_580426.host, call_580426.base,
-                         call_580426.route, valid.getOrDefault("path"),
+  let url = call_589459.url(scheme.get, call_589459.host, call_589459.base,
+                         call_589459.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580426, url, valid)
+  result = hook(call_589459, url, valid)
 
-proc call*(call_580427: Call_FusiontablesTaskDelete_580414; tableId: string;
+proc call*(call_589460: Call_FusiontablesTaskDelete_589447; tableId: string;
           taskId: string; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; userIp: string = "";
           key: string = ""; prettyPrint: bool = true): Recallable =
@@ -4608,27 +4608,27 @@ proc call*(call_580427: Call_FusiontablesTaskDelete_580414; tableId: string;
   ##              : Returns response with indentations and line breaks.
   ##   taskId: string (required)
   ##         : The identifier of the task to delete.
-  var path_580428 = newJObject()
-  var query_580429 = newJObject()
-  add(path_580428, "tableId", newJString(tableId))
-  add(query_580429, "fields", newJString(fields))
-  add(query_580429, "quotaUser", newJString(quotaUser))
-  add(query_580429, "alt", newJString(alt))
-  add(query_580429, "oauth_token", newJString(oauthToken))
-  add(query_580429, "userIp", newJString(userIp))
-  add(query_580429, "key", newJString(key))
-  add(query_580429, "prettyPrint", newJBool(prettyPrint))
-  add(path_580428, "taskId", newJString(taskId))
-  result = call_580427.call(path_580428, query_580429, nil, nil, nil)
+  var path_589461 = newJObject()
+  var query_589462 = newJObject()
+  add(path_589461, "tableId", newJString(tableId))
+  add(query_589462, "fields", newJString(fields))
+  add(query_589462, "quotaUser", newJString(quotaUser))
+  add(query_589462, "alt", newJString(alt))
+  add(query_589462, "oauth_token", newJString(oauthToken))
+  add(query_589462, "userIp", newJString(userIp))
+  add(query_589462, "key", newJString(key))
+  add(query_589462, "prettyPrint", newJBool(prettyPrint))
+  add(path_589461, "taskId", newJString(taskId))
+  result = call_589460.call(path_589461, query_589462, nil, nil, nil)
 
-var fusiontablesTaskDelete* = Call_FusiontablesTaskDelete_580414(
+var fusiontablesTaskDelete* = Call_FusiontablesTaskDelete_589447(
     name: "fusiontablesTaskDelete", meth: HttpMethod.HttpDelete,
     host: "www.googleapis.com", route: "/tables/{tableId}/tasks/{taskId}",
-    validator: validate_FusiontablesTaskDelete_580415, base: "/fusiontables/v2",
-    url: url_FusiontablesTaskDelete_580416, schemes: {Scheme.Https})
+    validator: validate_FusiontablesTaskDelete_589448, base: "/fusiontables/v2",
+    url: url_FusiontablesTaskDelete_589449, schemes: {Scheme.Https})
 type
-  Call_FusiontablesTemplateInsert_580447 = ref object of OpenApiRestCall_579424
-proc url_FusiontablesTemplateInsert_580449(protocol: Scheme; host: string;
+  Call_FusiontablesTemplateInsert_589480 = ref object of OpenApiRestCall_588457
+proc url_FusiontablesTemplateInsert_589482(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -4644,7 +4644,7 @@ proc url_FusiontablesTemplateInsert_580449(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_FusiontablesTemplateInsert_580448(path: JsonNode; query: JsonNode;
+proc validate_FusiontablesTemplateInsert_589481(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Creates a new template for the table.
   ## 
@@ -4655,11 +4655,11 @@ proc validate_FusiontablesTemplateInsert_580448(path: JsonNode; query: JsonNode;
   ##          : Table for which a new template is being created
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `tableId` field"
-  var valid_580450 = path.getOrDefault("tableId")
-  valid_580450 = validateParameter(valid_580450, JString, required = true,
+  var valid_589483 = path.getOrDefault("tableId")
+  valid_589483 = validateParameter(valid_589483, JString, required = true,
                                  default = nil)
-  if valid_580450 != nil:
-    section.add "tableId", valid_580450
+  if valid_589483 != nil:
+    section.add "tableId", valid_589483
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -4677,41 +4677,41 @@ proc validate_FusiontablesTemplateInsert_580448(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580451 = query.getOrDefault("fields")
-  valid_580451 = validateParameter(valid_580451, JString, required = false,
+  var valid_589484 = query.getOrDefault("fields")
+  valid_589484 = validateParameter(valid_589484, JString, required = false,
                                  default = nil)
-  if valid_580451 != nil:
-    section.add "fields", valid_580451
-  var valid_580452 = query.getOrDefault("quotaUser")
-  valid_580452 = validateParameter(valid_580452, JString, required = false,
+  if valid_589484 != nil:
+    section.add "fields", valid_589484
+  var valid_589485 = query.getOrDefault("quotaUser")
+  valid_589485 = validateParameter(valid_589485, JString, required = false,
                                  default = nil)
-  if valid_580452 != nil:
-    section.add "quotaUser", valid_580452
-  var valid_580453 = query.getOrDefault("alt")
-  valid_580453 = validateParameter(valid_580453, JString, required = false,
+  if valid_589485 != nil:
+    section.add "quotaUser", valid_589485
+  var valid_589486 = query.getOrDefault("alt")
+  valid_589486 = validateParameter(valid_589486, JString, required = false,
                                  default = newJString("json"))
-  if valid_580453 != nil:
-    section.add "alt", valid_580453
-  var valid_580454 = query.getOrDefault("oauth_token")
-  valid_580454 = validateParameter(valid_580454, JString, required = false,
+  if valid_589486 != nil:
+    section.add "alt", valid_589486
+  var valid_589487 = query.getOrDefault("oauth_token")
+  valid_589487 = validateParameter(valid_589487, JString, required = false,
                                  default = nil)
-  if valid_580454 != nil:
-    section.add "oauth_token", valid_580454
-  var valid_580455 = query.getOrDefault("userIp")
-  valid_580455 = validateParameter(valid_580455, JString, required = false,
+  if valid_589487 != nil:
+    section.add "oauth_token", valid_589487
+  var valid_589488 = query.getOrDefault("userIp")
+  valid_589488 = validateParameter(valid_589488, JString, required = false,
                                  default = nil)
-  if valid_580455 != nil:
-    section.add "userIp", valid_580455
-  var valid_580456 = query.getOrDefault("key")
-  valid_580456 = validateParameter(valid_580456, JString, required = false,
+  if valid_589488 != nil:
+    section.add "userIp", valid_589488
+  var valid_589489 = query.getOrDefault("key")
+  valid_589489 = validateParameter(valid_589489, JString, required = false,
                                  default = nil)
-  if valid_580456 != nil:
-    section.add "key", valid_580456
-  var valid_580457 = query.getOrDefault("prettyPrint")
-  valid_580457 = validateParameter(valid_580457, JBool, required = false,
+  if valid_589489 != nil:
+    section.add "key", valid_589489
+  var valid_589490 = query.getOrDefault("prettyPrint")
+  valid_589490 = validateParameter(valid_589490, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580457 != nil:
-    section.add "prettyPrint", valid_580457
+  if valid_589490 != nil:
+    section.add "prettyPrint", valid_589490
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -4723,20 +4723,20 @@ proc validate_FusiontablesTemplateInsert_580448(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580459: Call_FusiontablesTemplateInsert_580447; path: JsonNode;
+proc call*(call_589492: Call_FusiontablesTemplateInsert_589480; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Creates a new template for the table.
   ## 
-  let valid = call_580459.validator(path, query, header, formData, body)
-  let scheme = call_580459.pickScheme
+  let valid = call_589492.validator(path, query, header, formData, body)
+  let scheme = call_589492.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580459.url(scheme.get, call_580459.host, call_580459.base,
-                         call_580459.route, valid.getOrDefault("path"),
+  let url = call_589492.url(scheme.get, call_589492.host, call_589492.base,
+                         call_589492.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580459, url, valid)
+  result = hook(call_589492, url, valid)
 
-proc call*(call_580460: Call_FusiontablesTemplateInsert_580447; tableId: string;
+proc call*(call_589493: Call_FusiontablesTemplateInsert_589480; tableId: string;
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           oauthToken: string = ""; userIp: string = ""; key: string = "";
           body: JsonNode = nil; prettyPrint: bool = true): Recallable =
@@ -4759,30 +4759,30 @@ proc call*(call_580460: Call_FusiontablesTemplateInsert_580447; tableId: string;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_580461 = newJObject()
-  var query_580462 = newJObject()
-  var body_580463 = newJObject()
-  add(path_580461, "tableId", newJString(tableId))
-  add(query_580462, "fields", newJString(fields))
-  add(query_580462, "quotaUser", newJString(quotaUser))
-  add(query_580462, "alt", newJString(alt))
-  add(query_580462, "oauth_token", newJString(oauthToken))
-  add(query_580462, "userIp", newJString(userIp))
-  add(query_580462, "key", newJString(key))
+  var path_589494 = newJObject()
+  var query_589495 = newJObject()
+  var body_589496 = newJObject()
+  add(path_589494, "tableId", newJString(tableId))
+  add(query_589495, "fields", newJString(fields))
+  add(query_589495, "quotaUser", newJString(quotaUser))
+  add(query_589495, "alt", newJString(alt))
+  add(query_589495, "oauth_token", newJString(oauthToken))
+  add(query_589495, "userIp", newJString(userIp))
+  add(query_589495, "key", newJString(key))
   if body != nil:
-    body_580463 = body
-  add(query_580462, "prettyPrint", newJBool(prettyPrint))
-  result = call_580460.call(path_580461, query_580462, nil, nil, body_580463)
+    body_589496 = body
+  add(query_589495, "prettyPrint", newJBool(prettyPrint))
+  result = call_589493.call(path_589494, query_589495, nil, nil, body_589496)
 
-var fusiontablesTemplateInsert* = Call_FusiontablesTemplateInsert_580447(
+var fusiontablesTemplateInsert* = Call_FusiontablesTemplateInsert_589480(
     name: "fusiontablesTemplateInsert", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com", route: "/tables/{tableId}/templates",
-    validator: validate_FusiontablesTemplateInsert_580448,
-    base: "/fusiontables/v2", url: url_FusiontablesTemplateInsert_580449,
+    validator: validate_FusiontablesTemplateInsert_589481,
+    base: "/fusiontables/v2", url: url_FusiontablesTemplateInsert_589482,
     schemes: {Scheme.Https})
 type
-  Call_FusiontablesTemplateList_580430 = ref object of OpenApiRestCall_579424
-proc url_FusiontablesTemplateList_580432(protocol: Scheme; host: string;
+  Call_FusiontablesTemplateList_589463 = ref object of OpenApiRestCall_588457
+proc url_FusiontablesTemplateList_589465(protocol: Scheme; host: string;
                                         base: string; route: string; path: JsonNode;
                                         query: JsonNode): Uri =
   result.scheme = $protocol
@@ -4799,7 +4799,7 @@ proc url_FusiontablesTemplateList_580432(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_FusiontablesTemplateList_580431(path: JsonNode; query: JsonNode;
+proc validate_FusiontablesTemplateList_589464(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Retrieves a list of templates.
   ## 
@@ -4810,11 +4810,11 @@ proc validate_FusiontablesTemplateList_580431(path: JsonNode; query: JsonNode;
   ##          : Identifier for the table whose templates are being requested
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `tableId` field"
-  var valid_580433 = path.getOrDefault("tableId")
-  valid_580433 = validateParameter(valid_580433, JString, required = true,
+  var valid_589466 = path.getOrDefault("tableId")
+  valid_589466 = validateParameter(valid_589466, JString, required = true,
                                  default = nil)
-  if valid_580433 != nil:
-    section.add "tableId", valid_580433
+  if valid_589466 != nil:
+    section.add "tableId", valid_589466
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -4836,50 +4836,50 @@ proc validate_FusiontablesTemplateList_580431(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580434 = query.getOrDefault("fields")
-  valid_580434 = validateParameter(valid_580434, JString, required = false,
+  var valid_589467 = query.getOrDefault("fields")
+  valid_589467 = validateParameter(valid_589467, JString, required = false,
                                  default = nil)
-  if valid_580434 != nil:
-    section.add "fields", valid_580434
-  var valid_580435 = query.getOrDefault("pageToken")
-  valid_580435 = validateParameter(valid_580435, JString, required = false,
+  if valid_589467 != nil:
+    section.add "fields", valid_589467
+  var valid_589468 = query.getOrDefault("pageToken")
+  valid_589468 = validateParameter(valid_589468, JString, required = false,
                                  default = nil)
-  if valid_580435 != nil:
-    section.add "pageToken", valid_580435
-  var valid_580436 = query.getOrDefault("quotaUser")
-  valid_580436 = validateParameter(valid_580436, JString, required = false,
+  if valid_589468 != nil:
+    section.add "pageToken", valid_589468
+  var valid_589469 = query.getOrDefault("quotaUser")
+  valid_589469 = validateParameter(valid_589469, JString, required = false,
                                  default = nil)
-  if valid_580436 != nil:
-    section.add "quotaUser", valid_580436
-  var valid_580437 = query.getOrDefault("alt")
-  valid_580437 = validateParameter(valid_580437, JString, required = false,
+  if valid_589469 != nil:
+    section.add "quotaUser", valid_589469
+  var valid_589470 = query.getOrDefault("alt")
+  valid_589470 = validateParameter(valid_589470, JString, required = false,
                                  default = newJString("json"))
-  if valid_580437 != nil:
-    section.add "alt", valid_580437
-  var valid_580438 = query.getOrDefault("oauth_token")
-  valid_580438 = validateParameter(valid_580438, JString, required = false,
+  if valid_589470 != nil:
+    section.add "alt", valid_589470
+  var valid_589471 = query.getOrDefault("oauth_token")
+  valid_589471 = validateParameter(valid_589471, JString, required = false,
                                  default = nil)
-  if valid_580438 != nil:
-    section.add "oauth_token", valid_580438
-  var valid_580439 = query.getOrDefault("userIp")
-  valid_580439 = validateParameter(valid_580439, JString, required = false,
+  if valid_589471 != nil:
+    section.add "oauth_token", valid_589471
+  var valid_589472 = query.getOrDefault("userIp")
+  valid_589472 = validateParameter(valid_589472, JString, required = false,
                                  default = nil)
-  if valid_580439 != nil:
-    section.add "userIp", valid_580439
-  var valid_580440 = query.getOrDefault("maxResults")
-  valid_580440 = validateParameter(valid_580440, JInt, required = false, default = nil)
-  if valid_580440 != nil:
-    section.add "maxResults", valid_580440
-  var valid_580441 = query.getOrDefault("key")
-  valid_580441 = validateParameter(valid_580441, JString, required = false,
+  if valid_589472 != nil:
+    section.add "userIp", valid_589472
+  var valid_589473 = query.getOrDefault("maxResults")
+  valid_589473 = validateParameter(valid_589473, JInt, required = false, default = nil)
+  if valid_589473 != nil:
+    section.add "maxResults", valid_589473
+  var valid_589474 = query.getOrDefault("key")
+  valid_589474 = validateParameter(valid_589474, JString, required = false,
                                  default = nil)
-  if valid_580441 != nil:
-    section.add "key", valid_580441
-  var valid_580442 = query.getOrDefault("prettyPrint")
-  valid_580442 = validateParameter(valid_580442, JBool, required = false,
+  if valid_589474 != nil:
+    section.add "key", valid_589474
+  var valid_589475 = query.getOrDefault("prettyPrint")
+  valid_589475 = validateParameter(valid_589475, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580442 != nil:
-    section.add "prettyPrint", valid_580442
+  if valid_589475 != nil:
+    section.add "prettyPrint", valid_589475
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -4888,20 +4888,20 @@ proc validate_FusiontablesTemplateList_580431(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580443: Call_FusiontablesTemplateList_580430; path: JsonNode;
+proc call*(call_589476: Call_FusiontablesTemplateList_589463; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Retrieves a list of templates.
   ## 
-  let valid = call_580443.validator(path, query, header, formData, body)
-  let scheme = call_580443.pickScheme
+  let valid = call_589476.validator(path, query, header, formData, body)
+  let scheme = call_589476.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580443.url(scheme.get, call_580443.host, call_580443.base,
-                         call_580443.route, valid.getOrDefault("path"),
+  let url = call_589476.url(scheme.get, call_589476.host, call_589476.base,
+                         call_589476.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580443, url, valid)
+  result = hook(call_589476, url, valid)
 
-proc call*(call_580444: Call_FusiontablesTemplateList_580430; tableId: string;
+proc call*(call_589477: Call_FusiontablesTemplateList_589463; tableId: string;
           fields: string = ""; pageToken: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; userIp: string = "";
           maxResults: int = 0; key: string = ""; prettyPrint: bool = true): Recallable =
@@ -4927,28 +4927,28 @@ proc call*(call_580444: Call_FusiontablesTemplateList_580430; tableId: string;
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_580445 = newJObject()
-  var query_580446 = newJObject()
-  add(path_580445, "tableId", newJString(tableId))
-  add(query_580446, "fields", newJString(fields))
-  add(query_580446, "pageToken", newJString(pageToken))
-  add(query_580446, "quotaUser", newJString(quotaUser))
-  add(query_580446, "alt", newJString(alt))
-  add(query_580446, "oauth_token", newJString(oauthToken))
-  add(query_580446, "userIp", newJString(userIp))
-  add(query_580446, "maxResults", newJInt(maxResults))
-  add(query_580446, "key", newJString(key))
-  add(query_580446, "prettyPrint", newJBool(prettyPrint))
-  result = call_580444.call(path_580445, query_580446, nil, nil, nil)
+  var path_589478 = newJObject()
+  var query_589479 = newJObject()
+  add(path_589478, "tableId", newJString(tableId))
+  add(query_589479, "fields", newJString(fields))
+  add(query_589479, "pageToken", newJString(pageToken))
+  add(query_589479, "quotaUser", newJString(quotaUser))
+  add(query_589479, "alt", newJString(alt))
+  add(query_589479, "oauth_token", newJString(oauthToken))
+  add(query_589479, "userIp", newJString(userIp))
+  add(query_589479, "maxResults", newJInt(maxResults))
+  add(query_589479, "key", newJString(key))
+  add(query_589479, "prettyPrint", newJBool(prettyPrint))
+  result = call_589477.call(path_589478, query_589479, nil, nil, nil)
 
-var fusiontablesTemplateList* = Call_FusiontablesTemplateList_580430(
+var fusiontablesTemplateList* = Call_FusiontablesTemplateList_589463(
     name: "fusiontablesTemplateList", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/tables/{tableId}/templates",
-    validator: validate_FusiontablesTemplateList_580431, base: "/fusiontables/v2",
-    url: url_FusiontablesTemplateList_580432, schemes: {Scheme.Https})
+    validator: validate_FusiontablesTemplateList_589464, base: "/fusiontables/v2",
+    url: url_FusiontablesTemplateList_589465, schemes: {Scheme.Https})
 type
-  Call_FusiontablesTemplateUpdate_580480 = ref object of OpenApiRestCall_579424
-proc url_FusiontablesTemplateUpdate_580482(protocol: Scheme; host: string;
+  Call_FusiontablesTemplateUpdate_589513 = ref object of OpenApiRestCall_588457
+proc url_FusiontablesTemplateUpdate_589515(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -4966,7 +4966,7 @@ proc url_FusiontablesTemplateUpdate_580482(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_FusiontablesTemplateUpdate_580481(path: JsonNode; query: JsonNode;
+proc validate_FusiontablesTemplateUpdate_589514(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Updates an existing template
   ## 
@@ -4979,15 +4979,15 @@ proc validate_FusiontablesTemplateUpdate_580481(path: JsonNode; query: JsonNode;
   ##             : Identifier for the template that is being updated
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `tableId` field"
-  var valid_580483 = path.getOrDefault("tableId")
-  valid_580483 = validateParameter(valid_580483, JString, required = true,
+  var valid_589516 = path.getOrDefault("tableId")
+  valid_589516 = validateParameter(valid_589516, JString, required = true,
                                  default = nil)
-  if valid_580483 != nil:
-    section.add "tableId", valid_580483
-  var valid_580484 = path.getOrDefault("templateId")
-  valid_580484 = validateParameter(valid_580484, JInt, required = true, default = nil)
-  if valid_580484 != nil:
-    section.add "templateId", valid_580484
+  if valid_589516 != nil:
+    section.add "tableId", valid_589516
+  var valid_589517 = path.getOrDefault("templateId")
+  valid_589517 = validateParameter(valid_589517, JInt, required = true, default = nil)
+  if valid_589517 != nil:
+    section.add "templateId", valid_589517
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -5005,41 +5005,41 @@ proc validate_FusiontablesTemplateUpdate_580481(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580485 = query.getOrDefault("fields")
-  valid_580485 = validateParameter(valid_580485, JString, required = false,
+  var valid_589518 = query.getOrDefault("fields")
+  valid_589518 = validateParameter(valid_589518, JString, required = false,
                                  default = nil)
-  if valid_580485 != nil:
-    section.add "fields", valid_580485
-  var valid_580486 = query.getOrDefault("quotaUser")
-  valid_580486 = validateParameter(valid_580486, JString, required = false,
+  if valid_589518 != nil:
+    section.add "fields", valid_589518
+  var valid_589519 = query.getOrDefault("quotaUser")
+  valid_589519 = validateParameter(valid_589519, JString, required = false,
                                  default = nil)
-  if valid_580486 != nil:
-    section.add "quotaUser", valid_580486
-  var valid_580487 = query.getOrDefault("alt")
-  valid_580487 = validateParameter(valid_580487, JString, required = false,
+  if valid_589519 != nil:
+    section.add "quotaUser", valid_589519
+  var valid_589520 = query.getOrDefault("alt")
+  valid_589520 = validateParameter(valid_589520, JString, required = false,
                                  default = newJString("json"))
-  if valid_580487 != nil:
-    section.add "alt", valid_580487
-  var valid_580488 = query.getOrDefault("oauth_token")
-  valid_580488 = validateParameter(valid_580488, JString, required = false,
+  if valid_589520 != nil:
+    section.add "alt", valid_589520
+  var valid_589521 = query.getOrDefault("oauth_token")
+  valid_589521 = validateParameter(valid_589521, JString, required = false,
                                  default = nil)
-  if valid_580488 != nil:
-    section.add "oauth_token", valid_580488
-  var valid_580489 = query.getOrDefault("userIp")
-  valid_580489 = validateParameter(valid_580489, JString, required = false,
+  if valid_589521 != nil:
+    section.add "oauth_token", valid_589521
+  var valid_589522 = query.getOrDefault("userIp")
+  valid_589522 = validateParameter(valid_589522, JString, required = false,
                                  default = nil)
-  if valid_580489 != nil:
-    section.add "userIp", valid_580489
-  var valid_580490 = query.getOrDefault("key")
-  valid_580490 = validateParameter(valid_580490, JString, required = false,
+  if valid_589522 != nil:
+    section.add "userIp", valid_589522
+  var valid_589523 = query.getOrDefault("key")
+  valid_589523 = validateParameter(valid_589523, JString, required = false,
                                  default = nil)
-  if valid_580490 != nil:
-    section.add "key", valid_580490
-  var valid_580491 = query.getOrDefault("prettyPrint")
-  valid_580491 = validateParameter(valid_580491, JBool, required = false,
+  if valid_589523 != nil:
+    section.add "key", valid_589523
+  var valid_589524 = query.getOrDefault("prettyPrint")
+  valid_589524 = validateParameter(valid_589524, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580491 != nil:
-    section.add "prettyPrint", valid_580491
+  if valid_589524 != nil:
+    section.add "prettyPrint", valid_589524
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -5051,20 +5051,20 @@ proc validate_FusiontablesTemplateUpdate_580481(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580493: Call_FusiontablesTemplateUpdate_580480; path: JsonNode;
+proc call*(call_589526: Call_FusiontablesTemplateUpdate_589513; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Updates an existing template
   ## 
-  let valid = call_580493.validator(path, query, header, formData, body)
-  let scheme = call_580493.pickScheme
+  let valid = call_589526.validator(path, query, header, formData, body)
+  let scheme = call_589526.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580493.url(scheme.get, call_580493.host, call_580493.base,
-                         call_580493.route, valid.getOrDefault("path"),
+  let url = call_589526.url(scheme.get, call_589526.host, call_589526.base,
+                         call_589526.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580493, url, valid)
+  result = hook(call_589526, url, valid)
 
-proc call*(call_580494: Call_FusiontablesTemplateUpdate_580480; tableId: string;
+proc call*(call_589527: Call_FusiontablesTemplateUpdate_589513; tableId: string;
           templateId: int; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; userIp: string = "";
           key: string = ""; body: JsonNode = nil; prettyPrint: bool = true): Recallable =
@@ -5089,31 +5089,31 @@ proc call*(call_580494: Call_FusiontablesTemplateUpdate_580480; tableId: string;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_580495 = newJObject()
-  var query_580496 = newJObject()
-  var body_580497 = newJObject()
-  add(path_580495, "tableId", newJString(tableId))
-  add(query_580496, "fields", newJString(fields))
-  add(query_580496, "quotaUser", newJString(quotaUser))
-  add(query_580496, "alt", newJString(alt))
-  add(path_580495, "templateId", newJInt(templateId))
-  add(query_580496, "oauth_token", newJString(oauthToken))
-  add(query_580496, "userIp", newJString(userIp))
-  add(query_580496, "key", newJString(key))
+  var path_589528 = newJObject()
+  var query_589529 = newJObject()
+  var body_589530 = newJObject()
+  add(path_589528, "tableId", newJString(tableId))
+  add(query_589529, "fields", newJString(fields))
+  add(query_589529, "quotaUser", newJString(quotaUser))
+  add(query_589529, "alt", newJString(alt))
+  add(path_589528, "templateId", newJInt(templateId))
+  add(query_589529, "oauth_token", newJString(oauthToken))
+  add(query_589529, "userIp", newJString(userIp))
+  add(query_589529, "key", newJString(key))
   if body != nil:
-    body_580497 = body
-  add(query_580496, "prettyPrint", newJBool(prettyPrint))
-  result = call_580494.call(path_580495, query_580496, nil, nil, body_580497)
+    body_589530 = body
+  add(query_589529, "prettyPrint", newJBool(prettyPrint))
+  result = call_589527.call(path_589528, query_589529, nil, nil, body_589530)
 
-var fusiontablesTemplateUpdate* = Call_FusiontablesTemplateUpdate_580480(
+var fusiontablesTemplateUpdate* = Call_FusiontablesTemplateUpdate_589513(
     name: "fusiontablesTemplateUpdate", meth: HttpMethod.HttpPut,
     host: "www.googleapis.com", route: "/tables/{tableId}/templates/{templateId}",
-    validator: validate_FusiontablesTemplateUpdate_580481,
-    base: "/fusiontables/v2", url: url_FusiontablesTemplateUpdate_580482,
+    validator: validate_FusiontablesTemplateUpdate_589514,
+    base: "/fusiontables/v2", url: url_FusiontablesTemplateUpdate_589515,
     schemes: {Scheme.Https})
 type
-  Call_FusiontablesTemplateGet_580464 = ref object of OpenApiRestCall_579424
-proc url_FusiontablesTemplateGet_580466(protocol: Scheme; host: string; base: string;
+  Call_FusiontablesTemplateGet_589497 = ref object of OpenApiRestCall_588457
+proc url_FusiontablesTemplateGet_589499(protocol: Scheme; host: string; base: string;
                                        route: string; path: JsonNode;
                                        query: JsonNode): Uri =
   result.scheme = $protocol
@@ -5132,7 +5132,7 @@ proc url_FusiontablesTemplateGet_580466(protocol: Scheme; host: string; base: st
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_FusiontablesTemplateGet_580465(path: JsonNode; query: JsonNode;
+proc validate_FusiontablesTemplateGet_589498(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Retrieves a specific template by its id
   ## 
@@ -5145,15 +5145,15 @@ proc validate_FusiontablesTemplateGet_580465(path: JsonNode; query: JsonNode;
   ##             : Identifier for the template that is being requested
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `tableId` field"
-  var valid_580467 = path.getOrDefault("tableId")
-  valid_580467 = validateParameter(valid_580467, JString, required = true,
+  var valid_589500 = path.getOrDefault("tableId")
+  valid_589500 = validateParameter(valid_589500, JString, required = true,
                                  default = nil)
-  if valid_580467 != nil:
-    section.add "tableId", valid_580467
-  var valid_580468 = path.getOrDefault("templateId")
-  valid_580468 = validateParameter(valid_580468, JInt, required = true, default = nil)
-  if valid_580468 != nil:
-    section.add "templateId", valid_580468
+  if valid_589500 != nil:
+    section.add "tableId", valid_589500
+  var valid_589501 = path.getOrDefault("templateId")
+  valid_589501 = validateParameter(valid_589501, JInt, required = true, default = nil)
+  if valid_589501 != nil:
+    section.add "templateId", valid_589501
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -5171,41 +5171,41 @@ proc validate_FusiontablesTemplateGet_580465(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580469 = query.getOrDefault("fields")
-  valid_580469 = validateParameter(valid_580469, JString, required = false,
+  var valid_589502 = query.getOrDefault("fields")
+  valid_589502 = validateParameter(valid_589502, JString, required = false,
                                  default = nil)
-  if valid_580469 != nil:
-    section.add "fields", valid_580469
-  var valid_580470 = query.getOrDefault("quotaUser")
-  valid_580470 = validateParameter(valid_580470, JString, required = false,
+  if valid_589502 != nil:
+    section.add "fields", valid_589502
+  var valid_589503 = query.getOrDefault("quotaUser")
+  valid_589503 = validateParameter(valid_589503, JString, required = false,
                                  default = nil)
-  if valid_580470 != nil:
-    section.add "quotaUser", valid_580470
-  var valid_580471 = query.getOrDefault("alt")
-  valid_580471 = validateParameter(valid_580471, JString, required = false,
+  if valid_589503 != nil:
+    section.add "quotaUser", valid_589503
+  var valid_589504 = query.getOrDefault("alt")
+  valid_589504 = validateParameter(valid_589504, JString, required = false,
                                  default = newJString("json"))
-  if valid_580471 != nil:
-    section.add "alt", valid_580471
-  var valid_580472 = query.getOrDefault("oauth_token")
-  valid_580472 = validateParameter(valid_580472, JString, required = false,
+  if valid_589504 != nil:
+    section.add "alt", valid_589504
+  var valid_589505 = query.getOrDefault("oauth_token")
+  valid_589505 = validateParameter(valid_589505, JString, required = false,
                                  default = nil)
-  if valid_580472 != nil:
-    section.add "oauth_token", valid_580472
-  var valid_580473 = query.getOrDefault("userIp")
-  valid_580473 = validateParameter(valid_580473, JString, required = false,
+  if valid_589505 != nil:
+    section.add "oauth_token", valid_589505
+  var valid_589506 = query.getOrDefault("userIp")
+  valid_589506 = validateParameter(valid_589506, JString, required = false,
                                  default = nil)
-  if valid_580473 != nil:
-    section.add "userIp", valid_580473
-  var valid_580474 = query.getOrDefault("key")
-  valid_580474 = validateParameter(valid_580474, JString, required = false,
+  if valid_589506 != nil:
+    section.add "userIp", valid_589506
+  var valid_589507 = query.getOrDefault("key")
+  valid_589507 = validateParameter(valid_589507, JString, required = false,
                                  default = nil)
-  if valid_580474 != nil:
-    section.add "key", valid_580474
-  var valid_580475 = query.getOrDefault("prettyPrint")
-  valid_580475 = validateParameter(valid_580475, JBool, required = false,
+  if valid_589507 != nil:
+    section.add "key", valid_589507
+  var valid_589508 = query.getOrDefault("prettyPrint")
+  valid_589508 = validateParameter(valid_589508, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580475 != nil:
-    section.add "prettyPrint", valid_580475
+  if valid_589508 != nil:
+    section.add "prettyPrint", valid_589508
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -5214,20 +5214,20 @@ proc validate_FusiontablesTemplateGet_580465(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580476: Call_FusiontablesTemplateGet_580464; path: JsonNode;
+proc call*(call_589509: Call_FusiontablesTemplateGet_589497; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Retrieves a specific template by its id
   ## 
-  let valid = call_580476.validator(path, query, header, formData, body)
-  let scheme = call_580476.pickScheme
+  let valid = call_589509.validator(path, query, header, formData, body)
+  let scheme = call_589509.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580476.url(scheme.get, call_580476.host, call_580476.base,
-                         call_580476.route, valid.getOrDefault("path"),
+  let url = call_589509.url(scheme.get, call_589509.host, call_589509.base,
+                         call_589509.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580476, url, valid)
+  result = hook(call_589509, url, valid)
 
-proc call*(call_580477: Call_FusiontablesTemplateGet_580464; tableId: string;
+proc call*(call_589510: Call_FusiontablesTemplateGet_589497; tableId: string;
           templateId: int; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; userIp: string = "";
           key: string = ""; prettyPrint: bool = true): Recallable =
@@ -5251,27 +5251,27 @@ proc call*(call_580477: Call_FusiontablesTemplateGet_580464; tableId: string;
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_580478 = newJObject()
-  var query_580479 = newJObject()
-  add(path_580478, "tableId", newJString(tableId))
-  add(query_580479, "fields", newJString(fields))
-  add(query_580479, "quotaUser", newJString(quotaUser))
-  add(query_580479, "alt", newJString(alt))
-  add(path_580478, "templateId", newJInt(templateId))
-  add(query_580479, "oauth_token", newJString(oauthToken))
-  add(query_580479, "userIp", newJString(userIp))
-  add(query_580479, "key", newJString(key))
-  add(query_580479, "prettyPrint", newJBool(prettyPrint))
-  result = call_580477.call(path_580478, query_580479, nil, nil, nil)
+  var path_589511 = newJObject()
+  var query_589512 = newJObject()
+  add(path_589511, "tableId", newJString(tableId))
+  add(query_589512, "fields", newJString(fields))
+  add(query_589512, "quotaUser", newJString(quotaUser))
+  add(query_589512, "alt", newJString(alt))
+  add(path_589511, "templateId", newJInt(templateId))
+  add(query_589512, "oauth_token", newJString(oauthToken))
+  add(query_589512, "userIp", newJString(userIp))
+  add(query_589512, "key", newJString(key))
+  add(query_589512, "prettyPrint", newJBool(prettyPrint))
+  result = call_589510.call(path_589511, query_589512, nil, nil, nil)
 
-var fusiontablesTemplateGet* = Call_FusiontablesTemplateGet_580464(
+var fusiontablesTemplateGet* = Call_FusiontablesTemplateGet_589497(
     name: "fusiontablesTemplateGet", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/tables/{tableId}/templates/{templateId}",
-    validator: validate_FusiontablesTemplateGet_580465, base: "/fusiontables/v2",
-    url: url_FusiontablesTemplateGet_580466, schemes: {Scheme.Https})
+    validator: validate_FusiontablesTemplateGet_589498, base: "/fusiontables/v2",
+    url: url_FusiontablesTemplateGet_589499, schemes: {Scheme.Https})
 type
-  Call_FusiontablesTemplatePatch_580514 = ref object of OpenApiRestCall_579424
-proc url_FusiontablesTemplatePatch_580516(protocol: Scheme; host: string;
+  Call_FusiontablesTemplatePatch_589547 = ref object of OpenApiRestCall_588457
+proc url_FusiontablesTemplatePatch_589549(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -5289,7 +5289,7 @@ proc url_FusiontablesTemplatePatch_580516(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_FusiontablesTemplatePatch_580515(path: JsonNode; query: JsonNode;
+proc validate_FusiontablesTemplatePatch_589548(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Updates an existing template. This method supports patch semantics.
   ## 
@@ -5302,15 +5302,15 @@ proc validate_FusiontablesTemplatePatch_580515(path: JsonNode; query: JsonNode;
   ##             : Identifier for the template that is being updated
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `tableId` field"
-  var valid_580517 = path.getOrDefault("tableId")
-  valid_580517 = validateParameter(valid_580517, JString, required = true,
+  var valid_589550 = path.getOrDefault("tableId")
+  valid_589550 = validateParameter(valid_589550, JString, required = true,
                                  default = nil)
-  if valid_580517 != nil:
-    section.add "tableId", valid_580517
-  var valid_580518 = path.getOrDefault("templateId")
-  valid_580518 = validateParameter(valid_580518, JInt, required = true, default = nil)
-  if valid_580518 != nil:
-    section.add "templateId", valid_580518
+  if valid_589550 != nil:
+    section.add "tableId", valid_589550
+  var valid_589551 = path.getOrDefault("templateId")
+  valid_589551 = validateParameter(valid_589551, JInt, required = true, default = nil)
+  if valid_589551 != nil:
+    section.add "templateId", valid_589551
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -5328,41 +5328,41 @@ proc validate_FusiontablesTemplatePatch_580515(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580519 = query.getOrDefault("fields")
-  valid_580519 = validateParameter(valid_580519, JString, required = false,
+  var valid_589552 = query.getOrDefault("fields")
+  valid_589552 = validateParameter(valid_589552, JString, required = false,
                                  default = nil)
-  if valid_580519 != nil:
-    section.add "fields", valid_580519
-  var valid_580520 = query.getOrDefault("quotaUser")
-  valid_580520 = validateParameter(valid_580520, JString, required = false,
+  if valid_589552 != nil:
+    section.add "fields", valid_589552
+  var valid_589553 = query.getOrDefault("quotaUser")
+  valid_589553 = validateParameter(valid_589553, JString, required = false,
                                  default = nil)
-  if valid_580520 != nil:
-    section.add "quotaUser", valid_580520
-  var valid_580521 = query.getOrDefault("alt")
-  valid_580521 = validateParameter(valid_580521, JString, required = false,
+  if valid_589553 != nil:
+    section.add "quotaUser", valid_589553
+  var valid_589554 = query.getOrDefault("alt")
+  valid_589554 = validateParameter(valid_589554, JString, required = false,
                                  default = newJString("json"))
-  if valid_580521 != nil:
-    section.add "alt", valid_580521
-  var valid_580522 = query.getOrDefault("oauth_token")
-  valid_580522 = validateParameter(valid_580522, JString, required = false,
+  if valid_589554 != nil:
+    section.add "alt", valid_589554
+  var valid_589555 = query.getOrDefault("oauth_token")
+  valid_589555 = validateParameter(valid_589555, JString, required = false,
                                  default = nil)
-  if valid_580522 != nil:
-    section.add "oauth_token", valid_580522
-  var valid_580523 = query.getOrDefault("userIp")
-  valid_580523 = validateParameter(valid_580523, JString, required = false,
+  if valid_589555 != nil:
+    section.add "oauth_token", valid_589555
+  var valid_589556 = query.getOrDefault("userIp")
+  valid_589556 = validateParameter(valid_589556, JString, required = false,
                                  default = nil)
-  if valid_580523 != nil:
-    section.add "userIp", valid_580523
-  var valid_580524 = query.getOrDefault("key")
-  valid_580524 = validateParameter(valid_580524, JString, required = false,
+  if valid_589556 != nil:
+    section.add "userIp", valid_589556
+  var valid_589557 = query.getOrDefault("key")
+  valid_589557 = validateParameter(valid_589557, JString, required = false,
                                  default = nil)
-  if valid_580524 != nil:
-    section.add "key", valid_580524
-  var valid_580525 = query.getOrDefault("prettyPrint")
-  valid_580525 = validateParameter(valid_580525, JBool, required = false,
+  if valid_589557 != nil:
+    section.add "key", valid_589557
+  var valid_589558 = query.getOrDefault("prettyPrint")
+  valid_589558 = validateParameter(valid_589558, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580525 != nil:
-    section.add "prettyPrint", valid_580525
+  if valid_589558 != nil:
+    section.add "prettyPrint", valid_589558
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -5374,20 +5374,20 @@ proc validate_FusiontablesTemplatePatch_580515(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580527: Call_FusiontablesTemplatePatch_580514; path: JsonNode;
+proc call*(call_589560: Call_FusiontablesTemplatePatch_589547; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Updates an existing template. This method supports patch semantics.
   ## 
-  let valid = call_580527.validator(path, query, header, formData, body)
-  let scheme = call_580527.pickScheme
+  let valid = call_589560.validator(path, query, header, formData, body)
+  let scheme = call_589560.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580527.url(scheme.get, call_580527.host, call_580527.base,
-                         call_580527.route, valid.getOrDefault("path"),
+  let url = call_589560.url(scheme.get, call_589560.host, call_589560.base,
+                         call_589560.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580527, url, valid)
+  result = hook(call_589560, url, valid)
 
-proc call*(call_580528: Call_FusiontablesTemplatePatch_580514; tableId: string;
+proc call*(call_589561: Call_FusiontablesTemplatePatch_589547; tableId: string;
           templateId: int; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; userIp: string = "";
           key: string = ""; body: JsonNode = nil; prettyPrint: bool = true): Recallable =
@@ -5412,31 +5412,31 @@ proc call*(call_580528: Call_FusiontablesTemplatePatch_580514; tableId: string;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_580529 = newJObject()
-  var query_580530 = newJObject()
-  var body_580531 = newJObject()
-  add(path_580529, "tableId", newJString(tableId))
-  add(query_580530, "fields", newJString(fields))
-  add(query_580530, "quotaUser", newJString(quotaUser))
-  add(query_580530, "alt", newJString(alt))
-  add(path_580529, "templateId", newJInt(templateId))
-  add(query_580530, "oauth_token", newJString(oauthToken))
-  add(query_580530, "userIp", newJString(userIp))
-  add(query_580530, "key", newJString(key))
+  var path_589562 = newJObject()
+  var query_589563 = newJObject()
+  var body_589564 = newJObject()
+  add(path_589562, "tableId", newJString(tableId))
+  add(query_589563, "fields", newJString(fields))
+  add(query_589563, "quotaUser", newJString(quotaUser))
+  add(query_589563, "alt", newJString(alt))
+  add(path_589562, "templateId", newJInt(templateId))
+  add(query_589563, "oauth_token", newJString(oauthToken))
+  add(query_589563, "userIp", newJString(userIp))
+  add(query_589563, "key", newJString(key))
   if body != nil:
-    body_580531 = body
-  add(query_580530, "prettyPrint", newJBool(prettyPrint))
-  result = call_580528.call(path_580529, query_580530, nil, nil, body_580531)
+    body_589564 = body
+  add(query_589563, "prettyPrint", newJBool(prettyPrint))
+  result = call_589561.call(path_589562, query_589563, nil, nil, body_589564)
 
-var fusiontablesTemplatePatch* = Call_FusiontablesTemplatePatch_580514(
+var fusiontablesTemplatePatch* = Call_FusiontablesTemplatePatch_589547(
     name: "fusiontablesTemplatePatch", meth: HttpMethod.HttpPatch,
     host: "www.googleapis.com", route: "/tables/{tableId}/templates/{templateId}",
-    validator: validate_FusiontablesTemplatePatch_580515,
-    base: "/fusiontables/v2", url: url_FusiontablesTemplatePatch_580516,
+    validator: validate_FusiontablesTemplatePatch_589548,
+    base: "/fusiontables/v2", url: url_FusiontablesTemplatePatch_589549,
     schemes: {Scheme.Https})
 type
-  Call_FusiontablesTemplateDelete_580498 = ref object of OpenApiRestCall_579424
-proc url_FusiontablesTemplateDelete_580500(protocol: Scheme; host: string;
+  Call_FusiontablesTemplateDelete_589531 = ref object of OpenApiRestCall_588457
+proc url_FusiontablesTemplateDelete_589533(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -5454,7 +5454,7 @@ proc url_FusiontablesTemplateDelete_580500(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_FusiontablesTemplateDelete_580499(path: JsonNode; query: JsonNode;
+proc validate_FusiontablesTemplateDelete_589532(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Deletes a template
   ## 
@@ -5467,15 +5467,15 @@ proc validate_FusiontablesTemplateDelete_580499(path: JsonNode; query: JsonNode;
   ##             : Identifier for the template which is being deleted
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `tableId` field"
-  var valid_580501 = path.getOrDefault("tableId")
-  valid_580501 = validateParameter(valid_580501, JString, required = true,
+  var valid_589534 = path.getOrDefault("tableId")
+  valid_589534 = validateParameter(valid_589534, JString, required = true,
                                  default = nil)
-  if valid_580501 != nil:
-    section.add "tableId", valid_580501
-  var valid_580502 = path.getOrDefault("templateId")
-  valid_580502 = validateParameter(valid_580502, JInt, required = true, default = nil)
-  if valid_580502 != nil:
-    section.add "templateId", valid_580502
+  if valid_589534 != nil:
+    section.add "tableId", valid_589534
+  var valid_589535 = path.getOrDefault("templateId")
+  valid_589535 = validateParameter(valid_589535, JInt, required = true, default = nil)
+  if valid_589535 != nil:
+    section.add "templateId", valid_589535
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -5493,41 +5493,41 @@ proc validate_FusiontablesTemplateDelete_580499(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580503 = query.getOrDefault("fields")
-  valid_580503 = validateParameter(valid_580503, JString, required = false,
+  var valid_589536 = query.getOrDefault("fields")
+  valid_589536 = validateParameter(valid_589536, JString, required = false,
                                  default = nil)
-  if valid_580503 != nil:
-    section.add "fields", valid_580503
-  var valid_580504 = query.getOrDefault("quotaUser")
-  valid_580504 = validateParameter(valid_580504, JString, required = false,
+  if valid_589536 != nil:
+    section.add "fields", valid_589536
+  var valid_589537 = query.getOrDefault("quotaUser")
+  valid_589537 = validateParameter(valid_589537, JString, required = false,
                                  default = nil)
-  if valid_580504 != nil:
-    section.add "quotaUser", valid_580504
-  var valid_580505 = query.getOrDefault("alt")
-  valid_580505 = validateParameter(valid_580505, JString, required = false,
+  if valid_589537 != nil:
+    section.add "quotaUser", valid_589537
+  var valid_589538 = query.getOrDefault("alt")
+  valid_589538 = validateParameter(valid_589538, JString, required = false,
                                  default = newJString("json"))
-  if valid_580505 != nil:
-    section.add "alt", valid_580505
-  var valid_580506 = query.getOrDefault("oauth_token")
-  valid_580506 = validateParameter(valid_580506, JString, required = false,
+  if valid_589538 != nil:
+    section.add "alt", valid_589538
+  var valid_589539 = query.getOrDefault("oauth_token")
+  valid_589539 = validateParameter(valid_589539, JString, required = false,
                                  default = nil)
-  if valid_580506 != nil:
-    section.add "oauth_token", valid_580506
-  var valid_580507 = query.getOrDefault("userIp")
-  valid_580507 = validateParameter(valid_580507, JString, required = false,
+  if valid_589539 != nil:
+    section.add "oauth_token", valid_589539
+  var valid_589540 = query.getOrDefault("userIp")
+  valid_589540 = validateParameter(valid_589540, JString, required = false,
                                  default = nil)
-  if valid_580507 != nil:
-    section.add "userIp", valid_580507
-  var valid_580508 = query.getOrDefault("key")
-  valid_580508 = validateParameter(valid_580508, JString, required = false,
+  if valid_589540 != nil:
+    section.add "userIp", valid_589540
+  var valid_589541 = query.getOrDefault("key")
+  valid_589541 = validateParameter(valid_589541, JString, required = false,
                                  default = nil)
-  if valid_580508 != nil:
-    section.add "key", valid_580508
-  var valid_580509 = query.getOrDefault("prettyPrint")
-  valid_580509 = validateParameter(valid_580509, JBool, required = false,
+  if valid_589541 != nil:
+    section.add "key", valid_589541
+  var valid_589542 = query.getOrDefault("prettyPrint")
+  valid_589542 = validateParameter(valid_589542, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580509 != nil:
-    section.add "prettyPrint", valid_580509
+  if valid_589542 != nil:
+    section.add "prettyPrint", valid_589542
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -5536,20 +5536,20 @@ proc validate_FusiontablesTemplateDelete_580499(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580510: Call_FusiontablesTemplateDelete_580498; path: JsonNode;
+proc call*(call_589543: Call_FusiontablesTemplateDelete_589531; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Deletes a template
   ## 
-  let valid = call_580510.validator(path, query, header, formData, body)
-  let scheme = call_580510.pickScheme
+  let valid = call_589543.validator(path, query, header, formData, body)
+  let scheme = call_589543.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580510.url(scheme.get, call_580510.host, call_580510.base,
-                         call_580510.route, valid.getOrDefault("path"),
+  let url = call_589543.url(scheme.get, call_589543.host, call_589543.base,
+                         call_589543.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580510, url, valid)
+  result = hook(call_589543, url, valid)
 
-proc call*(call_580511: Call_FusiontablesTemplateDelete_580498; tableId: string;
+proc call*(call_589544: Call_FusiontablesTemplateDelete_589531; tableId: string;
           templateId: int; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; userIp: string = "";
           key: string = ""; prettyPrint: bool = true): Recallable =
@@ -5573,24 +5573,24 @@ proc call*(call_580511: Call_FusiontablesTemplateDelete_580498; tableId: string;
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_580512 = newJObject()
-  var query_580513 = newJObject()
-  add(path_580512, "tableId", newJString(tableId))
-  add(query_580513, "fields", newJString(fields))
-  add(query_580513, "quotaUser", newJString(quotaUser))
-  add(query_580513, "alt", newJString(alt))
-  add(path_580512, "templateId", newJInt(templateId))
-  add(query_580513, "oauth_token", newJString(oauthToken))
-  add(query_580513, "userIp", newJString(userIp))
-  add(query_580513, "key", newJString(key))
-  add(query_580513, "prettyPrint", newJBool(prettyPrint))
-  result = call_580511.call(path_580512, query_580513, nil, nil, nil)
+  var path_589545 = newJObject()
+  var query_589546 = newJObject()
+  add(path_589545, "tableId", newJString(tableId))
+  add(query_589546, "fields", newJString(fields))
+  add(query_589546, "quotaUser", newJString(quotaUser))
+  add(query_589546, "alt", newJString(alt))
+  add(path_589545, "templateId", newJInt(templateId))
+  add(query_589546, "oauth_token", newJString(oauthToken))
+  add(query_589546, "userIp", newJString(userIp))
+  add(query_589546, "key", newJString(key))
+  add(query_589546, "prettyPrint", newJBool(prettyPrint))
+  result = call_589544.call(path_589545, query_589546, nil, nil, nil)
 
-var fusiontablesTemplateDelete* = Call_FusiontablesTemplateDelete_580498(
+var fusiontablesTemplateDelete* = Call_FusiontablesTemplateDelete_589531(
     name: "fusiontablesTemplateDelete", meth: HttpMethod.HttpDelete,
     host: "www.googleapis.com", route: "/tables/{tableId}/templates/{templateId}",
-    validator: validate_FusiontablesTemplateDelete_580499,
-    base: "/fusiontables/v2", url: url_FusiontablesTemplateDelete_580500,
+    validator: validate_FusiontablesTemplateDelete_589532,
+    base: "/fusiontables/v2", url: url_FusiontablesTemplateDelete_589533,
     schemes: {Scheme.Https})
 export
   rest
@@ -5633,7 +5633,7 @@ proc store(auth: var GoogleAuth; token: string; expiry: int; form: string) =
   auth.form = form
   auth.digest = auth.hash
 
-proc authenticate*(fresh: float64 = -3600.0; lifetime: int = 3600): Future[bool] {.async.} =
+proc authenticate*(fresh: float64 = 3600.0; lifetime: int = 3600): Future[bool] {.async.} =
   ## get or refresh an authentication token; provide `fresh`
   ## to ensure that the token won't expire in the next N seconds.
   ## provide `lifetime` to indicate how long the token should last.

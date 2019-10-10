@@ -29,15 +29,15 @@ type
     url*: proc (protocol: Scheme; host: string; base: string; route: string;
               path: JsonNode; query: JsonNode): Uri
 
-  OpenApiRestCall_579421 = ref object of OpenApiRestCall
+  OpenApiRestCall_588450 = ref object of OpenApiRestCall
 proc hash(scheme: Scheme): Hash {.used.} =
   result = hash(ord(scheme))
 
-proc clone[T: OpenApiRestCall_579421](t: T): T {.used.} =
+proc clone[T: OpenApiRestCall_588450](t: T): T {.used.} =
   result = T(name: t.name, meth: t.meth, host: t.host, base: t.base, route: t.route,
            schemes: t.schemes, validator: t.validator, url: t.url)
 
-proc pickScheme(t: OpenApiRestCall_579421): Option[Scheme] {.used.} =
+proc pickScheme(t: OpenApiRestCall_588450): Option[Scheme] {.used.} =
   ## select a supported scheme from a set of candidates
   for scheme in Scheme.low ..
       Scheme.high:
@@ -74,7 +74,7 @@ type
   PathTokenKind = enum
     ConstantSegment, VariableSegment
   PathToken = tuple[kind: PathTokenKind, value: string]
-proc queryString(query: JsonNode): string =
+proc queryString(query: JsonNode): string {.used.} =
   var qs: seq[KeyVal]
   if query == nil:
     return ""
@@ -82,7 +82,7 @@ proc queryString(query: JsonNode): string =
     qs.add (key: k, val: v.getStr)
   result = encodeQuery(qs)
 
-proc hydratePath(input: JsonNode; segments: seq[PathToken]): Option[string] =
+proc hydratePath(input: JsonNode; segments: seq[PathToken]): Option[string] {.used.} =
   ## reconstitute a path with constants and variable values taken from json
   var head: string
   if segments.len == 0:
@@ -108,8 +108,8 @@ const
 proc composeQueryString(query: JsonNode): string
 method hook(call: OpenApiRestCall; url: Uri; input: JsonNode): Recallable {.base.}
 type
-  Call_AndroidpublisherEditsInsert_579689 = ref object of OpenApiRestCall_579421
-proc url_AndroidpublisherEditsInsert_579691(protocol: Scheme; host: string;
+  Call_AndroidpublisherEditsInsert_588718 = ref object of OpenApiRestCall_588450
+proc url_AndroidpublisherEditsInsert_588720(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -125,7 +125,7 @@ proc url_AndroidpublisherEditsInsert_579691(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_AndroidpublisherEditsInsert_579690(path: JsonNode; query: JsonNode;
+proc validate_AndroidpublisherEditsInsert_588719(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Creates a new edit for an app, populated with the app's current state.
   ## 
@@ -137,11 +137,11 @@ proc validate_AndroidpublisherEditsInsert_579690(path: JsonNode; query: JsonNode
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `packageName` field"
-  var valid_579817 = path.getOrDefault("packageName")
-  valid_579817 = validateParameter(valid_579817, JString, required = true,
+  var valid_588846 = path.getOrDefault("packageName")
+  valid_588846 = validateParameter(valid_588846, JString, required = true,
                                  default = nil)
-  if valid_579817 != nil:
-    section.add "packageName", valid_579817
+  if valid_588846 != nil:
+    section.add "packageName", valid_588846
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -159,41 +159,41 @@ proc validate_AndroidpublisherEditsInsert_579690(path: JsonNode; query: JsonNode
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_579818 = query.getOrDefault("fields")
-  valid_579818 = validateParameter(valid_579818, JString, required = false,
+  var valid_588847 = query.getOrDefault("fields")
+  valid_588847 = validateParameter(valid_588847, JString, required = false,
                                  default = nil)
-  if valid_579818 != nil:
-    section.add "fields", valid_579818
-  var valid_579819 = query.getOrDefault("quotaUser")
-  valid_579819 = validateParameter(valid_579819, JString, required = false,
+  if valid_588847 != nil:
+    section.add "fields", valid_588847
+  var valid_588848 = query.getOrDefault("quotaUser")
+  valid_588848 = validateParameter(valid_588848, JString, required = false,
                                  default = nil)
-  if valid_579819 != nil:
-    section.add "quotaUser", valid_579819
-  var valid_579833 = query.getOrDefault("alt")
-  valid_579833 = validateParameter(valid_579833, JString, required = false,
+  if valid_588848 != nil:
+    section.add "quotaUser", valid_588848
+  var valid_588862 = query.getOrDefault("alt")
+  valid_588862 = validateParameter(valid_588862, JString, required = false,
                                  default = newJString("json"))
-  if valid_579833 != nil:
-    section.add "alt", valid_579833
-  var valid_579834 = query.getOrDefault("oauth_token")
-  valid_579834 = validateParameter(valid_579834, JString, required = false,
+  if valid_588862 != nil:
+    section.add "alt", valid_588862
+  var valid_588863 = query.getOrDefault("oauth_token")
+  valid_588863 = validateParameter(valid_588863, JString, required = false,
                                  default = nil)
-  if valid_579834 != nil:
-    section.add "oauth_token", valid_579834
-  var valid_579835 = query.getOrDefault("userIp")
-  valid_579835 = validateParameter(valid_579835, JString, required = false,
+  if valid_588863 != nil:
+    section.add "oauth_token", valid_588863
+  var valid_588864 = query.getOrDefault("userIp")
+  valid_588864 = validateParameter(valid_588864, JString, required = false,
                                  default = nil)
-  if valid_579835 != nil:
-    section.add "userIp", valid_579835
-  var valid_579836 = query.getOrDefault("key")
-  valid_579836 = validateParameter(valid_579836, JString, required = false,
+  if valid_588864 != nil:
+    section.add "userIp", valid_588864
+  var valid_588865 = query.getOrDefault("key")
+  valid_588865 = validateParameter(valid_588865, JString, required = false,
                                  default = nil)
-  if valid_579836 != nil:
-    section.add "key", valid_579836
-  var valid_579837 = query.getOrDefault("prettyPrint")
-  valid_579837 = validateParameter(valid_579837, JBool, required = false,
+  if valid_588865 != nil:
+    section.add "key", valid_588865
+  var valid_588866 = query.getOrDefault("prettyPrint")
+  valid_588866 = validateParameter(valid_588866, JBool, required = false,
                                  default = newJBool(true))
-  if valid_579837 != nil:
-    section.add "prettyPrint", valid_579837
+  if valid_588866 != nil:
+    section.add "prettyPrint", valid_588866
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -205,20 +205,20 @@ proc validate_AndroidpublisherEditsInsert_579690(path: JsonNode; query: JsonNode
   if body != nil:
     result.add "body", body
 
-proc call*(call_579861: Call_AndroidpublisherEditsInsert_579689; path: JsonNode;
+proc call*(call_588890: Call_AndroidpublisherEditsInsert_588718; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Creates a new edit for an app, populated with the app's current state.
   ## 
-  let valid = call_579861.validator(path, query, header, formData, body)
-  let scheme = call_579861.pickScheme
+  let valid = call_588890.validator(path, query, header, formData, body)
+  let scheme = call_588890.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_579861.url(scheme.get, call_579861.host, call_579861.base,
-                         call_579861.route, valid.getOrDefault("path"),
+  let url = call_588890.url(scheme.get, call_588890.host, call_588890.base,
+                         call_588890.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_579861, url, valid)
+  result = hook(call_588890, url, valid)
 
-proc call*(call_579932: Call_AndroidpublisherEditsInsert_579689;
+proc call*(call_588961: Call_AndroidpublisherEditsInsert_588718;
           packageName: string; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; userIp: string = "";
           key: string = ""; body: JsonNode = nil; prettyPrint: bool = true): Recallable =
@@ -241,30 +241,30 @@ proc call*(call_579932: Call_AndroidpublisherEditsInsert_579689;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_579933 = newJObject()
-  var query_579935 = newJObject()
-  var body_579936 = newJObject()
-  add(query_579935, "fields", newJString(fields))
-  add(path_579933, "packageName", newJString(packageName))
-  add(query_579935, "quotaUser", newJString(quotaUser))
-  add(query_579935, "alt", newJString(alt))
-  add(query_579935, "oauth_token", newJString(oauthToken))
-  add(query_579935, "userIp", newJString(userIp))
-  add(query_579935, "key", newJString(key))
+  var path_588962 = newJObject()
+  var query_588964 = newJObject()
+  var body_588965 = newJObject()
+  add(query_588964, "fields", newJString(fields))
+  add(path_588962, "packageName", newJString(packageName))
+  add(query_588964, "quotaUser", newJString(quotaUser))
+  add(query_588964, "alt", newJString(alt))
+  add(query_588964, "oauth_token", newJString(oauthToken))
+  add(query_588964, "userIp", newJString(userIp))
+  add(query_588964, "key", newJString(key))
   if body != nil:
-    body_579936 = body
-  add(query_579935, "prettyPrint", newJBool(prettyPrint))
-  result = call_579932.call(path_579933, query_579935, nil, nil, body_579936)
+    body_588965 = body
+  add(query_588964, "prettyPrint", newJBool(prettyPrint))
+  result = call_588961.call(path_588962, query_588964, nil, nil, body_588965)
 
-var androidpublisherEditsInsert* = Call_AndroidpublisherEditsInsert_579689(
+var androidpublisherEditsInsert* = Call_AndroidpublisherEditsInsert_588718(
     name: "androidpublisherEditsInsert", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com", route: "/{packageName}/edits",
-    validator: validate_AndroidpublisherEditsInsert_579690,
+    validator: validate_AndroidpublisherEditsInsert_588719,
     base: "/androidpublisher/v2/applications",
-    url: url_AndroidpublisherEditsInsert_579691, schemes: {Scheme.Https})
+    url: url_AndroidpublisherEditsInsert_588720, schemes: {Scheme.Https})
 type
-  Call_AndroidpublisherEditsGet_579975 = ref object of OpenApiRestCall_579421
-proc url_AndroidpublisherEditsGet_579977(protocol: Scheme; host: string;
+  Call_AndroidpublisherEditsGet_589004 = ref object of OpenApiRestCall_588450
+proc url_AndroidpublisherEditsGet_589006(protocol: Scheme; host: string;
                                         base: string; route: string; path: JsonNode;
                                         query: JsonNode): Uri =
   result.scheme = $protocol
@@ -283,7 +283,7 @@ proc url_AndroidpublisherEditsGet_579977(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_AndroidpublisherEditsGet_579976(path: JsonNode; query: JsonNode;
+proc validate_AndroidpublisherEditsGet_589005(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Returns information about the edit specified. Calls will fail if the edit is no long active (e.g. has been deleted, superseded or expired).
   ## 
@@ -297,16 +297,16 @@ proc validate_AndroidpublisherEditsGet_579976(path: JsonNode; query: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `packageName` field"
-  var valid_579978 = path.getOrDefault("packageName")
-  valid_579978 = validateParameter(valid_579978, JString, required = true,
+  var valid_589007 = path.getOrDefault("packageName")
+  valid_589007 = validateParameter(valid_589007, JString, required = true,
                                  default = nil)
-  if valid_579978 != nil:
-    section.add "packageName", valid_579978
-  var valid_579979 = path.getOrDefault("editId")
-  valid_579979 = validateParameter(valid_579979, JString, required = true,
+  if valid_589007 != nil:
+    section.add "packageName", valid_589007
+  var valid_589008 = path.getOrDefault("editId")
+  valid_589008 = validateParameter(valid_589008, JString, required = true,
                                  default = nil)
-  if valid_579979 != nil:
-    section.add "editId", valid_579979
+  if valid_589008 != nil:
+    section.add "editId", valid_589008
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -324,41 +324,41 @@ proc validate_AndroidpublisherEditsGet_579976(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_579980 = query.getOrDefault("fields")
-  valid_579980 = validateParameter(valid_579980, JString, required = false,
+  var valid_589009 = query.getOrDefault("fields")
+  valid_589009 = validateParameter(valid_589009, JString, required = false,
                                  default = nil)
-  if valid_579980 != nil:
-    section.add "fields", valid_579980
-  var valid_579981 = query.getOrDefault("quotaUser")
-  valid_579981 = validateParameter(valid_579981, JString, required = false,
+  if valid_589009 != nil:
+    section.add "fields", valid_589009
+  var valid_589010 = query.getOrDefault("quotaUser")
+  valid_589010 = validateParameter(valid_589010, JString, required = false,
                                  default = nil)
-  if valid_579981 != nil:
-    section.add "quotaUser", valid_579981
-  var valid_579982 = query.getOrDefault("alt")
-  valid_579982 = validateParameter(valid_579982, JString, required = false,
+  if valid_589010 != nil:
+    section.add "quotaUser", valid_589010
+  var valid_589011 = query.getOrDefault("alt")
+  valid_589011 = validateParameter(valid_589011, JString, required = false,
                                  default = newJString("json"))
-  if valid_579982 != nil:
-    section.add "alt", valid_579982
-  var valid_579983 = query.getOrDefault("oauth_token")
-  valid_579983 = validateParameter(valid_579983, JString, required = false,
+  if valid_589011 != nil:
+    section.add "alt", valid_589011
+  var valid_589012 = query.getOrDefault("oauth_token")
+  valid_589012 = validateParameter(valid_589012, JString, required = false,
                                  default = nil)
-  if valid_579983 != nil:
-    section.add "oauth_token", valid_579983
-  var valid_579984 = query.getOrDefault("userIp")
-  valid_579984 = validateParameter(valid_579984, JString, required = false,
+  if valid_589012 != nil:
+    section.add "oauth_token", valid_589012
+  var valid_589013 = query.getOrDefault("userIp")
+  valid_589013 = validateParameter(valid_589013, JString, required = false,
                                  default = nil)
-  if valid_579984 != nil:
-    section.add "userIp", valid_579984
-  var valid_579985 = query.getOrDefault("key")
-  valid_579985 = validateParameter(valid_579985, JString, required = false,
+  if valid_589013 != nil:
+    section.add "userIp", valid_589013
+  var valid_589014 = query.getOrDefault("key")
+  valid_589014 = validateParameter(valid_589014, JString, required = false,
                                  default = nil)
-  if valid_579985 != nil:
-    section.add "key", valid_579985
-  var valid_579986 = query.getOrDefault("prettyPrint")
-  valid_579986 = validateParameter(valid_579986, JBool, required = false,
+  if valid_589014 != nil:
+    section.add "key", valid_589014
+  var valid_589015 = query.getOrDefault("prettyPrint")
+  valid_589015 = validateParameter(valid_589015, JBool, required = false,
                                  default = newJBool(true))
-  if valid_579986 != nil:
-    section.add "prettyPrint", valid_579986
+  if valid_589015 != nil:
+    section.add "prettyPrint", valid_589015
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -367,20 +367,20 @@ proc validate_AndroidpublisherEditsGet_579976(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_579987: Call_AndroidpublisherEditsGet_579975; path: JsonNode;
+proc call*(call_589016: Call_AndroidpublisherEditsGet_589004; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Returns information about the edit specified. Calls will fail if the edit is no long active (e.g. has been deleted, superseded or expired).
   ## 
-  let valid = call_579987.validator(path, query, header, formData, body)
-  let scheme = call_579987.pickScheme
+  let valid = call_589016.validator(path, query, header, formData, body)
+  let scheme = call_589016.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_579987.url(scheme.get, call_579987.host, call_579987.base,
-                         call_579987.route, valid.getOrDefault("path"),
+  let url = call_589016.url(scheme.get, call_589016.host, call_589016.base,
+                         call_589016.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_579987, url, valid)
+  result = hook(call_589016, url, valid)
 
-proc call*(call_579988: Call_AndroidpublisherEditsGet_579975; packageName: string;
+proc call*(call_589017: Call_AndroidpublisherEditsGet_589004; packageName: string;
           editId: string; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; userIp: string = "";
           key: string = ""; prettyPrint: bool = true): Recallable =
@@ -404,28 +404,28 @@ proc call*(call_579988: Call_AndroidpublisherEditsGet_579975; packageName: strin
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_579989 = newJObject()
-  var query_579990 = newJObject()
-  add(query_579990, "fields", newJString(fields))
-  add(path_579989, "packageName", newJString(packageName))
-  add(query_579990, "quotaUser", newJString(quotaUser))
-  add(query_579990, "alt", newJString(alt))
-  add(path_579989, "editId", newJString(editId))
-  add(query_579990, "oauth_token", newJString(oauthToken))
-  add(query_579990, "userIp", newJString(userIp))
-  add(query_579990, "key", newJString(key))
-  add(query_579990, "prettyPrint", newJBool(prettyPrint))
-  result = call_579988.call(path_579989, query_579990, nil, nil, nil)
+  var path_589018 = newJObject()
+  var query_589019 = newJObject()
+  add(query_589019, "fields", newJString(fields))
+  add(path_589018, "packageName", newJString(packageName))
+  add(query_589019, "quotaUser", newJString(quotaUser))
+  add(query_589019, "alt", newJString(alt))
+  add(path_589018, "editId", newJString(editId))
+  add(query_589019, "oauth_token", newJString(oauthToken))
+  add(query_589019, "userIp", newJString(userIp))
+  add(query_589019, "key", newJString(key))
+  add(query_589019, "prettyPrint", newJBool(prettyPrint))
+  result = call_589017.call(path_589018, query_589019, nil, nil, nil)
 
-var androidpublisherEditsGet* = Call_AndroidpublisherEditsGet_579975(
+var androidpublisherEditsGet* = Call_AndroidpublisherEditsGet_589004(
     name: "androidpublisherEditsGet", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/{packageName}/edits/{editId}",
-    validator: validate_AndroidpublisherEditsGet_579976,
-    base: "/androidpublisher/v2/applications", url: url_AndroidpublisherEditsGet_579977,
+    validator: validate_AndroidpublisherEditsGet_589005,
+    base: "/androidpublisher/v2/applications", url: url_AndroidpublisherEditsGet_589006,
     schemes: {Scheme.Https})
 type
-  Call_AndroidpublisherEditsDelete_579991 = ref object of OpenApiRestCall_579421
-proc url_AndroidpublisherEditsDelete_579993(protocol: Scheme; host: string;
+  Call_AndroidpublisherEditsDelete_589020 = ref object of OpenApiRestCall_588450
+proc url_AndroidpublisherEditsDelete_589022(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -443,7 +443,7 @@ proc url_AndroidpublisherEditsDelete_579993(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_AndroidpublisherEditsDelete_579992(path: JsonNode; query: JsonNode;
+proc validate_AndroidpublisherEditsDelete_589021(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Deletes an edit for an app. Creating a new edit will automatically delete any of your previous edits so this method need only be called if you want to preemptively abandon an edit.
   ## 
@@ -457,16 +457,16 @@ proc validate_AndroidpublisherEditsDelete_579992(path: JsonNode; query: JsonNode
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `packageName` field"
-  var valid_579994 = path.getOrDefault("packageName")
-  valid_579994 = validateParameter(valid_579994, JString, required = true,
+  var valid_589023 = path.getOrDefault("packageName")
+  valid_589023 = validateParameter(valid_589023, JString, required = true,
                                  default = nil)
-  if valid_579994 != nil:
-    section.add "packageName", valid_579994
-  var valid_579995 = path.getOrDefault("editId")
-  valid_579995 = validateParameter(valid_579995, JString, required = true,
+  if valid_589023 != nil:
+    section.add "packageName", valid_589023
+  var valid_589024 = path.getOrDefault("editId")
+  valid_589024 = validateParameter(valid_589024, JString, required = true,
                                  default = nil)
-  if valid_579995 != nil:
-    section.add "editId", valid_579995
+  if valid_589024 != nil:
+    section.add "editId", valid_589024
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -484,41 +484,41 @@ proc validate_AndroidpublisherEditsDelete_579992(path: JsonNode; query: JsonNode
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_579996 = query.getOrDefault("fields")
-  valid_579996 = validateParameter(valid_579996, JString, required = false,
+  var valid_589025 = query.getOrDefault("fields")
+  valid_589025 = validateParameter(valid_589025, JString, required = false,
                                  default = nil)
-  if valid_579996 != nil:
-    section.add "fields", valid_579996
-  var valid_579997 = query.getOrDefault("quotaUser")
-  valid_579997 = validateParameter(valid_579997, JString, required = false,
+  if valid_589025 != nil:
+    section.add "fields", valid_589025
+  var valid_589026 = query.getOrDefault("quotaUser")
+  valid_589026 = validateParameter(valid_589026, JString, required = false,
                                  default = nil)
-  if valid_579997 != nil:
-    section.add "quotaUser", valid_579997
-  var valid_579998 = query.getOrDefault("alt")
-  valid_579998 = validateParameter(valid_579998, JString, required = false,
+  if valid_589026 != nil:
+    section.add "quotaUser", valid_589026
+  var valid_589027 = query.getOrDefault("alt")
+  valid_589027 = validateParameter(valid_589027, JString, required = false,
                                  default = newJString("json"))
-  if valid_579998 != nil:
-    section.add "alt", valid_579998
-  var valid_579999 = query.getOrDefault("oauth_token")
-  valid_579999 = validateParameter(valid_579999, JString, required = false,
+  if valid_589027 != nil:
+    section.add "alt", valid_589027
+  var valid_589028 = query.getOrDefault("oauth_token")
+  valid_589028 = validateParameter(valid_589028, JString, required = false,
                                  default = nil)
-  if valid_579999 != nil:
-    section.add "oauth_token", valid_579999
-  var valid_580000 = query.getOrDefault("userIp")
-  valid_580000 = validateParameter(valid_580000, JString, required = false,
+  if valid_589028 != nil:
+    section.add "oauth_token", valid_589028
+  var valid_589029 = query.getOrDefault("userIp")
+  valid_589029 = validateParameter(valid_589029, JString, required = false,
                                  default = nil)
-  if valid_580000 != nil:
-    section.add "userIp", valid_580000
-  var valid_580001 = query.getOrDefault("key")
-  valid_580001 = validateParameter(valid_580001, JString, required = false,
+  if valid_589029 != nil:
+    section.add "userIp", valid_589029
+  var valid_589030 = query.getOrDefault("key")
+  valid_589030 = validateParameter(valid_589030, JString, required = false,
                                  default = nil)
-  if valid_580001 != nil:
-    section.add "key", valid_580001
-  var valid_580002 = query.getOrDefault("prettyPrint")
-  valid_580002 = validateParameter(valid_580002, JBool, required = false,
+  if valid_589030 != nil:
+    section.add "key", valid_589030
+  var valid_589031 = query.getOrDefault("prettyPrint")
+  valid_589031 = validateParameter(valid_589031, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580002 != nil:
-    section.add "prettyPrint", valid_580002
+  if valid_589031 != nil:
+    section.add "prettyPrint", valid_589031
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -527,20 +527,20 @@ proc validate_AndroidpublisherEditsDelete_579992(path: JsonNode; query: JsonNode
   if body != nil:
     result.add "body", body
 
-proc call*(call_580003: Call_AndroidpublisherEditsDelete_579991; path: JsonNode;
+proc call*(call_589032: Call_AndroidpublisherEditsDelete_589020; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Deletes an edit for an app. Creating a new edit will automatically delete any of your previous edits so this method need only be called if you want to preemptively abandon an edit.
   ## 
-  let valid = call_580003.validator(path, query, header, formData, body)
-  let scheme = call_580003.pickScheme
+  let valid = call_589032.validator(path, query, header, formData, body)
+  let scheme = call_589032.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580003.url(scheme.get, call_580003.host, call_580003.base,
-                         call_580003.route, valid.getOrDefault("path"),
+  let url = call_589032.url(scheme.get, call_589032.host, call_589032.base,
+                         call_589032.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580003, url, valid)
+  result = hook(call_589032, url, valid)
 
-proc call*(call_580004: Call_AndroidpublisherEditsDelete_579991;
+proc call*(call_589033: Call_AndroidpublisherEditsDelete_589020;
           packageName: string; editId: string; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; key: string = ""; prettyPrint: bool = true): Recallable =
@@ -564,28 +564,28 @@ proc call*(call_580004: Call_AndroidpublisherEditsDelete_579991;
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_580005 = newJObject()
-  var query_580006 = newJObject()
-  add(query_580006, "fields", newJString(fields))
-  add(path_580005, "packageName", newJString(packageName))
-  add(query_580006, "quotaUser", newJString(quotaUser))
-  add(query_580006, "alt", newJString(alt))
-  add(path_580005, "editId", newJString(editId))
-  add(query_580006, "oauth_token", newJString(oauthToken))
-  add(query_580006, "userIp", newJString(userIp))
-  add(query_580006, "key", newJString(key))
-  add(query_580006, "prettyPrint", newJBool(prettyPrint))
-  result = call_580004.call(path_580005, query_580006, nil, nil, nil)
+  var path_589034 = newJObject()
+  var query_589035 = newJObject()
+  add(query_589035, "fields", newJString(fields))
+  add(path_589034, "packageName", newJString(packageName))
+  add(query_589035, "quotaUser", newJString(quotaUser))
+  add(query_589035, "alt", newJString(alt))
+  add(path_589034, "editId", newJString(editId))
+  add(query_589035, "oauth_token", newJString(oauthToken))
+  add(query_589035, "userIp", newJString(userIp))
+  add(query_589035, "key", newJString(key))
+  add(query_589035, "prettyPrint", newJBool(prettyPrint))
+  result = call_589033.call(path_589034, query_589035, nil, nil, nil)
 
-var androidpublisherEditsDelete* = Call_AndroidpublisherEditsDelete_579991(
+var androidpublisherEditsDelete* = Call_AndroidpublisherEditsDelete_589020(
     name: "androidpublisherEditsDelete", meth: HttpMethod.HttpDelete,
     host: "www.googleapis.com", route: "/{packageName}/edits/{editId}",
-    validator: validate_AndroidpublisherEditsDelete_579992,
+    validator: validate_AndroidpublisherEditsDelete_589021,
     base: "/androidpublisher/v2/applications",
-    url: url_AndroidpublisherEditsDelete_579993, schemes: {Scheme.Https})
+    url: url_AndroidpublisherEditsDelete_589022, schemes: {Scheme.Https})
 type
-  Call_AndroidpublisherEditsApksUpload_580023 = ref object of OpenApiRestCall_579421
-proc url_AndroidpublisherEditsApksUpload_580025(protocol: Scheme; host: string;
+  Call_AndroidpublisherEditsApksUpload_589052 = ref object of OpenApiRestCall_588450
+proc url_AndroidpublisherEditsApksUpload_589054(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -604,7 +604,7 @@ proc url_AndroidpublisherEditsApksUpload_580025(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_AndroidpublisherEditsApksUpload_580024(path: JsonNode;
+proc validate_AndroidpublisherEditsApksUpload_589053(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   var section: JsonNode
   result = newJObject()
@@ -616,16 +616,16 @@ proc validate_AndroidpublisherEditsApksUpload_580024(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `packageName` field"
-  var valid_580026 = path.getOrDefault("packageName")
-  valid_580026 = validateParameter(valid_580026, JString, required = true,
+  var valid_589055 = path.getOrDefault("packageName")
+  valid_589055 = validateParameter(valid_589055, JString, required = true,
                                  default = nil)
-  if valid_580026 != nil:
-    section.add "packageName", valid_580026
-  var valid_580027 = path.getOrDefault("editId")
-  valid_580027 = validateParameter(valid_580027, JString, required = true,
+  if valid_589055 != nil:
+    section.add "packageName", valid_589055
+  var valid_589056 = path.getOrDefault("editId")
+  valid_589056 = validateParameter(valid_589056, JString, required = true,
                                  default = nil)
-  if valid_580027 != nil:
-    section.add "editId", valid_580027
+  if valid_589056 != nil:
+    section.add "editId", valid_589056
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -643,41 +643,41 @@ proc validate_AndroidpublisherEditsApksUpload_580024(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580028 = query.getOrDefault("fields")
-  valid_580028 = validateParameter(valid_580028, JString, required = false,
+  var valid_589057 = query.getOrDefault("fields")
+  valid_589057 = validateParameter(valid_589057, JString, required = false,
                                  default = nil)
-  if valid_580028 != nil:
-    section.add "fields", valid_580028
-  var valid_580029 = query.getOrDefault("quotaUser")
-  valid_580029 = validateParameter(valid_580029, JString, required = false,
+  if valid_589057 != nil:
+    section.add "fields", valid_589057
+  var valid_589058 = query.getOrDefault("quotaUser")
+  valid_589058 = validateParameter(valid_589058, JString, required = false,
                                  default = nil)
-  if valid_580029 != nil:
-    section.add "quotaUser", valid_580029
-  var valid_580030 = query.getOrDefault("alt")
-  valid_580030 = validateParameter(valid_580030, JString, required = false,
+  if valid_589058 != nil:
+    section.add "quotaUser", valid_589058
+  var valid_589059 = query.getOrDefault("alt")
+  valid_589059 = validateParameter(valid_589059, JString, required = false,
                                  default = newJString("json"))
-  if valid_580030 != nil:
-    section.add "alt", valid_580030
-  var valid_580031 = query.getOrDefault("oauth_token")
-  valid_580031 = validateParameter(valid_580031, JString, required = false,
+  if valid_589059 != nil:
+    section.add "alt", valid_589059
+  var valid_589060 = query.getOrDefault("oauth_token")
+  valid_589060 = validateParameter(valid_589060, JString, required = false,
                                  default = nil)
-  if valid_580031 != nil:
-    section.add "oauth_token", valid_580031
-  var valid_580032 = query.getOrDefault("userIp")
-  valid_580032 = validateParameter(valid_580032, JString, required = false,
+  if valid_589060 != nil:
+    section.add "oauth_token", valid_589060
+  var valid_589061 = query.getOrDefault("userIp")
+  valid_589061 = validateParameter(valid_589061, JString, required = false,
                                  default = nil)
-  if valid_580032 != nil:
-    section.add "userIp", valid_580032
-  var valid_580033 = query.getOrDefault("key")
-  valid_580033 = validateParameter(valid_580033, JString, required = false,
+  if valid_589061 != nil:
+    section.add "userIp", valid_589061
+  var valid_589062 = query.getOrDefault("key")
+  valid_589062 = validateParameter(valid_589062, JString, required = false,
                                  default = nil)
-  if valid_580033 != nil:
-    section.add "key", valid_580033
-  var valid_580034 = query.getOrDefault("prettyPrint")
-  valid_580034 = validateParameter(valid_580034, JBool, required = false,
+  if valid_589062 != nil:
+    section.add "key", valid_589062
+  var valid_589063 = query.getOrDefault("prettyPrint")
+  valid_589063 = validateParameter(valid_589063, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580034 != nil:
-    section.add "prettyPrint", valid_580034
+  if valid_589063 != nil:
+    section.add "prettyPrint", valid_589063
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -686,19 +686,19 @@ proc validate_AndroidpublisherEditsApksUpload_580024(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580035: Call_AndroidpublisherEditsApksUpload_580023;
+proc call*(call_589064: Call_AndroidpublisherEditsApksUpload_589052;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
-  let valid = call_580035.validator(path, query, header, formData, body)
-  let scheme = call_580035.pickScheme
+  let valid = call_589064.validator(path, query, header, formData, body)
+  let scheme = call_589064.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580035.url(scheme.get, call_580035.host, call_580035.base,
-                         call_580035.route, valid.getOrDefault("path"),
+  let url = call_589064.url(scheme.get, call_589064.host, call_589064.base,
+                         call_589064.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580035, url, valid)
+  result = hook(call_589064, url, valid)
 
-proc call*(call_580036: Call_AndroidpublisherEditsApksUpload_580023;
+proc call*(call_589065: Call_AndroidpublisherEditsApksUpload_589052;
           packageName: string; editId: string; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; key: string = ""; prettyPrint: bool = true): Recallable =
@@ -721,28 +721,28 @@ proc call*(call_580036: Call_AndroidpublisherEditsApksUpload_580023;
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_580037 = newJObject()
-  var query_580038 = newJObject()
-  add(query_580038, "fields", newJString(fields))
-  add(path_580037, "packageName", newJString(packageName))
-  add(query_580038, "quotaUser", newJString(quotaUser))
-  add(query_580038, "alt", newJString(alt))
-  add(path_580037, "editId", newJString(editId))
-  add(query_580038, "oauth_token", newJString(oauthToken))
-  add(query_580038, "userIp", newJString(userIp))
-  add(query_580038, "key", newJString(key))
-  add(query_580038, "prettyPrint", newJBool(prettyPrint))
-  result = call_580036.call(path_580037, query_580038, nil, nil, nil)
+  var path_589066 = newJObject()
+  var query_589067 = newJObject()
+  add(query_589067, "fields", newJString(fields))
+  add(path_589066, "packageName", newJString(packageName))
+  add(query_589067, "quotaUser", newJString(quotaUser))
+  add(query_589067, "alt", newJString(alt))
+  add(path_589066, "editId", newJString(editId))
+  add(query_589067, "oauth_token", newJString(oauthToken))
+  add(query_589067, "userIp", newJString(userIp))
+  add(query_589067, "key", newJString(key))
+  add(query_589067, "prettyPrint", newJBool(prettyPrint))
+  result = call_589065.call(path_589066, query_589067, nil, nil, nil)
 
-var androidpublisherEditsApksUpload* = Call_AndroidpublisherEditsApksUpload_580023(
+var androidpublisherEditsApksUpload* = Call_AndroidpublisherEditsApksUpload_589052(
     name: "androidpublisherEditsApksUpload", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com", route: "/{packageName}/edits/{editId}/apks",
-    validator: validate_AndroidpublisherEditsApksUpload_580024,
+    validator: validate_AndroidpublisherEditsApksUpload_589053,
     base: "/androidpublisher/v2/applications",
-    url: url_AndroidpublisherEditsApksUpload_580025, schemes: {Scheme.Https})
+    url: url_AndroidpublisherEditsApksUpload_589054, schemes: {Scheme.Https})
 type
-  Call_AndroidpublisherEditsApksList_580007 = ref object of OpenApiRestCall_579421
-proc url_AndroidpublisherEditsApksList_580009(protocol: Scheme; host: string;
+  Call_AndroidpublisherEditsApksList_589036 = ref object of OpenApiRestCall_588450
+proc url_AndroidpublisherEditsApksList_589038(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -761,7 +761,7 @@ proc url_AndroidpublisherEditsApksList_580009(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_AndroidpublisherEditsApksList_580008(path: JsonNode; query: JsonNode;
+proc validate_AndroidpublisherEditsApksList_589037(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   var section: JsonNode
   result = newJObject()
@@ -773,16 +773,16 @@ proc validate_AndroidpublisherEditsApksList_580008(path: JsonNode; query: JsonNo
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `packageName` field"
-  var valid_580010 = path.getOrDefault("packageName")
-  valid_580010 = validateParameter(valid_580010, JString, required = true,
+  var valid_589039 = path.getOrDefault("packageName")
+  valid_589039 = validateParameter(valid_589039, JString, required = true,
                                  default = nil)
-  if valid_580010 != nil:
-    section.add "packageName", valid_580010
-  var valid_580011 = path.getOrDefault("editId")
-  valid_580011 = validateParameter(valid_580011, JString, required = true,
+  if valid_589039 != nil:
+    section.add "packageName", valid_589039
+  var valid_589040 = path.getOrDefault("editId")
+  valid_589040 = validateParameter(valid_589040, JString, required = true,
                                  default = nil)
-  if valid_580011 != nil:
-    section.add "editId", valid_580011
+  if valid_589040 != nil:
+    section.add "editId", valid_589040
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -800,41 +800,41 @@ proc validate_AndroidpublisherEditsApksList_580008(path: JsonNode; query: JsonNo
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580012 = query.getOrDefault("fields")
-  valid_580012 = validateParameter(valid_580012, JString, required = false,
+  var valid_589041 = query.getOrDefault("fields")
+  valid_589041 = validateParameter(valid_589041, JString, required = false,
                                  default = nil)
-  if valid_580012 != nil:
-    section.add "fields", valid_580012
-  var valid_580013 = query.getOrDefault("quotaUser")
-  valid_580013 = validateParameter(valid_580013, JString, required = false,
+  if valid_589041 != nil:
+    section.add "fields", valid_589041
+  var valid_589042 = query.getOrDefault("quotaUser")
+  valid_589042 = validateParameter(valid_589042, JString, required = false,
                                  default = nil)
-  if valid_580013 != nil:
-    section.add "quotaUser", valid_580013
-  var valid_580014 = query.getOrDefault("alt")
-  valid_580014 = validateParameter(valid_580014, JString, required = false,
+  if valid_589042 != nil:
+    section.add "quotaUser", valid_589042
+  var valid_589043 = query.getOrDefault("alt")
+  valid_589043 = validateParameter(valid_589043, JString, required = false,
                                  default = newJString("json"))
-  if valid_580014 != nil:
-    section.add "alt", valid_580014
-  var valid_580015 = query.getOrDefault("oauth_token")
-  valid_580015 = validateParameter(valid_580015, JString, required = false,
+  if valid_589043 != nil:
+    section.add "alt", valid_589043
+  var valid_589044 = query.getOrDefault("oauth_token")
+  valid_589044 = validateParameter(valid_589044, JString, required = false,
                                  default = nil)
-  if valid_580015 != nil:
-    section.add "oauth_token", valid_580015
-  var valid_580016 = query.getOrDefault("userIp")
-  valid_580016 = validateParameter(valid_580016, JString, required = false,
+  if valid_589044 != nil:
+    section.add "oauth_token", valid_589044
+  var valid_589045 = query.getOrDefault("userIp")
+  valid_589045 = validateParameter(valid_589045, JString, required = false,
                                  default = nil)
-  if valid_580016 != nil:
-    section.add "userIp", valid_580016
-  var valid_580017 = query.getOrDefault("key")
-  valid_580017 = validateParameter(valid_580017, JString, required = false,
+  if valid_589045 != nil:
+    section.add "userIp", valid_589045
+  var valid_589046 = query.getOrDefault("key")
+  valid_589046 = validateParameter(valid_589046, JString, required = false,
                                  default = nil)
-  if valid_580017 != nil:
-    section.add "key", valid_580017
-  var valid_580018 = query.getOrDefault("prettyPrint")
-  valid_580018 = validateParameter(valid_580018, JBool, required = false,
+  if valid_589046 != nil:
+    section.add "key", valid_589046
+  var valid_589047 = query.getOrDefault("prettyPrint")
+  valid_589047 = validateParameter(valid_589047, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580018 != nil:
-    section.add "prettyPrint", valid_580018
+  if valid_589047 != nil:
+    section.add "prettyPrint", valid_589047
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -843,18 +843,18 @@ proc validate_AndroidpublisherEditsApksList_580008(path: JsonNode; query: JsonNo
   if body != nil:
     result.add "body", body
 
-proc call*(call_580019: Call_AndroidpublisherEditsApksList_580007; path: JsonNode;
+proc call*(call_589048: Call_AndroidpublisherEditsApksList_589036; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
-  let valid = call_580019.validator(path, query, header, formData, body)
-  let scheme = call_580019.pickScheme
+  let valid = call_589048.validator(path, query, header, formData, body)
+  let scheme = call_589048.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580019.url(scheme.get, call_580019.host, call_580019.base,
-                         call_580019.route, valid.getOrDefault("path"),
+  let url = call_589048.url(scheme.get, call_589048.host, call_589048.base,
+                         call_589048.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580019, url, valid)
+  result = hook(call_589048, url, valid)
 
-proc call*(call_580020: Call_AndroidpublisherEditsApksList_580007;
+proc call*(call_589049: Call_AndroidpublisherEditsApksList_589036;
           packageName: string; editId: string; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; key: string = ""; prettyPrint: bool = true): Recallable =
@@ -877,28 +877,28 @@ proc call*(call_580020: Call_AndroidpublisherEditsApksList_580007;
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_580021 = newJObject()
-  var query_580022 = newJObject()
-  add(query_580022, "fields", newJString(fields))
-  add(path_580021, "packageName", newJString(packageName))
-  add(query_580022, "quotaUser", newJString(quotaUser))
-  add(query_580022, "alt", newJString(alt))
-  add(path_580021, "editId", newJString(editId))
-  add(query_580022, "oauth_token", newJString(oauthToken))
-  add(query_580022, "userIp", newJString(userIp))
-  add(query_580022, "key", newJString(key))
-  add(query_580022, "prettyPrint", newJBool(prettyPrint))
-  result = call_580020.call(path_580021, query_580022, nil, nil, nil)
+  var path_589050 = newJObject()
+  var query_589051 = newJObject()
+  add(query_589051, "fields", newJString(fields))
+  add(path_589050, "packageName", newJString(packageName))
+  add(query_589051, "quotaUser", newJString(quotaUser))
+  add(query_589051, "alt", newJString(alt))
+  add(path_589050, "editId", newJString(editId))
+  add(query_589051, "oauth_token", newJString(oauthToken))
+  add(query_589051, "userIp", newJString(userIp))
+  add(query_589051, "key", newJString(key))
+  add(query_589051, "prettyPrint", newJBool(prettyPrint))
+  result = call_589049.call(path_589050, query_589051, nil, nil, nil)
 
-var androidpublisherEditsApksList* = Call_AndroidpublisherEditsApksList_580007(
+var androidpublisherEditsApksList* = Call_AndroidpublisherEditsApksList_589036(
     name: "androidpublisherEditsApksList", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/{packageName}/edits/{editId}/apks",
-    validator: validate_AndroidpublisherEditsApksList_580008,
+    validator: validate_AndroidpublisherEditsApksList_589037,
     base: "/androidpublisher/v2/applications",
-    url: url_AndroidpublisherEditsApksList_580009, schemes: {Scheme.Https})
+    url: url_AndroidpublisherEditsApksList_589038, schemes: {Scheme.Https})
 type
-  Call_AndroidpublisherEditsApksAddexternallyhosted_580039 = ref object of OpenApiRestCall_579421
-proc url_AndroidpublisherEditsApksAddexternallyhosted_580041(protocol: Scheme;
+  Call_AndroidpublisherEditsApksAddexternallyhosted_589068 = ref object of OpenApiRestCall_588450
+proc url_AndroidpublisherEditsApksAddexternallyhosted_589070(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -917,7 +917,7 @@ proc url_AndroidpublisherEditsApksAddexternallyhosted_580041(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_AndroidpublisherEditsApksAddexternallyhosted_580040(path: JsonNode;
+proc validate_AndroidpublisherEditsApksAddexternallyhosted_589069(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Creates a new APK without uploading the APK itself to Google Play, instead hosting the APK at a specified URL. This function is only available to enterprises using Google Play for Work whose application is configured to restrict distribution to the enterprise domain.
   ## 
@@ -931,16 +931,16 @@ proc validate_AndroidpublisherEditsApksAddexternallyhosted_580040(path: JsonNode
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `packageName` field"
-  var valid_580042 = path.getOrDefault("packageName")
-  valid_580042 = validateParameter(valid_580042, JString, required = true,
+  var valid_589071 = path.getOrDefault("packageName")
+  valid_589071 = validateParameter(valid_589071, JString, required = true,
                                  default = nil)
-  if valid_580042 != nil:
-    section.add "packageName", valid_580042
-  var valid_580043 = path.getOrDefault("editId")
-  valid_580043 = validateParameter(valid_580043, JString, required = true,
+  if valid_589071 != nil:
+    section.add "packageName", valid_589071
+  var valid_589072 = path.getOrDefault("editId")
+  valid_589072 = validateParameter(valid_589072, JString, required = true,
                                  default = nil)
-  if valid_580043 != nil:
-    section.add "editId", valid_580043
+  if valid_589072 != nil:
+    section.add "editId", valid_589072
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -958,41 +958,41 @@ proc validate_AndroidpublisherEditsApksAddexternallyhosted_580040(path: JsonNode
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580044 = query.getOrDefault("fields")
-  valid_580044 = validateParameter(valid_580044, JString, required = false,
+  var valid_589073 = query.getOrDefault("fields")
+  valid_589073 = validateParameter(valid_589073, JString, required = false,
                                  default = nil)
-  if valid_580044 != nil:
-    section.add "fields", valid_580044
-  var valid_580045 = query.getOrDefault("quotaUser")
-  valid_580045 = validateParameter(valid_580045, JString, required = false,
+  if valid_589073 != nil:
+    section.add "fields", valid_589073
+  var valid_589074 = query.getOrDefault("quotaUser")
+  valid_589074 = validateParameter(valid_589074, JString, required = false,
                                  default = nil)
-  if valid_580045 != nil:
-    section.add "quotaUser", valid_580045
-  var valid_580046 = query.getOrDefault("alt")
-  valid_580046 = validateParameter(valid_580046, JString, required = false,
+  if valid_589074 != nil:
+    section.add "quotaUser", valid_589074
+  var valid_589075 = query.getOrDefault("alt")
+  valid_589075 = validateParameter(valid_589075, JString, required = false,
                                  default = newJString("json"))
-  if valid_580046 != nil:
-    section.add "alt", valid_580046
-  var valid_580047 = query.getOrDefault("oauth_token")
-  valid_580047 = validateParameter(valid_580047, JString, required = false,
+  if valid_589075 != nil:
+    section.add "alt", valid_589075
+  var valid_589076 = query.getOrDefault("oauth_token")
+  valid_589076 = validateParameter(valid_589076, JString, required = false,
                                  default = nil)
-  if valid_580047 != nil:
-    section.add "oauth_token", valid_580047
-  var valid_580048 = query.getOrDefault("userIp")
-  valid_580048 = validateParameter(valid_580048, JString, required = false,
+  if valid_589076 != nil:
+    section.add "oauth_token", valid_589076
+  var valid_589077 = query.getOrDefault("userIp")
+  valid_589077 = validateParameter(valid_589077, JString, required = false,
                                  default = nil)
-  if valid_580048 != nil:
-    section.add "userIp", valid_580048
-  var valid_580049 = query.getOrDefault("key")
-  valid_580049 = validateParameter(valid_580049, JString, required = false,
+  if valid_589077 != nil:
+    section.add "userIp", valid_589077
+  var valid_589078 = query.getOrDefault("key")
+  valid_589078 = validateParameter(valid_589078, JString, required = false,
                                  default = nil)
-  if valid_580049 != nil:
-    section.add "key", valid_580049
-  var valid_580050 = query.getOrDefault("prettyPrint")
-  valid_580050 = validateParameter(valid_580050, JBool, required = false,
+  if valid_589078 != nil:
+    section.add "key", valid_589078
+  var valid_589079 = query.getOrDefault("prettyPrint")
+  valid_589079 = validateParameter(valid_589079, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580050 != nil:
-    section.add "prettyPrint", valid_580050
+  if valid_589079 != nil:
+    section.add "prettyPrint", valid_589079
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1004,21 +1004,21 @@ proc validate_AndroidpublisherEditsApksAddexternallyhosted_580040(path: JsonNode
   if body != nil:
     result.add "body", body
 
-proc call*(call_580052: Call_AndroidpublisherEditsApksAddexternallyhosted_580039;
+proc call*(call_589081: Call_AndroidpublisherEditsApksAddexternallyhosted_589068;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Creates a new APK without uploading the APK itself to Google Play, instead hosting the APK at a specified URL. This function is only available to enterprises using Google Play for Work whose application is configured to restrict distribution to the enterprise domain.
   ## 
-  let valid = call_580052.validator(path, query, header, formData, body)
-  let scheme = call_580052.pickScheme
+  let valid = call_589081.validator(path, query, header, formData, body)
+  let scheme = call_589081.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580052.url(scheme.get, call_580052.host, call_580052.base,
-                         call_580052.route, valid.getOrDefault("path"),
+  let url = call_589081.url(scheme.get, call_589081.host, call_589081.base,
+                         call_589081.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580052, url, valid)
+  result = hook(call_589081, url, valid)
 
-proc call*(call_580053: Call_AndroidpublisherEditsApksAddexternallyhosted_580039;
+proc call*(call_589082: Call_AndroidpublisherEditsApksAddexternallyhosted_589068;
           packageName: string; editId: string; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; key: string = ""; body: JsonNode = nil;
@@ -1044,33 +1044,33 @@ proc call*(call_580053: Call_AndroidpublisherEditsApksAddexternallyhosted_580039
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_580054 = newJObject()
-  var query_580055 = newJObject()
-  var body_580056 = newJObject()
-  add(query_580055, "fields", newJString(fields))
-  add(path_580054, "packageName", newJString(packageName))
-  add(query_580055, "quotaUser", newJString(quotaUser))
-  add(query_580055, "alt", newJString(alt))
-  add(path_580054, "editId", newJString(editId))
-  add(query_580055, "oauth_token", newJString(oauthToken))
-  add(query_580055, "userIp", newJString(userIp))
-  add(query_580055, "key", newJString(key))
+  var path_589083 = newJObject()
+  var query_589084 = newJObject()
+  var body_589085 = newJObject()
+  add(query_589084, "fields", newJString(fields))
+  add(path_589083, "packageName", newJString(packageName))
+  add(query_589084, "quotaUser", newJString(quotaUser))
+  add(query_589084, "alt", newJString(alt))
+  add(path_589083, "editId", newJString(editId))
+  add(query_589084, "oauth_token", newJString(oauthToken))
+  add(query_589084, "userIp", newJString(userIp))
+  add(query_589084, "key", newJString(key))
   if body != nil:
-    body_580056 = body
-  add(query_580055, "prettyPrint", newJBool(prettyPrint))
-  result = call_580053.call(path_580054, query_580055, nil, nil, body_580056)
+    body_589085 = body
+  add(query_589084, "prettyPrint", newJBool(prettyPrint))
+  result = call_589082.call(path_589083, query_589084, nil, nil, body_589085)
 
-var androidpublisherEditsApksAddexternallyhosted* = Call_AndroidpublisherEditsApksAddexternallyhosted_580039(
+var androidpublisherEditsApksAddexternallyhosted* = Call_AndroidpublisherEditsApksAddexternallyhosted_589068(
     name: "androidpublisherEditsApksAddexternallyhosted",
     meth: HttpMethod.HttpPost, host: "www.googleapis.com",
     route: "/{packageName}/edits/{editId}/apks/externallyHosted",
-    validator: validate_AndroidpublisherEditsApksAddexternallyhosted_580040,
+    validator: validate_AndroidpublisherEditsApksAddexternallyhosted_589069,
     base: "/androidpublisher/v2/applications",
-    url: url_AndroidpublisherEditsApksAddexternallyhosted_580041,
+    url: url_AndroidpublisherEditsApksAddexternallyhosted_589070,
     schemes: {Scheme.Https})
 type
-  Call_AndroidpublisherEditsDeobfuscationfilesUpload_580057 = ref object of OpenApiRestCall_579421
-proc url_AndroidpublisherEditsDeobfuscationfilesUpload_580059(protocol: Scheme;
+  Call_AndroidpublisherEditsDeobfuscationfilesUpload_589086 = ref object of OpenApiRestCall_588450
+proc url_AndroidpublisherEditsDeobfuscationfilesUpload_589088(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -1095,7 +1095,7 @@ proc url_AndroidpublisherEditsDeobfuscationfilesUpload_580059(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_AndroidpublisherEditsDeobfuscationfilesUpload_580058(
+proc validate_AndroidpublisherEditsDeobfuscationfilesUpload_589087(
     path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
     body: JsonNode): JsonNode =
   ## Uploads the deobfuscation file of the specified APK. If a deobfuscation file already exists, it will be replaced.
@@ -1113,25 +1113,25 @@ proc validate_AndroidpublisherEditsDeobfuscationfilesUpload_580058(
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `packageName` field"
-  var valid_580060 = path.getOrDefault("packageName")
-  valid_580060 = validateParameter(valid_580060, JString, required = true,
+  var valid_589089 = path.getOrDefault("packageName")
+  valid_589089 = validateParameter(valid_589089, JString, required = true,
                                  default = nil)
-  if valid_580060 != nil:
-    section.add "packageName", valid_580060
-  var valid_580061 = path.getOrDefault("deobfuscationFileType")
-  valid_580061 = validateParameter(valid_580061, JString, required = true,
+  if valid_589089 != nil:
+    section.add "packageName", valid_589089
+  var valid_589090 = path.getOrDefault("deobfuscationFileType")
+  valid_589090 = validateParameter(valid_589090, JString, required = true,
                                  default = newJString("proguard"))
-  if valid_580061 != nil:
-    section.add "deobfuscationFileType", valid_580061
-  var valid_580062 = path.getOrDefault("editId")
-  valid_580062 = validateParameter(valid_580062, JString, required = true,
+  if valid_589090 != nil:
+    section.add "deobfuscationFileType", valid_589090
+  var valid_589091 = path.getOrDefault("editId")
+  valid_589091 = validateParameter(valid_589091, JString, required = true,
                                  default = nil)
-  if valid_580062 != nil:
-    section.add "editId", valid_580062
-  var valid_580063 = path.getOrDefault("apkVersionCode")
-  valid_580063 = validateParameter(valid_580063, JInt, required = true, default = nil)
-  if valid_580063 != nil:
-    section.add "apkVersionCode", valid_580063
+  if valid_589091 != nil:
+    section.add "editId", valid_589091
+  var valid_589092 = path.getOrDefault("apkVersionCode")
+  valid_589092 = validateParameter(valid_589092, JInt, required = true, default = nil)
+  if valid_589092 != nil:
+    section.add "apkVersionCode", valid_589092
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -1149,41 +1149,41 @@ proc validate_AndroidpublisherEditsDeobfuscationfilesUpload_580058(
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580064 = query.getOrDefault("fields")
-  valid_580064 = validateParameter(valid_580064, JString, required = false,
+  var valid_589093 = query.getOrDefault("fields")
+  valid_589093 = validateParameter(valid_589093, JString, required = false,
                                  default = nil)
-  if valid_580064 != nil:
-    section.add "fields", valid_580064
-  var valid_580065 = query.getOrDefault("quotaUser")
-  valid_580065 = validateParameter(valid_580065, JString, required = false,
+  if valid_589093 != nil:
+    section.add "fields", valid_589093
+  var valid_589094 = query.getOrDefault("quotaUser")
+  valid_589094 = validateParameter(valid_589094, JString, required = false,
                                  default = nil)
-  if valid_580065 != nil:
-    section.add "quotaUser", valid_580065
-  var valid_580066 = query.getOrDefault("alt")
-  valid_580066 = validateParameter(valid_580066, JString, required = false,
+  if valid_589094 != nil:
+    section.add "quotaUser", valid_589094
+  var valid_589095 = query.getOrDefault("alt")
+  valid_589095 = validateParameter(valid_589095, JString, required = false,
                                  default = newJString("json"))
-  if valid_580066 != nil:
-    section.add "alt", valid_580066
-  var valid_580067 = query.getOrDefault("oauth_token")
-  valid_580067 = validateParameter(valid_580067, JString, required = false,
+  if valid_589095 != nil:
+    section.add "alt", valid_589095
+  var valid_589096 = query.getOrDefault("oauth_token")
+  valid_589096 = validateParameter(valid_589096, JString, required = false,
                                  default = nil)
-  if valid_580067 != nil:
-    section.add "oauth_token", valid_580067
-  var valid_580068 = query.getOrDefault("userIp")
-  valid_580068 = validateParameter(valid_580068, JString, required = false,
+  if valid_589096 != nil:
+    section.add "oauth_token", valid_589096
+  var valid_589097 = query.getOrDefault("userIp")
+  valid_589097 = validateParameter(valid_589097, JString, required = false,
                                  default = nil)
-  if valid_580068 != nil:
-    section.add "userIp", valid_580068
-  var valid_580069 = query.getOrDefault("key")
-  valid_580069 = validateParameter(valid_580069, JString, required = false,
+  if valid_589097 != nil:
+    section.add "userIp", valid_589097
+  var valid_589098 = query.getOrDefault("key")
+  valid_589098 = validateParameter(valid_589098, JString, required = false,
                                  default = nil)
-  if valid_580069 != nil:
-    section.add "key", valid_580069
-  var valid_580070 = query.getOrDefault("prettyPrint")
-  valid_580070 = validateParameter(valid_580070, JBool, required = false,
+  if valid_589098 != nil:
+    section.add "key", valid_589098
+  var valid_589099 = query.getOrDefault("prettyPrint")
+  valid_589099 = validateParameter(valid_589099, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580070 != nil:
-    section.add "prettyPrint", valid_580070
+  if valid_589099 != nil:
+    section.add "prettyPrint", valid_589099
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1192,21 +1192,21 @@ proc validate_AndroidpublisherEditsDeobfuscationfilesUpload_580058(
   if body != nil:
     result.add "body", body
 
-proc call*(call_580071: Call_AndroidpublisherEditsDeobfuscationfilesUpload_580057;
+proc call*(call_589100: Call_AndroidpublisherEditsDeobfuscationfilesUpload_589086;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Uploads the deobfuscation file of the specified APK. If a deobfuscation file already exists, it will be replaced.
   ## 
-  let valid = call_580071.validator(path, query, header, formData, body)
-  let scheme = call_580071.pickScheme
+  let valid = call_589100.validator(path, query, header, formData, body)
+  let scheme = call_589100.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580071.url(scheme.get, call_580071.host, call_580071.base,
-                         call_580071.route, valid.getOrDefault("path"),
+  let url = call_589100.url(scheme.get, call_589100.host, call_589100.base,
+                         call_589100.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580071, url, valid)
+  result = hook(call_589100, url, valid)
 
-proc call*(call_580072: Call_AndroidpublisherEditsDeobfuscationfilesUpload_580057;
+proc call*(call_589101: Call_AndroidpublisherEditsDeobfuscationfilesUpload_589086;
           packageName: string; editId: string; apkVersionCode: int;
           fields: string = ""; quotaUser: string = "";
           deobfuscationFileType: string = "proguard"; alt: string = "json";
@@ -1235,31 +1235,31 @@ proc call*(call_580072: Call_AndroidpublisherEditsDeobfuscationfilesUpload_58005
   ##              : Returns response with indentations and line breaks.
   ##   apkVersionCode: int (required)
   ##                 : The version code of the APK whose deobfuscation file is being uploaded.
-  var path_580073 = newJObject()
-  var query_580074 = newJObject()
-  add(query_580074, "fields", newJString(fields))
-  add(path_580073, "packageName", newJString(packageName))
-  add(query_580074, "quotaUser", newJString(quotaUser))
-  add(path_580073, "deobfuscationFileType", newJString(deobfuscationFileType))
-  add(query_580074, "alt", newJString(alt))
-  add(path_580073, "editId", newJString(editId))
-  add(query_580074, "oauth_token", newJString(oauthToken))
-  add(query_580074, "userIp", newJString(userIp))
-  add(query_580074, "key", newJString(key))
-  add(query_580074, "prettyPrint", newJBool(prettyPrint))
-  add(path_580073, "apkVersionCode", newJInt(apkVersionCode))
-  result = call_580072.call(path_580073, query_580074, nil, nil, nil)
+  var path_589102 = newJObject()
+  var query_589103 = newJObject()
+  add(query_589103, "fields", newJString(fields))
+  add(path_589102, "packageName", newJString(packageName))
+  add(query_589103, "quotaUser", newJString(quotaUser))
+  add(path_589102, "deobfuscationFileType", newJString(deobfuscationFileType))
+  add(query_589103, "alt", newJString(alt))
+  add(path_589102, "editId", newJString(editId))
+  add(query_589103, "oauth_token", newJString(oauthToken))
+  add(query_589103, "userIp", newJString(userIp))
+  add(query_589103, "key", newJString(key))
+  add(query_589103, "prettyPrint", newJBool(prettyPrint))
+  add(path_589102, "apkVersionCode", newJInt(apkVersionCode))
+  result = call_589101.call(path_589102, query_589103, nil, nil, nil)
 
-var androidpublisherEditsDeobfuscationfilesUpload* = Call_AndroidpublisherEditsDeobfuscationfilesUpload_580057(
+var androidpublisherEditsDeobfuscationfilesUpload* = Call_AndroidpublisherEditsDeobfuscationfilesUpload_589086(
     name: "androidpublisherEditsDeobfuscationfilesUpload",
     meth: HttpMethod.HttpPost, host: "www.googleapis.com", route: "/{packageName}/edits/{editId}/apks/{apkVersionCode}/deobfuscationFiles/{deobfuscationFileType}",
-    validator: validate_AndroidpublisherEditsDeobfuscationfilesUpload_580058,
+    validator: validate_AndroidpublisherEditsDeobfuscationfilesUpload_589087,
     base: "/androidpublisher/v2/applications",
-    url: url_AndroidpublisherEditsDeobfuscationfilesUpload_580059,
+    url: url_AndroidpublisherEditsDeobfuscationfilesUpload_589088,
     schemes: {Scheme.Https})
 type
-  Call_AndroidpublisherEditsExpansionfilesUpdate_580093 = ref object of OpenApiRestCall_579421
-proc url_AndroidpublisherEditsExpansionfilesUpdate_580095(protocol: Scheme;
+  Call_AndroidpublisherEditsExpansionfilesUpdate_589122 = ref object of OpenApiRestCall_588450
+proc url_AndroidpublisherEditsExpansionfilesUpdate_589124(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -1284,7 +1284,7 @@ proc url_AndroidpublisherEditsExpansionfilesUpdate_580095(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_AndroidpublisherEditsExpansionfilesUpdate_580094(path: JsonNode;
+proc validate_AndroidpublisherEditsExpansionfilesUpdate_589123(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Updates the APK's Expansion File configuration to reference another APK's Expansion Files. To add a new Expansion File use the Upload method.
   ## 
@@ -1301,25 +1301,25 @@ proc validate_AndroidpublisherEditsExpansionfilesUpdate_580094(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `packageName` field"
-  var valid_580096 = path.getOrDefault("packageName")
-  valid_580096 = validateParameter(valid_580096, JString, required = true,
+  var valid_589125 = path.getOrDefault("packageName")
+  valid_589125 = validateParameter(valid_589125, JString, required = true,
                                  default = nil)
-  if valid_580096 != nil:
-    section.add "packageName", valid_580096
-  var valid_580097 = path.getOrDefault("editId")
-  valid_580097 = validateParameter(valid_580097, JString, required = true,
+  if valid_589125 != nil:
+    section.add "packageName", valid_589125
+  var valid_589126 = path.getOrDefault("editId")
+  valid_589126 = validateParameter(valid_589126, JString, required = true,
                                  default = nil)
-  if valid_580097 != nil:
-    section.add "editId", valid_580097
-  var valid_580098 = path.getOrDefault("expansionFileType")
-  valid_580098 = validateParameter(valid_580098, JString, required = true,
+  if valid_589126 != nil:
+    section.add "editId", valid_589126
+  var valid_589127 = path.getOrDefault("expansionFileType")
+  valid_589127 = validateParameter(valid_589127, JString, required = true,
                                  default = newJString("main"))
-  if valid_580098 != nil:
-    section.add "expansionFileType", valid_580098
-  var valid_580099 = path.getOrDefault("apkVersionCode")
-  valid_580099 = validateParameter(valid_580099, JInt, required = true, default = nil)
-  if valid_580099 != nil:
-    section.add "apkVersionCode", valid_580099
+  if valid_589127 != nil:
+    section.add "expansionFileType", valid_589127
+  var valid_589128 = path.getOrDefault("apkVersionCode")
+  valid_589128 = validateParameter(valid_589128, JInt, required = true, default = nil)
+  if valid_589128 != nil:
+    section.add "apkVersionCode", valid_589128
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -1337,41 +1337,41 @@ proc validate_AndroidpublisherEditsExpansionfilesUpdate_580094(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580100 = query.getOrDefault("fields")
-  valid_580100 = validateParameter(valid_580100, JString, required = false,
+  var valid_589129 = query.getOrDefault("fields")
+  valid_589129 = validateParameter(valid_589129, JString, required = false,
                                  default = nil)
-  if valid_580100 != nil:
-    section.add "fields", valid_580100
-  var valid_580101 = query.getOrDefault("quotaUser")
-  valid_580101 = validateParameter(valid_580101, JString, required = false,
+  if valid_589129 != nil:
+    section.add "fields", valid_589129
+  var valid_589130 = query.getOrDefault("quotaUser")
+  valid_589130 = validateParameter(valid_589130, JString, required = false,
                                  default = nil)
-  if valid_580101 != nil:
-    section.add "quotaUser", valid_580101
-  var valid_580102 = query.getOrDefault("alt")
-  valid_580102 = validateParameter(valid_580102, JString, required = false,
+  if valid_589130 != nil:
+    section.add "quotaUser", valid_589130
+  var valid_589131 = query.getOrDefault("alt")
+  valid_589131 = validateParameter(valid_589131, JString, required = false,
                                  default = newJString("json"))
-  if valid_580102 != nil:
-    section.add "alt", valid_580102
-  var valid_580103 = query.getOrDefault("oauth_token")
-  valid_580103 = validateParameter(valid_580103, JString, required = false,
+  if valid_589131 != nil:
+    section.add "alt", valid_589131
+  var valid_589132 = query.getOrDefault("oauth_token")
+  valid_589132 = validateParameter(valid_589132, JString, required = false,
                                  default = nil)
-  if valid_580103 != nil:
-    section.add "oauth_token", valid_580103
-  var valid_580104 = query.getOrDefault("userIp")
-  valid_580104 = validateParameter(valid_580104, JString, required = false,
+  if valid_589132 != nil:
+    section.add "oauth_token", valid_589132
+  var valid_589133 = query.getOrDefault("userIp")
+  valid_589133 = validateParameter(valid_589133, JString, required = false,
                                  default = nil)
-  if valid_580104 != nil:
-    section.add "userIp", valid_580104
-  var valid_580105 = query.getOrDefault("key")
-  valid_580105 = validateParameter(valid_580105, JString, required = false,
+  if valid_589133 != nil:
+    section.add "userIp", valid_589133
+  var valid_589134 = query.getOrDefault("key")
+  valid_589134 = validateParameter(valid_589134, JString, required = false,
                                  default = nil)
-  if valid_580105 != nil:
-    section.add "key", valid_580105
-  var valid_580106 = query.getOrDefault("prettyPrint")
-  valid_580106 = validateParameter(valid_580106, JBool, required = false,
+  if valid_589134 != nil:
+    section.add "key", valid_589134
+  var valid_589135 = query.getOrDefault("prettyPrint")
+  valid_589135 = validateParameter(valid_589135, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580106 != nil:
-    section.add "prettyPrint", valid_580106
+  if valid_589135 != nil:
+    section.add "prettyPrint", valid_589135
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1383,21 +1383,21 @@ proc validate_AndroidpublisherEditsExpansionfilesUpdate_580094(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580108: Call_AndroidpublisherEditsExpansionfilesUpdate_580093;
+proc call*(call_589137: Call_AndroidpublisherEditsExpansionfilesUpdate_589122;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Updates the APK's Expansion File configuration to reference another APK's Expansion Files. To add a new Expansion File use the Upload method.
   ## 
-  let valid = call_580108.validator(path, query, header, formData, body)
-  let scheme = call_580108.pickScheme
+  let valid = call_589137.validator(path, query, header, formData, body)
+  let scheme = call_589137.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580108.url(scheme.get, call_580108.host, call_580108.base,
-                         call_580108.route, valid.getOrDefault("path"),
+  let url = call_589137.url(scheme.get, call_589137.host, call_589137.base,
+                         call_589137.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580108, url, valid)
+  result = hook(call_589137, url, valid)
 
-proc call*(call_580109: Call_AndroidpublisherEditsExpansionfilesUpdate_580093;
+proc call*(call_589138: Call_AndroidpublisherEditsExpansionfilesUpdate_589122;
           packageName: string; editId: string; apkVersionCode: int;
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           oauthToken: string = ""; userIp: string = ""; key: string = "";
@@ -1427,34 +1427,34 @@ proc call*(call_580109: Call_AndroidpublisherEditsExpansionfilesUpdate_580093;
   ##              : Returns response with indentations and line breaks.
   ##   apkVersionCode: int (required)
   ##                 : The version code of the APK whose Expansion File configuration is being read or modified.
-  var path_580110 = newJObject()
-  var query_580111 = newJObject()
-  var body_580112 = newJObject()
-  add(query_580111, "fields", newJString(fields))
-  add(path_580110, "packageName", newJString(packageName))
-  add(query_580111, "quotaUser", newJString(quotaUser))
-  add(query_580111, "alt", newJString(alt))
-  add(path_580110, "editId", newJString(editId))
-  add(query_580111, "oauth_token", newJString(oauthToken))
-  add(query_580111, "userIp", newJString(userIp))
-  add(query_580111, "key", newJString(key))
-  add(path_580110, "expansionFileType", newJString(expansionFileType))
+  var path_589139 = newJObject()
+  var query_589140 = newJObject()
+  var body_589141 = newJObject()
+  add(query_589140, "fields", newJString(fields))
+  add(path_589139, "packageName", newJString(packageName))
+  add(query_589140, "quotaUser", newJString(quotaUser))
+  add(query_589140, "alt", newJString(alt))
+  add(path_589139, "editId", newJString(editId))
+  add(query_589140, "oauth_token", newJString(oauthToken))
+  add(query_589140, "userIp", newJString(userIp))
+  add(query_589140, "key", newJString(key))
+  add(path_589139, "expansionFileType", newJString(expansionFileType))
   if body != nil:
-    body_580112 = body
-  add(query_580111, "prettyPrint", newJBool(prettyPrint))
-  add(path_580110, "apkVersionCode", newJInt(apkVersionCode))
-  result = call_580109.call(path_580110, query_580111, nil, nil, body_580112)
+    body_589141 = body
+  add(query_589140, "prettyPrint", newJBool(prettyPrint))
+  add(path_589139, "apkVersionCode", newJInt(apkVersionCode))
+  result = call_589138.call(path_589139, query_589140, nil, nil, body_589141)
 
-var androidpublisherEditsExpansionfilesUpdate* = Call_AndroidpublisherEditsExpansionfilesUpdate_580093(
+var androidpublisherEditsExpansionfilesUpdate* = Call_AndroidpublisherEditsExpansionfilesUpdate_589122(
     name: "androidpublisherEditsExpansionfilesUpdate", meth: HttpMethod.HttpPut,
     host: "www.googleapis.com", route: "/{packageName}/edits/{editId}/apks/{apkVersionCode}/expansionFiles/{expansionFileType}",
-    validator: validate_AndroidpublisherEditsExpansionfilesUpdate_580094,
+    validator: validate_AndroidpublisherEditsExpansionfilesUpdate_589123,
     base: "/androidpublisher/v2/applications",
-    url: url_AndroidpublisherEditsExpansionfilesUpdate_580095,
+    url: url_AndroidpublisherEditsExpansionfilesUpdate_589124,
     schemes: {Scheme.Https})
 type
-  Call_AndroidpublisherEditsExpansionfilesUpload_580113 = ref object of OpenApiRestCall_579421
-proc url_AndroidpublisherEditsExpansionfilesUpload_580115(protocol: Scheme;
+  Call_AndroidpublisherEditsExpansionfilesUpload_589142 = ref object of OpenApiRestCall_588450
+proc url_AndroidpublisherEditsExpansionfilesUpload_589144(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -1479,7 +1479,7 @@ proc url_AndroidpublisherEditsExpansionfilesUpload_580115(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_AndroidpublisherEditsExpansionfilesUpload_580114(path: JsonNode;
+proc validate_AndroidpublisherEditsExpansionfilesUpload_589143(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Uploads and attaches a new Expansion File to the APK specified.
   ## 
@@ -1496,25 +1496,25 @@ proc validate_AndroidpublisherEditsExpansionfilesUpload_580114(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `packageName` field"
-  var valid_580116 = path.getOrDefault("packageName")
-  valid_580116 = validateParameter(valid_580116, JString, required = true,
+  var valid_589145 = path.getOrDefault("packageName")
+  valid_589145 = validateParameter(valid_589145, JString, required = true,
                                  default = nil)
-  if valid_580116 != nil:
-    section.add "packageName", valid_580116
-  var valid_580117 = path.getOrDefault("editId")
-  valid_580117 = validateParameter(valid_580117, JString, required = true,
+  if valid_589145 != nil:
+    section.add "packageName", valid_589145
+  var valid_589146 = path.getOrDefault("editId")
+  valid_589146 = validateParameter(valid_589146, JString, required = true,
                                  default = nil)
-  if valid_580117 != nil:
-    section.add "editId", valid_580117
-  var valid_580118 = path.getOrDefault("expansionFileType")
-  valid_580118 = validateParameter(valid_580118, JString, required = true,
+  if valid_589146 != nil:
+    section.add "editId", valid_589146
+  var valid_589147 = path.getOrDefault("expansionFileType")
+  valid_589147 = validateParameter(valid_589147, JString, required = true,
                                  default = newJString("main"))
-  if valid_580118 != nil:
-    section.add "expansionFileType", valid_580118
-  var valid_580119 = path.getOrDefault("apkVersionCode")
-  valid_580119 = validateParameter(valid_580119, JInt, required = true, default = nil)
-  if valid_580119 != nil:
-    section.add "apkVersionCode", valid_580119
+  if valid_589147 != nil:
+    section.add "expansionFileType", valid_589147
+  var valid_589148 = path.getOrDefault("apkVersionCode")
+  valid_589148 = validateParameter(valid_589148, JInt, required = true, default = nil)
+  if valid_589148 != nil:
+    section.add "apkVersionCode", valid_589148
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -1532,41 +1532,41 @@ proc validate_AndroidpublisherEditsExpansionfilesUpload_580114(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580120 = query.getOrDefault("fields")
-  valid_580120 = validateParameter(valid_580120, JString, required = false,
+  var valid_589149 = query.getOrDefault("fields")
+  valid_589149 = validateParameter(valid_589149, JString, required = false,
                                  default = nil)
-  if valid_580120 != nil:
-    section.add "fields", valid_580120
-  var valid_580121 = query.getOrDefault("quotaUser")
-  valid_580121 = validateParameter(valid_580121, JString, required = false,
+  if valid_589149 != nil:
+    section.add "fields", valid_589149
+  var valid_589150 = query.getOrDefault("quotaUser")
+  valid_589150 = validateParameter(valid_589150, JString, required = false,
                                  default = nil)
-  if valid_580121 != nil:
-    section.add "quotaUser", valid_580121
-  var valid_580122 = query.getOrDefault("alt")
-  valid_580122 = validateParameter(valid_580122, JString, required = false,
+  if valid_589150 != nil:
+    section.add "quotaUser", valid_589150
+  var valid_589151 = query.getOrDefault("alt")
+  valid_589151 = validateParameter(valid_589151, JString, required = false,
                                  default = newJString("json"))
-  if valid_580122 != nil:
-    section.add "alt", valid_580122
-  var valid_580123 = query.getOrDefault("oauth_token")
-  valid_580123 = validateParameter(valid_580123, JString, required = false,
+  if valid_589151 != nil:
+    section.add "alt", valid_589151
+  var valid_589152 = query.getOrDefault("oauth_token")
+  valid_589152 = validateParameter(valid_589152, JString, required = false,
                                  default = nil)
-  if valid_580123 != nil:
-    section.add "oauth_token", valid_580123
-  var valid_580124 = query.getOrDefault("userIp")
-  valid_580124 = validateParameter(valid_580124, JString, required = false,
+  if valid_589152 != nil:
+    section.add "oauth_token", valid_589152
+  var valid_589153 = query.getOrDefault("userIp")
+  valid_589153 = validateParameter(valid_589153, JString, required = false,
                                  default = nil)
-  if valid_580124 != nil:
-    section.add "userIp", valid_580124
-  var valid_580125 = query.getOrDefault("key")
-  valid_580125 = validateParameter(valid_580125, JString, required = false,
+  if valid_589153 != nil:
+    section.add "userIp", valid_589153
+  var valid_589154 = query.getOrDefault("key")
+  valid_589154 = validateParameter(valid_589154, JString, required = false,
                                  default = nil)
-  if valid_580125 != nil:
-    section.add "key", valid_580125
-  var valid_580126 = query.getOrDefault("prettyPrint")
-  valid_580126 = validateParameter(valid_580126, JBool, required = false,
+  if valid_589154 != nil:
+    section.add "key", valid_589154
+  var valid_589155 = query.getOrDefault("prettyPrint")
+  valid_589155 = validateParameter(valid_589155, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580126 != nil:
-    section.add "prettyPrint", valid_580126
+  if valid_589155 != nil:
+    section.add "prettyPrint", valid_589155
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1575,21 +1575,21 @@ proc validate_AndroidpublisherEditsExpansionfilesUpload_580114(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580127: Call_AndroidpublisherEditsExpansionfilesUpload_580113;
+proc call*(call_589156: Call_AndroidpublisherEditsExpansionfilesUpload_589142;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Uploads and attaches a new Expansion File to the APK specified.
   ## 
-  let valid = call_580127.validator(path, query, header, formData, body)
-  let scheme = call_580127.pickScheme
+  let valid = call_589156.validator(path, query, header, formData, body)
+  let scheme = call_589156.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580127.url(scheme.get, call_580127.host, call_580127.base,
-                         call_580127.route, valid.getOrDefault("path"),
+  let url = call_589156.url(scheme.get, call_589156.host, call_589156.base,
+                         call_589156.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580127, url, valid)
+  result = hook(call_589156, url, valid)
 
-proc call*(call_580128: Call_AndroidpublisherEditsExpansionfilesUpload_580113;
+proc call*(call_589157: Call_AndroidpublisherEditsExpansionfilesUpload_589142;
           packageName: string; editId: string; apkVersionCode: int;
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           oauthToken: string = ""; userIp: string = ""; key: string = "";
@@ -1617,31 +1617,31 @@ proc call*(call_580128: Call_AndroidpublisherEditsExpansionfilesUpload_580113;
   ##              : Returns response with indentations and line breaks.
   ##   apkVersionCode: int (required)
   ##                 : The version code of the APK whose Expansion File configuration is being read or modified.
-  var path_580129 = newJObject()
-  var query_580130 = newJObject()
-  add(query_580130, "fields", newJString(fields))
-  add(path_580129, "packageName", newJString(packageName))
-  add(query_580130, "quotaUser", newJString(quotaUser))
-  add(query_580130, "alt", newJString(alt))
-  add(path_580129, "editId", newJString(editId))
-  add(query_580130, "oauth_token", newJString(oauthToken))
-  add(query_580130, "userIp", newJString(userIp))
-  add(query_580130, "key", newJString(key))
-  add(path_580129, "expansionFileType", newJString(expansionFileType))
-  add(query_580130, "prettyPrint", newJBool(prettyPrint))
-  add(path_580129, "apkVersionCode", newJInt(apkVersionCode))
-  result = call_580128.call(path_580129, query_580130, nil, nil, nil)
+  var path_589158 = newJObject()
+  var query_589159 = newJObject()
+  add(query_589159, "fields", newJString(fields))
+  add(path_589158, "packageName", newJString(packageName))
+  add(query_589159, "quotaUser", newJString(quotaUser))
+  add(query_589159, "alt", newJString(alt))
+  add(path_589158, "editId", newJString(editId))
+  add(query_589159, "oauth_token", newJString(oauthToken))
+  add(query_589159, "userIp", newJString(userIp))
+  add(query_589159, "key", newJString(key))
+  add(path_589158, "expansionFileType", newJString(expansionFileType))
+  add(query_589159, "prettyPrint", newJBool(prettyPrint))
+  add(path_589158, "apkVersionCode", newJInt(apkVersionCode))
+  result = call_589157.call(path_589158, query_589159, nil, nil, nil)
 
-var androidpublisherEditsExpansionfilesUpload* = Call_AndroidpublisherEditsExpansionfilesUpload_580113(
+var androidpublisherEditsExpansionfilesUpload* = Call_AndroidpublisherEditsExpansionfilesUpload_589142(
     name: "androidpublisherEditsExpansionfilesUpload", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com", route: "/{packageName}/edits/{editId}/apks/{apkVersionCode}/expansionFiles/{expansionFileType}",
-    validator: validate_AndroidpublisherEditsExpansionfilesUpload_580114,
+    validator: validate_AndroidpublisherEditsExpansionfilesUpload_589143,
     base: "/androidpublisher/v2/applications",
-    url: url_AndroidpublisherEditsExpansionfilesUpload_580115,
+    url: url_AndroidpublisherEditsExpansionfilesUpload_589144,
     schemes: {Scheme.Https})
 type
-  Call_AndroidpublisherEditsExpansionfilesGet_580075 = ref object of OpenApiRestCall_579421
-proc url_AndroidpublisherEditsExpansionfilesGet_580077(protocol: Scheme;
+  Call_AndroidpublisherEditsExpansionfilesGet_589104 = ref object of OpenApiRestCall_588450
+proc url_AndroidpublisherEditsExpansionfilesGet_589106(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -1666,7 +1666,7 @@ proc url_AndroidpublisherEditsExpansionfilesGet_580077(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_AndroidpublisherEditsExpansionfilesGet_580076(path: JsonNode;
+proc validate_AndroidpublisherEditsExpansionfilesGet_589105(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Fetches the Expansion File configuration for the APK specified.
   ## 
@@ -1683,25 +1683,25 @@ proc validate_AndroidpublisherEditsExpansionfilesGet_580076(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `packageName` field"
-  var valid_580078 = path.getOrDefault("packageName")
-  valid_580078 = validateParameter(valid_580078, JString, required = true,
+  var valid_589107 = path.getOrDefault("packageName")
+  valid_589107 = validateParameter(valid_589107, JString, required = true,
                                  default = nil)
-  if valid_580078 != nil:
-    section.add "packageName", valid_580078
-  var valid_580079 = path.getOrDefault("editId")
-  valid_580079 = validateParameter(valid_580079, JString, required = true,
+  if valid_589107 != nil:
+    section.add "packageName", valid_589107
+  var valid_589108 = path.getOrDefault("editId")
+  valid_589108 = validateParameter(valid_589108, JString, required = true,
                                  default = nil)
-  if valid_580079 != nil:
-    section.add "editId", valid_580079
-  var valid_580080 = path.getOrDefault("expansionFileType")
-  valid_580080 = validateParameter(valid_580080, JString, required = true,
+  if valid_589108 != nil:
+    section.add "editId", valid_589108
+  var valid_589109 = path.getOrDefault("expansionFileType")
+  valid_589109 = validateParameter(valid_589109, JString, required = true,
                                  default = newJString("main"))
-  if valid_580080 != nil:
-    section.add "expansionFileType", valid_580080
-  var valid_580081 = path.getOrDefault("apkVersionCode")
-  valid_580081 = validateParameter(valid_580081, JInt, required = true, default = nil)
-  if valid_580081 != nil:
-    section.add "apkVersionCode", valid_580081
+  if valid_589109 != nil:
+    section.add "expansionFileType", valid_589109
+  var valid_589110 = path.getOrDefault("apkVersionCode")
+  valid_589110 = validateParameter(valid_589110, JInt, required = true, default = nil)
+  if valid_589110 != nil:
+    section.add "apkVersionCode", valid_589110
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -1719,41 +1719,41 @@ proc validate_AndroidpublisherEditsExpansionfilesGet_580076(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580082 = query.getOrDefault("fields")
-  valid_580082 = validateParameter(valid_580082, JString, required = false,
+  var valid_589111 = query.getOrDefault("fields")
+  valid_589111 = validateParameter(valid_589111, JString, required = false,
                                  default = nil)
-  if valid_580082 != nil:
-    section.add "fields", valid_580082
-  var valid_580083 = query.getOrDefault("quotaUser")
-  valid_580083 = validateParameter(valid_580083, JString, required = false,
+  if valid_589111 != nil:
+    section.add "fields", valid_589111
+  var valid_589112 = query.getOrDefault("quotaUser")
+  valid_589112 = validateParameter(valid_589112, JString, required = false,
                                  default = nil)
-  if valid_580083 != nil:
-    section.add "quotaUser", valid_580083
-  var valid_580084 = query.getOrDefault("alt")
-  valid_580084 = validateParameter(valid_580084, JString, required = false,
+  if valid_589112 != nil:
+    section.add "quotaUser", valid_589112
+  var valid_589113 = query.getOrDefault("alt")
+  valid_589113 = validateParameter(valid_589113, JString, required = false,
                                  default = newJString("json"))
-  if valid_580084 != nil:
-    section.add "alt", valid_580084
-  var valid_580085 = query.getOrDefault("oauth_token")
-  valid_580085 = validateParameter(valid_580085, JString, required = false,
+  if valid_589113 != nil:
+    section.add "alt", valid_589113
+  var valid_589114 = query.getOrDefault("oauth_token")
+  valid_589114 = validateParameter(valid_589114, JString, required = false,
                                  default = nil)
-  if valid_580085 != nil:
-    section.add "oauth_token", valid_580085
-  var valid_580086 = query.getOrDefault("userIp")
-  valid_580086 = validateParameter(valid_580086, JString, required = false,
+  if valid_589114 != nil:
+    section.add "oauth_token", valid_589114
+  var valid_589115 = query.getOrDefault("userIp")
+  valid_589115 = validateParameter(valid_589115, JString, required = false,
                                  default = nil)
-  if valid_580086 != nil:
-    section.add "userIp", valid_580086
-  var valid_580087 = query.getOrDefault("key")
-  valid_580087 = validateParameter(valid_580087, JString, required = false,
+  if valid_589115 != nil:
+    section.add "userIp", valid_589115
+  var valid_589116 = query.getOrDefault("key")
+  valid_589116 = validateParameter(valid_589116, JString, required = false,
                                  default = nil)
-  if valid_580087 != nil:
-    section.add "key", valid_580087
-  var valid_580088 = query.getOrDefault("prettyPrint")
-  valid_580088 = validateParameter(valid_580088, JBool, required = false,
+  if valid_589116 != nil:
+    section.add "key", valid_589116
+  var valid_589117 = query.getOrDefault("prettyPrint")
+  valid_589117 = validateParameter(valid_589117, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580088 != nil:
-    section.add "prettyPrint", valid_580088
+  if valid_589117 != nil:
+    section.add "prettyPrint", valid_589117
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1762,21 +1762,21 @@ proc validate_AndroidpublisherEditsExpansionfilesGet_580076(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580089: Call_AndroidpublisherEditsExpansionfilesGet_580075;
+proc call*(call_589118: Call_AndroidpublisherEditsExpansionfilesGet_589104;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Fetches the Expansion File configuration for the APK specified.
   ## 
-  let valid = call_580089.validator(path, query, header, formData, body)
-  let scheme = call_580089.pickScheme
+  let valid = call_589118.validator(path, query, header, formData, body)
+  let scheme = call_589118.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580089.url(scheme.get, call_580089.host, call_580089.base,
-                         call_580089.route, valid.getOrDefault("path"),
+  let url = call_589118.url(scheme.get, call_589118.host, call_589118.base,
+                         call_589118.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580089, url, valid)
+  result = hook(call_589118, url, valid)
 
-proc call*(call_580090: Call_AndroidpublisherEditsExpansionfilesGet_580075;
+proc call*(call_589119: Call_AndroidpublisherEditsExpansionfilesGet_589104;
           packageName: string; editId: string; apkVersionCode: int;
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           oauthToken: string = ""; userIp: string = ""; key: string = "";
@@ -1804,31 +1804,31 @@ proc call*(call_580090: Call_AndroidpublisherEditsExpansionfilesGet_580075;
   ##              : Returns response with indentations and line breaks.
   ##   apkVersionCode: int (required)
   ##                 : The version code of the APK whose Expansion File configuration is being read or modified.
-  var path_580091 = newJObject()
-  var query_580092 = newJObject()
-  add(query_580092, "fields", newJString(fields))
-  add(path_580091, "packageName", newJString(packageName))
-  add(query_580092, "quotaUser", newJString(quotaUser))
-  add(query_580092, "alt", newJString(alt))
-  add(path_580091, "editId", newJString(editId))
-  add(query_580092, "oauth_token", newJString(oauthToken))
-  add(query_580092, "userIp", newJString(userIp))
-  add(query_580092, "key", newJString(key))
-  add(path_580091, "expansionFileType", newJString(expansionFileType))
-  add(query_580092, "prettyPrint", newJBool(prettyPrint))
-  add(path_580091, "apkVersionCode", newJInt(apkVersionCode))
-  result = call_580090.call(path_580091, query_580092, nil, nil, nil)
+  var path_589120 = newJObject()
+  var query_589121 = newJObject()
+  add(query_589121, "fields", newJString(fields))
+  add(path_589120, "packageName", newJString(packageName))
+  add(query_589121, "quotaUser", newJString(quotaUser))
+  add(query_589121, "alt", newJString(alt))
+  add(path_589120, "editId", newJString(editId))
+  add(query_589121, "oauth_token", newJString(oauthToken))
+  add(query_589121, "userIp", newJString(userIp))
+  add(query_589121, "key", newJString(key))
+  add(path_589120, "expansionFileType", newJString(expansionFileType))
+  add(query_589121, "prettyPrint", newJBool(prettyPrint))
+  add(path_589120, "apkVersionCode", newJInt(apkVersionCode))
+  result = call_589119.call(path_589120, query_589121, nil, nil, nil)
 
-var androidpublisherEditsExpansionfilesGet* = Call_AndroidpublisherEditsExpansionfilesGet_580075(
+var androidpublisherEditsExpansionfilesGet* = Call_AndroidpublisherEditsExpansionfilesGet_589104(
     name: "androidpublisherEditsExpansionfilesGet", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/{packageName}/edits/{editId}/apks/{apkVersionCode}/expansionFiles/{expansionFileType}",
-    validator: validate_AndroidpublisherEditsExpansionfilesGet_580076,
+    validator: validate_AndroidpublisherEditsExpansionfilesGet_589105,
     base: "/androidpublisher/v2/applications",
-    url: url_AndroidpublisherEditsExpansionfilesGet_580077,
+    url: url_AndroidpublisherEditsExpansionfilesGet_589106,
     schemes: {Scheme.Https})
 type
-  Call_AndroidpublisherEditsExpansionfilesPatch_580131 = ref object of OpenApiRestCall_579421
-proc url_AndroidpublisherEditsExpansionfilesPatch_580133(protocol: Scheme;
+  Call_AndroidpublisherEditsExpansionfilesPatch_589160 = ref object of OpenApiRestCall_588450
+proc url_AndroidpublisherEditsExpansionfilesPatch_589162(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -1853,7 +1853,7 @@ proc url_AndroidpublisherEditsExpansionfilesPatch_580133(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_AndroidpublisherEditsExpansionfilesPatch_580132(path: JsonNode;
+proc validate_AndroidpublisherEditsExpansionfilesPatch_589161(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Updates the APK's Expansion File configuration to reference another APK's Expansion Files. To add a new Expansion File use the Upload method. This method supports patch semantics.
   ## 
@@ -1870,25 +1870,25 @@ proc validate_AndroidpublisherEditsExpansionfilesPatch_580132(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `packageName` field"
-  var valid_580134 = path.getOrDefault("packageName")
-  valid_580134 = validateParameter(valid_580134, JString, required = true,
+  var valid_589163 = path.getOrDefault("packageName")
+  valid_589163 = validateParameter(valid_589163, JString, required = true,
                                  default = nil)
-  if valid_580134 != nil:
-    section.add "packageName", valid_580134
-  var valid_580135 = path.getOrDefault("editId")
-  valid_580135 = validateParameter(valid_580135, JString, required = true,
+  if valid_589163 != nil:
+    section.add "packageName", valid_589163
+  var valid_589164 = path.getOrDefault("editId")
+  valid_589164 = validateParameter(valid_589164, JString, required = true,
                                  default = nil)
-  if valid_580135 != nil:
-    section.add "editId", valid_580135
-  var valid_580136 = path.getOrDefault("expansionFileType")
-  valid_580136 = validateParameter(valid_580136, JString, required = true,
+  if valid_589164 != nil:
+    section.add "editId", valid_589164
+  var valid_589165 = path.getOrDefault("expansionFileType")
+  valid_589165 = validateParameter(valid_589165, JString, required = true,
                                  default = newJString("main"))
-  if valid_580136 != nil:
-    section.add "expansionFileType", valid_580136
-  var valid_580137 = path.getOrDefault("apkVersionCode")
-  valid_580137 = validateParameter(valid_580137, JInt, required = true, default = nil)
-  if valid_580137 != nil:
-    section.add "apkVersionCode", valid_580137
+  if valid_589165 != nil:
+    section.add "expansionFileType", valid_589165
+  var valid_589166 = path.getOrDefault("apkVersionCode")
+  valid_589166 = validateParameter(valid_589166, JInt, required = true, default = nil)
+  if valid_589166 != nil:
+    section.add "apkVersionCode", valid_589166
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -1906,41 +1906,41 @@ proc validate_AndroidpublisherEditsExpansionfilesPatch_580132(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580138 = query.getOrDefault("fields")
-  valid_580138 = validateParameter(valid_580138, JString, required = false,
+  var valid_589167 = query.getOrDefault("fields")
+  valid_589167 = validateParameter(valid_589167, JString, required = false,
                                  default = nil)
-  if valid_580138 != nil:
-    section.add "fields", valid_580138
-  var valid_580139 = query.getOrDefault("quotaUser")
-  valid_580139 = validateParameter(valid_580139, JString, required = false,
+  if valid_589167 != nil:
+    section.add "fields", valid_589167
+  var valid_589168 = query.getOrDefault("quotaUser")
+  valid_589168 = validateParameter(valid_589168, JString, required = false,
                                  default = nil)
-  if valid_580139 != nil:
-    section.add "quotaUser", valid_580139
-  var valid_580140 = query.getOrDefault("alt")
-  valid_580140 = validateParameter(valid_580140, JString, required = false,
+  if valid_589168 != nil:
+    section.add "quotaUser", valid_589168
+  var valid_589169 = query.getOrDefault("alt")
+  valid_589169 = validateParameter(valid_589169, JString, required = false,
                                  default = newJString("json"))
-  if valid_580140 != nil:
-    section.add "alt", valid_580140
-  var valid_580141 = query.getOrDefault("oauth_token")
-  valid_580141 = validateParameter(valid_580141, JString, required = false,
+  if valid_589169 != nil:
+    section.add "alt", valid_589169
+  var valid_589170 = query.getOrDefault("oauth_token")
+  valid_589170 = validateParameter(valid_589170, JString, required = false,
                                  default = nil)
-  if valid_580141 != nil:
-    section.add "oauth_token", valid_580141
-  var valid_580142 = query.getOrDefault("userIp")
-  valid_580142 = validateParameter(valid_580142, JString, required = false,
+  if valid_589170 != nil:
+    section.add "oauth_token", valid_589170
+  var valid_589171 = query.getOrDefault("userIp")
+  valid_589171 = validateParameter(valid_589171, JString, required = false,
                                  default = nil)
-  if valid_580142 != nil:
-    section.add "userIp", valid_580142
-  var valid_580143 = query.getOrDefault("key")
-  valid_580143 = validateParameter(valid_580143, JString, required = false,
+  if valid_589171 != nil:
+    section.add "userIp", valid_589171
+  var valid_589172 = query.getOrDefault("key")
+  valid_589172 = validateParameter(valid_589172, JString, required = false,
                                  default = nil)
-  if valid_580143 != nil:
-    section.add "key", valid_580143
-  var valid_580144 = query.getOrDefault("prettyPrint")
-  valid_580144 = validateParameter(valid_580144, JBool, required = false,
+  if valid_589172 != nil:
+    section.add "key", valid_589172
+  var valid_589173 = query.getOrDefault("prettyPrint")
+  valid_589173 = validateParameter(valid_589173, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580144 != nil:
-    section.add "prettyPrint", valid_580144
+  if valid_589173 != nil:
+    section.add "prettyPrint", valid_589173
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1952,21 +1952,21 @@ proc validate_AndroidpublisherEditsExpansionfilesPatch_580132(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580146: Call_AndroidpublisherEditsExpansionfilesPatch_580131;
+proc call*(call_589175: Call_AndroidpublisherEditsExpansionfilesPatch_589160;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Updates the APK's Expansion File configuration to reference another APK's Expansion Files. To add a new Expansion File use the Upload method. This method supports patch semantics.
   ## 
-  let valid = call_580146.validator(path, query, header, formData, body)
-  let scheme = call_580146.pickScheme
+  let valid = call_589175.validator(path, query, header, formData, body)
+  let scheme = call_589175.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580146.url(scheme.get, call_580146.host, call_580146.base,
-                         call_580146.route, valid.getOrDefault("path"),
+  let url = call_589175.url(scheme.get, call_589175.host, call_589175.base,
+                         call_589175.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580146, url, valid)
+  result = hook(call_589175, url, valid)
 
-proc call*(call_580147: Call_AndroidpublisherEditsExpansionfilesPatch_580131;
+proc call*(call_589176: Call_AndroidpublisherEditsExpansionfilesPatch_589160;
           packageName: string; editId: string; apkVersionCode: int;
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           oauthToken: string = ""; userIp: string = ""; key: string = "";
@@ -1996,34 +1996,34 @@ proc call*(call_580147: Call_AndroidpublisherEditsExpansionfilesPatch_580131;
   ##              : Returns response with indentations and line breaks.
   ##   apkVersionCode: int (required)
   ##                 : The version code of the APK whose Expansion File configuration is being read or modified.
-  var path_580148 = newJObject()
-  var query_580149 = newJObject()
-  var body_580150 = newJObject()
-  add(query_580149, "fields", newJString(fields))
-  add(path_580148, "packageName", newJString(packageName))
-  add(query_580149, "quotaUser", newJString(quotaUser))
-  add(query_580149, "alt", newJString(alt))
-  add(path_580148, "editId", newJString(editId))
-  add(query_580149, "oauth_token", newJString(oauthToken))
-  add(query_580149, "userIp", newJString(userIp))
-  add(query_580149, "key", newJString(key))
-  add(path_580148, "expansionFileType", newJString(expansionFileType))
+  var path_589177 = newJObject()
+  var query_589178 = newJObject()
+  var body_589179 = newJObject()
+  add(query_589178, "fields", newJString(fields))
+  add(path_589177, "packageName", newJString(packageName))
+  add(query_589178, "quotaUser", newJString(quotaUser))
+  add(query_589178, "alt", newJString(alt))
+  add(path_589177, "editId", newJString(editId))
+  add(query_589178, "oauth_token", newJString(oauthToken))
+  add(query_589178, "userIp", newJString(userIp))
+  add(query_589178, "key", newJString(key))
+  add(path_589177, "expansionFileType", newJString(expansionFileType))
   if body != nil:
-    body_580150 = body
-  add(query_580149, "prettyPrint", newJBool(prettyPrint))
-  add(path_580148, "apkVersionCode", newJInt(apkVersionCode))
-  result = call_580147.call(path_580148, query_580149, nil, nil, body_580150)
+    body_589179 = body
+  add(query_589178, "prettyPrint", newJBool(prettyPrint))
+  add(path_589177, "apkVersionCode", newJInt(apkVersionCode))
+  result = call_589176.call(path_589177, query_589178, nil, nil, body_589179)
 
-var androidpublisherEditsExpansionfilesPatch* = Call_AndroidpublisherEditsExpansionfilesPatch_580131(
+var androidpublisherEditsExpansionfilesPatch* = Call_AndroidpublisherEditsExpansionfilesPatch_589160(
     name: "androidpublisherEditsExpansionfilesPatch", meth: HttpMethod.HttpPatch,
     host: "www.googleapis.com", route: "/{packageName}/edits/{editId}/apks/{apkVersionCode}/expansionFiles/{expansionFileType}",
-    validator: validate_AndroidpublisherEditsExpansionfilesPatch_580132,
+    validator: validate_AndroidpublisherEditsExpansionfilesPatch_589161,
     base: "/androidpublisher/v2/applications",
-    url: url_AndroidpublisherEditsExpansionfilesPatch_580133,
+    url: url_AndroidpublisherEditsExpansionfilesPatch_589162,
     schemes: {Scheme.Https})
 type
-  Call_AndroidpublisherEditsApklistingsList_580151 = ref object of OpenApiRestCall_579421
-proc url_AndroidpublisherEditsApklistingsList_580153(protocol: Scheme;
+  Call_AndroidpublisherEditsApklistingsList_589180 = ref object of OpenApiRestCall_588450
+proc url_AndroidpublisherEditsApklistingsList_589182(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -2045,7 +2045,7 @@ proc url_AndroidpublisherEditsApklistingsList_580153(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_AndroidpublisherEditsApklistingsList_580152(path: JsonNode;
+proc validate_AndroidpublisherEditsApklistingsList_589181(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Lists all the APK-specific localized listings for a specified APK.
   ## 
@@ -2061,20 +2061,20 @@ proc validate_AndroidpublisherEditsApklistingsList_580152(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `packageName` field"
-  var valid_580154 = path.getOrDefault("packageName")
-  valid_580154 = validateParameter(valid_580154, JString, required = true,
+  var valid_589183 = path.getOrDefault("packageName")
+  valid_589183 = validateParameter(valid_589183, JString, required = true,
                                  default = nil)
-  if valid_580154 != nil:
-    section.add "packageName", valid_580154
-  var valid_580155 = path.getOrDefault("editId")
-  valid_580155 = validateParameter(valid_580155, JString, required = true,
+  if valid_589183 != nil:
+    section.add "packageName", valid_589183
+  var valid_589184 = path.getOrDefault("editId")
+  valid_589184 = validateParameter(valid_589184, JString, required = true,
                                  default = nil)
-  if valid_580155 != nil:
-    section.add "editId", valid_580155
-  var valid_580156 = path.getOrDefault("apkVersionCode")
-  valid_580156 = validateParameter(valid_580156, JInt, required = true, default = nil)
-  if valid_580156 != nil:
-    section.add "apkVersionCode", valid_580156
+  if valid_589184 != nil:
+    section.add "editId", valid_589184
+  var valid_589185 = path.getOrDefault("apkVersionCode")
+  valid_589185 = validateParameter(valid_589185, JInt, required = true, default = nil)
+  if valid_589185 != nil:
+    section.add "apkVersionCode", valid_589185
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -2092,41 +2092,41 @@ proc validate_AndroidpublisherEditsApklistingsList_580152(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580157 = query.getOrDefault("fields")
-  valid_580157 = validateParameter(valid_580157, JString, required = false,
+  var valid_589186 = query.getOrDefault("fields")
+  valid_589186 = validateParameter(valid_589186, JString, required = false,
                                  default = nil)
-  if valid_580157 != nil:
-    section.add "fields", valid_580157
-  var valid_580158 = query.getOrDefault("quotaUser")
-  valid_580158 = validateParameter(valid_580158, JString, required = false,
+  if valid_589186 != nil:
+    section.add "fields", valid_589186
+  var valid_589187 = query.getOrDefault("quotaUser")
+  valid_589187 = validateParameter(valid_589187, JString, required = false,
                                  default = nil)
-  if valid_580158 != nil:
-    section.add "quotaUser", valid_580158
-  var valid_580159 = query.getOrDefault("alt")
-  valid_580159 = validateParameter(valid_580159, JString, required = false,
+  if valid_589187 != nil:
+    section.add "quotaUser", valid_589187
+  var valid_589188 = query.getOrDefault("alt")
+  valid_589188 = validateParameter(valid_589188, JString, required = false,
                                  default = newJString("json"))
-  if valid_580159 != nil:
-    section.add "alt", valid_580159
-  var valid_580160 = query.getOrDefault("oauth_token")
-  valid_580160 = validateParameter(valid_580160, JString, required = false,
+  if valid_589188 != nil:
+    section.add "alt", valid_589188
+  var valid_589189 = query.getOrDefault("oauth_token")
+  valid_589189 = validateParameter(valid_589189, JString, required = false,
                                  default = nil)
-  if valid_580160 != nil:
-    section.add "oauth_token", valid_580160
-  var valid_580161 = query.getOrDefault("userIp")
-  valid_580161 = validateParameter(valid_580161, JString, required = false,
+  if valid_589189 != nil:
+    section.add "oauth_token", valid_589189
+  var valid_589190 = query.getOrDefault("userIp")
+  valid_589190 = validateParameter(valid_589190, JString, required = false,
                                  default = nil)
-  if valid_580161 != nil:
-    section.add "userIp", valid_580161
-  var valid_580162 = query.getOrDefault("key")
-  valid_580162 = validateParameter(valid_580162, JString, required = false,
+  if valid_589190 != nil:
+    section.add "userIp", valid_589190
+  var valid_589191 = query.getOrDefault("key")
+  valid_589191 = validateParameter(valid_589191, JString, required = false,
                                  default = nil)
-  if valid_580162 != nil:
-    section.add "key", valid_580162
-  var valid_580163 = query.getOrDefault("prettyPrint")
-  valid_580163 = validateParameter(valid_580163, JBool, required = false,
+  if valid_589191 != nil:
+    section.add "key", valid_589191
+  var valid_589192 = query.getOrDefault("prettyPrint")
+  valid_589192 = validateParameter(valid_589192, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580163 != nil:
-    section.add "prettyPrint", valid_580163
+  if valid_589192 != nil:
+    section.add "prettyPrint", valid_589192
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -2135,21 +2135,21 @@ proc validate_AndroidpublisherEditsApklistingsList_580152(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580164: Call_AndroidpublisherEditsApklistingsList_580151;
+proc call*(call_589193: Call_AndroidpublisherEditsApklistingsList_589180;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Lists all the APK-specific localized listings for a specified APK.
   ## 
-  let valid = call_580164.validator(path, query, header, formData, body)
-  let scheme = call_580164.pickScheme
+  let valid = call_589193.validator(path, query, header, formData, body)
+  let scheme = call_589193.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580164.url(scheme.get, call_580164.host, call_580164.base,
-                         call_580164.route, valid.getOrDefault("path"),
+  let url = call_589193.url(scheme.get, call_589193.host, call_589193.base,
+                         call_589193.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580164, url, valid)
+  result = hook(call_589193, url, valid)
 
-proc call*(call_580165: Call_AndroidpublisherEditsApklistingsList_580151;
+proc call*(call_589194: Call_AndroidpublisherEditsApklistingsList_589180;
           packageName: string; editId: string; apkVersionCode: int;
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           oauthToken: string = ""; userIp: string = ""; key: string = "";
@@ -2176,30 +2176,30 @@ proc call*(call_580165: Call_AndroidpublisherEditsApklistingsList_580151;
   ##              : Returns response with indentations and line breaks.
   ##   apkVersionCode: int (required)
   ##                 : The APK version code whose APK-specific listings should be read or modified.
-  var path_580166 = newJObject()
-  var query_580167 = newJObject()
-  add(query_580167, "fields", newJString(fields))
-  add(path_580166, "packageName", newJString(packageName))
-  add(query_580167, "quotaUser", newJString(quotaUser))
-  add(query_580167, "alt", newJString(alt))
-  add(path_580166, "editId", newJString(editId))
-  add(query_580167, "oauth_token", newJString(oauthToken))
-  add(query_580167, "userIp", newJString(userIp))
-  add(query_580167, "key", newJString(key))
-  add(query_580167, "prettyPrint", newJBool(prettyPrint))
-  add(path_580166, "apkVersionCode", newJInt(apkVersionCode))
-  result = call_580165.call(path_580166, query_580167, nil, nil, nil)
+  var path_589195 = newJObject()
+  var query_589196 = newJObject()
+  add(query_589196, "fields", newJString(fields))
+  add(path_589195, "packageName", newJString(packageName))
+  add(query_589196, "quotaUser", newJString(quotaUser))
+  add(query_589196, "alt", newJString(alt))
+  add(path_589195, "editId", newJString(editId))
+  add(query_589196, "oauth_token", newJString(oauthToken))
+  add(query_589196, "userIp", newJString(userIp))
+  add(query_589196, "key", newJString(key))
+  add(query_589196, "prettyPrint", newJBool(prettyPrint))
+  add(path_589195, "apkVersionCode", newJInt(apkVersionCode))
+  result = call_589194.call(path_589195, query_589196, nil, nil, nil)
 
-var androidpublisherEditsApklistingsList* = Call_AndroidpublisherEditsApklistingsList_580151(
+var androidpublisherEditsApklistingsList* = Call_AndroidpublisherEditsApklistingsList_589180(
     name: "androidpublisherEditsApklistingsList", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com",
     route: "/{packageName}/edits/{editId}/apks/{apkVersionCode}/listings",
-    validator: validate_AndroidpublisherEditsApklistingsList_580152,
+    validator: validate_AndroidpublisherEditsApklistingsList_589181,
     base: "/androidpublisher/v2/applications",
-    url: url_AndroidpublisherEditsApklistingsList_580153, schemes: {Scheme.Https})
+    url: url_AndroidpublisherEditsApklistingsList_589182, schemes: {Scheme.Https})
 type
-  Call_AndroidpublisherEditsApklistingsDeleteall_580168 = ref object of OpenApiRestCall_579421
-proc url_AndroidpublisherEditsApklistingsDeleteall_580170(protocol: Scheme;
+  Call_AndroidpublisherEditsApklistingsDeleteall_589197 = ref object of OpenApiRestCall_588450
+proc url_AndroidpublisherEditsApklistingsDeleteall_589199(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -2221,7 +2221,7 @@ proc url_AndroidpublisherEditsApklistingsDeleteall_580170(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_AndroidpublisherEditsApklistingsDeleteall_580169(path: JsonNode;
+proc validate_AndroidpublisherEditsApklistingsDeleteall_589198(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Deletes all the APK-specific localized listings for a specified APK.
   ## 
@@ -2237,20 +2237,20 @@ proc validate_AndroidpublisherEditsApklistingsDeleteall_580169(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `packageName` field"
-  var valid_580171 = path.getOrDefault("packageName")
-  valid_580171 = validateParameter(valid_580171, JString, required = true,
+  var valid_589200 = path.getOrDefault("packageName")
+  valid_589200 = validateParameter(valid_589200, JString, required = true,
                                  default = nil)
-  if valid_580171 != nil:
-    section.add "packageName", valid_580171
-  var valid_580172 = path.getOrDefault("editId")
-  valid_580172 = validateParameter(valid_580172, JString, required = true,
+  if valid_589200 != nil:
+    section.add "packageName", valid_589200
+  var valid_589201 = path.getOrDefault("editId")
+  valid_589201 = validateParameter(valid_589201, JString, required = true,
                                  default = nil)
-  if valid_580172 != nil:
-    section.add "editId", valid_580172
-  var valid_580173 = path.getOrDefault("apkVersionCode")
-  valid_580173 = validateParameter(valid_580173, JInt, required = true, default = nil)
-  if valid_580173 != nil:
-    section.add "apkVersionCode", valid_580173
+  if valid_589201 != nil:
+    section.add "editId", valid_589201
+  var valid_589202 = path.getOrDefault("apkVersionCode")
+  valid_589202 = validateParameter(valid_589202, JInt, required = true, default = nil)
+  if valid_589202 != nil:
+    section.add "apkVersionCode", valid_589202
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -2268,41 +2268,41 @@ proc validate_AndroidpublisherEditsApklistingsDeleteall_580169(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580174 = query.getOrDefault("fields")
-  valid_580174 = validateParameter(valid_580174, JString, required = false,
+  var valid_589203 = query.getOrDefault("fields")
+  valid_589203 = validateParameter(valid_589203, JString, required = false,
                                  default = nil)
-  if valid_580174 != nil:
-    section.add "fields", valid_580174
-  var valid_580175 = query.getOrDefault("quotaUser")
-  valid_580175 = validateParameter(valid_580175, JString, required = false,
+  if valid_589203 != nil:
+    section.add "fields", valid_589203
+  var valid_589204 = query.getOrDefault("quotaUser")
+  valid_589204 = validateParameter(valid_589204, JString, required = false,
                                  default = nil)
-  if valid_580175 != nil:
-    section.add "quotaUser", valid_580175
-  var valid_580176 = query.getOrDefault("alt")
-  valid_580176 = validateParameter(valid_580176, JString, required = false,
+  if valid_589204 != nil:
+    section.add "quotaUser", valid_589204
+  var valid_589205 = query.getOrDefault("alt")
+  valid_589205 = validateParameter(valid_589205, JString, required = false,
                                  default = newJString("json"))
-  if valid_580176 != nil:
-    section.add "alt", valid_580176
-  var valid_580177 = query.getOrDefault("oauth_token")
-  valid_580177 = validateParameter(valid_580177, JString, required = false,
+  if valid_589205 != nil:
+    section.add "alt", valid_589205
+  var valid_589206 = query.getOrDefault("oauth_token")
+  valid_589206 = validateParameter(valid_589206, JString, required = false,
                                  default = nil)
-  if valid_580177 != nil:
-    section.add "oauth_token", valid_580177
-  var valid_580178 = query.getOrDefault("userIp")
-  valid_580178 = validateParameter(valid_580178, JString, required = false,
+  if valid_589206 != nil:
+    section.add "oauth_token", valid_589206
+  var valid_589207 = query.getOrDefault("userIp")
+  valid_589207 = validateParameter(valid_589207, JString, required = false,
                                  default = nil)
-  if valid_580178 != nil:
-    section.add "userIp", valid_580178
-  var valid_580179 = query.getOrDefault("key")
-  valid_580179 = validateParameter(valid_580179, JString, required = false,
+  if valid_589207 != nil:
+    section.add "userIp", valid_589207
+  var valid_589208 = query.getOrDefault("key")
+  valid_589208 = validateParameter(valid_589208, JString, required = false,
                                  default = nil)
-  if valid_580179 != nil:
-    section.add "key", valid_580179
-  var valid_580180 = query.getOrDefault("prettyPrint")
-  valid_580180 = validateParameter(valid_580180, JBool, required = false,
+  if valid_589208 != nil:
+    section.add "key", valid_589208
+  var valid_589209 = query.getOrDefault("prettyPrint")
+  valid_589209 = validateParameter(valid_589209, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580180 != nil:
-    section.add "prettyPrint", valid_580180
+  if valid_589209 != nil:
+    section.add "prettyPrint", valid_589209
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -2311,21 +2311,21 @@ proc validate_AndroidpublisherEditsApklistingsDeleteall_580169(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580181: Call_AndroidpublisherEditsApklistingsDeleteall_580168;
+proc call*(call_589210: Call_AndroidpublisherEditsApklistingsDeleteall_589197;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Deletes all the APK-specific localized listings for a specified APK.
   ## 
-  let valid = call_580181.validator(path, query, header, formData, body)
-  let scheme = call_580181.pickScheme
+  let valid = call_589210.validator(path, query, header, formData, body)
+  let scheme = call_589210.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580181.url(scheme.get, call_580181.host, call_580181.base,
-                         call_580181.route, valid.getOrDefault("path"),
+  let url = call_589210.url(scheme.get, call_589210.host, call_589210.base,
+                         call_589210.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580181, url, valid)
+  result = hook(call_589210, url, valid)
 
-proc call*(call_580182: Call_AndroidpublisherEditsApklistingsDeleteall_580168;
+proc call*(call_589211: Call_AndroidpublisherEditsApklistingsDeleteall_589197;
           packageName: string; editId: string; apkVersionCode: int;
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           oauthToken: string = ""; userIp: string = ""; key: string = "";
@@ -2352,31 +2352,31 @@ proc call*(call_580182: Call_AndroidpublisherEditsApklistingsDeleteall_580168;
   ##              : Returns response with indentations and line breaks.
   ##   apkVersionCode: int (required)
   ##                 : The APK version code whose APK-specific listings should be read or modified.
-  var path_580183 = newJObject()
-  var query_580184 = newJObject()
-  add(query_580184, "fields", newJString(fields))
-  add(path_580183, "packageName", newJString(packageName))
-  add(query_580184, "quotaUser", newJString(quotaUser))
-  add(query_580184, "alt", newJString(alt))
-  add(path_580183, "editId", newJString(editId))
-  add(query_580184, "oauth_token", newJString(oauthToken))
-  add(query_580184, "userIp", newJString(userIp))
-  add(query_580184, "key", newJString(key))
-  add(query_580184, "prettyPrint", newJBool(prettyPrint))
-  add(path_580183, "apkVersionCode", newJInt(apkVersionCode))
-  result = call_580182.call(path_580183, query_580184, nil, nil, nil)
+  var path_589212 = newJObject()
+  var query_589213 = newJObject()
+  add(query_589213, "fields", newJString(fields))
+  add(path_589212, "packageName", newJString(packageName))
+  add(query_589213, "quotaUser", newJString(quotaUser))
+  add(query_589213, "alt", newJString(alt))
+  add(path_589212, "editId", newJString(editId))
+  add(query_589213, "oauth_token", newJString(oauthToken))
+  add(query_589213, "userIp", newJString(userIp))
+  add(query_589213, "key", newJString(key))
+  add(query_589213, "prettyPrint", newJBool(prettyPrint))
+  add(path_589212, "apkVersionCode", newJInt(apkVersionCode))
+  result = call_589211.call(path_589212, query_589213, nil, nil, nil)
 
-var androidpublisherEditsApklistingsDeleteall* = Call_AndroidpublisherEditsApklistingsDeleteall_580168(
+var androidpublisherEditsApklistingsDeleteall* = Call_AndroidpublisherEditsApklistingsDeleteall_589197(
     name: "androidpublisherEditsApklistingsDeleteall",
     meth: HttpMethod.HttpDelete, host: "www.googleapis.com",
     route: "/{packageName}/edits/{editId}/apks/{apkVersionCode}/listings",
-    validator: validate_AndroidpublisherEditsApklistingsDeleteall_580169,
+    validator: validate_AndroidpublisherEditsApklistingsDeleteall_589198,
     base: "/androidpublisher/v2/applications",
-    url: url_AndroidpublisherEditsApklistingsDeleteall_580170,
+    url: url_AndroidpublisherEditsApklistingsDeleteall_589199,
     schemes: {Scheme.Https})
 type
-  Call_AndroidpublisherEditsApklistingsUpdate_580203 = ref object of OpenApiRestCall_579421
-proc url_AndroidpublisherEditsApklistingsUpdate_580205(protocol: Scheme;
+  Call_AndroidpublisherEditsApklistingsUpdate_589232 = ref object of OpenApiRestCall_588450
+proc url_AndroidpublisherEditsApklistingsUpdate_589234(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -2400,7 +2400,7 @@ proc url_AndroidpublisherEditsApklistingsUpdate_580205(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_AndroidpublisherEditsApklistingsUpdate_580204(path: JsonNode;
+proc validate_AndroidpublisherEditsApklistingsUpdate_589233(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Updates or creates the APK-specific localized listing for a specified APK and language code.
   ## 
@@ -2418,25 +2418,25 @@ proc validate_AndroidpublisherEditsApklistingsUpdate_580204(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `packageName` field"
-  var valid_580206 = path.getOrDefault("packageName")
-  valid_580206 = validateParameter(valid_580206, JString, required = true,
+  var valid_589235 = path.getOrDefault("packageName")
+  valid_589235 = validateParameter(valid_589235, JString, required = true,
                                  default = nil)
-  if valid_580206 != nil:
-    section.add "packageName", valid_580206
-  var valid_580207 = path.getOrDefault("editId")
-  valid_580207 = validateParameter(valid_580207, JString, required = true,
+  if valid_589235 != nil:
+    section.add "packageName", valid_589235
+  var valid_589236 = path.getOrDefault("editId")
+  valid_589236 = validateParameter(valid_589236, JString, required = true,
                                  default = nil)
-  if valid_580207 != nil:
-    section.add "editId", valid_580207
-  var valid_580208 = path.getOrDefault("language")
-  valid_580208 = validateParameter(valid_580208, JString, required = true,
+  if valid_589236 != nil:
+    section.add "editId", valid_589236
+  var valid_589237 = path.getOrDefault("language")
+  valid_589237 = validateParameter(valid_589237, JString, required = true,
                                  default = nil)
-  if valid_580208 != nil:
-    section.add "language", valid_580208
-  var valid_580209 = path.getOrDefault("apkVersionCode")
-  valid_580209 = validateParameter(valid_580209, JInt, required = true, default = nil)
-  if valid_580209 != nil:
-    section.add "apkVersionCode", valid_580209
+  if valid_589237 != nil:
+    section.add "language", valid_589237
+  var valid_589238 = path.getOrDefault("apkVersionCode")
+  valid_589238 = validateParameter(valid_589238, JInt, required = true, default = nil)
+  if valid_589238 != nil:
+    section.add "apkVersionCode", valid_589238
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -2454,41 +2454,41 @@ proc validate_AndroidpublisherEditsApklistingsUpdate_580204(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580210 = query.getOrDefault("fields")
-  valid_580210 = validateParameter(valid_580210, JString, required = false,
+  var valid_589239 = query.getOrDefault("fields")
+  valid_589239 = validateParameter(valid_589239, JString, required = false,
                                  default = nil)
-  if valid_580210 != nil:
-    section.add "fields", valid_580210
-  var valid_580211 = query.getOrDefault("quotaUser")
-  valid_580211 = validateParameter(valid_580211, JString, required = false,
+  if valid_589239 != nil:
+    section.add "fields", valid_589239
+  var valid_589240 = query.getOrDefault("quotaUser")
+  valid_589240 = validateParameter(valid_589240, JString, required = false,
                                  default = nil)
-  if valid_580211 != nil:
-    section.add "quotaUser", valid_580211
-  var valid_580212 = query.getOrDefault("alt")
-  valid_580212 = validateParameter(valid_580212, JString, required = false,
+  if valid_589240 != nil:
+    section.add "quotaUser", valid_589240
+  var valid_589241 = query.getOrDefault("alt")
+  valid_589241 = validateParameter(valid_589241, JString, required = false,
                                  default = newJString("json"))
-  if valid_580212 != nil:
-    section.add "alt", valid_580212
-  var valid_580213 = query.getOrDefault("oauth_token")
-  valid_580213 = validateParameter(valid_580213, JString, required = false,
+  if valid_589241 != nil:
+    section.add "alt", valid_589241
+  var valid_589242 = query.getOrDefault("oauth_token")
+  valid_589242 = validateParameter(valid_589242, JString, required = false,
                                  default = nil)
-  if valid_580213 != nil:
-    section.add "oauth_token", valid_580213
-  var valid_580214 = query.getOrDefault("userIp")
-  valid_580214 = validateParameter(valid_580214, JString, required = false,
+  if valid_589242 != nil:
+    section.add "oauth_token", valid_589242
+  var valid_589243 = query.getOrDefault("userIp")
+  valid_589243 = validateParameter(valid_589243, JString, required = false,
                                  default = nil)
-  if valid_580214 != nil:
-    section.add "userIp", valid_580214
-  var valid_580215 = query.getOrDefault("key")
-  valid_580215 = validateParameter(valid_580215, JString, required = false,
+  if valid_589243 != nil:
+    section.add "userIp", valid_589243
+  var valid_589244 = query.getOrDefault("key")
+  valid_589244 = validateParameter(valid_589244, JString, required = false,
                                  default = nil)
-  if valid_580215 != nil:
-    section.add "key", valid_580215
-  var valid_580216 = query.getOrDefault("prettyPrint")
-  valid_580216 = validateParameter(valid_580216, JBool, required = false,
+  if valid_589244 != nil:
+    section.add "key", valid_589244
+  var valid_589245 = query.getOrDefault("prettyPrint")
+  valid_589245 = validateParameter(valid_589245, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580216 != nil:
-    section.add "prettyPrint", valid_580216
+  if valid_589245 != nil:
+    section.add "prettyPrint", valid_589245
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -2500,21 +2500,21 @@ proc validate_AndroidpublisherEditsApklistingsUpdate_580204(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580218: Call_AndroidpublisherEditsApklistingsUpdate_580203;
+proc call*(call_589247: Call_AndroidpublisherEditsApklistingsUpdate_589232;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Updates or creates the APK-specific localized listing for a specified APK and language code.
   ## 
-  let valid = call_580218.validator(path, query, header, formData, body)
-  let scheme = call_580218.pickScheme
+  let valid = call_589247.validator(path, query, header, formData, body)
+  let scheme = call_589247.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580218.url(scheme.get, call_580218.host, call_580218.base,
-                         call_580218.route, valid.getOrDefault("path"),
+  let url = call_589247.url(scheme.get, call_589247.host, call_589247.base,
+                         call_589247.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580218, url, valid)
+  result = hook(call_589247, url, valid)
 
-proc call*(call_580219: Call_AndroidpublisherEditsApklistingsUpdate_580203;
+proc call*(call_589248: Call_AndroidpublisherEditsApklistingsUpdate_589232;
           packageName: string; editId: string; language: string; apkVersionCode: int;
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           oauthToken: string = ""; userIp: string = ""; key: string = "";
@@ -2544,34 +2544,34 @@ proc call*(call_580219: Call_AndroidpublisherEditsApklistingsUpdate_580203;
   ##              : Returns response with indentations and line breaks.
   ##   apkVersionCode: int (required)
   ##                 : The APK version code whose APK-specific listings should be read or modified.
-  var path_580220 = newJObject()
-  var query_580221 = newJObject()
-  var body_580222 = newJObject()
-  add(query_580221, "fields", newJString(fields))
-  add(path_580220, "packageName", newJString(packageName))
-  add(query_580221, "quotaUser", newJString(quotaUser))
-  add(query_580221, "alt", newJString(alt))
-  add(path_580220, "editId", newJString(editId))
-  add(query_580221, "oauth_token", newJString(oauthToken))
-  add(path_580220, "language", newJString(language))
-  add(query_580221, "userIp", newJString(userIp))
-  add(query_580221, "key", newJString(key))
+  var path_589249 = newJObject()
+  var query_589250 = newJObject()
+  var body_589251 = newJObject()
+  add(query_589250, "fields", newJString(fields))
+  add(path_589249, "packageName", newJString(packageName))
+  add(query_589250, "quotaUser", newJString(quotaUser))
+  add(query_589250, "alt", newJString(alt))
+  add(path_589249, "editId", newJString(editId))
+  add(query_589250, "oauth_token", newJString(oauthToken))
+  add(path_589249, "language", newJString(language))
+  add(query_589250, "userIp", newJString(userIp))
+  add(query_589250, "key", newJString(key))
   if body != nil:
-    body_580222 = body
-  add(query_580221, "prettyPrint", newJBool(prettyPrint))
-  add(path_580220, "apkVersionCode", newJInt(apkVersionCode))
-  result = call_580219.call(path_580220, query_580221, nil, nil, body_580222)
+    body_589251 = body
+  add(query_589250, "prettyPrint", newJBool(prettyPrint))
+  add(path_589249, "apkVersionCode", newJInt(apkVersionCode))
+  result = call_589248.call(path_589249, query_589250, nil, nil, body_589251)
 
-var androidpublisherEditsApklistingsUpdate* = Call_AndroidpublisherEditsApklistingsUpdate_580203(
+var androidpublisherEditsApklistingsUpdate* = Call_AndroidpublisherEditsApklistingsUpdate_589232(
     name: "androidpublisherEditsApklistingsUpdate", meth: HttpMethod.HttpPut,
     host: "www.googleapis.com", route: "/{packageName}/edits/{editId}/apks/{apkVersionCode}/listings/{language}",
-    validator: validate_AndroidpublisherEditsApklistingsUpdate_580204,
+    validator: validate_AndroidpublisherEditsApklistingsUpdate_589233,
     base: "/androidpublisher/v2/applications",
-    url: url_AndroidpublisherEditsApklistingsUpdate_580205,
+    url: url_AndroidpublisherEditsApklistingsUpdate_589234,
     schemes: {Scheme.Https})
 type
-  Call_AndroidpublisherEditsApklistingsGet_580185 = ref object of OpenApiRestCall_579421
-proc url_AndroidpublisherEditsApklistingsGet_580187(protocol: Scheme; host: string;
+  Call_AndroidpublisherEditsApklistingsGet_589214 = ref object of OpenApiRestCall_588450
+proc url_AndroidpublisherEditsApklistingsGet_589216(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -2595,7 +2595,7 @@ proc url_AndroidpublisherEditsApklistingsGet_580187(protocol: Scheme; host: stri
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_AndroidpublisherEditsApklistingsGet_580186(path: JsonNode;
+proc validate_AndroidpublisherEditsApklistingsGet_589215(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Fetches the APK-specific localized listing for a specified APK and language code.
   ## 
@@ -2613,25 +2613,25 @@ proc validate_AndroidpublisherEditsApklistingsGet_580186(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `packageName` field"
-  var valid_580188 = path.getOrDefault("packageName")
-  valid_580188 = validateParameter(valid_580188, JString, required = true,
+  var valid_589217 = path.getOrDefault("packageName")
+  valid_589217 = validateParameter(valid_589217, JString, required = true,
                                  default = nil)
-  if valid_580188 != nil:
-    section.add "packageName", valid_580188
-  var valid_580189 = path.getOrDefault("editId")
-  valid_580189 = validateParameter(valid_580189, JString, required = true,
+  if valid_589217 != nil:
+    section.add "packageName", valid_589217
+  var valid_589218 = path.getOrDefault("editId")
+  valid_589218 = validateParameter(valid_589218, JString, required = true,
                                  default = nil)
-  if valid_580189 != nil:
-    section.add "editId", valid_580189
-  var valid_580190 = path.getOrDefault("language")
-  valid_580190 = validateParameter(valid_580190, JString, required = true,
+  if valid_589218 != nil:
+    section.add "editId", valid_589218
+  var valid_589219 = path.getOrDefault("language")
+  valid_589219 = validateParameter(valid_589219, JString, required = true,
                                  default = nil)
-  if valid_580190 != nil:
-    section.add "language", valid_580190
-  var valid_580191 = path.getOrDefault("apkVersionCode")
-  valid_580191 = validateParameter(valid_580191, JInt, required = true, default = nil)
-  if valid_580191 != nil:
-    section.add "apkVersionCode", valid_580191
+  if valid_589219 != nil:
+    section.add "language", valid_589219
+  var valid_589220 = path.getOrDefault("apkVersionCode")
+  valid_589220 = validateParameter(valid_589220, JInt, required = true, default = nil)
+  if valid_589220 != nil:
+    section.add "apkVersionCode", valid_589220
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -2649,41 +2649,41 @@ proc validate_AndroidpublisherEditsApklistingsGet_580186(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580192 = query.getOrDefault("fields")
-  valid_580192 = validateParameter(valid_580192, JString, required = false,
+  var valid_589221 = query.getOrDefault("fields")
+  valid_589221 = validateParameter(valid_589221, JString, required = false,
                                  default = nil)
-  if valid_580192 != nil:
-    section.add "fields", valid_580192
-  var valid_580193 = query.getOrDefault("quotaUser")
-  valid_580193 = validateParameter(valid_580193, JString, required = false,
+  if valid_589221 != nil:
+    section.add "fields", valid_589221
+  var valid_589222 = query.getOrDefault("quotaUser")
+  valid_589222 = validateParameter(valid_589222, JString, required = false,
                                  default = nil)
-  if valid_580193 != nil:
-    section.add "quotaUser", valid_580193
-  var valid_580194 = query.getOrDefault("alt")
-  valid_580194 = validateParameter(valid_580194, JString, required = false,
+  if valid_589222 != nil:
+    section.add "quotaUser", valid_589222
+  var valid_589223 = query.getOrDefault("alt")
+  valid_589223 = validateParameter(valid_589223, JString, required = false,
                                  default = newJString("json"))
-  if valid_580194 != nil:
-    section.add "alt", valid_580194
-  var valid_580195 = query.getOrDefault("oauth_token")
-  valid_580195 = validateParameter(valid_580195, JString, required = false,
+  if valid_589223 != nil:
+    section.add "alt", valid_589223
+  var valid_589224 = query.getOrDefault("oauth_token")
+  valid_589224 = validateParameter(valid_589224, JString, required = false,
                                  default = nil)
-  if valid_580195 != nil:
-    section.add "oauth_token", valid_580195
-  var valid_580196 = query.getOrDefault("userIp")
-  valid_580196 = validateParameter(valid_580196, JString, required = false,
+  if valid_589224 != nil:
+    section.add "oauth_token", valid_589224
+  var valid_589225 = query.getOrDefault("userIp")
+  valid_589225 = validateParameter(valid_589225, JString, required = false,
                                  default = nil)
-  if valid_580196 != nil:
-    section.add "userIp", valid_580196
-  var valid_580197 = query.getOrDefault("key")
-  valid_580197 = validateParameter(valid_580197, JString, required = false,
+  if valid_589225 != nil:
+    section.add "userIp", valid_589225
+  var valid_589226 = query.getOrDefault("key")
+  valid_589226 = validateParameter(valid_589226, JString, required = false,
                                  default = nil)
-  if valid_580197 != nil:
-    section.add "key", valid_580197
-  var valid_580198 = query.getOrDefault("prettyPrint")
-  valid_580198 = validateParameter(valid_580198, JBool, required = false,
+  if valid_589226 != nil:
+    section.add "key", valid_589226
+  var valid_589227 = query.getOrDefault("prettyPrint")
+  valid_589227 = validateParameter(valid_589227, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580198 != nil:
-    section.add "prettyPrint", valid_580198
+  if valid_589227 != nil:
+    section.add "prettyPrint", valid_589227
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -2692,21 +2692,21 @@ proc validate_AndroidpublisherEditsApklistingsGet_580186(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580199: Call_AndroidpublisherEditsApklistingsGet_580185;
+proc call*(call_589228: Call_AndroidpublisherEditsApklistingsGet_589214;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Fetches the APK-specific localized listing for a specified APK and language code.
   ## 
-  let valid = call_580199.validator(path, query, header, formData, body)
-  let scheme = call_580199.pickScheme
+  let valid = call_589228.validator(path, query, header, formData, body)
+  let scheme = call_589228.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580199.url(scheme.get, call_580199.host, call_580199.base,
-                         call_580199.route, valid.getOrDefault("path"),
+  let url = call_589228.url(scheme.get, call_589228.host, call_589228.base,
+                         call_589228.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580199, url, valid)
+  result = hook(call_589228, url, valid)
 
-proc call*(call_580200: Call_AndroidpublisherEditsApklistingsGet_580185;
+proc call*(call_589229: Call_AndroidpublisherEditsApklistingsGet_589214;
           packageName: string; editId: string; language: string; apkVersionCode: int;
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           oauthToken: string = ""; userIp: string = ""; key: string = "";
@@ -2735,30 +2735,30 @@ proc call*(call_580200: Call_AndroidpublisherEditsApklistingsGet_580185;
   ##              : Returns response with indentations and line breaks.
   ##   apkVersionCode: int (required)
   ##                 : The APK version code whose APK-specific listings should be read or modified.
-  var path_580201 = newJObject()
-  var query_580202 = newJObject()
-  add(query_580202, "fields", newJString(fields))
-  add(path_580201, "packageName", newJString(packageName))
-  add(query_580202, "quotaUser", newJString(quotaUser))
-  add(query_580202, "alt", newJString(alt))
-  add(path_580201, "editId", newJString(editId))
-  add(query_580202, "oauth_token", newJString(oauthToken))
-  add(path_580201, "language", newJString(language))
-  add(query_580202, "userIp", newJString(userIp))
-  add(query_580202, "key", newJString(key))
-  add(query_580202, "prettyPrint", newJBool(prettyPrint))
-  add(path_580201, "apkVersionCode", newJInt(apkVersionCode))
-  result = call_580200.call(path_580201, query_580202, nil, nil, nil)
+  var path_589230 = newJObject()
+  var query_589231 = newJObject()
+  add(query_589231, "fields", newJString(fields))
+  add(path_589230, "packageName", newJString(packageName))
+  add(query_589231, "quotaUser", newJString(quotaUser))
+  add(query_589231, "alt", newJString(alt))
+  add(path_589230, "editId", newJString(editId))
+  add(query_589231, "oauth_token", newJString(oauthToken))
+  add(path_589230, "language", newJString(language))
+  add(query_589231, "userIp", newJString(userIp))
+  add(query_589231, "key", newJString(key))
+  add(query_589231, "prettyPrint", newJBool(prettyPrint))
+  add(path_589230, "apkVersionCode", newJInt(apkVersionCode))
+  result = call_589229.call(path_589230, query_589231, nil, nil, nil)
 
-var androidpublisherEditsApklistingsGet* = Call_AndroidpublisherEditsApklistingsGet_580185(
+var androidpublisherEditsApklistingsGet* = Call_AndroidpublisherEditsApklistingsGet_589214(
     name: "androidpublisherEditsApklistingsGet", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/{packageName}/edits/{editId}/apks/{apkVersionCode}/listings/{language}",
-    validator: validate_AndroidpublisherEditsApklistingsGet_580186,
+    validator: validate_AndroidpublisherEditsApklistingsGet_589215,
     base: "/androidpublisher/v2/applications",
-    url: url_AndroidpublisherEditsApklistingsGet_580187, schemes: {Scheme.Https})
+    url: url_AndroidpublisherEditsApklistingsGet_589216, schemes: {Scheme.Https})
 type
-  Call_AndroidpublisherEditsApklistingsPatch_580241 = ref object of OpenApiRestCall_579421
-proc url_AndroidpublisherEditsApklistingsPatch_580243(protocol: Scheme;
+  Call_AndroidpublisherEditsApklistingsPatch_589270 = ref object of OpenApiRestCall_588450
+proc url_AndroidpublisherEditsApklistingsPatch_589272(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -2782,7 +2782,7 @@ proc url_AndroidpublisherEditsApklistingsPatch_580243(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_AndroidpublisherEditsApklistingsPatch_580242(path: JsonNode;
+proc validate_AndroidpublisherEditsApklistingsPatch_589271(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Updates or creates the APK-specific localized listing for a specified APK and language code. This method supports patch semantics.
   ## 
@@ -2800,25 +2800,25 @@ proc validate_AndroidpublisherEditsApklistingsPatch_580242(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `packageName` field"
-  var valid_580244 = path.getOrDefault("packageName")
-  valid_580244 = validateParameter(valid_580244, JString, required = true,
+  var valid_589273 = path.getOrDefault("packageName")
+  valid_589273 = validateParameter(valid_589273, JString, required = true,
                                  default = nil)
-  if valid_580244 != nil:
-    section.add "packageName", valid_580244
-  var valid_580245 = path.getOrDefault("editId")
-  valid_580245 = validateParameter(valid_580245, JString, required = true,
+  if valid_589273 != nil:
+    section.add "packageName", valid_589273
+  var valid_589274 = path.getOrDefault("editId")
+  valid_589274 = validateParameter(valid_589274, JString, required = true,
                                  default = nil)
-  if valid_580245 != nil:
-    section.add "editId", valid_580245
-  var valid_580246 = path.getOrDefault("language")
-  valid_580246 = validateParameter(valid_580246, JString, required = true,
+  if valid_589274 != nil:
+    section.add "editId", valid_589274
+  var valid_589275 = path.getOrDefault("language")
+  valid_589275 = validateParameter(valid_589275, JString, required = true,
                                  default = nil)
-  if valid_580246 != nil:
-    section.add "language", valid_580246
-  var valid_580247 = path.getOrDefault("apkVersionCode")
-  valid_580247 = validateParameter(valid_580247, JInt, required = true, default = nil)
-  if valid_580247 != nil:
-    section.add "apkVersionCode", valid_580247
+  if valid_589275 != nil:
+    section.add "language", valid_589275
+  var valid_589276 = path.getOrDefault("apkVersionCode")
+  valid_589276 = validateParameter(valid_589276, JInt, required = true, default = nil)
+  if valid_589276 != nil:
+    section.add "apkVersionCode", valid_589276
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -2836,41 +2836,41 @@ proc validate_AndroidpublisherEditsApklistingsPatch_580242(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580248 = query.getOrDefault("fields")
-  valid_580248 = validateParameter(valid_580248, JString, required = false,
+  var valid_589277 = query.getOrDefault("fields")
+  valid_589277 = validateParameter(valid_589277, JString, required = false,
                                  default = nil)
-  if valid_580248 != nil:
-    section.add "fields", valid_580248
-  var valid_580249 = query.getOrDefault("quotaUser")
-  valid_580249 = validateParameter(valid_580249, JString, required = false,
+  if valid_589277 != nil:
+    section.add "fields", valid_589277
+  var valid_589278 = query.getOrDefault("quotaUser")
+  valid_589278 = validateParameter(valid_589278, JString, required = false,
                                  default = nil)
-  if valid_580249 != nil:
-    section.add "quotaUser", valid_580249
-  var valid_580250 = query.getOrDefault("alt")
-  valid_580250 = validateParameter(valid_580250, JString, required = false,
+  if valid_589278 != nil:
+    section.add "quotaUser", valid_589278
+  var valid_589279 = query.getOrDefault("alt")
+  valid_589279 = validateParameter(valid_589279, JString, required = false,
                                  default = newJString("json"))
-  if valid_580250 != nil:
-    section.add "alt", valid_580250
-  var valid_580251 = query.getOrDefault("oauth_token")
-  valid_580251 = validateParameter(valid_580251, JString, required = false,
+  if valid_589279 != nil:
+    section.add "alt", valid_589279
+  var valid_589280 = query.getOrDefault("oauth_token")
+  valid_589280 = validateParameter(valid_589280, JString, required = false,
                                  default = nil)
-  if valid_580251 != nil:
-    section.add "oauth_token", valid_580251
-  var valid_580252 = query.getOrDefault("userIp")
-  valid_580252 = validateParameter(valid_580252, JString, required = false,
+  if valid_589280 != nil:
+    section.add "oauth_token", valid_589280
+  var valid_589281 = query.getOrDefault("userIp")
+  valid_589281 = validateParameter(valid_589281, JString, required = false,
                                  default = nil)
-  if valid_580252 != nil:
-    section.add "userIp", valid_580252
-  var valid_580253 = query.getOrDefault("key")
-  valid_580253 = validateParameter(valid_580253, JString, required = false,
+  if valid_589281 != nil:
+    section.add "userIp", valid_589281
+  var valid_589282 = query.getOrDefault("key")
+  valid_589282 = validateParameter(valid_589282, JString, required = false,
                                  default = nil)
-  if valid_580253 != nil:
-    section.add "key", valid_580253
-  var valid_580254 = query.getOrDefault("prettyPrint")
-  valid_580254 = validateParameter(valid_580254, JBool, required = false,
+  if valid_589282 != nil:
+    section.add "key", valid_589282
+  var valid_589283 = query.getOrDefault("prettyPrint")
+  valid_589283 = validateParameter(valid_589283, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580254 != nil:
-    section.add "prettyPrint", valid_580254
+  if valid_589283 != nil:
+    section.add "prettyPrint", valid_589283
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -2882,21 +2882,21 @@ proc validate_AndroidpublisherEditsApklistingsPatch_580242(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580256: Call_AndroidpublisherEditsApklistingsPatch_580241;
+proc call*(call_589285: Call_AndroidpublisherEditsApklistingsPatch_589270;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Updates or creates the APK-specific localized listing for a specified APK and language code. This method supports patch semantics.
   ## 
-  let valid = call_580256.validator(path, query, header, formData, body)
-  let scheme = call_580256.pickScheme
+  let valid = call_589285.validator(path, query, header, formData, body)
+  let scheme = call_589285.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580256.url(scheme.get, call_580256.host, call_580256.base,
-                         call_580256.route, valid.getOrDefault("path"),
+  let url = call_589285.url(scheme.get, call_589285.host, call_589285.base,
+                         call_589285.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580256, url, valid)
+  result = hook(call_589285, url, valid)
 
-proc call*(call_580257: Call_AndroidpublisherEditsApklistingsPatch_580241;
+proc call*(call_589286: Call_AndroidpublisherEditsApklistingsPatch_589270;
           packageName: string; editId: string; language: string; apkVersionCode: int;
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           oauthToken: string = ""; userIp: string = ""; key: string = "";
@@ -2926,33 +2926,33 @@ proc call*(call_580257: Call_AndroidpublisherEditsApklistingsPatch_580241;
   ##              : Returns response with indentations and line breaks.
   ##   apkVersionCode: int (required)
   ##                 : The APK version code whose APK-specific listings should be read or modified.
-  var path_580258 = newJObject()
-  var query_580259 = newJObject()
-  var body_580260 = newJObject()
-  add(query_580259, "fields", newJString(fields))
-  add(path_580258, "packageName", newJString(packageName))
-  add(query_580259, "quotaUser", newJString(quotaUser))
-  add(query_580259, "alt", newJString(alt))
-  add(path_580258, "editId", newJString(editId))
-  add(query_580259, "oauth_token", newJString(oauthToken))
-  add(path_580258, "language", newJString(language))
-  add(query_580259, "userIp", newJString(userIp))
-  add(query_580259, "key", newJString(key))
+  var path_589287 = newJObject()
+  var query_589288 = newJObject()
+  var body_589289 = newJObject()
+  add(query_589288, "fields", newJString(fields))
+  add(path_589287, "packageName", newJString(packageName))
+  add(query_589288, "quotaUser", newJString(quotaUser))
+  add(query_589288, "alt", newJString(alt))
+  add(path_589287, "editId", newJString(editId))
+  add(query_589288, "oauth_token", newJString(oauthToken))
+  add(path_589287, "language", newJString(language))
+  add(query_589288, "userIp", newJString(userIp))
+  add(query_589288, "key", newJString(key))
   if body != nil:
-    body_580260 = body
-  add(query_580259, "prettyPrint", newJBool(prettyPrint))
-  add(path_580258, "apkVersionCode", newJInt(apkVersionCode))
-  result = call_580257.call(path_580258, query_580259, nil, nil, body_580260)
+    body_589289 = body
+  add(query_589288, "prettyPrint", newJBool(prettyPrint))
+  add(path_589287, "apkVersionCode", newJInt(apkVersionCode))
+  result = call_589286.call(path_589287, query_589288, nil, nil, body_589289)
 
-var androidpublisherEditsApklistingsPatch* = Call_AndroidpublisherEditsApklistingsPatch_580241(
+var androidpublisherEditsApklistingsPatch* = Call_AndroidpublisherEditsApklistingsPatch_589270(
     name: "androidpublisherEditsApklistingsPatch", meth: HttpMethod.HttpPatch,
     host: "www.googleapis.com", route: "/{packageName}/edits/{editId}/apks/{apkVersionCode}/listings/{language}",
-    validator: validate_AndroidpublisherEditsApklistingsPatch_580242,
+    validator: validate_AndroidpublisherEditsApklistingsPatch_589271,
     base: "/androidpublisher/v2/applications",
-    url: url_AndroidpublisherEditsApklistingsPatch_580243, schemes: {Scheme.Https})
+    url: url_AndroidpublisherEditsApklistingsPatch_589272, schemes: {Scheme.Https})
 type
-  Call_AndroidpublisherEditsApklistingsDelete_580223 = ref object of OpenApiRestCall_579421
-proc url_AndroidpublisherEditsApklistingsDelete_580225(protocol: Scheme;
+  Call_AndroidpublisherEditsApklistingsDelete_589252 = ref object of OpenApiRestCall_588450
+proc url_AndroidpublisherEditsApklistingsDelete_589254(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -2976,7 +2976,7 @@ proc url_AndroidpublisherEditsApklistingsDelete_580225(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_AndroidpublisherEditsApklistingsDelete_580224(path: JsonNode;
+proc validate_AndroidpublisherEditsApklistingsDelete_589253(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Deletes the APK-specific localized listing for a specified APK and language code.
   ## 
@@ -2994,25 +2994,25 @@ proc validate_AndroidpublisherEditsApklistingsDelete_580224(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `packageName` field"
-  var valid_580226 = path.getOrDefault("packageName")
-  valid_580226 = validateParameter(valid_580226, JString, required = true,
+  var valid_589255 = path.getOrDefault("packageName")
+  valid_589255 = validateParameter(valid_589255, JString, required = true,
                                  default = nil)
-  if valid_580226 != nil:
-    section.add "packageName", valid_580226
-  var valid_580227 = path.getOrDefault("editId")
-  valid_580227 = validateParameter(valid_580227, JString, required = true,
+  if valid_589255 != nil:
+    section.add "packageName", valid_589255
+  var valid_589256 = path.getOrDefault("editId")
+  valid_589256 = validateParameter(valid_589256, JString, required = true,
                                  default = nil)
-  if valid_580227 != nil:
-    section.add "editId", valid_580227
-  var valid_580228 = path.getOrDefault("language")
-  valid_580228 = validateParameter(valid_580228, JString, required = true,
+  if valid_589256 != nil:
+    section.add "editId", valid_589256
+  var valid_589257 = path.getOrDefault("language")
+  valid_589257 = validateParameter(valid_589257, JString, required = true,
                                  default = nil)
-  if valid_580228 != nil:
-    section.add "language", valid_580228
-  var valid_580229 = path.getOrDefault("apkVersionCode")
-  valid_580229 = validateParameter(valid_580229, JInt, required = true, default = nil)
-  if valid_580229 != nil:
-    section.add "apkVersionCode", valid_580229
+  if valid_589257 != nil:
+    section.add "language", valid_589257
+  var valid_589258 = path.getOrDefault("apkVersionCode")
+  valid_589258 = validateParameter(valid_589258, JInt, required = true, default = nil)
+  if valid_589258 != nil:
+    section.add "apkVersionCode", valid_589258
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -3030,41 +3030,41 @@ proc validate_AndroidpublisherEditsApklistingsDelete_580224(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580230 = query.getOrDefault("fields")
-  valid_580230 = validateParameter(valid_580230, JString, required = false,
+  var valid_589259 = query.getOrDefault("fields")
+  valid_589259 = validateParameter(valid_589259, JString, required = false,
                                  default = nil)
-  if valid_580230 != nil:
-    section.add "fields", valid_580230
-  var valid_580231 = query.getOrDefault("quotaUser")
-  valid_580231 = validateParameter(valid_580231, JString, required = false,
+  if valid_589259 != nil:
+    section.add "fields", valid_589259
+  var valid_589260 = query.getOrDefault("quotaUser")
+  valid_589260 = validateParameter(valid_589260, JString, required = false,
                                  default = nil)
-  if valid_580231 != nil:
-    section.add "quotaUser", valid_580231
-  var valid_580232 = query.getOrDefault("alt")
-  valid_580232 = validateParameter(valid_580232, JString, required = false,
+  if valid_589260 != nil:
+    section.add "quotaUser", valid_589260
+  var valid_589261 = query.getOrDefault("alt")
+  valid_589261 = validateParameter(valid_589261, JString, required = false,
                                  default = newJString("json"))
-  if valid_580232 != nil:
-    section.add "alt", valid_580232
-  var valid_580233 = query.getOrDefault("oauth_token")
-  valid_580233 = validateParameter(valid_580233, JString, required = false,
+  if valid_589261 != nil:
+    section.add "alt", valid_589261
+  var valid_589262 = query.getOrDefault("oauth_token")
+  valid_589262 = validateParameter(valid_589262, JString, required = false,
                                  default = nil)
-  if valid_580233 != nil:
-    section.add "oauth_token", valid_580233
-  var valid_580234 = query.getOrDefault("userIp")
-  valid_580234 = validateParameter(valid_580234, JString, required = false,
+  if valid_589262 != nil:
+    section.add "oauth_token", valid_589262
+  var valid_589263 = query.getOrDefault("userIp")
+  valid_589263 = validateParameter(valid_589263, JString, required = false,
                                  default = nil)
-  if valid_580234 != nil:
-    section.add "userIp", valid_580234
-  var valid_580235 = query.getOrDefault("key")
-  valid_580235 = validateParameter(valid_580235, JString, required = false,
+  if valid_589263 != nil:
+    section.add "userIp", valid_589263
+  var valid_589264 = query.getOrDefault("key")
+  valid_589264 = validateParameter(valid_589264, JString, required = false,
                                  default = nil)
-  if valid_580235 != nil:
-    section.add "key", valid_580235
-  var valid_580236 = query.getOrDefault("prettyPrint")
-  valid_580236 = validateParameter(valid_580236, JBool, required = false,
+  if valid_589264 != nil:
+    section.add "key", valid_589264
+  var valid_589265 = query.getOrDefault("prettyPrint")
+  valid_589265 = validateParameter(valid_589265, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580236 != nil:
-    section.add "prettyPrint", valid_580236
+  if valid_589265 != nil:
+    section.add "prettyPrint", valid_589265
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -3073,21 +3073,21 @@ proc validate_AndroidpublisherEditsApklistingsDelete_580224(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580237: Call_AndroidpublisherEditsApklistingsDelete_580223;
+proc call*(call_589266: Call_AndroidpublisherEditsApklistingsDelete_589252;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Deletes the APK-specific localized listing for a specified APK and language code.
   ## 
-  let valid = call_580237.validator(path, query, header, formData, body)
-  let scheme = call_580237.pickScheme
+  let valid = call_589266.validator(path, query, header, formData, body)
+  let scheme = call_589266.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580237.url(scheme.get, call_580237.host, call_580237.base,
-                         call_580237.route, valid.getOrDefault("path"),
+  let url = call_589266.url(scheme.get, call_589266.host, call_589266.base,
+                         call_589266.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580237, url, valid)
+  result = hook(call_589266, url, valid)
 
-proc call*(call_580238: Call_AndroidpublisherEditsApklistingsDelete_580223;
+proc call*(call_589267: Call_AndroidpublisherEditsApklistingsDelete_589252;
           packageName: string; editId: string; language: string; apkVersionCode: int;
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           oauthToken: string = ""; userIp: string = ""; key: string = "";
@@ -3116,31 +3116,31 @@ proc call*(call_580238: Call_AndroidpublisherEditsApklistingsDelete_580223;
   ##              : Returns response with indentations and line breaks.
   ##   apkVersionCode: int (required)
   ##                 : The APK version code whose APK-specific listings should be read or modified.
-  var path_580239 = newJObject()
-  var query_580240 = newJObject()
-  add(query_580240, "fields", newJString(fields))
-  add(path_580239, "packageName", newJString(packageName))
-  add(query_580240, "quotaUser", newJString(quotaUser))
-  add(query_580240, "alt", newJString(alt))
-  add(path_580239, "editId", newJString(editId))
-  add(query_580240, "oauth_token", newJString(oauthToken))
-  add(path_580239, "language", newJString(language))
-  add(query_580240, "userIp", newJString(userIp))
-  add(query_580240, "key", newJString(key))
-  add(query_580240, "prettyPrint", newJBool(prettyPrint))
-  add(path_580239, "apkVersionCode", newJInt(apkVersionCode))
-  result = call_580238.call(path_580239, query_580240, nil, nil, nil)
+  var path_589268 = newJObject()
+  var query_589269 = newJObject()
+  add(query_589269, "fields", newJString(fields))
+  add(path_589268, "packageName", newJString(packageName))
+  add(query_589269, "quotaUser", newJString(quotaUser))
+  add(query_589269, "alt", newJString(alt))
+  add(path_589268, "editId", newJString(editId))
+  add(query_589269, "oauth_token", newJString(oauthToken))
+  add(path_589268, "language", newJString(language))
+  add(query_589269, "userIp", newJString(userIp))
+  add(query_589269, "key", newJString(key))
+  add(query_589269, "prettyPrint", newJBool(prettyPrint))
+  add(path_589268, "apkVersionCode", newJInt(apkVersionCode))
+  result = call_589267.call(path_589268, query_589269, nil, nil, nil)
 
-var androidpublisherEditsApklistingsDelete* = Call_AndroidpublisherEditsApklistingsDelete_580223(
+var androidpublisherEditsApklistingsDelete* = Call_AndroidpublisherEditsApklistingsDelete_589252(
     name: "androidpublisherEditsApklistingsDelete", meth: HttpMethod.HttpDelete,
     host: "www.googleapis.com", route: "/{packageName}/edits/{editId}/apks/{apkVersionCode}/listings/{language}",
-    validator: validate_AndroidpublisherEditsApklistingsDelete_580224,
+    validator: validate_AndroidpublisherEditsApklistingsDelete_589253,
     base: "/androidpublisher/v2/applications",
-    url: url_AndroidpublisherEditsApklistingsDelete_580225,
+    url: url_AndroidpublisherEditsApklistingsDelete_589254,
     schemes: {Scheme.Https})
 type
-  Call_AndroidpublisherEditsBundlesUpload_580277 = ref object of OpenApiRestCall_579421
-proc url_AndroidpublisherEditsBundlesUpload_580279(protocol: Scheme; host: string;
+  Call_AndroidpublisherEditsBundlesUpload_589306 = ref object of OpenApiRestCall_588450
+proc url_AndroidpublisherEditsBundlesUpload_589308(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -3159,7 +3159,7 @@ proc url_AndroidpublisherEditsBundlesUpload_580279(protocol: Scheme; host: strin
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_AndroidpublisherEditsBundlesUpload_580278(path: JsonNode;
+proc validate_AndroidpublisherEditsBundlesUpload_589307(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Uploads a new Android App Bundle to this edit. If you are using the Google API client libraries, please increase the timeout of the http request before calling this endpoint (a timeout of 2 minutes is recommended). See: https://developers.google.com/api-client-library/java/google-api-java-client/errors for an example in java.
   ## 
@@ -3173,16 +3173,16 @@ proc validate_AndroidpublisherEditsBundlesUpload_580278(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `packageName` field"
-  var valid_580280 = path.getOrDefault("packageName")
-  valid_580280 = validateParameter(valid_580280, JString, required = true,
+  var valid_589309 = path.getOrDefault("packageName")
+  valid_589309 = validateParameter(valid_589309, JString, required = true,
                                  default = nil)
-  if valid_580280 != nil:
-    section.add "packageName", valid_580280
-  var valid_580281 = path.getOrDefault("editId")
-  valid_580281 = validateParameter(valid_580281, JString, required = true,
+  if valid_589309 != nil:
+    section.add "packageName", valid_589309
+  var valid_589310 = path.getOrDefault("editId")
+  valid_589310 = validateParameter(valid_589310, JString, required = true,
                                  default = nil)
-  if valid_580281 != nil:
-    section.add "editId", valid_580281
+  if valid_589310 != nil:
+    section.add "editId", valid_589310
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -3202,45 +3202,45 @@ proc validate_AndroidpublisherEditsBundlesUpload_580278(path: JsonNode;
   ##   ackBundleInstallationWarning: JBool
   ##                               : Must be set to true if the bundle installation may trigger a warning on user devices (for example, if installation size may be over a threshold, typically 100 MB).
   section = newJObject()
-  var valid_580282 = query.getOrDefault("fields")
-  valid_580282 = validateParameter(valid_580282, JString, required = false,
+  var valid_589311 = query.getOrDefault("fields")
+  valid_589311 = validateParameter(valid_589311, JString, required = false,
                                  default = nil)
-  if valid_580282 != nil:
-    section.add "fields", valid_580282
-  var valid_580283 = query.getOrDefault("quotaUser")
-  valid_580283 = validateParameter(valid_580283, JString, required = false,
+  if valid_589311 != nil:
+    section.add "fields", valid_589311
+  var valid_589312 = query.getOrDefault("quotaUser")
+  valid_589312 = validateParameter(valid_589312, JString, required = false,
                                  default = nil)
-  if valid_580283 != nil:
-    section.add "quotaUser", valid_580283
-  var valid_580284 = query.getOrDefault("alt")
-  valid_580284 = validateParameter(valid_580284, JString, required = false,
+  if valid_589312 != nil:
+    section.add "quotaUser", valid_589312
+  var valid_589313 = query.getOrDefault("alt")
+  valid_589313 = validateParameter(valid_589313, JString, required = false,
                                  default = newJString("json"))
-  if valid_580284 != nil:
-    section.add "alt", valid_580284
-  var valid_580285 = query.getOrDefault("oauth_token")
-  valid_580285 = validateParameter(valid_580285, JString, required = false,
+  if valid_589313 != nil:
+    section.add "alt", valid_589313
+  var valid_589314 = query.getOrDefault("oauth_token")
+  valid_589314 = validateParameter(valid_589314, JString, required = false,
                                  default = nil)
-  if valid_580285 != nil:
-    section.add "oauth_token", valid_580285
-  var valid_580286 = query.getOrDefault("userIp")
-  valid_580286 = validateParameter(valid_580286, JString, required = false,
+  if valid_589314 != nil:
+    section.add "oauth_token", valid_589314
+  var valid_589315 = query.getOrDefault("userIp")
+  valid_589315 = validateParameter(valid_589315, JString, required = false,
                                  default = nil)
-  if valid_580286 != nil:
-    section.add "userIp", valid_580286
-  var valid_580287 = query.getOrDefault("key")
-  valid_580287 = validateParameter(valid_580287, JString, required = false,
+  if valid_589315 != nil:
+    section.add "userIp", valid_589315
+  var valid_589316 = query.getOrDefault("key")
+  valid_589316 = validateParameter(valid_589316, JString, required = false,
                                  default = nil)
-  if valid_580287 != nil:
-    section.add "key", valid_580287
-  var valid_580288 = query.getOrDefault("prettyPrint")
-  valid_580288 = validateParameter(valid_580288, JBool, required = false,
+  if valid_589316 != nil:
+    section.add "key", valid_589316
+  var valid_589317 = query.getOrDefault("prettyPrint")
+  valid_589317 = validateParameter(valid_589317, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580288 != nil:
-    section.add "prettyPrint", valid_580288
-  var valid_580289 = query.getOrDefault("ackBundleInstallationWarning")
-  valid_580289 = validateParameter(valid_580289, JBool, required = false, default = nil)
-  if valid_580289 != nil:
-    section.add "ackBundleInstallationWarning", valid_580289
+  if valid_589317 != nil:
+    section.add "prettyPrint", valid_589317
+  var valid_589318 = query.getOrDefault("ackBundleInstallationWarning")
+  valid_589318 = validateParameter(valid_589318, JBool, required = false, default = nil)
+  if valid_589318 != nil:
+    section.add "ackBundleInstallationWarning", valid_589318
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -3249,21 +3249,21 @@ proc validate_AndroidpublisherEditsBundlesUpload_580278(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580290: Call_AndroidpublisherEditsBundlesUpload_580277;
+proc call*(call_589319: Call_AndroidpublisherEditsBundlesUpload_589306;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Uploads a new Android App Bundle to this edit. If you are using the Google API client libraries, please increase the timeout of the http request before calling this endpoint (a timeout of 2 minutes is recommended). See: https://developers.google.com/api-client-library/java/google-api-java-client/errors for an example in java.
   ## 
-  let valid = call_580290.validator(path, query, header, formData, body)
-  let scheme = call_580290.pickScheme
+  let valid = call_589319.validator(path, query, header, formData, body)
+  let scheme = call_589319.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580290.url(scheme.get, call_580290.host, call_580290.base,
-                         call_580290.route, valid.getOrDefault("path"),
+  let url = call_589319.url(scheme.get, call_589319.host, call_589319.base,
+                         call_589319.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580290, url, valid)
+  result = hook(call_589319, url, valid)
 
-proc call*(call_580291: Call_AndroidpublisherEditsBundlesUpload_580277;
+proc call*(call_589320: Call_AndroidpublisherEditsBundlesUpload_589306;
           packageName: string; editId: string; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; key: string = ""; prettyPrint: bool = true;
@@ -3290,30 +3290,30 @@ proc call*(call_580291: Call_AndroidpublisherEditsBundlesUpload_580277;
   ##              : Returns response with indentations and line breaks.
   ##   ackBundleInstallationWarning: bool
   ##                               : Must be set to true if the bundle installation may trigger a warning on user devices (for example, if installation size may be over a threshold, typically 100 MB).
-  var path_580292 = newJObject()
-  var query_580293 = newJObject()
-  add(query_580293, "fields", newJString(fields))
-  add(path_580292, "packageName", newJString(packageName))
-  add(query_580293, "quotaUser", newJString(quotaUser))
-  add(query_580293, "alt", newJString(alt))
-  add(path_580292, "editId", newJString(editId))
-  add(query_580293, "oauth_token", newJString(oauthToken))
-  add(query_580293, "userIp", newJString(userIp))
-  add(query_580293, "key", newJString(key))
-  add(query_580293, "prettyPrint", newJBool(prettyPrint))
-  add(query_580293, "ackBundleInstallationWarning",
+  var path_589321 = newJObject()
+  var query_589322 = newJObject()
+  add(query_589322, "fields", newJString(fields))
+  add(path_589321, "packageName", newJString(packageName))
+  add(query_589322, "quotaUser", newJString(quotaUser))
+  add(query_589322, "alt", newJString(alt))
+  add(path_589321, "editId", newJString(editId))
+  add(query_589322, "oauth_token", newJString(oauthToken))
+  add(query_589322, "userIp", newJString(userIp))
+  add(query_589322, "key", newJString(key))
+  add(query_589322, "prettyPrint", newJBool(prettyPrint))
+  add(query_589322, "ackBundleInstallationWarning",
       newJBool(ackBundleInstallationWarning))
-  result = call_580291.call(path_580292, query_580293, nil, nil, nil)
+  result = call_589320.call(path_589321, query_589322, nil, nil, nil)
 
-var androidpublisherEditsBundlesUpload* = Call_AndroidpublisherEditsBundlesUpload_580277(
+var androidpublisherEditsBundlesUpload* = Call_AndroidpublisherEditsBundlesUpload_589306(
     name: "androidpublisherEditsBundlesUpload", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com", route: "/{packageName}/edits/{editId}/bundles",
-    validator: validate_AndroidpublisherEditsBundlesUpload_580278,
+    validator: validate_AndroidpublisherEditsBundlesUpload_589307,
     base: "/androidpublisher/v2/applications",
-    url: url_AndroidpublisherEditsBundlesUpload_580279, schemes: {Scheme.Https})
+    url: url_AndroidpublisherEditsBundlesUpload_589308, schemes: {Scheme.Https})
 type
-  Call_AndroidpublisherEditsBundlesList_580261 = ref object of OpenApiRestCall_579421
-proc url_AndroidpublisherEditsBundlesList_580263(protocol: Scheme; host: string;
+  Call_AndroidpublisherEditsBundlesList_589290 = ref object of OpenApiRestCall_588450
+proc url_AndroidpublisherEditsBundlesList_589292(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -3332,7 +3332,7 @@ proc url_AndroidpublisherEditsBundlesList_580263(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_AndroidpublisherEditsBundlesList_580262(path: JsonNode;
+proc validate_AndroidpublisherEditsBundlesList_589291(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   var section: JsonNode
   result = newJObject()
@@ -3344,16 +3344,16 @@ proc validate_AndroidpublisherEditsBundlesList_580262(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `packageName` field"
-  var valid_580264 = path.getOrDefault("packageName")
-  valid_580264 = validateParameter(valid_580264, JString, required = true,
+  var valid_589293 = path.getOrDefault("packageName")
+  valid_589293 = validateParameter(valid_589293, JString, required = true,
                                  default = nil)
-  if valid_580264 != nil:
-    section.add "packageName", valid_580264
-  var valid_580265 = path.getOrDefault("editId")
-  valid_580265 = validateParameter(valid_580265, JString, required = true,
+  if valid_589293 != nil:
+    section.add "packageName", valid_589293
+  var valid_589294 = path.getOrDefault("editId")
+  valid_589294 = validateParameter(valid_589294, JString, required = true,
                                  default = nil)
-  if valid_580265 != nil:
-    section.add "editId", valid_580265
+  if valid_589294 != nil:
+    section.add "editId", valid_589294
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -3371,41 +3371,41 @@ proc validate_AndroidpublisherEditsBundlesList_580262(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580266 = query.getOrDefault("fields")
-  valid_580266 = validateParameter(valid_580266, JString, required = false,
+  var valid_589295 = query.getOrDefault("fields")
+  valid_589295 = validateParameter(valid_589295, JString, required = false,
                                  default = nil)
-  if valid_580266 != nil:
-    section.add "fields", valid_580266
-  var valid_580267 = query.getOrDefault("quotaUser")
-  valid_580267 = validateParameter(valid_580267, JString, required = false,
+  if valid_589295 != nil:
+    section.add "fields", valid_589295
+  var valid_589296 = query.getOrDefault("quotaUser")
+  valid_589296 = validateParameter(valid_589296, JString, required = false,
                                  default = nil)
-  if valid_580267 != nil:
-    section.add "quotaUser", valid_580267
-  var valid_580268 = query.getOrDefault("alt")
-  valid_580268 = validateParameter(valid_580268, JString, required = false,
+  if valid_589296 != nil:
+    section.add "quotaUser", valid_589296
+  var valid_589297 = query.getOrDefault("alt")
+  valid_589297 = validateParameter(valid_589297, JString, required = false,
                                  default = newJString("json"))
-  if valid_580268 != nil:
-    section.add "alt", valid_580268
-  var valid_580269 = query.getOrDefault("oauth_token")
-  valid_580269 = validateParameter(valid_580269, JString, required = false,
+  if valid_589297 != nil:
+    section.add "alt", valid_589297
+  var valid_589298 = query.getOrDefault("oauth_token")
+  valid_589298 = validateParameter(valid_589298, JString, required = false,
                                  default = nil)
-  if valid_580269 != nil:
-    section.add "oauth_token", valid_580269
-  var valid_580270 = query.getOrDefault("userIp")
-  valid_580270 = validateParameter(valid_580270, JString, required = false,
+  if valid_589298 != nil:
+    section.add "oauth_token", valid_589298
+  var valid_589299 = query.getOrDefault("userIp")
+  valid_589299 = validateParameter(valid_589299, JString, required = false,
                                  default = nil)
-  if valid_580270 != nil:
-    section.add "userIp", valid_580270
-  var valid_580271 = query.getOrDefault("key")
-  valid_580271 = validateParameter(valid_580271, JString, required = false,
+  if valid_589299 != nil:
+    section.add "userIp", valid_589299
+  var valid_589300 = query.getOrDefault("key")
+  valid_589300 = validateParameter(valid_589300, JString, required = false,
                                  default = nil)
-  if valid_580271 != nil:
-    section.add "key", valid_580271
-  var valid_580272 = query.getOrDefault("prettyPrint")
-  valid_580272 = validateParameter(valid_580272, JBool, required = false,
+  if valid_589300 != nil:
+    section.add "key", valid_589300
+  var valid_589301 = query.getOrDefault("prettyPrint")
+  valid_589301 = validateParameter(valid_589301, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580272 != nil:
-    section.add "prettyPrint", valid_580272
+  if valid_589301 != nil:
+    section.add "prettyPrint", valid_589301
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -3414,19 +3414,19 @@ proc validate_AndroidpublisherEditsBundlesList_580262(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580273: Call_AndroidpublisherEditsBundlesList_580261;
+proc call*(call_589302: Call_AndroidpublisherEditsBundlesList_589290;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
-  let valid = call_580273.validator(path, query, header, formData, body)
-  let scheme = call_580273.pickScheme
+  let valid = call_589302.validator(path, query, header, formData, body)
+  let scheme = call_589302.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580273.url(scheme.get, call_580273.host, call_580273.base,
-                         call_580273.route, valid.getOrDefault("path"),
+  let url = call_589302.url(scheme.get, call_589302.host, call_589302.base,
+                         call_589302.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580273, url, valid)
+  result = hook(call_589302, url, valid)
 
-proc call*(call_580274: Call_AndroidpublisherEditsBundlesList_580261;
+proc call*(call_589303: Call_AndroidpublisherEditsBundlesList_589290;
           packageName: string; editId: string; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; key: string = ""; prettyPrint: bool = true): Recallable =
@@ -3449,28 +3449,28 @@ proc call*(call_580274: Call_AndroidpublisherEditsBundlesList_580261;
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_580275 = newJObject()
-  var query_580276 = newJObject()
-  add(query_580276, "fields", newJString(fields))
-  add(path_580275, "packageName", newJString(packageName))
-  add(query_580276, "quotaUser", newJString(quotaUser))
-  add(query_580276, "alt", newJString(alt))
-  add(path_580275, "editId", newJString(editId))
-  add(query_580276, "oauth_token", newJString(oauthToken))
-  add(query_580276, "userIp", newJString(userIp))
-  add(query_580276, "key", newJString(key))
-  add(query_580276, "prettyPrint", newJBool(prettyPrint))
-  result = call_580274.call(path_580275, query_580276, nil, nil, nil)
+  var path_589304 = newJObject()
+  var query_589305 = newJObject()
+  add(query_589305, "fields", newJString(fields))
+  add(path_589304, "packageName", newJString(packageName))
+  add(query_589305, "quotaUser", newJString(quotaUser))
+  add(query_589305, "alt", newJString(alt))
+  add(path_589304, "editId", newJString(editId))
+  add(query_589305, "oauth_token", newJString(oauthToken))
+  add(query_589305, "userIp", newJString(userIp))
+  add(query_589305, "key", newJString(key))
+  add(query_589305, "prettyPrint", newJBool(prettyPrint))
+  result = call_589303.call(path_589304, query_589305, nil, nil, nil)
 
-var androidpublisherEditsBundlesList* = Call_AndroidpublisherEditsBundlesList_580261(
+var androidpublisherEditsBundlesList* = Call_AndroidpublisherEditsBundlesList_589290(
     name: "androidpublisherEditsBundlesList", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/{packageName}/edits/{editId}/bundles",
-    validator: validate_AndroidpublisherEditsBundlesList_580262,
+    validator: validate_AndroidpublisherEditsBundlesList_589291,
     base: "/androidpublisher/v2/applications",
-    url: url_AndroidpublisherEditsBundlesList_580263, schemes: {Scheme.Https})
+    url: url_AndroidpublisherEditsBundlesList_589292, schemes: {Scheme.Https})
 type
-  Call_AndroidpublisherEditsDetailsUpdate_580310 = ref object of OpenApiRestCall_579421
-proc url_AndroidpublisherEditsDetailsUpdate_580312(protocol: Scheme; host: string;
+  Call_AndroidpublisherEditsDetailsUpdate_589339 = ref object of OpenApiRestCall_588450
+proc url_AndroidpublisherEditsDetailsUpdate_589341(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -3489,7 +3489,7 @@ proc url_AndroidpublisherEditsDetailsUpdate_580312(protocol: Scheme; host: strin
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_AndroidpublisherEditsDetailsUpdate_580311(path: JsonNode;
+proc validate_AndroidpublisherEditsDetailsUpdate_589340(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Updates app details for this edit.
   ## 
@@ -3503,16 +3503,16 @@ proc validate_AndroidpublisherEditsDetailsUpdate_580311(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `packageName` field"
-  var valid_580313 = path.getOrDefault("packageName")
-  valid_580313 = validateParameter(valid_580313, JString, required = true,
+  var valid_589342 = path.getOrDefault("packageName")
+  valid_589342 = validateParameter(valid_589342, JString, required = true,
                                  default = nil)
-  if valid_580313 != nil:
-    section.add "packageName", valid_580313
-  var valid_580314 = path.getOrDefault("editId")
-  valid_580314 = validateParameter(valid_580314, JString, required = true,
+  if valid_589342 != nil:
+    section.add "packageName", valid_589342
+  var valid_589343 = path.getOrDefault("editId")
+  valid_589343 = validateParameter(valid_589343, JString, required = true,
                                  default = nil)
-  if valid_580314 != nil:
-    section.add "editId", valid_580314
+  if valid_589343 != nil:
+    section.add "editId", valid_589343
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -3530,41 +3530,41 @@ proc validate_AndroidpublisherEditsDetailsUpdate_580311(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580315 = query.getOrDefault("fields")
-  valid_580315 = validateParameter(valid_580315, JString, required = false,
+  var valid_589344 = query.getOrDefault("fields")
+  valid_589344 = validateParameter(valid_589344, JString, required = false,
                                  default = nil)
-  if valid_580315 != nil:
-    section.add "fields", valid_580315
-  var valid_580316 = query.getOrDefault("quotaUser")
-  valid_580316 = validateParameter(valid_580316, JString, required = false,
+  if valid_589344 != nil:
+    section.add "fields", valid_589344
+  var valid_589345 = query.getOrDefault("quotaUser")
+  valid_589345 = validateParameter(valid_589345, JString, required = false,
                                  default = nil)
-  if valid_580316 != nil:
-    section.add "quotaUser", valid_580316
-  var valid_580317 = query.getOrDefault("alt")
-  valid_580317 = validateParameter(valid_580317, JString, required = false,
+  if valid_589345 != nil:
+    section.add "quotaUser", valid_589345
+  var valid_589346 = query.getOrDefault("alt")
+  valid_589346 = validateParameter(valid_589346, JString, required = false,
                                  default = newJString("json"))
-  if valid_580317 != nil:
-    section.add "alt", valid_580317
-  var valid_580318 = query.getOrDefault("oauth_token")
-  valid_580318 = validateParameter(valid_580318, JString, required = false,
+  if valid_589346 != nil:
+    section.add "alt", valid_589346
+  var valid_589347 = query.getOrDefault("oauth_token")
+  valid_589347 = validateParameter(valid_589347, JString, required = false,
                                  default = nil)
-  if valid_580318 != nil:
-    section.add "oauth_token", valid_580318
-  var valid_580319 = query.getOrDefault("userIp")
-  valid_580319 = validateParameter(valid_580319, JString, required = false,
+  if valid_589347 != nil:
+    section.add "oauth_token", valid_589347
+  var valid_589348 = query.getOrDefault("userIp")
+  valid_589348 = validateParameter(valid_589348, JString, required = false,
                                  default = nil)
-  if valid_580319 != nil:
-    section.add "userIp", valid_580319
-  var valid_580320 = query.getOrDefault("key")
-  valid_580320 = validateParameter(valid_580320, JString, required = false,
+  if valid_589348 != nil:
+    section.add "userIp", valid_589348
+  var valid_589349 = query.getOrDefault("key")
+  valid_589349 = validateParameter(valid_589349, JString, required = false,
                                  default = nil)
-  if valid_580320 != nil:
-    section.add "key", valid_580320
-  var valid_580321 = query.getOrDefault("prettyPrint")
-  valid_580321 = validateParameter(valid_580321, JBool, required = false,
+  if valid_589349 != nil:
+    section.add "key", valid_589349
+  var valid_589350 = query.getOrDefault("prettyPrint")
+  valid_589350 = validateParameter(valid_589350, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580321 != nil:
-    section.add "prettyPrint", valid_580321
+  if valid_589350 != nil:
+    section.add "prettyPrint", valid_589350
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -3576,21 +3576,21 @@ proc validate_AndroidpublisherEditsDetailsUpdate_580311(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580323: Call_AndroidpublisherEditsDetailsUpdate_580310;
+proc call*(call_589352: Call_AndroidpublisherEditsDetailsUpdate_589339;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Updates app details for this edit.
   ## 
-  let valid = call_580323.validator(path, query, header, formData, body)
-  let scheme = call_580323.pickScheme
+  let valid = call_589352.validator(path, query, header, formData, body)
+  let scheme = call_589352.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580323.url(scheme.get, call_580323.host, call_580323.base,
-                         call_580323.route, valid.getOrDefault("path"),
+  let url = call_589352.url(scheme.get, call_589352.host, call_589352.base,
+                         call_589352.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580323, url, valid)
+  result = hook(call_589352, url, valid)
 
-proc call*(call_580324: Call_AndroidpublisherEditsDetailsUpdate_580310;
+proc call*(call_589353: Call_AndroidpublisherEditsDetailsUpdate_589339;
           packageName: string; editId: string; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; key: string = ""; body: JsonNode = nil;
@@ -3616,31 +3616,31 @@ proc call*(call_580324: Call_AndroidpublisherEditsDetailsUpdate_580310;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_580325 = newJObject()
-  var query_580326 = newJObject()
-  var body_580327 = newJObject()
-  add(query_580326, "fields", newJString(fields))
-  add(path_580325, "packageName", newJString(packageName))
-  add(query_580326, "quotaUser", newJString(quotaUser))
-  add(query_580326, "alt", newJString(alt))
-  add(path_580325, "editId", newJString(editId))
-  add(query_580326, "oauth_token", newJString(oauthToken))
-  add(query_580326, "userIp", newJString(userIp))
-  add(query_580326, "key", newJString(key))
+  var path_589354 = newJObject()
+  var query_589355 = newJObject()
+  var body_589356 = newJObject()
+  add(query_589355, "fields", newJString(fields))
+  add(path_589354, "packageName", newJString(packageName))
+  add(query_589355, "quotaUser", newJString(quotaUser))
+  add(query_589355, "alt", newJString(alt))
+  add(path_589354, "editId", newJString(editId))
+  add(query_589355, "oauth_token", newJString(oauthToken))
+  add(query_589355, "userIp", newJString(userIp))
+  add(query_589355, "key", newJString(key))
   if body != nil:
-    body_580327 = body
-  add(query_580326, "prettyPrint", newJBool(prettyPrint))
-  result = call_580324.call(path_580325, query_580326, nil, nil, body_580327)
+    body_589356 = body
+  add(query_589355, "prettyPrint", newJBool(prettyPrint))
+  result = call_589353.call(path_589354, query_589355, nil, nil, body_589356)
 
-var androidpublisherEditsDetailsUpdate* = Call_AndroidpublisherEditsDetailsUpdate_580310(
+var androidpublisherEditsDetailsUpdate* = Call_AndroidpublisherEditsDetailsUpdate_589339(
     name: "androidpublisherEditsDetailsUpdate", meth: HttpMethod.HttpPut,
     host: "www.googleapis.com", route: "/{packageName}/edits/{editId}/details",
-    validator: validate_AndroidpublisherEditsDetailsUpdate_580311,
+    validator: validate_AndroidpublisherEditsDetailsUpdate_589340,
     base: "/androidpublisher/v2/applications",
-    url: url_AndroidpublisherEditsDetailsUpdate_580312, schemes: {Scheme.Https})
+    url: url_AndroidpublisherEditsDetailsUpdate_589341, schemes: {Scheme.Https})
 type
-  Call_AndroidpublisherEditsDetailsGet_580294 = ref object of OpenApiRestCall_579421
-proc url_AndroidpublisherEditsDetailsGet_580296(protocol: Scheme; host: string;
+  Call_AndroidpublisherEditsDetailsGet_589323 = ref object of OpenApiRestCall_588450
+proc url_AndroidpublisherEditsDetailsGet_589325(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -3659,7 +3659,7 @@ proc url_AndroidpublisherEditsDetailsGet_580296(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_AndroidpublisherEditsDetailsGet_580295(path: JsonNode;
+proc validate_AndroidpublisherEditsDetailsGet_589324(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Fetches app details for this edit. This includes the default language and developer support contact information.
   ## 
@@ -3673,16 +3673,16 @@ proc validate_AndroidpublisherEditsDetailsGet_580295(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `packageName` field"
-  var valid_580297 = path.getOrDefault("packageName")
-  valid_580297 = validateParameter(valid_580297, JString, required = true,
+  var valid_589326 = path.getOrDefault("packageName")
+  valid_589326 = validateParameter(valid_589326, JString, required = true,
                                  default = nil)
-  if valid_580297 != nil:
-    section.add "packageName", valid_580297
-  var valid_580298 = path.getOrDefault("editId")
-  valid_580298 = validateParameter(valid_580298, JString, required = true,
+  if valid_589326 != nil:
+    section.add "packageName", valid_589326
+  var valid_589327 = path.getOrDefault("editId")
+  valid_589327 = validateParameter(valid_589327, JString, required = true,
                                  default = nil)
-  if valid_580298 != nil:
-    section.add "editId", valid_580298
+  if valid_589327 != nil:
+    section.add "editId", valid_589327
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -3700,41 +3700,41 @@ proc validate_AndroidpublisherEditsDetailsGet_580295(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580299 = query.getOrDefault("fields")
-  valid_580299 = validateParameter(valid_580299, JString, required = false,
+  var valid_589328 = query.getOrDefault("fields")
+  valid_589328 = validateParameter(valid_589328, JString, required = false,
                                  default = nil)
-  if valid_580299 != nil:
-    section.add "fields", valid_580299
-  var valid_580300 = query.getOrDefault("quotaUser")
-  valid_580300 = validateParameter(valid_580300, JString, required = false,
+  if valid_589328 != nil:
+    section.add "fields", valid_589328
+  var valid_589329 = query.getOrDefault("quotaUser")
+  valid_589329 = validateParameter(valid_589329, JString, required = false,
                                  default = nil)
-  if valid_580300 != nil:
-    section.add "quotaUser", valid_580300
-  var valid_580301 = query.getOrDefault("alt")
-  valid_580301 = validateParameter(valid_580301, JString, required = false,
+  if valid_589329 != nil:
+    section.add "quotaUser", valid_589329
+  var valid_589330 = query.getOrDefault("alt")
+  valid_589330 = validateParameter(valid_589330, JString, required = false,
                                  default = newJString("json"))
-  if valid_580301 != nil:
-    section.add "alt", valid_580301
-  var valid_580302 = query.getOrDefault("oauth_token")
-  valid_580302 = validateParameter(valid_580302, JString, required = false,
+  if valid_589330 != nil:
+    section.add "alt", valid_589330
+  var valid_589331 = query.getOrDefault("oauth_token")
+  valid_589331 = validateParameter(valid_589331, JString, required = false,
                                  default = nil)
-  if valid_580302 != nil:
-    section.add "oauth_token", valid_580302
-  var valid_580303 = query.getOrDefault("userIp")
-  valid_580303 = validateParameter(valid_580303, JString, required = false,
+  if valid_589331 != nil:
+    section.add "oauth_token", valid_589331
+  var valid_589332 = query.getOrDefault("userIp")
+  valid_589332 = validateParameter(valid_589332, JString, required = false,
                                  default = nil)
-  if valid_580303 != nil:
-    section.add "userIp", valid_580303
-  var valid_580304 = query.getOrDefault("key")
-  valid_580304 = validateParameter(valid_580304, JString, required = false,
+  if valid_589332 != nil:
+    section.add "userIp", valid_589332
+  var valid_589333 = query.getOrDefault("key")
+  valid_589333 = validateParameter(valid_589333, JString, required = false,
                                  default = nil)
-  if valid_580304 != nil:
-    section.add "key", valid_580304
-  var valid_580305 = query.getOrDefault("prettyPrint")
-  valid_580305 = validateParameter(valid_580305, JBool, required = false,
+  if valid_589333 != nil:
+    section.add "key", valid_589333
+  var valid_589334 = query.getOrDefault("prettyPrint")
+  valid_589334 = validateParameter(valid_589334, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580305 != nil:
-    section.add "prettyPrint", valid_580305
+  if valid_589334 != nil:
+    section.add "prettyPrint", valid_589334
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -3743,21 +3743,21 @@ proc validate_AndroidpublisherEditsDetailsGet_580295(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580306: Call_AndroidpublisherEditsDetailsGet_580294;
+proc call*(call_589335: Call_AndroidpublisherEditsDetailsGet_589323;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Fetches app details for this edit. This includes the default language and developer support contact information.
   ## 
-  let valid = call_580306.validator(path, query, header, formData, body)
-  let scheme = call_580306.pickScheme
+  let valid = call_589335.validator(path, query, header, formData, body)
+  let scheme = call_589335.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580306.url(scheme.get, call_580306.host, call_580306.base,
-                         call_580306.route, valid.getOrDefault("path"),
+  let url = call_589335.url(scheme.get, call_589335.host, call_589335.base,
+                         call_589335.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580306, url, valid)
+  result = hook(call_589335, url, valid)
 
-proc call*(call_580307: Call_AndroidpublisherEditsDetailsGet_580294;
+proc call*(call_589336: Call_AndroidpublisherEditsDetailsGet_589323;
           packageName: string; editId: string; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; key: string = ""; prettyPrint: bool = true): Recallable =
@@ -3781,28 +3781,28 @@ proc call*(call_580307: Call_AndroidpublisherEditsDetailsGet_580294;
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_580308 = newJObject()
-  var query_580309 = newJObject()
-  add(query_580309, "fields", newJString(fields))
-  add(path_580308, "packageName", newJString(packageName))
-  add(query_580309, "quotaUser", newJString(quotaUser))
-  add(query_580309, "alt", newJString(alt))
-  add(path_580308, "editId", newJString(editId))
-  add(query_580309, "oauth_token", newJString(oauthToken))
-  add(query_580309, "userIp", newJString(userIp))
-  add(query_580309, "key", newJString(key))
-  add(query_580309, "prettyPrint", newJBool(prettyPrint))
-  result = call_580307.call(path_580308, query_580309, nil, nil, nil)
+  var path_589337 = newJObject()
+  var query_589338 = newJObject()
+  add(query_589338, "fields", newJString(fields))
+  add(path_589337, "packageName", newJString(packageName))
+  add(query_589338, "quotaUser", newJString(quotaUser))
+  add(query_589338, "alt", newJString(alt))
+  add(path_589337, "editId", newJString(editId))
+  add(query_589338, "oauth_token", newJString(oauthToken))
+  add(query_589338, "userIp", newJString(userIp))
+  add(query_589338, "key", newJString(key))
+  add(query_589338, "prettyPrint", newJBool(prettyPrint))
+  result = call_589336.call(path_589337, query_589338, nil, nil, nil)
 
-var androidpublisherEditsDetailsGet* = Call_AndroidpublisherEditsDetailsGet_580294(
+var androidpublisherEditsDetailsGet* = Call_AndroidpublisherEditsDetailsGet_589323(
     name: "androidpublisherEditsDetailsGet", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/{packageName}/edits/{editId}/details",
-    validator: validate_AndroidpublisherEditsDetailsGet_580295,
+    validator: validate_AndroidpublisherEditsDetailsGet_589324,
     base: "/androidpublisher/v2/applications",
-    url: url_AndroidpublisherEditsDetailsGet_580296, schemes: {Scheme.Https})
+    url: url_AndroidpublisherEditsDetailsGet_589325, schemes: {Scheme.Https})
 type
-  Call_AndroidpublisherEditsDetailsPatch_580328 = ref object of OpenApiRestCall_579421
-proc url_AndroidpublisherEditsDetailsPatch_580330(protocol: Scheme; host: string;
+  Call_AndroidpublisherEditsDetailsPatch_589357 = ref object of OpenApiRestCall_588450
+proc url_AndroidpublisherEditsDetailsPatch_589359(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -3821,7 +3821,7 @@ proc url_AndroidpublisherEditsDetailsPatch_580330(protocol: Scheme; host: string
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_AndroidpublisherEditsDetailsPatch_580329(path: JsonNode;
+proc validate_AndroidpublisherEditsDetailsPatch_589358(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Updates app details for this edit. This method supports patch semantics.
   ## 
@@ -3835,16 +3835,16 @@ proc validate_AndroidpublisherEditsDetailsPatch_580329(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `packageName` field"
-  var valid_580331 = path.getOrDefault("packageName")
-  valid_580331 = validateParameter(valid_580331, JString, required = true,
+  var valid_589360 = path.getOrDefault("packageName")
+  valid_589360 = validateParameter(valid_589360, JString, required = true,
                                  default = nil)
-  if valid_580331 != nil:
-    section.add "packageName", valid_580331
-  var valid_580332 = path.getOrDefault("editId")
-  valid_580332 = validateParameter(valid_580332, JString, required = true,
+  if valid_589360 != nil:
+    section.add "packageName", valid_589360
+  var valid_589361 = path.getOrDefault("editId")
+  valid_589361 = validateParameter(valid_589361, JString, required = true,
                                  default = nil)
-  if valid_580332 != nil:
-    section.add "editId", valid_580332
+  if valid_589361 != nil:
+    section.add "editId", valid_589361
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -3862,41 +3862,41 @@ proc validate_AndroidpublisherEditsDetailsPatch_580329(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580333 = query.getOrDefault("fields")
-  valid_580333 = validateParameter(valid_580333, JString, required = false,
+  var valid_589362 = query.getOrDefault("fields")
+  valid_589362 = validateParameter(valid_589362, JString, required = false,
                                  default = nil)
-  if valid_580333 != nil:
-    section.add "fields", valid_580333
-  var valid_580334 = query.getOrDefault("quotaUser")
-  valid_580334 = validateParameter(valid_580334, JString, required = false,
+  if valid_589362 != nil:
+    section.add "fields", valid_589362
+  var valid_589363 = query.getOrDefault("quotaUser")
+  valid_589363 = validateParameter(valid_589363, JString, required = false,
                                  default = nil)
-  if valid_580334 != nil:
-    section.add "quotaUser", valid_580334
-  var valid_580335 = query.getOrDefault("alt")
-  valid_580335 = validateParameter(valid_580335, JString, required = false,
+  if valid_589363 != nil:
+    section.add "quotaUser", valid_589363
+  var valid_589364 = query.getOrDefault("alt")
+  valid_589364 = validateParameter(valid_589364, JString, required = false,
                                  default = newJString("json"))
-  if valid_580335 != nil:
-    section.add "alt", valid_580335
-  var valid_580336 = query.getOrDefault("oauth_token")
-  valid_580336 = validateParameter(valid_580336, JString, required = false,
+  if valid_589364 != nil:
+    section.add "alt", valid_589364
+  var valid_589365 = query.getOrDefault("oauth_token")
+  valid_589365 = validateParameter(valid_589365, JString, required = false,
                                  default = nil)
-  if valid_580336 != nil:
-    section.add "oauth_token", valid_580336
-  var valid_580337 = query.getOrDefault("userIp")
-  valid_580337 = validateParameter(valid_580337, JString, required = false,
+  if valid_589365 != nil:
+    section.add "oauth_token", valid_589365
+  var valid_589366 = query.getOrDefault("userIp")
+  valid_589366 = validateParameter(valid_589366, JString, required = false,
                                  default = nil)
-  if valid_580337 != nil:
-    section.add "userIp", valid_580337
-  var valid_580338 = query.getOrDefault("key")
-  valid_580338 = validateParameter(valid_580338, JString, required = false,
+  if valid_589366 != nil:
+    section.add "userIp", valid_589366
+  var valid_589367 = query.getOrDefault("key")
+  valid_589367 = validateParameter(valid_589367, JString, required = false,
                                  default = nil)
-  if valid_580338 != nil:
-    section.add "key", valid_580338
-  var valid_580339 = query.getOrDefault("prettyPrint")
-  valid_580339 = validateParameter(valid_580339, JBool, required = false,
+  if valid_589367 != nil:
+    section.add "key", valid_589367
+  var valid_589368 = query.getOrDefault("prettyPrint")
+  valid_589368 = validateParameter(valid_589368, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580339 != nil:
-    section.add "prettyPrint", valid_580339
+  if valid_589368 != nil:
+    section.add "prettyPrint", valid_589368
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -3908,21 +3908,21 @@ proc validate_AndroidpublisherEditsDetailsPatch_580329(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580341: Call_AndroidpublisherEditsDetailsPatch_580328;
+proc call*(call_589370: Call_AndroidpublisherEditsDetailsPatch_589357;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Updates app details for this edit. This method supports patch semantics.
   ## 
-  let valid = call_580341.validator(path, query, header, formData, body)
-  let scheme = call_580341.pickScheme
+  let valid = call_589370.validator(path, query, header, formData, body)
+  let scheme = call_589370.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580341.url(scheme.get, call_580341.host, call_580341.base,
-                         call_580341.route, valid.getOrDefault("path"),
+  let url = call_589370.url(scheme.get, call_589370.host, call_589370.base,
+                         call_589370.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580341, url, valid)
+  result = hook(call_589370, url, valid)
 
-proc call*(call_580342: Call_AndroidpublisherEditsDetailsPatch_580328;
+proc call*(call_589371: Call_AndroidpublisherEditsDetailsPatch_589357;
           packageName: string; editId: string; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; key: string = ""; body: JsonNode = nil;
@@ -3948,31 +3948,31 @@ proc call*(call_580342: Call_AndroidpublisherEditsDetailsPatch_580328;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_580343 = newJObject()
-  var query_580344 = newJObject()
-  var body_580345 = newJObject()
-  add(query_580344, "fields", newJString(fields))
-  add(path_580343, "packageName", newJString(packageName))
-  add(query_580344, "quotaUser", newJString(quotaUser))
-  add(query_580344, "alt", newJString(alt))
-  add(path_580343, "editId", newJString(editId))
-  add(query_580344, "oauth_token", newJString(oauthToken))
-  add(query_580344, "userIp", newJString(userIp))
-  add(query_580344, "key", newJString(key))
+  var path_589372 = newJObject()
+  var query_589373 = newJObject()
+  var body_589374 = newJObject()
+  add(query_589373, "fields", newJString(fields))
+  add(path_589372, "packageName", newJString(packageName))
+  add(query_589373, "quotaUser", newJString(quotaUser))
+  add(query_589373, "alt", newJString(alt))
+  add(path_589372, "editId", newJString(editId))
+  add(query_589373, "oauth_token", newJString(oauthToken))
+  add(query_589373, "userIp", newJString(userIp))
+  add(query_589373, "key", newJString(key))
   if body != nil:
-    body_580345 = body
-  add(query_580344, "prettyPrint", newJBool(prettyPrint))
-  result = call_580342.call(path_580343, query_580344, nil, nil, body_580345)
+    body_589374 = body
+  add(query_589373, "prettyPrint", newJBool(prettyPrint))
+  result = call_589371.call(path_589372, query_589373, nil, nil, body_589374)
 
-var androidpublisherEditsDetailsPatch* = Call_AndroidpublisherEditsDetailsPatch_580328(
+var androidpublisherEditsDetailsPatch* = Call_AndroidpublisherEditsDetailsPatch_589357(
     name: "androidpublisherEditsDetailsPatch", meth: HttpMethod.HttpPatch,
     host: "www.googleapis.com", route: "/{packageName}/edits/{editId}/details",
-    validator: validate_AndroidpublisherEditsDetailsPatch_580329,
+    validator: validate_AndroidpublisherEditsDetailsPatch_589358,
     base: "/androidpublisher/v2/applications",
-    url: url_AndroidpublisherEditsDetailsPatch_580330, schemes: {Scheme.Https})
+    url: url_AndroidpublisherEditsDetailsPatch_589359, schemes: {Scheme.Https})
 type
-  Call_AndroidpublisherEditsListingsList_580346 = ref object of OpenApiRestCall_579421
-proc url_AndroidpublisherEditsListingsList_580348(protocol: Scheme; host: string;
+  Call_AndroidpublisherEditsListingsList_589375 = ref object of OpenApiRestCall_588450
+proc url_AndroidpublisherEditsListingsList_589377(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -3991,7 +3991,7 @@ proc url_AndroidpublisherEditsListingsList_580348(protocol: Scheme; host: string
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_AndroidpublisherEditsListingsList_580347(path: JsonNode;
+proc validate_AndroidpublisherEditsListingsList_589376(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Returns all of the localized store listings attached to this edit.
   ## 
@@ -4005,16 +4005,16 @@ proc validate_AndroidpublisherEditsListingsList_580347(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `packageName` field"
-  var valid_580349 = path.getOrDefault("packageName")
-  valid_580349 = validateParameter(valid_580349, JString, required = true,
+  var valid_589378 = path.getOrDefault("packageName")
+  valid_589378 = validateParameter(valid_589378, JString, required = true,
                                  default = nil)
-  if valid_580349 != nil:
-    section.add "packageName", valid_580349
-  var valid_580350 = path.getOrDefault("editId")
-  valid_580350 = validateParameter(valid_580350, JString, required = true,
+  if valid_589378 != nil:
+    section.add "packageName", valid_589378
+  var valid_589379 = path.getOrDefault("editId")
+  valid_589379 = validateParameter(valid_589379, JString, required = true,
                                  default = nil)
-  if valid_580350 != nil:
-    section.add "editId", valid_580350
+  if valid_589379 != nil:
+    section.add "editId", valid_589379
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -4032,41 +4032,41 @@ proc validate_AndroidpublisherEditsListingsList_580347(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580351 = query.getOrDefault("fields")
-  valid_580351 = validateParameter(valid_580351, JString, required = false,
+  var valid_589380 = query.getOrDefault("fields")
+  valid_589380 = validateParameter(valid_589380, JString, required = false,
                                  default = nil)
-  if valid_580351 != nil:
-    section.add "fields", valid_580351
-  var valid_580352 = query.getOrDefault("quotaUser")
-  valid_580352 = validateParameter(valid_580352, JString, required = false,
+  if valid_589380 != nil:
+    section.add "fields", valid_589380
+  var valid_589381 = query.getOrDefault("quotaUser")
+  valid_589381 = validateParameter(valid_589381, JString, required = false,
                                  default = nil)
-  if valid_580352 != nil:
-    section.add "quotaUser", valid_580352
-  var valid_580353 = query.getOrDefault("alt")
-  valid_580353 = validateParameter(valid_580353, JString, required = false,
+  if valid_589381 != nil:
+    section.add "quotaUser", valid_589381
+  var valid_589382 = query.getOrDefault("alt")
+  valid_589382 = validateParameter(valid_589382, JString, required = false,
                                  default = newJString("json"))
-  if valid_580353 != nil:
-    section.add "alt", valid_580353
-  var valid_580354 = query.getOrDefault("oauth_token")
-  valid_580354 = validateParameter(valid_580354, JString, required = false,
+  if valid_589382 != nil:
+    section.add "alt", valid_589382
+  var valid_589383 = query.getOrDefault("oauth_token")
+  valid_589383 = validateParameter(valid_589383, JString, required = false,
                                  default = nil)
-  if valid_580354 != nil:
-    section.add "oauth_token", valid_580354
-  var valid_580355 = query.getOrDefault("userIp")
-  valid_580355 = validateParameter(valid_580355, JString, required = false,
+  if valid_589383 != nil:
+    section.add "oauth_token", valid_589383
+  var valid_589384 = query.getOrDefault("userIp")
+  valid_589384 = validateParameter(valid_589384, JString, required = false,
                                  default = nil)
-  if valid_580355 != nil:
-    section.add "userIp", valid_580355
-  var valid_580356 = query.getOrDefault("key")
-  valid_580356 = validateParameter(valid_580356, JString, required = false,
+  if valid_589384 != nil:
+    section.add "userIp", valid_589384
+  var valid_589385 = query.getOrDefault("key")
+  valid_589385 = validateParameter(valid_589385, JString, required = false,
                                  default = nil)
-  if valid_580356 != nil:
-    section.add "key", valid_580356
-  var valid_580357 = query.getOrDefault("prettyPrint")
-  valid_580357 = validateParameter(valid_580357, JBool, required = false,
+  if valid_589385 != nil:
+    section.add "key", valid_589385
+  var valid_589386 = query.getOrDefault("prettyPrint")
+  valid_589386 = validateParameter(valid_589386, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580357 != nil:
-    section.add "prettyPrint", valid_580357
+  if valid_589386 != nil:
+    section.add "prettyPrint", valid_589386
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -4075,21 +4075,21 @@ proc validate_AndroidpublisherEditsListingsList_580347(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580358: Call_AndroidpublisherEditsListingsList_580346;
+proc call*(call_589387: Call_AndroidpublisherEditsListingsList_589375;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Returns all of the localized store listings attached to this edit.
   ## 
-  let valid = call_580358.validator(path, query, header, formData, body)
-  let scheme = call_580358.pickScheme
+  let valid = call_589387.validator(path, query, header, formData, body)
+  let scheme = call_589387.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580358.url(scheme.get, call_580358.host, call_580358.base,
-                         call_580358.route, valid.getOrDefault("path"),
+  let url = call_589387.url(scheme.get, call_589387.host, call_589387.base,
+                         call_589387.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580358, url, valid)
+  result = hook(call_589387, url, valid)
 
-proc call*(call_580359: Call_AndroidpublisherEditsListingsList_580346;
+proc call*(call_589388: Call_AndroidpublisherEditsListingsList_589375;
           packageName: string; editId: string; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; key: string = ""; prettyPrint: bool = true): Recallable =
@@ -4113,28 +4113,28 @@ proc call*(call_580359: Call_AndroidpublisherEditsListingsList_580346;
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_580360 = newJObject()
-  var query_580361 = newJObject()
-  add(query_580361, "fields", newJString(fields))
-  add(path_580360, "packageName", newJString(packageName))
-  add(query_580361, "quotaUser", newJString(quotaUser))
-  add(query_580361, "alt", newJString(alt))
-  add(path_580360, "editId", newJString(editId))
-  add(query_580361, "oauth_token", newJString(oauthToken))
-  add(query_580361, "userIp", newJString(userIp))
-  add(query_580361, "key", newJString(key))
-  add(query_580361, "prettyPrint", newJBool(prettyPrint))
-  result = call_580359.call(path_580360, query_580361, nil, nil, nil)
+  var path_589389 = newJObject()
+  var query_589390 = newJObject()
+  add(query_589390, "fields", newJString(fields))
+  add(path_589389, "packageName", newJString(packageName))
+  add(query_589390, "quotaUser", newJString(quotaUser))
+  add(query_589390, "alt", newJString(alt))
+  add(path_589389, "editId", newJString(editId))
+  add(query_589390, "oauth_token", newJString(oauthToken))
+  add(query_589390, "userIp", newJString(userIp))
+  add(query_589390, "key", newJString(key))
+  add(query_589390, "prettyPrint", newJBool(prettyPrint))
+  result = call_589388.call(path_589389, query_589390, nil, nil, nil)
 
-var androidpublisherEditsListingsList* = Call_AndroidpublisherEditsListingsList_580346(
+var androidpublisherEditsListingsList* = Call_AndroidpublisherEditsListingsList_589375(
     name: "androidpublisherEditsListingsList", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/{packageName}/edits/{editId}/listings",
-    validator: validate_AndroidpublisherEditsListingsList_580347,
+    validator: validate_AndroidpublisherEditsListingsList_589376,
     base: "/androidpublisher/v2/applications",
-    url: url_AndroidpublisherEditsListingsList_580348, schemes: {Scheme.Https})
+    url: url_AndroidpublisherEditsListingsList_589377, schemes: {Scheme.Https})
 type
-  Call_AndroidpublisherEditsListingsDeleteall_580362 = ref object of OpenApiRestCall_579421
-proc url_AndroidpublisherEditsListingsDeleteall_580364(protocol: Scheme;
+  Call_AndroidpublisherEditsListingsDeleteall_589391 = ref object of OpenApiRestCall_588450
+proc url_AndroidpublisherEditsListingsDeleteall_589393(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -4153,7 +4153,7 @@ proc url_AndroidpublisherEditsListingsDeleteall_580364(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_AndroidpublisherEditsListingsDeleteall_580363(path: JsonNode;
+proc validate_AndroidpublisherEditsListingsDeleteall_589392(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Deletes all localized listings from an edit.
   ## 
@@ -4167,16 +4167,16 @@ proc validate_AndroidpublisherEditsListingsDeleteall_580363(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `packageName` field"
-  var valid_580365 = path.getOrDefault("packageName")
-  valid_580365 = validateParameter(valid_580365, JString, required = true,
+  var valid_589394 = path.getOrDefault("packageName")
+  valid_589394 = validateParameter(valid_589394, JString, required = true,
                                  default = nil)
-  if valid_580365 != nil:
-    section.add "packageName", valid_580365
-  var valid_580366 = path.getOrDefault("editId")
-  valid_580366 = validateParameter(valid_580366, JString, required = true,
+  if valid_589394 != nil:
+    section.add "packageName", valid_589394
+  var valid_589395 = path.getOrDefault("editId")
+  valid_589395 = validateParameter(valid_589395, JString, required = true,
                                  default = nil)
-  if valid_580366 != nil:
-    section.add "editId", valid_580366
+  if valid_589395 != nil:
+    section.add "editId", valid_589395
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -4194,41 +4194,41 @@ proc validate_AndroidpublisherEditsListingsDeleteall_580363(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580367 = query.getOrDefault("fields")
-  valid_580367 = validateParameter(valid_580367, JString, required = false,
+  var valid_589396 = query.getOrDefault("fields")
+  valid_589396 = validateParameter(valid_589396, JString, required = false,
                                  default = nil)
-  if valid_580367 != nil:
-    section.add "fields", valid_580367
-  var valid_580368 = query.getOrDefault("quotaUser")
-  valid_580368 = validateParameter(valid_580368, JString, required = false,
+  if valid_589396 != nil:
+    section.add "fields", valid_589396
+  var valid_589397 = query.getOrDefault("quotaUser")
+  valid_589397 = validateParameter(valid_589397, JString, required = false,
                                  default = nil)
-  if valid_580368 != nil:
-    section.add "quotaUser", valid_580368
-  var valid_580369 = query.getOrDefault("alt")
-  valid_580369 = validateParameter(valid_580369, JString, required = false,
+  if valid_589397 != nil:
+    section.add "quotaUser", valid_589397
+  var valid_589398 = query.getOrDefault("alt")
+  valid_589398 = validateParameter(valid_589398, JString, required = false,
                                  default = newJString("json"))
-  if valid_580369 != nil:
-    section.add "alt", valid_580369
-  var valid_580370 = query.getOrDefault("oauth_token")
-  valid_580370 = validateParameter(valid_580370, JString, required = false,
+  if valid_589398 != nil:
+    section.add "alt", valid_589398
+  var valid_589399 = query.getOrDefault("oauth_token")
+  valid_589399 = validateParameter(valid_589399, JString, required = false,
                                  default = nil)
-  if valid_580370 != nil:
-    section.add "oauth_token", valid_580370
-  var valid_580371 = query.getOrDefault("userIp")
-  valid_580371 = validateParameter(valid_580371, JString, required = false,
+  if valid_589399 != nil:
+    section.add "oauth_token", valid_589399
+  var valid_589400 = query.getOrDefault("userIp")
+  valid_589400 = validateParameter(valid_589400, JString, required = false,
                                  default = nil)
-  if valid_580371 != nil:
-    section.add "userIp", valid_580371
-  var valid_580372 = query.getOrDefault("key")
-  valid_580372 = validateParameter(valid_580372, JString, required = false,
+  if valid_589400 != nil:
+    section.add "userIp", valid_589400
+  var valid_589401 = query.getOrDefault("key")
+  valid_589401 = validateParameter(valid_589401, JString, required = false,
                                  default = nil)
-  if valid_580372 != nil:
-    section.add "key", valid_580372
-  var valid_580373 = query.getOrDefault("prettyPrint")
-  valid_580373 = validateParameter(valid_580373, JBool, required = false,
+  if valid_589401 != nil:
+    section.add "key", valid_589401
+  var valid_589402 = query.getOrDefault("prettyPrint")
+  valid_589402 = validateParameter(valid_589402, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580373 != nil:
-    section.add "prettyPrint", valid_580373
+  if valid_589402 != nil:
+    section.add "prettyPrint", valid_589402
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -4237,21 +4237,21 @@ proc validate_AndroidpublisherEditsListingsDeleteall_580363(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580374: Call_AndroidpublisherEditsListingsDeleteall_580362;
+proc call*(call_589403: Call_AndroidpublisherEditsListingsDeleteall_589391;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Deletes all localized listings from an edit.
   ## 
-  let valid = call_580374.validator(path, query, header, formData, body)
-  let scheme = call_580374.pickScheme
+  let valid = call_589403.validator(path, query, header, formData, body)
+  let scheme = call_589403.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580374.url(scheme.get, call_580374.host, call_580374.base,
-                         call_580374.route, valid.getOrDefault("path"),
+  let url = call_589403.url(scheme.get, call_589403.host, call_589403.base,
+                         call_589403.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580374, url, valid)
+  result = hook(call_589403, url, valid)
 
-proc call*(call_580375: Call_AndroidpublisherEditsListingsDeleteall_580362;
+proc call*(call_589404: Call_AndroidpublisherEditsListingsDeleteall_589391;
           packageName: string; editId: string; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; key: string = ""; prettyPrint: bool = true): Recallable =
@@ -4275,29 +4275,29 @@ proc call*(call_580375: Call_AndroidpublisherEditsListingsDeleteall_580362;
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_580376 = newJObject()
-  var query_580377 = newJObject()
-  add(query_580377, "fields", newJString(fields))
-  add(path_580376, "packageName", newJString(packageName))
-  add(query_580377, "quotaUser", newJString(quotaUser))
-  add(query_580377, "alt", newJString(alt))
-  add(path_580376, "editId", newJString(editId))
-  add(query_580377, "oauth_token", newJString(oauthToken))
-  add(query_580377, "userIp", newJString(userIp))
-  add(query_580377, "key", newJString(key))
-  add(query_580377, "prettyPrint", newJBool(prettyPrint))
-  result = call_580375.call(path_580376, query_580377, nil, nil, nil)
+  var path_589405 = newJObject()
+  var query_589406 = newJObject()
+  add(query_589406, "fields", newJString(fields))
+  add(path_589405, "packageName", newJString(packageName))
+  add(query_589406, "quotaUser", newJString(quotaUser))
+  add(query_589406, "alt", newJString(alt))
+  add(path_589405, "editId", newJString(editId))
+  add(query_589406, "oauth_token", newJString(oauthToken))
+  add(query_589406, "userIp", newJString(userIp))
+  add(query_589406, "key", newJString(key))
+  add(query_589406, "prettyPrint", newJBool(prettyPrint))
+  result = call_589404.call(path_589405, query_589406, nil, nil, nil)
 
-var androidpublisherEditsListingsDeleteall* = Call_AndroidpublisherEditsListingsDeleteall_580362(
+var androidpublisherEditsListingsDeleteall* = Call_AndroidpublisherEditsListingsDeleteall_589391(
     name: "androidpublisherEditsListingsDeleteall", meth: HttpMethod.HttpDelete,
     host: "www.googleapis.com", route: "/{packageName}/edits/{editId}/listings",
-    validator: validate_AndroidpublisherEditsListingsDeleteall_580363,
+    validator: validate_AndroidpublisherEditsListingsDeleteall_589392,
     base: "/androidpublisher/v2/applications",
-    url: url_AndroidpublisherEditsListingsDeleteall_580364,
+    url: url_AndroidpublisherEditsListingsDeleteall_589393,
     schemes: {Scheme.Https})
 type
-  Call_AndroidpublisherEditsListingsUpdate_580395 = ref object of OpenApiRestCall_579421
-proc url_AndroidpublisherEditsListingsUpdate_580397(protocol: Scheme; host: string;
+  Call_AndroidpublisherEditsListingsUpdate_589424 = ref object of OpenApiRestCall_588450
+proc url_AndroidpublisherEditsListingsUpdate_589426(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -4318,7 +4318,7 @@ proc url_AndroidpublisherEditsListingsUpdate_580397(protocol: Scheme; host: stri
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_AndroidpublisherEditsListingsUpdate_580396(path: JsonNode;
+proc validate_AndroidpublisherEditsListingsUpdate_589425(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Creates or updates a localized store listing.
   ## 
@@ -4334,21 +4334,21 @@ proc validate_AndroidpublisherEditsListingsUpdate_580396(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `packageName` field"
-  var valid_580398 = path.getOrDefault("packageName")
-  valid_580398 = validateParameter(valid_580398, JString, required = true,
+  var valid_589427 = path.getOrDefault("packageName")
+  valid_589427 = validateParameter(valid_589427, JString, required = true,
                                  default = nil)
-  if valid_580398 != nil:
-    section.add "packageName", valid_580398
-  var valid_580399 = path.getOrDefault("editId")
-  valid_580399 = validateParameter(valid_580399, JString, required = true,
+  if valid_589427 != nil:
+    section.add "packageName", valid_589427
+  var valid_589428 = path.getOrDefault("editId")
+  valid_589428 = validateParameter(valid_589428, JString, required = true,
                                  default = nil)
-  if valid_580399 != nil:
-    section.add "editId", valid_580399
-  var valid_580400 = path.getOrDefault("language")
-  valid_580400 = validateParameter(valid_580400, JString, required = true,
+  if valid_589428 != nil:
+    section.add "editId", valid_589428
+  var valid_589429 = path.getOrDefault("language")
+  valid_589429 = validateParameter(valid_589429, JString, required = true,
                                  default = nil)
-  if valid_580400 != nil:
-    section.add "language", valid_580400
+  if valid_589429 != nil:
+    section.add "language", valid_589429
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -4366,41 +4366,41 @@ proc validate_AndroidpublisherEditsListingsUpdate_580396(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580401 = query.getOrDefault("fields")
-  valid_580401 = validateParameter(valid_580401, JString, required = false,
+  var valid_589430 = query.getOrDefault("fields")
+  valid_589430 = validateParameter(valid_589430, JString, required = false,
                                  default = nil)
-  if valid_580401 != nil:
-    section.add "fields", valid_580401
-  var valid_580402 = query.getOrDefault("quotaUser")
-  valid_580402 = validateParameter(valid_580402, JString, required = false,
+  if valid_589430 != nil:
+    section.add "fields", valid_589430
+  var valid_589431 = query.getOrDefault("quotaUser")
+  valid_589431 = validateParameter(valid_589431, JString, required = false,
                                  default = nil)
-  if valid_580402 != nil:
-    section.add "quotaUser", valid_580402
-  var valid_580403 = query.getOrDefault("alt")
-  valid_580403 = validateParameter(valid_580403, JString, required = false,
+  if valid_589431 != nil:
+    section.add "quotaUser", valid_589431
+  var valid_589432 = query.getOrDefault("alt")
+  valid_589432 = validateParameter(valid_589432, JString, required = false,
                                  default = newJString("json"))
-  if valid_580403 != nil:
-    section.add "alt", valid_580403
-  var valid_580404 = query.getOrDefault("oauth_token")
-  valid_580404 = validateParameter(valid_580404, JString, required = false,
+  if valid_589432 != nil:
+    section.add "alt", valid_589432
+  var valid_589433 = query.getOrDefault("oauth_token")
+  valid_589433 = validateParameter(valid_589433, JString, required = false,
                                  default = nil)
-  if valid_580404 != nil:
-    section.add "oauth_token", valid_580404
-  var valid_580405 = query.getOrDefault("userIp")
-  valid_580405 = validateParameter(valid_580405, JString, required = false,
+  if valid_589433 != nil:
+    section.add "oauth_token", valid_589433
+  var valid_589434 = query.getOrDefault("userIp")
+  valid_589434 = validateParameter(valid_589434, JString, required = false,
                                  default = nil)
-  if valid_580405 != nil:
-    section.add "userIp", valid_580405
-  var valid_580406 = query.getOrDefault("key")
-  valid_580406 = validateParameter(valid_580406, JString, required = false,
+  if valid_589434 != nil:
+    section.add "userIp", valid_589434
+  var valid_589435 = query.getOrDefault("key")
+  valid_589435 = validateParameter(valid_589435, JString, required = false,
                                  default = nil)
-  if valid_580406 != nil:
-    section.add "key", valid_580406
-  var valid_580407 = query.getOrDefault("prettyPrint")
-  valid_580407 = validateParameter(valid_580407, JBool, required = false,
+  if valid_589435 != nil:
+    section.add "key", valid_589435
+  var valid_589436 = query.getOrDefault("prettyPrint")
+  valid_589436 = validateParameter(valid_589436, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580407 != nil:
-    section.add "prettyPrint", valid_580407
+  if valid_589436 != nil:
+    section.add "prettyPrint", valid_589436
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -4412,21 +4412,21 @@ proc validate_AndroidpublisherEditsListingsUpdate_580396(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580409: Call_AndroidpublisherEditsListingsUpdate_580395;
+proc call*(call_589438: Call_AndroidpublisherEditsListingsUpdate_589424;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Creates or updates a localized store listing.
   ## 
-  let valid = call_580409.validator(path, query, header, formData, body)
-  let scheme = call_580409.pickScheme
+  let valid = call_589438.validator(path, query, header, formData, body)
+  let scheme = call_589438.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580409.url(scheme.get, call_580409.host, call_580409.base,
-                         call_580409.route, valid.getOrDefault("path"),
+  let url = call_589438.url(scheme.get, call_589438.host, call_589438.base,
+                         call_589438.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580409, url, valid)
+  result = hook(call_589438, url, valid)
 
-proc call*(call_580410: Call_AndroidpublisherEditsListingsUpdate_580395;
+proc call*(call_589439: Call_AndroidpublisherEditsListingsUpdate_589424;
           packageName: string; editId: string; language: string; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; key: string = ""; body: JsonNode = nil;
@@ -4454,33 +4454,33 @@ proc call*(call_580410: Call_AndroidpublisherEditsListingsUpdate_580395;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_580411 = newJObject()
-  var query_580412 = newJObject()
-  var body_580413 = newJObject()
-  add(query_580412, "fields", newJString(fields))
-  add(path_580411, "packageName", newJString(packageName))
-  add(query_580412, "quotaUser", newJString(quotaUser))
-  add(query_580412, "alt", newJString(alt))
-  add(path_580411, "editId", newJString(editId))
-  add(query_580412, "oauth_token", newJString(oauthToken))
-  add(path_580411, "language", newJString(language))
-  add(query_580412, "userIp", newJString(userIp))
-  add(query_580412, "key", newJString(key))
+  var path_589440 = newJObject()
+  var query_589441 = newJObject()
+  var body_589442 = newJObject()
+  add(query_589441, "fields", newJString(fields))
+  add(path_589440, "packageName", newJString(packageName))
+  add(query_589441, "quotaUser", newJString(quotaUser))
+  add(query_589441, "alt", newJString(alt))
+  add(path_589440, "editId", newJString(editId))
+  add(query_589441, "oauth_token", newJString(oauthToken))
+  add(path_589440, "language", newJString(language))
+  add(query_589441, "userIp", newJString(userIp))
+  add(query_589441, "key", newJString(key))
   if body != nil:
-    body_580413 = body
-  add(query_580412, "prettyPrint", newJBool(prettyPrint))
-  result = call_580410.call(path_580411, query_580412, nil, nil, body_580413)
+    body_589442 = body
+  add(query_589441, "prettyPrint", newJBool(prettyPrint))
+  result = call_589439.call(path_589440, query_589441, nil, nil, body_589442)
 
-var androidpublisherEditsListingsUpdate* = Call_AndroidpublisherEditsListingsUpdate_580395(
+var androidpublisherEditsListingsUpdate* = Call_AndroidpublisherEditsListingsUpdate_589424(
     name: "androidpublisherEditsListingsUpdate", meth: HttpMethod.HttpPut,
     host: "www.googleapis.com",
     route: "/{packageName}/edits/{editId}/listings/{language}",
-    validator: validate_AndroidpublisherEditsListingsUpdate_580396,
+    validator: validate_AndroidpublisherEditsListingsUpdate_589425,
     base: "/androidpublisher/v2/applications",
-    url: url_AndroidpublisherEditsListingsUpdate_580397, schemes: {Scheme.Https})
+    url: url_AndroidpublisherEditsListingsUpdate_589426, schemes: {Scheme.Https})
 type
-  Call_AndroidpublisherEditsListingsGet_580378 = ref object of OpenApiRestCall_579421
-proc url_AndroidpublisherEditsListingsGet_580380(protocol: Scheme; host: string;
+  Call_AndroidpublisherEditsListingsGet_589407 = ref object of OpenApiRestCall_588450
+proc url_AndroidpublisherEditsListingsGet_589409(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -4501,7 +4501,7 @@ proc url_AndroidpublisherEditsListingsGet_580380(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_AndroidpublisherEditsListingsGet_580379(path: JsonNode;
+proc validate_AndroidpublisherEditsListingsGet_589408(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Fetches information about a localized store listing.
   ## 
@@ -4517,21 +4517,21 @@ proc validate_AndroidpublisherEditsListingsGet_580379(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `packageName` field"
-  var valid_580381 = path.getOrDefault("packageName")
-  valid_580381 = validateParameter(valid_580381, JString, required = true,
+  var valid_589410 = path.getOrDefault("packageName")
+  valid_589410 = validateParameter(valid_589410, JString, required = true,
                                  default = nil)
-  if valid_580381 != nil:
-    section.add "packageName", valid_580381
-  var valid_580382 = path.getOrDefault("editId")
-  valid_580382 = validateParameter(valid_580382, JString, required = true,
+  if valid_589410 != nil:
+    section.add "packageName", valid_589410
+  var valid_589411 = path.getOrDefault("editId")
+  valid_589411 = validateParameter(valid_589411, JString, required = true,
                                  default = nil)
-  if valid_580382 != nil:
-    section.add "editId", valid_580382
-  var valid_580383 = path.getOrDefault("language")
-  valid_580383 = validateParameter(valid_580383, JString, required = true,
+  if valid_589411 != nil:
+    section.add "editId", valid_589411
+  var valid_589412 = path.getOrDefault("language")
+  valid_589412 = validateParameter(valid_589412, JString, required = true,
                                  default = nil)
-  if valid_580383 != nil:
-    section.add "language", valid_580383
+  if valid_589412 != nil:
+    section.add "language", valid_589412
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -4549,41 +4549,41 @@ proc validate_AndroidpublisherEditsListingsGet_580379(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580384 = query.getOrDefault("fields")
-  valid_580384 = validateParameter(valid_580384, JString, required = false,
+  var valid_589413 = query.getOrDefault("fields")
+  valid_589413 = validateParameter(valid_589413, JString, required = false,
                                  default = nil)
-  if valid_580384 != nil:
-    section.add "fields", valid_580384
-  var valid_580385 = query.getOrDefault("quotaUser")
-  valid_580385 = validateParameter(valid_580385, JString, required = false,
+  if valid_589413 != nil:
+    section.add "fields", valid_589413
+  var valid_589414 = query.getOrDefault("quotaUser")
+  valid_589414 = validateParameter(valid_589414, JString, required = false,
                                  default = nil)
-  if valid_580385 != nil:
-    section.add "quotaUser", valid_580385
-  var valid_580386 = query.getOrDefault("alt")
-  valid_580386 = validateParameter(valid_580386, JString, required = false,
+  if valid_589414 != nil:
+    section.add "quotaUser", valid_589414
+  var valid_589415 = query.getOrDefault("alt")
+  valid_589415 = validateParameter(valid_589415, JString, required = false,
                                  default = newJString("json"))
-  if valid_580386 != nil:
-    section.add "alt", valid_580386
-  var valid_580387 = query.getOrDefault("oauth_token")
-  valid_580387 = validateParameter(valid_580387, JString, required = false,
+  if valid_589415 != nil:
+    section.add "alt", valid_589415
+  var valid_589416 = query.getOrDefault("oauth_token")
+  valid_589416 = validateParameter(valid_589416, JString, required = false,
                                  default = nil)
-  if valid_580387 != nil:
-    section.add "oauth_token", valid_580387
-  var valid_580388 = query.getOrDefault("userIp")
-  valid_580388 = validateParameter(valid_580388, JString, required = false,
+  if valid_589416 != nil:
+    section.add "oauth_token", valid_589416
+  var valid_589417 = query.getOrDefault("userIp")
+  valid_589417 = validateParameter(valid_589417, JString, required = false,
                                  default = nil)
-  if valid_580388 != nil:
-    section.add "userIp", valid_580388
-  var valid_580389 = query.getOrDefault("key")
-  valid_580389 = validateParameter(valid_580389, JString, required = false,
+  if valid_589417 != nil:
+    section.add "userIp", valid_589417
+  var valid_589418 = query.getOrDefault("key")
+  valid_589418 = validateParameter(valid_589418, JString, required = false,
                                  default = nil)
-  if valid_580389 != nil:
-    section.add "key", valid_580389
-  var valid_580390 = query.getOrDefault("prettyPrint")
-  valid_580390 = validateParameter(valid_580390, JBool, required = false,
+  if valid_589418 != nil:
+    section.add "key", valid_589418
+  var valid_589419 = query.getOrDefault("prettyPrint")
+  valid_589419 = validateParameter(valid_589419, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580390 != nil:
-    section.add "prettyPrint", valid_580390
+  if valid_589419 != nil:
+    section.add "prettyPrint", valid_589419
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -4592,21 +4592,21 @@ proc validate_AndroidpublisherEditsListingsGet_580379(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580391: Call_AndroidpublisherEditsListingsGet_580378;
+proc call*(call_589420: Call_AndroidpublisherEditsListingsGet_589407;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Fetches information about a localized store listing.
   ## 
-  let valid = call_580391.validator(path, query, header, formData, body)
-  let scheme = call_580391.pickScheme
+  let valid = call_589420.validator(path, query, header, formData, body)
+  let scheme = call_589420.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580391.url(scheme.get, call_580391.host, call_580391.base,
-                         call_580391.route, valid.getOrDefault("path"),
+  let url = call_589420.url(scheme.get, call_589420.host, call_589420.base,
+                         call_589420.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580391, url, valid)
+  result = hook(call_589420, url, valid)
 
-proc call*(call_580392: Call_AndroidpublisherEditsListingsGet_580378;
+proc call*(call_589421: Call_AndroidpublisherEditsListingsGet_589407;
           packageName: string; editId: string; language: string; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; key: string = ""; prettyPrint: bool = true): Recallable =
@@ -4632,30 +4632,30 @@ proc call*(call_580392: Call_AndroidpublisherEditsListingsGet_580378;
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_580393 = newJObject()
-  var query_580394 = newJObject()
-  add(query_580394, "fields", newJString(fields))
-  add(path_580393, "packageName", newJString(packageName))
-  add(query_580394, "quotaUser", newJString(quotaUser))
-  add(query_580394, "alt", newJString(alt))
-  add(path_580393, "editId", newJString(editId))
-  add(query_580394, "oauth_token", newJString(oauthToken))
-  add(path_580393, "language", newJString(language))
-  add(query_580394, "userIp", newJString(userIp))
-  add(query_580394, "key", newJString(key))
-  add(query_580394, "prettyPrint", newJBool(prettyPrint))
-  result = call_580392.call(path_580393, query_580394, nil, nil, nil)
+  var path_589422 = newJObject()
+  var query_589423 = newJObject()
+  add(query_589423, "fields", newJString(fields))
+  add(path_589422, "packageName", newJString(packageName))
+  add(query_589423, "quotaUser", newJString(quotaUser))
+  add(query_589423, "alt", newJString(alt))
+  add(path_589422, "editId", newJString(editId))
+  add(query_589423, "oauth_token", newJString(oauthToken))
+  add(path_589422, "language", newJString(language))
+  add(query_589423, "userIp", newJString(userIp))
+  add(query_589423, "key", newJString(key))
+  add(query_589423, "prettyPrint", newJBool(prettyPrint))
+  result = call_589421.call(path_589422, query_589423, nil, nil, nil)
 
-var androidpublisherEditsListingsGet* = Call_AndroidpublisherEditsListingsGet_580378(
+var androidpublisherEditsListingsGet* = Call_AndroidpublisherEditsListingsGet_589407(
     name: "androidpublisherEditsListingsGet", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com",
     route: "/{packageName}/edits/{editId}/listings/{language}",
-    validator: validate_AndroidpublisherEditsListingsGet_580379,
+    validator: validate_AndroidpublisherEditsListingsGet_589408,
     base: "/androidpublisher/v2/applications",
-    url: url_AndroidpublisherEditsListingsGet_580380, schemes: {Scheme.Https})
+    url: url_AndroidpublisherEditsListingsGet_589409, schemes: {Scheme.Https})
 type
-  Call_AndroidpublisherEditsListingsPatch_580431 = ref object of OpenApiRestCall_579421
-proc url_AndroidpublisherEditsListingsPatch_580433(protocol: Scheme; host: string;
+  Call_AndroidpublisherEditsListingsPatch_589460 = ref object of OpenApiRestCall_588450
+proc url_AndroidpublisherEditsListingsPatch_589462(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -4676,7 +4676,7 @@ proc url_AndroidpublisherEditsListingsPatch_580433(protocol: Scheme; host: strin
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_AndroidpublisherEditsListingsPatch_580432(path: JsonNode;
+proc validate_AndroidpublisherEditsListingsPatch_589461(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Creates or updates a localized store listing. This method supports patch semantics.
   ## 
@@ -4692,21 +4692,21 @@ proc validate_AndroidpublisherEditsListingsPatch_580432(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `packageName` field"
-  var valid_580434 = path.getOrDefault("packageName")
-  valid_580434 = validateParameter(valid_580434, JString, required = true,
+  var valid_589463 = path.getOrDefault("packageName")
+  valid_589463 = validateParameter(valid_589463, JString, required = true,
                                  default = nil)
-  if valid_580434 != nil:
-    section.add "packageName", valid_580434
-  var valid_580435 = path.getOrDefault("editId")
-  valid_580435 = validateParameter(valid_580435, JString, required = true,
+  if valid_589463 != nil:
+    section.add "packageName", valid_589463
+  var valid_589464 = path.getOrDefault("editId")
+  valid_589464 = validateParameter(valid_589464, JString, required = true,
                                  default = nil)
-  if valid_580435 != nil:
-    section.add "editId", valid_580435
-  var valid_580436 = path.getOrDefault("language")
-  valid_580436 = validateParameter(valid_580436, JString, required = true,
+  if valid_589464 != nil:
+    section.add "editId", valid_589464
+  var valid_589465 = path.getOrDefault("language")
+  valid_589465 = validateParameter(valid_589465, JString, required = true,
                                  default = nil)
-  if valid_580436 != nil:
-    section.add "language", valid_580436
+  if valid_589465 != nil:
+    section.add "language", valid_589465
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -4724,41 +4724,41 @@ proc validate_AndroidpublisherEditsListingsPatch_580432(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580437 = query.getOrDefault("fields")
-  valid_580437 = validateParameter(valid_580437, JString, required = false,
+  var valid_589466 = query.getOrDefault("fields")
+  valid_589466 = validateParameter(valid_589466, JString, required = false,
                                  default = nil)
-  if valid_580437 != nil:
-    section.add "fields", valid_580437
-  var valid_580438 = query.getOrDefault("quotaUser")
-  valid_580438 = validateParameter(valid_580438, JString, required = false,
+  if valid_589466 != nil:
+    section.add "fields", valid_589466
+  var valid_589467 = query.getOrDefault("quotaUser")
+  valid_589467 = validateParameter(valid_589467, JString, required = false,
                                  default = nil)
-  if valid_580438 != nil:
-    section.add "quotaUser", valid_580438
-  var valid_580439 = query.getOrDefault("alt")
-  valid_580439 = validateParameter(valid_580439, JString, required = false,
+  if valid_589467 != nil:
+    section.add "quotaUser", valid_589467
+  var valid_589468 = query.getOrDefault("alt")
+  valid_589468 = validateParameter(valid_589468, JString, required = false,
                                  default = newJString("json"))
-  if valid_580439 != nil:
-    section.add "alt", valid_580439
-  var valid_580440 = query.getOrDefault("oauth_token")
-  valid_580440 = validateParameter(valid_580440, JString, required = false,
+  if valid_589468 != nil:
+    section.add "alt", valid_589468
+  var valid_589469 = query.getOrDefault("oauth_token")
+  valid_589469 = validateParameter(valid_589469, JString, required = false,
                                  default = nil)
-  if valid_580440 != nil:
-    section.add "oauth_token", valid_580440
-  var valid_580441 = query.getOrDefault("userIp")
-  valid_580441 = validateParameter(valid_580441, JString, required = false,
+  if valid_589469 != nil:
+    section.add "oauth_token", valid_589469
+  var valid_589470 = query.getOrDefault("userIp")
+  valid_589470 = validateParameter(valid_589470, JString, required = false,
                                  default = nil)
-  if valid_580441 != nil:
-    section.add "userIp", valid_580441
-  var valid_580442 = query.getOrDefault("key")
-  valid_580442 = validateParameter(valid_580442, JString, required = false,
+  if valid_589470 != nil:
+    section.add "userIp", valid_589470
+  var valid_589471 = query.getOrDefault("key")
+  valid_589471 = validateParameter(valid_589471, JString, required = false,
                                  default = nil)
-  if valid_580442 != nil:
-    section.add "key", valid_580442
-  var valid_580443 = query.getOrDefault("prettyPrint")
-  valid_580443 = validateParameter(valid_580443, JBool, required = false,
+  if valid_589471 != nil:
+    section.add "key", valid_589471
+  var valid_589472 = query.getOrDefault("prettyPrint")
+  valid_589472 = validateParameter(valid_589472, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580443 != nil:
-    section.add "prettyPrint", valid_580443
+  if valid_589472 != nil:
+    section.add "prettyPrint", valid_589472
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -4770,21 +4770,21 @@ proc validate_AndroidpublisherEditsListingsPatch_580432(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580445: Call_AndroidpublisherEditsListingsPatch_580431;
+proc call*(call_589474: Call_AndroidpublisherEditsListingsPatch_589460;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Creates or updates a localized store listing. This method supports patch semantics.
   ## 
-  let valid = call_580445.validator(path, query, header, formData, body)
-  let scheme = call_580445.pickScheme
+  let valid = call_589474.validator(path, query, header, formData, body)
+  let scheme = call_589474.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580445.url(scheme.get, call_580445.host, call_580445.base,
-                         call_580445.route, valid.getOrDefault("path"),
+  let url = call_589474.url(scheme.get, call_589474.host, call_589474.base,
+                         call_589474.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580445, url, valid)
+  result = hook(call_589474, url, valid)
 
-proc call*(call_580446: Call_AndroidpublisherEditsListingsPatch_580431;
+proc call*(call_589475: Call_AndroidpublisherEditsListingsPatch_589460;
           packageName: string; editId: string; language: string; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; key: string = ""; body: JsonNode = nil;
@@ -4812,33 +4812,33 @@ proc call*(call_580446: Call_AndroidpublisherEditsListingsPatch_580431;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_580447 = newJObject()
-  var query_580448 = newJObject()
-  var body_580449 = newJObject()
-  add(query_580448, "fields", newJString(fields))
-  add(path_580447, "packageName", newJString(packageName))
-  add(query_580448, "quotaUser", newJString(quotaUser))
-  add(query_580448, "alt", newJString(alt))
-  add(path_580447, "editId", newJString(editId))
-  add(query_580448, "oauth_token", newJString(oauthToken))
-  add(path_580447, "language", newJString(language))
-  add(query_580448, "userIp", newJString(userIp))
-  add(query_580448, "key", newJString(key))
+  var path_589476 = newJObject()
+  var query_589477 = newJObject()
+  var body_589478 = newJObject()
+  add(query_589477, "fields", newJString(fields))
+  add(path_589476, "packageName", newJString(packageName))
+  add(query_589477, "quotaUser", newJString(quotaUser))
+  add(query_589477, "alt", newJString(alt))
+  add(path_589476, "editId", newJString(editId))
+  add(query_589477, "oauth_token", newJString(oauthToken))
+  add(path_589476, "language", newJString(language))
+  add(query_589477, "userIp", newJString(userIp))
+  add(query_589477, "key", newJString(key))
   if body != nil:
-    body_580449 = body
-  add(query_580448, "prettyPrint", newJBool(prettyPrint))
-  result = call_580446.call(path_580447, query_580448, nil, nil, body_580449)
+    body_589478 = body
+  add(query_589477, "prettyPrint", newJBool(prettyPrint))
+  result = call_589475.call(path_589476, query_589477, nil, nil, body_589478)
 
-var androidpublisherEditsListingsPatch* = Call_AndroidpublisherEditsListingsPatch_580431(
+var androidpublisherEditsListingsPatch* = Call_AndroidpublisherEditsListingsPatch_589460(
     name: "androidpublisherEditsListingsPatch", meth: HttpMethod.HttpPatch,
     host: "www.googleapis.com",
     route: "/{packageName}/edits/{editId}/listings/{language}",
-    validator: validate_AndroidpublisherEditsListingsPatch_580432,
+    validator: validate_AndroidpublisherEditsListingsPatch_589461,
     base: "/androidpublisher/v2/applications",
-    url: url_AndroidpublisherEditsListingsPatch_580433, schemes: {Scheme.Https})
+    url: url_AndroidpublisherEditsListingsPatch_589462, schemes: {Scheme.Https})
 type
-  Call_AndroidpublisherEditsListingsDelete_580414 = ref object of OpenApiRestCall_579421
-proc url_AndroidpublisherEditsListingsDelete_580416(protocol: Scheme; host: string;
+  Call_AndroidpublisherEditsListingsDelete_589443 = ref object of OpenApiRestCall_588450
+proc url_AndroidpublisherEditsListingsDelete_589445(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -4859,7 +4859,7 @@ proc url_AndroidpublisherEditsListingsDelete_580416(protocol: Scheme; host: stri
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_AndroidpublisherEditsListingsDelete_580415(path: JsonNode;
+proc validate_AndroidpublisherEditsListingsDelete_589444(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Deletes the specified localized store listing from an edit.
   ## 
@@ -4875,21 +4875,21 @@ proc validate_AndroidpublisherEditsListingsDelete_580415(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `packageName` field"
-  var valid_580417 = path.getOrDefault("packageName")
-  valid_580417 = validateParameter(valid_580417, JString, required = true,
+  var valid_589446 = path.getOrDefault("packageName")
+  valid_589446 = validateParameter(valid_589446, JString, required = true,
                                  default = nil)
-  if valid_580417 != nil:
-    section.add "packageName", valid_580417
-  var valid_580418 = path.getOrDefault("editId")
-  valid_580418 = validateParameter(valid_580418, JString, required = true,
+  if valid_589446 != nil:
+    section.add "packageName", valid_589446
+  var valid_589447 = path.getOrDefault("editId")
+  valid_589447 = validateParameter(valid_589447, JString, required = true,
                                  default = nil)
-  if valid_580418 != nil:
-    section.add "editId", valid_580418
-  var valid_580419 = path.getOrDefault("language")
-  valid_580419 = validateParameter(valid_580419, JString, required = true,
+  if valid_589447 != nil:
+    section.add "editId", valid_589447
+  var valid_589448 = path.getOrDefault("language")
+  valid_589448 = validateParameter(valid_589448, JString, required = true,
                                  default = nil)
-  if valid_580419 != nil:
-    section.add "language", valid_580419
+  if valid_589448 != nil:
+    section.add "language", valid_589448
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -4907,41 +4907,41 @@ proc validate_AndroidpublisherEditsListingsDelete_580415(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580420 = query.getOrDefault("fields")
-  valid_580420 = validateParameter(valid_580420, JString, required = false,
+  var valid_589449 = query.getOrDefault("fields")
+  valid_589449 = validateParameter(valid_589449, JString, required = false,
                                  default = nil)
-  if valid_580420 != nil:
-    section.add "fields", valid_580420
-  var valid_580421 = query.getOrDefault("quotaUser")
-  valid_580421 = validateParameter(valid_580421, JString, required = false,
+  if valid_589449 != nil:
+    section.add "fields", valid_589449
+  var valid_589450 = query.getOrDefault("quotaUser")
+  valid_589450 = validateParameter(valid_589450, JString, required = false,
                                  default = nil)
-  if valid_580421 != nil:
-    section.add "quotaUser", valid_580421
-  var valid_580422 = query.getOrDefault("alt")
-  valid_580422 = validateParameter(valid_580422, JString, required = false,
+  if valid_589450 != nil:
+    section.add "quotaUser", valid_589450
+  var valid_589451 = query.getOrDefault("alt")
+  valid_589451 = validateParameter(valid_589451, JString, required = false,
                                  default = newJString("json"))
-  if valid_580422 != nil:
-    section.add "alt", valid_580422
-  var valid_580423 = query.getOrDefault("oauth_token")
-  valid_580423 = validateParameter(valid_580423, JString, required = false,
+  if valid_589451 != nil:
+    section.add "alt", valid_589451
+  var valid_589452 = query.getOrDefault("oauth_token")
+  valid_589452 = validateParameter(valid_589452, JString, required = false,
                                  default = nil)
-  if valid_580423 != nil:
-    section.add "oauth_token", valid_580423
-  var valid_580424 = query.getOrDefault("userIp")
-  valid_580424 = validateParameter(valid_580424, JString, required = false,
+  if valid_589452 != nil:
+    section.add "oauth_token", valid_589452
+  var valid_589453 = query.getOrDefault("userIp")
+  valid_589453 = validateParameter(valid_589453, JString, required = false,
                                  default = nil)
-  if valid_580424 != nil:
-    section.add "userIp", valid_580424
-  var valid_580425 = query.getOrDefault("key")
-  valid_580425 = validateParameter(valid_580425, JString, required = false,
+  if valid_589453 != nil:
+    section.add "userIp", valid_589453
+  var valid_589454 = query.getOrDefault("key")
+  valid_589454 = validateParameter(valid_589454, JString, required = false,
                                  default = nil)
-  if valid_580425 != nil:
-    section.add "key", valid_580425
-  var valid_580426 = query.getOrDefault("prettyPrint")
-  valid_580426 = validateParameter(valid_580426, JBool, required = false,
+  if valid_589454 != nil:
+    section.add "key", valid_589454
+  var valid_589455 = query.getOrDefault("prettyPrint")
+  valid_589455 = validateParameter(valid_589455, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580426 != nil:
-    section.add "prettyPrint", valid_580426
+  if valid_589455 != nil:
+    section.add "prettyPrint", valid_589455
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -4950,21 +4950,21 @@ proc validate_AndroidpublisherEditsListingsDelete_580415(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580427: Call_AndroidpublisherEditsListingsDelete_580414;
+proc call*(call_589456: Call_AndroidpublisherEditsListingsDelete_589443;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Deletes the specified localized store listing from an edit.
   ## 
-  let valid = call_580427.validator(path, query, header, formData, body)
-  let scheme = call_580427.pickScheme
+  let valid = call_589456.validator(path, query, header, formData, body)
+  let scheme = call_589456.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580427.url(scheme.get, call_580427.host, call_580427.base,
-                         call_580427.route, valid.getOrDefault("path"),
+  let url = call_589456.url(scheme.get, call_589456.host, call_589456.base,
+                         call_589456.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580427, url, valid)
+  result = hook(call_589456, url, valid)
 
-proc call*(call_580428: Call_AndroidpublisherEditsListingsDelete_580414;
+proc call*(call_589457: Call_AndroidpublisherEditsListingsDelete_589443;
           packageName: string; editId: string; language: string; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; key: string = ""; prettyPrint: bool = true): Recallable =
@@ -4990,30 +4990,30 @@ proc call*(call_580428: Call_AndroidpublisherEditsListingsDelete_580414;
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_580429 = newJObject()
-  var query_580430 = newJObject()
-  add(query_580430, "fields", newJString(fields))
-  add(path_580429, "packageName", newJString(packageName))
-  add(query_580430, "quotaUser", newJString(quotaUser))
-  add(query_580430, "alt", newJString(alt))
-  add(path_580429, "editId", newJString(editId))
-  add(query_580430, "oauth_token", newJString(oauthToken))
-  add(path_580429, "language", newJString(language))
-  add(query_580430, "userIp", newJString(userIp))
-  add(query_580430, "key", newJString(key))
-  add(query_580430, "prettyPrint", newJBool(prettyPrint))
-  result = call_580428.call(path_580429, query_580430, nil, nil, nil)
+  var path_589458 = newJObject()
+  var query_589459 = newJObject()
+  add(query_589459, "fields", newJString(fields))
+  add(path_589458, "packageName", newJString(packageName))
+  add(query_589459, "quotaUser", newJString(quotaUser))
+  add(query_589459, "alt", newJString(alt))
+  add(path_589458, "editId", newJString(editId))
+  add(query_589459, "oauth_token", newJString(oauthToken))
+  add(path_589458, "language", newJString(language))
+  add(query_589459, "userIp", newJString(userIp))
+  add(query_589459, "key", newJString(key))
+  add(query_589459, "prettyPrint", newJBool(prettyPrint))
+  result = call_589457.call(path_589458, query_589459, nil, nil, nil)
 
-var androidpublisherEditsListingsDelete* = Call_AndroidpublisherEditsListingsDelete_580414(
+var androidpublisherEditsListingsDelete* = Call_AndroidpublisherEditsListingsDelete_589443(
     name: "androidpublisherEditsListingsDelete", meth: HttpMethod.HttpDelete,
     host: "www.googleapis.com",
     route: "/{packageName}/edits/{editId}/listings/{language}",
-    validator: validate_AndroidpublisherEditsListingsDelete_580415,
+    validator: validate_AndroidpublisherEditsListingsDelete_589444,
     base: "/androidpublisher/v2/applications",
-    url: url_AndroidpublisherEditsListingsDelete_580416, schemes: {Scheme.Https})
+    url: url_AndroidpublisherEditsListingsDelete_589445, schemes: {Scheme.Https})
 type
-  Call_AndroidpublisherEditsImagesUpload_580468 = ref object of OpenApiRestCall_579421
-proc url_AndroidpublisherEditsImagesUpload_580470(protocol: Scheme; host: string;
+  Call_AndroidpublisherEditsImagesUpload_589497 = ref object of OpenApiRestCall_588450
+proc url_AndroidpublisherEditsImagesUpload_589499(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -5037,7 +5037,7 @@ proc url_AndroidpublisherEditsImagesUpload_580470(protocol: Scheme; host: string
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_AndroidpublisherEditsImagesUpload_580469(path: JsonNode;
+proc validate_AndroidpublisherEditsImagesUpload_589498(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Uploads a new image and adds it to the list of images for the specified language and image type.
   ## 
@@ -5054,26 +5054,26 @@ proc validate_AndroidpublisherEditsImagesUpload_580469(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `packageName` field"
-  var valid_580471 = path.getOrDefault("packageName")
-  valid_580471 = validateParameter(valid_580471, JString, required = true,
+  var valid_589500 = path.getOrDefault("packageName")
+  valid_589500 = validateParameter(valid_589500, JString, required = true,
                                  default = nil)
-  if valid_580471 != nil:
-    section.add "packageName", valid_580471
-  var valid_580472 = path.getOrDefault("editId")
-  valid_580472 = validateParameter(valid_580472, JString, required = true,
+  if valid_589500 != nil:
+    section.add "packageName", valid_589500
+  var valid_589501 = path.getOrDefault("editId")
+  valid_589501 = validateParameter(valid_589501, JString, required = true,
                                  default = nil)
-  if valid_580472 != nil:
-    section.add "editId", valid_580472
-  var valid_580473 = path.getOrDefault("language")
-  valid_580473 = validateParameter(valid_580473, JString, required = true,
+  if valid_589501 != nil:
+    section.add "editId", valid_589501
+  var valid_589502 = path.getOrDefault("language")
+  valid_589502 = validateParameter(valid_589502, JString, required = true,
                                  default = nil)
-  if valid_580473 != nil:
-    section.add "language", valid_580473
-  var valid_580474 = path.getOrDefault("imageType")
-  valid_580474 = validateParameter(valid_580474, JString, required = true,
+  if valid_589502 != nil:
+    section.add "language", valid_589502
+  var valid_589503 = path.getOrDefault("imageType")
+  valid_589503 = validateParameter(valid_589503, JString, required = true,
                                  default = newJString("featureGraphic"))
-  if valid_580474 != nil:
-    section.add "imageType", valid_580474
+  if valid_589503 != nil:
+    section.add "imageType", valid_589503
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -5091,41 +5091,41 @@ proc validate_AndroidpublisherEditsImagesUpload_580469(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580475 = query.getOrDefault("fields")
-  valid_580475 = validateParameter(valid_580475, JString, required = false,
+  var valid_589504 = query.getOrDefault("fields")
+  valid_589504 = validateParameter(valid_589504, JString, required = false,
                                  default = nil)
-  if valid_580475 != nil:
-    section.add "fields", valid_580475
-  var valid_580476 = query.getOrDefault("quotaUser")
-  valid_580476 = validateParameter(valid_580476, JString, required = false,
+  if valid_589504 != nil:
+    section.add "fields", valid_589504
+  var valid_589505 = query.getOrDefault("quotaUser")
+  valid_589505 = validateParameter(valid_589505, JString, required = false,
                                  default = nil)
-  if valid_580476 != nil:
-    section.add "quotaUser", valid_580476
-  var valid_580477 = query.getOrDefault("alt")
-  valid_580477 = validateParameter(valid_580477, JString, required = false,
+  if valid_589505 != nil:
+    section.add "quotaUser", valid_589505
+  var valid_589506 = query.getOrDefault("alt")
+  valid_589506 = validateParameter(valid_589506, JString, required = false,
                                  default = newJString("json"))
-  if valid_580477 != nil:
-    section.add "alt", valid_580477
-  var valid_580478 = query.getOrDefault("oauth_token")
-  valid_580478 = validateParameter(valid_580478, JString, required = false,
+  if valid_589506 != nil:
+    section.add "alt", valid_589506
+  var valid_589507 = query.getOrDefault("oauth_token")
+  valid_589507 = validateParameter(valid_589507, JString, required = false,
                                  default = nil)
-  if valid_580478 != nil:
-    section.add "oauth_token", valid_580478
-  var valid_580479 = query.getOrDefault("userIp")
-  valid_580479 = validateParameter(valid_580479, JString, required = false,
+  if valid_589507 != nil:
+    section.add "oauth_token", valid_589507
+  var valid_589508 = query.getOrDefault("userIp")
+  valid_589508 = validateParameter(valid_589508, JString, required = false,
                                  default = nil)
-  if valid_580479 != nil:
-    section.add "userIp", valid_580479
-  var valid_580480 = query.getOrDefault("key")
-  valid_580480 = validateParameter(valid_580480, JString, required = false,
+  if valid_589508 != nil:
+    section.add "userIp", valid_589508
+  var valid_589509 = query.getOrDefault("key")
+  valid_589509 = validateParameter(valid_589509, JString, required = false,
                                  default = nil)
-  if valid_580480 != nil:
-    section.add "key", valid_580480
-  var valid_580481 = query.getOrDefault("prettyPrint")
-  valid_580481 = validateParameter(valid_580481, JBool, required = false,
+  if valid_589509 != nil:
+    section.add "key", valid_589509
+  var valid_589510 = query.getOrDefault("prettyPrint")
+  valid_589510 = validateParameter(valid_589510, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580481 != nil:
-    section.add "prettyPrint", valid_580481
+  if valid_589510 != nil:
+    section.add "prettyPrint", valid_589510
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -5134,21 +5134,21 @@ proc validate_AndroidpublisherEditsImagesUpload_580469(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580482: Call_AndroidpublisherEditsImagesUpload_580468;
+proc call*(call_589511: Call_AndroidpublisherEditsImagesUpload_589497;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Uploads a new image and adds it to the list of images for the specified language and image type.
   ## 
-  let valid = call_580482.validator(path, query, header, formData, body)
-  let scheme = call_580482.pickScheme
+  let valid = call_589511.validator(path, query, header, formData, body)
+  let scheme = call_589511.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580482.url(scheme.get, call_580482.host, call_580482.base,
-                         call_580482.route, valid.getOrDefault("path"),
+  let url = call_589511.url(scheme.get, call_589511.host, call_589511.base,
+                         call_589511.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580482, url, valid)
+  result = hook(call_589511, url, valid)
 
-proc call*(call_580483: Call_AndroidpublisherEditsImagesUpload_580468;
+proc call*(call_589512: Call_AndroidpublisherEditsImagesUpload_589497;
           packageName: string; editId: string; language: string; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; imageType: string = "featureGraphic"; key: string = "";
@@ -5176,31 +5176,31 @@ proc call*(call_580483: Call_AndroidpublisherEditsImagesUpload_580468;
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_580484 = newJObject()
-  var query_580485 = newJObject()
-  add(query_580485, "fields", newJString(fields))
-  add(path_580484, "packageName", newJString(packageName))
-  add(query_580485, "quotaUser", newJString(quotaUser))
-  add(query_580485, "alt", newJString(alt))
-  add(path_580484, "editId", newJString(editId))
-  add(query_580485, "oauth_token", newJString(oauthToken))
-  add(path_580484, "language", newJString(language))
-  add(query_580485, "userIp", newJString(userIp))
-  add(path_580484, "imageType", newJString(imageType))
-  add(query_580485, "key", newJString(key))
-  add(query_580485, "prettyPrint", newJBool(prettyPrint))
-  result = call_580483.call(path_580484, query_580485, nil, nil, nil)
+  var path_589513 = newJObject()
+  var query_589514 = newJObject()
+  add(query_589514, "fields", newJString(fields))
+  add(path_589513, "packageName", newJString(packageName))
+  add(query_589514, "quotaUser", newJString(quotaUser))
+  add(query_589514, "alt", newJString(alt))
+  add(path_589513, "editId", newJString(editId))
+  add(query_589514, "oauth_token", newJString(oauthToken))
+  add(path_589513, "language", newJString(language))
+  add(query_589514, "userIp", newJString(userIp))
+  add(path_589513, "imageType", newJString(imageType))
+  add(query_589514, "key", newJString(key))
+  add(query_589514, "prettyPrint", newJBool(prettyPrint))
+  result = call_589512.call(path_589513, query_589514, nil, nil, nil)
 
-var androidpublisherEditsImagesUpload* = Call_AndroidpublisherEditsImagesUpload_580468(
+var androidpublisherEditsImagesUpload* = Call_AndroidpublisherEditsImagesUpload_589497(
     name: "androidpublisherEditsImagesUpload", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com",
     route: "/{packageName}/edits/{editId}/listings/{language}/{imageType}",
-    validator: validate_AndroidpublisherEditsImagesUpload_580469,
+    validator: validate_AndroidpublisherEditsImagesUpload_589498,
     base: "/androidpublisher/v2/applications",
-    url: url_AndroidpublisherEditsImagesUpload_580470, schemes: {Scheme.Https})
+    url: url_AndroidpublisherEditsImagesUpload_589499, schemes: {Scheme.Https})
 type
-  Call_AndroidpublisherEditsImagesList_580450 = ref object of OpenApiRestCall_579421
-proc url_AndroidpublisherEditsImagesList_580452(protocol: Scheme; host: string;
+  Call_AndroidpublisherEditsImagesList_589479 = ref object of OpenApiRestCall_588450
+proc url_AndroidpublisherEditsImagesList_589481(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -5224,7 +5224,7 @@ proc url_AndroidpublisherEditsImagesList_580452(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_AndroidpublisherEditsImagesList_580451(path: JsonNode;
+proc validate_AndroidpublisherEditsImagesList_589480(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Lists all images for the specified language and image type.
   ## 
@@ -5241,26 +5241,26 @@ proc validate_AndroidpublisherEditsImagesList_580451(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `packageName` field"
-  var valid_580453 = path.getOrDefault("packageName")
-  valid_580453 = validateParameter(valid_580453, JString, required = true,
+  var valid_589482 = path.getOrDefault("packageName")
+  valid_589482 = validateParameter(valid_589482, JString, required = true,
                                  default = nil)
-  if valid_580453 != nil:
-    section.add "packageName", valid_580453
-  var valid_580454 = path.getOrDefault("editId")
-  valid_580454 = validateParameter(valid_580454, JString, required = true,
+  if valid_589482 != nil:
+    section.add "packageName", valid_589482
+  var valid_589483 = path.getOrDefault("editId")
+  valid_589483 = validateParameter(valid_589483, JString, required = true,
                                  default = nil)
-  if valid_580454 != nil:
-    section.add "editId", valid_580454
-  var valid_580455 = path.getOrDefault("language")
-  valid_580455 = validateParameter(valid_580455, JString, required = true,
+  if valid_589483 != nil:
+    section.add "editId", valid_589483
+  var valid_589484 = path.getOrDefault("language")
+  valid_589484 = validateParameter(valid_589484, JString, required = true,
                                  default = nil)
-  if valid_580455 != nil:
-    section.add "language", valid_580455
-  var valid_580456 = path.getOrDefault("imageType")
-  valid_580456 = validateParameter(valid_580456, JString, required = true,
+  if valid_589484 != nil:
+    section.add "language", valid_589484
+  var valid_589485 = path.getOrDefault("imageType")
+  valid_589485 = validateParameter(valid_589485, JString, required = true,
                                  default = newJString("featureGraphic"))
-  if valid_580456 != nil:
-    section.add "imageType", valid_580456
+  if valid_589485 != nil:
+    section.add "imageType", valid_589485
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -5278,41 +5278,41 @@ proc validate_AndroidpublisherEditsImagesList_580451(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580457 = query.getOrDefault("fields")
-  valid_580457 = validateParameter(valid_580457, JString, required = false,
+  var valid_589486 = query.getOrDefault("fields")
+  valid_589486 = validateParameter(valid_589486, JString, required = false,
                                  default = nil)
-  if valid_580457 != nil:
-    section.add "fields", valid_580457
-  var valid_580458 = query.getOrDefault("quotaUser")
-  valid_580458 = validateParameter(valid_580458, JString, required = false,
+  if valid_589486 != nil:
+    section.add "fields", valid_589486
+  var valid_589487 = query.getOrDefault("quotaUser")
+  valid_589487 = validateParameter(valid_589487, JString, required = false,
                                  default = nil)
-  if valid_580458 != nil:
-    section.add "quotaUser", valid_580458
-  var valid_580459 = query.getOrDefault("alt")
-  valid_580459 = validateParameter(valid_580459, JString, required = false,
+  if valid_589487 != nil:
+    section.add "quotaUser", valid_589487
+  var valid_589488 = query.getOrDefault("alt")
+  valid_589488 = validateParameter(valid_589488, JString, required = false,
                                  default = newJString("json"))
-  if valid_580459 != nil:
-    section.add "alt", valid_580459
-  var valid_580460 = query.getOrDefault("oauth_token")
-  valid_580460 = validateParameter(valid_580460, JString, required = false,
+  if valid_589488 != nil:
+    section.add "alt", valid_589488
+  var valid_589489 = query.getOrDefault("oauth_token")
+  valid_589489 = validateParameter(valid_589489, JString, required = false,
                                  default = nil)
-  if valid_580460 != nil:
-    section.add "oauth_token", valid_580460
-  var valid_580461 = query.getOrDefault("userIp")
-  valid_580461 = validateParameter(valid_580461, JString, required = false,
+  if valid_589489 != nil:
+    section.add "oauth_token", valid_589489
+  var valid_589490 = query.getOrDefault("userIp")
+  valid_589490 = validateParameter(valid_589490, JString, required = false,
                                  default = nil)
-  if valid_580461 != nil:
-    section.add "userIp", valid_580461
-  var valid_580462 = query.getOrDefault("key")
-  valid_580462 = validateParameter(valid_580462, JString, required = false,
+  if valid_589490 != nil:
+    section.add "userIp", valid_589490
+  var valid_589491 = query.getOrDefault("key")
+  valid_589491 = validateParameter(valid_589491, JString, required = false,
                                  default = nil)
-  if valid_580462 != nil:
-    section.add "key", valid_580462
-  var valid_580463 = query.getOrDefault("prettyPrint")
-  valid_580463 = validateParameter(valid_580463, JBool, required = false,
+  if valid_589491 != nil:
+    section.add "key", valid_589491
+  var valid_589492 = query.getOrDefault("prettyPrint")
+  valid_589492 = validateParameter(valid_589492, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580463 != nil:
-    section.add "prettyPrint", valid_580463
+  if valid_589492 != nil:
+    section.add "prettyPrint", valid_589492
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -5321,21 +5321,21 @@ proc validate_AndroidpublisherEditsImagesList_580451(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580464: Call_AndroidpublisherEditsImagesList_580450;
+proc call*(call_589493: Call_AndroidpublisherEditsImagesList_589479;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Lists all images for the specified language and image type.
   ## 
-  let valid = call_580464.validator(path, query, header, formData, body)
-  let scheme = call_580464.pickScheme
+  let valid = call_589493.validator(path, query, header, formData, body)
+  let scheme = call_589493.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580464.url(scheme.get, call_580464.host, call_580464.base,
-                         call_580464.route, valid.getOrDefault("path"),
+  let url = call_589493.url(scheme.get, call_589493.host, call_589493.base,
+                         call_589493.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580464, url, valid)
+  result = hook(call_589493, url, valid)
 
-proc call*(call_580465: Call_AndroidpublisherEditsImagesList_580450;
+proc call*(call_589494: Call_AndroidpublisherEditsImagesList_589479;
           packageName: string; editId: string; language: string; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; imageType: string = "featureGraphic"; key: string = "";
@@ -5363,31 +5363,31 @@ proc call*(call_580465: Call_AndroidpublisherEditsImagesList_580450;
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_580466 = newJObject()
-  var query_580467 = newJObject()
-  add(query_580467, "fields", newJString(fields))
-  add(path_580466, "packageName", newJString(packageName))
-  add(query_580467, "quotaUser", newJString(quotaUser))
-  add(query_580467, "alt", newJString(alt))
-  add(path_580466, "editId", newJString(editId))
-  add(query_580467, "oauth_token", newJString(oauthToken))
-  add(path_580466, "language", newJString(language))
-  add(query_580467, "userIp", newJString(userIp))
-  add(path_580466, "imageType", newJString(imageType))
-  add(query_580467, "key", newJString(key))
-  add(query_580467, "prettyPrint", newJBool(prettyPrint))
-  result = call_580465.call(path_580466, query_580467, nil, nil, nil)
+  var path_589495 = newJObject()
+  var query_589496 = newJObject()
+  add(query_589496, "fields", newJString(fields))
+  add(path_589495, "packageName", newJString(packageName))
+  add(query_589496, "quotaUser", newJString(quotaUser))
+  add(query_589496, "alt", newJString(alt))
+  add(path_589495, "editId", newJString(editId))
+  add(query_589496, "oauth_token", newJString(oauthToken))
+  add(path_589495, "language", newJString(language))
+  add(query_589496, "userIp", newJString(userIp))
+  add(path_589495, "imageType", newJString(imageType))
+  add(query_589496, "key", newJString(key))
+  add(query_589496, "prettyPrint", newJBool(prettyPrint))
+  result = call_589494.call(path_589495, query_589496, nil, nil, nil)
 
-var androidpublisherEditsImagesList* = Call_AndroidpublisherEditsImagesList_580450(
+var androidpublisherEditsImagesList* = Call_AndroidpublisherEditsImagesList_589479(
     name: "androidpublisherEditsImagesList", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com",
     route: "/{packageName}/edits/{editId}/listings/{language}/{imageType}",
-    validator: validate_AndroidpublisherEditsImagesList_580451,
+    validator: validate_AndroidpublisherEditsImagesList_589480,
     base: "/androidpublisher/v2/applications",
-    url: url_AndroidpublisherEditsImagesList_580452, schemes: {Scheme.Https})
+    url: url_AndroidpublisherEditsImagesList_589481, schemes: {Scheme.Https})
 type
-  Call_AndroidpublisherEditsImagesDeleteall_580486 = ref object of OpenApiRestCall_579421
-proc url_AndroidpublisherEditsImagesDeleteall_580488(protocol: Scheme;
+  Call_AndroidpublisherEditsImagesDeleteall_589515 = ref object of OpenApiRestCall_588450
+proc url_AndroidpublisherEditsImagesDeleteall_589517(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -5411,7 +5411,7 @@ proc url_AndroidpublisherEditsImagesDeleteall_580488(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_AndroidpublisherEditsImagesDeleteall_580487(path: JsonNode;
+proc validate_AndroidpublisherEditsImagesDeleteall_589516(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Deletes all images for the specified language and image type.
   ## 
@@ -5428,26 +5428,26 @@ proc validate_AndroidpublisherEditsImagesDeleteall_580487(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `packageName` field"
-  var valid_580489 = path.getOrDefault("packageName")
-  valid_580489 = validateParameter(valid_580489, JString, required = true,
+  var valid_589518 = path.getOrDefault("packageName")
+  valid_589518 = validateParameter(valid_589518, JString, required = true,
                                  default = nil)
-  if valid_580489 != nil:
-    section.add "packageName", valid_580489
-  var valid_580490 = path.getOrDefault("editId")
-  valid_580490 = validateParameter(valid_580490, JString, required = true,
+  if valid_589518 != nil:
+    section.add "packageName", valid_589518
+  var valid_589519 = path.getOrDefault("editId")
+  valid_589519 = validateParameter(valid_589519, JString, required = true,
                                  default = nil)
-  if valid_580490 != nil:
-    section.add "editId", valid_580490
-  var valid_580491 = path.getOrDefault("language")
-  valid_580491 = validateParameter(valid_580491, JString, required = true,
+  if valid_589519 != nil:
+    section.add "editId", valid_589519
+  var valid_589520 = path.getOrDefault("language")
+  valid_589520 = validateParameter(valid_589520, JString, required = true,
                                  default = nil)
-  if valid_580491 != nil:
-    section.add "language", valid_580491
-  var valid_580492 = path.getOrDefault("imageType")
-  valid_580492 = validateParameter(valid_580492, JString, required = true,
+  if valid_589520 != nil:
+    section.add "language", valid_589520
+  var valid_589521 = path.getOrDefault("imageType")
+  valid_589521 = validateParameter(valid_589521, JString, required = true,
                                  default = newJString("featureGraphic"))
-  if valid_580492 != nil:
-    section.add "imageType", valid_580492
+  if valid_589521 != nil:
+    section.add "imageType", valid_589521
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -5465,41 +5465,41 @@ proc validate_AndroidpublisherEditsImagesDeleteall_580487(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580493 = query.getOrDefault("fields")
-  valid_580493 = validateParameter(valid_580493, JString, required = false,
+  var valid_589522 = query.getOrDefault("fields")
+  valid_589522 = validateParameter(valid_589522, JString, required = false,
                                  default = nil)
-  if valid_580493 != nil:
-    section.add "fields", valid_580493
-  var valid_580494 = query.getOrDefault("quotaUser")
-  valid_580494 = validateParameter(valid_580494, JString, required = false,
+  if valid_589522 != nil:
+    section.add "fields", valid_589522
+  var valid_589523 = query.getOrDefault("quotaUser")
+  valid_589523 = validateParameter(valid_589523, JString, required = false,
                                  default = nil)
-  if valid_580494 != nil:
-    section.add "quotaUser", valid_580494
-  var valid_580495 = query.getOrDefault("alt")
-  valid_580495 = validateParameter(valid_580495, JString, required = false,
+  if valid_589523 != nil:
+    section.add "quotaUser", valid_589523
+  var valid_589524 = query.getOrDefault("alt")
+  valid_589524 = validateParameter(valid_589524, JString, required = false,
                                  default = newJString("json"))
-  if valid_580495 != nil:
-    section.add "alt", valid_580495
-  var valid_580496 = query.getOrDefault("oauth_token")
-  valid_580496 = validateParameter(valid_580496, JString, required = false,
+  if valid_589524 != nil:
+    section.add "alt", valid_589524
+  var valid_589525 = query.getOrDefault("oauth_token")
+  valid_589525 = validateParameter(valid_589525, JString, required = false,
                                  default = nil)
-  if valid_580496 != nil:
-    section.add "oauth_token", valid_580496
-  var valid_580497 = query.getOrDefault("userIp")
-  valid_580497 = validateParameter(valid_580497, JString, required = false,
+  if valid_589525 != nil:
+    section.add "oauth_token", valid_589525
+  var valid_589526 = query.getOrDefault("userIp")
+  valid_589526 = validateParameter(valid_589526, JString, required = false,
                                  default = nil)
-  if valid_580497 != nil:
-    section.add "userIp", valid_580497
-  var valid_580498 = query.getOrDefault("key")
-  valid_580498 = validateParameter(valid_580498, JString, required = false,
+  if valid_589526 != nil:
+    section.add "userIp", valid_589526
+  var valid_589527 = query.getOrDefault("key")
+  valid_589527 = validateParameter(valid_589527, JString, required = false,
                                  default = nil)
-  if valid_580498 != nil:
-    section.add "key", valid_580498
-  var valid_580499 = query.getOrDefault("prettyPrint")
-  valid_580499 = validateParameter(valid_580499, JBool, required = false,
+  if valid_589527 != nil:
+    section.add "key", valid_589527
+  var valid_589528 = query.getOrDefault("prettyPrint")
+  valid_589528 = validateParameter(valid_589528, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580499 != nil:
-    section.add "prettyPrint", valid_580499
+  if valid_589528 != nil:
+    section.add "prettyPrint", valid_589528
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -5508,21 +5508,21 @@ proc validate_AndroidpublisherEditsImagesDeleteall_580487(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580500: Call_AndroidpublisherEditsImagesDeleteall_580486;
+proc call*(call_589529: Call_AndroidpublisherEditsImagesDeleteall_589515;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Deletes all images for the specified language and image type.
   ## 
-  let valid = call_580500.validator(path, query, header, formData, body)
-  let scheme = call_580500.pickScheme
+  let valid = call_589529.validator(path, query, header, formData, body)
+  let scheme = call_589529.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580500.url(scheme.get, call_580500.host, call_580500.base,
-                         call_580500.route, valid.getOrDefault("path"),
+  let url = call_589529.url(scheme.get, call_589529.host, call_589529.base,
+                         call_589529.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580500, url, valid)
+  result = hook(call_589529, url, valid)
 
-proc call*(call_580501: Call_AndroidpublisherEditsImagesDeleteall_580486;
+proc call*(call_589530: Call_AndroidpublisherEditsImagesDeleteall_589515;
           packageName: string; editId: string; language: string; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; imageType: string = "featureGraphic"; key: string = "";
@@ -5550,31 +5550,31 @@ proc call*(call_580501: Call_AndroidpublisherEditsImagesDeleteall_580486;
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_580502 = newJObject()
-  var query_580503 = newJObject()
-  add(query_580503, "fields", newJString(fields))
-  add(path_580502, "packageName", newJString(packageName))
-  add(query_580503, "quotaUser", newJString(quotaUser))
-  add(query_580503, "alt", newJString(alt))
-  add(path_580502, "editId", newJString(editId))
-  add(query_580503, "oauth_token", newJString(oauthToken))
-  add(path_580502, "language", newJString(language))
-  add(query_580503, "userIp", newJString(userIp))
-  add(path_580502, "imageType", newJString(imageType))
-  add(query_580503, "key", newJString(key))
-  add(query_580503, "prettyPrint", newJBool(prettyPrint))
-  result = call_580501.call(path_580502, query_580503, nil, nil, nil)
+  var path_589531 = newJObject()
+  var query_589532 = newJObject()
+  add(query_589532, "fields", newJString(fields))
+  add(path_589531, "packageName", newJString(packageName))
+  add(query_589532, "quotaUser", newJString(quotaUser))
+  add(query_589532, "alt", newJString(alt))
+  add(path_589531, "editId", newJString(editId))
+  add(query_589532, "oauth_token", newJString(oauthToken))
+  add(path_589531, "language", newJString(language))
+  add(query_589532, "userIp", newJString(userIp))
+  add(path_589531, "imageType", newJString(imageType))
+  add(query_589532, "key", newJString(key))
+  add(query_589532, "prettyPrint", newJBool(prettyPrint))
+  result = call_589530.call(path_589531, query_589532, nil, nil, nil)
 
-var androidpublisherEditsImagesDeleteall* = Call_AndroidpublisherEditsImagesDeleteall_580486(
+var androidpublisherEditsImagesDeleteall* = Call_AndroidpublisherEditsImagesDeleteall_589515(
     name: "androidpublisherEditsImagesDeleteall", meth: HttpMethod.HttpDelete,
     host: "www.googleapis.com",
     route: "/{packageName}/edits/{editId}/listings/{language}/{imageType}",
-    validator: validate_AndroidpublisherEditsImagesDeleteall_580487,
+    validator: validate_AndroidpublisherEditsImagesDeleteall_589516,
     base: "/androidpublisher/v2/applications",
-    url: url_AndroidpublisherEditsImagesDeleteall_580488, schemes: {Scheme.Https})
+    url: url_AndroidpublisherEditsImagesDeleteall_589517, schemes: {Scheme.Https})
 type
-  Call_AndroidpublisherEditsImagesDelete_580504 = ref object of OpenApiRestCall_579421
-proc url_AndroidpublisherEditsImagesDelete_580506(protocol: Scheme; host: string;
+  Call_AndroidpublisherEditsImagesDelete_589533 = ref object of OpenApiRestCall_588450
+proc url_AndroidpublisherEditsImagesDelete_589535(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -5601,7 +5601,7 @@ proc url_AndroidpublisherEditsImagesDelete_580506(protocol: Scheme; host: string
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_AndroidpublisherEditsImagesDelete_580505(path: JsonNode;
+proc validate_AndroidpublisherEditsImagesDelete_589534(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Deletes the image (specified by id) from the edit.
   ## 
@@ -5619,31 +5619,31 @@ proc validate_AndroidpublisherEditsImagesDelete_580505(path: JsonNode;
   ##   imageType: JString (required)
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `imageId` field"
-  var valid_580507 = path.getOrDefault("imageId")
-  valid_580507 = validateParameter(valid_580507, JString, required = true,
+  var valid_589536 = path.getOrDefault("imageId")
+  valid_589536 = validateParameter(valid_589536, JString, required = true,
                                  default = nil)
-  if valid_580507 != nil:
-    section.add "imageId", valid_580507
-  var valid_580508 = path.getOrDefault("packageName")
-  valid_580508 = validateParameter(valid_580508, JString, required = true,
+  if valid_589536 != nil:
+    section.add "imageId", valid_589536
+  var valid_589537 = path.getOrDefault("packageName")
+  valid_589537 = validateParameter(valid_589537, JString, required = true,
                                  default = nil)
-  if valid_580508 != nil:
-    section.add "packageName", valid_580508
-  var valid_580509 = path.getOrDefault("editId")
-  valid_580509 = validateParameter(valid_580509, JString, required = true,
+  if valid_589537 != nil:
+    section.add "packageName", valid_589537
+  var valid_589538 = path.getOrDefault("editId")
+  valid_589538 = validateParameter(valid_589538, JString, required = true,
                                  default = nil)
-  if valid_580509 != nil:
-    section.add "editId", valid_580509
-  var valid_580510 = path.getOrDefault("language")
-  valid_580510 = validateParameter(valid_580510, JString, required = true,
+  if valid_589538 != nil:
+    section.add "editId", valid_589538
+  var valid_589539 = path.getOrDefault("language")
+  valid_589539 = validateParameter(valid_589539, JString, required = true,
                                  default = nil)
-  if valid_580510 != nil:
-    section.add "language", valid_580510
-  var valid_580511 = path.getOrDefault("imageType")
-  valid_580511 = validateParameter(valid_580511, JString, required = true,
+  if valid_589539 != nil:
+    section.add "language", valid_589539
+  var valid_589540 = path.getOrDefault("imageType")
+  valid_589540 = validateParameter(valid_589540, JString, required = true,
                                  default = newJString("featureGraphic"))
-  if valid_580511 != nil:
-    section.add "imageType", valid_580511
+  if valid_589540 != nil:
+    section.add "imageType", valid_589540
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -5661,41 +5661,41 @@ proc validate_AndroidpublisherEditsImagesDelete_580505(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580512 = query.getOrDefault("fields")
-  valid_580512 = validateParameter(valid_580512, JString, required = false,
+  var valid_589541 = query.getOrDefault("fields")
+  valid_589541 = validateParameter(valid_589541, JString, required = false,
                                  default = nil)
-  if valid_580512 != nil:
-    section.add "fields", valid_580512
-  var valid_580513 = query.getOrDefault("quotaUser")
-  valid_580513 = validateParameter(valid_580513, JString, required = false,
+  if valid_589541 != nil:
+    section.add "fields", valid_589541
+  var valid_589542 = query.getOrDefault("quotaUser")
+  valid_589542 = validateParameter(valid_589542, JString, required = false,
                                  default = nil)
-  if valid_580513 != nil:
-    section.add "quotaUser", valid_580513
-  var valid_580514 = query.getOrDefault("alt")
-  valid_580514 = validateParameter(valid_580514, JString, required = false,
+  if valid_589542 != nil:
+    section.add "quotaUser", valid_589542
+  var valid_589543 = query.getOrDefault("alt")
+  valid_589543 = validateParameter(valid_589543, JString, required = false,
                                  default = newJString("json"))
-  if valid_580514 != nil:
-    section.add "alt", valid_580514
-  var valid_580515 = query.getOrDefault("oauth_token")
-  valid_580515 = validateParameter(valid_580515, JString, required = false,
+  if valid_589543 != nil:
+    section.add "alt", valid_589543
+  var valid_589544 = query.getOrDefault("oauth_token")
+  valid_589544 = validateParameter(valid_589544, JString, required = false,
                                  default = nil)
-  if valid_580515 != nil:
-    section.add "oauth_token", valid_580515
-  var valid_580516 = query.getOrDefault("userIp")
-  valid_580516 = validateParameter(valid_580516, JString, required = false,
+  if valid_589544 != nil:
+    section.add "oauth_token", valid_589544
+  var valid_589545 = query.getOrDefault("userIp")
+  valid_589545 = validateParameter(valid_589545, JString, required = false,
                                  default = nil)
-  if valid_580516 != nil:
-    section.add "userIp", valid_580516
-  var valid_580517 = query.getOrDefault("key")
-  valid_580517 = validateParameter(valid_580517, JString, required = false,
+  if valid_589545 != nil:
+    section.add "userIp", valid_589545
+  var valid_589546 = query.getOrDefault("key")
+  valid_589546 = validateParameter(valid_589546, JString, required = false,
                                  default = nil)
-  if valid_580517 != nil:
-    section.add "key", valid_580517
-  var valid_580518 = query.getOrDefault("prettyPrint")
-  valid_580518 = validateParameter(valid_580518, JBool, required = false,
+  if valid_589546 != nil:
+    section.add "key", valid_589546
+  var valid_589547 = query.getOrDefault("prettyPrint")
+  valid_589547 = validateParameter(valid_589547, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580518 != nil:
-    section.add "prettyPrint", valid_580518
+  if valid_589547 != nil:
+    section.add "prettyPrint", valid_589547
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -5704,21 +5704,21 @@ proc validate_AndroidpublisherEditsImagesDelete_580505(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580519: Call_AndroidpublisherEditsImagesDelete_580504;
+proc call*(call_589548: Call_AndroidpublisherEditsImagesDelete_589533;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Deletes the image (specified by id) from the edit.
   ## 
-  let valid = call_580519.validator(path, query, header, formData, body)
-  let scheme = call_580519.pickScheme
+  let valid = call_589548.validator(path, query, header, formData, body)
+  let scheme = call_589548.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580519.url(scheme.get, call_580519.host, call_580519.base,
-                         call_580519.route, valid.getOrDefault("path"),
+  let url = call_589548.url(scheme.get, call_589548.host, call_589548.base,
+                         call_589548.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580519, url, valid)
+  result = hook(call_589548, url, valid)
 
-proc call*(call_580520: Call_AndroidpublisherEditsImagesDelete_580504;
+proc call*(call_589549: Call_AndroidpublisherEditsImagesDelete_589533;
           imageId: string; packageName: string; editId: string; language: string;
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           oauthToken: string = ""; userIp: string = "";
@@ -5749,31 +5749,31 @@ proc call*(call_580520: Call_AndroidpublisherEditsImagesDelete_580504;
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_580521 = newJObject()
-  var query_580522 = newJObject()
-  add(path_580521, "imageId", newJString(imageId))
-  add(query_580522, "fields", newJString(fields))
-  add(path_580521, "packageName", newJString(packageName))
-  add(query_580522, "quotaUser", newJString(quotaUser))
-  add(query_580522, "alt", newJString(alt))
-  add(path_580521, "editId", newJString(editId))
-  add(query_580522, "oauth_token", newJString(oauthToken))
-  add(path_580521, "language", newJString(language))
-  add(query_580522, "userIp", newJString(userIp))
-  add(path_580521, "imageType", newJString(imageType))
-  add(query_580522, "key", newJString(key))
-  add(query_580522, "prettyPrint", newJBool(prettyPrint))
-  result = call_580520.call(path_580521, query_580522, nil, nil, nil)
+  var path_589550 = newJObject()
+  var query_589551 = newJObject()
+  add(path_589550, "imageId", newJString(imageId))
+  add(query_589551, "fields", newJString(fields))
+  add(path_589550, "packageName", newJString(packageName))
+  add(query_589551, "quotaUser", newJString(quotaUser))
+  add(query_589551, "alt", newJString(alt))
+  add(path_589550, "editId", newJString(editId))
+  add(query_589551, "oauth_token", newJString(oauthToken))
+  add(path_589550, "language", newJString(language))
+  add(query_589551, "userIp", newJString(userIp))
+  add(path_589550, "imageType", newJString(imageType))
+  add(query_589551, "key", newJString(key))
+  add(query_589551, "prettyPrint", newJBool(prettyPrint))
+  result = call_589549.call(path_589550, query_589551, nil, nil, nil)
 
-var androidpublisherEditsImagesDelete* = Call_AndroidpublisherEditsImagesDelete_580504(
+var androidpublisherEditsImagesDelete* = Call_AndroidpublisherEditsImagesDelete_589533(
     name: "androidpublisherEditsImagesDelete", meth: HttpMethod.HttpDelete,
     host: "www.googleapis.com", route: "/{packageName}/edits/{editId}/listings/{language}/{imageType}/{imageId}",
-    validator: validate_AndroidpublisherEditsImagesDelete_580505,
+    validator: validate_AndroidpublisherEditsImagesDelete_589534,
     base: "/androidpublisher/v2/applications",
-    url: url_AndroidpublisherEditsImagesDelete_580506, schemes: {Scheme.Https})
+    url: url_AndroidpublisherEditsImagesDelete_589535, schemes: {Scheme.Https})
 type
-  Call_AndroidpublisherEditsTestersUpdate_580540 = ref object of OpenApiRestCall_579421
-proc url_AndroidpublisherEditsTestersUpdate_580542(protocol: Scheme; host: string;
+  Call_AndroidpublisherEditsTestersUpdate_589569 = ref object of OpenApiRestCall_588450
+proc url_AndroidpublisherEditsTestersUpdate_589571(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -5794,7 +5794,7 @@ proc url_AndroidpublisherEditsTestersUpdate_580542(protocol: Scheme; host: strin
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_AndroidpublisherEditsTestersUpdate_580541(path: JsonNode;
+proc validate_AndroidpublisherEditsTestersUpdate_589570(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   var section: JsonNode
   result = newJObject()
@@ -5808,21 +5808,21 @@ proc validate_AndroidpublisherEditsTestersUpdate_580541(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `packageName` field"
-  var valid_580543 = path.getOrDefault("packageName")
-  valid_580543 = validateParameter(valid_580543, JString, required = true,
+  var valid_589572 = path.getOrDefault("packageName")
+  valid_589572 = validateParameter(valid_589572, JString, required = true,
                                  default = nil)
-  if valid_580543 != nil:
-    section.add "packageName", valid_580543
-  var valid_580544 = path.getOrDefault("editId")
-  valid_580544 = validateParameter(valid_580544, JString, required = true,
+  if valid_589572 != nil:
+    section.add "packageName", valid_589572
+  var valid_589573 = path.getOrDefault("editId")
+  valid_589573 = validateParameter(valid_589573, JString, required = true,
                                  default = nil)
-  if valid_580544 != nil:
-    section.add "editId", valid_580544
-  var valid_580545 = path.getOrDefault("track")
-  valid_580545 = validateParameter(valid_580545, JString, required = true,
+  if valid_589573 != nil:
+    section.add "editId", valid_589573
+  var valid_589574 = path.getOrDefault("track")
+  valid_589574 = validateParameter(valid_589574, JString, required = true,
                                  default = nil)
-  if valid_580545 != nil:
-    section.add "track", valid_580545
+  if valid_589574 != nil:
+    section.add "track", valid_589574
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -5840,41 +5840,41 @@ proc validate_AndroidpublisherEditsTestersUpdate_580541(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580546 = query.getOrDefault("fields")
-  valid_580546 = validateParameter(valid_580546, JString, required = false,
+  var valid_589575 = query.getOrDefault("fields")
+  valid_589575 = validateParameter(valid_589575, JString, required = false,
                                  default = nil)
-  if valid_580546 != nil:
-    section.add "fields", valid_580546
-  var valid_580547 = query.getOrDefault("quotaUser")
-  valid_580547 = validateParameter(valid_580547, JString, required = false,
+  if valid_589575 != nil:
+    section.add "fields", valid_589575
+  var valid_589576 = query.getOrDefault("quotaUser")
+  valid_589576 = validateParameter(valid_589576, JString, required = false,
                                  default = nil)
-  if valid_580547 != nil:
-    section.add "quotaUser", valid_580547
-  var valid_580548 = query.getOrDefault("alt")
-  valid_580548 = validateParameter(valid_580548, JString, required = false,
+  if valid_589576 != nil:
+    section.add "quotaUser", valid_589576
+  var valid_589577 = query.getOrDefault("alt")
+  valid_589577 = validateParameter(valid_589577, JString, required = false,
                                  default = newJString("json"))
-  if valid_580548 != nil:
-    section.add "alt", valid_580548
-  var valid_580549 = query.getOrDefault("oauth_token")
-  valid_580549 = validateParameter(valid_580549, JString, required = false,
+  if valid_589577 != nil:
+    section.add "alt", valid_589577
+  var valid_589578 = query.getOrDefault("oauth_token")
+  valid_589578 = validateParameter(valid_589578, JString, required = false,
                                  default = nil)
-  if valid_580549 != nil:
-    section.add "oauth_token", valid_580549
-  var valid_580550 = query.getOrDefault("userIp")
-  valid_580550 = validateParameter(valid_580550, JString, required = false,
+  if valid_589578 != nil:
+    section.add "oauth_token", valid_589578
+  var valid_589579 = query.getOrDefault("userIp")
+  valid_589579 = validateParameter(valid_589579, JString, required = false,
                                  default = nil)
-  if valid_580550 != nil:
-    section.add "userIp", valid_580550
-  var valid_580551 = query.getOrDefault("key")
-  valid_580551 = validateParameter(valid_580551, JString, required = false,
+  if valid_589579 != nil:
+    section.add "userIp", valid_589579
+  var valid_589580 = query.getOrDefault("key")
+  valid_589580 = validateParameter(valid_589580, JString, required = false,
                                  default = nil)
-  if valid_580551 != nil:
-    section.add "key", valid_580551
-  var valid_580552 = query.getOrDefault("prettyPrint")
-  valid_580552 = validateParameter(valid_580552, JBool, required = false,
+  if valid_589580 != nil:
+    section.add "key", valid_589580
+  var valid_589581 = query.getOrDefault("prettyPrint")
+  valid_589581 = validateParameter(valid_589581, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580552 != nil:
-    section.add "prettyPrint", valid_580552
+  if valid_589581 != nil:
+    section.add "prettyPrint", valid_589581
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -5886,19 +5886,19 @@ proc validate_AndroidpublisherEditsTestersUpdate_580541(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580554: Call_AndroidpublisherEditsTestersUpdate_580540;
+proc call*(call_589583: Call_AndroidpublisherEditsTestersUpdate_589569;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
-  let valid = call_580554.validator(path, query, header, formData, body)
-  let scheme = call_580554.pickScheme
+  let valid = call_589583.validator(path, query, header, formData, body)
+  let scheme = call_589583.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580554.url(scheme.get, call_580554.host, call_580554.base,
-                         call_580554.route, valid.getOrDefault("path"),
+  let url = call_589583.url(scheme.get, call_589583.host, call_589583.base,
+                         call_589583.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580554, url, valid)
+  result = hook(call_589583, url, valid)
 
-proc call*(call_580555: Call_AndroidpublisherEditsTestersUpdate_580540;
+proc call*(call_589584: Call_AndroidpublisherEditsTestersUpdate_589569;
           packageName: string; editId: string; track: string; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; key: string = ""; body: JsonNode = nil;
@@ -5925,33 +5925,33 @@ proc call*(call_580555: Call_AndroidpublisherEditsTestersUpdate_580540;
   ##              : Returns response with indentations and line breaks.
   ##   track: string (required)
   ##        : The track to read or modify.
-  var path_580556 = newJObject()
-  var query_580557 = newJObject()
-  var body_580558 = newJObject()
-  add(query_580557, "fields", newJString(fields))
-  add(path_580556, "packageName", newJString(packageName))
-  add(query_580557, "quotaUser", newJString(quotaUser))
-  add(query_580557, "alt", newJString(alt))
-  add(path_580556, "editId", newJString(editId))
-  add(query_580557, "oauth_token", newJString(oauthToken))
-  add(query_580557, "userIp", newJString(userIp))
-  add(query_580557, "key", newJString(key))
+  var path_589585 = newJObject()
+  var query_589586 = newJObject()
+  var body_589587 = newJObject()
+  add(query_589586, "fields", newJString(fields))
+  add(path_589585, "packageName", newJString(packageName))
+  add(query_589586, "quotaUser", newJString(quotaUser))
+  add(query_589586, "alt", newJString(alt))
+  add(path_589585, "editId", newJString(editId))
+  add(query_589586, "oauth_token", newJString(oauthToken))
+  add(query_589586, "userIp", newJString(userIp))
+  add(query_589586, "key", newJString(key))
   if body != nil:
-    body_580558 = body
-  add(query_580557, "prettyPrint", newJBool(prettyPrint))
-  add(path_580556, "track", newJString(track))
-  result = call_580555.call(path_580556, query_580557, nil, nil, body_580558)
+    body_589587 = body
+  add(query_589586, "prettyPrint", newJBool(prettyPrint))
+  add(path_589585, "track", newJString(track))
+  result = call_589584.call(path_589585, query_589586, nil, nil, body_589587)
 
-var androidpublisherEditsTestersUpdate* = Call_AndroidpublisherEditsTestersUpdate_580540(
+var androidpublisherEditsTestersUpdate* = Call_AndroidpublisherEditsTestersUpdate_589569(
     name: "androidpublisherEditsTestersUpdate", meth: HttpMethod.HttpPut,
     host: "www.googleapis.com",
     route: "/{packageName}/edits/{editId}/testers/{track}",
-    validator: validate_AndroidpublisherEditsTestersUpdate_580541,
+    validator: validate_AndroidpublisherEditsTestersUpdate_589570,
     base: "/androidpublisher/v2/applications",
-    url: url_AndroidpublisherEditsTestersUpdate_580542, schemes: {Scheme.Https})
+    url: url_AndroidpublisherEditsTestersUpdate_589571, schemes: {Scheme.Https})
 type
-  Call_AndroidpublisherEditsTestersGet_580523 = ref object of OpenApiRestCall_579421
-proc url_AndroidpublisherEditsTestersGet_580525(protocol: Scheme; host: string;
+  Call_AndroidpublisherEditsTestersGet_589552 = ref object of OpenApiRestCall_588450
+proc url_AndroidpublisherEditsTestersGet_589554(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -5972,7 +5972,7 @@ proc url_AndroidpublisherEditsTestersGet_580525(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_AndroidpublisherEditsTestersGet_580524(path: JsonNode;
+proc validate_AndroidpublisherEditsTestersGet_589553(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   var section: JsonNode
   result = newJObject()
@@ -5986,21 +5986,21 @@ proc validate_AndroidpublisherEditsTestersGet_580524(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `packageName` field"
-  var valid_580526 = path.getOrDefault("packageName")
-  valid_580526 = validateParameter(valid_580526, JString, required = true,
+  var valid_589555 = path.getOrDefault("packageName")
+  valid_589555 = validateParameter(valid_589555, JString, required = true,
                                  default = nil)
-  if valid_580526 != nil:
-    section.add "packageName", valid_580526
-  var valid_580527 = path.getOrDefault("editId")
-  valid_580527 = validateParameter(valid_580527, JString, required = true,
+  if valid_589555 != nil:
+    section.add "packageName", valid_589555
+  var valid_589556 = path.getOrDefault("editId")
+  valid_589556 = validateParameter(valid_589556, JString, required = true,
                                  default = nil)
-  if valid_580527 != nil:
-    section.add "editId", valid_580527
-  var valid_580528 = path.getOrDefault("track")
-  valid_580528 = validateParameter(valid_580528, JString, required = true,
+  if valid_589556 != nil:
+    section.add "editId", valid_589556
+  var valid_589557 = path.getOrDefault("track")
+  valid_589557 = validateParameter(valid_589557, JString, required = true,
                                  default = nil)
-  if valid_580528 != nil:
-    section.add "track", valid_580528
+  if valid_589557 != nil:
+    section.add "track", valid_589557
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -6018,41 +6018,41 @@ proc validate_AndroidpublisherEditsTestersGet_580524(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580529 = query.getOrDefault("fields")
-  valid_580529 = validateParameter(valid_580529, JString, required = false,
+  var valid_589558 = query.getOrDefault("fields")
+  valid_589558 = validateParameter(valid_589558, JString, required = false,
                                  default = nil)
-  if valid_580529 != nil:
-    section.add "fields", valid_580529
-  var valid_580530 = query.getOrDefault("quotaUser")
-  valid_580530 = validateParameter(valid_580530, JString, required = false,
+  if valid_589558 != nil:
+    section.add "fields", valid_589558
+  var valid_589559 = query.getOrDefault("quotaUser")
+  valid_589559 = validateParameter(valid_589559, JString, required = false,
                                  default = nil)
-  if valid_580530 != nil:
-    section.add "quotaUser", valid_580530
-  var valid_580531 = query.getOrDefault("alt")
-  valid_580531 = validateParameter(valid_580531, JString, required = false,
+  if valid_589559 != nil:
+    section.add "quotaUser", valid_589559
+  var valid_589560 = query.getOrDefault("alt")
+  valid_589560 = validateParameter(valid_589560, JString, required = false,
                                  default = newJString("json"))
-  if valid_580531 != nil:
-    section.add "alt", valid_580531
-  var valid_580532 = query.getOrDefault("oauth_token")
-  valid_580532 = validateParameter(valid_580532, JString, required = false,
+  if valid_589560 != nil:
+    section.add "alt", valid_589560
+  var valid_589561 = query.getOrDefault("oauth_token")
+  valid_589561 = validateParameter(valid_589561, JString, required = false,
                                  default = nil)
-  if valid_580532 != nil:
-    section.add "oauth_token", valid_580532
-  var valid_580533 = query.getOrDefault("userIp")
-  valid_580533 = validateParameter(valid_580533, JString, required = false,
+  if valid_589561 != nil:
+    section.add "oauth_token", valid_589561
+  var valid_589562 = query.getOrDefault("userIp")
+  valid_589562 = validateParameter(valid_589562, JString, required = false,
                                  default = nil)
-  if valid_580533 != nil:
-    section.add "userIp", valid_580533
-  var valid_580534 = query.getOrDefault("key")
-  valid_580534 = validateParameter(valid_580534, JString, required = false,
+  if valid_589562 != nil:
+    section.add "userIp", valid_589562
+  var valid_589563 = query.getOrDefault("key")
+  valid_589563 = validateParameter(valid_589563, JString, required = false,
                                  default = nil)
-  if valid_580534 != nil:
-    section.add "key", valid_580534
-  var valid_580535 = query.getOrDefault("prettyPrint")
-  valid_580535 = validateParameter(valid_580535, JBool, required = false,
+  if valid_589563 != nil:
+    section.add "key", valid_589563
+  var valid_589564 = query.getOrDefault("prettyPrint")
+  valid_589564 = validateParameter(valid_589564, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580535 != nil:
-    section.add "prettyPrint", valid_580535
+  if valid_589564 != nil:
+    section.add "prettyPrint", valid_589564
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -6061,19 +6061,19 @@ proc validate_AndroidpublisherEditsTestersGet_580524(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580536: Call_AndroidpublisherEditsTestersGet_580523;
+proc call*(call_589565: Call_AndroidpublisherEditsTestersGet_589552;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
-  let valid = call_580536.validator(path, query, header, formData, body)
-  let scheme = call_580536.pickScheme
+  let valid = call_589565.validator(path, query, header, formData, body)
+  let scheme = call_589565.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580536.url(scheme.get, call_580536.host, call_580536.base,
-                         call_580536.route, valid.getOrDefault("path"),
+  let url = call_589565.url(scheme.get, call_589565.host, call_589565.base,
+                         call_589565.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580536, url, valid)
+  result = hook(call_589565, url, valid)
 
-proc call*(call_580537: Call_AndroidpublisherEditsTestersGet_580523;
+proc call*(call_589566: Call_AndroidpublisherEditsTestersGet_589552;
           packageName: string; editId: string; track: string; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; key: string = ""; prettyPrint: bool = true): Recallable =
@@ -6098,30 +6098,30 @@ proc call*(call_580537: Call_AndroidpublisherEditsTestersGet_580523;
   ##              : Returns response with indentations and line breaks.
   ##   track: string (required)
   ##        : The track to read or modify.
-  var path_580538 = newJObject()
-  var query_580539 = newJObject()
-  add(query_580539, "fields", newJString(fields))
-  add(path_580538, "packageName", newJString(packageName))
-  add(query_580539, "quotaUser", newJString(quotaUser))
-  add(query_580539, "alt", newJString(alt))
-  add(path_580538, "editId", newJString(editId))
-  add(query_580539, "oauth_token", newJString(oauthToken))
-  add(query_580539, "userIp", newJString(userIp))
-  add(query_580539, "key", newJString(key))
-  add(query_580539, "prettyPrint", newJBool(prettyPrint))
-  add(path_580538, "track", newJString(track))
-  result = call_580537.call(path_580538, query_580539, nil, nil, nil)
+  var path_589567 = newJObject()
+  var query_589568 = newJObject()
+  add(query_589568, "fields", newJString(fields))
+  add(path_589567, "packageName", newJString(packageName))
+  add(query_589568, "quotaUser", newJString(quotaUser))
+  add(query_589568, "alt", newJString(alt))
+  add(path_589567, "editId", newJString(editId))
+  add(query_589568, "oauth_token", newJString(oauthToken))
+  add(query_589568, "userIp", newJString(userIp))
+  add(query_589568, "key", newJString(key))
+  add(query_589568, "prettyPrint", newJBool(prettyPrint))
+  add(path_589567, "track", newJString(track))
+  result = call_589566.call(path_589567, query_589568, nil, nil, nil)
 
-var androidpublisherEditsTestersGet* = Call_AndroidpublisherEditsTestersGet_580523(
+var androidpublisherEditsTestersGet* = Call_AndroidpublisherEditsTestersGet_589552(
     name: "androidpublisherEditsTestersGet", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com",
     route: "/{packageName}/edits/{editId}/testers/{track}",
-    validator: validate_AndroidpublisherEditsTestersGet_580524,
+    validator: validate_AndroidpublisherEditsTestersGet_589553,
     base: "/androidpublisher/v2/applications",
-    url: url_AndroidpublisherEditsTestersGet_580525, schemes: {Scheme.Https})
+    url: url_AndroidpublisherEditsTestersGet_589554, schemes: {Scheme.Https})
 type
-  Call_AndroidpublisherEditsTestersPatch_580559 = ref object of OpenApiRestCall_579421
-proc url_AndroidpublisherEditsTestersPatch_580561(protocol: Scheme; host: string;
+  Call_AndroidpublisherEditsTestersPatch_589588 = ref object of OpenApiRestCall_588450
+proc url_AndroidpublisherEditsTestersPatch_589590(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -6142,7 +6142,7 @@ proc url_AndroidpublisherEditsTestersPatch_580561(protocol: Scheme; host: string
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_AndroidpublisherEditsTestersPatch_580560(path: JsonNode;
+proc validate_AndroidpublisherEditsTestersPatch_589589(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   var section: JsonNode
   result = newJObject()
@@ -6156,21 +6156,21 @@ proc validate_AndroidpublisherEditsTestersPatch_580560(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `packageName` field"
-  var valid_580562 = path.getOrDefault("packageName")
-  valid_580562 = validateParameter(valid_580562, JString, required = true,
+  var valid_589591 = path.getOrDefault("packageName")
+  valid_589591 = validateParameter(valid_589591, JString, required = true,
                                  default = nil)
-  if valid_580562 != nil:
-    section.add "packageName", valid_580562
-  var valid_580563 = path.getOrDefault("editId")
-  valid_580563 = validateParameter(valid_580563, JString, required = true,
+  if valid_589591 != nil:
+    section.add "packageName", valid_589591
+  var valid_589592 = path.getOrDefault("editId")
+  valid_589592 = validateParameter(valid_589592, JString, required = true,
                                  default = nil)
-  if valid_580563 != nil:
-    section.add "editId", valid_580563
-  var valid_580564 = path.getOrDefault("track")
-  valid_580564 = validateParameter(valid_580564, JString, required = true,
+  if valid_589592 != nil:
+    section.add "editId", valid_589592
+  var valid_589593 = path.getOrDefault("track")
+  valid_589593 = validateParameter(valid_589593, JString, required = true,
                                  default = nil)
-  if valid_580564 != nil:
-    section.add "track", valid_580564
+  if valid_589593 != nil:
+    section.add "track", valid_589593
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -6188,41 +6188,41 @@ proc validate_AndroidpublisherEditsTestersPatch_580560(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580565 = query.getOrDefault("fields")
-  valid_580565 = validateParameter(valid_580565, JString, required = false,
+  var valid_589594 = query.getOrDefault("fields")
+  valid_589594 = validateParameter(valid_589594, JString, required = false,
                                  default = nil)
-  if valid_580565 != nil:
-    section.add "fields", valid_580565
-  var valid_580566 = query.getOrDefault("quotaUser")
-  valid_580566 = validateParameter(valid_580566, JString, required = false,
+  if valid_589594 != nil:
+    section.add "fields", valid_589594
+  var valid_589595 = query.getOrDefault("quotaUser")
+  valid_589595 = validateParameter(valid_589595, JString, required = false,
                                  default = nil)
-  if valid_580566 != nil:
-    section.add "quotaUser", valid_580566
-  var valid_580567 = query.getOrDefault("alt")
-  valid_580567 = validateParameter(valid_580567, JString, required = false,
+  if valid_589595 != nil:
+    section.add "quotaUser", valid_589595
+  var valid_589596 = query.getOrDefault("alt")
+  valid_589596 = validateParameter(valid_589596, JString, required = false,
                                  default = newJString("json"))
-  if valid_580567 != nil:
-    section.add "alt", valid_580567
-  var valid_580568 = query.getOrDefault("oauth_token")
-  valid_580568 = validateParameter(valid_580568, JString, required = false,
+  if valid_589596 != nil:
+    section.add "alt", valid_589596
+  var valid_589597 = query.getOrDefault("oauth_token")
+  valid_589597 = validateParameter(valid_589597, JString, required = false,
                                  default = nil)
-  if valid_580568 != nil:
-    section.add "oauth_token", valid_580568
-  var valid_580569 = query.getOrDefault("userIp")
-  valid_580569 = validateParameter(valid_580569, JString, required = false,
+  if valid_589597 != nil:
+    section.add "oauth_token", valid_589597
+  var valid_589598 = query.getOrDefault("userIp")
+  valid_589598 = validateParameter(valid_589598, JString, required = false,
                                  default = nil)
-  if valid_580569 != nil:
-    section.add "userIp", valid_580569
-  var valid_580570 = query.getOrDefault("key")
-  valid_580570 = validateParameter(valid_580570, JString, required = false,
+  if valid_589598 != nil:
+    section.add "userIp", valid_589598
+  var valid_589599 = query.getOrDefault("key")
+  valid_589599 = validateParameter(valid_589599, JString, required = false,
                                  default = nil)
-  if valid_580570 != nil:
-    section.add "key", valid_580570
-  var valid_580571 = query.getOrDefault("prettyPrint")
-  valid_580571 = validateParameter(valid_580571, JBool, required = false,
+  if valid_589599 != nil:
+    section.add "key", valid_589599
+  var valid_589600 = query.getOrDefault("prettyPrint")
+  valid_589600 = validateParameter(valid_589600, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580571 != nil:
-    section.add "prettyPrint", valid_580571
+  if valid_589600 != nil:
+    section.add "prettyPrint", valid_589600
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -6234,19 +6234,19 @@ proc validate_AndroidpublisherEditsTestersPatch_580560(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580573: Call_AndroidpublisherEditsTestersPatch_580559;
+proc call*(call_589602: Call_AndroidpublisherEditsTestersPatch_589588;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
-  let valid = call_580573.validator(path, query, header, formData, body)
-  let scheme = call_580573.pickScheme
+  let valid = call_589602.validator(path, query, header, formData, body)
+  let scheme = call_589602.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580573.url(scheme.get, call_580573.host, call_580573.base,
-                         call_580573.route, valid.getOrDefault("path"),
+  let url = call_589602.url(scheme.get, call_589602.host, call_589602.base,
+                         call_589602.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580573, url, valid)
+  result = hook(call_589602, url, valid)
 
-proc call*(call_580574: Call_AndroidpublisherEditsTestersPatch_580559;
+proc call*(call_589603: Call_AndroidpublisherEditsTestersPatch_589588;
           packageName: string; editId: string; track: string; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; key: string = ""; body: JsonNode = nil;
@@ -6273,33 +6273,33 @@ proc call*(call_580574: Call_AndroidpublisherEditsTestersPatch_580559;
   ##              : Returns response with indentations and line breaks.
   ##   track: string (required)
   ##        : The track to read or modify.
-  var path_580575 = newJObject()
-  var query_580576 = newJObject()
-  var body_580577 = newJObject()
-  add(query_580576, "fields", newJString(fields))
-  add(path_580575, "packageName", newJString(packageName))
-  add(query_580576, "quotaUser", newJString(quotaUser))
-  add(query_580576, "alt", newJString(alt))
-  add(path_580575, "editId", newJString(editId))
-  add(query_580576, "oauth_token", newJString(oauthToken))
-  add(query_580576, "userIp", newJString(userIp))
-  add(query_580576, "key", newJString(key))
+  var path_589604 = newJObject()
+  var query_589605 = newJObject()
+  var body_589606 = newJObject()
+  add(query_589605, "fields", newJString(fields))
+  add(path_589604, "packageName", newJString(packageName))
+  add(query_589605, "quotaUser", newJString(quotaUser))
+  add(query_589605, "alt", newJString(alt))
+  add(path_589604, "editId", newJString(editId))
+  add(query_589605, "oauth_token", newJString(oauthToken))
+  add(query_589605, "userIp", newJString(userIp))
+  add(query_589605, "key", newJString(key))
   if body != nil:
-    body_580577 = body
-  add(query_580576, "prettyPrint", newJBool(prettyPrint))
-  add(path_580575, "track", newJString(track))
-  result = call_580574.call(path_580575, query_580576, nil, nil, body_580577)
+    body_589606 = body
+  add(query_589605, "prettyPrint", newJBool(prettyPrint))
+  add(path_589604, "track", newJString(track))
+  result = call_589603.call(path_589604, query_589605, nil, nil, body_589606)
 
-var androidpublisherEditsTestersPatch* = Call_AndroidpublisherEditsTestersPatch_580559(
+var androidpublisherEditsTestersPatch* = Call_AndroidpublisherEditsTestersPatch_589588(
     name: "androidpublisherEditsTestersPatch", meth: HttpMethod.HttpPatch,
     host: "www.googleapis.com",
     route: "/{packageName}/edits/{editId}/testers/{track}",
-    validator: validate_AndroidpublisherEditsTestersPatch_580560,
+    validator: validate_AndroidpublisherEditsTestersPatch_589589,
     base: "/androidpublisher/v2/applications",
-    url: url_AndroidpublisherEditsTestersPatch_580561, schemes: {Scheme.Https})
+    url: url_AndroidpublisherEditsTestersPatch_589590, schemes: {Scheme.Https})
 type
-  Call_AndroidpublisherEditsTracksList_580578 = ref object of OpenApiRestCall_579421
-proc url_AndroidpublisherEditsTracksList_580580(protocol: Scheme; host: string;
+  Call_AndroidpublisherEditsTracksList_589607 = ref object of OpenApiRestCall_588450
+proc url_AndroidpublisherEditsTracksList_589609(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -6318,7 +6318,7 @@ proc url_AndroidpublisherEditsTracksList_580580(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_AndroidpublisherEditsTracksList_580579(path: JsonNode;
+proc validate_AndroidpublisherEditsTracksList_589608(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Lists all the track configurations for this edit.
   ## 
@@ -6332,16 +6332,16 @@ proc validate_AndroidpublisherEditsTracksList_580579(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `packageName` field"
-  var valid_580581 = path.getOrDefault("packageName")
-  valid_580581 = validateParameter(valid_580581, JString, required = true,
+  var valid_589610 = path.getOrDefault("packageName")
+  valid_589610 = validateParameter(valid_589610, JString, required = true,
                                  default = nil)
-  if valid_580581 != nil:
-    section.add "packageName", valid_580581
-  var valid_580582 = path.getOrDefault("editId")
-  valid_580582 = validateParameter(valid_580582, JString, required = true,
+  if valid_589610 != nil:
+    section.add "packageName", valid_589610
+  var valid_589611 = path.getOrDefault("editId")
+  valid_589611 = validateParameter(valid_589611, JString, required = true,
                                  default = nil)
-  if valid_580582 != nil:
-    section.add "editId", valid_580582
+  if valid_589611 != nil:
+    section.add "editId", valid_589611
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -6359,41 +6359,41 @@ proc validate_AndroidpublisherEditsTracksList_580579(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580583 = query.getOrDefault("fields")
-  valid_580583 = validateParameter(valid_580583, JString, required = false,
+  var valid_589612 = query.getOrDefault("fields")
+  valid_589612 = validateParameter(valid_589612, JString, required = false,
                                  default = nil)
-  if valid_580583 != nil:
-    section.add "fields", valid_580583
-  var valid_580584 = query.getOrDefault("quotaUser")
-  valid_580584 = validateParameter(valid_580584, JString, required = false,
+  if valid_589612 != nil:
+    section.add "fields", valid_589612
+  var valid_589613 = query.getOrDefault("quotaUser")
+  valid_589613 = validateParameter(valid_589613, JString, required = false,
                                  default = nil)
-  if valid_580584 != nil:
-    section.add "quotaUser", valid_580584
-  var valid_580585 = query.getOrDefault("alt")
-  valid_580585 = validateParameter(valid_580585, JString, required = false,
+  if valid_589613 != nil:
+    section.add "quotaUser", valid_589613
+  var valid_589614 = query.getOrDefault("alt")
+  valid_589614 = validateParameter(valid_589614, JString, required = false,
                                  default = newJString("json"))
-  if valid_580585 != nil:
-    section.add "alt", valid_580585
-  var valid_580586 = query.getOrDefault("oauth_token")
-  valid_580586 = validateParameter(valid_580586, JString, required = false,
+  if valid_589614 != nil:
+    section.add "alt", valid_589614
+  var valid_589615 = query.getOrDefault("oauth_token")
+  valid_589615 = validateParameter(valid_589615, JString, required = false,
                                  default = nil)
-  if valid_580586 != nil:
-    section.add "oauth_token", valid_580586
-  var valid_580587 = query.getOrDefault("userIp")
-  valid_580587 = validateParameter(valid_580587, JString, required = false,
+  if valid_589615 != nil:
+    section.add "oauth_token", valid_589615
+  var valid_589616 = query.getOrDefault("userIp")
+  valid_589616 = validateParameter(valid_589616, JString, required = false,
                                  default = nil)
-  if valid_580587 != nil:
-    section.add "userIp", valid_580587
-  var valid_580588 = query.getOrDefault("key")
-  valid_580588 = validateParameter(valid_580588, JString, required = false,
+  if valid_589616 != nil:
+    section.add "userIp", valid_589616
+  var valid_589617 = query.getOrDefault("key")
+  valid_589617 = validateParameter(valid_589617, JString, required = false,
                                  default = nil)
-  if valid_580588 != nil:
-    section.add "key", valid_580588
-  var valid_580589 = query.getOrDefault("prettyPrint")
-  valid_580589 = validateParameter(valid_580589, JBool, required = false,
+  if valid_589617 != nil:
+    section.add "key", valid_589617
+  var valid_589618 = query.getOrDefault("prettyPrint")
+  valid_589618 = validateParameter(valid_589618, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580589 != nil:
-    section.add "prettyPrint", valid_580589
+  if valid_589618 != nil:
+    section.add "prettyPrint", valid_589618
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -6402,21 +6402,21 @@ proc validate_AndroidpublisherEditsTracksList_580579(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580590: Call_AndroidpublisherEditsTracksList_580578;
+proc call*(call_589619: Call_AndroidpublisherEditsTracksList_589607;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Lists all the track configurations for this edit.
   ## 
-  let valid = call_580590.validator(path, query, header, formData, body)
-  let scheme = call_580590.pickScheme
+  let valid = call_589619.validator(path, query, header, formData, body)
+  let scheme = call_589619.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580590.url(scheme.get, call_580590.host, call_580590.base,
-                         call_580590.route, valid.getOrDefault("path"),
+  let url = call_589619.url(scheme.get, call_589619.host, call_589619.base,
+                         call_589619.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580590, url, valid)
+  result = hook(call_589619, url, valid)
 
-proc call*(call_580591: Call_AndroidpublisherEditsTracksList_580578;
+proc call*(call_589620: Call_AndroidpublisherEditsTracksList_589607;
           packageName: string; editId: string; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; key: string = ""; prettyPrint: bool = true): Recallable =
@@ -6440,28 +6440,28 @@ proc call*(call_580591: Call_AndroidpublisherEditsTracksList_580578;
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_580592 = newJObject()
-  var query_580593 = newJObject()
-  add(query_580593, "fields", newJString(fields))
-  add(path_580592, "packageName", newJString(packageName))
-  add(query_580593, "quotaUser", newJString(quotaUser))
-  add(query_580593, "alt", newJString(alt))
-  add(path_580592, "editId", newJString(editId))
-  add(query_580593, "oauth_token", newJString(oauthToken))
-  add(query_580593, "userIp", newJString(userIp))
-  add(query_580593, "key", newJString(key))
-  add(query_580593, "prettyPrint", newJBool(prettyPrint))
-  result = call_580591.call(path_580592, query_580593, nil, nil, nil)
+  var path_589621 = newJObject()
+  var query_589622 = newJObject()
+  add(query_589622, "fields", newJString(fields))
+  add(path_589621, "packageName", newJString(packageName))
+  add(query_589622, "quotaUser", newJString(quotaUser))
+  add(query_589622, "alt", newJString(alt))
+  add(path_589621, "editId", newJString(editId))
+  add(query_589622, "oauth_token", newJString(oauthToken))
+  add(query_589622, "userIp", newJString(userIp))
+  add(query_589622, "key", newJString(key))
+  add(query_589622, "prettyPrint", newJBool(prettyPrint))
+  result = call_589620.call(path_589621, query_589622, nil, nil, nil)
 
-var androidpublisherEditsTracksList* = Call_AndroidpublisherEditsTracksList_580578(
+var androidpublisherEditsTracksList* = Call_AndroidpublisherEditsTracksList_589607(
     name: "androidpublisherEditsTracksList", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/{packageName}/edits/{editId}/tracks",
-    validator: validate_AndroidpublisherEditsTracksList_580579,
+    validator: validate_AndroidpublisherEditsTracksList_589608,
     base: "/androidpublisher/v2/applications",
-    url: url_AndroidpublisherEditsTracksList_580580, schemes: {Scheme.Https})
+    url: url_AndroidpublisherEditsTracksList_589609, schemes: {Scheme.Https})
 type
-  Call_AndroidpublisherEditsTracksUpdate_580611 = ref object of OpenApiRestCall_579421
-proc url_AndroidpublisherEditsTracksUpdate_580613(protocol: Scheme; host: string;
+  Call_AndroidpublisherEditsTracksUpdate_589640 = ref object of OpenApiRestCall_588450
+proc url_AndroidpublisherEditsTracksUpdate_589642(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -6482,7 +6482,7 @@ proc url_AndroidpublisherEditsTracksUpdate_580613(protocol: Scheme; host: string
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_AndroidpublisherEditsTracksUpdate_580612(path: JsonNode;
+proc validate_AndroidpublisherEditsTracksUpdate_589641(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Updates the track configuration for the specified track type.
   ## 
@@ -6498,21 +6498,21 @@ proc validate_AndroidpublisherEditsTracksUpdate_580612(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `packageName` field"
-  var valid_580614 = path.getOrDefault("packageName")
-  valid_580614 = validateParameter(valid_580614, JString, required = true,
+  var valid_589643 = path.getOrDefault("packageName")
+  valid_589643 = validateParameter(valid_589643, JString, required = true,
                                  default = nil)
-  if valid_580614 != nil:
-    section.add "packageName", valid_580614
-  var valid_580615 = path.getOrDefault("editId")
-  valid_580615 = validateParameter(valid_580615, JString, required = true,
+  if valid_589643 != nil:
+    section.add "packageName", valid_589643
+  var valid_589644 = path.getOrDefault("editId")
+  valid_589644 = validateParameter(valid_589644, JString, required = true,
                                  default = nil)
-  if valid_580615 != nil:
-    section.add "editId", valid_580615
-  var valid_580616 = path.getOrDefault("track")
-  valid_580616 = validateParameter(valid_580616, JString, required = true,
+  if valid_589644 != nil:
+    section.add "editId", valid_589644
+  var valid_589645 = path.getOrDefault("track")
+  valid_589645 = validateParameter(valid_589645, JString, required = true,
                                  default = nil)
-  if valid_580616 != nil:
-    section.add "track", valid_580616
+  if valid_589645 != nil:
+    section.add "track", valid_589645
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -6530,41 +6530,41 @@ proc validate_AndroidpublisherEditsTracksUpdate_580612(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580617 = query.getOrDefault("fields")
-  valid_580617 = validateParameter(valid_580617, JString, required = false,
+  var valid_589646 = query.getOrDefault("fields")
+  valid_589646 = validateParameter(valid_589646, JString, required = false,
                                  default = nil)
-  if valid_580617 != nil:
-    section.add "fields", valid_580617
-  var valid_580618 = query.getOrDefault("quotaUser")
-  valid_580618 = validateParameter(valid_580618, JString, required = false,
+  if valid_589646 != nil:
+    section.add "fields", valid_589646
+  var valid_589647 = query.getOrDefault("quotaUser")
+  valid_589647 = validateParameter(valid_589647, JString, required = false,
                                  default = nil)
-  if valid_580618 != nil:
-    section.add "quotaUser", valid_580618
-  var valid_580619 = query.getOrDefault("alt")
-  valid_580619 = validateParameter(valid_580619, JString, required = false,
+  if valid_589647 != nil:
+    section.add "quotaUser", valid_589647
+  var valid_589648 = query.getOrDefault("alt")
+  valid_589648 = validateParameter(valid_589648, JString, required = false,
                                  default = newJString("json"))
-  if valid_580619 != nil:
-    section.add "alt", valid_580619
-  var valid_580620 = query.getOrDefault("oauth_token")
-  valid_580620 = validateParameter(valid_580620, JString, required = false,
+  if valid_589648 != nil:
+    section.add "alt", valid_589648
+  var valid_589649 = query.getOrDefault("oauth_token")
+  valid_589649 = validateParameter(valid_589649, JString, required = false,
                                  default = nil)
-  if valid_580620 != nil:
-    section.add "oauth_token", valid_580620
-  var valid_580621 = query.getOrDefault("userIp")
-  valid_580621 = validateParameter(valid_580621, JString, required = false,
+  if valid_589649 != nil:
+    section.add "oauth_token", valid_589649
+  var valid_589650 = query.getOrDefault("userIp")
+  valid_589650 = validateParameter(valid_589650, JString, required = false,
                                  default = nil)
-  if valid_580621 != nil:
-    section.add "userIp", valid_580621
-  var valid_580622 = query.getOrDefault("key")
-  valid_580622 = validateParameter(valid_580622, JString, required = false,
+  if valid_589650 != nil:
+    section.add "userIp", valid_589650
+  var valid_589651 = query.getOrDefault("key")
+  valid_589651 = validateParameter(valid_589651, JString, required = false,
                                  default = nil)
-  if valid_580622 != nil:
-    section.add "key", valid_580622
-  var valid_580623 = query.getOrDefault("prettyPrint")
-  valid_580623 = validateParameter(valid_580623, JBool, required = false,
+  if valid_589651 != nil:
+    section.add "key", valid_589651
+  var valid_589652 = query.getOrDefault("prettyPrint")
+  valid_589652 = validateParameter(valid_589652, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580623 != nil:
-    section.add "prettyPrint", valid_580623
+  if valid_589652 != nil:
+    section.add "prettyPrint", valid_589652
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -6576,21 +6576,21 @@ proc validate_AndroidpublisherEditsTracksUpdate_580612(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580625: Call_AndroidpublisherEditsTracksUpdate_580611;
+proc call*(call_589654: Call_AndroidpublisherEditsTracksUpdate_589640;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Updates the track configuration for the specified track type.
   ## 
-  let valid = call_580625.validator(path, query, header, formData, body)
-  let scheme = call_580625.pickScheme
+  let valid = call_589654.validator(path, query, header, formData, body)
+  let scheme = call_589654.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580625.url(scheme.get, call_580625.host, call_580625.base,
-                         call_580625.route, valid.getOrDefault("path"),
+  let url = call_589654.url(scheme.get, call_589654.host, call_589654.base,
+                         call_589654.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580625, url, valid)
+  result = hook(call_589654, url, valid)
 
-proc call*(call_580626: Call_AndroidpublisherEditsTracksUpdate_580611;
+proc call*(call_589655: Call_AndroidpublisherEditsTracksUpdate_589640;
           packageName: string; editId: string; track: string; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; key: string = ""; body: JsonNode = nil;
@@ -6618,33 +6618,33 @@ proc call*(call_580626: Call_AndroidpublisherEditsTracksUpdate_580611;
   ##              : Returns response with indentations and line breaks.
   ##   track: string (required)
   ##        : The track to read or modify.
-  var path_580627 = newJObject()
-  var query_580628 = newJObject()
-  var body_580629 = newJObject()
-  add(query_580628, "fields", newJString(fields))
-  add(path_580627, "packageName", newJString(packageName))
-  add(query_580628, "quotaUser", newJString(quotaUser))
-  add(query_580628, "alt", newJString(alt))
-  add(path_580627, "editId", newJString(editId))
-  add(query_580628, "oauth_token", newJString(oauthToken))
-  add(query_580628, "userIp", newJString(userIp))
-  add(query_580628, "key", newJString(key))
+  var path_589656 = newJObject()
+  var query_589657 = newJObject()
+  var body_589658 = newJObject()
+  add(query_589657, "fields", newJString(fields))
+  add(path_589656, "packageName", newJString(packageName))
+  add(query_589657, "quotaUser", newJString(quotaUser))
+  add(query_589657, "alt", newJString(alt))
+  add(path_589656, "editId", newJString(editId))
+  add(query_589657, "oauth_token", newJString(oauthToken))
+  add(query_589657, "userIp", newJString(userIp))
+  add(query_589657, "key", newJString(key))
   if body != nil:
-    body_580629 = body
-  add(query_580628, "prettyPrint", newJBool(prettyPrint))
-  add(path_580627, "track", newJString(track))
-  result = call_580626.call(path_580627, query_580628, nil, nil, body_580629)
+    body_589658 = body
+  add(query_589657, "prettyPrint", newJBool(prettyPrint))
+  add(path_589656, "track", newJString(track))
+  result = call_589655.call(path_589656, query_589657, nil, nil, body_589658)
 
-var androidpublisherEditsTracksUpdate* = Call_AndroidpublisherEditsTracksUpdate_580611(
+var androidpublisherEditsTracksUpdate* = Call_AndroidpublisherEditsTracksUpdate_589640(
     name: "androidpublisherEditsTracksUpdate", meth: HttpMethod.HttpPut,
     host: "www.googleapis.com",
     route: "/{packageName}/edits/{editId}/tracks/{track}",
-    validator: validate_AndroidpublisherEditsTracksUpdate_580612,
+    validator: validate_AndroidpublisherEditsTracksUpdate_589641,
     base: "/androidpublisher/v2/applications",
-    url: url_AndroidpublisherEditsTracksUpdate_580613, schemes: {Scheme.Https})
+    url: url_AndroidpublisherEditsTracksUpdate_589642, schemes: {Scheme.Https})
 type
-  Call_AndroidpublisherEditsTracksGet_580594 = ref object of OpenApiRestCall_579421
-proc url_AndroidpublisherEditsTracksGet_580596(protocol: Scheme; host: string;
+  Call_AndroidpublisherEditsTracksGet_589623 = ref object of OpenApiRestCall_588450
+proc url_AndroidpublisherEditsTracksGet_589625(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -6665,7 +6665,7 @@ proc url_AndroidpublisherEditsTracksGet_580596(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_AndroidpublisherEditsTracksGet_580595(path: JsonNode;
+proc validate_AndroidpublisherEditsTracksGet_589624(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Fetches the track configuration for the specified track type. Includes the APK version codes that are in this track.
   ## 
@@ -6681,21 +6681,21 @@ proc validate_AndroidpublisherEditsTracksGet_580595(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `packageName` field"
-  var valid_580597 = path.getOrDefault("packageName")
-  valid_580597 = validateParameter(valid_580597, JString, required = true,
+  var valid_589626 = path.getOrDefault("packageName")
+  valid_589626 = validateParameter(valid_589626, JString, required = true,
                                  default = nil)
-  if valid_580597 != nil:
-    section.add "packageName", valid_580597
-  var valid_580598 = path.getOrDefault("editId")
-  valid_580598 = validateParameter(valid_580598, JString, required = true,
+  if valid_589626 != nil:
+    section.add "packageName", valid_589626
+  var valid_589627 = path.getOrDefault("editId")
+  valid_589627 = validateParameter(valid_589627, JString, required = true,
                                  default = nil)
-  if valid_580598 != nil:
-    section.add "editId", valid_580598
-  var valid_580599 = path.getOrDefault("track")
-  valid_580599 = validateParameter(valid_580599, JString, required = true,
+  if valid_589627 != nil:
+    section.add "editId", valid_589627
+  var valid_589628 = path.getOrDefault("track")
+  valid_589628 = validateParameter(valid_589628, JString, required = true,
                                  default = nil)
-  if valid_580599 != nil:
-    section.add "track", valid_580599
+  if valid_589628 != nil:
+    section.add "track", valid_589628
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -6713,41 +6713,41 @@ proc validate_AndroidpublisherEditsTracksGet_580595(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580600 = query.getOrDefault("fields")
-  valid_580600 = validateParameter(valid_580600, JString, required = false,
+  var valid_589629 = query.getOrDefault("fields")
+  valid_589629 = validateParameter(valid_589629, JString, required = false,
                                  default = nil)
-  if valid_580600 != nil:
-    section.add "fields", valid_580600
-  var valid_580601 = query.getOrDefault("quotaUser")
-  valid_580601 = validateParameter(valid_580601, JString, required = false,
+  if valid_589629 != nil:
+    section.add "fields", valid_589629
+  var valid_589630 = query.getOrDefault("quotaUser")
+  valid_589630 = validateParameter(valid_589630, JString, required = false,
                                  default = nil)
-  if valid_580601 != nil:
-    section.add "quotaUser", valid_580601
-  var valid_580602 = query.getOrDefault("alt")
-  valid_580602 = validateParameter(valid_580602, JString, required = false,
+  if valid_589630 != nil:
+    section.add "quotaUser", valid_589630
+  var valid_589631 = query.getOrDefault("alt")
+  valid_589631 = validateParameter(valid_589631, JString, required = false,
                                  default = newJString("json"))
-  if valid_580602 != nil:
-    section.add "alt", valid_580602
-  var valid_580603 = query.getOrDefault("oauth_token")
-  valid_580603 = validateParameter(valid_580603, JString, required = false,
+  if valid_589631 != nil:
+    section.add "alt", valid_589631
+  var valid_589632 = query.getOrDefault("oauth_token")
+  valid_589632 = validateParameter(valid_589632, JString, required = false,
                                  default = nil)
-  if valid_580603 != nil:
-    section.add "oauth_token", valid_580603
-  var valid_580604 = query.getOrDefault("userIp")
-  valid_580604 = validateParameter(valid_580604, JString, required = false,
+  if valid_589632 != nil:
+    section.add "oauth_token", valid_589632
+  var valid_589633 = query.getOrDefault("userIp")
+  valid_589633 = validateParameter(valid_589633, JString, required = false,
                                  default = nil)
-  if valid_580604 != nil:
-    section.add "userIp", valid_580604
-  var valid_580605 = query.getOrDefault("key")
-  valid_580605 = validateParameter(valid_580605, JString, required = false,
+  if valid_589633 != nil:
+    section.add "userIp", valid_589633
+  var valid_589634 = query.getOrDefault("key")
+  valid_589634 = validateParameter(valid_589634, JString, required = false,
                                  default = nil)
-  if valid_580605 != nil:
-    section.add "key", valid_580605
-  var valid_580606 = query.getOrDefault("prettyPrint")
-  valid_580606 = validateParameter(valid_580606, JBool, required = false,
+  if valid_589634 != nil:
+    section.add "key", valid_589634
+  var valid_589635 = query.getOrDefault("prettyPrint")
+  valid_589635 = validateParameter(valid_589635, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580606 != nil:
-    section.add "prettyPrint", valid_580606
+  if valid_589635 != nil:
+    section.add "prettyPrint", valid_589635
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -6756,20 +6756,20 @@ proc validate_AndroidpublisherEditsTracksGet_580595(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580607: Call_AndroidpublisherEditsTracksGet_580594; path: JsonNode;
+proc call*(call_589636: Call_AndroidpublisherEditsTracksGet_589623; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Fetches the track configuration for the specified track type. Includes the APK version codes that are in this track.
   ## 
-  let valid = call_580607.validator(path, query, header, formData, body)
-  let scheme = call_580607.pickScheme
+  let valid = call_589636.validator(path, query, header, formData, body)
+  let scheme = call_589636.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580607.url(scheme.get, call_580607.host, call_580607.base,
-                         call_580607.route, valid.getOrDefault("path"),
+  let url = call_589636.url(scheme.get, call_589636.host, call_589636.base,
+                         call_589636.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580607, url, valid)
+  result = hook(call_589636, url, valid)
 
-proc call*(call_580608: Call_AndroidpublisherEditsTracksGet_580594;
+proc call*(call_589637: Call_AndroidpublisherEditsTracksGet_589623;
           packageName: string; editId: string; track: string; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; key: string = ""; prettyPrint: bool = true): Recallable =
@@ -6795,30 +6795,30 @@ proc call*(call_580608: Call_AndroidpublisherEditsTracksGet_580594;
   ##              : Returns response with indentations and line breaks.
   ##   track: string (required)
   ##        : The track to read or modify.
-  var path_580609 = newJObject()
-  var query_580610 = newJObject()
-  add(query_580610, "fields", newJString(fields))
-  add(path_580609, "packageName", newJString(packageName))
-  add(query_580610, "quotaUser", newJString(quotaUser))
-  add(query_580610, "alt", newJString(alt))
-  add(path_580609, "editId", newJString(editId))
-  add(query_580610, "oauth_token", newJString(oauthToken))
-  add(query_580610, "userIp", newJString(userIp))
-  add(query_580610, "key", newJString(key))
-  add(query_580610, "prettyPrint", newJBool(prettyPrint))
-  add(path_580609, "track", newJString(track))
-  result = call_580608.call(path_580609, query_580610, nil, nil, nil)
+  var path_589638 = newJObject()
+  var query_589639 = newJObject()
+  add(query_589639, "fields", newJString(fields))
+  add(path_589638, "packageName", newJString(packageName))
+  add(query_589639, "quotaUser", newJString(quotaUser))
+  add(query_589639, "alt", newJString(alt))
+  add(path_589638, "editId", newJString(editId))
+  add(query_589639, "oauth_token", newJString(oauthToken))
+  add(query_589639, "userIp", newJString(userIp))
+  add(query_589639, "key", newJString(key))
+  add(query_589639, "prettyPrint", newJBool(prettyPrint))
+  add(path_589638, "track", newJString(track))
+  result = call_589637.call(path_589638, query_589639, nil, nil, nil)
 
-var androidpublisherEditsTracksGet* = Call_AndroidpublisherEditsTracksGet_580594(
+var androidpublisherEditsTracksGet* = Call_AndroidpublisherEditsTracksGet_589623(
     name: "androidpublisherEditsTracksGet", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com",
     route: "/{packageName}/edits/{editId}/tracks/{track}",
-    validator: validate_AndroidpublisherEditsTracksGet_580595,
+    validator: validate_AndroidpublisherEditsTracksGet_589624,
     base: "/androidpublisher/v2/applications",
-    url: url_AndroidpublisherEditsTracksGet_580596, schemes: {Scheme.Https})
+    url: url_AndroidpublisherEditsTracksGet_589625, schemes: {Scheme.Https})
 type
-  Call_AndroidpublisherEditsTracksPatch_580630 = ref object of OpenApiRestCall_579421
-proc url_AndroidpublisherEditsTracksPatch_580632(protocol: Scheme; host: string;
+  Call_AndroidpublisherEditsTracksPatch_589659 = ref object of OpenApiRestCall_588450
+proc url_AndroidpublisherEditsTracksPatch_589661(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -6839,7 +6839,7 @@ proc url_AndroidpublisherEditsTracksPatch_580632(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_AndroidpublisherEditsTracksPatch_580631(path: JsonNode;
+proc validate_AndroidpublisherEditsTracksPatch_589660(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Updates the track configuration for the specified track type. This method supports patch semantics.
   ## 
@@ -6855,21 +6855,21 @@ proc validate_AndroidpublisherEditsTracksPatch_580631(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `packageName` field"
-  var valid_580633 = path.getOrDefault("packageName")
-  valid_580633 = validateParameter(valid_580633, JString, required = true,
+  var valid_589662 = path.getOrDefault("packageName")
+  valid_589662 = validateParameter(valid_589662, JString, required = true,
                                  default = nil)
-  if valid_580633 != nil:
-    section.add "packageName", valid_580633
-  var valid_580634 = path.getOrDefault("editId")
-  valid_580634 = validateParameter(valid_580634, JString, required = true,
+  if valid_589662 != nil:
+    section.add "packageName", valid_589662
+  var valid_589663 = path.getOrDefault("editId")
+  valid_589663 = validateParameter(valid_589663, JString, required = true,
                                  default = nil)
-  if valid_580634 != nil:
-    section.add "editId", valid_580634
-  var valid_580635 = path.getOrDefault("track")
-  valid_580635 = validateParameter(valid_580635, JString, required = true,
+  if valid_589663 != nil:
+    section.add "editId", valid_589663
+  var valid_589664 = path.getOrDefault("track")
+  valid_589664 = validateParameter(valid_589664, JString, required = true,
                                  default = nil)
-  if valid_580635 != nil:
-    section.add "track", valid_580635
+  if valid_589664 != nil:
+    section.add "track", valid_589664
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -6887,41 +6887,41 @@ proc validate_AndroidpublisherEditsTracksPatch_580631(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580636 = query.getOrDefault("fields")
-  valid_580636 = validateParameter(valid_580636, JString, required = false,
+  var valid_589665 = query.getOrDefault("fields")
+  valid_589665 = validateParameter(valid_589665, JString, required = false,
                                  default = nil)
-  if valid_580636 != nil:
-    section.add "fields", valid_580636
-  var valid_580637 = query.getOrDefault("quotaUser")
-  valid_580637 = validateParameter(valid_580637, JString, required = false,
+  if valid_589665 != nil:
+    section.add "fields", valid_589665
+  var valid_589666 = query.getOrDefault("quotaUser")
+  valid_589666 = validateParameter(valid_589666, JString, required = false,
                                  default = nil)
-  if valid_580637 != nil:
-    section.add "quotaUser", valid_580637
-  var valid_580638 = query.getOrDefault("alt")
-  valid_580638 = validateParameter(valid_580638, JString, required = false,
+  if valid_589666 != nil:
+    section.add "quotaUser", valid_589666
+  var valid_589667 = query.getOrDefault("alt")
+  valid_589667 = validateParameter(valid_589667, JString, required = false,
                                  default = newJString("json"))
-  if valid_580638 != nil:
-    section.add "alt", valid_580638
-  var valid_580639 = query.getOrDefault("oauth_token")
-  valid_580639 = validateParameter(valid_580639, JString, required = false,
+  if valid_589667 != nil:
+    section.add "alt", valid_589667
+  var valid_589668 = query.getOrDefault("oauth_token")
+  valid_589668 = validateParameter(valid_589668, JString, required = false,
                                  default = nil)
-  if valid_580639 != nil:
-    section.add "oauth_token", valid_580639
-  var valid_580640 = query.getOrDefault("userIp")
-  valid_580640 = validateParameter(valid_580640, JString, required = false,
+  if valid_589668 != nil:
+    section.add "oauth_token", valid_589668
+  var valid_589669 = query.getOrDefault("userIp")
+  valid_589669 = validateParameter(valid_589669, JString, required = false,
                                  default = nil)
-  if valid_580640 != nil:
-    section.add "userIp", valid_580640
-  var valid_580641 = query.getOrDefault("key")
-  valid_580641 = validateParameter(valid_580641, JString, required = false,
+  if valid_589669 != nil:
+    section.add "userIp", valid_589669
+  var valid_589670 = query.getOrDefault("key")
+  valid_589670 = validateParameter(valid_589670, JString, required = false,
                                  default = nil)
-  if valid_580641 != nil:
-    section.add "key", valid_580641
-  var valid_580642 = query.getOrDefault("prettyPrint")
-  valid_580642 = validateParameter(valid_580642, JBool, required = false,
+  if valid_589670 != nil:
+    section.add "key", valid_589670
+  var valid_589671 = query.getOrDefault("prettyPrint")
+  valid_589671 = validateParameter(valid_589671, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580642 != nil:
-    section.add "prettyPrint", valid_580642
+  if valid_589671 != nil:
+    section.add "prettyPrint", valid_589671
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -6933,21 +6933,21 @@ proc validate_AndroidpublisherEditsTracksPatch_580631(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580644: Call_AndroidpublisherEditsTracksPatch_580630;
+proc call*(call_589673: Call_AndroidpublisherEditsTracksPatch_589659;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Updates the track configuration for the specified track type. This method supports patch semantics.
   ## 
-  let valid = call_580644.validator(path, query, header, formData, body)
-  let scheme = call_580644.pickScheme
+  let valid = call_589673.validator(path, query, header, formData, body)
+  let scheme = call_589673.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580644.url(scheme.get, call_580644.host, call_580644.base,
-                         call_580644.route, valid.getOrDefault("path"),
+  let url = call_589673.url(scheme.get, call_589673.host, call_589673.base,
+                         call_589673.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580644, url, valid)
+  result = hook(call_589673, url, valid)
 
-proc call*(call_580645: Call_AndroidpublisherEditsTracksPatch_580630;
+proc call*(call_589674: Call_AndroidpublisherEditsTracksPatch_589659;
           packageName: string; editId: string; track: string; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; key: string = ""; body: JsonNode = nil;
@@ -6975,33 +6975,33 @@ proc call*(call_580645: Call_AndroidpublisherEditsTracksPatch_580630;
   ##              : Returns response with indentations and line breaks.
   ##   track: string (required)
   ##        : The track to read or modify.
-  var path_580646 = newJObject()
-  var query_580647 = newJObject()
-  var body_580648 = newJObject()
-  add(query_580647, "fields", newJString(fields))
-  add(path_580646, "packageName", newJString(packageName))
-  add(query_580647, "quotaUser", newJString(quotaUser))
-  add(query_580647, "alt", newJString(alt))
-  add(path_580646, "editId", newJString(editId))
-  add(query_580647, "oauth_token", newJString(oauthToken))
-  add(query_580647, "userIp", newJString(userIp))
-  add(query_580647, "key", newJString(key))
+  var path_589675 = newJObject()
+  var query_589676 = newJObject()
+  var body_589677 = newJObject()
+  add(query_589676, "fields", newJString(fields))
+  add(path_589675, "packageName", newJString(packageName))
+  add(query_589676, "quotaUser", newJString(quotaUser))
+  add(query_589676, "alt", newJString(alt))
+  add(path_589675, "editId", newJString(editId))
+  add(query_589676, "oauth_token", newJString(oauthToken))
+  add(query_589676, "userIp", newJString(userIp))
+  add(query_589676, "key", newJString(key))
   if body != nil:
-    body_580648 = body
-  add(query_580647, "prettyPrint", newJBool(prettyPrint))
-  add(path_580646, "track", newJString(track))
-  result = call_580645.call(path_580646, query_580647, nil, nil, body_580648)
+    body_589677 = body
+  add(query_589676, "prettyPrint", newJBool(prettyPrint))
+  add(path_589675, "track", newJString(track))
+  result = call_589674.call(path_589675, query_589676, nil, nil, body_589677)
 
-var androidpublisherEditsTracksPatch* = Call_AndroidpublisherEditsTracksPatch_580630(
+var androidpublisherEditsTracksPatch* = Call_AndroidpublisherEditsTracksPatch_589659(
     name: "androidpublisherEditsTracksPatch", meth: HttpMethod.HttpPatch,
     host: "www.googleapis.com",
     route: "/{packageName}/edits/{editId}/tracks/{track}",
-    validator: validate_AndroidpublisherEditsTracksPatch_580631,
+    validator: validate_AndroidpublisherEditsTracksPatch_589660,
     base: "/androidpublisher/v2/applications",
-    url: url_AndroidpublisherEditsTracksPatch_580632, schemes: {Scheme.Https})
+    url: url_AndroidpublisherEditsTracksPatch_589661, schemes: {Scheme.Https})
 type
-  Call_AndroidpublisherEditsCommit_580649 = ref object of OpenApiRestCall_579421
-proc url_AndroidpublisherEditsCommit_580651(protocol: Scheme; host: string;
+  Call_AndroidpublisherEditsCommit_589678 = ref object of OpenApiRestCall_588450
+proc url_AndroidpublisherEditsCommit_589680(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -7020,7 +7020,7 @@ proc url_AndroidpublisherEditsCommit_580651(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_AndroidpublisherEditsCommit_580650(path: JsonNode; query: JsonNode;
+proc validate_AndroidpublisherEditsCommit_589679(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Commits/applies the changes made in this edit back to the app.
   ## 
@@ -7034,16 +7034,16 @@ proc validate_AndroidpublisherEditsCommit_580650(path: JsonNode; query: JsonNode
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `packageName` field"
-  var valid_580652 = path.getOrDefault("packageName")
-  valid_580652 = validateParameter(valid_580652, JString, required = true,
+  var valid_589681 = path.getOrDefault("packageName")
+  valid_589681 = validateParameter(valid_589681, JString, required = true,
                                  default = nil)
-  if valid_580652 != nil:
-    section.add "packageName", valid_580652
-  var valid_580653 = path.getOrDefault("editId")
-  valid_580653 = validateParameter(valid_580653, JString, required = true,
+  if valid_589681 != nil:
+    section.add "packageName", valid_589681
+  var valid_589682 = path.getOrDefault("editId")
+  valid_589682 = validateParameter(valid_589682, JString, required = true,
                                  default = nil)
-  if valid_580653 != nil:
-    section.add "editId", valid_580653
+  if valid_589682 != nil:
+    section.add "editId", valid_589682
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -7061,41 +7061,41 @@ proc validate_AndroidpublisherEditsCommit_580650(path: JsonNode; query: JsonNode
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580654 = query.getOrDefault("fields")
-  valid_580654 = validateParameter(valid_580654, JString, required = false,
+  var valid_589683 = query.getOrDefault("fields")
+  valid_589683 = validateParameter(valid_589683, JString, required = false,
                                  default = nil)
-  if valid_580654 != nil:
-    section.add "fields", valid_580654
-  var valid_580655 = query.getOrDefault("quotaUser")
-  valid_580655 = validateParameter(valid_580655, JString, required = false,
+  if valid_589683 != nil:
+    section.add "fields", valid_589683
+  var valid_589684 = query.getOrDefault("quotaUser")
+  valid_589684 = validateParameter(valid_589684, JString, required = false,
                                  default = nil)
-  if valid_580655 != nil:
-    section.add "quotaUser", valid_580655
-  var valid_580656 = query.getOrDefault("alt")
-  valid_580656 = validateParameter(valid_580656, JString, required = false,
+  if valid_589684 != nil:
+    section.add "quotaUser", valid_589684
+  var valid_589685 = query.getOrDefault("alt")
+  valid_589685 = validateParameter(valid_589685, JString, required = false,
                                  default = newJString("json"))
-  if valid_580656 != nil:
-    section.add "alt", valid_580656
-  var valid_580657 = query.getOrDefault("oauth_token")
-  valid_580657 = validateParameter(valid_580657, JString, required = false,
+  if valid_589685 != nil:
+    section.add "alt", valid_589685
+  var valid_589686 = query.getOrDefault("oauth_token")
+  valid_589686 = validateParameter(valid_589686, JString, required = false,
                                  default = nil)
-  if valid_580657 != nil:
-    section.add "oauth_token", valid_580657
-  var valid_580658 = query.getOrDefault("userIp")
-  valid_580658 = validateParameter(valid_580658, JString, required = false,
+  if valid_589686 != nil:
+    section.add "oauth_token", valid_589686
+  var valid_589687 = query.getOrDefault("userIp")
+  valid_589687 = validateParameter(valid_589687, JString, required = false,
                                  default = nil)
-  if valid_580658 != nil:
-    section.add "userIp", valid_580658
-  var valid_580659 = query.getOrDefault("key")
-  valid_580659 = validateParameter(valid_580659, JString, required = false,
+  if valid_589687 != nil:
+    section.add "userIp", valid_589687
+  var valid_589688 = query.getOrDefault("key")
+  valid_589688 = validateParameter(valid_589688, JString, required = false,
                                  default = nil)
-  if valid_580659 != nil:
-    section.add "key", valid_580659
-  var valid_580660 = query.getOrDefault("prettyPrint")
-  valid_580660 = validateParameter(valid_580660, JBool, required = false,
+  if valid_589688 != nil:
+    section.add "key", valid_589688
+  var valid_589689 = query.getOrDefault("prettyPrint")
+  valid_589689 = validateParameter(valid_589689, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580660 != nil:
-    section.add "prettyPrint", valid_580660
+  if valid_589689 != nil:
+    section.add "prettyPrint", valid_589689
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -7104,20 +7104,20 @@ proc validate_AndroidpublisherEditsCommit_580650(path: JsonNode; query: JsonNode
   if body != nil:
     result.add "body", body
 
-proc call*(call_580661: Call_AndroidpublisherEditsCommit_580649; path: JsonNode;
+proc call*(call_589690: Call_AndroidpublisherEditsCommit_589678; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Commits/applies the changes made in this edit back to the app.
   ## 
-  let valid = call_580661.validator(path, query, header, formData, body)
-  let scheme = call_580661.pickScheme
+  let valid = call_589690.validator(path, query, header, formData, body)
+  let scheme = call_589690.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580661.url(scheme.get, call_580661.host, call_580661.base,
-                         call_580661.route, valid.getOrDefault("path"),
+  let url = call_589690.url(scheme.get, call_589690.host, call_589690.base,
+                         call_589690.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580661, url, valid)
+  result = hook(call_589690, url, valid)
 
-proc call*(call_580662: Call_AndroidpublisherEditsCommit_580649;
+proc call*(call_589691: Call_AndroidpublisherEditsCommit_589678;
           packageName: string; editId: string; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; key: string = ""; prettyPrint: bool = true): Recallable =
@@ -7141,28 +7141,28 @@ proc call*(call_580662: Call_AndroidpublisherEditsCommit_580649;
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_580663 = newJObject()
-  var query_580664 = newJObject()
-  add(query_580664, "fields", newJString(fields))
-  add(path_580663, "packageName", newJString(packageName))
-  add(query_580664, "quotaUser", newJString(quotaUser))
-  add(query_580664, "alt", newJString(alt))
-  add(path_580663, "editId", newJString(editId))
-  add(query_580664, "oauth_token", newJString(oauthToken))
-  add(query_580664, "userIp", newJString(userIp))
-  add(query_580664, "key", newJString(key))
-  add(query_580664, "prettyPrint", newJBool(prettyPrint))
-  result = call_580662.call(path_580663, query_580664, nil, nil, nil)
+  var path_589692 = newJObject()
+  var query_589693 = newJObject()
+  add(query_589693, "fields", newJString(fields))
+  add(path_589692, "packageName", newJString(packageName))
+  add(query_589693, "quotaUser", newJString(quotaUser))
+  add(query_589693, "alt", newJString(alt))
+  add(path_589692, "editId", newJString(editId))
+  add(query_589693, "oauth_token", newJString(oauthToken))
+  add(query_589693, "userIp", newJString(userIp))
+  add(query_589693, "key", newJString(key))
+  add(query_589693, "prettyPrint", newJBool(prettyPrint))
+  result = call_589691.call(path_589692, query_589693, nil, nil, nil)
 
-var androidpublisherEditsCommit* = Call_AndroidpublisherEditsCommit_580649(
+var androidpublisherEditsCommit* = Call_AndroidpublisherEditsCommit_589678(
     name: "androidpublisherEditsCommit", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com", route: "/{packageName}/edits/{editId}:commit",
-    validator: validate_AndroidpublisherEditsCommit_580650,
+    validator: validate_AndroidpublisherEditsCommit_589679,
     base: "/androidpublisher/v2/applications",
-    url: url_AndroidpublisherEditsCommit_580651, schemes: {Scheme.Https})
+    url: url_AndroidpublisherEditsCommit_589680, schemes: {Scheme.Https})
 type
-  Call_AndroidpublisherEditsValidate_580665 = ref object of OpenApiRestCall_579421
-proc url_AndroidpublisherEditsValidate_580667(protocol: Scheme; host: string;
+  Call_AndroidpublisherEditsValidate_589694 = ref object of OpenApiRestCall_588450
+proc url_AndroidpublisherEditsValidate_589696(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -7181,7 +7181,7 @@ proc url_AndroidpublisherEditsValidate_580667(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_AndroidpublisherEditsValidate_580666(path: JsonNode; query: JsonNode;
+proc validate_AndroidpublisherEditsValidate_589695(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Checks that the edit can be successfully committed. The edit's changes are not applied to the live app.
   ## 
@@ -7195,16 +7195,16 @@ proc validate_AndroidpublisherEditsValidate_580666(path: JsonNode; query: JsonNo
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `packageName` field"
-  var valid_580668 = path.getOrDefault("packageName")
-  valid_580668 = validateParameter(valid_580668, JString, required = true,
+  var valid_589697 = path.getOrDefault("packageName")
+  valid_589697 = validateParameter(valid_589697, JString, required = true,
                                  default = nil)
-  if valid_580668 != nil:
-    section.add "packageName", valid_580668
-  var valid_580669 = path.getOrDefault("editId")
-  valid_580669 = validateParameter(valid_580669, JString, required = true,
+  if valid_589697 != nil:
+    section.add "packageName", valid_589697
+  var valid_589698 = path.getOrDefault("editId")
+  valid_589698 = validateParameter(valid_589698, JString, required = true,
                                  default = nil)
-  if valid_580669 != nil:
-    section.add "editId", valid_580669
+  if valid_589698 != nil:
+    section.add "editId", valid_589698
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -7222,41 +7222,41 @@ proc validate_AndroidpublisherEditsValidate_580666(path: JsonNode; query: JsonNo
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580670 = query.getOrDefault("fields")
-  valid_580670 = validateParameter(valid_580670, JString, required = false,
+  var valid_589699 = query.getOrDefault("fields")
+  valid_589699 = validateParameter(valid_589699, JString, required = false,
                                  default = nil)
-  if valid_580670 != nil:
-    section.add "fields", valid_580670
-  var valid_580671 = query.getOrDefault("quotaUser")
-  valid_580671 = validateParameter(valid_580671, JString, required = false,
+  if valid_589699 != nil:
+    section.add "fields", valid_589699
+  var valid_589700 = query.getOrDefault("quotaUser")
+  valid_589700 = validateParameter(valid_589700, JString, required = false,
                                  default = nil)
-  if valid_580671 != nil:
-    section.add "quotaUser", valid_580671
-  var valid_580672 = query.getOrDefault("alt")
-  valid_580672 = validateParameter(valid_580672, JString, required = false,
+  if valid_589700 != nil:
+    section.add "quotaUser", valid_589700
+  var valid_589701 = query.getOrDefault("alt")
+  valid_589701 = validateParameter(valid_589701, JString, required = false,
                                  default = newJString("json"))
-  if valid_580672 != nil:
-    section.add "alt", valid_580672
-  var valid_580673 = query.getOrDefault("oauth_token")
-  valid_580673 = validateParameter(valid_580673, JString, required = false,
+  if valid_589701 != nil:
+    section.add "alt", valid_589701
+  var valid_589702 = query.getOrDefault("oauth_token")
+  valid_589702 = validateParameter(valid_589702, JString, required = false,
                                  default = nil)
-  if valid_580673 != nil:
-    section.add "oauth_token", valid_580673
-  var valid_580674 = query.getOrDefault("userIp")
-  valid_580674 = validateParameter(valid_580674, JString, required = false,
+  if valid_589702 != nil:
+    section.add "oauth_token", valid_589702
+  var valid_589703 = query.getOrDefault("userIp")
+  valid_589703 = validateParameter(valid_589703, JString, required = false,
                                  default = nil)
-  if valid_580674 != nil:
-    section.add "userIp", valid_580674
-  var valid_580675 = query.getOrDefault("key")
-  valid_580675 = validateParameter(valid_580675, JString, required = false,
+  if valid_589703 != nil:
+    section.add "userIp", valid_589703
+  var valid_589704 = query.getOrDefault("key")
+  valid_589704 = validateParameter(valid_589704, JString, required = false,
                                  default = nil)
-  if valid_580675 != nil:
-    section.add "key", valid_580675
-  var valid_580676 = query.getOrDefault("prettyPrint")
-  valid_580676 = validateParameter(valid_580676, JBool, required = false,
+  if valid_589704 != nil:
+    section.add "key", valid_589704
+  var valid_589705 = query.getOrDefault("prettyPrint")
+  valid_589705 = validateParameter(valid_589705, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580676 != nil:
-    section.add "prettyPrint", valid_580676
+  if valid_589705 != nil:
+    section.add "prettyPrint", valid_589705
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -7265,20 +7265,20 @@ proc validate_AndroidpublisherEditsValidate_580666(path: JsonNode; query: JsonNo
   if body != nil:
     result.add "body", body
 
-proc call*(call_580677: Call_AndroidpublisherEditsValidate_580665; path: JsonNode;
+proc call*(call_589706: Call_AndroidpublisherEditsValidate_589694; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Checks that the edit can be successfully committed. The edit's changes are not applied to the live app.
   ## 
-  let valid = call_580677.validator(path, query, header, formData, body)
-  let scheme = call_580677.pickScheme
+  let valid = call_589706.validator(path, query, header, formData, body)
+  let scheme = call_589706.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580677.url(scheme.get, call_580677.host, call_580677.base,
-                         call_580677.route, valid.getOrDefault("path"),
+  let url = call_589706.url(scheme.get, call_589706.host, call_589706.base,
+                         call_589706.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580677, url, valid)
+  result = hook(call_589706, url, valid)
 
-proc call*(call_580678: Call_AndroidpublisherEditsValidate_580665;
+proc call*(call_589707: Call_AndroidpublisherEditsValidate_589694;
           packageName: string; editId: string; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; key: string = ""; prettyPrint: bool = true): Recallable =
@@ -7302,28 +7302,28 @@ proc call*(call_580678: Call_AndroidpublisherEditsValidate_580665;
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_580679 = newJObject()
-  var query_580680 = newJObject()
-  add(query_580680, "fields", newJString(fields))
-  add(path_580679, "packageName", newJString(packageName))
-  add(query_580680, "quotaUser", newJString(quotaUser))
-  add(query_580680, "alt", newJString(alt))
-  add(path_580679, "editId", newJString(editId))
-  add(query_580680, "oauth_token", newJString(oauthToken))
-  add(query_580680, "userIp", newJString(userIp))
-  add(query_580680, "key", newJString(key))
-  add(query_580680, "prettyPrint", newJBool(prettyPrint))
-  result = call_580678.call(path_580679, query_580680, nil, nil, nil)
+  var path_589708 = newJObject()
+  var query_589709 = newJObject()
+  add(query_589709, "fields", newJString(fields))
+  add(path_589708, "packageName", newJString(packageName))
+  add(query_589709, "quotaUser", newJString(quotaUser))
+  add(query_589709, "alt", newJString(alt))
+  add(path_589708, "editId", newJString(editId))
+  add(query_589709, "oauth_token", newJString(oauthToken))
+  add(query_589709, "userIp", newJString(userIp))
+  add(query_589709, "key", newJString(key))
+  add(query_589709, "prettyPrint", newJBool(prettyPrint))
+  result = call_589707.call(path_589708, query_589709, nil, nil, nil)
 
-var androidpublisherEditsValidate* = Call_AndroidpublisherEditsValidate_580665(
+var androidpublisherEditsValidate* = Call_AndroidpublisherEditsValidate_589694(
     name: "androidpublisherEditsValidate", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com", route: "/{packageName}/edits/{editId}:validate",
-    validator: validate_AndroidpublisherEditsValidate_580666,
+    validator: validate_AndroidpublisherEditsValidate_589695,
     base: "/androidpublisher/v2/applications",
-    url: url_AndroidpublisherEditsValidate_580667, schemes: {Scheme.Https})
+    url: url_AndroidpublisherEditsValidate_589696, schemes: {Scheme.Https})
 type
-  Call_AndroidpublisherInappproductsInsert_580699 = ref object of OpenApiRestCall_579421
-proc url_AndroidpublisherInappproductsInsert_580701(protocol: Scheme; host: string;
+  Call_AndroidpublisherInappproductsInsert_589728 = ref object of OpenApiRestCall_588450
+proc url_AndroidpublisherInappproductsInsert_589730(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -7339,7 +7339,7 @@ proc url_AndroidpublisherInappproductsInsert_580701(protocol: Scheme; host: stri
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_AndroidpublisherInappproductsInsert_580700(path: JsonNode;
+proc validate_AndroidpublisherInappproductsInsert_589729(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Creates a new in-app product for an app.
   ## 
@@ -7351,11 +7351,11 @@ proc validate_AndroidpublisherInappproductsInsert_580700(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `packageName` field"
-  var valid_580702 = path.getOrDefault("packageName")
-  valid_580702 = validateParameter(valid_580702, JString, required = true,
+  var valid_589731 = path.getOrDefault("packageName")
+  valid_589731 = validateParameter(valid_589731, JString, required = true,
                                  default = nil)
-  if valid_580702 != nil:
-    section.add "packageName", valid_580702
+  if valid_589731 != nil:
+    section.add "packageName", valid_589731
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -7375,45 +7375,45 @@ proc validate_AndroidpublisherInappproductsInsert_580700(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580703 = query.getOrDefault("fields")
-  valid_580703 = validateParameter(valid_580703, JString, required = false,
+  var valid_589732 = query.getOrDefault("fields")
+  valid_589732 = validateParameter(valid_589732, JString, required = false,
                                  default = nil)
-  if valid_580703 != nil:
-    section.add "fields", valid_580703
-  var valid_580704 = query.getOrDefault("quotaUser")
-  valid_580704 = validateParameter(valid_580704, JString, required = false,
+  if valid_589732 != nil:
+    section.add "fields", valid_589732
+  var valid_589733 = query.getOrDefault("quotaUser")
+  valid_589733 = validateParameter(valid_589733, JString, required = false,
                                  default = nil)
-  if valid_580704 != nil:
-    section.add "quotaUser", valid_580704
-  var valid_580705 = query.getOrDefault("alt")
-  valid_580705 = validateParameter(valid_580705, JString, required = false,
+  if valid_589733 != nil:
+    section.add "quotaUser", valid_589733
+  var valid_589734 = query.getOrDefault("alt")
+  valid_589734 = validateParameter(valid_589734, JString, required = false,
                                  default = newJString("json"))
-  if valid_580705 != nil:
-    section.add "alt", valid_580705
-  var valid_580706 = query.getOrDefault("oauth_token")
-  valid_580706 = validateParameter(valid_580706, JString, required = false,
+  if valid_589734 != nil:
+    section.add "alt", valid_589734
+  var valid_589735 = query.getOrDefault("oauth_token")
+  valid_589735 = validateParameter(valid_589735, JString, required = false,
                                  default = nil)
-  if valid_580706 != nil:
-    section.add "oauth_token", valid_580706
-  var valid_580707 = query.getOrDefault("userIp")
-  valid_580707 = validateParameter(valid_580707, JString, required = false,
+  if valid_589735 != nil:
+    section.add "oauth_token", valid_589735
+  var valid_589736 = query.getOrDefault("userIp")
+  valid_589736 = validateParameter(valid_589736, JString, required = false,
                                  default = nil)
-  if valid_580707 != nil:
-    section.add "userIp", valid_580707
-  var valid_580708 = query.getOrDefault("key")
-  valid_580708 = validateParameter(valid_580708, JString, required = false,
+  if valid_589736 != nil:
+    section.add "userIp", valid_589736
+  var valid_589737 = query.getOrDefault("key")
+  valid_589737 = validateParameter(valid_589737, JString, required = false,
                                  default = nil)
-  if valid_580708 != nil:
-    section.add "key", valid_580708
-  var valid_580709 = query.getOrDefault("autoConvertMissingPrices")
-  valid_580709 = validateParameter(valid_580709, JBool, required = false, default = nil)
-  if valid_580709 != nil:
-    section.add "autoConvertMissingPrices", valid_580709
-  var valid_580710 = query.getOrDefault("prettyPrint")
-  valid_580710 = validateParameter(valid_580710, JBool, required = false,
+  if valid_589737 != nil:
+    section.add "key", valid_589737
+  var valid_589738 = query.getOrDefault("autoConvertMissingPrices")
+  valid_589738 = validateParameter(valid_589738, JBool, required = false, default = nil)
+  if valid_589738 != nil:
+    section.add "autoConvertMissingPrices", valid_589738
+  var valid_589739 = query.getOrDefault("prettyPrint")
+  valid_589739 = validateParameter(valid_589739, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580710 != nil:
-    section.add "prettyPrint", valid_580710
+  if valid_589739 != nil:
+    section.add "prettyPrint", valid_589739
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -7425,21 +7425,21 @@ proc validate_AndroidpublisherInappproductsInsert_580700(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580712: Call_AndroidpublisherInappproductsInsert_580699;
+proc call*(call_589741: Call_AndroidpublisherInappproductsInsert_589728;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Creates a new in-app product for an app.
   ## 
-  let valid = call_580712.validator(path, query, header, formData, body)
-  let scheme = call_580712.pickScheme
+  let valid = call_589741.validator(path, query, header, formData, body)
+  let scheme = call_589741.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580712.url(scheme.get, call_580712.host, call_580712.base,
-                         call_580712.route, valid.getOrDefault("path"),
+  let url = call_589741.url(scheme.get, call_589741.host, call_589741.base,
+                         call_589741.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580712, url, valid)
+  result = hook(call_589741, url, valid)
 
-proc call*(call_580713: Call_AndroidpublisherInappproductsInsert_580699;
+proc call*(call_589742: Call_AndroidpublisherInappproductsInsert_589728;
           packageName: string; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; userIp: string = "";
           key: string = ""; autoConvertMissingPrices: bool = false;
@@ -7465,31 +7465,31 @@ proc call*(call_580713: Call_AndroidpublisherInappproductsInsert_580699;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_580714 = newJObject()
-  var query_580715 = newJObject()
-  var body_580716 = newJObject()
-  add(query_580715, "fields", newJString(fields))
-  add(path_580714, "packageName", newJString(packageName))
-  add(query_580715, "quotaUser", newJString(quotaUser))
-  add(query_580715, "alt", newJString(alt))
-  add(query_580715, "oauth_token", newJString(oauthToken))
-  add(query_580715, "userIp", newJString(userIp))
-  add(query_580715, "key", newJString(key))
-  add(query_580715, "autoConvertMissingPrices", newJBool(autoConvertMissingPrices))
+  var path_589743 = newJObject()
+  var query_589744 = newJObject()
+  var body_589745 = newJObject()
+  add(query_589744, "fields", newJString(fields))
+  add(path_589743, "packageName", newJString(packageName))
+  add(query_589744, "quotaUser", newJString(quotaUser))
+  add(query_589744, "alt", newJString(alt))
+  add(query_589744, "oauth_token", newJString(oauthToken))
+  add(query_589744, "userIp", newJString(userIp))
+  add(query_589744, "key", newJString(key))
+  add(query_589744, "autoConvertMissingPrices", newJBool(autoConvertMissingPrices))
   if body != nil:
-    body_580716 = body
-  add(query_580715, "prettyPrint", newJBool(prettyPrint))
-  result = call_580713.call(path_580714, query_580715, nil, nil, body_580716)
+    body_589745 = body
+  add(query_589744, "prettyPrint", newJBool(prettyPrint))
+  result = call_589742.call(path_589743, query_589744, nil, nil, body_589745)
 
-var androidpublisherInappproductsInsert* = Call_AndroidpublisherInappproductsInsert_580699(
+var androidpublisherInappproductsInsert* = Call_AndroidpublisherInappproductsInsert_589728(
     name: "androidpublisherInappproductsInsert", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com", route: "/{packageName}/inappproducts",
-    validator: validate_AndroidpublisherInappproductsInsert_580700,
+    validator: validate_AndroidpublisherInappproductsInsert_589729,
     base: "/androidpublisher/v2/applications",
-    url: url_AndroidpublisherInappproductsInsert_580701, schemes: {Scheme.Https})
+    url: url_AndroidpublisherInappproductsInsert_589730, schemes: {Scheme.Https})
 type
-  Call_AndroidpublisherInappproductsList_580681 = ref object of OpenApiRestCall_579421
-proc url_AndroidpublisherInappproductsList_580683(protocol: Scheme; host: string;
+  Call_AndroidpublisherInappproductsList_589710 = ref object of OpenApiRestCall_588450
+proc url_AndroidpublisherInappproductsList_589712(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -7505,7 +7505,7 @@ proc url_AndroidpublisherInappproductsList_580683(protocol: Scheme; host: string
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_AndroidpublisherInappproductsList_580682(path: JsonNode;
+proc validate_AndroidpublisherInappproductsList_589711(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## List all the in-app products for an Android app, both subscriptions and managed in-app products..
   ## 
@@ -7517,11 +7517,11 @@ proc validate_AndroidpublisherInappproductsList_580682(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `packageName` field"
-  var valid_580684 = path.getOrDefault("packageName")
-  valid_580684 = validateParameter(valid_580684, JString, required = true,
+  var valid_589713 = path.getOrDefault("packageName")
+  valid_589713 = validateParameter(valid_589713, JString, required = true,
                                  default = nil)
-  if valid_580684 != nil:
-    section.add "packageName", valid_580684
+  if valid_589713 != nil:
+    section.add "packageName", valid_589713
   result.add "path", section
   ## parameters in `query` object:
   ##   token: JString
@@ -7542,54 +7542,54 @@ proc validate_AndroidpublisherInappproductsList_580682(path: JsonNode;
   ##              : Returns response with indentations and line breaks.
   ##   startIndex: JInt
   section = newJObject()
-  var valid_580685 = query.getOrDefault("token")
-  valid_580685 = validateParameter(valid_580685, JString, required = false,
+  var valid_589714 = query.getOrDefault("token")
+  valid_589714 = validateParameter(valid_589714, JString, required = false,
                                  default = nil)
-  if valid_580685 != nil:
-    section.add "token", valid_580685
-  var valid_580686 = query.getOrDefault("fields")
-  valid_580686 = validateParameter(valid_580686, JString, required = false,
+  if valid_589714 != nil:
+    section.add "token", valid_589714
+  var valid_589715 = query.getOrDefault("fields")
+  valid_589715 = validateParameter(valid_589715, JString, required = false,
                                  default = nil)
-  if valid_580686 != nil:
-    section.add "fields", valid_580686
-  var valid_580687 = query.getOrDefault("quotaUser")
-  valid_580687 = validateParameter(valid_580687, JString, required = false,
+  if valid_589715 != nil:
+    section.add "fields", valid_589715
+  var valid_589716 = query.getOrDefault("quotaUser")
+  valid_589716 = validateParameter(valid_589716, JString, required = false,
                                  default = nil)
-  if valid_580687 != nil:
-    section.add "quotaUser", valid_580687
-  var valid_580688 = query.getOrDefault("alt")
-  valid_580688 = validateParameter(valid_580688, JString, required = false,
+  if valid_589716 != nil:
+    section.add "quotaUser", valid_589716
+  var valid_589717 = query.getOrDefault("alt")
+  valid_589717 = validateParameter(valid_589717, JString, required = false,
                                  default = newJString("json"))
-  if valid_580688 != nil:
-    section.add "alt", valid_580688
-  var valid_580689 = query.getOrDefault("oauth_token")
-  valid_580689 = validateParameter(valid_580689, JString, required = false,
+  if valid_589717 != nil:
+    section.add "alt", valid_589717
+  var valid_589718 = query.getOrDefault("oauth_token")
+  valid_589718 = validateParameter(valid_589718, JString, required = false,
                                  default = nil)
-  if valid_580689 != nil:
-    section.add "oauth_token", valid_580689
-  var valid_580690 = query.getOrDefault("userIp")
-  valid_580690 = validateParameter(valid_580690, JString, required = false,
+  if valid_589718 != nil:
+    section.add "oauth_token", valid_589718
+  var valid_589719 = query.getOrDefault("userIp")
+  valid_589719 = validateParameter(valid_589719, JString, required = false,
                                  default = nil)
-  if valid_580690 != nil:
-    section.add "userIp", valid_580690
-  var valid_580691 = query.getOrDefault("maxResults")
-  valid_580691 = validateParameter(valid_580691, JInt, required = false, default = nil)
-  if valid_580691 != nil:
-    section.add "maxResults", valid_580691
-  var valid_580692 = query.getOrDefault("key")
-  valid_580692 = validateParameter(valid_580692, JString, required = false,
+  if valid_589719 != nil:
+    section.add "userIp", valid_589719
+  var valid_589720 = query.getOrDefault("maxResults")
+  valid_589720 = validateParameter(valid_589720, JInt, required = false, default = nil)
+  if valid_589720 != nil:
+    section.add "maxResults", valid_589720
+  var valid_589721 = query.getOrDefault("key")
+  valid_589721 = validateParameter(valid_589721, JString, required = false,
                                  default = nil)
-  if valid_580692 != nil:
-    section.add "key", valid_580692
-  var valid_580693 = query.getOrDefault("prettyPrint")
-  valid_580693 = validateParameter(valid_580693, JBool, required = false,
+  if valid_589721 != nil:
+    section.add "key", valid_589721
+  var valid_589722 = query.getOrDefault("prettyPrint")
+  valid_589722 = validateParameter(valid_589722, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580693 != nil:
-    section.add "prettyPrint", valid_580693
-  var valid_580694 = query.getOrDefault("startIndex")
-  valid_580694 = validateParameter(valid_580694, JInt, required = false, default = nil)
-  if valid_580694 != nil:
-    section.add "startIndex", valid_580694
+  if valid_589722 != nil:
+    section.add "prettyPrint", valid_589722
+  var valid_589723 = query.getOrDefault("startIndex")
+  valid_589723 = validateParameter(valid_589723, JInt, required = false, default = nil)
+  if valid_589723 != nil:
+    section.add "startIndex", valid_589723
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -7598,21 +7598,21 @@ proc validate_AndroidpublisherInappproductsList_580682(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580695: Call_AndroidpublisherInappproductsList_580681;
+proc call*(call_589724: Call_AndroidpublisherInappproductsList_589710;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## List all the in-app products for an Android app, both subscriptions and managed in-app products..
   ## 
-  let valid = call_580695.validator(path, query, header, formData, body)
-  let scheme = call_580695.pickScheme
+  let valid = call_589724.validator(path, query, header, formData, body)
+  let scheme = call_589724.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580695.url(scheme.get, call_580695.host, call_580695.base,
-                         call_580695.route, valid.getOrDefault("path"),
+  let url = call_589724.url(scheme.get, call_589724.host, call_589724.base,
+                         call_589724.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580695, url, valid)
+  result = hook(call_589724, url, valid)
 
-proc call*(call_580696: Call_AndroidpublisherInappproductsList_580681;
+proc call*(call_589725: Call_AndroidpublisherInappproductsList_589710;
           packageName: string; token: string = ""; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; maxResults: int = 0; key: string = "";
@@ -7638,30 +7638,30 @@ proc call*(call_580696: Call_AndroidpublisherInappproductsList_580681;
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
   ##   startIndex: int
-  var path_580697 = newJObject()
-  var query_580698 = newJObject()
-  add(query_580698, "token", newJString(token))
-  add(query_580698, "fields", newJString(fields))
-  add(path_580697, "packageName", newJString(packageName))
-  add(query_580698, "quotaUser", newJString(quotaUser))
-  add(query_580698, "alt", newJString(alt))
-  add(query_580698, "oauth_token", newJString(oauthToken))
-  add(query_580698, "userIp", newJString(userIp))
-  add(query_580698, "maxResults", newJInt(maxResults))
-  add(query_580698, "key", newJString(key))
-  add(query_580698, "prettyPrint", newJBool(prettyPrint))
-  add(query_580698, "startIndex", newJInt(startIndex))
-  result = call_580696.call(path_580697, query_580698, nil, nil, nil)
+  var path_589726 = newJObject()
+  var query_589727 = newJObject()
+  add(query_589727, "token", newJString(token))
+  add(query_589727, "fields", newJString(fields))
+  add(path_589726, "packageName", newJString(packageName))
+  add(query_589727, "quotaUser", newJString(quotaUser))
+  add(query_589727, "alt", newJString(alt))
+  add(query_589727, "oauth_token", newJString(oauthToken))
+  add(query_589727, "userIp", newJString(userIp))
+  add(query_589727, "maxResults", newJInt(maxResults))
+  add(query_589727, "key", newJString(key))
+  add(query_589727, "prettyPrint", newJBool(prettyPrint))
+  add(query_589727, "startIndex", newJInt(startIndex))
+  result = call_589725.call(path_589726, query_589727, nil, nil, nil)
 
-var androidpublisherInappproductsList* = Call_AndroidpublisherInappproductsList_580681(
+var androidpublisherInappproductsList* = Call_AndroidpublisherInappproductsList_589710(
     name: "androidpublisherInappproductsList", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/{packageName}/inappproducts",
-    validator: validate_AndroidpublisherInappproductsList_580682,
+    validator: validate_AndroidpublisherInappproductsList_589711,
     base: "/androidpublisher/v2/applications",
-    url: url_AndroidpublisherInappproductsList_580683, schemes: {Scheme.Https})
+    url: url_AndroidpublisherInappproductsList_589712, schemes: {Scheme.Https})
 type
-  Call_AndroidpublisherInappproductsUpdate_580733 = ref object of OpenApiRestCall_579421
-proc url_AndroidpublisherInappproductsUpdate_580735(protocol: Scheme; host: string;
+  Call_AndroidpublisherInappproductsUpdate_589762 = ref object of OpenApiRestCall_588450
+proc url_AndroidpublisherInappproductsUpdate_589764(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -7679,7 +7679,7 @@ proc url_AndroidpublisherInappproductsUpdate_580735(protocol: Scheme; host: stri
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_AndroidpublisherInappproductsUpdate_580734(path: JsonNode;
+proc validate_AndroidpublisherInappproductsUpdate_589763(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Updates the details of an in-app product.
   ## 
@@ -7693,16 +7693,16 @@ proc validate_AndroidpublisherInappproductsUpdate_580734(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `packageName` field"
-  var valid_580736 = path.getOrDefault("packageName")
-  valid_580736 = validateParameter(valid_580736, JString, required = true,
+  var valid_589765 = path.getOrDefault("packageName")
+  valid_589765 = validateParameter(valid_589765, JString, required = true,
                                  default = nil)
-  if valid_580736 != nil:
-    section.add "packageName", valid_580736
-  var valid_580737 = path.getOrDefault("sku")
-  valid_580737 = validateParameter(valid_580737, JString, required = true,
+  if valid_589765 != nil:
+    section.add "packageName", valid_589765
+  var valid_589766 = path.getOrDefault("sku")
+  valid_589766 = validateParameter(valid_589766, JString, required = true,
                                  default = nil)
-  if valid_580737 != nil:
-    section.add "sku", valid_580737
+  if valid_589766 != nil:
+    section.add "sku", valid_589766
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -7722,45 +7722,45 @@ proc validate_AndroidpublisherInappproductsUpdate_580734(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580738 = query.getOrDefault("fields")
-  valid_580738 = validateParameter(valid_580738, JString, required = false,
+  var valid_589767 = query.getOrDefault("fields")
+  valid_589767 = validateParameter(valid_589767, JString, required = false,
                                  default = nil)
-  if valid_580738 != nil:
-    section.add "fields", valid_580738
-  var valid_580739 = query.getOrDefault("quotaUser")
-  valid_580739 = validateParameter(valid_580739, JString, required = false,
+  if valid_589767 != nil:
+    section.add "fields", valid_589767
+  var valid_589768 = query.getOrDefault("quotaUser")
+  valid_589768 = validateParameter(valid_589768, JString, required = false,
                                  default = nil)
-  if valid_580739 != nil:
-    section.add "quotaUser", valid_580739
-  var valid_580740 = query.getOrDefault("alt")
-  valid_580740 = validateParameter(valid_580740, JString, required = false,
+  if valid_589768 != nil:
+    section.add "quotaUser", valid_589768
+  var valid_589769 = query.getOrDefault("alt")
+  valid_589769 = validateParameter(valid_589769, JString, required = false,
                                  default = newJString("json"))
-  if valid_580740 != nil:
-    section.add "alt", valid_580740
-  var valid_580741 = query.getOrDefault("oauth_token")
-  valid_580741 = validateParameter(valid_580741, JString, required = false,
+  if valid_589769 != nil:
+    section.add "alt", valid_589769
+  var valid_589770 = query.getOrDefault("oauth_token")
+  valid_589770 = validateParameter(valid_589770, JString, required = false,
                                  default = nil)
-  if valid_580741 != nil:
-    section.add "oauth_token", valid_580741
-  var valid_580742 = query.getOrDefault("userIp")
-  valid_580742 = validateParameter(valid_580742, JString, required = false,
+  if valid_589770 != nil:
+    section.add "oauth_token", valid_589770
+  var valid_589771 = query.getOrDefault("userIp")
+  valid_589771 = validateParameter(valid_589771, JString, required = false,
                                  default = nil)
-  if valid_580742 != nil:
-    section.add "userIp", valid_580742
-  var valid_580743 = query.getOrDefault("key")
-  valid_580743 = validateParameter(valid_580743, JString, required = false,
+  if valid_589771 != nil:
+    section.add "userIp", valid_589771
+  var valid_589772 = query.getOrDefault("key")
+  valid_589772 = validateParameter(valid_589772, JString, required = false,
                                  default = nil)
-  if valid_580743 != nil:
-    section.add "key", valid_580743
-  var valid_580744 = query.getOrDefault("autoConvertMissingPrices")
-  valid_580744 = validateParameter(valid_580744, JBool, required = false, default = nil)
-  if valid_580744 != nil:
-    section.add "autoConvertMissingPrices", valid_580744
-  var valid_580745 = query.getOrDefault("prettyPrint")
-  valid_580745 = validateParameter(valid_580745, JBool, required = false,
+  if valid_589772 != nil:
+    section.add "key", valid_589772
+  var valid_589773 = query.getOrDefault("autoConvertMissingPrices")
+  valid_589773 = validateParameter(valid_589773, JBool, required = false, default = nil)
+  if valid_589773 != nil:
+    section.add "autoConvertMissingPrices", valid_589773
+  var valid_589774 = query.getOrDefault("prettyPrint")
+  valid_589774 = validateParameter(valid_589774, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580745 != nil:
-    section.add "prettyPrint", valid_580745
+  if valid_589774 != nil:
+    section.add "prettyPrint", valid_589774
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -7772,21 +7772,21 @@ proc validate_AndroidpublisherInappproductsUpdate_580734(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580747: Call_AndroidpublisherInappproductsUpdate_580733;
+proc call*(call_589776: Call_AndroidpublisherInappproductsUpdate_589762;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Updates the details of an in-app product.
   ## 
-  let valid = call_580747.validator(path, query, header, formData, body)
-  let scheme = call_580747.pickScheme
+  let valid = call_589776.validator(path, query, header, formData, body)
+  let scheme = call_589776.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580747.url(scheme.get, call_580747.host, call_580747.base,
-                         call_580747.route, valid.getOrDefault("path"),
+  let url = call_589776.url(scheme.get, call_589776.host, call_589776.base,
+                         call_589776.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580747, url, valid)
+  result = hook(call_589776, url, valid)
 
-proc call*(call_580748: Call_AndroidpublisherInappproductsUpdate_580733;
+proc call*(call_589777: Call_AndroidpublisherInappproductsUpdate_589762;
           packageName: string; sku: string; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; userIp: string = "";
           key: string = ""; autoConvertMissingPrices: bool = false;
@@ -7814,32 +7814,32 @@ proc call*(call_580748: Call_AndroidpublisherInappproductsUpdate_580733;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_580749 = newJObject()
-  var query_580750 = newJObject()
-  var body_580751 = newJObject()
-  add(query_580750, "fields", newJString(fields))
-  add(path_580749, "packageName", newJString(packageName))
-  add(query_580750, "quotaUser", newJString(quotaUser))
-  add(query_580750, "alt", newJString(alt))
-  add(query_580750, "oauth_token", newJString(oauthToken))
-  add(query_580750, "userIp", newJString(userIp))
-  add(path_580749, "sku", newJString(sku))
-  add(query_580750, "key", newJString(key))
-  add(query_580750, "autoConvertMissingPrices", newJBool(autoConvertMissingPrices))
+  var path_589778 = newJObject()
+  var query_589779 = newJObject()
+  var body_589780 = newJObject()
+  add(query_589779, "fields", newJString(fields))
+  add(path_589778, "packageName", newJString(packageName))
+  add(query_589779, "quotaUser", newJString(quotaUser))
+  add(query_589779, "alt", newJString(alt))
+  add(query_589779, "oauth_token", newJString(oauthToken))
+  add(query_589779, "userIp", newJString(userIp))
+  add(path_589778, "sku", newJString(sku))
+  add(query_589779, "key", newJString(key))
+  add(query_589779, "autoConvertMissingPrices", newJBool(autoConvertMissingPrices))
   if body != nil:
-    body_580751 = body
-  add(query_580750, "prettyPrint", newJBool(prettyPrint))
-  result = call_580748.call(path_580749, query_580750, nil, nil, body_580751)
+    body_589780 = body
+  add(query_589779, "prettyPrint", newJBool(prettyPrint))
+  result = call_589777.call(path_589778, query_589779, nil, nil, body_589780)
 
-var androidpublisherInappproductsUpdate* = Call_AndroidpublisherInappproductsUpdate_580733(
+var androidpublisherInappproductsUpdate* = Call_AndroidpublisherInappproductsUpdate_589762(
     name: "androidpublisherInappproductsUpdate", meth: HttpMethod.HttpPut,
     host: "www.googleapis.com", route: "/{packageName}/inappproducts/{sku}",
-    validator: validate_AndroidpublisherInappproductsUpdate_580734,
+    validator: validate_AndroidpublisherInappproductsUpdate_589763,
     base: "/androidpublisher/v2/applications",
-    url: url_AndroidpublisherInappproductsUpdate_580735, schemes: {Scheme.Https})
+    url: url_AndroidpublisherInappproductsUpdate_589764, schemes: {Scheme.Https})
 type
-  Call_AndroidpublisherInappproductsGet_580717 = ref object of OpenApiRestCall_579421
-proc url_AndroidpublisherInappproductsGet_580719(protocol: Scheme; host: string;
+  Call_AndroidpublisherInappproductsGet_589746 = ref object of OpenApiRestCall_588450
+proc url_AndroidpublisherInappproductsGet_589748(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -7857,7 +7857,7 @@ proc url_AndroidpublisherInappproductsGet_580719(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_AndroidpublisherInappproductsGet_580718(path: JsonNode;
+proc validate_AndroidpublisherInappproductsGet_589747(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Returns information about the in-app product specified.
   ## 
@@ -7870,16 +7870,16 @@ proc validate_AndroidpublisherInappproductsGet_580718(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `packageName` field"
-  var valid_580720 = path.getOrDefault("packageName")
-  valid_580720 = validateParameter(valid_580720, JString, required = true,
+  var valid_589749 = path.getOrDefault("packageName")
+  valid_589749 = validateParameter(valid_589749, JString, required = true,
                                  default = nil)
-  if valid_580720 != nil:
-    section.add "packageName", valid_580720
-  var valid_580721 = path.getOrDefault("sku")
-  valid_580721 = validateParameter(valid_580721, JString, required = true,
+  if valid_589749 != nil:
+    section.add "packageName", valid_589749
+  var valid_589750 = path.getOrDefault("sku")
+  valid_589750 = validateParameter(valid_589750, JString, required = true,
                                  default = nil)
-  if valid_580721 != nil:
-    section.add "sku", valid_580721
+  if valid_589750 != nil:
+    section.add "sku", valid_589750
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -7897,41 +7897,41 @@ proc validate_AndroidpublisherInappproductsGet_580718(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580722 = query.getOrDefault("fields")
-  valid_580722 = validateParameter(valid_580722, JString, required = false,
+  var valid_589751 = query.getOrDefault("fields")
+  valid_589751 = validateParameter(valid_589751, JString, required = false,
                                  default = nil)
-  if valid_580722 != nil:
-    section.add "fields", valid_580722
-  var valid_580723 = query.getOrDefault("quotaUser")
-  valid_580723 = validateParameter(valid_580723, JString, required = false,
+  if valid_589751 != nil:
+    section.add "fields", valid_589751
+  var valid_589752 = query.getOrDefault("quotaUser")
+  valid_589752 = validateParameter(valid_589752, JString, required = false,
                                  default = nil)
-  if valid_580723 != nil:
-    section.add "quotaUser", valid_580723
-  var valid_580724 = query.getOrDefault("alt")
-  valid_580724 = validateParameter(valid_580724, JString, required = false,
+  if valid_589752 != nil:
+    section.add "quotaUser", valid_589752
+  var valid_589753 = query.getOrDefault("alt")
+  valid_589753 = validateParameter(valid_589753, JString, required = false,
                                  default = newJString("json"))
-  if valid_580724 != nil:
-    section.add "alt", valid_580724
-  var valid_580725 = query.getOrDefault("oauth_token")
-  valid_580725 = validateParameter(valid_580725, JString, required = false,
+  if valid_589753 != nil:
+    section.add "alt", valid_589753
+  var valid_589754 = query.getOrDefault("oauth_token")
+  valid_589754 = validateParameter(valid_589754, JString, required = false,
                                  default = nil)
-  if valid_580725 != nil:
-    section.add "oauth_token", valid_580725
-  var valid_580726 = query.getOrDefault("userIp")
-  valid_580726 = validateParameter(valid_580726, JString, required = false,
+  if valid_589754 != nil:
+    section.add "oauth_token", valid_589754
+  var valid_589755 = query.getOrDefault("userIp")
+  valid_589755 = validateParameter(valid_589755, JString, required = false,
                                  default = nil)
-  if valid_580726 != nil:
-    section.add "userIp", valid_580726
-  var valid_580727 = query.getOrDefault("key")
-  valid_580727 = validateParameter(valid_580727, JString, required = false,
+  if valid_589755 != nil:
+    section.add "userIp", valid_589755
+  var valid_589756 = query.getOrDefault("key")
+  valid_589756 = validateParameter(valid_589756, JString, required = false,
                                  default = nil)
-  if valid_580727 != nil:
-    section.add "key", valid_580727
-  var valid_580728 = query.getOrDefault("prettyPrint")
-  valid_580728 = validateParameter(valid_580728, JBool, required = false,
+  if valid_589756 != nil:
+    section.add "key", valid_589756
+  var valid_589757 = query.getOrDefault("prettyPrint")
+  valid_589757 = validateParameter(valid_589757, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580728 != nil:
-    section.add "prettyPrint", valid_580728
+  if valid_589757 != nil:
+    section.add "prettyPrint", valid_589757
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -7940,21 +7940,21 @@ proc validate_AndroidpublisherInappproductsGet_580718(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580729: Call_AndroidpublisherInappproductsGet_580717;
+proc call*(call_589758: Call_AndroidpublisherInappproductsGet_589746;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Returns information about the in-app product specified.
   ## 
-  let valid = call_580729.validator(path, query, header, formData, body)
-  let scheme = call_580729.pickScheme
+  let valid = call_589758.validator(path, query, header, formData, body)
+  let scheme = call_589758.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580729.url(scheme.get, call_580729.host, call_580729.base,
-                         call_580729.route, valid.getOrDefault("path"),
+  let url = call_589758.url(scheme.get, call_589758.host, call_589758.base,
+                         call_589758.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580729, url, valid)
+  result = hook(call_589758, url, valid)
 
-proc call*(call_580730: Call_AndroidpublisherInappproductsGet_580717;
+proc call*(call_589759: Call_AndroidpublisherInappproductsGet_589746;
           packageName: string; sku: string; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; userIp: string = "";
           key: string = ""; prettyPrint: bool = true): Recallable =
@@ -7977,28 +7977,28 @@ proc call*(call_580730: Call_AndroidpublisherInappproductsGet_580717;
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_580731 = newJObject()
-  var query_580732 = newJObject()
-  add(query_580732, "fields", newJString(fields))
-  add(path_580731, "packageName", newJString(packageName))
-  add(query_580732, "quotaUser", newJString(quotaUser))
-  add(query_580732, "alt", newJString(alt))
-  add(query_580732, "oauth_token", newJString(oauthToken))
-  add(query_580732, "userIp", newJString(userIp))
-  add(path_580731, "sku", newJString(sku))
-  add(query_580732, "key", newJString(key))
-  add(query_580732, "prettyPrint", newJBool(prettyPrint))
-  result = call_580730.call(path_580731, query_580732, nil, nil, nil)
+  var path_589760 = newJObject()
+  var query_589761 = newJObject()
+  add(query_589761, "fields", newJString(fields))
+  add(path_589760, "packageName", newJString(packageName))
+  add(query_589761, "quotaUser", newJString(quotaUser))
+  add(query_589761, "alt", newJString(alt))
+  add(query_589761, "oauth_token", newJString(oauthToken))
+  add(query_589761, "userIp", newJString(userIp))
+  add(path_589760, "sku", newJString(sku))
+  add(query_589761, "key", newJString(key))
+  add(query_589761, "prettyPrint", newJBool(prettyPrint))
+  result = call_589759.call(path_589760, query_589761, nil, nil, nil)
 
-var androidpublisherInappproductsGet* = Call_AndroidpublisherInappproductsGet_580717(
+var androidpublisherInappproductsGet* = Call_AndroidpublisherInappproductsGet_589746(
     name: "androidpublisherInappproductsGet", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/{packageName}/inappproducts/{sku}",
-    validator: validate_AndroidpublisherInappproductsGet_580718,
+    validator: validate_AndroidpublisherInappproductsGet_589747,
     base: "/androidpublisher/v2/applications",
-    url: url_AndroidpublisherInappproductsGet_580719, schemes: {Scheme.Https})
+    url: url_AndroidpublisherInappproductsGet_589748, schemes: {Scheme.Https})
 type
-  Call_AndroidpublisherInappproductsPatch_580768 = ref object of OpenApiRestCall_579421
-proc url_AndroidpublisherInappproductsPatch_580770(protocol: Scheme; host: string;
+  Call_AndroidpublisherInappproductsPatch_589797 = ref object of OpenApiRestCall_588450
+proc url_AndroidpublisherInappproductsPatch_589799(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -8016,7 +8016,7 @@ proc url_AndroidpublisherInappproductsPatch_580770(protocol: Scheme; host: strin
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_AndroidpublisherInappproductsPatch_580769(path: JsonNode;
+proc validate_AndroidpublisherInappproductsPatch_589798(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Updates the details of an in-app product. This method supports patch semantics.
   ## 
@@ -8030,16 +8030,16 @@ proc validate_AndroidpublisherInappproductsPatch_580769(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `packageName` field"
-  var valid_580771 = path.getOrDefault("packageName")
-  valid_580771 = validateParameter(valid_580771, JString, required = true,
+  var valid_589800 = path.getOrDefault("packageName")
+  valid_589800 = validateParameter(valid_589800, JString, required = true,
                                  default = nil)
-  if valid_580771 != nil:
-    section.add "packageName", valid_580771
-  var valid_580772 = path.getOrDefault("sku")
-  valid_580772 = validateParameter(valid_580772, JString, required = true,
+  if valid_589800 != nil:
+    section.add "packageName", valid_589800
+  var valid_589801 = path.getOrDefault("sku")
+  valid_589801 = validateParameter(valid_589801, JString, required = true,
                                  default = nil)
-  if valid_580772 != nil:
-    section.add "sku", valid_580772
+  if valid_589801 != nil:
+    section.add "sku", valid_589801
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -8059,45 +8059,45 @@ proc validate_AndroidpublisherInappproductsPatch_580769(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580773 = query.getOrDefault("fields")
-  valid_580773 = validateParameter(valid_580773, JString, required = false,
+  var valid_589802 = query.getOrDefault("fields")
+  valid_589802 = validateParameter(valid_589802, JString, required = false,
                                  default = nil)
-  if valid_580773 != nil:
-    section.add "fields", valid_580773
-  var valid_580774 = query.getOrDefault("quotaUser")
-  valid_580774 = validateParameter(valid_580774, JString, required = false,
+  if valid_589802 != nil:
+    section.add "fields", valid_589802
+  var valid_589803 = query.getOrDefault("quotaUser")
+  valid_589803 = validateParameter(valid_589803, JString, required = false,
                                  default = nil)
-  if valid_580774 != nil:
-    section.add "quotaUser", valid_580774
-  var valid_580775 = query.getOrDefault("alt")
-  valid_580775 = validateParameter(valid_580775, JString, required = false,
+  if valid_589803 != nil:
+    section.add "quotaUser", valid_589803
+  var valid_589804 = query.getOrDefault("alt")
+  valid_589804 = validateParameter(valid_589804, JString, required = false,
                                  default = newJString("json"))
-  if valid_580775 != nil:
-    section.add "alt", valid_580775
-  var valid_580776 = query.getOrDefault("oauth_token")
-  valid_580776 = validateParameter(valid_580776, JString, required = false,
+  if valid_589804 != nil:
+    section.add "alt", valid_589804
+  var valid_589805 = query.getOrDefault("oauth_token")
+  valid_589805 = validateParameter(valid_589805, JString, required = false,
                                  default = nil)
-  if valid_580776 != nil:
-    section.add "oauth_token", valid_580776
-  var valid_580777 = query.getOrDefault("userIp")
-  valid_580777 = validateParameter(valid_580777, JString, required = false,
+  if valid_589805 != nil:
+    section.add "oauth_token", valid_589805
+  var valid_589806 = query.getOrDefault("userIp")
+  valid_589806 = validateParameter(valid_589806, JString, required = false,
                                  default = nil)
-  if valid_580777 != nil:
-    section.add "userIp", valid_580777
-  var valid_580778 = query.getOrDefault("key")
-  valid_580778 = validateParameter(valid_580778, JString, required = false,
+  if valid_589806 != nil:
+    section.add "userIp", valid_589806
+  var valid_589807 = query.getOrDefault("key")
+  valid_589807 = validateParameter(valid_589807, JString, required = false,
                                  default = nil)
-  if valid_580778 != nil:
-    section.add "key", valid_580778
-  var valid_580779 = query.getOrDefault("autoConvertMissingPrices")
-  valid_580779 = validateParameter(valid_580779, JBool, required = false, default = nil)
-  if valid_580779 != nil:
-    section.add "autoConvertMissingPrices", valid_580779
-  var valid_580780 = query.getOrDefault("prettyPrint")
-  valid_580780 = validateParameter(valid_580780, JBool, required = false,
+  if valid_589807 != nil:
+    section.add "key", valid_589807
+  var valid_589808 = query.getOrDefault("autoConvertMissingPrices")
+  valid_589808 = validateParameter(valid_589808, JBool, required = false, default = nil)
+  if valid_589808 != nil:
+    section.add "autoConvertMissingPrices", valid_589808
+  var valid_589809 = query.getOrDefault("prettyPrint")
+  valid_589809 = validateParameter(valid_589809, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580780 != nil:
-    section.add "prettyPrint", valid_580780
+  if valid_589809 != nil:
+    section.add "prettyPrint", valid_589809
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -8109,21 +8109,21 @@ proc validate_AndroidpublisherInappproductsPatch_580769(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580782: Call_AndroidpublisherInappproductsPatch_580768;
+proc call*(call_589811: Call_AndroidpublisherInappproductsPatch_589797;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Updates the details of an in-app product. This method supports patch semantics.
   ## 
-  let valid = call_580782.validator(path, query, header, formData, body)
-  let scheme = call_580782.pickScheme
+  let valid = call_589811.validator(path, query, header, formData, body)
+  let scheme = call_589811.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580782.url(scheme.get, call_580782.host, call_580782.base,
-                         call_580782.route, valid.getOrDefault("path"),
+  let url = call_589811.url(scheme.get, call_589811.host, call_589811.base,
+                         call_589811.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580782, url, valid)
+  result = hook(call_589811, url, valid)
 
-proc call*(call_580783: Call_AndroidpublisherInappproductsPatch_580768;
+proc call*(call_589812: Call_AndroidpublisherInappproductsPatch_589797;
           packageName: string; sku: string; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; userIp: string = "";
           key: string = ""; autoConvertMissingPrices: bool = false;
@@ -8151,32 +8151,32 @@ proc call*(call_580783: Call_AndroidpublisherInappproductsPatch_580768;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_580784 = newJObject()
-  var query_580785 = newJObject()
-  var body_580786 = newJObject()
-  add(query_580785, "fields", newJString(fields))
-  add(path_580784, "packageName", newJString(packageName))
-  add(query_580785, "quotaUser", newJString(quotaUser))
-  add(query_580785, "alt", newJString(alt))
-  add(query_580785, "oauth_token", newJString(oauthToken))
-  add(query_580785, "userIp", newJString(userIp))
-  add(path_580784, "sku", newJString(sku))
-  add(query_580785, "key", newJString(key))
-  add(query_580785, "autoConvertMissingPrices", newJBool(autoConvertMissingPrices))
+  var path_589813 = newJObject()
+  var query_589814 = newJObject()
+  var body_589815 = newJObject()
+  add(query_589814, "fields", newJString(fields))
+  add(path_589813, "packageName", newJString(packageName))
+  add(query_589814, "quotaUser", newJString(quotaUser))
+  add(query_589814, "alt", newJString(alt))
+  add(query_589814, "oauth_token", newJString(oauthToken))
+  add(query_589814, "userIp", newJString(userIp))
+  add(path_589813, "sku", newJString(sku))
+  add(query_589814, "key", newJString(key))
+  add(query_589814, "autoConvertMissingPrices", newJBool(autoConvertMissingPrices))
   if body != nil:
-    body_580786 = body
-  add(query_580785, "prettyPrint", newJBool(prettyPrint))
-  result = call_580783.call(path_580784, query_580785, nil, nil, body_580786)
+    body_589815 = body
+  add(query_589814, "prettyPrint", newJBool(prettyPrint))
+  result = call_589812.call(path_589813, query_589814, nil, nil, body_589815)
 
-var androidpublisherInappproductsPatch* = Call_AndroidpublisherInappproductsPatch_580768(
+var androidpublisherInappproductsPatch* = Call_AndroidpublisherInappproductsPatch_589797(
     name: "androidpublisherInappproductsPatch", meth: HttpMethod.HttpPatch,
     host: "www.googleapis.com", route: "/{packageName}/inappproducts/{sku}",
-    validator: validate_AndroidpublisherInappproductsPatch_580769,
+    validator: validate_AndroidpublisherInappproductsPatch_589798,
     base: "/androidpublisher/v2/applications",
-    url: url_AndroidpublisherInappproductsPatch_580770, schemes: {Scheme.Https})
+    url: url_AndroidpublisherInappproductsPatch_589799, schemes: {Scheme.Https})
 type
-  Call_AndroidpublisherInappproductsDelete_580752 = ref object of OpenApiRestCall_579421
-proc url_AndroidpublisherInappproductsDelete_580754(protocol: Scheme; host: string;
+  Call_AndroidpublisherInappproductsDelete_589781 = ref object of OpenApiRestCall_588450
+proc url_AndroidpublisherInappproductsDelete_589783(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -8194,7 +8194,7 @@ proc url_AndroidpublisherInappproductsDelete_580754(protocol: Scheme; host: stri
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_AndroidpublisherInappproductsDelete_580753(path: JsonNode;
+proc validate_AndroidpublisherInappproductsDelete_589782(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Delete an in-app product for an app.
   ## 
@@ -8208,16 +8208,16 @@ proc validate_AndroidpublisherInappproductsDelete_580753(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `packageName` field"
-  var valid_580755 = path.getOrDefault("packageName")
-  valid_580755 = validateParameter(valid_580755, JString, required = true,
+  var valid_589784 = path.getOrDefault("packageName")
+  valid_589784 = validateParameter(valid_589784, JString, required = true,
                                  default = nil)
-  if valid_580755 != nil:
-    section.add "packageName", valid_580755
-  var valid_580756 = path.getOrDefault("sku")
-  valid_580756 = validateParameter(valid_580756, JString, required = true,
+  if valid_589784 != nil:
+    section.add "packageName", valid_589784
+  var valid_589785 = path.getOrDefault("sku")
+  valid_589785 = validateParameter(valid_589785, JString, required = true,
                                  default = nil)
-  if valid_580756 != nil:
-    section.add "sku", valid_580756
+  if valid_589785 != nil:
+    section.add "sku", valid_589785
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -8235,41 +8235,41 @@ proc validate_AndroidpublisherInappproductsDelete_580753(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580757 = query.getOrDefault("fields")
-  valid_580757 = validateParameter(valid_580757, JString, required = false,
+  var valid_589786 = query.getOrDefault("fields")
+  valid_589786 = validateParameter(valid_589786, JString, required = false,
                                  default = nil)
-  if valid_580757 != nil:
-    section.add "fields", valid_580757
-  var valid_580758 = query.getOrDefault("quotaUser")
-  valid_580758 = validateParameter(valid_580758, JString, required = false,
+  if valid_589786 != nil:
+    section.add "fields", valid_589786
+  var valid_589787 = query.getOrDefault("quotaUser")
+  valid_589787 = validateParameter(valid_589787, JString, required = false,
                                  default = nil)
-  if valid_580758 != nil:
-    section.add "quotaUser", valid_580758
-  var valid_580759 = query.getOrDefault("alt")
-  valid_580759 = validateParameter(valid_580759, JString, required = false,
+  if valid_589787 != nil:
+    section.add "quotaUser", valid_589787
+  var valid_589788 = query.getOrDefault("alt")
+  valid_589788 = validateParameter(valid_589788, JString, required = false,
                                  default = newJString("json"))
-  if valid_580759 != nil:
-    section.add "alt", valid_580759
-  var valid_580760 = query.getOrDefault("oauth_token")
-  valid_580760 = validateParameter(valid_580760, JString, required = false,
+  if valid_589788 != nil:
+    section.add "alt", valid_589788
+  var valid_589789 = query.getOrDefault("oauth_token")
+  valid_589789 = validateParameter(valid_589789, JString, required = false,
                                  default = nil)
-  if valid_580760 != nil:
-    section.add "oauth_token", valid_580760
-  var valid_580761 = query.getOrDefault("userIp")
-  valid_580761 = validateParameter(valid_580761, JString, required = false,
+  if valid_589789 != nil:
+    section.add "oauth_token", valid_589789
+  var valid_589790 = query.getOrDefault("userIp")
+  valid_589790 = validateParameter(valid_589790, JString, required = false,
                                  default = nil)
-  if valid_580761 != nil:
-    section.add "userIp", valid_580761
-  var valid_580762 = query.getOrDefault("key")
-  valid_580762 = validateParameter(valid_580762, JString, required = false,
+  if valid_589790 != nil:
+    section.add "userIp", valid_589790
+  var valid_589791 = query.getOrDefault("key")
+  valid_589791 = validateParameter(valid_589791, JString, required = false,
                                  default = nil)
-  if valid_580762 != nil:
-    section.add "key", valid_580762
-  var valid_580763 = query.getOrDefault("prettyPrint")
-  valid_580763 = validateParameter(valid_580763, JBool, required = false,
+  if valid_589791 != nil:
+    section.add "key", valid_589791
+  var valid_589792 = query.getOrDefault("prettyPrint")
+  valid_589792 = validateParameter(valid_589792, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580763 != nil:
-    section.add "prettyPrint", valid_580763
+  if valid_589792 != nil:
+    section.add "prettyPrint", valid_589792
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -8278,21 +8278,21 @@ proc validate_AndroidpublisherInappproductsDelete_580753(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580764: Call_AndroidpublisherInappproductsDelete_580752;
+proc call*(call_589793: Call_AndroidpublisherInappproductsDelete_589781;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Delete an in-app product for an app.
   ## 
-  let valid = call_580764.validator(path, query, header, formData, body)
-  let scheme = call_580764.pickScheme
+  let valid = call_589793.validator(path, query, header, formData, body)
+  let scheme = call_589793.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580764.url(scheme.get, call_580764.host, call_580764.base,
-                         call_580764.route, valid.getOrDefault("path"),
+  let url = call_589793.url(scheme.get, call_589793.host, call_589793.base,
+                         call_589793.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580764, url, valid)
+  result = hook(call_589793, url, valid)
 
-proc call*(call_580765: Call_AndroidpublisherInappproductsDelete_580752;
+proc call*(call_589794: Call_AndroidpublisherInappproductsDelete_589781;
           packageName: string; sku: string; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; userIp: string = "";
           key: string = ""; prettyPrint: bool = true): Recallable =
@@ -8316,28 +8316,28 @@ proc call*(call_580765: Call_AndroidpublisherInappproductsDelete_580752;
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_580766 = newJObject()
-  var query_580767 = newJObject()
-  add(query_580767, "fields", newJString(fields))
-  add(path_580766, "packageName", newJString(packageName))
-  add(query_580767, "quotaUser", newJString(quotaUser))
-  add(query_580767, "alt", newJString(alt))
-  add(query_580767, "oauth_token", newJString(oauthToken))
-  add(query_580767, "userIp", newJString(userIp))
-  add(path_580766, "sku", newJString(sku))
-  add(query_580767, "key", newJString(key))
-  add(query_580767, "prettyPrint", newJBool(prettyPrint))
-  result = call_580765.call(path_580766, query_580767, nil, nil, nil)
+  var path_589795 = newJObject()
+  var query_589796 = newJObject()
+  add(query_589796, "fields", newJString(fields))
+  add(path_589795, "packageName", newJString(packageName))
+  add(query_589796, "quotaUser", newJString(quotaUser))
+  add(query_589796, "alt", newJString(alt))
+  add(query_589796, "oauth_token", newJString(oauthToken))
+  add(query_589796, "userIp", newJString(userIp))
+  add(path_589795, "sku", newJString(sku))
+  add(query_589796, "key", newJString(key))
+  add(query_589796, "prettyPrint", newJBool(prettyPrint))
+  result = call_589794.call(path_589795, query_589796, nil, nil, nil)
 
-var androidpublisherInappproductsDelete* = Call_AndroidpublisherInappproductsDelete_580752(
+var androidpublisherInappproductsDelete* = Call_AndroidpublisherInappproductsDelete_589781(
     name: "androidpublisherInappproductsDelete", meth: HttpMethod.HttpDelete,
     host: "www.googleapis.com", route: "/{packageName}/inappproducts/{sku}",
-    validator: validate_AndroidpublisherInappproductsDelete_580753,
+    validator: validate_AndroidpublisherInappproductsDelete_589782,
     base: "/androidpublisher/v2/applications",
-    url: url_AndroidpublisherInappproductsDelete_580754, schemes: {Scheme.Https})
+    url: url_AndroidpublisherInappproductsDelete_589783, schemes: {Scheme.Https})
 type
-  Call_AndroidpublisherOrdersRefund_580787 = ref object of OpenApiRestCall_579421
-proc url_AndroidpublisherOrdersRefund_580789(protocol: Scheme; host: string;
+  Call_AndroidpublisherOrdersRefund_589816 = ref object of OpenApiRestCall_588450
+proc url_AndroidpublisherOrdersRefund_589818(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -8356,7 +8356,7 @@ proc url_AndroidpublisherOrdersRefund_580789(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_AndroidpublisherOrdersRefund_580788(path: JsonNode; query: JsonNode;
+proc validate_AndroidpublisherOrdersRefund_589817(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Refund a user's subscription or in-app purchase order.
   ## 
@@ -8370,16 +8370,16 @@ proc validate_AndroidpublisherOrdersRefund_580788(path: JsonNode; query: JsonNod
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `packageName` field"
-  var valid_580790 = path.getOrDefault("packageName")
-  valid_580790 = validateParameter(valid_580790, JString, required = true,
+  var valid_589819 = path.getOrDefault("packageName")
+  valid_589819 = validateParameter(valid_589819, JString, required = true,
                                  default = nil)
-  if valid_580790 != nil:
-    section.add "packageName", valid_580790
-  var valid_580791 = path.getOrDefault("orderId")
-  valid_580791 = validateParameter(valid_580791, JString, required = true,
+  if valid_589819 != nil:
+    section.add "packageName", valid_589819
+  var valid_589820 = path.getOrDefault("orderId")
+  valid_589820 = validateParameter(valid_589820, JString, required = true,
                                  default = nil)
-  if valid_580791 != nil:
-    section.add "orderId", valid_580791
+  if valid_589820 != nil:
+    section.add "orderId", valid_589820
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -8399,45 +8399,45 @@ proc validate_AndroidpublisherOrdersRefund_580788(path: JsonNode; query: JsonNod
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580792 = query.getOrDefault("fields")
-  valid_580792 = validateParameter(valid_580792, JString, required = false,
+  var valid_589821 = query.getOrDefault("fields")
+  valid_589821 = validateParameter(valid_589821, JString, required = false,
                                  default = nil)
-  if valid_580792 != nil:
-    section.add "fields", valid_580792
-  var valid_580793 = query.getOrDefault("quotaUser")
-  valid_580793 = validateParameter(valid_580793, JString, required = false,
+  if valid_589821 != nil:
+    section.add "fields", valid_589821
+  var valid_589822 = query.getOrDefault("quotaUser")
+  valid_589822 = validateParameter(valid_589822, JString, required = false,
                                  default = nil)
-  if valid_580793 != nil:
-    section.add "quotaUser", valid_580793
-  var valid_580794 = query.getOrDefault("alt")
-  valid_580794 = validateParameter(valid_580794, JString, required = false,
+  if valid_589822 != nil:
+    section.add "quotaUser", valid_589822
+  var valid_589823 = query.getOrDefault("alt")
+  valid_589823 = validateParameter(valid_589823, JString, required = false,
                                  default = newJString("json"))
-  if valid_580794 != nil:
-    section.add "alt", valid_580794
-  var valid_580795 = query.getOrDefault("oauth_token")
-  valid_580795 = validateParameter(valid_580795, JString, required = false,
+  if valid_589823 != nil:
+    section.add "alt", valid_589823
+  var valid_589824 = query.getOrDefault("oauth_token")
+  valid_589824 = validateParameter(valid_589824, JString, required = false,
                                  default = nil)
-  if valid_580795 != nil:
-    section.add "oauth_token", valid_580795
-  var valid_580796 = query.getOrDefault("userIp")
-  valid_580796 = validateParameter(valid_580796, JString, required = false,
+  if valid_589824 != nil:
+    section.add "oauth_token", valid_589824
+  var valid_589825 = query.getOrDefault("userIp")
+  valid_589825 = validateParameter(valid_589825, JString, required = false,
                                  default = nil)
-  if valid_580796 != nil:
-    section.add "userIp", valid_580796
-  var valid_580797 = query.getOrDefault("key")
-  valid_580797 = validateParameter(valid_580797, JString, required = false,
+  if valid_589825 != nil:
+    section.add "userIp", valid_589825
+  var valid_589826 = query.getOrDefault("key")
+  valid_589826 = validateParameter(valid_589826, JString, required = false,
                                  default = nil)
-  if valid_580797 != nil:
-    section.add "key", valid_580797
-  var valid_580798 = query.getOrDefault("revoke")
-  valid_580798 = validateParameter(valid_580798, JBool, required = false, default = nil)
-  if valid_580798 != nil:
-    section.add "revoke", valid_580798
-  var valid_580799 = query.getOrDefault("prettyPrint")
-  valid_580799 = validateParameter(valid_580799, JBool, required = false,
+  if valid_589826 != nil:
+    section.add "key", valid_589826
+  var valid_589827 = query.getOrDefault("revoke")
+  valid_589827 = validateParameter(valid_589827, JBool, required = false, default = nil)
+  if valid_589827 != nil:
+    section.add "revoke", valid_589827
+  var valid_589828 = query.getOrDefault("prettyPrint")
+  valid_589828 = validateParameter(valid_589828, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580799 != nil:
-    section.add "prettyPrint", valid_580799
+  if valid_589828 != nil:
+    section.add "prettyPrint", valid_589828
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -8446,20 +8446,20 @@ proc validate_AndroidpublisherOrdersRefund_580788(path: JsonNode; query: JsonNod
   if body != nil:
     result.add "body", body
 
-proc call*(call_580800: Call_AndroidpublisherOrdersRefund_580787; path: JsonNode;
+proc call*(call_589829: Call_AndroidpublisherOrdersRefund_589816; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Refund a user's subscription or in-app purchase order.
   ## 
-  let valid = call_580800.validator(path, query, header, formData, body)
-  let scheme = call_580800.pickScheme
+  let valid = call_589829.validator(path, query, header, formData, body)
+  let scheme = call_589829.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580800.url(scheme.get, call_580800.host, call_580800.base,
-                         call_580800.route, valid.getOrDefault("path"),
+  let url = call_589829.url(scheme.get, call_589829.host, call_589829.base,
+                         call_589829.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580800, url, valid)
+  result = hook(call_589829, url, valid)
 
-proc call*(call_580801: Call_AndroidpublisherOrdersRefund_580787;
+proc call*(call_589830: Call_AndroidpublisherOrdersRefund_589816;
           packageName: string; orderId: string; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; key: string = ""; revoke: bool = false;
@@ -8486,29 +8486,29 @@ proc call*(call_580801: Call_AndroidpublisherOrdersRefund_580787;
   ##         : Whether to revoke the purchased item. If set to true, access to the subscription or in-app item will be terminated immediately. If the item is a recurring subscription, all future payments will also be terminated. Consumed in-app items need to be handled by developer's app. (optional)
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_580802 = newJObject()
-  var query_580803 = newJObject()
-  add(query_580803, "fields", newJString(fields))
-  add(path_580802, "packageName", newJString(packageName))
-  add(query_580803, "quotaUser", newJString(quotaUser))
-  add(query_580803, "alt", newJString(alt))
-  add(query_580803, "oauth_token", newJString(oauthToken))
-  add(query_580803, "userIp", newJString(userIp))
-  add(path_580802, "orderId", newJString(orderId))
-  add(query_580803, "key", newJString(key))
-  add(query_580803, "revoke", newJBool(revoke))
-  add(query_580803, "prettyPrint", newJBool(prettyPrint))
-  result = call_580801.call(path_580802, query_580803, nil, nil, nil)
+  var path_589831 = newJObject()
+  var query_589832 = newJObject()
+  add(query_589832, "fields", newJString(fields))
+  add(path_589831, "packageName", newJString(packageName))
+  add(query_589832, "quotaUser", newJString(quotaUser))
+  add(query_589832, "alt", newJString(alt))
+  add(query_589832, "oauth_token", newJString(oauthToken))
+  add(query_589832, "userIp", newJString(userIp))
+  add(path_589831, "orderId", newJString(orderId))
+  add(query_589832, "key", newJString(key))
+  add(query_589832, "revoke", newJBool(revoke))
+  add(query_589832, "prettyPrint", newJBool(prettyPrint))
+  result = call_589830.call(path_589831, query_589832, nil, nil, nil)
 
-var androidpublisherOrdersRefund* = Call_AndroidpublisherOrdersRefund_580787(
+var androidpublisherOrdersRefund* = Call_AndroidpublisherOrdersRefund_589816(
     name: "androidpublisherOrdersRefund", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com", route: "/{packageName}/orders/{orderId}:refund",
-    validator: validate_AndroidpublisherOrdersRefund_580788,
+    validator: validate_AndroidpublisherOrdersRefund_589817,
     base: "/androidpublisher/v2/applications",
-    url: url_AndroidpublisherOrdersRefund_580789, schemes: {Scheme.Https})
+    url: url_AndroidpublisherOrdersRefund_589818, schemes: {Scheme.Https})
 type
-  Call_AndroidpublisherPurchasesProductsGet_580804 = ref object of OpenApiRestCall_579421
-proc url_AndroidpublisherPurchasesProductsGet_580806(protocol: Scheme;
+  Call_AndroidpublisherPurchasesProductsGet_589833 = ref object of OpenApiRestCall_588450
+proc url_AndroidpublisherPurchasesProductsGet_589835(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -8529,7 +8529,7 @@ proc url_AndroidpublisherPurchasesProductsGet_580806(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_AndroidpublisherPurchasesProductsGet_580805(path: JsonNode;
+proc validate_AndroidpublisherPurchasesProductsGet_589834(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Checks the purchase and consumption status of an inapp item.
   ## 
@@ -8545,21 +8545,21 @@ proc validate_AndroidpublisherPurchasesProductsGet_580805(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `packageName` field"
-  var valid_580807 = path.getOrDefault("packageName")
-  valid_580807 = validateParameter(valid_580807, JString, required = true,
+  var valid_589836 = path.getOrDefault("packageName")
+  valid_589836 = validateParameter(valid_589836, JString, required = true,
                                  default = nil)
-  if valid_580807 != nil:
-    section.add "packageName", valid_580807
-  var valid_580808 = path.getOrDefault("token")
-  valid_580808 = validateParameter(valid_580808, JString, required = true,
+  if valid_589836 != nil:
+    section.add "packageName", valid_589836
+  var valid_589837 = path.getOrDefault("token")
+  valid_589837 = validateParameter(valid_589837, JString, required = true,
                                  default = nil)
-  if valid_580808 != nil:
-    section.add "token", valid_580808
-  var valid_580809 = path.getOrDefault("productId")
-  valid_580809 = validateParameter(valid_580809, JString, required = true,
+  if valid_589837 != nil:
+    section.add "token", valid_589837
+  var valid_589838 = path.getOrDefault("productId")
+  valid_589838 = validateParameter(valid_589838, JString, required = true,
                                  default = nil)
-  if valid_580809 != nil:
-    section.add "productId", valid_580809
+  if valid_589838 != nil:
+    section.add "productId", valid_589838
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -8577,41 +8577,41 @@ proc validate_AndroidpublisherPurchasesProductsGet_580805(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580810 = query.getOrDefault("fields")
-  valid_580810 = validateParameter(valid_580810, JString, required = false,
+  var valid_589839 = query.getOrDefault("fields")
+  valid_589839 = validateParameter(valid_589839, JString, required = false,
                                  default = nil)
-  if valid_580810 != nil:
-    section.add "fields", valid_580810
-  var valid_580811 = query.getOrDefault("quotaUser")
-  valid_580811 = validateParameter(valid_580811, JString, required = false,
+  if valid_589839 != nil:
+    section.add "fields", valid_589839
+  var valid_589840 = query.getOrDefault("quotaUser")
+  valid_589840 = validateParameter(valid_589840, JString, required = false,
                                  default = nil)
-  if valid_580811 != nil:
-    section.add "quotaUser", valid_580811
-  var valid_580812 = query.getOrDefault("alt")
-  valid_580812 = validateParameter(valid_580812, JString, required = false,
+  if valid_589840 != nil:
+    section.add "quotaUser", valid_589840
+  var valid_589841 = query.getOrDefault("alt")
+  valid_589841 = validateParameter(valid_589841, JString, required = false,
                                  default = newJString("json"))
-  if valid_580812 != nil:
-    section.add "alt", valid_580812
-  var valid_580813 = query.getOrDefault("oauth_token")
-  valid_580813 = validateParameter(valid_580813, JString, required = false,
+  if valid_589841 != nil:
+    section.add "alt", valid_589841
+  var valid_589842 = query.getOrDefault("oauth_token")
+  valid_589842 = validateParameter(valid_589842, JString, required = false,
                                  default = nil)
-  if valid_580813 != nil:
-    section.add "oauth_token", valid_580813
-  var valid_580814 = query.getOrDefault("userIp")
-  valid_580814 = validateParameter(valid_580814, JString, required = false,
+  if valid_589842 != nil:
+    section.add "oauth_token", valid_589842
+  var valid_589843 = query.getOrDefault("userIp")
+  valid_589843 = validateParameter(valid_589843, JString, required = false,
                                  default = nil)
-  if valid_580814 != nil:
-    section.add "userIp", valid_580814
-  var valid_580815 = query.getOrDefault("key")
-  valid_580815 = validateParameter(valid_580815, JString, required = false,
+  if valid_589843 != nil:
+    section.add "userIp", valid_589843
+  var valid_589844 = query.getOrDefault("key")
+  valid_589844 = validateParameter(valid_589844, JString, required = false,
                                  default = nil)
-  if valid_580815 != nil:
-    section.add "key", valid_580815
-  var valid_580816 = query.getOrDefault("prettyPrint")
-  valid_580816 = validateParameter(valid_580816, JBool, required = false,
+  if valid_589844 != nil:
+    section.add "key", valid_589844
+  var valid_589845 = query.getOrDefault("prettyPrint")
+  valid_589845 = validateParameter(valid_589845, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580816 != nil:
-    section.add "prettyPrint", valid_580816
+  if valid_589845 != nil:
+    section.add "prettyPrint", valid_589845
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -8620,21 +8620,21 @@ proc validate_AndroidpublisherPurchasesProductsGet_580805(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580817: Call_AndroidpublisherPurchasesProductsGet_580804;
+proc call*(call_589846: Call_AndroidpublisherPurchasesProductsGet_589833;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Checks the purchase and consumption status of an inapp item.
   ## 
-  let valid = call_580817.validator(path, query, header, formData, body)
-  let scheme = call_580817.pickScheme
+  let valid = call_589846.validator(path, query, header, formData, body)
+  let scheme = call_589846.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580817.url(scheme.get, call_580817.host, call_580817.base,
-                         call_580817.route, valid.getOrDefault("path"),
+  let url = call_589846.url(scheme.get, call_589846.host, call_589846.base,
+                         call_589846.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580817, url, valid)
+  result = hook(call_589846, url, valid)
 
-proc call*(call_580818: Call_AndroidpublisherPurchasesProductsGet_580804;
+proc call*(call_589847: Call_AndroidpublisherPurchasesProductsGet_589833;
           packageName: string; token: string; productId: string; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; key: string = ""; prettyPrint: bool = true): Recallable =
@@ -8660,30 +8660,30 @@ proc call*(call_580818: Call_AndroidpublisherPurchasesProductsGet_580804;
   ##            : The inapp product SKU (for example, 'com.some.thing.inapp1').
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_580819 = newJObject()
-  var query_580820 = newJObject()
-  add(query_580820, "fields", newJString(fields))
-  add(path_580819, "packageName", newJString(packageName))
-  add(query_580820, "quotaUser", newJString(quotaUser))
-  add(query_580820, "alt", newJString(alt))
-  add(query_580820, "oauth_token", newJString(oauthToken))
-  add(query_580820, "userIp", newJString(userIp))
-  add(query_580820, "key", newJString(key))
-  add(path_580819, "token", newJString(token))
-  add(path_580819, "productId", newJString(productId))
-  add(query_580820, "prettyPrint", newJBool(prettyPrint))
-  result = call_580818.call(path_580819, query_580820, nil, nil, nil)
+  var path_589848 = newJObject()
+  var query_589849 = newJObject()
+  add(query_589849, "fields", newJString(fields))
+  add(path_589848, "packageName", newJString(packageName))
+  add(query_589849, "quotaUser", newJString(quotaUser))
+  add(query_589849, "alt", newJString(alt))
+  add(query_589849, "oauth_token", newJString(oauthToken))
+  add(query_589849, "userIp", newJString(userIp))
+  add(query_589849, "key", newJString(key))
+  add(path_589848, "token", newJString(token))
+  add(path_589848, "productId", newJString(productId))
+  add(query_589849, "prettyPrint", newJBool(prettyPrint))
+  result = call_589847.call(path_589848, query_589849, nil, nil, nil)
 
-var androidpublisherPurchasesProductsGet* = Call_AndroidpublisherPurchasesProductsGet_580804(
+var androidpublisherPurchasesProductsGet* = Call_AndroidpublisherPurchasesProductsGet_589833(
     name: "androidpublisherPurchasesProductsGet", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com",
     route: "/{packageName}/purchases/products/{productId}/tokens/{token}",
-    validator: validate_AndroidpublisherPurchasesProductsGet_580805,
+    validator: validate_AndroidpublisherPurchasesProductsGet_589834,
     base: "/androidpublisher/v2/applications",
-    url: url_AndroidpublisherPurchasesProductsGet_580806, schemes: {Scheme.Https})
+    url: url_AndroidpublisherPurchasesProductsGet_589835, schemes: {Scheme.Https})
 type
-  Call_AndroidpublisherPurchasesSubscriptionsGet_580821 = ref object of OpenApiRestCall_579421
-proc url_AndroidpublisherPurchasesSubscriptionsGet_580823(protocol: Scheme;
+  Call_AndroidpublisherPurchasesSubscriptionsGet_589850 = ref object of OpenApiRestCall_588450
+proc url_AndroidpublisherPurchasesSubscriptionsGet_589852(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -8704,7 +8704,7 @@ proc url_AndroidpublisherPurchasesSubscriptionsGet_580823(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_AndroidpublisherPurchasesSubscriptionsGet_580822(path: JsonNode;
+proc validate_AndroidpublisherPurchasesSubscriptionsGet_589851(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Checks whether a user's subscription purchase is valid and returns its expiry time.
   ## 
@@ -8720,21 +8720,21 @@ proc validate_AndroidpublisherPurchasesSubscriptionsGet_580822(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `packageName` field"
-  var valid_580824 = path.getOrDefault("packageName")
-  valid_580824 = validateParameter(valid_580824, JString, required = true,
+  var valid_589853 = path.getOrDefault("packageName")
+  valid_589853 = validateParameter(valid_589853, JString, required = true,
                                  default = nil)
-  if valid_580824 != nil:
-    section.add "packageName", valid_580824
-  var valid_580825 = path.getOrDefault("subscriptionId")
-  valid_580825 = validateParameter(valid_580825, JString, required = true,
+  if valid_589853 != nil:
+    section.add "packageName", valid_589853
+  var valid_589854 = path.getOrDefault("subscriptionId")
+  valid_589854 = validateParameter(valid_589854, JString, required = true,
                                  default = nil)
-  if valid_580825 != nil:
-    section.add "subscriptionId", valid_580825
-  var valid_580826 = path.getOrDefault("token")
-  valid_580826 = validateParameter(valid_580826, JString, required = true,
+  if valid_589854 != nil:
+    section.add "subscriptionId", valid_589854
+  var valid_589855 = path.getOrDefault("token")
+  valid_589855 = validateParameter(valid_589855, JString, required = true,
                                  default = nil)
-  if valid_580826 != nil:
-    section.add "token", valid_580826
+  if valid_589855 != nil:
+    section.add "token", valid_589855
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -8752,41 +8752,41 @@ proc validate_AndroidpublisherPurchasesSubscriptionsGet_580822(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580827 = query.getOrDefault("fields")
-  valid_580827 = validateParameter(valid_580827, JString, required = false,
+  var valid_589856 = query.getOrDefault("fields")
+  valid_589856 = validateParameter(valid_589856, JString, required = false,
                                  default = nil)
-  if valid_580827 != nil:
-    section.add "fields", valid_580827
-  var valid_580828 = query.getOrDefault("quotaUser")
-  valid_580828 = validateParameter(valid_580828, JString, required = false,
+  if valid_589856 != nil:
+    section.add "fields", valid_589856
+  var valid_589857 = query.getOrDefault("quotaUser")
+  valid_589857 = validateParameter(valid_589857, JString, required = false,
                                  default = nil)
-  if valid_580828 != nil:
-    section.add "quotaUser", valid_580828
-  var valid_580829 = query.getOrDefault("alt")
-  valid_580829 = validateParameter(valid_580829, JString, required = false,
+  if valid_589857 != nil:
+    section.add "quotaUser", valid_589857
+  var valid_589858 = query.getOrDefault("alt")
+  valid_589858 = validateParameter(valid_589858, JString, required = false,
                                  default = newJString("json"))
-  if valid_580829 != nil:
-    section.add "alt", valid_580829
-  var valid_580830 = query.getOrDefault("oauth_token")
-  valid_580830 = validateParameter(valid_580830, JString, required = false,
+  if valid_589858 != nil:
+    section.add "alt", valid_589858
+  var valid_589859 = query.getOrDefault("oauth_token")
+  valid_589859 = validateParameter(valid_589859, JString, required = false,
                                  default = nil)
-  if valid_580830 != nil:
-    section.add "oauth_token", valid_580830
-  var valid_580831 = query.getOrDefault("userIp")
-  valid_580831 = validateParameter(valid_580831, JString, required = false,
+  if valid_589859 != nil:
+    section.add "oauth_token", valid_589859
+  var valid_589860 = query.getOrDefault("userIp")
+  valid_589860 = validateParameter(valid_589860, JString, required = false,
                                  default = nil)
-  if valid_580831 != nil:
-    section.add "userIp", valid_580831
-  var valid_580832 = query.getOrDefault("key")
-  valid_580832 = validateParameter(valid_580832, JString, required = false,
+  if valid_589860 != nil:
+    section.add "userIp", valid_589860
+  var valid_589861 = query.getOrDefault("key")
+  valid_589861 = validateParameter(valid_589861, JString, required = false,
                                  default = nil)
-  if valid_580832 != nil:
-    section.add "key", valid_580832
-  var valid_580833 = query.getOrDefault("prettyPrint")
-  valid_580833 = validateParameter(valid_580833, JBool, required = false,
+  if valid_589861 != nil:
+    section.add "key", valid_589861
+  var valid_589862 = query.getOrDefault("prettyPrint")
+  valid_589862 = validateParameter(valid_589862, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580833 != nil:
-    section.add "prettyPrint", valid_580833
+  if valid_589862 != nil:
+    section.add "prettyPrint", valid_589862
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -8795,21 +8795,21 @@ proc validate_AndroidpublisherPurchasesSubscriptionsGet_580822(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580834: Call_AndroidpublisherPurchasesSubscriptionsGet_580821;
+proc call*(call_589863: Call_AndroidpublisherPurchasesSubscriptionsGet_589850;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Checks whether a user's subscription purchase is valid and returns its expiry time.
   ## 
-  let valid = call_580834.validator(path, query, header, formData, body)
-  let scheme = call_580834.pickScheme
+  let valid = call_589863.validator(path, query, header, formData, body)
+  let scheme = call_589863.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580834.url(scheme.get, call_580834.host, call_580834.base,
-                         call_580834.route, valid.getOrDefault("path"),
+  let url = call_589863.url(scheme.get, call_589863.host, call_589863.base,
+                         call_589863.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580834, url, valid)
+  result = hook(call_589863, url, valid)
 
-proc call*(call_580835: Call_AndroidpublisherPurchasesSubscriptionsGet_580821;
+proc call*(call_589864: Call_AndroidpublisherPurchasesSubscriptionsGet_589850;
           packageName: string; subscriptionId: string; token: string;
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           oauthToken: string = ""; userIp: string = ""; key: string = "";
@@ -8836,30 +8836,30 @@ proc call*(call_580835: Call_AndroidpublisherPurchasesSubscriptionsGet_580821;
   ##        : The token provided to the user's device when the subscription was purchased.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_580836 = newJObject()
-  var query_580837 = newJObject()
-  add(query_580837, "fields", newJString(fields))
-  add(path_580836, "packageName", newJString(packageName))
-  add(query_580837, "quotaUser", newJString(quotaUser))
-  add(query_580837, "alt", newJString(alt))
-  add(path_580836, "subscriptionId", newJString(subscriptionId))
-  add(query_580837, "oauth_token", newJString(oauthToken))
-  add(query_580837, "userIp", newJString(userIp))
-  add(query_580837, "key", newJString(key))
-  add(path_580836, "token", newJString(token))
-  add(query_580837, "prettyPrint", newJBool(prettyPrint))
-  result = call_580835.call(path_580836, query_580837, nil, nil, nil)
+  var path_589865 = newJObject()
+  var query_589866 = newJObject()
+  add(query_589866, "fields", newJString(fields))
+  add(path_589865, "packageName", newJString(packageName))
+  add(query_589866, "quotaUser", newJString(quotaUser))
+  add(query_589866, "alt", newJString(alt))
+  add(path_589865, "subscriptionId", newJString(subscriptionId))
+  add(query_589866, "oauth_token", newJString(oauthToken))
+  add(query_589866, "userIp", newJString(userIp))
+  add(query_589866, "key", newJString(key))
+  add(path_589865, "token", newJString(token))
+  add(query_589866, "prettyPrint", newJBool(prettyPrint))
+  result = call_589864.call(path_589865, query_589866, nil, nil, nil)
 
-var androidpublisherPurchasesSubscriptionsGet* = Call_AndroidpublisherPurchasesSubscriptionsGet_580821(
+var androidpublisherPurchasesSubscriptionsGet* = Call_AndroidpublisherPurchasesSubscriptionsGet_589850(
     name: "androidpublisherPurchasesSubscriptionsGet", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/{packageName}/purchases/subscriptions/{subscriptionId}/tokens/{token}",
-    validator: validate_AndroidpublisherPurchasesSubscriptionsGet_580822,
+    validator: validate_AndroidpublisherPurchasesSubscriptionsGet_589851,
     base: "/androidpublisher/v2/applications",
-    url: url_AndroidpublisherPurchasesSubscriptionsGet_580823,
+    url: url_AndroidpublisherPurchasesSubscriptionsGet_589852,
     schemes: {Scheme.Https})
 type
-  Call_AndroidpublisherPurchasesSubscriptionsCancel_580838 = ref object of OpenApiRestCall_579421
-proc url_AndroidpublisherPurchasesSubscriptionsCancel_580840(protocol: Scheme;
+  Call_AndroidpublisherPurchasesSubscriptionsCancel_589867 = ref object of OpenApiRestCall_588450
+proc url_AndroidpublisherPurchasesSubscriptionsCancel_589869(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -8881,7 +8881,7 @@ proc url_AndroidpublisherPurchasesSubscriptionsCancel_580840(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_AndroidpublisherPurchasesSubscriptionsCancel_580839(path: JsonNode;
+proc validate_AndroidpublisherPurchasesSubscriptionsCancel_589868(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Cancels a user's subscription purchase. The subscription remains valid until its expiration time.
   ## 
@@ -8897,21 +8897,21 @@ proc validate_AndroidpublisherPurchasesSubscriptionsCancel_580839(path: JsonNode
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `packageName` field"
-  var valid_580841 = path.getOrDefault("packageName")
-  valid_580841 = validateParameter(valid_580841, JString, required = true,
+  var valid_589870 = path.getOrDefault("packageName")
+  valid_589870 = validateParameter(valid_589870, JString, required = true,
                                  default = nil)
-  if valid_580841 != nil:
-    section.add "packageName", valid_580841
-  var valid_580842 = path.getOrDefault("subscriptionId")
-  valid_580842 = validateParameter(valid_580842, JString, required = true,
+  if valid_589870 != nil:
+    section.add "packageName", valid_589870
+  var valid_589871 = path.getOrDefault("subscriptionId")
+  valid_589871 = validateParameter(valid_589871, JString, required = true,
                                  default = nil)
-  if valid_580842 != nil:
-    section.add "subscriptionId", valid_580842
-  var valid_580843 = path.getOrDefault("token")
-  valid_580843 = validateParameter(valid_580843, JString, required = true,
+  if valid_589871 != nil:
+    section.add "subscriptionId", valid_589871
+  var valid_589872 = path.getOrDefault("token")
+  valid_589872 = validateParameter(valid_589872, JString, required = true,
                                  default = nil)
-  if valid_580843 != nil:
-    section.add "token", valid_580843
+  if valid_589872 != nil:
+    section.add "token", valid_589872
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -8929,41 +8929,41 @@ proc validate_AndroidpublisherPurchasesSubscriptionsCancel_580839(path: JsonNode
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580844 = query.getOrDefault("fields")
-  valid_580844 = validateParameter(valid_580844, JString, required = false,
+  var valid_589873 = query.getOrDefault("fields")
+  valid_589873 = validateParameter(valid_589873, JString, required = false,
                                  default = nil)
-  if valid_580844 != nil:
-    section.add "fields", valid_580844
-  var valid_580845 = query.getOrDefault("quotaUser")
-  valid_580845 = validateParameter(valid_580845, JString, required = false,
+  if valid_589873 != nil:
+    section.add "fields", valid_589873
+  var valid_589874 = query.getOrDefault("quotaUser")
+  valid_589874 = validateParameter(valid_589874, JString, required = false,
                                  default = nil)
-  if valid_580845 != nil:
-    section.add "quotaUser", valid_580845
-  var valid_580846 = query.getOrDefault("alt")
-  valid_580846 = validateParameter(valid_580846, JString, required = false,
+  if valid_589874 != nil:
+    section.add "quotaUser", valid_589874
+  var valid_589875 = query.getOrDefault("alt")
+  valid_589875 = validateParameter(valid_589875, JString, required = false,
                                  default = newJString("json"))
-  if valid_580846 != nil:
-    section.add "alt", valid_580846
-  var valid_580847 = query.getOrDefault("oauth_token")
-  valid_580847 = validateParameter(valid_580847, JString, required = false,
+  if valid_589875 != nil:
+    section.add "alt", valid_589875
+  var valid_589876 = query.getOrDefault("oauth_token")
+  valid_589876 = validateParameter(valid_589876, JString, required = false,
                                  default = nil)
-  if valid_580847 != nil:
-    section.add "oauth_token", valid_580847
-  var valid_580848 = query.getOrDefault("userIp")
-  valid_580848 = validateParameter(valid_580848, JString, required = false,
+  if valid_589876 != nil:
+    section.add "oauth_token", valid_589876
+  var valid_589877 = query.getOrDefault("userIp")
+  valid_589877 = validateParameter(valid_589877, JString, required = false,
                                  default = nil)
-  if valid_580848 != nil:
-    section.add "userIp", valid_580848
-  var valid_580849 = query.getOrDefault("key")
-  valid_580849 = validateParameter(valid_580849, JString, required = false,
+  if valid_589877 != nil:
+    section.add "userIp", valid_589877
+  var valid_589878 = query.getOrDefault("key")
+  valid_589878 = validateParameter(valid_589878, JString, required = false,
                                  default = nil)
-  if valid_580849 != nil:
-    section.add "key", valid_580849
-  var valid_580850 = query.getOrDefault("prettyPrint")
-  valid_580850 = validateParameter(valid_580850, JBool, required = false,
+  if valid_589878 != nil:
+    section.add "key", valid_589878
+  var valid_589879 = query.getOrDefault("prettyPrint")
+  valid_589879 = validateParameter(valid_589879, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580850 != nil:
-    section.add "prettyPrint", valid_580850
+  if valid_589879 != nil:
+    section.add "prettyPrint", valid_589879
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -8972,21 +8972,21 @@ proc validate_AndroidpublisherPurchasesSubscriptionsCancel_580839(path: JsonNode
   if body != nil:
     result.add "body", body
 
-proc call*(call_580851: Call_AndroidpublisherPurchasesSubscriptionsCancel_580838;
+proc call*(call_589880: Call_AndroidpublisherPurchasesSubscriptionsCancel_589867;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Cancels a user's subscription purchase. The subscription remains valid until its expiration time.
   ## 
-  let valid = call_580851.validator(path, query, header, formData, body)
-  let scheme = call_580851.pickScheme
+  let valid = call_589880.validator(path, query, header, formData, body)
+  let scheme = call_589880.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580851.url(scheme.get, call_580851.host, call_580851.base,
-                         call_580851.route, valid.getOrDefault("path"),
+  let url = call_589880.url(scheme.get, call_589880.host, call_589880.base,
+                         call_589880.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580851, url, valid)
+  result = hook(call_589880, url, valid)
 
-proc call*(call_580852: Call_AndroidpublisherPurchasesSubscriptionsCancel_580838;
+proc call*(call_589881: Call_AndroidpublisherPurchasesSubscriptionsCancel_589867;
           packageName: string; subscriptionId: string; token: string;
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           oauthToken: string = ""; userIp: string = ""; key: string = "";
@@ -9013,30 +9013,30 @@ proc call*(call_580852: Call_AndroidpublisherPurchasesSubscriptionsCancel_580838
   ##        : The token provided to the user's device when the subscription was purchased.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_580853 = newJObject()
-  var query_580854 = newJObject()
-  add(query_580854, "fields", newJString(fields))
-  add(path_580853, "packageName", newJString(packageName))
-  add(query_580854, "quotaUser", newJString(quotaUser))
-  add(query_580854, "alt", newJString(alt))
-  add(path_580853, "subscriptionId", newJString(subscriptionId))
-  add(query_580854, "oauth_token", newJString(oauthToken))
-  add(query_580854, "userIp", newJString(userIp))
-  add(query_580854, "key", newJString(key))
-  add(path_580853, "token", newJString(token))
-  add(query_580854, "prettyPrint", newJBool(prettyPrint))
-  result = call_580852.call(path_580853, query_580854, nil, nil, nil)
+  var path_589882 = newJObject()
+  var query_589883 = newJObject()
+  add(query_589883, "fields", newJString(fields))
+  add(path_589882, "packageName", newJString(packageName))
+  add(query_589883, "quotaUser", newJString(quotaUser))
+  add(query_589883, "alt", newJString(alt))
+  add(path_589882, "subscriptionId", newJString(subscriptionId))
+  add(query_589883, "oauth_token", newJString(oauthToken))
+  add(query_589883, "userIp", newJString(userIp))
+  add(query_589883, "key", newJString(key))
+  add(path_589882, "token", newJString(token))
+  add(query_589883, "prettyPrint", newJBool(prettyPrint))
+  result = call_589881.call(path_589882, query_589883, nil, nil, nil)
 
-var androidpublisherPurchasesSubscriptionsCancel* = Call_AndroidpublisherPurchasesSubscriptionsCancel_580838(
+var androidpublisherPurchasesSubscriptionsCancel* = Call_AndroidpublisherPurchasesSubscriptionsCancel_589867(
     name: "androidpublisherPurchasesSubscriptionsCancel",
     meth: HttpMethod.HttpPost, host: "www.googleapis.com", route: "/{packageName}/purchases/subscriptions/{subscriptionId}/tokens/{token}:cancel",
-    validator: validate_AndroidpublisherPurchasesSubscriptionsCancel_580839,
+    validator: validate_AndroidpublisherPurchasesSubscriptionsCancel_589868,
     base: "/androidpublisher/v2/applications",
-    url: url_AndroidpublisherPurchasesSubscriptionsCancel_580840,
+    url: url_AndroidpublisherPurchasesSubscriptionsCancel_589869,
     schemes: {Scheme.Https})
 type
-  Call_AndroidpublisherPurchasesSubscriptionsDefer_580855 = ref object of OpenApiRestCall_579421
-proc url_AndroidpublisherPurchasesSubscriptionsDefer_580857(protocol: Scheme;
+  Call_AndroidpublisherPurchasesSubscriptionsDefer_589884 = ref object of OpenApiRestCall_588450
+proc url_AndroidpublisherPurchasesSubscriptionsDefer_589886(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -9058,7 +9058,7 @@ proc url_AndroidpublisherPurchasesSubscriptionsDefer_580857(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_AndroidpublisherPurchasesSubscriptionsDefer_580856(path: JsonNode;
+proc validate_AndroidpublisherPurchasesSubscriptionsDefer_589885(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Defers a user's subscription purchase until a specified future expiration time.
   ## 
@@ -9074,21 +9074,21 @@ proc validate_AndroidpublisherPurchasesSubscriptionsDefer_580856(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `packageName` field"
-  var valid_580858 = path.getOrDefault("packageName")
-  valid_580858 = validateParameter(valid_580858, JString, required = true,
+  var valid_589887 = path.getOrDefault("packageName")
+  valid_589887 = validateParameter(valid_589887, JString, required = true,
                                  default = nil)
-  if valid_580858 != nil:
-    section.add "packageName", valid_580858
-  var valid_580859 = path.getOrDefault("subscriptionId")
-  valid_580859 = validateParameter(valid_580859, JString, required = true,
+  if valid_589887 != nil:
+    section.add "packageName", valid_589887
+  var valid_589888 = path.getOrDefault("subscriptionId")
+  valid_589888 = validateParameter(valid_589888, JString, required = true,
                                  default = nil)
-  if valid_580859 != nil:
-    section.add "subscriptionId", valid_580859
-  var valid_580860 = path.getOrDefault("token")
-  valid_580860 = validateParameter(valid_580860, JString, required = true,
+  if valid_589888 != nil:
+    section.add "subscriptionId", valid_589888
+  var valid_589889 = path.getOrDefault("token")
+  valid_589889 = validateParameter(valid_589889, JString, required = true,
                                  default = nil)
-  if valid_580860 != nil:
-    section.add "token", valid_580860
+  if valid_589889 != nil:
+    section.add "token", valid_589889
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -9106,41 +9106,41 @@ proc validate_AndroidpublisherPurchasesSubscriptionsDefer_580856(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580861 = query.getOrDefault("fields")
-  valid_580861 = validateParameter(valid_580861, JString, required = false,
+  var valid_589890 = query.getOrDefault("fields")
+  valid_589890 = validateParameter(valid_589890, JString, required = false,
                                  default = nil)
-  if valid_580861 != nil:
-    section.add "fields", valid_580861
-  var valid_580862 = query.getOrDefault("quotaUser")
-  valid_580862 = validateParameter(valid_580862, JString, required = false,
+  if valid_589890 != nil:
+    section.add "fields", valid_589890
+  var valid_589891 = query.getOrDefault("quotaUser")
+  valid_589891 = validateParameter(valid_589891, JString, required = false,
                                  default = nil)
-  if valid_580862 != nil:
-    section.add "quotaUser", valid_580862
-  var valid_580863 = query.getOrDefault("alt")
-  valid_580863 = validateParameter(valid_580863, JString, required = false,
+  if valid_589891 != nil:
+    section.add "quotaUser", valid_589891
+  var valid_589892 = query.getOrDefault("alt")
+  valid_589892 = validateParameter(valid_589892, JString, required = false,
                                  default = newJString("json"))
-  if valid_580863 != nil:
-    section.add "alt", valid_580863
-  var valid_580864 = query.getOrDefault("oauth_token")
-  valid_580864 = validateParameter(valid_580864, JString, required = false,
+  if valid_589892 != nil:
+    section.add "alt", valid_589892
+  var valid_589893 = query.getOrDefault("oauth_token")
+  valid_589893 = validateParameter(valid_589893, JString, required = false,
                                  default = nil)
-  if valid_580864 != nil:
-    section.add "oauth_token", valid_580864
-  var valid_580865 = query.getOrDefault("userIp")
-  valid_580865 = validateParameter(valid_580865, JString, required = false,
+  if valid_589893 != nil:
+    section.add "oauth_token", valid_589893
+  var valid_589894 = query.getOrDefault("userIp")
+  valid_589894 = validateParameter(valid_589894, JString, required = false,
                                  default = nil)
-  if valid_580865 != nil:
-    section.add "userIp", valid_580865
-  var valid_580866 = query.getOrDefault("key")
-  valid_580866 = validateParameter(valid_580866, JString, required = false,
+  if valid_589894 != nil:
+    section.add "userIp", valid_589894
+  var valid_589895 = query.getOrDefault("key")
+  valid_589895 = validateParameter(valid_589895, JString, required = false,
                                  default = nil)
-  if valid_580866 != nil:
-    section.add "key", valid_580866
-  var valid_580867 = query.getOrDefault("prettyPrint")
-  valid_580867 = validateParameter(valid_580867, JBool, required = false,
+  if valid_589895 != nil:
+    section.add "key", valid_589895
+  var valid_589896 = query.getOrDefault("prettyPrint")
+  valid_589896 = validateParameter(valid_589896, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580867 != nil:
-    section.add "prettyPrint", valid_580867
+  if valid_589896 != nil:
+    section.add "prettyPrint", valid_589896
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -9152,21 +9152,21 @@ proc validate_AndroidpublisherPurchasesSubscriptionsDefer_580856(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580869: Call_AndroidpublisherPurchasesSubscriptionsDefer_580855;
+proc call*(call_589898: Call_AndroidpublisherPurchasesSubscriptionsDefer_589884;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Defers a user's subscription purchase until a specified future expiration time.
   ## 
-  let valid = call_580869.validator(path, query, header, formData, body)
-  let scheme = call_580869.pickScheme
+  let valid = call_589898.validator(path, query, header, formData, body)
+  let scheme = call_589898.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580869.url(scheme.get, call_580869.host, call_580869.base,
-                         call_580869.route, valid.getOrDefault("path"),
+  let url = call_589898.url(scheme.get, call_589898.host, call_589898.base,
+                         call_589898.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580869, url, valid)
+  result = hook(call_589898, url, valid)
 
-proc call*(call_580870: Call_AndroidpublisherPurchasesSubscriptionsDefer_580855;
+proc call*(call_589899: Call_AndroidpublisherPurchasesSubscriptionsDefer_589884;
           packageName: string; subscriptionId: string; token: string;
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           oauthToken: string = ""; userIp: string = ""; key: string = "";
@@ -9194,33 +9194,33 @@ proc call*(call_580870: Call_AndroidpublisherPurchasesSubscriptionsDefer_580855;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_580871 = newJObject()
-  var query_580872 = newJObject()
-  var body_580873 = newJObject()
-  add(query_580872, "fields", newJString(fields))
-  add(path_580871, "packageName", newJString(packageName))
-  add(query_580872, "quotaUser", newJString(quotaUser))
-  add(query_580872, "alt", newJString(alt))
-  add(path_580871, "subscriptionId", newJString(subscriptionId))
-  add(query_580872, "oauth_token", newJString(oauthToken))
-  add(query_580872, "userIp", newJString(userIp))
-  add(query_580872, "key", newJString(key))
-  add(path_580871, "token", newJString(token))
+  var path_589900 = newJObject()
+  var query_589901 = newJObject()
+  var body_589902 = newJObject()
+  add(query_589901, "fields", newJString(fields))
+  add(path_589900, "packageName", newJString(packageName))
+  add(query_589901, "quotaUser", newJString(quotaUser))
+  add(query_589901, "alt", newJString(alt))
+  add(path_589900, "subscriptionId", newJString(subscriptionId))
+  add(query_589901, "oauth_token", newJString(oauthToken))
+  add(query_589901, "userIp", newJString(userIp))
+  add(query_589901, "key", newJString(key))
+  add(path_589900, "token", newJString(token))
   if body != nil:
-    body_580873 = body
-  add(query_580872, "prettyPrint", newJBool(prettyPrint))
-  result = call_580870.call(path_580871, query_580872, nil, nil, body_580873)
+    body_589902 = body
+  add(query_589901, "prettyPrint", newJBool(prettyPrint))
+  result = call_589899.call(path_589900, query_589901, nil, nil, body_589902)
 
-var androidpublisherPurchasesSubscriptionsDefer* = Call_AndroidpublisherPurchasesSubscriptionsDefer_580855(
+var androidpublisherPurchasesSubscriptionsDefer* = Call_AndroidpublisherPurchasesSubscriptionsDefer_589884(
     name: "androidpublisherPurchasesSubscriptionsDefer",
     meth: HttpMethod.HttpPost, host: "www.googleapis.com", route: "/{packageName}/purchases/subscriptions/{subscriptionId}/tokens/{token}:defer",
-    validator: validate_AndroidpublisherPurchasesSubscriptionsDefer_580856,
+    validator: validate_AndroidpublisherPurchasesSubscriptionsDefer_589885,
     base: "/androidpublisher/v2/applications",
-    url: url_AndroidpublisherPurchasesSubscriptionsDefer_580857,
+    url: url_AndroidpublisherPurchasesSubscriptionsDefer_589886,
     schemes: {Scheme.Https})
 type
-  Call_AndroidpublisherPurchasesSubscriptionsRefund_580874 = ref object of OpenApiRestCall_579421
-proc url_AndroidpublisherPurchasesSubscriptionsRefund_580876(protocol: Scheme;
+  Call_AndroidpublisherPurchasesSubscriptionsRefund_589903 = ref object of OpenApiRestCall_588450
+proc url_AndroidpublisherPurchasesSubscriptionsRefund_589905(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -9242,7 +9242,7 @@ proc url_AndroidpublisherPurchasesSubscriptionsRefund_580876(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_AndroidpublisherPurchasesSubscriptionsRefund_580875(path: JsonNode;
+proc validate_AndroidpublisherPurchasesSubscriptionsRefund_589904(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Refunds a user's subscription purchase, but the subscription remains valid until its expiration time and it will continue to recur.
   ## 
@@ -9258,21 +9258,21 @@ proc validate_AndroidpublisherPurchasesSubscriptionsRefund_580875(path: JsonNode
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `packageName` field"
-  var valid_580877 = path.getOrDefault("packageName")
-  valid_580877 = validateParameter(valid_580877, JString, required = true,
+  var valid_589906 = path.getOrDefault("packageName")
+  valid_589906 = validateParameter(valid_589906, JString, required = true,
                                  default = nil)
-  if valid_580877 != nil:
-    section.add "packageName", valid_580877
-  var valid_580878 = path.getOrDefault("subscriptionId")
-  valid_580878 = validateParameter(valid_580878, JString, required = true,
+  if valid_589906 != nil:
+    section.add "packageName", valid_589906
+  var valid_589907 = path.getOrDefault("subscriptionId")
+  valid_589907 = validateParameter(valid_589907, JString, required = true,
                                  default = nil)
-  if valid_580878 != nil:
-    section.add "subscriptionId", valid_580878
-  var valid_580879 = path.getOrDefault("token")
-  valid_580879 = validateParameter(valid_580879, JString, required = true,
+  if valid_589907 != nil:
+    section.add "subscriptionId", valid_589907
+  var valid_589908 = path.getOrDefault("token")
+  valid_589908 = validateParameter(valid_589908, JString, required = true,
                                  default = nil)
-  if valid_580879 != nil:
-    section.add "token", valid_580879
+  if valid_589908 != nil:
+    section.add "token", valid_589908
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -9290,41 +9290,41 @@ proc validate_AndroidpublisherPurchasesSubscriptionsRefund_580875(path: JsonNode
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580880 = query.getOrDefault("fields")
-  valid_580880 = validateParameter(valid_580880, JString, required = false,
+  var valid_589909 = query.getOrDefault("fields")
+  valid_589909 = validateParameter(valid_589909, JString, required = false,
                                  default = nil)
-  if valid_580880 != nil:
-    section.add "fields", valid_580880
-  var valid_580881 = query.getOrDefault("quotaUser")
-  valid_580881 = validateParameter(valid_580881, JString, required = false,
+  if valid_589909 != nil:
+    section.add "fields", valid_589909
+  var valid_589910 = query.getOrDefault("quotaUser")
+  valid_589910 = validateParameter(valid_589910, JString, required = false,
                                  default = nil)
-  if valid_580881 != nil:
-    section.add "quotaUser", valid_580881
-  var valid_580882 = query.getOrDefault("alt")
-  valid_580882 = validateParameter(valid_580882, JString, required = false,
+  if valid_589910 != nil:
+    section.add "quotaUser", valid_589910
+  var valid_589911 = query.getOrDefault("alt")
+  valid_589911 = validateParameter(valid_589911, JString, required = false,
                                  default = newJString("json"))
-  if valid_580882 != nil:
-    section.add "alt", valid_580882
-  var valid_580883 = query.getOrDefault("oauth_token")
-  valid_580883 = validateParameter(valid_580883, JString, required = false,
+  if valid_589911 != nil:
+    section.add "alt", valid_589911
+  var valid_589912 = query.getOrDefault("oauth_token")
+  valid_589912 = validateParameter(valid_589912, JString, required = false,
                                  default = nil)
-  if valid_580883 != nil:
-    section.add "oauth_token", valid_580883
-  var valid_580884 = query.getOrDefault("userIp")
-  valid_580884 = validateParameter(valid_580884, JString, required = false,
+  if valid_589912 != nil:
+    section.add "oauth_token", valid_589912
+  var valid_589913 = query.getOrDefault("userIp")
+  valid_589913 = validateParameter(valid_589913, JString, required = false,
                                  default = nil)
-  if valid_580884 != nil:
-    section.add "userIp", valid_580884
-  var valid_580885 = query.getOrDefault("key")
-  valid_580885 = validateParameter(valid_580885, JString, required = false,
+  if valid_589913 != nil:
+    section.add "userIp", valid_589913
+  var valid_589914 = query.getOrDefault("key")
+  valid_589914 = validateParameter(valid_589914, JString, required = false,
                                  default = nil)
-  if valid_580885 != nil:
-    section.add "key", valid_580885
-  var valid_580886 = query.getOrDefault("prettyPrint")
-  valid_580886 = validateParameter(valid_580886, JBool, required = false,
+  if valid_589914 != nil:
+    section.add "key", valid_589914
+  var valid_589915 = query.getOrDefault("prettyPrint")
+  valid_589915 = validateParameter(valid_589915, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580886 != nil:
-    section.add "prettyPrint", valid_580886
+  if valid_589915 != nil:
+    section.add "prettyPrint", valid_589915
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -9333,21 +9333,21 @@ proc validate_AndroidpublisherPurchasesSubscriptionsRefund_580875(path: JsonNode
   if body != nil:
     result.add "body", body
 
-proc call*(call_580887: Call_AndroidpublisherPurchasesSubscriptionsRefund_580874;
+proc call*(call_589916: Call_AndroidpublisherPurchasesSubscriptionsRefund_589903;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Refunds a user's subscription purchase, but the subscription remains valid until its expiration time and it will continue to recur.
   ## 
-  let valid = call_580887.validator(path, query, header, formData, body)
-  let scheme = call_580887.pickScheme
+  let valid = call_589916.validator(path, query, header, formData, body)
+  let scheme = call_589916.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580887.url(scheme.get, call_580887.host, call_580887.base,
-                         call_580887.route, valid.getOrDefault("path"),
+  let url = call_589916.url(scheme.get, call_589916.host, call_589916.base,
+                         call_589916.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580887, url, valid)
+  result = hook(call_589916, url, valid)
 
-proc call*(call_580888: Call_AndroidpublisherPurchasesSubscriptionsRefund_580874;
+proc call*(call_589917: Call_AndroidpublisherPurchasesSubscriptionsRefund_589903;
           packageName: string; subscriptionId: string; token: string;
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           oauthToken: string = ""; userIp: string = ""; key: string = "";
@@ -9374,30 +9374,30 @@ proc call*(call_580888: Call_AndroidpublisherPurchasesSubscriptionsRefund_580874
   ##        : The token provided to the user's device when the subscription was purchased.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_580889 = newJObject()
-  var query_580890 = newJObject()
-  add(query_580890, "fields", newJString(fields))
-  add(path_580889, "packageName", newJString(packageName))
-  add(query_580890, "quotaUser", newJString(quotaUser))
-  add(query_580890, "alt", newJString(alt))
-  add(path_580889, "subscriptionId", newJString(subscriptionId))
-  add(query_580890, "oauth_token", newJString(oauthToken))
-  add(query_580890, "userIp", newJString(userIp))
-  add(query_580890, "key", newJString(key))
-  add(path_580889, "token", newJString(token))
-  add(query_580890, "prettyPrint", newJBool(prettyPrint))
-  result = call_580888.call(path_580889, query_580890, nil, nil, nil)
+  var path_589918 = newJObject()
+  var query_589919 = newJObject()
+  add(query_589919, "fields", newJString(fields))
+  add(path_589918, "packageName", newJString(packageName))
+  add(query_589919, "quotaUser", newJString(quotaUser))
+  add(query_589919, "alt", newJString(alt))
+  add(path_589918, "subscriptionId", newJString(subscriptionId))
+  add(query_589919, "oauth_token", newJString(oauthToken))
+  add(query_589919, "userIp", newJString(userIp))
+  add(query_589919, "key", newJString(key))
+  add(path_589918, "token", newJString(token))
+  add(query_589919, "prettyPrint", newJBool(prettyPrint))
+  result = call_589917.call(path_589918, query_589919, nil, nil, nil)
 
-var androidpublisherPurchasesSubscriptionsRefund* = Call_AndroidpublisherPurchasesSubscriptionsRefund_580874(
+var androidpublisherPurchasesSubscriptionsRefund* = Call_AndroidpublisherPurchasesSubscriptionsRefund_589903(
     name: "androidpublisherPurchasesSubscriptionsRefund",
     meth: HttpMethod.HttpPost, host: "www.googleapis.com", route: "/{packageName}/purchases/subscriptions/{subscriptionId}/tokens/{token}:refund",
-    validator: validate_AndroidpublisherPurchasesSubscriptionsRefund_580875,
+    validator: validate_AndroidpublisherPurchasesSubscriptionsRefund_589904,
     base: "/androidpublisher/v2/applications",
-    url: url_AndroidpublisherPurchasesSubscriptionsRefund_580876,
+    url: url_AndroidpublisherPurchasesSubscriptionsRefund_589905,
     schemes: {Scheme.Https})
 type
-  Call_AndroidpublisherPurchasesSubscriptionsRevoke_580891 = ref object of OpenApiRestCall_579421
-proc url_AndroidpublisherPurchasesSubscriptionsRevoke_580893(protocol: Scheme;
+  Call_AndroidpublisherPurchasesSubscriptionsRevoke_589920 = ref object of OpenApiRestCall_588450
+proc url_AndroidpublisherPurchasesSubscriptionsRevoke_589922(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -9419,7 +9419,7 @@ proc url_AndroidpublisherPurchasesSubscriptionsRevoke_580893(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_AndroidpublisherPurchasesSubscriptionsRevoke_580892(path: JsonNode;
+proc validate_AndroidpublisherPurchasesSubscriptionsRevoke_589921(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Refunds and immediately revokes a user's subscription purchase. Access to the subscription will be terminated immediately and it will stop recurring.
   ## 
@@ -9435,21 +9435,21 @@ proc validate_AndroidpublisherPurchasesSubscriptionsRevoke_580892(path: JsonNode
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `packageName` field"
-  var valid_580894 = path.getOrDefault("packageName")
-  valid_580894 = validateParameter(valid_580894, JString, required = true,
+  var valid_589923 = path.getOrDefault("packageName")
+  valid_589923 = validateParameter(valid_589923, JString, required = true,
                                  default = nil)
-  if valid_580894 != nil:
-    section.add "packageName", valid_580894
-  var valid_580895 = path.getOrDefault("subscriptionId")
-  valid_580895 = validateParameter(valid_580895, JString, required = true,
+  if valid_589923 != nil:
+    section.add "packageName", valid_589923
+  var valid_589924 = path.getOrDefault("subscriptionId")
+  valid_589924 = validateParameter(valid_589924, JString, required = true,
                                  default = nil)
-  if valid_580895 != nil:
-    section.add "subscriptionId", valid_580895
-  var valid_580896 = path.getOrDefault("token")
-  valid_580896 = validateParameter(valid_580896, JString, required = true,
+  if valid_589924 != nil:
+    section.add "subscriptionId", valid_589924
+  var valid_589925 = path.getOrDefault("token")
+  valid_589925 = validateParameter(valid_589925, JString, required = true,
                                  default = nil)
-  if valid_580896 != nil:
-    section.add "token", valid_580896
+  if valid_589925 != nil:
+    section.add "token", valid_589925
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -9467,41 +9467,41 @@ proc validate_AndroidpublisherPurchasesSubscriptionsRevoke_580892(path: JsonNode
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580897 = query.getOrDefault("fields")
-  valid_580897 = validateParameter(valid_580897, JString, required = false,
+  var valid_589926 = query.getOrDefault("fields")
+  valid_589926 = validateParameter(valid_589926, JString, required = false,
                                  default = nil)
-  if valid_580897 != nil:
-    section.add "fields", valid_580897
-  var valid_580898 = query.getOrDefault("quotaUser")
-  valid_580898 = validateParameter(valid_580898, JString, required = false,
+  if valid_589926 != nil:
+    section.add "fields", valid_589926
+  var valid_589927 = query.getOrDefault("quotaUser")
+  valid_589927 = validateParameter(valid_589927, JString, required = false,
                                  default = nil)
-  if valid_580898 != nil:
-    section.add "quotaUser", valid_580898
-  var valid_580899 = query.getOrDefault("alt")
-  valid_580899 = validateParameter(valid_580899, JString, required = false,
+  if valid_589927 != nil:
+    section.add "quotaUser", valid_589927
+  var valid_589928 = query.getOrDefault("alt")
+  valid_589928 = validateParameter(valid_589928, JString, required = false,
                                  default = newJString("json"))
-  if valid_580899 != nil:
-    section.add "alt", valid_580899
-  var valid_580900 = query.getOrDefault("oauth_token")
-  valid_580900 = validateParameter(valid_580900, JString, required = false,
+  if valid_589928 != nil:
+    section.add "alt", valid_589928
+  var valid_589929 = query.getOrDefault("oauth_token")
+  valid_589929 = validateParameter(valid_589929, JString, required = false,
                                  default = nil)
-  if valid_580900 != nil:
-    section.add "oauth_token", valid_580900
-  var valid_580901 = query.getOrDefault("userIp")
-  valid_580901 = validateParameter(valid_580901, JString, required = false,
+  if valid_589929 != nil:
+    section.add "oauth_token", valid_589929
+  var valid_589930 = query.getOrDefault("userIp")
+  valid_589930 = validateParameter(valid_589930, JString, required = false,
                                  default = nil)
-  if valid_580901 != nil:
-    section.add "userIp", valid_580901
-  var valid_580902 = query.getOrDefault("key")
-  valid_580902 = validateParameter(valid_580902, JString, required = false,
+  if valid_589930 != nil:
+    section.add "userIp", valid_589930
+  var valid_589931 = query.getOrDefault("key")
+  valid_589931 = validateParameter(valid_589931, JString, required = false,
                                  default = nil)
-  if valid_580902 != nil:
-    section.add "key", valid_580902
-  var valid_580903 = query.getOrDefault("prettyPrint")
-  valid_580903 = validateParameter(valid_580903, JBool, required = false,
+  if valid_589931 != nil:
+    section.add "key", valid_589931
+  var valid_589932 = query.getOrDefault("prettyPrint")
+  valid_589932 = validateParameter(valid_589932, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580903 != nil:
-    section.add "prettyPrint", valid_580903
+  if valid_589932 != nil:
+    section.add "prettyPrint", valid_589932
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -9510,21 +9510,21 @@ proc validate_AndroidpublisherPurchasesSubscriptionsRevoke_580892(path: JsonNode
   if body != nil:
     result.add "body", body
 
-proc call*(call_580904: Call_AndroidpublisherPurchasesSubscriptionsRevoke_580891;
+proc call*(call_589933: Call_AndroidpublisherPurchasesSubscriptionsRevoke_589920;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Refunds and immediately revokes a user's subscription purchase. Access to the subscription will be terminated immediately and it will stop recurring.
   ## 
-  let valid = call_580904.validator(path, query, header, formData, body)
-  let scheme = call_580904.pickScheme
+  let valid = call_589933.validator(path, query, header, formData, body)
+  let scheme = call_589933.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580904.url(scheme.get, call_580904.host, call_580904.base,
-                         call_580904.route, valid.getOrDefault("path"),
+  let url = call_589933.url(scheme.get, call_589933.host, call_589933.base,
+                         call_589933.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580904, url, valid)
+  result = hook(call_589933, url, valid)
 
-proc call*(call_580905: Call_AndroidpublisherPurchasesSubscriptionsRevoke_580891;
+proc call*(call_589934: Call_AndroidpublisherPurchasesSubscriptionsRevoke_589920;
           packageName: string; subscriptionId: string; token: string;
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           oauthToken: string = ""; userIp: string = ""; key: string = "";
@@ -9551,30 +9551,30 @@ proc call*(call_580905: Call_AndroidpublisherPurchasesSubscriptionsRevoke_580891
   ##        : The token provided to the user's device when the subscription was purchased.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_580906 = newJObject()
-  var query_580907 = newJObject()
-  add(query_580907, "fields", newJString(fields))
-  add(path_580906, "packageName", newJString(packageName))
-  add(query_580907, "quotaUser", newJString(quotaUser))
-  add(query_580907, "alt", newJString(alt))
-  add(path_580906, "subscriptionId", newJString(subscriptionId))
-  add(query_580907, "oauth_token", newJString(oauthToken))
-  add(query_580907, "userIp", newJString(userIp))
-  add(query_580907, "key", newJString(key))
-  add(path_580906, "token", newJString(token))
-  add(query_580907, "prettyPrint", newJBool(prettyPrint))
-  result = call_580905.call(path_580906, query_580907, nil, nil, nil)
+  var path_589935 = newJObject()
+  var query_589936 = newJObject()
+  add(query_589936, "fields", newJString(fields))
+  add(path_589935, "packageName", newJString(packageName))
+  add(query_589936, "quotaUser", newJString(quotaUser))
+  add(query_589936, "alt", newJString(alt))
+  add(path_589935, "subscriptionId", newJString(subscriptionId))
+  add(query_589936, "oauth_token", newJString(oauthToken))
+  add(query_589936, "userIp", newJString(userIp))
+  add(query_589936, "key", newJString(key))
+  add(path_589935, "token", newJString(token))
+  add(query_589936, "prettyPrint", newJBool(prettyPrint))
+  result = call_589934.call(path_589935, query_589936, nil, nil, nil)
 
-var androidpublisherPurchasesSubscriptionsRevoke* = Call_AndroidpublisherPurchasesSubscriptionsRevoke_580891(
+var androidpublisherPurchasesSubscriptionsRevoke* = Call_AndroidpublisherPurchasesSubscriptionsRevoke_589920(
     name: "androidpublisherPurchasesSubscriptionsRevoke",
     meth: HttpMethod.HttpPost, host: "www.googleapis.com", route: "/{packageName}/purchases/subscriptions/{subscriptionId}/tokens/{token}:revoke",
-    validator: validate_AndroidpublisherPurchasesSubscriptionsRevoke_580892,
+    validator: validate_AndroidpublisherPurchasesSubscriptionsRevoke_589921,
     base: "/androidpublisher/v2/applications",
-    url: url_AndroidpublisherPurchasesSubscriptionsRevoke_580893,
+    url: url_AndroidpublisherPurchasesSubscriptionsRevoke_589922,
     schemes: {Scheme.Https})
 type
-  Call_AndroidpublisherPurchasesVoidedpurchasesList_580908 = ref object of OpenApiRestCall_579421
-proc url_AndroidpublisherPurchasesVoidedpurchasesList_580910(protocol: Scheme;
+  Call_AndroidpublisherPurchasesVoidedpurchasesList_589937 = ref object of OpenApiRestCall_588450
+proc url_AndroidpublisherPurchasesVoidedpurchasesList_589939(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -9590,7 +9590,7 @@ proc url_AndroidpublisherPurchasesVoidedpurchasesList_580910(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_AndroidpublisherPurchasesVoidedpurchasesList_580909(path: JsonNode;
+proc validate_AndroidpublisherPurchasesVoidedpurchasesList_589938(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Lists the purchases that were canceled, refunded or charged-back.
   ## 
@@ -9602,11 +9602,11 @@ proc validate_AndroidpublisherPurchasesVoidedpurchasesList_580909(path: JsonNode
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `packageName` field"
-  var valid_580911 = path.getOrDefault("packageName")
-  valid_580911 = validateParameter(valid_580911, JString, required = true,
+  var valid_589940 = path.getOrDefault("packageName")
+  valid_589940 = validateParameter(valid_589940, JString, required = true,
                                  default = nil)
-  if valid_580911 != nil:
-    section.add "packageName", valid_580911
+  if valid_589940 != nil:
+    section.add "packageName", valid_589940
   result.add "path", section
   ## parameters in `query` object:
   ##   token: JString
@@ -9631,64 +9631,64 @@ proc validate_AndroidpublisherPurchasesVoidedpurchasesList_580909(path: JsonNode
   ##            : The time, in milliseconds since the Epoch, of the oldest voided purchase that you want to see in the response. The value of this parameter cannot be older than 30 days and is ignored if a pagination token is set. Default value is current time minus 30 days. Note: This filter is applied on the time at which the record is seen as voided by our systems and not the actual voided time returned in the response.
   ##   startIndex: JInt
   section = newJObject()
-  var valid_580912 = query.getOrDefault("token")
-  valid_580912 = validateParameter(valid_580912, JString, required = false,
+  var valid_589941 = query.getOrDefault("token")
+  valid_589941 = validateParameter(valid_589941, JString, required = false,
                                  default = nil)
-  if valid_580912 != nil:
-    section.add "token", valid_580912
-  var valid_580913 = query.getOrDefault("fields")
-  valid_580913 = validateParameter(valid_580913, JString, required = false,
+  if valid_589941 != nil:
+    section.add "token", valid_589941
+  var valid_589942 = query.getOrDefault("fields")
+  valid_589942 = validateParameter(valid_589942, JString, required = false,
                                  default = nil)
-  if valid_580913 != nil:
-    section.add "fields", valid_580913
-  var valid_580914 = query.getOrDefault("quotaUser")
-  valid_580914 = validateParameter(valid_580914, JString, required = false,
+  if valid_589942 != nil:
+    section.add "fields", valid_589942
+  var valid_589943 = query.getOrDefault("quotaUser")
+  valid_589943 = validateParameter(valid_589943, JString, required = false,
                                  default = nil)
-  if valid_580914 != nil:
-    section.add "quotaUser", valid_580914
-  var valid_580915 = query.getOrDefault("alt")
-  valid_580915 = validateParameter(valid_580915, JString, required = false,
+  if valid_589943 != nil:
+    section.add "quotaUser", valid_589943
+  var valid_589944 = query.getOrDefault("alt")
+  valid_589944 = validateParameter(valid_589944, JString, required = false,
                                  default = newJString("json"))
-  if valid_580915 != nil:
-    section.add "alt", valid_580915
-  var valid_580916 = query.getOrDefault("oauth_token")
-  valid_580916 = validateParameter(valid_580916, JString, required = false,
+  if valid_589944 != nil:
+    section.add "alt", valid_589944
+  var valid_589945 = query.getOrDefault("oauth_token")
+  valid_589945 = validateParameter(valid_589945, JString, required = false,
                                  default = nil)
-  if valid_580916 != nil:
-    section.add "oauth_token", valid_580916
-  var valid_580917 = query.getOrDefault("endTime")
-  valid_580917 = validateParameter(valid_580917, JString, required = false,
+  if valid_589945 != nil:
+    section.add "oauth_token", valid_589945
+  var valid_589946 = query.getOrDefault("endTime")
+  valid_589946 = validateParameter(valid_589946, JString, required = false,
                                  default = nil)
-  if valid_580917 != nil:
-    section.add "endTime", valid_580917
-  var valid_580918 = query.getOrDefault("userIp")
-  valid_580918 = validateParameter(valid_580918, JString, required = false,
+  if valid_589946 != nil:
+    section.add "endTime", valid_589946
+  var valid_589947 = query.getOrDefault("userIp")
+  valid_589947 = validateParameter(valid_589947, JString, required = false,
                                  default = nil)
-  if valid_580918 != nil:
-    section.add "userIp", valid_580918
-  var valid_580919 = query.getOrDefault("maxResults")
-  valid_580919 = validateParameter(valid_580919, JInt, required = false, default = nil)
-  if valid_580919 != nil:
-    section.add "maxResults", valid_580919
-  var valid_580920 = query.getOrDefault("key")
-  valid_580920 = validateParameter(valid_580920, JString, required = false,
+  if valid_589947 != nil:
+    section.add "userIp", valid_589947
+  var valid_589948 = query.getOrDefault("maxResults")
+  valid_589948 = validateParameter(valid_589948, JInt, required = false, default = nil)
+  if valid_589948 != nil:
+    section.add "maxResults", valid_589948
+  var valid_589949 = query.getOrDefault("key")
+  valid_589949 = validateParameter(valid_589949, JString, required = false,
                                  default = nil)
-  if valid_580920 != nil:
-    section.add "key", valid_580920
-  var valid_580921 = query.getOrDefault("prettyPrint")
-  valid_580921 = validateParameter(valid_580921, JBool, required = false,
+  if valid_589949 != nil:
+    section.add "key", valid_589949
+  var valid_589950 = query.getOrDefault("prettyPrint")
+  valid_589950 = validateParameter(valid_589950, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580921 != nil:
-    section.add "prettyPrint", valid_580921
-  var valid_580922 = query.getOrDefault("startTime")
-  valid_580922 = validateParameter(valid_580922, JString, required = false,
+  if valid_589950 != nil:
+    section.add "prettyPrint", valid_589950
+  var valid_589951 = query.getOrDefault("startTime")
+  valid_589951 = validateParameter(valid_589951, JString, required = false,
                                  default = nil)
-  if valid_580922 != nil:
-    section.add "startTime", valid_580922
-  var valid_580923 = query.getOrDefault("startIndex")
-  valid_580923 = validateParameter(valid_580923, JInt, required = false, default = nil)
-  if valid_580923 != nil:
-    section.add "startIndex", valid_580923
+  if valid_589951 != nil:
+    section.add "startTime", valid_589951
+  var valid_589952 = query.getOrDefault("startIndex")
+  valid_589952 = validateParameter(valid_589952, JInt, required = false, default = nil)
+  if valid_589952 != nil:
+    section.add "startIndex", valid_589952
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -9697,21 +9697,21 @@ proc validate_AndroidpublisherPurchasesVoidedpurchasesList_580909(path: JsonNode
   if body != nil:
     result.add "body", body
 
-proc call*(call_580924: Call_AndroidpublisherPurchasesVoidedpurchasesList_580908;
+proc call*(call_589953: Call_AndroidpublisherPurchasesVoidedpurchasesList_589937;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Lists the purchases that were canceled, refunded or charged-back.
   ## 
-  let valid = call_580924.validator(path, query, header, formData, body)
-  let scheme = call_580924.pickScheme
+  let valid = call_589953.validator(path, query, header, formData, body)
+  let scheme = call_589953.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580924.url(scheme.get, call_580924.host, call_580924.base,
-                         call_580924.route, valid.getOrDefault("path"),
+  let url = call_589953.url(scheme.get, call_589953.host, call_589953.base,
+                         call_589953.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580924, url, valid)
+  result = hook(call_589953, url, valid)
 
-proc call*(call_580925: Call_AndroidpublisherPurchasesVoidedpurchasesList_580908;
+proc call*(call_589954: Call_AndroidpublisherPurchasesVoidedpurchasesList_589937;
           packageName: string; token: string = ""; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           endTime: string = ""; userIp: string = ""; maxResults: int = 0; key: string = "";
@@ -9741,34 +9741,34 @@ proc call*(call_580925: Call_AndroidpublisherPurchasesVoidedpurchasesList_580908
   ##   startTime: string
   ##            : The time, in milliseconds since the Epoch, of the oldest voided purchase that you want to see in the response. The value of this parameter cannot be older than 30 days and is ignored if a pagination token is set. Default value is current time minus 30 days. Note: This filter is applied on the time at which the record is seen as voided by our systems and not the actual voided time returned in the response.
   ##   startIndex: int
-  var path_580926 = newJObject()
-  var query_580927 = newJObject()
-  add(query_580927, "token", newJString(token))
-  add(query_580927, "fields", newJString(fields))
-  add(path_580926, "packageName", newJString(packageName))
-  add(query_580927, "quotaUser", newJString(quotaUser))
-  add(query_580927, "alt", newJString(alt))
-  add(query_580927, "oauth_token", newJString(oauthToken))
-  add(query_580927, "endTime", newJString(endTime))
-  add(query_580927, "userIp", newJString(userIp))
-  add(query_580927, "maxResults", newJInt(maxResults))
-  add(query_580927, "key", newJString(key))
-  add(query_580927, "prettyPrint", newJBool(prettyPrint))
-  add(query_580927, "startTime", newJString(startTime))
-  add(query_580927, "startIndex", newJInt(startIndex))
-  result = call_580925.call(path_580926, query_580927, nil, nil, nil)
+  var path_589955 = newJObject()
+  var query_589956 = newJObject()
+  add(query_589956, "token", newJString(token))
+  add(query_589956, "fields", newJString(fields))
+  add(path_589955, "packageName", newJString(packageName))
+  add(query_589956, "quotaUser", newJString(quotaUser))
+  add(query_589956, "alt", newJString(alt))
+  add(query_589956, "oauth_token", newJString(oauthToken))
+  add(query_589956, "endTime", newJString(endTime))
+  add(query_589956, "userIp", newJString(userIp))
+  add(query_589956, "maxResults", newJInt(maxResults))
+  add(query_589956, "key", newJString(key))
+  add(query_589956, "prettyPrint", newJBool(prettyPrint))
+  add(query_589956, "startTime", newJString(startTime))
+  add(query_589956, "startIndex", newJInt(startIndex))
+  result = call_589954.call(path_589955, query_589956, nil, nil, nil)
 
-var androidpublisherPurchasesVoidedpurchasesList* = Call_AndroidpublisherPurchasesVoidedpurchasesList_580908(
+var androidpublisherPurchasesVoidedpurchasesList* = Call_AndroidpublisherPurchasesVoidedpurchasesList_589937(
     name: "androidpublisherPurchasesVoidedpurchasesList",
     meth: HttpMethod.HttpGet, host: "www.googleapis.com",
     route: "/{packageName}/purchases/voidedpurchases",
-    validator: validate_AndroidpublisherPurchasesVoidedpurchasesList_580909,
+    validator: validate_AndroidpublisherPurchasesVoidedpurchasesList_589938,
     base: "/androidpublisher/v2/applications",
-    url: url_AndroidpublisherPurchasesVoidedpurchasesList_580910,
+    url: url_AndroidpublisherPurchasesVoidedpurchasesList_589939,
     schemes: {Scheme.Https})
 type
-  Call_AndroidpublisherReviewsList_580928 = ref object of OpenApiRestCall_579421
-proc url_AndroidpublisherReviewsList_580930(protocol: Scheme; host: string;
+  Call_AndroidpublisherReviewsList_589957 = ref object of OpenApiRestCall_588450
+proc url_AndroidpublisherReviewsList_589959(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -9784,7 +9784,7 @@ proc url_AndroidpublisherReviewsList_580930(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_AndroidpublisherReviewsList_580929(path: JsonNode; query: JsonNode;
+proc validate_AndroidpublisherReviewsList_589958(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Returns a list of reviews. Only reviews from last week will be returned.
   ## 
@@ -9796,11 +9796,11 @@ proc validate_AndroidpublisherReviewsList_580929(path: JsonNode; query: JsonNode
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `packageName` field"
-  var valid_580931 = path.getOrDefault("packageName")
-  valid_580931 = validateParameter(valid_580931, JString, required = true,
+  var valid_589960 = path.getOrDefault("packageName")
+  valid_589960 = validateParameter(valid_589960, JString, required = true,
                                  default = nil)
-  if valid_580931 != nil:
-    section.add "packageName", valid_580931
+  if valid_589960 != nil:
+    section.add "packageName", valid_589960
   result.add "path", section
   ## parameters in `query` object:
   ##   translationLanguage: JString
@@ -9822,59 +9822,59 @@ proc validate_AndroidpublisherReviewsList_580929(path: JsonNode; query: JsonNode
   ##              : Returns response with indentations and line breaks.
   ##   startIndex: JInt
   section = newJObject()
-  var valid_580932 = query.getOrDefault("translationLanguage")
-  valid_580932 = validateParameter(valid_580932, JString, required = false,
+  var valid_589961 = query.getOrDefault("translationLanguage")
+  valid_589961 = validateParameter(valid_589961, JString, required = false,
                                  default = nil)
-  if valid_580932 != nil:
-    section.add "translationLanguage", valid_580932
-  var valid_580933 = query.getOrDefault("token")
-  valid_580933 = validateParameter(valid_580933, JString, required = false,
+  if valid_589961 != nil:
+    section.add "translationLanguage", valid_589961
+  var valid_589962 = query.getOrDefault("token")
+  valid_589962 = validateParameter(valid_589962, JString, required = false,
                                  default = nil)
-  if valid_580933 != nil:
-    section.add "token", valid_580933
-  var valid_580934 = query.getOrDefault("fields")
-  valid_580934 = validateParameter(valid_580934, JString, required = false,
+  if valid_589962 != nil:
+    section.add "token", valid_589962
+  var valid_589963 = query.getOrDefault("fields")
+  valid_589963 = validateParameter(valid_589963, JString, required = false,
                                  default = nil)
-  if valid_580934 != nil:
-    section.add "fields", valid_580934
-  var valid_580935 = query.getOrDefault("quotaUser")
-  valid_580935 = validateParameter(valid_580935, JString, required = false,
+  if valid_589963 != nil:
+    section.add "fields", valid_589963
+  var valid_589964 = query.getOrDefault("quotaUser")
+  valid_589964 = validateParameter(valid_589964, JString, required = false,
                                  default = nil)
-  if valid_580935 != nil:
-    section.add "quotaUser", valid_580935
-  var valid_580936 = query.getOrDefault("alt")
-  valid_580936 = validateParameter(valid_580936, JString, required = false,
+  if valid_589964 != nil:
+    section.add "quotaUser", valid_589964
+  var valid_589965 = query.getOrDefault("alt")
+  valid_589965 = validateParameter(valid_589965, JString, required = false,
                                  default = newJString("json"))
-  if valid_580936 != nil:
-    section.add "alt", valid_580936
-  var valid_580937 = query.getOrDefault("oauth_token")
-  valid_580937 = validateParameter(valid_580937, JString, required = false,
+  if valid_589965 != nil:
+    section.add "alt", valid_589965
+  var valid_589966 = query.getOrDefault("oauth_token")
+  valid_589966 = validateParameter(valid_589966, JString, required = false,
                                  default = nil)
-  if valid_580937 != nil:
-    section.add "oauth_token", valid_580937
-  var valid_580938 = query.getOrDefault("userIp")
-  valid_580938 = validateParameter(valid_580938, JString, required = false,
+  if valid_589966 != nil:
+    section.add "oauth_token", valid_589966
+  var valid_589967 = query.getOrDefault("userIp")
+  valid_589967 = validateParameter(valid_589967, JString, required = false,
                                  default = nil)
-  if valid_580938 != nil:
-    section.add "userIp", valid_580938
-  var valid_580939 = query.getOrDefault("maxResults")
-  valid_580939 = validateParameter(valid_580939, JInt, required = false, default = nil)
-  if valid_580939 != nil:
-    section.add "maxResults", valid_580939
-  var valid_580940 = query.getOrDefault("key")
-  valid_580940 = validateParameter(valid_580940, JString, required = false,
+  if valid_589967 != nil:
+    section.add "userIp", valid_589967
+  var valid_589968 = query.getOrDefault("maxResults")
+  valid_589968 = validateParameter(valid_589968, JInt, required = false, default = nil)
+  if valid_589968 != nil:
+    section.add "maxResults", valid_589968
+  var valid_589969 = query.getOrDefault("key")
+  valid_589969 = validateParameter(valid_589969, JString, required = false,
                                  default = nil)
-  if valid_580940 != nil:
-    section.add "key", valid_580940
-  var valid_580941 = query.getOrDefault("prettyPrint")
-  valid_580941 = validateParameter(valid_580941, JBool, required = false,
+  if valid_589969 != nil:
+    section.add "key", valid_589969
+  var valid_589970 = query.getOrDefault("prettyPrint")
+  valid_589970 = validateParameter(valid_589970, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580941 != nil:
-    section.add "prettyPrint", valid_580941
-  var valid_580942 = query.getOrDefault("startIndex")
-  valid_580942 = validateParameter(valid_580942, JInt, required = false, default = nil)
-  if valid_580942 != nil:
-    section.add "startIndex", valid_580942
+  if valid_589970 != nil:
+    section.add "prettyPrint", valid_589970
+  var valid_589971 = query.getOrDefault("startIndex")
+  valid_589971 = validateParameter(valid_589971, JInt, required = false, default = nil)
+  if valid_589971 != nil:
+    section.add "startIndex", valid_589971
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -9883,20 +9883,20 @@ proc validate_AndroidpublisherReviewsList_580929(path: JsonNode; query: JsonNode
   if body != nil:
     result.add "body", body
 
-proc call*(call_580943: Call_AndroidpublisherReviewsList_580928; path: JsonNode;
+proc call*(call_589972: Call_AndroidpublisherReviewsList_589957; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Returns a list of reviews. Only reviews from last week will be returned.
   ## 
-  let valid = call_580943.validator(path, query, header, formData, body)
-  let scheme = call_580943.pickScheme
+  let valid = call_589972.validator(path, query, header, formData, body)
+  let scheme = call_589972.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580943.url(scheme.get, call_580943.host, call_580943.base,
-                         call_580943.route, valid.getOrDefault("path"),
+  let url = call_589972.url(scheme.get, call_589972.host, call_589972.base,
+                         call_589972.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580943, url, valid)
+  result = hook(call_589972, url, valid)
 
-proc call*(call_580944: Call_AndroidpublisherReviewsList_580928;
+proc call*(call_589973: Call_AndroidpublisherReviewsList_589957;
           packageName: string; translationLanguage: string = ""; token: string = "";
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           oauthToken: string = ""; userIp: string = ""; maxResults: int = 0;
@@ -9923,31 +9923,31 @@ proc call*(call_580944: Call_AndroidpublisherReviewsList_580928;
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
   ##   startIndex: int
-  var path_580945 = newJObject()
-  var query_580946 = newJObject()
-  add(query_580946, "translationLanguage", newJString(translationLanguage))
-  add(query_580946, "token", newJString(token))
-  add(query_580946, "fields", newJString(fields))
-  add(path_580945, "packageName", newJString(packageName))
-  add(query_580946, "quotaUser", newJString(quotaUser))
-  add(query_580946, "alt", newJString(alt))
-  add(query_580946, "oauth_token", newJString(oauthToken))
-  add(query_580946, "userIp", newJString(userIp))
-  add(query_580946, "maxResults", newJInt(maxResults))
-  add(query_580946, "key", newJString(key))
-  add(query_580946, "prettyPrint", newJBool(prettyPrint))
-  add(query_580946, "startIndex", newJInt(startIndex))
-  result = call_580944.call(path_580945, query_580946, nil, nil, nil)
+  var path_589974 = newJObject()
+  var query_589975 = newJObject()
+  add(query_589975, "translationLanguage", newJString(translationLanguage))
+  add(query_589975, "token", newJString(token))
+  add(query_589975, "fields", newJString(fields))
+  add(path_589974, "packageName", newJString(packageName))
+  add(query_589975, "quotaUser", newJString(quotaUser))
+  add(query_589975, "alt", newJString(alt))
+  add(query_589975, "oauth_token", newJString(oauthToken))
+  add(query_589975, "userIp", newJString(userIp))
+  add(query_589975, "maxResults", newJInt(maxResults))
+  add(query_589975, "key", newJString(key))
+  add(query_589975, "prettyPrint", newJBool(prettyPrint))
+  add(query_589975, "startIndex", newJInt(startIndex))
+  result = call_589973.call(path_589974, query_589975, nil, nil, nil)
 
-var androidpublisherReviewsList* = Call_AndroidpublisherReviewsList_580928(
+var androidpublisherReviewsList* = Call_AndroidpublisherReviewsList_589957(
     name: "androidpublisherReviewsList", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/{packageName}/reviews",
-    validator: validate_AndroidpublisherReviewsList_580929,
+    validator: validate_AndroidpublisherReviewsList_589958,
     base: "/androidpublisher/v2/applications",
-    url: url_AndroidpublisherReviewsList_580930, schemes: {Scheme.Https})
+    url: url_AndroidpublisherReviewsList_589959, schemes: {Scheme.Https})
 type
-  Call_AndroidpublisherReviewsGet_580947 = ref object of OpenApiRestCall_579421
-proc url_AndroidpublisherReviewsGet_580949(protocol: Scheme; host: string;
+  Call_AndroidpublisherReviewsGet_589976 = ref object of OpenApiRestCall_588450
+proc url_AndroidpublisherReviewsGet_589978(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -9965,7 +9965,7 @@ proc url_AndroidpublisherReviewsGet_580949(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_AndroidpublisherReviewsGet_580948(path: JsonNode; query: JsonNode;
+proc validate_AndroidpublisherReviewsGet_589977(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Returns a single review.
   ## 
@@ -9978,16 +9978,16 @@ proc validate_AndroidpublisherReviewsGet_580948(path: JsonNode; query: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `packageName` field"
-  var valid_580950 = path.getOrDefault("packageName")
-  valid_580950 = validateParameter(valid_580950, JString, required = true,
+  var valid_589979 = path.getOrDefault("packageName")
+  valid_589979 = validateParameter(valid_589979, JString, required = true,
                                  default = nil)
-  if valid_580950 != nil:
-    section.add "packageName", valid_580950
-  var valid_580951 = path.getOrDefault("reviewId")
-  valid_580951 = validateParameter(valid_580951, JString, required = true,
+  if valid_589979 != nil:
+    section.add "packageName", valid_589979
+  var valid_589980 = path.getOrDefault("reviewId")
+  valid_589980 = validateParameter(valid_589980, JString, required = true,
                                  default = nil)
-  if valid_580951 != nil:
-    section.add "reviewId", valid_580951
+  if valid_589980 != nil:
+    section.add "reviewId", valid_589980
   result.add "path", section
   ## parameters in `query` object:
   ##   translationLanguage: JString
@@ -10006,46 +10006,46 @@ proc validate_AndroidpublisherReviewsGet_580948(path: JsonNode; query: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580952 = query.getOrDefault("translationLanguage")
-  valid_580952 = validateParameter(valid_580952, JString, required = false,
+  var valid_589981 = query.getOrDefault("translationLanguage")
+  valid_589981 = validateParameter(valid_589981, JString, required = false,
                                  default = nil)
-  if valid_580952 != nil:
-    section.add "translationLanguage", valid_580952
-  var valid_580953 = query.getOrDefault("fields")
-  valid_580953 = validateParameter(valid_580953, JString, required = false,
+  if valid_589981 != nil:
+    section.add "translationLanguage", valid_589981
+  var valid_589982 = query.getOrDefault("fields")
+  valid_589982 = validateParameter(valid_589982, JString, required = false,
                                  default = nil)
-  if valid_580953 != nil:
-    section.add "fields", valid_580953
-  var valid_580954 = query.getOrDefault("quotaUser")
-  valid_580954 = validateParameter(valid_580954, JString, required = false,
+  if valid_589982 != nil:
+    section.add "fields", valid_589982
+  var valid_589983 = query.getOrDefault("quotaUser")
+  valid_589983 = validateParameter(valid_589983, JString, required = false,
                                  default = nil)
-  if valid_580954 != nil:
-    section.add "quotaUser", valid_580954
-  var valid_580955 = query.getOrDefault("alt")
-  valid_580955 = validateParameter(valid_580955, JString, required = false,
+  if valid_589983 != nil:
+    section.add "quotaUser", valid_589983
+  var valid_589984 = query.getOrDefault("alt")
+  valid_589984 = validateParameter(valid_589984, JString, required = false,
                                  default = newJString("json"))
-  if valid_580955 != nil:
-    section.add "alt", valid_580955
-  var valid_580956 = query.getOrDefault("oauth_token")
-  valid_580956 = validateParameter(valid_580956, JString, required = false,
+  if valid_589984 != nil:
+    section.add "alt", valid_589984
+  var valid_589985 = query.getOrDefault("oauth_token")
+  valid_589985 = validateParameter(valid_589985, JString, required = false,
                                  default = nil)
-  if valid_580956 != nil:
-    section.add "oauth_token", valid_580956
-  var valid_580957 = query.getOrDefault("userIp")
-  valid_580957 = validateParameter(valid_580957, JString, required = false,
+  if valid_589985 != nil:
+    section.add "oauth_token", valid_589985
+  var valid_589986 = query.getOrDefault("userIp")
+  valid_589986 = validateParameter(valid_589986, JString, required = false,
                                  default = nil)
-  if valid_580957 != nil:
-    section.add "userIp", valid_580957
-  var valid_580958 = query.getOrDefault("key")
-  valid_580958 = validateParameter(valid_580958, JString, required = false,
+  if valid_589986 != nil:
+    section.add "userIp", valid_589986
+  var valid_589987 = query.getOrDefault("key")
+  valid_589987 = validateParameter(valid_589987, JString, required = false,
                                  default = nil)
-  if valid_580958 != nil:
-    section.add "key", valid_580958
-  var valid_580959 = query.getOrDefault("prettyPrint")
-  valid_580959 = validateParameter(valid_580959, JBool, required = false,
+  if valid_589987 != nil:
+    section.add "key", valid_589987
+  var valid_589988 = query.getOrDefault("prettyPrint")
+  valid_589988 = validateParameter(valid_589988, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580959 != nil:
-    section.add "prettyPrint", valid_580959
+  if valid_589988 != nil:
+    section.add "prettyPrint", valid_589988
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -10054,20 +10054,20 @@ proc validate_AndroidpublisherReviewsGet_580948(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580960: Call_AndroidpublisherReviewsGet_580947; path: JsonNode;
+proc call*(call_589989: Call_AndroidpublisherReviewsGet_589976; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Returns a single review.
   ## 
-  let valid = call_580960.validator(path, query, header, formData, body)
-  let scheme = call_580960.pickScheme
+  let valid = call_589989.validator(path, query, header, formData, body)
+  let scheme = call_589989.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580960.url(scheme.get, call_580960.host, call_580960.base,
-                         call_580960.route, valid.getOrDefault("path"),
+  let url = call_589989.url(scheme.get, call_589989.host, call_589989.base,
+                         call_589989.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580960, url, valid)
+  result = hook(call_589989, url, valid)
 
-proc call*(call_580961: Call_AndroidpublisherReviewsGet_580947;
+proc call*(call_589990: Call_AndroidpublisherReviewsGet_589976;
           packageName: string; reviewId: string; translationLanguage: string = "";
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           oauthToken: string = ""; userIp: string = ""; key: string = "";
@@ -10092,29 +10092,29 @@ proc call*(call_580961: Call_AndroidpublisherReviewsGet_580947;
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_580962 = newJObject()
-  var query_580963 = newJObject()
-  add(query_580963, "translationLanguage", newJString(translationLanguage))
-  add(query_580963, "fields", newJString(fields))
-  add(path_580962, "packageName", newJString(packageName))
-  add(query_580963, "quotaUser", newJString(quotaUser))
-  add(query_580963, "alt", newJString(alt))
-  add(query_580963, "oauth_token", newJString(oauthToken))
-  add(path_580962, "reviewId", newJString(reviewId))
-  add(query_580963, "userIp", newJString(userIp))
-  add(query_580963, "key", newJString(key))
-  add(query_580963, "prettyPrint", newJBool(prettyPrint))
-  result = call_580961.call(path_580962, query_580963, nil, nil, nil)
+  var path_589991 = newJObject()
+  var query_589992 = newJObject()
+  add(query_589992, "translationLanguage", newJString(translationLanguage))
+  add(query_589992, "fields", newJString(fields))
+  add(path_589991, "packageName", newJString(packageName))
+  add(query_589992, "quotaUser", newJString(quotaUser))
+  add(query_589992, "alt", newJString(alt))
+  add(query_589992, "oauth_token", newJString(oauthToken))
+  add(path_589991, "reviewId", newJString(reviewId))
+  add(query_589992, "userIp", newJString(userIp))
+  add(query_589992, "key", newJString(key))
+  add(query_589992, "prettyPrint", newJBool(prettyPrint))
+  result = call_589990.call(path_589991, query_589992, nil, nil, nil)
 
-var androidpublisherReviewsGet* = Call_AndroidpublisherReviewsGet_580947(
+var androidpublisherReviewsGet* = Call_AndroidpublisherReviewsGet_589976(
     name: "androidpublisherReviewsGet", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/{packageName}/reviews/{reviewId}",
-    validator: validate_AndroidpublisherReviewsGet_580948,
+    validator: validate_AndroidpublisherReviewsGet_589977,
     base: "/androidpublisher/v2/applications",
-    url: url_AndroidpublisherReviewsGet_580949, schemes: {Scheme.Https})
+    url: url_AndroidpublisherReviewsGet_589978, schemes: {Scheme.Https})
 type
-  Call_AndroidpublisherReviewsReply_580964 = ref object of OpenApiRestCall_579421
-proc url_AndroidpublisherReviewsReply_580966(protocol: Scheme; host: string;
+  Call_AndroidpublisherReviewsReply_589993 = ref object of OpenApiRestCall_588450
+proc url_AndroidpublisherReviewsReply_589995(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -10133,7 +10133,7 @@ proc url_AndroidpublisherReviewsReply_580966(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_AndroidpublisherReviewsReply_580965(path: JsonNode; query: JsonNode;
+proc validate_AndroidpublisherReviewsReply_589994(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Reply to a single review, or update an existing reply.
   ## 
@@ -10146,16 +10146,16 @@ proc validate_AndroidpublisherReviewsReply_580965(path: JsonNode; query: JsonNod
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `packageName` field"
-  var valid_580967 = path.getOrDefault("packageName")
-  valid_580967 = validateParameter(valid_580967, JString, required = true,
+  var valid_589996 = path.getOrDefault("packageName")
+  valid_589996 = validateParameter(valid_589996, JString, required = true,
                                  default = nil)
-  if valid_580967 != nil:
-    section.add "packageName", valid_580967
-  var valid_580968 = path.getOrDefault("reviewId")
-  valid_580968 = validateParameter(valid_580968, JString, required = true,
+  if valid_589996 != nil:
+    section.add "packageName", valid_589996
+  var valid_589997 = path.getOrDefault("reviewId")
+  valid_589997 = validateParameter(valid_589997, JString, required = true,
                                  default = nil)
-  if valid_580968 != nil:
-    section.add "reviewId", valid_580968
+  if valid_589997 != nil:
+    section.add "reviewId", valid_589997
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -10173,41 +10173,41 @@ proc validate_AndroidpublisherReviewsReply_580965(path: JsonNode; query: JsonNod
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580969 = query.getOrDefault("fields")
-  valid_580969 = validateParameter(valid_580969, JString, required = false,
+  var valid_589998 = query.getOrDefault("fields")
+  valid_589998 = validateParameter(valid_589998, JString, required = false,
                                  default = nil)
-  if valid_580969 != nil:
-    section.add "fields", valid_580969
-  var valid_580970 = query.getOrDefault("quotaUser")
-  valid_580970 = validateParameter(valid_580970, JString, required = false,
+  if valid_589998 != nil:
+    section.add "fields", valid_589998
+  var valid_589999 = query.getOrDefault("quotaUser")
+  valid_589999 = validateParameter(valid_589999, JString, required = false,
                                  default = nil)
-  if valid_580970 != nil:
-    section.add "quotaUser", valid_580970
-  var valid_580971 = query.getOrDefault("alt")
-  valid_580971 = validateParameter(valid_580971, JString, required = false,
+  if valid_589999 != nil:
+    section.add "quotaUser", valid_589999
+  var valid_590000 = query.getOrDefault("alt")
+  valid_590000 = validateParameter(valid_590000, JString, required = false,
                                  default = newJString("json"))
-  if valid_580971 != nil:
-    section.add "alt", valid_580971
-  var valid_580972 = query.getOrDefault("oauth_token")
-  valid_580972 = validateParameter(valid_580972, JString, required = false,
+  if valid_590000 != nil:
+    section.add "alt", valid_590000
+  var valid_590001 = query.getOrDefault("oauth_token")
+  valid_590001 = validateParameter(valid_590001, JString, required = false,
                                  default = nil)
-  if valid_580972 != nil:
-    section.add "oauth_token", valid_580972
-  var valid_580973 = query.getOrDefault("userIp")
-  valid_580973 = validateParameter(valid_580973, JString, required = false,
+  if valid_590001 != nil:
+    section.add "oauth_token", valid_590001
+  var valid_590002 = query.getOrDefault("userIp")
+  valid_590002 = validateParameter(valid_590002, JString, required = false,
                                  default = nil)
-  if valid_580973 != nil:
-    section.add "userIp", valid_580973
-  var valid_580974 = query.getOrDefault("key")
-  valid_580974 = validateParameter(valid_580974, JString, required = false,
+  if valid_590002 != nil:
+    section.add "userIp", valid_590002
+  var valid_590003 = query.getOrDefault("key")
+  valid_590003 = validateParameter(valid_590003, JString, required = false,
                                  default = nil)
-  if valid_580974 != nil:
-    section.add "key", valid_580974
-  var valid_580975 = query.getOrDefault("prettyPrint")
-  valid_580975 = validateParameter(valid_580975, JBool, required = false,
+  if valid_590003 != nil:
+    section.add "key", valid_590003
+  var valid_590004 = query.getOrDefault("prettyPrint")
+  valid_590004 = validateParameter(valid_590004, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580975 != nil:
-    section.add "prettyPrint", valid_580975
+  if valid_590004 != nil:
+    section.add "prettyPrint", valid_590004
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -10219,20 +10219,20 @@ proc validate_AndroidpublisherReviewsReply_580965(path: JsonNode; query: JsonNod
   if body != nil:
     result.add "body", body
 
-proc call*(call_580977: Call_AndroidpublisherReviewsReply_580964; path: JsonNode;
+proc call*(call_590006: Call_AndroidpublisherReviewsReply_589993; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Reply to a single review, or update an existing reply.
   ## 
-  let valid = call_580977.validator(path, query, header, formData, body)
-  let scheme = call_580977.pickScheme
+  let valid = call_590006.validator(path, query, header, formData, body)
+  let scheme = call_590006.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580977.url(scheme.get, call_580977.host, call_580977.base,
-                         call_580977.route, valid.getOrDefault("path"),
+  let url = call_590006.url(scheme.get, call_590006.host, call_590006.base,
+                         call_590006.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580977, url, valid)
+  result = hook(call_590006, url, valid)
 
-proc call*(call_580978: Call_AndroidpublisherReviewsReply_580964;
+proc call*(call_590007: Call_AndroidpublisherReviewsReply_589993;
           packageName: string; reviewId: string; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; key: string = ""; body: JsonNode = nil;
@@ -10257,28 +10257,28 @@ proc call*(call_580978: Call_AndroidpublisherReviewsReply_580964;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_580979 = newJObject()
-  var query_580980 = newJObject()
-  var body_580981 = newJObject()
-  add(query_580980, "fields", newJString(fields))
-  add(path_580979, "packageName", newJString(packageName))
-  add(query_580980, "quotaUser", newJString(quotaUser))
-  add(query_580980, "alt", newJString(alt))
-  add(query_580980, "oauth_token", newJString(oauthToken))
-  add(path_580979, "reviewId", newJString(reviewId))
-  add(query_580980, "userIp", newJString(userIp))
-  add(query_580980, "key", newJString(key))
+  var path_590008 = newJObject()
+  var query_590009 = newJObject()
+  var body_590010 = newJObject()
+  add(query_590009, "fields", newJString(fields))
+  add(path_590008, "packageName", newJString(packageName))
+  add(query_590009, "quotaUser", newJString(quotaUser))
+  add(query_590009, "alt", newJString(alt))
+  add(query_590009, "oauth_token", newJString(oauthToken))
+  add(path_590008, "reviewId", newJString(reviewId))
+  add(query_590009, "userIp", newJString(userIp))
+  add(query_590009, "key", newJString(key))
   if body != nil:
-    body_580981 = body
-  add(query_580980, "prettyPrint", newJBool(prettyPrint))
-  result = call_580978.call(path_580979, query_580980, nil, nil, body_580981)
+    body_590010 = body
+  add(query_590009, "prettyPrint", newJBool(prettyPrint))
+  result = call_590007.call(path_590008, query_590009, nil, nil, body_590010)
 
-var androidpublisherReviewsReply* = Call_AndroidpublisherReviewsReply_580964(
+var androidpublisherReviewsReply* = Call_AndroidpublisherReviewsReply_589993(
     name: "androidpublisherReviewsReply", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com", route: "/{packageName}/reviews/{reviewId}:reply",
-    validator: validate_AndroidpublisherReviewsReply_580965,
+    validator: validate_AndroidpublisherReviewsReply_589994,
     base: "/androidpublisher/v2/applications",
-    url: url_AndroidpublisherReviewsReply_580966, schemes: {Scheme.Https})
+    url: url_AndroidpublisherReviewsReply_589995, schemes: {Scheme.Https})
 export
   rest
 
@@ -10320,7 +10320,7 @@ proc store(auth: var GoogleAuth; token: string; expiry: int; form: string) =
   auth.form = form
   auth.digest = auth.hash
 
-proc authenticate*(fresh: float64 = -3600.0; lifetime: int = 3600): Future[bool] {.async.} =
+proc authenticate*(fresh: float64 = 3600.0; lifetime: int = 3600): Future[bool] {.async.} =
   ## get or refresh an authentication token; provide `fresh`
   ## to ensure that the token won't expire in the next N seconds.
   ## provide `lifetime` to indicate how long the token should last.

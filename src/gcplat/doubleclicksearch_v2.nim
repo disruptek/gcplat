@@ -29,15 +29,15 @@ type
     url*: proc (protocol: Scheme; host: string; base: string; route: string;
               path: JsonNode; query: JsonNode): Uri
 
-  OpenApiRestCall_579424 = ref object of OpenApiRestCall
+  OpenApiRestCall_588457 = ref object of OpenApiRestCall
 proc hash(scheme: Scheme): Hash {.used.} =
   result = hash(ord(scheme))
 
-proc clone[T: OpenApiRestCall_579424](t: T): T {.used.} =
+proc clone[T: OpenApiRestCall_588457](t: T): T {.used.} =
   result = T(name: t.name, meth: t.meth, host: t.host, base: t.base, route: t.route,
            schemes: t.schemes, validator: t.validator, url: t.url)
 
-proc pickScheme(t: OpenApiRestCall_579424): Option[Scheme] {.used.} =
+proc pickScheme(t: OpenApiRestCall_588457): Option[Scheme] {.used.} =
   ## select a supported scheme from a set of candidates
   for scheme in Scheme.low ..
       Scheme.high:
@@ -74,7 +74,7 @@ type
   PathTokenKind = enum
     ConstantSegment, VariableSegment
   PathToken = tuple[kind: PathTokenKind, value: string]
-proc queryString(query: JsonNode): string =
+proc queryString(query: JsonNode): string {.used.} =
   var qs: seq[KeyVal]
   if query == nil:
     return ""
@@ -82,7 +82,7 @@ proc queryString(query: JsonNode): string =
     qs.add (key: k, val: v.getStr)
   result = encodeQuery(qs)
 
-proc hydratePath(input: JsonNode; segments: seq[PathToken]): Option[string] =
+proc hydratePath(input: JsonNode; segments: seq[PathToken]): Option[string] {.used.} =
   ## reconstitute a path with constants and variable values taken from json
   var head: string
   if segments.len == 0:
@@ -108,8 +108,8 @@ const
 proc composeQueryString(query: JsonNode): string
 method hook(call: OpenApiRestCall; url: Uri; input: JsonNode): Recallable {.base.}
 type
-  Call_DoubleclicksearchConversionGet_579692 = ref object of OpenApiRestCall_579424
-proc url_DoubleclicksearchConversionGet_579694(protocol: Scheme; host: string;
+  Call_DoubleclicksearchConversionGet_588725 = ref object of OpenApiRestCall_588457
+proc url_DoubleclicksearchConversionGet_588727(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -131,7 +131,7 @@ proc url_DoubleclicksearchConversionGet_579694(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_DoubleclicksearchConversionGet_579693(path: JsonNode;
+proc validate_DoubleclicksearchConversionGet_588726(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Retrieves a list of conversions from a DoubleClick Search engine account.
   ## 
@@ -146,21 +146,21 @@ proc validate_DoubleclicksearchConversionGet_579693(path: JsonNode;
   ##               : Numeric ID of the advertiser.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `agencyId` field"
-  var valid_579820 = path.getOrDefault("agencyId")
-  valid_579820 = validateParameter(valid_579820, JString, required = true,
+  var valid_588853 = path.getOrDefault("agencyId")
+  valid_588853 = validateParameter(valid_588853, JString, required = true,
                                  default = nil)
-  if valid_579820 != nil:
-    section.add "agencyId", valid_579820
-  var valid_579821 = path.getOrDefault("engineAccountId")
-  valid_579821 = validateParameter(valid_579821, JString, required = true,
+  if valid_588853 != nil:
+    section.add "agencyId", valid_588853
+  var valid_588854 = path.getOrDefault("engineAccountId")
+  valid_588854 = validateParameter(valid_588854, JString, required = true,
                                  default = nil)
-  if valid_579821 != nil:
-    section.add "engineAccountId", valid_579821
-  var valid_579822 = path.getOrDefault("advertiserId")
-  valid_579822 = validateParameter(valid_579822, JString, required = true,
+  if valid_588854 != nil:
+    section.add "engineAccountId", valid_588854
+  var valid_588855 = path.getOrDefault("advertiserId")
+  valid_588855 = validateParameter(valid_588855, JString, required = true,
                                  default = nil)
-  if valid_579822 != nil:
-    section.add "advertiserId", valid_579822
+  if valid_588855 != nil:
+    section.add "advertiserId", valid_588855
   result.add "path", section
   ## parameters in `query` object:
   ##   adGroupId: JString
@@ -194,78 +194,78 @@ proc validate_DoubleclicksearchConversionGet_579693(path: JsonNode;
   ##   rowCount: JInt (required)
   ##           : The number of conversions to return per call.
   section = newJObject()
-  var valid_579823 = query.getOrDefault("adGroupId")
-  valid_579823 = validateParameter(valid_579823, JString, required = false,
+  var valid_588856 = query.getOrDefault("adGroupId")
+  valid_588856 = validateParameter(valid_588856, JString, required = false,
                                  default = nil)
-  if valid_579823 != nil:
-    section.add "adGroupId", valid_579823
-  var valid_579824 = query.getOrDefault("fields")
-  valid_579824 = validateParameter(valid_579824, JString, required = false,
+  if valid_588856 != nil:
+    section.add "adGroupId", valid_588856
+  var valid_588857 = query.getOrDefault("fields")
+  valid_588857 = validateParameter(valid_588857, JString, required = false,
                                  default = nil)
-  if valid_579824 != nil:
-    section.add "fields", valid_579824
-  var valid_579825 = query.getOrDefault("quotaUser")
-  valid_579825 = validateParameter(valid_579825, JString, required = false,
+  if valid_588857 != nil:
+    section.add "fields", valid_588857
+  var valid_588858 = query.getOrDefault("quotaUser")
+  valid_588858 = validateParameter(valid_588858, JString, required = false,
                                  default = nil)
-  if valid_579825 != nil:
-    section.add "quotaUser", valid_579825
-  var valid_579839 = query.getOrDefault("alt")
-  valid_579839 = validateParameter(valid_579839, JString, required = false,
+  if valid_588858 != nil:
+    section.add "quotaUser", valid_588858
+  var valid_588872 = query.getOrDefault("alt")
+  valid_588872 = validateParameter(valid_588872, JString, required = false,
                                  default = newJString("json"))
-  if valid_579839 != nil:
-    section.add "alt", valid_579839
+  if valid_588872 != nil:
+    section.add "alt", valid_588872
   assert query != nil, "query argument is necessary due to required `endDate` field"
-  var valid_579840 = query.getOrDefault("endDate")
-  valid_579840 = validateParameter(valid_579840, JInt, required = true, default = nil)
-  if valid_579840 != nil:
-    section.add "endDate", valid_579840
-  var valid_579841 = query.getOrDefault("startDate")
-  valid_579841 = validateParameter(valid_579841, JInt, required = true, default = nil)
-  if valid_579841 != nil:
-    section.add "startDate", valid_579841
-  var valid_579842 = query.getOrDefault("criterionId")
-  valid_579842 = validateParameter(valid_579842, JString, required = false,
+  var valid_588873 = query.getOrDefault("endDate")
+  valid_588873 = validateParameter(valid_588873, JInt, required = true, default = nil)
+  if valid_588873 != nil:
+    section.add "endDate", valid_588873
+  var valid_588874 = query.getOrDefault("startDate")
+  valid_588874 = validateParameter(valid_588874, JInt, required = true, default = nil)
+  if valid_588874 != nil:
+    section.add "startDate", valid_588874
+  var valid_588875 = query.getOrDefault("criterionId")
+  valid_588875 = validateParameter(valid_588875, JString, required = false,
                                  default = nil)
-  if valid_579842 != nil:
-    section.add "criterionId", valid_579842
-  var valid_579843 = query.getOrDefault("oauth_token")
-  valid_579843 = validateParameter(valid_579843, JString, required = false,
+  if valid_588875 != nil:
+    section.add "criterionId", valid_588875
+  var valid_588876 = query.getOrDefault("oauth_token")
+  valid_588876 = validateParameter(valid_588876, JString, required = false,
                                  default = nil)
-  if valid_579843 != nil:
-    section.add "oauth_token", valid_579843
-  var valid_579844 = query.getOrDefault("userIp")
-  valid_579844 = validateParameter(valid_579844, JString, required = false,
+  if valid_588876 != nil:
+    section.add "oauth_token", valid_588876
+  var valid_588877 = query.getOrDefault("userIp")
+  valid_588877 = validateParameter(valid_588877, JString, required = false,
                                  default = nil)
-  if valid_579844 != nil:
-    section.add "userIp", valid_579844
-  var valid_579845 = query.getOrDefault("adId")
-  valid_579845 = validateParameter(valid_579845, JString, required = false,
+  if valid_588877 != nil:
+    section.add "userIp", valid_588877
+  var valid_588878 = query.getOrDefault("adId")
+  valid_588878 = validateParameter(valid_588878, JString, required = false,
                                  default = nil)
-  if valid_579845 != nil:
-    section.add "adId", valid_579845
-  var valid_579846 = query.getOrDefault("key")
-  valid_579846 = validateParameter(valid_579846, JString, required = false,
+  if valid_588878 != nil:
+    section.add "adId", valid_588878
+  var valid_588879 = query.getOrDefault("key")
+  valid_588879 = validateParameter(valid_588879, JString, required = false,
                                  default = nil)
-  if valid_579846 != nil:
-    section.add "key", valid_579846
-  var valid_579847 = query.getOrDefault("startRow")
-  valid_579847 = validateParameter(valid_579847, JInt, required = true, default = nil)
-  if valid_579847 != nil:
-    section.add "startRow", valid_579847
-  var valid_579848 = query.getOrDefault("prettyPrint")
-  valid_579848 = validateParameter(valid_579848, JBool, required = false,
+  if valid_588879 != nil:
+    section.add "key", valid_588879
+  var valid_588880 = query.getOrDefault("startRow")
+  valid_588880 = validateParameter(valid_588880, JInt, required = true, default = nil)
+  if valid_588880 != nil:
+    section.add "startRow", valid_588880
+  var valid_588881 = query.getOrDefault("prettyPrint")
+  valid_588881 = validateParameter(valid_588881, JBool, required = false,
                                  default = newJBool(true))
-  if valid_579848 != nil:
-    section.add "prettyPrint", valid_579848
-  var valid_579849 = query.getOrDefault("campaignId")
-  valid_579849 = validateParameter(valid_579849, JString, required = false,
+  if valid_588881 != nil:
+    section.add "prettyPrint", valid_588881
+  var valid_588882 = query.getOrDefault("campaignId")
+  valid_588882 = validateParameter(valid_588882, JString, required = false,
                                  default = nil)
-  if valid_579849 != nil:
-    section.add "campaignId", valid_579849
-  var valid_579850 = query.getOrDefault("rowCount")
-  valid_579850 = validateParameter(valid_579850, JInt, required = true, default = nil)
-  if valid_579850 != nil:
-    section.add "rowCount", valid_579850
+  if valid_588882 != nil:
+    section.add "campaignId", valid_588882
+  var valid_588883 = query.getOrDefault("rowCount")
+  valid_588883 = validateParameter(valid_588883, JInt, required = true, default = nil)
+  if valid_588883 != nil:
+    section.add "rowCount", valid_588883
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -274,20 +274,20 @@ proc validate_DoubleclicksearchConversionGet_579693(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_579873: Call_DoubleclicksearchConversionGet_579692; path: JsonNode;
+proc call*(call_588906: Call_DoubleclicksearchConversionGet_588725; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Retrieves a list of conversions from a DoubleClick Search engine account.
   ## 
-  let valid = call_579873.validator(path, query, header, formData, body)
-  let scheme = call_579873.pickScheme
+  let valid = call_588906.validator(path, query, header, formData, body)
+  let scheme = call_588906.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_579873.url(scheme.get, call_579873.host, call_579873.base,
-                         call_579873.route, valid.getOrDefault("path"),
+  let url = call_588906.url(scheme.get, call_588906.host, call_588906.base,
+                         call_588906.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_579873, url, valid)
+  result = hook(call_588906, url, valid)
 
-proc call*(call_579944: Call_DoubleclicksearchConversionGet_579692; endDate: int;
+proc call*(call_588977: Call_DoubleclicksearchConversionGet_588725; endDate: int;
           agencyId: string; engineAccountId: string; startDate: int; startRow: int;
           advertiserId: string; rowCount: int; adGroupId: string = "";
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
@@ -332,37 +332,37 @@ proc call*(call_579944: Call_DoubleclicksearchConversionGet_579692; endDate: int
   ##             : Numeric ID of the campaign.
   ##   rowCount: int (required)
   ##           : The number of conversions to return per call.
-  var path_579945 = newJObject()
-  var query_579947 = newJObject()
-  add(query_579947, "adGroupId", newJString(adGroupId))
-  add(query_579947, "fields", newJString(fields))
-  add(query_579947, "quotaUser", newJString(quotaUser))
-  add(query_579947, "alt", newJString(alt))
-  add(query_579947, "endDate", newJInt(endDate))
-  add(path_579945, "agencyId", newJString(agencyId))
-  add(path_579945, "engineAccountId", newJString(engineAccountId))
-  add(query_579947, "startDate", newJInt(startDate))
-  add(query_579947, "criterionId", newJString(criterionId))
-  add(query_579947, "oauth_token", newJString(oauthToken))
-  add(query_579947, "userIp", newJString(userIp))
-  add(query_579947, "adId", newJString(adId))
-  add(query_579947, "key", newJString(key))
-  add(query_579947, "startRow", newJInt(startRow))
-  add(path_579945, "advertiserId", newJString(advertiserId))
-  add(query_579947, "prettyPrint", newJBool(prettyPrint))
-  add(query_579947, "campaignId", newJString(campaignId))
-  add(query_579947, "rowCount", newJInt(rowCount))
-  result = call_579944.call(path_579945, query_579947, nil, nil, nil)
+  var path_588978 = newJObject()
+  var query_588980 = newJObject()
+  add(query_588980, "adGroupId", newJString(adGroupId))
+  add(query_588980, "fields", newJString(fields))
+  add(query_588980, "quotaUser", newJString(quotaUser))
+  add(query_588980, "alt", newJString(alt))
+  add(query_588980, "endDate", newJInt(endDate))
+  add(path_588978, "agencyId", newJString(agencyId))
+  add(path_588978, "engineAccountId", newJString(engineAccountId))
+  add(query_588980, "startDate", newJInt(startDate))
+  add(query_588980, "criterionId", newJString(criterionId))
+  add(query_588980, "oauth_token", newJString(oauthToken))
+  add(query_588980, "userIp", newJString(userIp))
+  add(query_588980, "adId", newJString(adId))
+  add(query_588980, "key", newJString(key))
+  add(query_588980, "startRow", newJInt(startRow))
+  add(path_588978, "advertiserId", newJString(advertiserId))
+  add(query_588980, "prettyPrint", newJBool(prettyPrint))
+  add(query_588980, "campaignId", newJString(campaignId))
+  add(query_588980, "rowCount", newJInt(rowCount))
+  result = call_588977.call(path_588978, query_588980, nil, nil, nil)
 
-var doubleclicksearchConversionGet* = Call_DoubleclicksearchConversionGet_579692(
+var doubleclicksearchConversionGet* = Call_DoubleclicksearchConversionGet_588725(
     name: "doubleclicksearchConversionGet", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/agency/{agencyId}/advertiser/{advertiserId}/engine/{engineAccountId}/conversion",
-    validator: validate_DoubleclicksearchConversionGet_579693,
-    base: "/doubleclicksearch/v2", url: url_DoubleclicksearchConversionGet_579694,
+    validator: validate_DoubleclicksearchConversionGet_588726,
+    base: "/doubleclicksearch/v2", url: url_DoubleclicksearchConversionGet_588727,
     schemes: {Scheme.Https})
 type
-  Call_DoubleclicksearchSavedColumnsList_579986 = ref object of OpenApiRestCall_579424
-proc url_DoubleclicksearchSavedColumnsList_579988(protocol: Scheme; host: string;
+  Call_DoubleclicksearchSavedColumnsList_589019 = ref object of OpenApiRestCall_588457
+proc url_DoubleclicksearchSavedColumnsList_589021(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -381,7 +381,7 @@ proc url_DoubleclicksearchSavedColumnsList_579988(protocol: Scheme; host: string
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_DoubleclicksearchSavedColumnsList_579987(path: JsonNode;
+proc validate_DoubleclicksearchSavedColumnsList_589020(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Retrieve the list of saved columns for a specified advertiser.
   ## 
@@ -394,16 +394,16 @@ proc validate_DoubleclicksearchSavedColumnsList_579987(path: JsonNode;
   ##               : DS ID of the advertiser.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `agencyId` field"
-  var valid_579989 = path.getOrDefault("agencyId")
-  valid_579989 = validateParameter(valid_579989, JString, required = true,
+  var valid_589022 = path.getOrDefault("agencyId")
+  valid_589022 = validateParameter(valid_589022, JString, required = true,
                                  default = nil)
-  if valid_579989 != nil:
-    section.add "agencyId", valid_579989
-  var valid_579990 = path.getOrDefault("advertiserId")
-  valid_579990 = validateParameter(valid_579990, JString, required = true,
+  if valid_589022 != nil:
+    section.add "agencyId", valid_589022
+  var valid_589023 = path.getOrDefault("advertiserId")
+  valid_589023 = validateParameter(valid_589023, JString, required = true,
                                  default = nil)
-  if valid_579990 != nil:
-    section.add "advertiserId", valid_579990
+  if valid_589023 != nil:
+    section.add "advertiserId", valid_589023
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -421,41 +421,41 @@ proc validate_DoubleclicksearchSavedColumnsList_579987(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_579991 = query.getOrDefault("fields")
-  valid_579991 = validateParameter(valid_579991, JString, required = false,
+  var valid_589024 = query.getOrDefault("fields")
+  valid_589024 = validateParameter(valid_589024, JString, required = false,
                                  default = nil)
-  if valid_579991 != nil:
-    section.add "fields", valid_579991
-  var valid_579992 = query.getOrDefault("quotaUser")
-  valid_579992 = validateParameter(valid_579992, JString, required = false,
+  if valid_589024 != nil:
+    section.add "fields", valid_589024
+  var valid_589025 = query.getOrDefault("quotaUser")
+  valid_589025 = validateParameter(valid_589025, JString, required = false,
                                  default = nil)
-  if valid_579992 != nil:
-    section.add "quotaUser", valid_579992
-  var valid_579993 = query.getOrDefault("alt")
-  valid_579993 = validateParameter(valid_579993, JString, required = false,
+  if valid_589025 != nil:
+    section.add "quotaUser", valid_589025
+  var valid_589026 = query.getOrDefault("alt")
+  valid_589026 = validateParameter(valid_589026, JString, required = false,
                                  default = newJString("json"))
-  if valid_579993 != nil:
-    section.add "alt", valid_579993
-  var valid_579994 = query.getOrDefault("oauth_token")
-  valid_579994 = validateParameter(valid_579994, JString, required = false,
+  if valid_589026 != nil:
+    section.add "alt", valid_589026
+  var valid_589027 = query.getOrDefault("oauth_token")
+  valid_589027 = validateParameter(valid_589027, JString, required = false,
                                  default = nil)
-  if valid_579994 != nil:
-    section.add "oauth_token", valid_579994
-  var valid_579995 = query.getOrDefault("userIp")
-  valid_579995 = validateParameter(valid_579995, JString, required = false,
+  if valid_589027 != nil:
+    section.add "oauth_token", valid_589027
+  var valid_589028 = query.getOrDefault("userIp")
+  valid_589028 = validateParameter(valid_589028, JString, required = false,
                                  default = nil)
-  if valid_579995 != nil:
-    section.add "userIp", valid_579995
-  var valid_579996 = query.getOrDefault("key")
-  valid_579996 = validateParameter(valid_579996, JString, required = false,
+  if valid_589028 != nil:
+    section.add "userIp", valid_589028
+  var valid_589029 = query.getOrDefault("key")
+  valid_589029 = validateParameter(valid_589029, JString, required = false,
                                  default = nil)
-  if valid_579996 != nil:
-    section.add "key", valid_579996
-  var valid_579997 = query.getOrDefault("prettyPrint")
-  valid_579997 = validateParameter(valid_579997, JBool, required = false,
+  if valid_589029 != nil:
+    section.add "key", valid_589029
+  var valid_589030 = query.getOrDefault("prettyPrint")
+  valid_589030 = validateParameter(valid_589030, JBool, required = false,
                                  default = newJBool(true))
-  if valid_579997 != nil:
-    section.add "prettyPrint", valid_579997
+  if valid_589030 != nil:
+    section.add "prettyPrint", valid_589030
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -464,21 +464,21 @@ proc validate_DoubleclicksearchSavedColumnsList_579987(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_579998: Call_DoubleclicksearchSavedColumnsList_579986;
+proc call*(call_589031: Call_DoubleclicksearchSavedColumnsList_589019;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Retrieve the list of saved columns for a specified advertiser.
   ## 
-  let valid = call_579998.validator(path, query, header, formData, body)
-  let scheme = call_579998.pickScheme
+  let valid = call_589031.validator(path, query, header, formData, body)
+  let scheme = call_589031.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_579998.url(scheme.get, call_579998.host, call_579998.base,
-                         call_579998.route, valid.getOrDefault("path"),
+  let url = call_589031.url(scheme.get, call_589031.host, call_589031.base,
+                         call_589031.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_579998, url, valid)
+  result = hook(call_589031, url, valid)
 
-proc call*(call_579999: Call_DoubleclicksearchSavedColumnsList_579986;
+proc call*(call_589032: Call_DoubleclicksearchSavedColumnsList_589019;
           agencyId: string; advertiserId: string; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; key: string = ""; prettyPrint: bool = true): Recallable =
@@ -502,36 +502,36 @@ proc call*(call_579999: Call_DoubleclicksearchSavedColumnsList_579986;
   ##               : DS ID of the advertiser.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_580000 = newJObject()
-  var query_580001 = newJObject()
-  add(query_580001, "fields", newJString(fields))
-  add(query_580001, "quotaUser", newJString(quotaUser))
-  add(query_580001, "alt", newJString(alt))
-  add(path_580000, "agencyId", newJString(agencyId))
-  add(query_580001, "oauth_token", newJString(oauthToken))
-  add(query_580001, "userIp", newJString(userIp))
-  add(query_580001, "key", newJString(key))
-  add(path_580000, "advertiserId", newJString(advertiserId))
-  add(query_580001, "prettyPrint", newJBool(prettyPrint))
-  result = call_579999.call(path_580000, query_580001, nil, nil, nil)
+  var path_589033 = newJObject()
+  var query_589034 = newJObject()
+  add(query_589034, "fields", newJString(fields))
+  add(query_589034, "quotaUser", newJString(quotaUser))
+  add(query_589034, "alt", newJString(alt))
+  add(path_589033, "agencyId", newJString(agencyId))
+  add(query_589034, "oauth_token", newJString(oauthToken))
+  add(query_589034, "userIp", newJString(userIp))
+  add(query_589034, "key", newJString(key))
+  add(path_589033, "advertiserId", newJString(advertiserId))
+  add(query_589034, "prettyPrint", newJBool(prettyPrint))
+  result = call_589032.call(path_589033, query_589034, nil, nil, nil)
 
-var doubleclicksearchSavedColumnsList* = Call_DoubleclicksearchSavedColumnsList_579986(
+var doubleclicksearchSavedColumnsList* = Call_DoubleclicksearchSavedColumnsList_589019(
     name: "doubleclicksearchSavedColumnsList", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com",
     route: "/agency/{agencyId}/advertiser/{advertiserId}/savedcolumns",
-    validator: validate_DoubleclicksearchSavedColumnsList_579987,
-    base: "/doubleclicksearch/v2", url: url_DoubleclicksearchSavedColumnsList_579988,
+    validator: validate_DoubleclicksearchSavedColumnsList_589020,
+    base: "/doubleclicksearch/v2", url: url_DoubleclicksearchSavedColumnsList_589021,
     schemes: {Scheme.Https})
 type
-  Call_DoubleclicksearchConversionUpdate_580002 = ref object of OpenApiRestCall_579424
-proc url_DoubleclicksearchConversionUpdate_580004(protocol: Scheme; host: string;
+  Call_DoubleclicksearchConversionUpdate_589035 = ref object of OpenApiRestCall_588457
+proc url_DoubleclicksearchConversionUpdate_589037(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
   result.query = $composeQueryString(query)
   result.path = base & route
 
-proc validate_DoubleclicksearchConversionUpdate_580003(path: JsonNode;
+proc validate_DoubleclicksearchConversionUpdate_589036(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Updates a batch of conversions in DoubleClick Search.
   ## 
@@ -555,41 +555,41 @@ proc validate_DoubleclicksearchConversionUpdate_580003(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580005 = query.getOrDefault("fields")
-  valid_580005 = validateParameter(valid_580005, JString, required = false,
+  var valid_589038 = query.getOrDefault("fields")
+  valid_589038 = validateParameter(valid_589038, JString, required = false,
                                  default = nil)
-  if valid_580005 != nil:
-    section.add "fields", valid_580005
-  var valid_580006 = query.getOrDefault("quotaUser")
-  valid_580006 = validateParameter(valid_580006, JString, required = false,
+  if valid_589038 != nil:
+    section.add "fields", valid_589038
+  var valid_589039 = query.getOrDefault("quotaUser")
+  valid_589039 = validateParameter(valid_589039, JString, required = false,
                                  default = nil)
-  if valid_580006 != nil:
-    section.add "quotaUser", valid_580006
-  var valid_580007 = query.getOrDefault("alt")
-  valid_580007 = validateParameter(valid_580007, JString, required = false,
+  if valid_589039 != nil:
+    section.add "quotaUser", valid_589039
+  var valid_589040 = query.getOrDefault("alt")
+  valid_589040 = validateParameter(valid_589040, JString, required = false,
                                  default = newJString("json"))
-  if valid_580007 != nil:
-    section.add "alt", valid_580007
-  var valid_580008 = query.getOrDefault("oauth_token")
-  valid_580008 = validateParameter(valid_580008, JString, required = false,
+  if valid_589040 != nil:
+    section.add "alt", valid_589040
+  var valid_589041 = query.getOrDefault("oauth_token")
+  valid_589041 = validateParameter(valid_589041, JString, required = false,
                                  default = nil)
-  if valid_580008 != nil:
-    section.add "oauth_token", valid_580008
-  var valid_580009 = query.getOrDefault("userIp")
-  valid_580009 = validateParameter(valid_580009, JString, required = false,
+  if valid_589041 != nil:
+    section.add "oauth_token", valid_589041
+  var valid_589042 = query.getOrDefault("userIp")
+  valid_589042 = validateParameter(valid_589042, JString, required = false,
                                  default = nil)
-  if valid_580009 != nil:
-    section.add "userIp", valid_580009
-  var valid_580010 = query.getOrDefault("key")
-  valid_580010 = validateParameter(valid_580010, JString, required = false,
+  if valid_589042 != nil:
+    section.add "userIp", valid_589042
+  var valid_589043 = query.getOrDefault("key")
+  valid_589043 = validateParameter(valid_589043, JString, required = false,
                                  default = nil)
-  if valid_580010 != nil:
-    section.add "key", valid_580010
-  var valid_580011 = query.getOrDefault("prettyPrint")
-  valid_580011 = validateParameter(valid_580011, JBool, required = false,
+  if valid_589043 != nil:
+    section.add "key", valid_589043
+  var valid_589044 = query.getOrDefault("prettyPrint")
+  valid_589044 = validateParameter(valid_589044, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580011 != nil:
-    section.add "prettyPrint", valid_580011
+  if valid_589044 != nil:
+    section.add "prettyPrint", valid_589044
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -601,21 +601,21 @@ proc validate_DoubleclicksearchConversionUpdate_580003(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580013: Call_DoubleclicksearchConversionUpdate_580002;
+proc call*(call_589046: Call_DoubleclicksearchConversionUpdate_589035;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Updates a batch of conversions in DoubleClick Search.
   ## 
-  let valid = call_580013.validator(path, query, header, formData, body)
-  let scheme = call_580013.pickScheme
+  let valid = call_589046.validator(path, query, header, formData, body)
+  let scheme = call_589046.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580013.url(scheme.get, call_580013.host, call_580013.base,
-                         call_580013.route, valid.getOrDefault("path"),
+  let url = call_589046.url(scheme.get, call_589046.host, call_589046.base,
+                         call_589046.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580013, url, valid)
+  result = hook(call_589046, url, valid)
 
-proc call*(call_580014: Call_DoubleclicksearchConversionUpdate_580002;
+proc call*(call_589047: Call_DoubleclicksearchConversionUpdate_589035;
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           oauthToken: string = ""; userIp: string = ""; key: string = "";
           body: JsonNode = nil; prettyPrint: bool = true): Recallable =
@@ -636,35 +636,35 @@ proc call*(call_580014: Call_DoubleclicksearchConversionUpdate_580002;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var query_580015 = newJObject()
-  var body_580016 = newJObject()
-  add(query_580015, "fields", newJString(fields))
-  add(query_580015, "quotaUser", newJString(quotaUser))
-  add(query_580015, "alt", newJString(alt))
-  add(query_580015, "oauth_token", newJString(oauthToken))
-  add(query_580015, "userIp", newJString(userIp))
-  add(query_580015, "key", newJString(key))
+  var query_589048 = newJObject()
+  var body_589049 = newJObject()
+  add(query_589048, "fields", newJString(fields))
+  add(query_589048, "quotaUser", newJString(quotaUser))
+  add(query_589048, "alt", newJString(alt))
+  add(query_589048, "oauth_token", newJString(oauthToken))
+  add(query_589048, "userIp", newJString(userIp))
+  add(query_589048, "key", newJString(key))
   if body != nil:
-    body_580016 = body
-  add(query_580015, "prettyPrint", newJBool(prettyPrint))
-  result = call_580014.call(nil, query_580015, nil, nil, body_580016)
+    body_589049 = body
+  add(query_589048, "prettyPrint", newJBool(prettyPrint))
+  result = call_589047.call(nil, query_589048, nil, nil, body_589049)
 
-var doubleclicksearchConversionUpdate* = Call_DoubleclicksearchConversionUpdate_580002(
+var doubleclicksearchConversionUpdate* = Call_DoubleclicksearchConversionUpdate_589035(
     name: "doubleclicksearchConversionUpdate", meth: HttpMethod.HttpPut,
     host: "www.googleapis.com", route: "/conversion",
-    validator: validate_DoubleclicksearchConversionUpdate_580003,
-    base: "/doubleclicksearch/v2", url: url_DoubleclicksearchConversionUpdate_580004,
+    validator: validate_DoubleclicksearchConversionUpdate_589036,
+    base: "/doubleclicksearch/v2", url: url_DoubleclicksearchConversionUpdate_589037,
     schemes: {Scheme.Https})
 type
-  Call_DoubleclicksearchConversionInsert_580017 = ref object of OpenApiRestCall_579424
-proc url_DoubleclicksearchConversionInsert_580019(protocol: Scheme; host: string;
+  Call_DoubleclicksearchConversionInsert_589050 = ref object of OpenApiRestCall_588457
+proc url_DoubleclicksearchConversionInsert_589052(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
   result.query = $composeQueryString(query)
   result.path = base & route
 
-proc validate_DoubleclicksearchConversionInsert_580018(path: JsonNode;
+proc validate_DoubleclicksearchConversionInsert_589051(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Inserts a batch of new conversions into DoubleClick Search.
   ## 
@@ -688,41 +688,41 @@ proc validate_DoubleclicksearchConversionInsert_580018(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580020 = query.getOrDefault("fields")
-  valid_580020 = validateParameter(valid_580020, JString, required = false,
+  var valid_589053 = query.getOrDefault("fields")
+  valid_589053 = validateParameter(valid_589053, JString, required = false,
                                  default = nil)
-  if valid_580020 != nil:
-    section.add "fields", valid_580020
-  var valid_580021 = query.getOrDefault("quotaUser")
-  valid_580021 = validateParameter(valid_580021, JString, required = false,
+  if valid_589053 != nil:
+    section.add "fields", valid_589053
+  var valid_589054 = query.getOrDefault("quotaUser")
+  valid_589054 = validateParameter(valid_589054, JString, required = false,
                                  default = nil)
-  if valid_580021 != nil:
-    section.add "quotaUser", valid_580021
-  var valid_580022 = query.getOrDefault("alt")
-  valid_580022 = validateParameter(valid_580022, JString, required = false,
+  if valid_589054 != nil:
+    section.add "quotaUser", valid_589054
+  var valid_589055 = query.getOrDefault("alt")
+  valid_589055 = validateParameter(valid_589055, JString, required = false,
                                  default = newJString("json"))
-  if valid_580022 != nil:
-    section.add "alt", valid_580022
-  var valid_580023 = query.getOrDefault("oauth_token")
-  valid_580023 = validateParameter(valid_580023, JString, required = false,
+  if valid_589055 != nil:
+    section.add "alt", valid_589055
+  var valid_589056 = query.getOrDefault("oauth_token")
+  valid_589056 = validateParameter(valid_589056, JString, required = false,
                                  default = nil)
-  if valid_580023 != nil:
-    section.add "oauth_token", valid_580023
-  var valid_580024 = query.getOrDefault("userIp")
-  valid_580024 = validateParameter(valid_580024, JString, required = false,
+  if valid_589056 != nil:
+    section.add "oauth_token", valid_589056
+  var valid_589057 = query.getOrDefault("userIp")
+  valid_589057 = validateParameter(valid_589057, JString, required = false,
                                  default = nil)
-  if valid_580024 != nil:
-    section.add "userIp", valid_580024
-  var valid_580025 = query.getOrDefault("key")
-  valid_580025 = validateParameter(valid_580025, JString, required = false,
+  if valid_589057 != nil:
+    section.add "userIp", valid_589057
+  var valid_589058 = query.getOrDefault("key")
+  valid_589058 = validateParameter(valid_589058, JString, required = false,
                                  default = nil)
-  if valid_580025 != nil:
-    section.add "key", valid_580025
-  var valid_580026 = query.getOrDefault("prettyPrint")
-  valid_580026 = validateParameter(valid_580026, JBool, required = false,
+  if valid_589058 != nil:
+    section.add "key", valid_589058
+  var valid_589059 = query.getOrDefault("prettyPrint")
+  valid_589059 = validateParameter(valid_589059, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580026 != nil:
-    section.add "prettyPrint", valid_580026
+  if valid_589059 != nil:
+    section.add "prettyPrint", valid_589059
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -734,21 +734,21 @@ proc validate_DoubleclicksearchConversionInsert_580018(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580028: Call_DoubleclicksearchConversionInsert_580017;
+proc call*(call_589061: Call_DoubleclicksearchConversionInsert_589050;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Inserts a batch of new conversions into DoubleClick Search.
   ## 
-  let valid = call_580028.validator(path, query, header, formData, body)
-  let scheme = call_580028.pickScheme
+  let valid = call_589061.validator(path, query, header, formData, body)
+  let scheme = call_589061.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580028.url(scheme.get, call_580028.host, call_580028.base,
-                         call_580028.route, valid.getOrDefault("path"),
+  let url = call_589061.url(scheme.get, call_589061.host, call_589061.base,
+                         call_589061.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580028, url, valid)
+  result = hook(call_589061, url, valid)
 
-proc call*(call_580029: Call_DoubleclicksearchConversionInsert_580017;
+proc call*(call_589062: Call_DoubleclicksearchConversionInsert_589050;
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           oauthToken: string = ""; userIp: string = ""; key: string = "";
           body: JsonNode = nil; prettyPrint: bool = true): Recallable =
@@ -769,35 +769,35 @@ proc call*(call_580029: Call_DoubleclicksearchConversionInsert_580017;
   ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var query_580030 = newJObject()
-  var body_580031 = newJObject()
-  add(query_580030, "fields", newJString(fields))
-  add(query_580030, "quotaUser", newJString(quotaUser))
-  add(query_580030, "alt", newJString(alt))
-  add(query_580030, "oauth_token", newJString(oauthToken))
-  add(query_580030, "userIp", newJString(userIp))
-  add(query_580030, "key", newJString(key))
+  var query_589063 = newJObject()
+  var body_589064 = newJObject()
+  add(query_589063, "fields", newJString(fields))
+  add(query_589063, "quotaUser", newJString(quotaUser))
+  add(query_589063, "alt", newJString(alt))
+  add(query_589063, "oauth_token", newJString(oauthToken))
+  add(query_589063, "userIp", newJString(userIp))
+  add(query_589063, "key", newJString(key))
   if body != nil:
-    body_580031 = body
-  add(query_580030, "prettyPrint", newJBool(prettyPrint))
-  result = call_580029.call(nil, query_580030, nil, nil, body_580031)
+    body_589064 = body
+  add(query_589063, "prettyPrint", newJBool(prettyPrint))
+  result = call_589062.call(nil, query_589063, nil, nil, body_589064)
 
-var doubleclicksearchConversionInsert* = Call_DoubleclicksearchConversionInsert_580017(
+var doubleclicksearchConversionInsert* = Call_DoubleclicksearchConversionInsert_589050(
     name: "doubleclicksearchConversionInsert", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com", route: "/conversion",
-    validator: validate_DoubleclicksearchConversionInsert_580018,
-    base: "/doubleclicksearch/v2", url: url_DoubleclicksearchConversionInsert_580019,
+    validator: validate_DoubleclicksearchConversionInsert_589051,
+    base: "/doubleclicksearch/v2", url: url_DoubleclicksearchConversionInsert_589052,
     schemes: {Scheme.Https})
 type
-  Call_DoubleclicksearchConversionPatch_580032 = ref object of OpenApiRestCall_579424
-proc url_DoubleclicksearchConversionPatch_580034(protocol: Scheme; host: string;
+  Call_DoubleclicksearchConversionPatch_589065 = ref object of OpenApiRestCall_588457
+proc url_DoubleclicksearchConversionPatch_589067(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
   result.query = $composeQueryString(query)
   result.path = base & route
 
-proc validate_DoubleclicksearchConversionPatch_580033(path: JsonNode;
+proc validate_DoubleclicksearchConversionPatch_589066(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Updates a batch of conversions in DoubleClick Search. This method supports patch semantics.
   ## 
@@ -837,72 +837,72 @@ proc validate_DoubleclicksearchConversionPatch_580033(path: JsonNode;
   section = newJObject()
   assert query != nil,
         "query argument is necessary due to required `agencyId` field"
-  var valid_580035 = query.getOrDefault("agencyId")
-  valid_580035 = validateParameter(valid_580035, JString, required = true,
+  var valid_589068 = query.getOrDefault("agencyId")
+  valid_589068 = validateParameter(valid_589068, JString, required = true,
                                  default = nil)
-  if valid_580035 != nil:
-    section.add "agencyId", valid_580035
-  var valid_580036 = query.getOrDefault("fields")
-  valid_580036 = validateParameter(valid_580036, JString, required = false,
+  if valid_589068 != nil:
+    section.add "agencyId", valid_589068
+  var valid_589069 = query.getOrDefault("fields")
+  valid_589069 = validateParameter(valid_589069, JString, required = false,
                                  default = nil)
-  if valid_580036 != nil:
-    section.add "fields", valid_580036
-  var valid_580037 = query.getOrDefault("quotaUser")
-  valid_580037 = validateParameter(valid_580037, JString, required = false,
+  if valid_589069 != nil:
+    section.add "fields", valid_589069
+  var valid_589070 = query.getOrDefault("quotaUser")
+  valid_589070 = validateParameter(valid_589070, JString, required = false,
                                  default = nil)
-  if valid_580037 != nil:
-    section.add "quotaUser", valid_580037
-  var valid_580038 = query.getOrDefault("alt")
-  valid_580038 = validateParameter(valid_580038, JString, required = false,
+  if valid_589070 != nil:
+    section.add "quotaUser", valid_589070
+  var valid_589071 = query.getOrDefault("alt")
+  valid_589071 = validateParameter(valid_589071, JString, required = false,
                                  default = newJString("json"))
-  if valid_580038 != nil:
-    section.add "alt", valid_580038
-  var valid_580039 = query.getOrDefault("endDate")
-  valid_580039 = validateParameter(valid_580039, JInt, required = true, default = nil)
-  if valid_580039 != nil:
-    section.add "endDate", valid_580039
-  var valid_580040 = query.getOrDefault("startDate")
-  valid_580040 = validateParameter(valid_580040, JInt, required = true, default = nil)
-  if valid_580040 != nil:
-    section.add "startDate", valid_580040
-  var valid_580041 = query.getOrDefault("advertiserId")
-  valid_580041 = validateParameter(valid_580041, JString, required = true,
+  if valid_589071 != nil:
+    section.add "alt", valid_589071
+  var valid_589072 = query.getOrDefault("endDate")
+  valid_589072 = validateParameter(valid_589072, JInt, required = true, default = nil)
+  if valid_589072 != nil:
+    section.add "endDate", valid_589072
+  var valid_589073 = query.getOrDefault("startDate")
+  valid_589073 = validateParameter(valid_589073, JInt, required = true, default = nil)
+  if valid_589073 != nil:
+    section.add "startDate", valid_589073
+  var valid_589074 = query.getOrDefault("advertiserId")
+  valid_589074 = validateParameter(valid_589074, JString, required = true,
                                  default = nil)
-  if valid_580041 != nil:
-    section.add "advertiserId", valid_580041
-  var valid_580042 = query.getOrDefault("oauth_token")
-  valid_580042 = validateParameter(valid_580042, JString, required = false,
+  if valid_589074 != nil:
+    section.add "advertiserId", valid_589074
+  var valid_589075 = query.getOrDefault("oauth_token")
+  valid_589075 = validateParameter(valid_589075, JString, required = false,
                                  default = nil)
-  if valid_580042 != nil:
-    section.add "oauth_token", valid_580042
-  var valid_580043 = query.getOrDefault("userIp")
-  valid_580043 = validateParameter(valid_580043, JString, required = false,
+  if valid_589075 != nil:
+    section.add "oauth_token", valid_589075
+  var valid_589076 = query.getOrDefault("userIp")
+  valid_589076 = validateParameter(valid_589076, JString, required = false,
                                  default = nil)
-  if valid_580043 != nil:
-    section.add "userIp", valid_580043
-  var valid_580044 = query.getOrDefault("key")
-  valid_580044 = validateParameter(valid_580044, JString, required = false,
+  if valid_589076 != nil:
+    section.add "userIp", valid_589076
+  var valid_589077 = query.getOrDefault("key")
+  valid_589077 = validateParameter(valid_589077, JString, required = false,
                                  default = nil)
-  if valid_580044 != nil:
-    section.add "key", valid_580044
-  var valid_580045 = query.getOrDefault("startRow")
-  valid_580045 = validateParameter(valid_580045, JInt, required = true, default = nil)
-  if valid_580045 != nil:
-    section.add "startRow", valid_580045
-  var valid_580046 = query.getOrDefault("engineAccountId")
-  valid_580046 = validateParameter(valid_580046, JString, required = true,
+  if valid_589077 != nil:
+    section.add "key", valid_589077
+  var valid_589078 = query.getOrDefault("startRow")
+  valid_589078 = validateParameter(valid_589078, JInt, required = true, default = nil)
+  if valid_589078 != nil:
+    section.add "startRow", valid_589078
+  var valid_589079 = query.getOrDefault("engineAccountId")
+  valid_589079 = validateParameter(valid_589079, JString, required = true,
                                  default = nil)
-  if valid_580046 != nil:
-    section.add "engineAccountId", valid_580046
-  var valid_580047 = query.getOrDefault("prettyPrint")
-  valid_580047 = validateParameter(valid_580047, JBool, required = false,
+  if valid_589079 != nil:
+    section.add "engineAccountId", valid_589079
+  var valid_589080 = query.getOrDefault("prettyPrint")
+  valid_589080 = validateParameter(valid_589080, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580047 != nil:
-    section.add "prettyPrint", valid_580047
-  var valid_580048 = query.getOrDefault("rowCount")
-  valid_580048 = validateParameter(valid_580048, JInt, required = true, default = nil)
-  if valid_580048 != nil:
-    section.add "rowCount", valid_580048
+  if valid_589080 != nil:
+    section.add "prettyPrint", valid_589080
+  var valid_589081 = query.getOrDefault("rowCount")
+  valid_589081 = validateParameter(valid_589081, JInt, required = true, default = nil)
+  if valid_589081 != nil:
+    section.add "rowCount", valid_589081
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -914,21 +914,21 @@ proc validate_DoubleclicksearchConversionPatch_580033(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580050: Call_DoubleclicksearchConversionPatch_580032;
+proc call*(call_589083: Call_DoubleclicksearchConversionPatch_589065;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Updates a batch of conversions in DoubleClick Search. This method supports patch semantics.
   ## 
-  let valid = call_580050.validator(path, query, header, formData, body)
-  let scheme = call_580050.pickScheme
+  let valid = call_589083.validator(path, query, header, formData, body)
+  let scheme = call_589083.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580050.url(scheme.get, call_580050.host, call_580050.base,
-                         call_580050.route, valid.getOrDefault("path"),
+  let url = call_589083.url(scheme.get, call_589083.host, call_589083.base,
+                         call_589083.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580050, url, valid)
+  result = hook(call_589083, url, valid)
 
-proc call*(call_580051: Call_DoubleclicksearchConversionPatch_580032;
+proc call*(call_589084: Call_DoubleclicksearchConversionPatch_589065;
           agencyId: string; endDate: int; startDate: int; advertiserId: string;
           startRow: int; engineAccountId: string; rowCount: int; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
@@ -965,42 +965,42 @@ proc call*(call_580051: Call_DoubleclicksearchConversionPatch_580032;
   ##              : Returns response with indentations and line breaks.
   ##   rowCount: int (required)
   ##           : The number of conversions to return per call.
-  var query_580052 = newJObject()
-  var body_580053 = newJObject()
-  add(query_580052, "agencyId", newJString(agencyId))
-  add(query_580052, "fields", newJString(fields))
-  add(query_580052, "quotaUser", newJString(quotaUser))
-  add(query_580052, "alt", newJString(alt))
-  add(query_580052, "endDate", newJInt(endDate))
-  add(query_580052, "startDate", newJInt(startDate))
-  add(query_580052, "advertiserId", newJString(advertiserId))
-  add(query_580052, "oauth_token", newJString(oauthToken))
-  add(query_580052, "userIp", newJString(userIp))
-  add(query_580052, "key", newJString(key))
-  add(query_580052, "startRow", newJInt(startRow))
-  add(query_580052, "engineAccountId", newJString(engineAccountId))
+  var query_589085 = newJObject()
+  var body_589086 = newJObject()
+  add(query_589085, "agencyId", newJString(agencyId))
+  add(query_589085, "fields", newJString(fields))
+  add(query_589085, "quotaUser", newJString(quotaUser))
+  add(query_589085, "alt", newJString(alt))
+  add(query_589085, "endDate", newJInt(endDate))
+  add(query_589085, "startDate", newJInt(startDate))
+  add(query_589085, "advertiserId", newJString(advertiserId))
+  add(query_589085, "oauth_token", newJString(oauthToken))
+  add(query_589085, "userIp", newJString(userIp))
+  add(query_589085, "key", newJString(key))
+  add(query_589085, "startRow", newJInt(startRow))
+  add(query_589085, "engineAccountId", newJString(engineAccountId))
   if body != nil:
-    body_580053 = body
-  add(query_580052, "prettyPrint", newJBool(prettyPrint))
-  add(query_580052, "rowCount", newJInt(rowCount))
-  result = call_580051.call(nil, query_580052, nil, nil, body_580053)
+    body_589086 = body
+  add(query_589085, "prettyPrint", newJBool(prettyPrint))
+  add(query_589085, "rowCount", newJInt(rowCount))
+  result = call_589084.call(nil, query_589085, nil, nil, body_589086)
 
-var doubleclicksearchConversionPatch* = Call_DoubleclicksearchConversionPatch_580032(
+var doubleclicksearchConversionPatch* = Call_DoubleclicksearchConversionPatch_589065(
     name: "doubleclicksearchConversionPatch", meth: HttpMethod.HttpPatch,
     host: "www.googleapis.com", route: "/conversion",
-    validator: validate_DoubleclicksearchConversionPatch_580033,
-    base: "/doubleclicksearch/v2", url: url_DoubleclicksearchConversionPatch_580034,
+    validator: validate_DoubleclicksearchConversionPatch_589066,
+    base: "/doubleclicksearch/v2", url: url_DoubleclicksearchConversionPatch_589067,
     schemes: {Scheme.Https})
 type
-  Call_DoubleclicksearchConversionUpdateAvailability_580054 = ref object of OpenApiRestCall_579424
-proc url_DoubleclicksearchConversionUpdateAvailability_580056(protocol: Scheme;
+  Call_DoubleclicksearchConversionUpdateAvailability_589087 = ref object of OpenApiRestCall_588457
+proc url_DoubleclicksearchConversionUpdateAvailability_589089(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
   result.query = $composeQueryString(query)
   result.path = base & route
 
-proc validate_DoubleclicksearchConversionUpdateAvailability_580055(
+proc validate_DoubleclicksearchConversionUpdateAvailability_589088(
     path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
     body: JsonNode): JsonNode =
   ## Updates the availabilities of a batch of floodlight activities in DoubleClick Search.
@@ -1025,41 +1025,41 @@ proc validate_DoubleclicksearchConversionUpdateAvailability_580055(
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580057 = query.getOrDefault("fields")
-  valid_580057 = validateParameter(valid_580057, JString, required = false,
+  var valid_589090 = query.getOrDefault("fields")
+  valid_589090 = validateParameter(valid_589090, JString, required = false,
                                  default = nil)
-  if valid_580057 != nil:
-    section.add "fields", valid_580057
-  var valid_580058 = query.getOrDefault("quotaUser")
-  valid_580058 = validateParameter(valid_580058, JString, required = false,
+  if valid_589090 != nil:
+    section.add "fields", valid_589090
+  var valid_589091 = query.getOrDefault("quotaUser")
+  valid_589091 = validateParameter(valid_589091, JString, required = false,
                                  default = nil)
-  if valid_580058 != nil:
-    section.add "quotaUser", valid_580058
-  var valid_580059 = query.getOrDefault("alt")
-  valid_580059 = validateParameter(valid_580059, JString, required = false,
+  if valid_589091 != nil:
+    section.add "quotaUser", valid_589091
+  var valid_589092 = query.getOrDefault("alt")
+  valid_589092 = validateParameter(valid_589092, JString, required = false,
                                  default = newJString("json"))
-  if valid_580059 != nil:
-    section.add "alt", valid_580059
-  var valid_580060 = query.getOrDefault("oauth_token")
-  valid_580060 = validateParameter(valid_580060, JString, required = false,
+  if valid_589092 != nil:
+    section.add "alt", valid_589092
+  var valid_589093 = query.getOrDefault("oauth_token")
+  valid_589093 = validateParameter(valid_589093, JString, required = false,
                                  default = nil)
-  if valid_580060 != nil:
-    section.add "oauth_token", valid_580060
-  var valid_580061 = query.getOrDefault("userIp")
-  valid_580061 = validateParameter(valid_580061, JString, required = false,
+  if valid_589093 != nil:
+    section.add "oauth_token", valid_589093
+  var valid_589094 = query.getOrDefault("userIp")
+  valid_589094 = validateParameter(valid_589094, JString, required = false,
                                  default = nil)
-  if valid_580061 != nil:
-    section.add "userIp", valid_580061
-  var valid_580062 = query.getOrDefault("key")
-  valid_580062 = validateParameter(valid_580062, JString, required = false,
+  if valid_589094 != nil:
+    section.add "userIp", valid_589094
+  var valid_589095 = query.getOrDefault("key")
+  valid_589095 = validateParameter(valid_589095, JString, required = false,
                                  default = nil)
-  if valid_580062 != nil:
-    section.add "key", valid_580062
-  var valid_580063 = query.getOrDefault("prettyPrint")
-  valid_580063 = validateParameter(valid_580063, JBool, required = false,
+  if valid_589095 != nil:
+    section.add "key", valid_589095
+  var valid_589096 = query.getOrDefault("prettyPrint")
+  valid_589096 = validateParameter(valid_589096, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580063 != nil:
-    section.add "prettyPrint", valid_580063
+  if valid_589096 != nil:
+    section.add "prettyPrint", valid_589096
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1071,21 +1071,21 @@ proc validate_DoubleclicksearchConversionUpdateAvailability_580055(
   if body != nil:
     result.add "body", body
 
-proc call*(call_580065: Call_DoubleclicksearchConversionUpdateAvailability_580054;
+proc call*(call_589098: Call_DoubleclicksearchConversionUpdateAvailability_589087;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Updates the availabilities of a batch of floodlight activities in DoubleClick Search.
   ## 
-  let valid = call_580065.validator(path, query, header, formData, body)
-  let scheme = call_580065.pickScheme
+  let valid = call_589098.validator(path, query, header, formData, body)
+  let scheme = call_589098.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580065.url(scheme.get, call_580065.host, call_580065.base,
-                         call_580065.route, valid.getOrDefault("path"),
+  let url = call_589098.url(scheme.get, call_589098.host, call_589098.base,
+                         call_589098.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580065, url, valid)
+  result = hook(call_589098, url, valid)
 
-proc call*(call_580066: Call_DoubleclicksearchConversionUpdateAvailability_580054;
+proc call*(call_589099: Call_DoubleclicksearchConversionUpdateAvailability_589087;
           empty: JsonNode = nil; fields: string = ""; quotaUser: string = "";
           alt: string = "json"; oauthToken: string = ""; userIp: string = "";
           key: string = ""; prettyPrint: bool = true): Recallable =
@@ -1106,37 +1106,37 @@ proc call*(call_580066: Call_DoubleclicksearchConversionUpdateAvailability_58005
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var query_580067 = newJObject()
-  var body_580068 = newJObject()
+  var query_589100 = newJObject()
+  var body_589101 = newJObject()
   if empty != nil:
-    body_580068 = empty
-  add(query_580067, "fields", newJString(fields))
-  add(query_580067, "quotaUser", newJString(quotaUser))
-  add(query_580067, "alt", newJString(alt))
-  add(query_580067, "oauth_token", newJString(oauthToken))
-  add(query_580067, "userIp", newJString(userIp))
-  add(query_580067, "key", newJString(key))
-  add(query_580067, "prettyPrint", newJBool(prettyPrint))
-  result = call_580066.call(nil, query_580067, nil, nil, body_580068)
+    body_589101 = empty
+  add(query_589100, "fields", newJString(fields))
+  add(query_589100, "quotaUser", newJString(quotaUser))
+  add(query_589100, "alt", newJString(alt))
+  add(query_589100, "oauth_token", newJString(oauthToken))
+  add(query_589100, "userIp", newJString(userIp))
+  add(query_589100, "key", newJString(key))
+  add(query_589100, "prettyPrint", newJBool(prettyPrint))
+  result = call_589099.call(nil, query_589100, nil, nil, body_589101)
 
-var doubleclicksearchConversionUpdateAvailability* = Call_DoubleclicksearchConversionUpdateAvailability_580054(
+var doubleclicksearchConversionUpdateAvailability* = Call_DoubleclicksearchConversionUpdateAvailability_589087(
     name: "doubleclicksearchConversionUpdateAvailability",
     meth: HttpMethod.HttpPost, host: "www.googleapis.com",
     route: "/conversion/updateAvailability",
-    validator: validate_DoubleclicksearchConversionUpdateAvailability_580055,
+    validator: validate_DoubleclicksearchConversionUpdateAvailability_589088,
     base: "/doubleclicksearch/v2",
-    url: url_DoubleclicksearchConversionUpdateAvailability_580056,
+    url: url_DoubleclicksearchConversionUpdateAvailability_589089,
     schemes: {Scheme.Https})
 type
-  Call_DoubleclicksearchReportsRequest_580069 = ref object of OpenApiRestCall_579424
-proc url_DoubleclicksearchReportsRequest_580071(protocol: Scheme; host: string;
+  Call_DoubleclicksearchReportsRequest_589102 = ref object of OpenApiRestCall_588457
+proc url_DoubleclicksearchReportsRequest_589104(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
   result.query = $composeQueryString(query)
   result.path = base & route
 
-proc validate_DoubleclicksearchReportsRequest_580070(path: JsonNode;
+proc validate_DoubleclicksearchReportsRequest_589103(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Inserts a report request into the reporting system.
   ## 
@@ -1160,41 +1160,41 @@ proc validate_DoubleclicksearchReportsRequest_580070(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580072 = query.getOrDefault("fields")
-  valid_580072 = validateParameter(valid_580072, JString, required = false,
+  var valid_589105 = query.getOrDefault("fields")
+  valid_589105 = validateParameter(valid_589105, JString, required = false,
                                  default = nil)
-  if valid_580072 != nil:
-    section.add "fields", valid_580072
-  var valid_580073 = query.getOrDefault("quotaUser")
-  valid_580073 = validateParameter(valid_580073, JString, required = false,
+  if valid_589105 != nil:
+    section.add "fields", valid_589105
+  var valid_589106 = query.getOrDefault("quotaUser")
+  valid_589106 = validateParameter(valid_589106, JString, required = false,
                                  default = nil)
-  if valid_580073 != nil:
-    section.add "quotaUser", valid_580073
-  var valid_580074 = query.getOrDefault("alt")
-  valid_580074 = validateParameter(valid_580074, JString, required = false,
+  if valid_589106 != nil:
+    section.add "quotaUser", valid_589106
+  var valid_589107 = query.getOrDefault("alt")
+  valid_589107 = validateParameter(valid_589107, JString, required = false,
                                  default = newJString("json"))
-  if valid_580074 != nil:
-    section.add "alt", valid_580074
-  var valid_580075 = query.getOrDefault("oauth_token")
-  valid_580075 = validateParameter(valid_580075, JString, required = false,
+  if valid_589107 != nil:
+    section.add "alt", valid_589107
+  var valid_589108 = query.getOrDefault("oauth_token")
+  valid_589108 = validateParameter(valid_589108, JString, required = false,
                                  default = nil)
-  if valid_580075 != nil:
-    section.add "oauth_token", valid_580075
-  var valid_580076 = query.getOrDefault("userIp")
-  valid_580076 = validateParameter(valid_580076, JString, required = false,
+  if valid_589108 != nil:
+    section.add "oauth_token", valid_589108
+  var valid_589109 = query.getOrDefault("userIp")
+  valid_589109 = validateParameter(valid_589109, JString, required = false,
                                  default = nil)
-  if valid_580076 != nil:
-    section.add "userIp", valid_580076
-  var valid_580077 = query.getOrDefault("key")
-  valid_580077 = validateParameter(valid_580077, JString, required = false,
+  if valid_589109 != nil:
+    section.add "userIp", valid_589109
+  var valid_589110 = query.getOrDefault("key")
+  valid_589110 = validateParameter(valid_589110, JString, required = false,
                                  default = nil)
-  if valid_580077 != nil:
-    section.add "key", valid_580077
-  var valid_580078 = query.getOrDefault("prettyPrint")
-  valid_580078 = validateParameter(valid_580078, JBool, required = false,
+  if valid_589110 != nil:
+    section.add "key", valid_589110
+  var valid_589111 = query.getOrDefault("prettyPrint")
+  valid_589111 = validateParameter(valid_589111, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580078 != nil:
-    section.add "prettyPrint", valid_580078
+  if valid_589111 != nil:
+    section.add "prettyPrint", valid_589111
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1206,21 +1206,21 @@ proc validate_DoubleclicksearchReportsRequest_580070(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580080: Call_DoubleclicksearchReportsRequest_580069;
+proc call*(call_589113: Call_DoubleclicksearchReportsRequest_589102;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Inserts a report request into the reporting system.
   ## 
-  let valid = call_580080.validator(path, query, header, formData, body)
-  let scheme = call_580080.pickScheme
+  let valid = call_589113.validator(path, query, header, formData, body)
+  let scheme = call_589113.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580080.url(scheme.get, call_580080.host, call_580080.base,
-                         call_580080.route, valid.getOrDefault("path"),
+  let url = call_589113.url(scheme.get, call_589113.host, call_589113.base,
+                         call_589113.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580080, url, valid)
+  result = hook(call_589113, url, valid)
 
-proc call*(call_580081: Call_DoubleclicksearchReportsRequest_580069;
+proc call*(call_589114: Call_DoubleclicksearchReportsRequest_589102;
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           reportRequest: JsonNode = nil; oauthToken: string = ""; userIp: string = "";
           key: string = ""; prettyPrint: bool = true): Recallable =
@@ -1241,35 +1241,35 @@ proc call*(call_580081: Call_DoubleclicksearchReportsRequest_580069;
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var query_580082 = newJObject()
-  var body_580083 = newJObject()
-  add(query_580082, "fields", newJString(fields))
-  add(query_580082, "quotaUser", newJString(quotaUser))
-  add(query_580082, "alt", newJString(alt))
+  var query_589115 = newJObject()
+  var body_589116 = newJObject()
+  add(query_589115, "fields", newJString(fields))
+  add(query_589115, "quotaUser", newJString(quotaUser))
+  add(query_589115, "alt", newJString(alt))
   if reportRequest != nil:
-    body_580083 = reportRequest
-  add(query_580082, "oauth_token", newJString(oauthToken))
-  add(query_580082, "userIp", newJString(userIp))
-  add(query_580082, "key", newJString(key))
-  add(query_580082, "prettyPrint", newJBool(prettyPrint))
-  result = call_580081.call(nil, query_580082, nil, nil, body_580083)
+    body_589116 = reportRequest
+  add(query_589115, "oauth_token", newJString(oauthToken))
+  add(query_589115, "userIp", newJString(userIp))
+  add(query_589115, "key", newJString(key))
+  add(query_589115, "prettyPrint", newJBool(prettyPrint))
+  result = call_589114.call(nil, query_589115, nil, nil, body_589116)
 
-var doubleclicksearchReportsRequest* = Call_DoubleclicksearchReportsRequest_580069(
+var doubleclicksearchReportsRequest* = Call_DoubleclicksearchReportsRequest_589102(
     name: "doubleclicksearchReportsRequest", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com", route: "/reports",
-    validator: validate_DoubleclicksearchReportsRequest_580070,
-    base: "/doubleclicksearch/v2", url: url_DoubleclicksearchReportsRequest_580071,
+    validator: validate_DoubleclicksearchReportsRequest_589103,
+    base: "/doubleclicksearch/v2", url: url_DoubleclicksearchReportsRequest_589104,
     schemes: {Scheme.Https})
 type
-  Call_DoubleclicksearchReportsGenerate_580084 = ref object of OpenApiRestCall_579424
-proc url_DoubleclicksearchReportsGenerate_580086(protocol: Scheme; host: string;
+  Call_DoubleclicksearchReportsGenerate_589117 = ref object of OpenApiRestCall_588457
+proc url_DoubleclicksearchReportsGenerate_589119(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
   result.query = $composeQueryString(query)
   result.path = base & route
 
-proc validate_DoubleclicksearchReportsGenerate_580085(path: JsonNode;
+proc validate_DoubleclicksearchReportsGenerate_589118(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Generates and returns a report immediately.
   ## 
@@ -1293,41 +1293,41 @@ proc validate_DoubleclicksearchReportsGenerate_580085(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580087 = query.getOrDefault("fields")
-  valid_580087 = validateParameter(valid_580087, JString, required = false,
+  var valid_589120 = query.getOrDefault("fields")
+  valid_589120 = validateParameter(valid_589120, JString, required = false,
                                  default = nil)
-  if valid_580087 != nil:
-    section.add "fields", valid_580087
-  var valid_580088 = query.getOrDefault("quotaUser")
-  valid_580088 = validateParameter(valid_580088, JString, required = false,
+  if valid_589120 != nil:
+    section.add "fields", valid_589120
+  var valid_589121 = query.getOrDefault("quotaUser")
+  valid_589121 = validateParameter(valid_589121, JString, required = false,
                                  default = nil)
-  if valid_580088 != nil:
-    section.add "quotaUser", valid_580088
-  var valid_580089 = query.getOrDefault("alt")
-  valid_580089 = validateParameter(valid_580089, JString, required = false,
+  if valid_589121 != nil:
+    section.add "quotaUser", valid_589121
+  var valid_589122 = query.getOrDefault("alt")
+  valid_589122 = validateParameter(valid_589122, JString, required = false,
                                  default = newJString("json"))
-  if valid_580089 != nil:
-    section.add "alt", valid_580089
-  var valid_580090 = query.getOrDefault("oauth_token")
-  valid_580090 = validateParameter(valid_580090, JString, required = false,
+  if valid_589122 != nil:
+    section.add "alt", valid_589122
+  var valid_589123 = query.getOrDefault("oauth_token")
+  valid_589123 = validateParameter(valid_589123, JString, required = false,
                                  default = nil)
-  if valid_580090 != nil:
-    section.add "oauth_token", valid_580090
-  var valid_580091 = query.getOrDefault("userIp")
-  valid_580091 = validateParameter(valid_580091, JString, required = false,
+  if valid_589123 != nil:
+    section.add "oauth_token", valid_589123
+  var valid_589124 = query.getOrDefault("userIp")
+  valid_589124 = validateParameter(valid_589124, JString, required = false,
                                  default = nil)
-  if valid_580091 != nil:
-    section.add "userIp", valid_580091
-  var valid_580092 = query.getOrDefault("key")
-  valid_580092 = validateParameter(valid_580092, JString, required = false,
+  if valid_589124 != nil:
+    section.add "userIp", valid_589124
+  var valid_589125 = query.getOrDefault("key")
+  valid_589125 = validateParameter(valid_589125, JString, required = false,
                                  default = nil)
-  if valid_580092 != nil:
-    section.add "key", valid_580092
-  var valid_580093 = query.getOrDefault("prettyPrint")
-  valid_580093 = validateParameter(valid_580093, JBool, required = false,
+  if valid_589125 != nil:
+    section.add "key", valid_589125
+  var valid_589126 = query.getOrDefault("prettyPrint")
+  valid_589126 = validateParameter(valid_589126, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580093 != nil:
-    section.add "prettyPrint", valid_580093
+  if valid_589126 != nil:
+    section.add "prettyPrint", valid_589126
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1339,21 +1339,21 @@ proc validate_DoubleclicksearchReportsGenerate_580085(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580095: Call_DoubleclicksearchReportsGenerate_580084;
+proc call*(call_589128: Call_DoubleclicksearchReportsGenerate_589117;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Generates and returns a report immediately.
   ## 
-  let valid = call_580095.validator(path, query, header, formData, body)
-  let scheme = call_580095.pickScheme
+  let valid = call_589128.validator(path, query, header, formData, body)
+  let scheme = call_589128.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580095.url(scheme.get, call_580095.host, call_580095.base,
-                         call_580095.route, valid.getOrDefault("path"),
+  let url = call_589128.url(scheme.get, call_589128.host, call_589128.base,
+                         call_589128.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580095, url, valid)
+  result = hook(call_589128, url, valid)
 
-proc call*(call_580096: Call_DoubleclicksearchReportsGenerate_580084;
+proc call*(call_589129: Call_DoubleclicksearchReportsGenerate_589117;
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           reportRequest: JsonNode = nil; oauthToken: string = ""; userIp: string = "";
           key: string = ""; prettyPrint: bool = true): Recallable =
@@ -1374,28 +1374,28 @@ proc call*(call_580096: Call_DoubleclicksearchReportsGenerate_580084;
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var query_580097 = newJObject()
-  var body_580098 = newJObject()
-  add(query_580097, "fields", newJString(fields))
-  add(query_580097, "quotaUser", newJString(quotaUser))
-  add(query_580097, "alt", newJString(alt))
+  var query_589130 = newJObject()
+  var body_589131 = newJObject()
+  add(query_589130, "fields", newJString(fields))
+  add(query_589130, "quotaUser", newJString(quotaUser))
+  add(query_589130, "alt", newJString(alt))
   if reportRequest != nil:
-    body_580098 = reportRequest
-  add(query_580097, "oauth_token", newJString(oauthToken))
-  add(query_580097, "userIp", newJString(userIp))
-  add(query_580097, "key", newJString(key))
-  add(query_580097, "prettyPrint", newJBool(prettyPrint))
-  result = call_580096.call(nil, query_580097, nil, nil, body_580098)
+    body_589131 = reportRequest
+  add(query_589130, "oauth_token", newJString(oauthToken))
+  add(query_589130, "userIp", newJString(userIp))
+  add(query_589130, "key", newJString(key))
+  add(query_589130, "prettyPrint", newJBool(prettyPrint))
+  result = call_589129.call(nil, query_589130, nil, nil, body_589131)
 
-var doubleclicksearchReportsGenerate* = Call_DoubleclicksearchReportsGenerate_580084(
+var doubleclicksearchReportsGenerate* = Call_DoubleclicksearchReportsGenerate_589117(
     name: "doubleclicksearchReportsGenerate", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com", route: "/reports/generate",
-    validator: validate_DoubleclicksearchReportsGenerate_580085,
-    base: "/doubleclicksearch/v2", url: url_DoubleclicksearchReportsGenerate_580086,
+    validator: validate_DoubleclicksearchReportsGenerate_589118,
+    base: "/doubleclicksearch/v2", url: url_DoubleclicksearchReportsGenerate_589119,
     schemes: {Scheme.Https})
 type
-  Call_DoubleclicksearchReportsGet_580099 = ref object of OpenApiRestCall_579424
-proc url_DoubleclicksearchReportsGet_580101(protocol: Scheme; host: string;
+  Call_DoubleclicksearchReportsGet_589132 = ref object of OpenApiRestCall_588457
+proc url_DoubleclicksearchReportsGet_589134(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -1410,7 +1410,7 @@ proc url_DoubleclicksearchReportsGet_580101(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_DoubleclicksearchReportsGet_580100(path: JsonNode; query: JsonNode;
+proc validate_DoubleclicksearchReportsGet_589133(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Polls for the status of a report request.
   ## 
@@ -1421,11 +1421,11 @@ proc validate_DoubleclicksearchReportsGet_580100(path: JsonNode; query: JsonNode
   ##           : ID of the report request being polled.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `reportId` field"
-  var valid_580102 = path.getOrDefault("reportId")
-  valid_580102 = validateParameter(valid_580102, JString, required = true,
+  var valid_589135 = path.getOrDefault("reportId")
+  valid_589135 = validateParameter(valid_589135, JString, required = true,
                                  default = nil)
-  if valid_580102 != nil:
-    section.add "reportId", valid_580102
+  if valid_589135 != nil:
+    section.add "reportId", valid_589135
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -1443,41 +1443,41 @@ proc validate_DoubleclicksearchReportsGet_580100(path: JsonNode; query: JsonNode
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580103 = query.getOrDefault("fields")
-  valid_580103 = validateParameter(valid_580103, JString, required = false,
+  var valid_589136 = query.getOrDefault("fields")
+  valid_589136 = validateParameter(valid_589136, JString, required = false,
                                  default = nil)
-  if valid_580103 != nil:
-    section.add "fields", valid_580103
-  var valid_580104 = query.getOrDefault("quotaUser")
-  valid_580104 = validateParameter(valid_580104, JString, required = false,
+  if valid_589136 != nil:
+    section.add "fields", valid_589136
+  var valid_589137 = query.getOrDefault("quotaUser")
+  valid_589137 = validateParameter(valid_589137, JString, required = false,
                                  default = nil)
-  if valid_580104 != nil:
-    section.add "quotaUser", valid_580104
-  var valid_580105 = query.getOrDefault("alt")
-  valid_580105 = validateParameter(valid_580105, JString, required = false,
+  if valid_589137 != nil:
+    section.add "quotaUser", valid_589137
+  var valid_589138 = query.getOrDefault("alt")
+  valid_589138 = validateParameter(valid_589138, JString, required = false,
                                  default = newJString("json"))
-  if valid_580105 != nil:
-    section.add "alt", valid_580105
-  var valid_580106 = query.getOrDefault("oauth_token")
-  valid_580106 = validateParameter(valid_580106, JString, required = false,
+  if valid_589138 != nil:
+    section.add "alt", valid_589138
+  var valid_589139 = query.getOrDefault("oauth_token")
+  valid_589139 = validateParameter(valid_589139, JString, required = false,
                                  default = nil)
-  if valid_580106 != nil:
-    section.add "oauth_token", valid_580106
-  var valid_580107 = query.getOrDefault("userIp")
-  valid_580107 = validateParameter(valid_580107, JString, required = false,
+  if valid_589139 != nil:
+    section.add "oauth_token", valid_589139
+  var valid_589140 = query.getOrDefault("userIp")
+  valid_589140 = validateParameter(valid_589140, JString, required = false,
                                  default = nil)
-  if valid_580107 != nil:
-    section.add "userIp", valid_580107
-  var valid_580108 = query.getOrDefault("key")
-  valid_580108 = validateParameter(valid_580108, JString, required = false,
+  if valid_589140 != nil:
+    section.add "userIp", valid_589140
+  var valid_589141 = query.getOrDefault("key")
+  valid_589141 = validateParameter(valid_589141, JString, required = false,
                                  default = nil)
-  if valid_580108 != nil:
-    section.add "key", valid_580108
-  var valid_580109 = query.getOrDefault("prettyPrint")
-  valid_580109 = validateParameter(valid_580109, JBool, required = false,
+  if valid_589141 != nil:
+    section.add "key", valid_589141
+  var valid_589142 = query.getOrDefault("prettyPrint")
+  valid_589142 = validateParameter(valid_589142, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580109 != nil:
-    section.add "prettyPrint", valid_580109
+  if valid_589142 != nil:
+    section.add "prettyPrint", valid_589142
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1486,20 +1486,20 @@ proc validate_DoubleclicksearchReportsGet_580100(path: JsonNode; query: JsonNode
   if body != nil:
     result.add "body", body
 
-proc call*(call_580110: Call_DoubleclicksearchReportsGet_580099; path: JsonNode;
+proc call*(call_589143: Call_DoubleclicksearchReportsGet_589132; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Polls for the status of a report request.
   ## 
-  let valid = call_580110.validator(path, query, header, formData, body)
-  let scheme = call_580110.pickScheme
+  let valid = call_589143.validator(path, query, header, formData, body)
+  let scheme = call_589143.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580110.url(scheme.get, call_580110.host, call_580110.base,
-                         call_580110.route, valid.getOrDefault("path"),
+  let url = call_589143.url(scheme.get, call_589143.host, call_589143.base,
+                         call_589143.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580110, url, valid)
+  result = hook(call_589143, url, valid)
 
-proc call*(call_580111: Call_DoubleclicksearchReportsGet_580099; reportId: string;
+proc call*(call_589144: Call_DoubleclicksearchReportsGet_589132; reportId: string;
           fields: string = ""; quotaUser: string = ""; alt: string = "json";
           oauthToken: string = ""; userIp: string = ""; key: string = "";
           prettyPrint: bool = true): Recallable =
@@ -1521,27 +1521,27 @@ proc call*(call_580111: Call_DoubleclicksearchReportsGet_580099; reportId: strin
   ##           : ID of the report request being polled.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_580112 = newJObject()
-  var query_580113 = newJObject()
-  add(query_580113, "fields", newJString(fields))
-  add(query_580113, "quotaUser", newJString(quotaUser))
-  add(query_580113, "alt", newJString(alt))
-  add(query_580113, "oauth_token", newJString(oauthToken))
-  add(query_580113, "userIp", newJString(userIp))
-  add(query_580113, "key", newJString(key))
-  add(path_580112, "reportId", newJString(reportId))
-  add(query_580113, "prettyPrint", newJBool(prettyPrint))
-  result = call_580111.call(path_580112, query_580113, nil, nil, nil)
+  var path_589145 = newJObject()
+  var query_589146 = newJObject()
+  add(query_589146, "fields", newJString(fields))
+  add(query_589146, "quotaUser", newJString(quotaUser))
+  add(query_589146, "alt", newJString(alt))
+  add(query_589146, "oauth_token", newJString(oauthToken))
+  add(query_589146, "userIp", newJString(userIp))
+  add(query_589146, "key", newJString(key))
+  add(path_589145, "reportId", newJString(reportId))
+  add(query_589146, "prettyPrint", newJBool(prettyPrint))
+  result = call_589144.call(path_589145, query_589146, nil, nil, nil)
 
-var doubleclicksearchReportsGet* = Call_DoubleclicksearchReportsGet_580099(
+var doubleclicksearchReportsGet* = Call_DoubleclicksearchReportsGet_589132(
     name: "doubleclicksearchReportsGet", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/reports/{reportId}",
-    validator: validate_DoubleclicksearchReportsGet_580100,
-    base: "/doubleclicksearch/v2", url: url_DoubleclicksearchReportsGet_580101,
+    validator: validate_DoubleclicksearchReportsGet_589133,
+    base: "/doubleclicksearch/v2", url: url_DoubleclicksearchReportsGet_589134,
     schemes: {Scheme.Https})
 type
-  Call_DoubleclicksearchReportsGetFile_580114 = ref object of OpenApiRestCall_579424
-proc url_DoubleclicksearchReportsGetFile_580116(protocol: Scheme; host: string;
+  Call_DoubleclicksearchReportsGetFile_589147 = ref object of OpenApiRestCall_588457
+proc url_DoubleclicksearchReportsGetFile_589149(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -1559,7 +1559,7 @@ proc url_DoubleclicksearchReportsGetFile_580116(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_DoubleclicksearchReportsGetFile_580115(path: JsonNode;
+proc validate_DoubleclicksearchReportsGetFile_589148(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Downloads a report file encoded in UTF-8.
   ## 
@@ -1573,15 +1573,15 @@ proc validate_DoubleclicksearchReportsGetFile_580115(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `reportFragment` field"
-  var valid_580117 = path.getOrDefault("reportFragment")
-  valid_580117 = validateParameter(valid_580117, JInt, required = true, default = nil)
-  if valid_580117 != nil:
-    section.add "reportFragment", valid_580117
-  var valid_580118 = path.getOrDefault("reportId")
-  valid_580118 = validateParameter(valid_580118, JString, required = true,
+  var valid_589150 = path.getOrDefault("reportFragment")
+  valid_589150 = validateParameter(valid_589150, JInt, required = true, default = nil)
+  if valid_589150 != nil:
+    section.add "reportFragment", valid_589150
+  var valid_589151 = path.getOrDefault("reportId")
+  valid_589151 = validateParameter(valid_589151, JString, required = true,
                                  default = nil)
-  if valid_580118 != nil:
-    section.add "reportId", valid_580118
+  if valid_589151 != nil:
+    section.add "reportId", valid_589151
   result.add "path", section
   ## parameters in `query` object:
   ##   fields: JString
@@ -1599,41 +1599,41 @@ proc validate_DoubleclicksearchReportsGetFile_580115(path: JsonNode;
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_580119 = query.getOrDefault("fields")
-  valid_580119 = validateParameter(valid_580119, JString, required = false,
+  var valid_589152 = query.getOrDefault("fields")
+  valid_589152 = validateParameter(valid_589152, JString, required = false,
                                  default = nil)
-  if valid_580119 != nil:
-    section.add "fields", valid_580119
-  var valid_580120 = query.getOrDefault("quotaUser")
-  valid_580120 = validateParameter(valid_580120, JString, required = false,
+  if valid_589152 != nil:
+    section.add "fields", valid_589152
+  var valid_589153 = query.getOrDefault("quotaUser")
+  valid_589153 = validateParameter(valid_589153, JString, required = false,
                                  default = nil)
-  if valid_580120 != nil:
-    section.add "quotaUser", valid_580120
-  var valid_580121 = query.getOrDefault("alt")
-  valid_580121 = validateParameter(valid_580121, JString, required = false,
+  if valid_589153 != nil:
+    section.add "quotaUser", valid_589153
+  var valid_589154 = query.getOrDefault("alt")
+  valid_589154 = validateParameter(valid_589154, JString, required = false,
                                  default = newJString("json"))
-  if valid_580121 != nil:
-    section.add "alt", valid_580121
-  var valid_580122 = query.getOrDefault("oauth_token")
-  valid_580122 = validateParameter(valid_580122, JString, required = false,
+  if valid_589154 != nil:
+    section.add "alt", valid_589154
+  var valid_589155 = query.getOrDefault("oauth_token")
+  valid_589155 = validateParameter(valid_589155, JString, required = false,
                                  default = nil)
-  if valid_580122 != nil:
-    section.add "oauth_token", valid_580122
-  var valid_580123 = query.getOrDefault("userIp")
-  valid_580123 = validateParameter(valid_580123, JString, required = false,
+  if valid_589155 != nil:
+    section.add "oauth_token", valid_589155
+  var valid_589156 = query.getOrDefault("userIp")
+  valid_589156 = validateParameter(valid_589156, JString, required = false,
                                  default = nil)
-  if valid_580123 != nil:
-    section.add "userIp", valid_580123
-  var valid_580124 = query.getOrDefault("key")
-  valid_580124 = validateParameter(valid_580124, JString, required = false,
+  if valid_589156 != nil:
+    section.add "userIp", valid_589156
+  var valid_589157 = query.getOrDefault("key")
+  valid_589157 = validateParameter(valid_589157, JString, required = false,
                                  default = nil)
-  if valid_580124 != nil:
-    section.add "key", valid_580124
-  var valid_580125 = query.getOrDefault("prettyPrint")
-  valid_580125 = validateParameter(valid_580125, JBool, required = false,
+  if valid_589157 != nil:
+    section.add "key", valid_589157
+  var valid_589158 = query.getOrDefault("prettyPrint")
+  valid_589158 = validateParameter(valid_589158, JBool, required = false,
                                  default = newJBool(true))
-  if valid_580125 != nil:
-    section.add "prettyPrint", valid_580125
+  if valid_589158 != nil:
+    section.add "prettyPrint", valid_589158
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1642,21 +1642,21 @@ proc validate_DoubleclicksearchReportsGetFile_580115(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_580126: Call_DoubleclicksearchReportsGetFile_580114;
+proc call*(call_589159: Call_DoubleclicksearchReportsGetFile_589147;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Downloads a report file encoded in UTF-8.
   ## 
-  let valid = call_580126.validator(path, query, header, formData, body)
-  let scheme = call_580126.pickScheme
+  let valid = call_589159.validator(path, query, header, formData, body)
+  let scheme = call_589159.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_580126.url(scheme.get, call_580126.host, call_580126.base,
-                         call_580126.route, valid.getOrDefault("path"),
+  let url = call_589159.url(scheme.get, call_589159.host, call_589159.base,
+                         call_589159.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_580126, url, valid)
+  result = hook(call_589159, url, valid)
 
-proc call*(call_580127: Call_DoubleclicksearchReportsGetFile_580114;
+proc call*(call_589160: Call_DoubleclicksearchReportsGetFile_589147;
           reportFragment: int; reportId: string; fields: string = "";
           quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
           userIp: string = ""; key: string = ""; prettyPrint: bool = true): Recallable =
@@ -1680,25 +1680,25 @@ proc call*(call_580127: Call_DoubleclicksearchReportsGetFile_580114;
   ##           : ID of the report.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_580128 = newJObject()
-  var query_580129 = newJObject()
-  add(query_580129, "fields", newJString(fields))
-  add(path_580128, "reportFragment", newJInt(reportFragment))
-  add(query_580129, "quotaUser", newJString(quotaUser))
-  add(query_580129, "alt", newJString(alt))
-  add(query_580129, "oauth_token", newJString(oauthToken))
-  add(query_580129, "userIp", newJString(userIp))
-  add(query_580129, "key", newJString(key))
-  add(path_580128, "reportId", newJString(reportId))
-  add(query_580129, "prettyPrint", newJBool(prettyPrint))
-  result = call_580127.call(path_580128, query_580129, nil, nil, nil)
+  var path_589161 = newJObject()
+  var query_589162 = newJObject()
+  add(query_589162, "fields", newJString(fields))
+  add(path_589161, "reportFragment", newJInt(reportFragment))
+  add(query_589162, "quotaUser", newJString(quotaUser))
+  add(query_589162, "alt", newJString(alt))
+  add(query_589162, "oauth_token", newJString(oauthToken))
+  add(query_589162, "userIp", newJString(userIp))
+  add(query_589162, "key", newJString(key))
+  add(path_589161, "reportId", newJString(reportId))
+  add(query_589162, "prettyPrint", newJBool(prettyPrint))
+  result = call_589160.call(path_589161, query_589162, nil, nil, nil)
 
-var doubleclicksearchReportsGetFile* = Call_DoubleclicksearchReportsGetFile_580114(
+var doubleclicksearchReportsGetFile* = Call_DoubleclicksearchReportsGetFile_589147(
     name: "doubleclicksearchReportsGetFile", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com",
     route: "/reports/{reportId}/files/{reportFragment}",
-    validator: validate_DoubleclicksearchReportsGetFile_580115,
-    base: "/doubleclicksearch/v2", url: url_DoubleclicksearchReportsGetFile_580116,
+    validator: validate_DoubleclicksearchReportsGetFile_589148,
+    base: "/doubleclicksearch/v2", url: url_DoubleclicksearchReportsGetFile_589149,
     schemes: {Scheme.Https})
 export
   rest
@@ -1741,7 +1741,7 @@ proc store(auth: var GoogleAuth; token: string; expiry: int; form: string) =
   auth.form = form
   auth.digest = auth.hash
 
-proc authenticate*(fresh: float64 = -3600.0; lifetime: int = 3600): Future[bool] {.async.} =
+proc authenticate*(fresh: float64 = 3600.0; lifetime: int = 3600): Future[bool] {.async.} =
   ## get or refresh an authentication token; provide `fresh`
   ## to ensure that the token won't expire in the next N seconds.
   ## provide `lifetime` to indicate how long the token should last.
