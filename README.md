@@ -7,7 +7,7 @@ Haven't decided how to handle parameters with empty strings, so for now, you nee
 
 ## Supported APIs
 
-[Sadly, only the 172 most popular GCP APIs are supported at this time.](https://github.com/disruptek/gcplat/tree/master/src/gcplat) :cry:
+[Sadly, only the 180 most popular GCP APIs are supported at this time.](https://github.com/disruptek/gcplat/tree/master/src/gcplat) :cry:
 
 ## Example
 
